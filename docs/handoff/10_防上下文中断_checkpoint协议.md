@@ -47,3 +47,12 @@
 - 旧辅助函数源码和 batch3 报告中误写的字符串判断、返回值顺序均已修正。
 - 本批 20/20 条指令已映射；运行时验证仍为 0，不将其计为运行时完成。
 - 下一批：root.children[28]（旧 root/29，102 条指令、1 个子原型）FindMonsterCandidates；之后核查 root.children[7]、root.children[38] 两个 owner 判断函数。注意 root.children[27]（旧 root/28）才是 25 条指令的 StopGatherMonsters。
+
+
+## 检查点 #2（2026-11-08）：FindMonsterCandidates 阶段分析
+- 当前对象：root.children[28]（旧 root/29），102 条指令、19 个常量、1 个子原型。
+- 已核对视野怪物列表获取、空结果返回、忽略怪物设置读取、未知怪物名称相关筛选、`_distance` 写入和 `table.sort` 调用。
+- 子闭包比较器已确认是 `a._distance < b._distance`。
+- 5 个捕获槽位的业务名称和忽略列表匹配细节仍待确认，因此本批不计为完整恢复，也没有写入猜测性源码。
+- 分析报告：`docs/audit/root28_FindMonsterCandidates_阶段分析.md`。
+- 下一步：核验捕获值、配置结构和完整数据流，再形成普通 Lua 候选。
