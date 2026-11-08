@@ -228,3 +228,10 @@
 - 静态完整恢复总数从 2 增至 8；运行时验证仍为 0。
 - 详细报告：`docs/audit/检查点15_DiuItems复核与短函数首批验收.md`。
 - 下一步：继续批量处理其他短小辅助函数，优先直接产出普通 Lua，再复核并标记状态。
+
+
+## 检查点 #16（2026-11-08）：第二批短辅助函数恢复
+- 新增 `04_源码候选/其他短辅助函数_第二批草稿.lua`。
+- `root.children[4]` GetDroppedItems（8 指令）完整静态恢复：调用 `global.dropItemManager:FindDropItemInCurrViewFieldAll()`，原样返回两个值；CSV/机器状态已更新。
+- `root.children[20]` ShowLocalNoticeByType（15 指令）首版草稿：通知记录字段 Type/Msg/FColor/BColor/X/Y 与 `SL.ShowLocalNoticeByType(notice)` 调用已恢复；UP[0] 捕获对象身份仍待复核，因此不计完整静态恢复。
+- 详细报告：`docs/audit/检查点16_第二批短辅助函数恢复.md`。
