@@ -998,3 +998,3925 @@
           "instruction": [
             64,
             27,
+            46,
+            17,
+            1
+          ],
+          "opcode": 27,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[17]",
+      "legacy_one_based_label": "root/18",
+      "reconstruction_proto_id": 21,
+      "reconstruction_name": "PCallHelper",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/17/0",
+      "parent_path": "root/17",
+      "instruction_count": 14,
+      "constant_count": 5,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 14613,
+      "end_offset": 14824,
+      "constants": [
+        "tostring",
+        "cc",
+        "getInstance",
+        "FileUtils",
+        "writeStringToFile"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/17",
+          "pc": 1,
+          "instruction": [
+            0,
+            154,
+            3,
+            0,
+            3
+          ],
+          "opcode": 154,
+          "capture_count": 3
+        }
+      ],
+      "canonical_json_path": "root.children[17].children[0]",
+      "legacy_one_based_label": "root/18/1",
+      "reconstruction_proto_id": 22,
+      "reconstruction_name": "Nested_tostring",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/18",
+      "parent_path": "root",
+      "instruction_count": 19,
+      "constant_count": 7,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 14825,
+      "end_offset": 15066,
+      "constants": [
+        "X",
+        "y",
+        "GetMetaValue",
+        "x",
+        "Y",
+        0.0,
+        "SL"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 186,
+          "instruction": [
+            0,
+            154,
+            27,
+            18,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[18]",
+      "legacy_one_based_label": "root/19",
+      "reconstruction_proto_id": 23,
+      "reconstruction_name": "GetPlayerPosition",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/19",
+      "parent_path": "root",
+      "instruction_count": 36,
+      "constant_count": 11,
+      "child_count": 1,
+      "vararg_flag": 0,
+      "start_offset": 15066,
+      "end_offset": 15618,
+      "constants": [
+        "gatherTimer",
+        "CHECK_INTERVAL",
+        "format",
+        "IDLE",
+        "Schedule",
+        "GATHER_THRESHOLD",
+        "引怪功能已启动 (阈值: %d)",
+        "SL",
+        "string",
+        [
+          "unknown",
+          2
+        ],
+        "UnSchedule"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 237,
+          "instruction": [
+            0,
+            27,
+            37,
+            19,
+            7
+          ],
+          "opcode": 27,
+          "capture_count": 7
+        }
+      ],
+      "canonical_json_path": "root.children[19]",
+      "legacy_one_based_label": "root/20",
+      "reconstruction_proto_id": 24,
+      "reconstruction_name": "InitGatherMonsters",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/19/0",
+      "parent_path": "root/19",
+      "instruction_count": 3,
+      "constant_count": 1,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 15564,
+      "end_offset": 15617,
+      "constants": [
+        "MainLoop"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/19",
+          "pc": 22,
+          "instruction": [
+            128,
+            27,
+            3,
+            0,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[19].children[0]",
+      "legacy_one_based_label": "root/20/1",
+      "reconstruction_proto_id": 25,
+      "reconstruction_name": "Nested_MainLoop",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/20",
+      "parent_path": "root",
+      "instruction_count": 15,
+      "constant_count": 14,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 15618,
+      "end_offset": 15907,
+      "constants": [
+        5.0,
+        "screenH",
+        "Y",
+        "SL",
+        0.0,
+        "Type",
+        "Msg",
+        "ShowLocalNoticeByType",
+        249.0,
+        "BColor",
+        "FColor",
+        "X",
+        50.0,
+        10.0
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 45,
+          "instruction": [
+            192,
+            27,
+            5,
+            20,
+            1
+          ],
+          "opcode": 27,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[20]",
+      "legacy_one_based_label": "root/21",
+      "reconstruction_proto_id": 26,
+      "reconstruction_name": "ShowLocalNoticeByType",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/21",
+      "parent_path": "root",
+      "instruction_count": 172,
+      "constant_count": 34,
+      "child_count": 2,
+      "vararg_flag": 0,
+      "start_offset": 15907,
+      "end_offset": 18157,
+      "constants": [
+        "地面无可拾取物品",
+        "abs",
+        "MoveTo",
+        "PlayerPos",
+        "mapY",
+        "global",
+        "sort",
+        "ipairs",
+        "dist",
+        "find",
+        "MapY",
+        "math",
+        "mCurrMapX",
+        "mapX",
+        "MapX",
+        0.0,
+        "",
+        "mName",
+        "string",
+        1.0,
+        "mCurrMapY",
+        "item",
+        "mONameStr",
+        "table",
+        "GetDroppedItems",
+        "name",
+        "x",
+        "kIdx",
+        "PickMainPlayerPosItem",
+        "insert",
+        "dropItemController",
+        "y",
+        "Name",
+        "拾取: "
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 82,
+          "instruction": [
+            192,
+            154,
+            8,
+            21,
+            1
+          ],
+          "opcode": 154,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[21]",
+      "legacy_one_based_label": "root/22",
+      "reconstruction_proto_id": 27,
+      "reconstruction_name": "PickUpItems",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/21/0",
+      "parent_path": "root/21",
+      "instruction_count": 19,
+      "constant_count": 2,
+      "child_count": 0,
+      "vararg_flag": 2,
+      "start_offset": 17860,
+      "end_offset": 18062,
+      "constants": [
+        "dist",
+        "kIdx"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/21",
+          "pc": 103,
+          "instruction": [
+            192,
+            27,
+            7,
+            0,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[21].children[0]",
+      "legacy_one_based_label": "root/22/1",
+      "reconstruction_proto_id": 28,
+      "reconstruction_name": "Nested_dist",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/21/1",
+      "parent_path": "root/21",
+      "instruction_count": 8,
+      "constant_count": 1,
+      "child_count": 0,
+      "vararg_flag": 2,
+      "start_offset": 18062,
+      "end_offset": 18156,
+      "constants": [
+        "dist"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/21",
+          "pc": 112,
+          "instruction": [
+            192,
+            27,
+            10,
+            1,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[21].children[1]",
+      "legacy_one_based_label": "root/22/2",
+      "reconstruction_proto_id": 29,
+      "reconstruction_name": "Nested_dist_2",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/22",
+      "parent_path": "root",
+      "instruction_count": 144,
+      "constant_count": 15,
+      "child_count": 0,
+      "vararg_flag": 5,
+      "start_offset": 18157,
+      "end_offset": 19639,
+      "constants": [
+        "GetMapData2DPtr",
+        "abs",
+        "isObstacle",
+        [
+          "unknown",
+          2
+        ],
+        10000.0,
+        "getMapDataCols",
+        0.0,
+        "global",
+        "floor",
+        "math",
+        1.0,
+        2.0,
+        "getMapDataRows",
+        "max",
+        "sceneManager"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 349,
+          "instruction": [
+            0,
+            154,
+            53,
+            22,
+            1
+          ],
+          "opcode": 154,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[22]",
+      "legacy_one_based_label": "root/23",
+      "reconstruction_proto_id": 30,
+      "reconstruction_name": "GetMapData2DPtr",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/23",
+      "parent_path": "root",
+      "instruction_count": 55,
+      "constant_count": 15,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 19639,
+      "end_offset": 20373,
+      "constants": [
+        58.0,
+        "CHANGE_SETTING",
+        2005.0,
+        57.0,
+        "关闭屏蔽怪物",
+        "关闭游戏音乐",
+        0.0,
+        "开启人物简装",
+        1002.0,
+        "开启怪物简装",
+        "关闭高帧率",
+        27.0,
+        1.0,
+        52.0,
+        "关闭背景音乐"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 255,
+          "instruction": [
+            64,
+            154,
+            37,
+            23,
+            1
+          ],
+          "opcode": 154,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[23]",
+      "legacy_one_based_label": "root/24",
+      "reconstruction_proto_id": 31,
+      "reconstruction_name": "Builtsetting",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/24",
+      "parent_path": "root",
+      "instruction_count": 33,
+      "constant_count": 8,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 20373,
+      "end_offset": 20797,
+      "constants": [
+        "GetMetaValue",
+        "ITEM_COUNT",
+        "ipairs",
+        "tonumber",
+        "ITEM_INDEX_BY_NAME",
+        "SL",
+        "UseItemByIndex",
+        0.0
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 354,
+          "instruction": [
+            0,
+            154,
+            56,
+            24,
+            1
+          ],
+          "opcode": 154,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[24]",
+      "legacy_one_based_label": "root/25",
+      "reconstruction_proto_id": 32,
+      "reconstruction_name": "UseItemByIndex",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/25",
+      "parent_path": "root",
+      "instruction_count": 47,
+      "constant_count": 15,
+      "child_count": 1,
+      "vararg_flag": 0,
+      "start_offset": 20797,
+      "end_offset": 21597,
+      "constants": [
+        5.0,
+        "被 %s 击杀，自动加入黑名单",
+        "ScheduleOnce",
+        "本次死亡没记录到凶手，跳过自动拉黑",
+        "lastAttacker",
+        [
+          "unknown",
+          2
+        ],
+        "",
+        1.0,
+        0.0,
+        "自动拉黑：",
+        "凶手已在黑名单中：%s",
+        "id",
+        0.5,
+        "SL",
+        "name"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 362,
+          "instruction": [
+            192,
+            27,
+            58,
+            25,
+            4
+          ],
+          "opcode": 27,
+          "capture_count": 4
+        }
+      ],
+      "canonical_json_path": "root.children[25]",
+      "legacy_one_based_label": "root/26",
+      "reconstruction_proto_id": 33,
+      "reconstruction_name": "DeathAutoBlacklist",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/25/0",
+      "parent_path": "root/25",
+      "instruction_count": 6,
+      "constant_count": 3,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 21483,
+      "end_offset": 21596,
+      "constants": [
+        "RequestAddBlacklistByName",
+        "name",
+        "SL"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/25",
+          "pc": 41,
+          "instruction": [
+            0,
+            27,
+            7,
+            0,
+            1
+          ],
+          "opcode": 27,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[25].children[0]",
+      "legacy_one_based_label": "root/26/1",
+      "reconstruction_proto_id": 34,
+      "reconstruction_name": "Nested_RequestAddBlacklistByName",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/26",
+      "parent_path": "root",
+      "instruction_count": 20,
+      "constant_count": 3,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 21597,
+      "end_offset": 21824,
+      "constants": [
+        "数据已重置",
+        0.0,
+        ""
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 199,
+          "instruction": [
+            64,
+            154,
+            35,
+            26,
+            9
+          ],
+          "opcode": 154,
+          "capture_count": 9
+        }
+      ],
+      "canonical_json_path": "root.children[26]",
+      "legacy_one_based_label": "root/27",
+      "reconstruction_proto_id": 35,
+      "reconstruction_name": "ResetGatherMonsterData",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/27",
+      "parent_path": "root",
+      "instruction_count": 25,
+      "constant_count": 6,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 21824,
+      "end_offset": 22136,
+      "constants": [
+        "引怪功能已停止",
+        "UnSchedule",
+        [
+          "unknown",
+          2
+        ],
+        "IDLE",
+        "gatherTimer",
+        "SL"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 246,
+          "instruction": [
+            192,
+            27,
+            37,
+            27,
+            7
+          ],
+          "opcode": 27,
+          "capture_count": 7
+        }
+      ],
+      "canonical_json_path": "root.children[27]",
+      "legacy_one_based_label": "root/28",
+      "reconstruction_proto_id": 36,
+      "reconstruction_name": "StopGatherMonsters",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/28",
+      "parent_path": "root",
+      "instruction_count": 102,
+      "constant_count": 19,
+      "child_count": 1,
+      "vararg_flag": 0,
+      "start_offset": 22136,
+      "end_offset": 23414,
+      "constants": [
+        "global",
+        0.0,
+        "ipairs",
+        "FindMonsterInCurrViewField",
+        1.0,
+        "未知怪物",
+        "type",
+        "SETTING_IDX_IGNORE_MONSTER",
+        "SL",
+        "insert",
+        "GetName",
+        "GET_SETTING",
+        "table",
+        "MMO",
+        "sort",
+        "_distance",
+        "GATHER_THRESHOLD",
+        "pairs",
+        true
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 193,
+          "instruction": [
+            64,
+            27,
+            34,
+            28,
+            5
+          ],
+          "opcode": 27,
+          "capture_count": 5
+        }
+      ],
+      "canonical_json_path": "root.children[28]",
+      "legacy_one_based_label": "root/29",
+      "reconstruction_proto_id": 37,
+      "reconstruction_name": "FindMonsterCandidates",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/28/0",
+      "parent_path": "root/28",
+      "instruction_count": 8,
+      "constant_count": 1,
+      "child_count": 0,
+      "vararg_flag": 2,
+      "start_offset": 23314,
+      "end_offset": 23413,
+      "constants": [
+        "_distance"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/28",
+          "pc": 81,
+          "instruction": [
+            128,
+            27,
+            8,
+            0,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[28].children[0]",
+      "legacy_one_based_label": "root/29/1",
+      "reconstruction_proto_id": 38,
+      "reconstruction_name": "Nested_distance",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/29",
+      "parent_path": "root",
+      "instruction_count": 7,
+      "constant_count": 1,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 23414,
+      "end_offset": 23500,
+      "constants": [
+        "IsDie"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 189,
+          "instruction": [
+            128,
+            27,
+            30,
+            29,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[29]",
+      "legacy_one_based_label": "root/30",
+      "reconstruction_proto_id": 39,
+      "reconstruction_name": "IsDie",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/30",
+      "parent_path": "root",
+      "instruction_count": 9,
+      "constant_count": 4,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 23500,
+      "end_offset": 23636,
+      "constants": [
+        "GetMetaValue",
+        "MAP_NAME",
+        "",
+        "SL"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 55,
+          "instruction": [
+            192,
+            27,
+            8,
+            30,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[30]",
+      "legacy_one_based_label": "root/31",
+      "reconstruction_proto_id": 40,
+      "reconstruction_name": "GetMapName",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/31",
+      "parent_path": "root",
+      "instruction_count": 28,
+      "constant_count": 6,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 23636,
+      "end_offset": 23977,
+      "constants": [
+        "MAP_NAME",
+        "GetMetaValue",
+        "土城",
+        "IN_SAFE_AREA",
+        "ipairs",
+        "SL"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 211,
+          "instruction": [
+            192,
+            154,
+            37,
+            31,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[31]",
+      "legacy_one_based_label": "root/32",
+      "reconstruction_proto_id": 41,
+      "reconstruction_name": "IsInWhitelistMap",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/32",
+      "parent_path": "root",
+      "instruction_count": 6,
+      "constant_count": 0,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 23977,
+      "end_offset": 24044,
+      "constants": [],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 306,
+          "instruction": [
+            0,
+            27,
+            49,
+            32,
+            2
+          ],
+          "opcode": 27,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[32]",
+      "legacy_one_based_label": "root/33",
+      "reconstruction_proto_id": 42,
+      "reconstruction_name": "AnonymousHelper_32",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/33",
+      "parent_path": "root",
+      "instruction_count": 5,
+      "constant_count": 0,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 24044,
+      "end_offset": 24102,
+      "constants": [],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 309,
+          "instruction": [
+            64,
+            154,
+            50,
+            33,
+            2
+          ],
+          "opcode": 154,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[33]",
+      "legacy_one_based_label": "root/34",
+      "reconstruction_proto_id": 43,
+      "reconstruction_name": "AnonymousHelper_33",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/34",
+      "parent_path": "root",
+      "instruction_count": 7,
+      "constant_count": 2,
+      "child_count": 0,
+      "vararg_flag": 2,
+      "start_offset": 24102,
+      "end_offset": 24198,
+      "constants": [
+        "SL",
+        "Schedule"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 52,
+          "instruction": [
+            192,
+            154,
+            7,
+            34,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[34]",
+      "legacy_one_based_label": "root/35",
+      "reconstruction_proto_id": 44,
+      "reconstruction_name": "Schedule",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/35",
+      "parent_path": "root",
+      "instruction_count": 26,
+      "constant_count": 8,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 24198,
+      "end_offset": 24573,
+      "constants": [
+        "retrieveProxy",
+        "Facade",
+        "ProxyTable",
+        "SELETE_TARGET_TYPE_FIND",
+        "MMO",
+        "PlayerInputProxy",
+        "SetTargetID",
+        "global"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 183,
+          "instruction": [
+            64,
+            154,
+            24,
+            35,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[35]",
+      "legacy_one_based_label": "root/36",
+      "reconstruction_proto_id": 45,
+      "reconstruction_name": "SetTargetID",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/36",
+      "parent_path": "root",
+      "instruction_count": 51,
+      "constant_count": 12,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 24573,
+      "end_offset": 25251,
+      "constants": [
+        "STORAGE_PER_PAGE_MAX",
+        "GetOpenSize",
+        "NPC_STORAGE_MAX_PAGE",
+        "仓库代理未初始化",
+        "GetMaxPage",
+        0.0,
+        "GUIDefine",
+        "NPCStorageProxy",
+        1.0,
+        "global",
+        "GetStorageDataByPage",
+        "MMO"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 67,
+          "instruction": [
+            0,
+            27,
+            8,
+            36,
+            1
+          ],
+          "opcode": 27,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[36]",
+      "legacy_one_based_label": "root/37",
+      "reconstruction_proto_id": 46,
+      "reconstruction_name": "GetAvailableStoragePage",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/37",
+      "parent_path": "root",
+      "instruction_count": 31,
+      "constant_count": 11,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 25251,
+      "end_offset": 25655,
+      "constants": [
+        [
+          "unknown",
+          2
+        ],
+        "UnSchedule",
+        "isHidden",
+        "GUI",
+        "setVisible",
+        "SL",
+        "resWin",
+        "resTimer",
+        "Win_CloseAll",
+        false,
+        "pairs"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 260,
+          "instruction": [
+            64,
+            154,
+            37,
+            37,
+            3
+          ],
+          "opcode": 154,
+          "capture_count": 3
+        }
+      ],
+      "canonical_json_path": "root.children[37]",
+      "legacy_one_based_label": "root/38",
+      "reconstruction_proto_id": 47,
+      "reconstruction_name": "DestroyUI",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/38",
+      "parent_path": "root",
+      "instruction_count": 31,
+      "constant_count": 7,
+      "child_count": 0,
+      "vararg_flag": 2,
+      "start_offset": 25655,
+      "end_offset": 26010,
+      "constants": [
+        -1.0,
+        "tostring",
+        "GetOwnerID",
+        "type",
+        [
+          "unknown",
+          2
+        ],
+        "",
+        "string"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 191,
+          "instruction": [
+            0,
+            154,
+            32,
+            38,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[38]",
+      "legacy_one_based_label": "root/39",
+      "reconstruction_proto_id": 48,
+      "reconstruction_name": "GetOwnerID",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/39",
+      "parent_path": "root",
+      "instruction_count": 6,
+      "constant_count": 3,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 26010,
+      "end_offset": 26133,
+      "constants": [
+        "gamePlayerController",
+        "GetMainPlayerID",
+        "global"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 185,
+          "instruction": [
+            0,
+            154,
+            26,
+            39,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[39]",
+      "legacy_one_based_label": "root/40",
+      "reconstruction_proto_id": 49,
+      "reconstruction_name": "GetMainPlayerID",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/40",
+      "parent_path": "root",
+      "instruction_count": 47,
+      "constant_count": 9,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 26133,
+      "end_offset": 26669,
+      "constants": [
+        "GUI",
+        "pairs",
+        "setVisible",
+        "SL",
+        "hidebut",
+        "UnSchedule",
+        [
+          "unknown",
+          2
+        ],
+        "rewardTimer",
+        "cruiseTimer"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 269,
+          "instruction": [
+            128,
+            154,
+            37,
+            40,
+            3
+          ],
+          "opcode": 154,
+          "capture_count": 3
+        }
+      ],
+      "canonical_json_path": "root.children[40]",
+      "legacy_one_based_label": "root/41",
+      "reconstruction_proto_id": 50,
+      "reconstruction_name": "ShowHideAllButtons",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/41",
+      "parent_path": "root",
+      "instruction_count": 133,
+      "constant_count": 26,
+      "child_count": 0,
+      "vararg_flag": 2,
+      "start_offset": 26669,
+      "end_offset": 28367,
+      "constants": [
+        "快捷栏移动: %d → %d",
+        "next",
+        "QuickUseProxy",
+        "SetQuickUsePosData",
+        "GetQuickUseData",
+        "GetQuickUseSize",
+        "DelItemData",
+        "参数无效",
+        "物品已在目标位置",
+        "addItemData",
+        "Bag",
+        "物品不存在",
+        "Index",
+        "ProxyTable",
+        "retrieveProxy",
+        "Facade",
+        "目标位置超出范围",
+        "string",
+        "已从背包移动到快捷栏位置%d",
+        "format",
+        "GetItemDataByItemIndex",
+        "pairs",
+        "global",
+        "GetQucikUseDataByPos",
+        "快捷栏交换: %d ↔ %d",
+        1.0
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 258,
+          "instruction": [
+            64,
+            154,
+            37,
+            41,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[41]",
+      "legacy_one_based_label": "root/42",
+      "reconstruction_proto_id": 51,
+      "reconstruction_name": "MoveItemToQuickUse",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42",
+      "parent_path": "root",
+      "instruction_count": 419,
+      "constant_count": 105,
+      "child_count": 23,
+      "vararg_flag": 0,
+      "start_offset": 28367,
+      "end_offset": 52718,
+      "constants": [
+        "addOnClickEvent",
+        "pcall",
+        "Button_setTitleFontSize",
+        "RequestStorageData",
+        "ScheduleOnce",
+        "takebut",
+        "res/public/kaiti2.ttf",
+        "声望卷",
+        "SL",
+        "%Y-%m-%d %H:%M:%S",
+        "Builtsetting",
+        "slot",
+        "开拉怪",
+        18.0,
+        "retrieveProxy",
+        "cruiseTimer",
+        [
+          "unknown",
+          2
+        ],
+        0.1,
+        "toggle",
+        "恶魔令牌",
+        "灵符",
+        "MainProperty",
+        "转生水晶",
+        "绑定灵符",
+        "Button_Create",
+        "res/public/fuzhu_btn.png",
+        "MoneyProxy",
+        80.0,
+        "Button_setTitleFontName",
+        "绑定元宝",
+        "快速小退",
+        "随机传送石",
+        "永久随机石",
+        "免战回城石",
+        "GetMoneyCountById",
+        "大陆传送石",
+        "rewardbut",
+        "关黑名单",
+        "shiqubut",
+        "关拉怪",
+        "clearblacklistbut",
+        "NPCStorageProxy",
+        "插件初始化完成",
+        "getWorldPosition",
+        4.0,
+        "time",
+        "width",
+        "清距离值",
+        "开拾取",
+        "关丢物品",
+        1.0,
+        "getContentSize",
+        "Button_setTitleText",
+        "storagebut",
+        "血龙宝珠",
+        10.0,
+        "UnSchedule",
+        "资源统计",
+        "Panel_mini_chat",
+        "盟重传送石",
+        "date",
+        "_ui",
+        "GetMoneyIdByName",
+        2.0,
+        "hidebut",
+        "xiaotuibut",
+        "os",
+        "洗髓丹",
+        "--",
+        "ProxyTable",
+        "Facade",
+        "initTimeStr",
+        "隐 藏",
+        40.0,
+        "cleardistancebut",
+        "开黑名单",
+        "key",
+        "ipairs",
+        "blacklistbut",
+        "关奖励",
+        "GUI",
+        "moneybut",
+        "diuqibut",
+        "clearmonsterbut",
+        "initTime",
+        "initSnapshot",
+        "Schedule",
+        "yinguaibut",
+        "name",
+        "盟重回城石",
+        3.0,
+        "关拾取",
+        "names",
+        "x",
+        "Attach_UITop",
+        "清黑名单",
+        "元宝",
+        "开奖励",
+        "清怪物值",
+        "y",
+        "永久回城石",
+        "global",
+        "悟道茶",
+        0.0,
+        "开丢物品"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 389,
+          "instruction": [
+            0,
+            27,
+            60,
+            42,
+            20
+          ],
+          "opcode": 27,
+          "capture_count": 20
+        }
+      ],
+      "canonical_json_path": "root.children[42]",
+      "legacy_one_based_label": "root/43",
+      "reconstruction_proto_id": 52,
+      "reconstruction_name": "doInit_UI",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/0",
+      "parent_path": "root/42",
+      "instruction_count": 46,
+      "constant_count": 12,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 33721,
+      "end_offset": 34285,
+      "constants": [
+        "find",
+        "Name",
+        "GetMetaValue",
+        1.0,
+        "BAG_DATA",
+        "string",
+        "MakeIndex",
+        "ITEM_IS_BIND",
+        "SL",
+        "pairs",
+        "OverLap",
+        0.0
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 17,
+          "instruction": [
+            192,
+            27,
+            2,
+            0,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[0]",
+      "legacy_one_based_label": "root/43/1",
+      "reconstruction_proto_id": 53,
+      "reconstruction_name": "Nested_find",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/1",
+      "parent_path": "root/42",
+      "instruction_count": 33,
+      "constant_count": 8,
+      "child_count": 1,
+      "vararg_flag": 0,
+      "start_offset": 34285,
+      "end_offset": 34964,
+      "constants": [
+        "SL",
+        [
+          "unknown",
+          2
+        ],
+        "开启奖励功能",
+        "UnSchedule",
+        "rewardTimer",
+        "Schedule",
+        0.0,
+        "关闭奖励功能"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 288,
+          "instruction": [
+            0,
+            27,
+            22,
+            1,
+            5
+          ],
+          "opcode": 27,
+          "capture_count": 5
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[1]",
+      "legacy_one_based_label": "root/43/2",
+      "reconstruction_proto_id": 54,
+      "reconstruction_name": "Nested_SL_2",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/1/0",
+      "parent_path": "root/42/1",
+      "instruction_count": 22,
+      "constant_count": 5,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 34701,
+      "end_offset": 34963,
+      "constants": [
+        2.0,
+        1.0,
+        9002.0,
+        3.0,
+        "LuaSendMsg"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42/1",
+          "pc": 23,
+          "instruction": [
+            192,
+            27,
+            4,
+            0,
+            3
+          ],
+          "opcode": 27,
+          "capture_count": 3
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[1].children[0]",
+      "legacy_one_based_label": "root/43/2/1",
+      "reconstruction_proto_id": 55,
+      "reconstruction_name": "Nested_LuaSendMsg",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/2",
+      "parent_path": "root/42",
+      "instruction_count": 21,
+      "constant_count": 4,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 34964,
+      "end_offset": 35292,
+      "constants": [
+        "已清空怪物阈值",
+        "已清空怪物阈值存档：%s",
+        "清空怪物阈值失败",
+        "清空怪物阈值失败：%s"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 276,
+          "instruction": [
+            64,
+            154,
+            22,
+            2,
+            4
+          ],
+          "opcode": 154,
+          "capture_count": 4
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[2]",
+      "legacy_one_based_label": "root/43/3",
+      "reconstruction_proto_id": 56,
+      "reconstruction_name": "Nested_Helper",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/3",
+      "parent_path": "root/42",
+      "instruction_count": 320,
+      "constant_count": 72,
+      "child_count": 5,
+      "vararg_flag": 0,
+      "start_offset": 35292,
+      "end_offset": 43248,
+      "constants": [
+        "#FFFF00",
+        "durTimeText",
+        2.0,
+        "noteText",
+        "global",
+        "money",
+        "--",
+        "initTimeCell",
+        "元宝",
+        "Schedule",
+        "titleText",
+        "Win_IsNotNull",
+        "#00FF00",
+        "#FF0000",
+        "当前时间:--",
+        "绑定灵符",
+        999.0,
+        255.0,
+        "（括号内数量为非绑定资源的收益）",
+        "声望卷",
+        "历时:--",
+        "ProxyTable",
+        "noteCell",
+        "Layout_Create",
+        "screenW",
+        "SL",
+        "Text_Create",
+        "curTimeCell",
+        [
+          "unknown",
+          2
+        ],
+        "UnSchedule",
+        "resWin",
+        "血龙宝珠",
+        "Facade",
+        0.0,
+        "ListView_setBackGroundColorOpacity",
+        "item",
+        "screenH",
+        "转生水晶",
+        "ListView_setBackGroundColorType",
+        "恶魔令牌",
+        "绑定元宝",
+        "initTimeText",
+        "悟道茶",
+        "GUI",
+        "Win_Close",
+        0.6,
+        "资源统计",
+        "关闭资源信息窗口",
+        "curTimeText",
+        "setAnchorPoint",
+        1.0,
+        "closeResWin",
+        "ListView_setBackGroundColor",
+        15.0,
+        "resList",
+        "retrieveProxy",
+        "初始时间:",
+        "addOnClickEvent",
+        "durTimeCell",
+        "resTimer",
+        "灵符",
+        "initTimeStr",
+        "titleCell",
+        "Win_Create",
+        "MoneyProxy",
+        "ListView_Create",
+        "#CEB5F7",
+        "洗髓丹",
+        "setTouchEnabled",
+        30.0,
+        0.5,
+        20.0
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 329,
+          "instruction": [
+            192,
+            154,
+            22,
+            3,
+            4
+          ],
+          "opcode": 154,
+          "capture_count": 4
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[3]",
+      "legacy_one_based_label": "root/43/4",
+      "reconstruction_proto_id": 57,
+      "reconstruction_name": "Nested_FFFF00",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/3/0",
+      "parent_path": "root/42/3",
+      "instruction_count": 35,
+      "constant_count": 12,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 39273,
+      "end_offset": 39720,
+      "constants": [
+        0.0,
+        "万",
+        "format",
+        "string",
+        "%.1f亿",
+        10.0,
+        "tostring",
+        10000.0,
+        100000.0,
+        100000000.0,
+        "floor",
+        "math"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42/3",
+          "pc": 117,
+          "instruction": [
+            64,
+            154,
+            6,
+            0,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[3].children[0]",
+      "legacy_one_based_label": "root/43/4/1",
+      "reconstruction_proto_id": 58,
+      "reconstruction_name": "Nested_Helper_2",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/3/1",
+      "parent_path": "root/42/3",
+      "instruction_count": 46,
+      "constant_count": 12,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 39720,
+      "end_offset": 40284,
+      "constants": [
+        "string",
+        1.0,
+        "SL",
+        "pairs",
+        "OverLap",
+        "ITEM_IS_BIND",
+        "Name",
+        0.0,
+        "GetMetaValue",
+        "BAG_DATA",
+        "find",
+        "MakeIndex"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42/3",
+          "pc": 291,
+          "instruction": [
+            64,
+            27,
+            22,
+            1,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[3].children[1]",
+      "legacy_one_based_label": "root/43/4/2",
+      "reconstruction_proto_id": 59,
+      "reconstruction_name": "Nested_string",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/3/2",
+      "parent_path": "root/42/3",
+      "instruction_count": 65,
+      "constant_count": 17,
+      "child_count": 0,
+      "vararg_flag": 3,
+      "start_offset": 40284,
+      "end_offset": 41063,
+      "constants": [
+        35.0,
+        "#FFFFFF",
+        1.0,
+        "Layout_Create",
+        ":--",
+        "math",
+        "_",
+        15.0,
+        0.5,
+        "_cell_",
+        30.0,
+        "GUI",
+        "_text_",
+        "Text_Create",
+        "ceil",
+        0.0,
+        "setAnchorPoint"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42/3",
+          "pc": 264,
+          "instruction": [
+            192,
+            27,
+            17,
+            2,
+            2
+          ],
+          "opcode": 27,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[3].children[2]",
+      "legacy_one_based_label": "root/43/4/3",
+      "reconstruction_proto_id": 60,
+      "reconstruction_name": "Nested_FFFFFF",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/3/3",
+      "parent_path": "root/42/3",
+      "instruction_count": 168,
+      "constant_count": 31,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 41063,
+      "end_offset": 42943,
+      "constants": [
+        ":",
+        "--",
+        "time",
+        "GUI",
+        "小时",
+        "floor",
+        "initTime",
+        ")",
+        0.0,
+        3600.0,
+        "%Y-%m-%d %H:%M:%S",
+        "历时:",
+        60.0,
+        "math",
+        "resWin",
+        "date",
+        "os",
+        "resTimer",
+        "pairs",
+        "当前时间:",
+        "pcall",
+        "Text_setString",
+        "GetMoneyIdByName",
+        [
+          "unknown",
+          2
+        ],
+        "SL",
+        "Win_IsNotNull",
+        "(",
+        "分钟",
+        "initSnapshot",
+        "UnSchedule",
+        "GetMoneyCountById"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42/3",
+          "pc": 299,
+          "instruction": [
+            128,
+            154,
+            24,
+            3,
+            10
+          ],
+          "opcode": 154,
+          "capture_count": 10
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[3].children[3]",
+      "legacy_one_based_label": "root/43/4/4",
+      "reconstruction_proto_id": 61,
+      "reconstruction_name": "Nested_Helper_3",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/3/4",
+      "parent_path": "root/42/3",
+      "instruction_count": 20,
+      "constant_count": 8,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 42943,
+      "end_offset": 43247,
+      "constants": [
+        "UnSchedule",
+        "GUI",
+        "resTimer",
+        "点击空白,关闭资源信息窗口",
+        [
+          "unknown",
+          2
+        ],
+        "SL",
+        "resWin",
+        "Win_Close"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42/3",
+          "pc": 67,
+          "instruction": [
+            64,
+            154,
+            4,
+            4,
+            3
+          ],
+          "opcode": 154,
+          "capture_count": 3
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[3].children[4]",
+      "legacy_one_based_label": "root/43/4/5",
+      "reconstruction_proto_id": 62,
+      "reconstruction_name": "Nested_UnSchedule",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/4",
+      "parent_path": "root/42",
+      "instruction_count": 5,
+      "constant_count": 3,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 43248,
+      "end_offset": 43362,
+      "constants": [
+        "OnGameLeaveWorld",
+        "global",
+        "gameWorldController"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 335,
+          "instruction": [
+            128,
+            154,
+            22,
+            4,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[4]",
+      "legacy_one_based_label": "root/43/5",
+      "reconstruction_proto_id": 63,
+      "reconstruction_name": "Nested_OnGameLeaveWorld",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/5",
+      "parent_path": "root/42",
+      "instruction_count": 41,
+      "constant_count": 10,
+      "child_count": 0,
+      "vararg_flag": 2,
+      "start_offset": 43362,
+      "end_offset": 43876,
+      "constants": [
+        "#ffffff",
+        "toggled",
+        "toggle",
+        "Button_setTitleText",
+        "Button_setTitleColor",
+        "#ff0000",
+        "name",
+        "ipairs",
+        "GUI",
+        "key"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 235,
+          "instruction": [
+            0,
+            27,
+            15,
+            5,
+            2
+          ],
+          "opcode": 27,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[5]",
+      "legacy_one_based_label": "root/43/6",
+      "reconstruction_proto_id": 64,
+      "reconstruction_name": "Nested_ffffff",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/6",
+      "parent_path": "root/42",
+      "instruction_count": 31,
+      "constant_count": 5,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 43876,
+      "end_offset": 44309,
+      "constants": [
+        "StopGatherMonsters",
+        "路径中没有怪物数量阈值，弹出输入框",
+        "关闭引怪功能",
+        "开启引怪功能",
+        "gatherTimer"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 268,
+          "instruction": [
+            0,
+            154,
+            22,
+            6,
+            6
+          ],
+          "opcode": 154,
+          "capture_count": 6
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[6]",
+      "legacy_one_based_label": "root/43/7",
+      "reconstruction_proto_id": 65,
+      "reconstruction_name": "Nested_StopGatherMonsters",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/7",
+      "parent_path": "root/42",
+      "instruction_count": 17,
+      "constant_count": 2,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 44309,
+      "end_offset": 44519,
+      "constants": [
+        "InitGatherMonsters",
+        "GATHER_THRESHOLD"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 244,
+          "instruction": [
+            128,
+            154,
+            17,
+            7,
+            2
+          ],
+          "opcode": 154,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[7]",
+      "legacy_one_based_label": "root/43/8",
+      "reconstruction_proto_id": 66,
+      "reconstruction_name": "Nested_InitGatherMonsters",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/8",
+      "parent_path": "root/42",
+      "instruction_count": 29,
+      "constant_count": 10,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 44519,
+      "end_offset": 44921,
+      "constants": [
+        false,
+        "SL",
+        "storageTimer",
+        "isStoring",
+        "StorageItems",
+        "UnSchedule",
+        [
+          "unknown",
+          2
+        ],
+        1.0,
+        "开启存仓功能",
+        "关闭存仓功能"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 306,
+          "instruction": [
+            0,
+            27,
+            22,
+            8,
+            4
+          ],
+          "opcode": 27,
+          "capture_count": 4
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[8]",
+      "legacy_one_based_label": "root/43/9",
+      "reconstruction_proto_id": 67,
+      "reconstruction_name": "Nested_SL_3",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/9",
+      "parent_path": "root/42",
+      "instruction_count": 50,
+      "constant_count": 17,
+      "child_count": 1,
+      "vararg_flag": 3,
+      "start_offset": 44921,
+      "end_offset": 46230,
+      "constants": [
+        85.0,
+        18.0,
+        "Button_setTitleFontSize",
+        "toggled",
+        "GUI",
+        "Button_Create",
+        false,
+        "toggle",
+        "name",
+        "Button_setTitleColor",
+        "res/public/fuzhu_btn.png",
+        "res/public/kaiti2.ttf",
+        "#ffffff",
+        "Button_setTitleText",
+        "addOnClickEvent",
+        "Button_setTitleFontName",
+        "key"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 339,
+          "instruction": [
+            128,
+            27,
+            24,
+            9,
+            5
+          ],
+          "opcode": 27,
+          "capture_count": 5
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[9]",
+      "legacy_one_based_label": "root/43/10",
+      "reconstruction_proto_id": 68,
+      "reconstruction_name": "Nested_Button_setTitleFontSize",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/9/0",
+      "parent_path": "root/42/9",
+      "instruction_count": 48,
+      "constant_count": 10,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 45661,
+      "end_offset": 46229,
+      "constants": [
+        "Button_setTitleText",
+        "GUI",
+        "Button_setTitleColor",
+        "#ff0000",
+        "toggled",
+        "name",
+        "key",
+        false,
+        "toggle",
+        "#ffffff"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42/9",
+          "pc": 44,
+          "instruction": [
+            64,
+            154,
+            7,
+            0,
+            3
+          ],
+          "opcode": 154,
+          "capture_count": 3
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[9].children[0]",
+      "legacy_one_based_label": "root/43/10/1",
+      "reconstruction_proto_id": 69,
+      "reconstruction_name": "Nested_Button_setTitleText",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/10",
+      "parent_path": "root/42",
+      "instruction_count": 25,
+      "constant_count": 8,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 46230,
+      "end_offset": 46577,
+      "constants": [
+        [
+          "unknown",
+          2
+        ],
+        "shiquTimer",
+        "关闭拾取物品",
+        "SL",
+        "UnSchedule",
+        "开启拾取物品",
+        "PickUpItems",
+        0.01
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 318,
+          "instruction": [
+            192,
+            154,
+            22,
+            10,
+            3
+          ],
+          "opcode": 154,
+          "capture_count": 3
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[10]",
+      "legacy_one_based_label": "root/43/11",
+      "reconstruction_proto_id": 70,
+      "reconstruction_name": "Nested_shiquTimer",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/11",
+      "parent_path": "root/42",
+      "instruction_count": 12,
+      "constant_count": 1,
+      "child_count": 1,
+      "vararg_flag": 0,
+      "start_offset": 46577,
+      "end_offset": 47268,
+      "constants": [
+        "请输入黑名单的距离格子（数字，按线路计算）"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 249,
+          "instruction": [
+            192,
+            27,
+            19,
+            11,
+            8
+          ],
+          "opcode": 27,
+          "capture_count": 8
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[11]",
+      "legacy_one_based_label": "root/43/12",
+      "reconstruction_proto_id": 71,
+      "reconstruction_name": "Nested_Helper_4",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/11/0",
+      "parent_path": "root/42/11",
+      "instruction_count": 35,
+      "constant_count": 6,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 46765,
+      "end_offset": 47267,
+      "constants": [
+        "黑名单距离保存失败",
+        " 格",
+        "blacklistbut",
+        "黑名单距离已保存：",
+        "黑名单距离保存失败，路径：%s",
+        "黑名单距离已保存：%d 格"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42/11",
+          "pc": 2,
+          "instruction": [
+            128,
+            154,
+            2,
+            0,
+            7
+          ],
+          "opcode": 154,
+          "capture_count": 7
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[11].children[0]",
+      "legacy_one_based_label": "root/43/12/1",
+      "reconstruction_proto_id": 72,
+      "reconstruction_name": "Nested_Helper_5",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/12",
+      "parent_path": "root/42",
+      "instruction_count": 43,
+      "constant_count": 25,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 47268,
+      "end_offset": 47939,
+      "constants": [
+        "%04d%02d%02d",
+        "到达 22:00:05，发送开启巡航协议",
+        "",
+        "sec",
+        "date",
+        79205.0,
+        3600.0,
+        "day",
+        1.0,
+        3.0,
+        "string",
+        79208.0,
+        "year",
+        9002.0,
+        2.0,
+        "os",
+        "*t",
+        "hour",
+        60.0,
+        55556.0,
+        "LuaSendMsg",
+        0.0,
+        "min",
+        "format",
+        "month"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 159,
+          "instruction": [
+            64,
+            27,
+            9,
+            12,
+            3
+          ],
+          "opcode": 27,
+          "capture_count": 3
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[12]",
+      "legacy_one_based_label": "root/43/13",
+      "reconstruction_proto_id": 73,
+      "reconstruction_name": "Nested_04d_02d_02d",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/13",
+      "parent_path": "root/42",
+      "instruction_count": 6,
+      "constant_count": 2,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 47939,
+      "end_offset": 48050,
+      "constants": [
+        "清空黑名单",
+        "ClearBlacklistItems"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 295,
+          "instruction": [
+            0,
+            27,
+            22,
+            13,
+            1
+          ],
+          "opcode": 27,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[13]",
+      "legacy_one_based_label": "root/43/14",
+      "reconstruction_proto_id": 74,
+      "reconstruction_name": "Nested_Helper_6",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/14",
+      "parent_path": "root/42",
+      "instruction_count": 12,
+      "constant_count": 1,
+      "child_count": 1,
+      "vararg_flag": 0,
+      "start_offset": 48050,
+      "end_offset": 48690,
+      "constants": [
+        "请输入拉怪的怪物数量阈值（数字）"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 258,
+          "instruction": [
+            192,
+            27,
+            20,
+            14,
+            8
+          ],
+          "opcode": 27,
+          "capture_count": 8
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[14]",
+      "legacy_one_based_label": "root/43/15",
+      "reconstruction_proto_id": 75,
+      "reconstruction_name": "Nested_Helper_7",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/14/0",
+      "parent_path": "root/42/14",
+      "instruction_count": 34,
+      "constant_count": 5,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 48223,
+      "end_offset": 48689,
+      "constants": [
+        "怪物阈值已保存：",
+        "怪物阈值保存失败，路径：%s",
+        "yinguaibut",
+        "怪物阈值保存失败",
+        "怪物阈值已保存：%d"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42/14",
+          "pc": 2,
+          "instruction": [
+            64,
+            27,
+            2,
+            0,
+            7
+          ],
+          "opcode": 27,
+          "capture_count": 7
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[14].children[0]",
+      "legacy_one_based_label": "root/43/15/1",
+      "reconstruction_proto_id": 76,
+      "reconstruction_name": "Nested_Helper_8",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/15",
+      "parent_path": "root/42",
+      "instruction_count": 30,
+      "constant_count": 10,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 48690,
+      "end_offset": 49103,
+      "constants": [
+        "隐藏所有按钮",
+        "hidebut",
+        255.0,
+        "setOpacity",
+        "show",
+        "isHidden",
+        "GUI",
+        "显示所有按钮",
+        "hide",
+        0.0
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 414,
+          "instruction": [
+            64,
+            154,
+            28,
+            15,
+            2
+          ],
+          "opcode": 154,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[15]",
+      "legacy_one_based_label": "root/43/16",
+      "reconstruction_proto_id": 77,
+      "reconstruction_name": "Nested_Helper_9",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/16",
+      "parent_path": "root/42",
+      "instruction_count": 26,
+      "constant_count": 7,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 49103,
+      "end_offset": 49450,
+      "constants": [
+        "ITEM_INDEX_BY_NAME",
+        "MoveItemToQuickUse",
+        "GetMetaValue",
+        "SL",
+        "ipairs",
+        "slot",
+        "names"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 136,
+          "instruction": [
+            64,
+            154,
+            12,
+            16,
+            2
+          ],
+          "opcode": 154,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[16]",
+      "legacy_one_based_label": "root/43/17",
+      "reconstruction_proto_id": 78,
+      "reconstruction_name": "Nested_ITEM_INDEX_BY_NAME",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/17",
+      "parent_path": "root/42",
+      "instruction_count": 28,
+      "constant_count": 5,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 49450,
+      "end_offset": 49821,
+      "constants": [
+        "blacklistTimer",
+        0.1,
+        "distance",
+        "BlacklistItems",
+        "开启黑名单功能，距离格子：%d"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 238,
+          "instruction": [
+            192,
+            154,
+            16,
+            17,
+            5
+          ],
+          "opcode": 154,
+          "capture_count": 5
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[17]",
+      "legacy_one_based_label": "root/43/18",
+      "reconstruction_proto_id": 79,
+      "reconstruction_name": "Nested_blacklistTimer",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/18",
+      "parent_path": "root/42",
+      "instruction_count": 39,
+      "constant_count": 9,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 49821,
+      "end_offset": 50382,
+      "constants": [
+        "路径中没有黑名单的距离格子，弹出输入框",
+        "开启黑名单功能，距离格子：%d",
+        [
+          "unknown",
+          2
+        ],
+        "blacklistTimer",
+        false,
+        "isBlacklisting",
+        "SL",
+        "UnSchedule",
+        "关闭黑名单功能"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 298,
+          "instruction": [
+            128,
+            27,
+            22,
+            18,
+            6
+          ],
+          "opcode": 27,
+          "capture_count": 6
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[18]",
+      "legacy_one_based_label": "root/43/19",
+      "reconstruction_proto_id": 80,
+      "reconstruction_name": "Nested_Helper_10",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/19",
+      "parent_path": "root/42",
+      "instruction_count": 29,
+      "constant_count": 10,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 50382,
+      "end_offset": 50777,
+      "constants": [
+        [
+          "unknown",
+          2
+        ],
+        "TakeItems",
+        1.0,
+        "开启取物功能",
+        "isTaking",
+        "UnSchedule",
+        "SL",
+        "takeTimer",
+        "关闭取物功能",
+        false
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 312,
+          "instruction": [
+            192,
+            27,
+            22,
+            19,
+            4
+          ],
+          "opcode": 27,
+          "capture_count": 4
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[19]",
+      "legacy_one_based_label": "root/43/20",
+      "reconstruction_proto_id": 81,
+      "reconstruction_name": "Nested_TakeItems",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/20",
+      "parent_path": "root/42",
+      "instruction_count": 21,
+      "constant_count": 4,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 50777,
+      "end_offset": 51117,
+      "constants": [
+        "清空黑名单距离失败：%s",
+        "清空黑名单距离失败",
+        "已清空黑名单距离存档：%s",
+        "已清空黑名单距离"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 282,
+          "instruction": [
+            192,
+            27,
+            22,
+            20,
+            4
+          ],
+          "opcode": 27,
+          "capture_count": 4
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[20]",
+      "legacy_one_based_label": "root/43/21",
+      "reconstruction_proto_id": 82,
+      "reconstruction_name": "Nested_s",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/21",
+      "parent_path": "root/42",
+      "instruction_count": 29,
+      "constant_count": 10,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 51117,
+      "end_offset": 51511,
+      "constants": [
+        1.0,
+        "dropTimer",
+        [
+          "unknown",
+          2
+        ],
+        "DiuItems",
+        "开启丢弃物品",
+        "关闭丢弃物品",
+        "SL",
+        "UnSchedule",
+        "isDiuing",
+        false
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 323,
+          "instruction": [
+            192,
+            27,
+            22,
+            21,
+            4
+          ],
+          "opcode": 27,
+          "capture_count": 4
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[21]",
+      "legacy_one_based_label": "root/43/22",
+      "reconstruction_proto_id": 83,
+      "reconstruction_name": "Nested_dropTimer",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/22",
+      "parent_path": "root/42",
+      "instruction_count": 8,
+      "constant_count": 0,
+      "child_count": 1,
+      "vararg_flag": 2,
+      "start_offset": 51511,
+      "end_offset": 52717,
+      "constants": [],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42",
+          "pc": 247,
+          "instruction": [
+            128,
+            154,
+            18,
+            22,
+            1
+          ],
+          "opcode": 154,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[22]",
+      "legacy_one_based_label": "root/43/23",
+      "reconstruction_proto_id": 84,
+      "reconstruction_name": "Nested_Anonymous",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/22/0",
+      "parent_path": "root/42/22",
+      "instruction_count": 27,
+      "constant_count": 13,
+      "child_count": 1,
+      "vararg_flag": 1,
+      "start_offset": 51595,
+      "end_offset": 52716,
+      "constants": [
+        "str",
+        true,
+        "btnType",
+        "SL",
+        6.0,
+        "OpenCommonTipsPop",
+        "\n",
+        "editParams",
+        "maxLength",
+        "showEdit",
+        2.0,
+        "inputMode",
+        "callback"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42/22",
+          "pc": 0,
+          "instruction": [
+            0,
+            154,
+            2,
+            0,
+            4
+          ],
+          "opcode": 154,
+          "capture_count": 4
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[22].children[0]",
+      "legacy_one_based_label": "root/43/23/1",
+      "reconstruction_proto_id": 85,
+      "reconstruction_name": "Nested_str",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/22/0/0",
+      "parent_path": "root/42/22/0",
+      "instruction_count": 50,
+      "constant_count": 14,
+      "child_count": 1,
+      "vararg_flag": 2,
+      "start_offset": 51994,
+      "end_offset": 52715,
+      "constants": [
+        "match",
+        1.0,
+        "%s：参数格式不对（%s）",
+        "^%d+$",
+        "gsub",
+        "ScheduleOnce",
+        "SL",
+        "%s",
+        "string",
+        "",
+        "tonumber",
+        0.1,
+        "tostring",
+        "editStr"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42/22/0",
+          "pc": 16,
+          "instruction": [
+            192,
+            154,
+            2,
+            0,
+            4
+          ],
+          "opcode": 154,
+          "capture_count": 4
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[22].children[0].children[0]",
+      "legacy_one_based_label": "root/43/23/1/1",
+      "reconstruction_proto_id": 86,
+      "reconstruction_name": "Nested_match",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/42/22/0/0/0",
+      "parent_path": "root/42/22/0/0",
+      "instruction_count": 4,
+      "constant_count": 1,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 52624,
+      "end_offset": 52714,
+      "constants": [
+        "参数格式不对，请输入数字"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/42/22/0/0",
+          "pc": 41,
+          "instruction": [
+            0,
+            27,
+            7,
+            0,
+            1
+          ],
+          "opcode": 27,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[42].children[22].children[0].children[0].children[0]",
+      "legacy_one_based_label": "root/43/23/1/1/1",
+      "reconstruction_proto_id": 87,
+      "reconstruction_name": "Nested_Helper_11",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/43",
+      "parent_path": "root",
+      "instruction_count": 20,
+      "constant_count": 7,
+      "child_count": 0,
+      "vararg_flag": 2,
+      "start_offset": 52718,
+      "end_offset": 52983,
+      "constants": [
+        -1.0,
+        "其他玩家",
+        "GetOwnerID",
+        "无归属",
+        "",
+        [
+          "unknown",
+          2
+        ],
+        "自己"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 192,
+          "instruction": [
+            0,
+            27,
+            33,
+            43,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[43]",
+      "legacy_one_based_label": "root/44",
+      "reconstruction_proto_id": 88,
+      "reconstruction_name": "GetOwnerDescription",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/44",
+      "parent_path": "root",
+      "instruction_count": 17,
+      "constant_count": 5,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 52983,
+      "end_offset": 53198,
+      "constants": [
+        "mCurrMapY",
+        "y",
+        "x",
+        "mCurrMapX",
+        0.0
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 187,
+          "instruction": [
+            0,
+            27,
+            28,
+            44,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[44]",
+      "legacy_one_based_label": "root/45",
+      "reconstruction_proto_id": 89,
+      "reconstruction_name": "GetPlayerMapPosition",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/45",
+      "parent_path": "root",
+      "instruction_count": 417,
+      "constant_count": 41,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 53198,
+      "end_offset": 58148,
+      "constants": [
+        "锁定怪物 %d: %s (ID: %s, 归属: %s)",
+        "怪物 %s 归属未变更或已离开视野",
+        "怪物 %d (ID: %s) 已死亡，跳过",
+        "引怪中",
+        "视野内没有可攻击怪物",
+        "ATTACKING",
+        "",
+        "怪物 %d (ID: %s) 已死亡或离开视野",
+        "GetName",
+        "未知怪物",
+        "IDLE",
+        "开始等待 %s 归属变更 (等待 %d 秒)",
+        "ATTACK_WAIT_TIME",
+        "攻击中",
+        "ipairs",
+        "IsInWhitelistMap",
+        "攻击怪物 %d: %s (ID: %s)",
+        "锁定怪物 %s 失败",
+        "开始引怪，目标数量: %d",
+        "GetID",
+        1.0,
+        "table",
+        "time",
+        "怪物列表处理完毕但未全部获取归属，重新扫描",
+        "怪物 %s 归属已变更为自己",
+        "扫描怪物中",
+        0.0,
+        "等待归属变更中: %s (还剩 %d 秒)",
+        "没有可攻击的怪物",
+        "format",
+        "string",
+        "所有怪物归属已获取，切换到攻击状态",
+        "tostring",
+        "insert",
+        "怪物 %d (ID: %s) 不在视野内，跳过",
+        "所有目标怪物已死亡或离开视野，切换到空闲状态",
+        "在白名单地图, 停止引怪",
+        "os",
+        "怪物 %d (%s, ID: %s) 归属属于其他玩家(归属ID: %s, %s)，跳过",
+        "怪物 %d (%s, ID: %s) 归属已属于自己(归属ID: %s, %s)，跳过",
+        "GATHERING"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 213,
+          "instruction": [
+            128,
+            27,
+            37,
+            45,
+            22
+          ],
+          "opcode": 27,
+          "capture_count": 22
+        }
+      ],
+      "canonical_json_path": "root.children[45]",
+      "legacy_one_based_label": "root/46",
+      "reconstruction_proto_id": 90,
+      "reconstruction_name": "MainLoop",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/46",
+      "parent_path": "root",
+      "instruction_count": 169,
+      "constant_count": 64,
+      "child_count": 1,
+      "vararg_flag": 0,
+      "start_offset": 58148,
+      "end_offset": 60736,
+      "constants": [
+        "global",
+        "时装晶魄",
+        "龙傲",
+        "敖顺",
+        "神凤",
+        "MakeIndex",
+        "上古",
+        "悟道茶",
+        "MsgType",
+        "残",
+        "熬光",
+        "GetDroppedItems",
+        "经验卷",
+        "冰雪",
+        false,
+        "敖闰",
+        "SL",
+        "MSG_CS_MAP_ITEM_DISCARD",
+        "ITEM_IS_BIND",
+        "count",
+        "技能残页",
+        0.0,
+        "麻痹",
+        35.0,
+        "主印",
+        "血龙宝珠",
+        "共丢弃 ",
+        "GetMetaValue",
+        "table",
+        "Name",
+        "转生水晶",
+        "复活",
+        "副印",
+        "件，停止丢弃",
+        "晶石",
+        true,
+        "之力",
+        "makeIndex",
+        "insert",
+        "起源",
+        "pairs",
+        "name",
+        "点点",
+        "护身",
+        "len",
+        "string",
+        "LuaSendMsg",
+        "BAG_DATA",
+        "OverLap",
+        ")超过上限(",
+        "地面物品(",
+        "背包无可丢弃物品",
+        "isDiuing",
+        " 件物品",
+        "丢: ",
+        "称号卷",
+        "恶魔令牌",
+        "洗髓丹",
+        "声望卷",
+        "ipairs",
+        "地面物品已满",
+        ")",
+        1.0,
+        "鸿蒙"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 63,
+          "instruction": [
+            0,
+            27,
+            8,
+            46,
+            2
+          ],
+          "opcode": 27,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[46]",
+      "legacy_one_based_label": "root/47",
+      "reconstruction_proto_id": 91,
+      "reconstruction_name": "DiuItems",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/46/0",
+      "parent_path": "root/46",
+      "instruction_count": 20,
+      "constant_count": 4,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 60502,
+      "end_offset": 60735,
+      "constants": [
+        "string",
+        "ipairs",
+        "find",
+        1.0
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/46",
+          "pc": 66,
+          "instruction": [
+            64,
+            154,
+            6,
+            0,
+            1
+          ],
+          "opcode": 154,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[46].children[0]",
+      "legacy_one_based_label": "root/47/1",
+      "reconstruction_proto_id": 92,
+      "reconstruction_name": "Nested_string_2",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/47",
+      "parent_path": "root",
+      "instruction_count": 216,
+      "constant_count": 35,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 60736,
+      "end_offset": 63329,
+      "constants": [
+        "黑名单玩家",
+        false,
+        "deathHandled",
+        "ACTOR_MAP_X",
+        "nextTryAt",
+        "table",
+        "alertAt",
+        "distance",
+        "format",
+        "黑名单玩家 %s，距离 %d 格，使用 %s 随机传送",
+        1.0,
+        "concat",
+        "os",
+        "SL",
+        "FIND_IN_VIEW_PLAYER_LIST",
+        "没有随机传送石，黑名单玩家传送暂停",
+        [
+          "unknown",
+          2
+        ],
+        "没有可用的随机传送道具（%s）",
+        "ACTOR_MAP_Y",
+        "MAIN_ACTOR_ID",
+        "野外观测到黑名单玩家：%s（%d格）",
+        "IsInWhitelistMap",
+        "lastHp",
+        "GetMetaValue",
+        "time",
+        "/",
+        "tonumber",
+        "HP",
+        "ACTOR_NAME",
+        "isBlacklisting",
+        "黑名单玩家：%s（%d格），飞随机",
+        "string",
+        true,
+        0.0,
+        "noStoneWarned"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 367,
+          "instruction": [
+            0,
+            154,
+            59,
+            47,
+            13
+          ],
+          "opcode": 154,
+          "capture_count": 13
+        }
+      ],
+      "canonical_json_path": "root.children[47]",
+      "legacy_one_based_label": "root/48",
+      "reconstruction_proto_id": 93,
+      "reconstruction_name": "BlacklistPlayerDetection",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/48",
+      "parent_path": "root",
+      "instruction_count": 10,
+      "constant_count": 1,
+      "child_count": 1,
+      "vararg_flag": 0,
+      "start_offset": 63329,
+      "end_offset": 63607,
+      "constants": [
+        "pcall"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 351,
+          "instruction": [
+            0,
+            154,
+            54,
+            48,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[48]",
+      "legacy_one_based_label": "root/49",
+      "reconstruction_proto_id": 94,
+      "reconstruction_name": "PCallHelper_2",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/48/0",
+      "parent_path": "root/48",
+      "instruction_count": 9,
+      "constant_count": 5,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 63441,
+      "end_offset": 63606,
+      "constants": [
+        "FriendProxy",
+        "Facade",
+        "global",
+        "retrieveProxy",
+        "ProxyTable"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/48",
+          "pc": 1,
+          "instruction": [
+            192,
+            154,
+            1,
+            0,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[48].children[0]",
+      "legacy_one_based_label": "root/49/1",
+      "reconstruction_proto_id": 95,
+      "reconstruction_name": "Nested_FriendProxy",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/49",
+      "parent_path": "root",
+      "instruction_count": 5,
+      "constant_count": 0,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 63607,
+      "end_offset": 63665,
+      "constants": [],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 303,
+          "instruction": [
+            128,
+            154,
+            48,
+            49,
+            2
+          ],
+          "opcode": 154,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[49]",
+      "legacy_one_based_label": "root/50",
+      "reconstruction_proto_id": 96,
+      "reconstruction_name": "AnonymousHelper_49",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/50",
+      "parent_path": "root",
+      "instruction_count": 224,
+      "constant_count": 57,
+      "child_count": 2,
+      "vararg_flag": 0,
+      "start_offset": 63665,
+      "end_offset": 67464,
+      "constants": [
+        "涅槃石",
+        "神彩",
+        "麻痹戒指",
+        "至尊",
+        "GetOpenSize",
+        "global",
+        "isStoring",
+        "天神令",
+        "MSG_CS_STORAGE_STORE_REQUEST",
+        "宝石精魄",
+        "GUIDefine",
+        999999999.0,
+        true,
+        "使用: ",
+        "MsgType",
+        "金刚石",
+        "神装碎片",
+        "UseItemByIndex",
+        "仓库已满,无法存仓",
+        "pairs",
+        "find",
+        "GetMaxPage",
+        "NPCStorageProxy",
+        "STORAGE_PER_PAGE_MAX",
+        "MakeIndex",
+        "待定",
+        "SL",
+        false,
+        "ITEM_INDEX_BY_NAME",
+        "ITEM_IS_BIND",
+        "转生证明",
+        "GetStorageDataByPage",
+        "魔神石",
+        "GetAvailableStoragePage",
+        0.0,
+        "金罡",
+        1.0,
+        "ipairs",
+        " 件物品",
+        "存仓完成, 共存入 ",
+        "凤凰",
+        "存: ",
+        "玄铁",
+        "GetMetaValue",
+        "圣皇",
+        "Name",
+        "len",
+        "BAG_DATA",
+        "string",
+        "复活戒指",
+        "真金矿石",
+        "切割神戒",
+        "NPC_STORAGE_MAX_PAGE",
+        "BOSS头骨",
+        "LuaSendMsg",
+        "背包物品为空",
+        "MMO"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 73,
+          "instruction": [
+            128,
+            27,
+            8,
+            50,
+            3
+          ],
+          "opcode": 27,
+          "capture_count": 3
+        }
+      ],
+      "canonical_json_path": "root.children[50]",
+      "legacy_one_based_label": "root/51",
+      "reconstruction_proto_id": 97,
+      "reconstruction_name": "StorageItems",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/50/0",
+      "parent_path": "root/50",
+      "instruction_count": 52,
+      "constant_count": 15,
+      "child_count": 0,
+      "vararg_flag": 2,
+      "start_offset": 66540,
+      "end_offset": 67198,
+      "constants": [
+        "isOutputted",
+        "tostring",
+        "聚灵珠信息: ",
+        1.0,
+        " Dura=",
+        true,
+        "string",
+        "Dura",
+        " DuraMax=",
+        "聚灵珠",
+        " StdMode=",
+        "Name",
+        "StdMode",
+        "DuraMax",
+        "find"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/50",
+          "pc": 101,
+          "instruction": [
+            64,
+            154,
+            14,
+            0,
+            2
+          ],
+          "opcode": 154,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[50].children[0]",
+      "legacy_one_based_label": "root/51/1",
+      "reconstruction_proto_id": 98,
+      "reconstruction_name": "Nested_isOutputted",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/50/1",
+      "parent_path": "root/50",
+      "instruction_count": 27,
+      "constant_count": 1,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 67198,
+      "end_offset": 67463,
+      "constants": [
+        1.0
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/50",
+          "pc": 53,
+          "instruction": [
+            192,
+            27,
+            5,
+            1,
+            4
+          ],
+          "opcode": 27,
+          "capture_count": 4
+        }
+      ],
+      "canonical_json_path": "root.children[50].children[1]",
+      "legacy_one_based_label": "root/51/2",
+      "reconstruction_proto_id": 99,
+      "reconstruction_name": "Nested_Anonymous_2",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/51",
+      "parent_path": "root",
+      "instruction_count": 35,
+      "constant_count": 5,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 67464,
+      "end_offset": 67864,
+      "constants": [
+        "SL",
+        "_blacklistData",
+        "Name",
+        "ACTOR_MASTER_ID",
+        "GetMetaValue"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 352,
+          "instruction": [
+            0,
+            154,
+            55,
+            51,
+            1
+          ],
+          "opcode": 154,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[51]",
+      "legacy_one_based_label": "root/52",
+      "reconstruction_proto_id": 100,
+      "reconstruction_name": "FindBlacklistPlayer",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/52",
+      "parent_path": "root",
+      "instruction_count": 72,
+      "constant_count": 19,
+      "child_count": 1,
+      "vararg_flag": 2,
+      "start_offset": 67864,
+      "end_offset": 68844,
+      "constants": [
+        "ACTOR_IS_HERO",
+        "GetMetaValue",
+        "table",
+        1.0,
+        "lastAttacker",
+        "UserID",
+        "",
+        "pcall",
+        "string",
+        "AttackUserID",
+        "MAIN_ACTOR_ID",
+        "type",
+        "SL",
+        "ACTOR_MASTER_ID",
+        "name",
+        "id",
+        "ACTOR_NAME",
+        "分身",
+        "find"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 356,
+          "instruction": [
+            64,
+            27,
+            57,
+            52,
+            1
+          ],
+          "opcode": 27,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[52]",
+      "legacy_one_based_label": "root/53",
+      "reconstruction_proto_id": 101,
+      "reconstruction_name": "onDamageMsg",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/52/0",
+      "parent_path": "root/52",
+      "instruction_count": 6,
+      "constant_count": 2,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 68754,
+      "end_offset": 68843,
+      "constants": [
+        "JsonDecode",
+        "SL"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/52",
+          "pc": 6,
+          "instruction": [
+            192,
+            27,
+            3,
+            0,
+            1
+          ],
+          "opcode": 27,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[52].children[0]",
+      "legacy_one_based_label": "root/53/1",
+      "reconstruction_proto_id": 102,
+      "reconstruction_name": "Nested_JsonDecode",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/53",
+      "parent_path": "root",
+      "instruction_count": 7,
+      "constant_count": 2,
+      "child_count": 0,
+      "vararg_flag": 2,
+      "start_offset": 68844,
+      "end_offset": 68944,
+      "constants": [
+        "ScheduleOnce",
+        "SL"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 51,
+          "instruction": [
+            0,
+            27,
+            6,
+            53,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[53]",
+      "legacy_one_based_label": "root/54",
+      "reconstruction_proto_id": 103,
+      "reconstruction_name": "ScheduleOnce",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/54",
+      "parent_path": "root",
+      "instruction_count": 6,
+      "constant_count": 0,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 68944,
+      "end_offset": 69011,
+      "constants": [],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 312,
+          "instruction": [
+            128,
+            27,
+            51,
+            54,
+            2
+          ],
+          "opcode": 27,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[54]",
+      "legacy_one_based_label": "root/55",
+      "reconstruction_proto_id": 104,
+      "reconstruction_name": "AnonymousHelper_54",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/55",
+      "parent_path": "root",
+      "instruction_count": 64,
+      "constant_count": 21,
+      "child_count": 2,
+      "vararg_flag": 0,
+      "start_offset": 69011,
+      "end_offset": 70728,
+      "constants": [
+        "39770358",
+        "GetMetaValue",
+        "1627987432",
+        "1957840929",
+        "1580027021",
+        "3548598",
+        "游戏不一致，id：",
+        "Schedule",
+        204208.0,
+        "账号ID：",
+        "1585201915",
+        "SL",
+        0.5,
+        "GAME_ID",
+        "6324648",
+        "1488903257",
+        "[验证成功] 账号ID验证通过",
+        "1304755149",
+        "UID",
+        "游戏id：",
+        "[验证失败] 账号ID未在允许列表中"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 275,
+          "instruction": [
+            0,
+            27,
+            38,
+            55,
+            2
+          ],
+          "opcode": 27,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[55]",
+      "legacy_one_based_label": "root/56",
+      "reconstruction_proto_id": 105,
+      "reconstruction_name": "AccountIDValidation",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/55/0",
+      "parent_path": "root/55",
+      "instruction_count": 24,
+      "constant_count": 8,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 69950,
+      "end_offset": 70337,
+      "constants": [
+        "Panel_mini_chat",
+        "doInit",
+        "_ui",
+        "等待主界面属性栏(MainProperty)初始化完成...",
+        "UnSchedule",
+        "MainLeftBottom",
+        "MainProperty",
+        "SL"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/55",
+          "pc": 57,
+          "instruction": [
+            128,
+            154,
+            7,
+            0,
+            2
+          ],
+          "opcode": 154,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[55].children[0]",
+      "legacy_one_based_label": "root/56/1",
+      "reconstruction_proto_id": 106,
+      "reconstruction_name": "Nested_Panel_mini_chat",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/55/1",
+      "parent_path": "root/55",
+      "instruction_count": 27,
+      "constant_count": 4,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 70337,
+      "end_offset": 70727,
+      "constants": [
+        "[提示] 账号ID在允许列表中，功能已开启",
+        "ipairs",
+        "账号不存在，功能已限制，账号ID：",
+        "tostring"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/55",
+          "pc": 37,
+          "instruction": [
+            128,
+            154,
+            3,
+            1,
+            3
+          ],
+          "opcode": 154,
+          "capture_count": 3
+        }
+      ],
+      "canonical_json_path": "root.children[55].children[1]",
+      "legacy_one_based_label": "root/56/2",
+      "reconstruction_proto_id": 107,
+      "reconstruction_name": "Nested_ID",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/56",
+      "parent_path": "root",
+      "instruction_count": 22,
+      "constant_count": 9,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 70728,
+      "end_offset": 71076,
+      "constants": [
+        "MMO",
+        "global",
+        "ProxyTable",
+        "retrieveProxy",
+        "Facade",
+        "SetTargetID",
+        0.0,
+        "PlayerInputProxy",
+        "SELETE_TARGET_TYPE_FIND"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 184,
+          "instruction": [
+            192,
+            154,
+            25,
+            56,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[56]",
+      "legacy_one_based_label": "root/57",
+      "reconstruction_proto_id": 108,
+      "reconstruction_name": "ClearTargetID_2",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/57",
+      "parent_path": "root",
+      "instruction_count": 10,
+      "constant_count": 4,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 71076,
+      "end_offset": 71215,
+      "constants": [
+        "GetMetaValue",
+        "X",
+        "Y",
+        "SL"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 57,
+          "instruction": [
+            192,
+            27,
+            8,
+            57,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[57]",
+      "legacy_one_based_label": "root/58",
+      "reconstruction_proto_id": 109,
+      "reconstruction_name": "PlayerPos",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    }
+  ],
+  "path_conventions": {
+    "canonical": "root.children[45].children[0] 形式，严格按 JSON children 的 0-based 索引。",
+    "legacy": "旧报告中的 root/46、root/47/1 等路径按子原型从 1 开始编号；root/46 等于 canonical root.children[45]。",
+    "dot_path": "MainLeftBottom_完整明文重建版.lua 中 path=root.45 使用 JSON 0-based 索引。",
+    "warning": "禁止只写 root/46 而不注明编号体系；后续一律优先使用 canonical_json_path。"
+  }
+}
