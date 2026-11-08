@@ -24,7 +24,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 20,root/16,root.children[16],root/17,PrintLog,38,13,0,完整静态恢复（未运行时验证）,04_源码候选/PrintLog_日志辅助函数_第七批.lua；table 输入调用 SL.dump(value,"【超本】")；非 table 输入 tostring，存在额外参数时 pcall(string.format,message,...)；PC31-37 只检查 SL.Print 存在而无调用。
 21,root/17,root.children[17],root/18,PCallHelper,14,2,1,首版普通 Lua 草稿（待复核/未运行时验证）,04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua；pcall 失败或子函数严格返回 false 时返回 false，否则返回 true；child 文件写入调用参数仍待展开。
 22,root/17/0,root.children[17].children[0],root/18/1,Nested_tostring,14,5,0,首版普通 Lua 草稿（待复核/未运行时验证）,04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua；解析 cc.FileUtils:getInstance():writeStringToFile 并 tostring(UP[0])；三个捕获值来源已定位，融合调用参数顺序待复核。
-23,root/18,root.children[18],root/19,GetPlayerPosition,19,7,0,首版普通 Lua 草稿（待复核/未运行时验证）,04_源码候选/位置读取函数_第五批草稿.lua；读取 SL X/Y，false/nil 分支默认路径；PC14 含融合 table create/field assignment，当前 y=0 仅为临时表达。
+23,root/18,root.children[18],root/19,GetPlayerPosition,19,7,0,完整静态恢复（未运行时验证）,04_源码候选/位置读取函数_第五批草稿.lua；PC1-4读取X，PC5-7 false/nil回退0；PC8-11读取Y，PC12-14 false/nil回退0；PC15-18构造并返回{x=x,y=y}；审计见docs/audit/检查点24_GetPlayerPosition完整静态恢复.md。
 24,root/19,root.children[19],root/20,InitGatherMonsters,36,11,1,首版普通 Lua 草稿（待复核/未运行时验证）,04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua；取消旧 gatherTimer、UP[1]=true、切换 IDLE、调用 reset helper、Schedule(MainLoop,CHECK_INTERVAL)、格式化阈值启动提示；UP[2-4] 领域命名暂定。
 25,root/19/0,root.children[19].children[0],root/20/1,Nested_MainLoop,3,1,0,完整静态恢复（未运行时验证）,04_源码候选/短闭包辅助函数_第三批草稿.lua；无参数调用全局 MainLoop()。
 26,root/20,root.children[20],root/21,ShowLocalNoticeByType,15,14,0,完整静态恢复（未运行时验证）,04_源码候选/其他短辅助函数_第二批草稿.lua；root PC46 创建闭包、PC47 捕获 parent T[0]；通知表 Type=10/Msg/FColor=249/BColor=0/X=5/Y=screenH-50，调用 SL.ShowLocalNoticeByType(notice)。
