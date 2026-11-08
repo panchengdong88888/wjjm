@@ -44,8 +44,8 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 40,root/30,root.children[30],root/31,GetMapName,9,4,0,完整静态恢复（未运行时验证）,04_源码候选/小型辅助函数_首批草稿.lua；完整还原 SL:GetMetaValue(""MAP_NAME"") or ""。
 41,root/31,root.children[31],root/32,IsInWhitelistMap,28,6,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 42,root/32,root.children[32],root/33,AnonymousHelper_32,6,0,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-43,root/33,root.children[33],root/34,AnonymousHelper_33,5,0,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-44,root/34,root.children[34],root/35,Schedule,7,2,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+43,root/32,root.children[32],root/33,AnonymousHelper_33,6,0,2,首版普通 Lua 草稿（待父级捕获复核/未运行时验证）,04_源码候选/代理与回调短函数_第四批.lua；UP[0]作为调用目标、UP[1]作为首个实参，原始 varargs 追加转发：return callback(wrappedFunction, ...)。
+44,root/33,root.children[33],root/34,AnonymousHelper_34,5,0,2,首版普通 Lua 草稿（待父级捕获复核/未运行时验证）,04_源码候选/代理与回调短函数_第四批.lua；UP[0]作为调用目标、UP[1]作为唯一实参：return callback(argument)。
 45,root/35,root.children[35],root/36,SetTargetID,26,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 46,root/36,root.children[36],root/37,GetAvailableStoragePage,51,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 47,root/37,root.children[37],root/38,DestroyUI,31,11,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
@@ -96,7 +96,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 92,root/46/0,root.children[46].children[0],root/47/1,Nested_string_2,20,4,0,完整静态恢复（未运行时验证）,04_源码候选/小型辅助函数_首批草稿.lua；捕获关键词数组，ipairs 遍历并 string.find(text, keyword, 1, true) 纯文本查找。
 93,root/47,root.children[47],root/48,BlacklistPlayerDetection,216,35,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 94,root/48,root.children[48],root/49,PCallHelper_2,10,1,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-95,root/48/0,root.children[48].children[0],root/49/1,Nested_FriendProxy,9,5,0,部分核验,访问 global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)；融合调用/返回需复核。
+95,root/48/0,root.children[48].children[0],root/49/1,Nested_FriendProxy,9,5,0,完整静态恢复（未运行时验证）,04_源码候选/代理与回调短函数_第四批.lua；无参数/无捕获，返回 global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)。
 96,root/49,root.children[49],root/50,AnonymousHelper_49,5,0,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 97,root/50,root.children[50],root/51,StorageItems,224,57,2,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 98,root/50/0,root.children[50].children[0],root/51/1,Nested_isOutputted,52,15,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
