@@ -1,0 +1,50 @@
+{
+  "project": "MainLeftBottom(2).lua VM devirtualization / readable Lua recovery",
+  "as_of": "2026-11-08",
+  "source_sha256": {
+    "MainLeftBottom(2).lua": "458b2f98d635307cc566e38222cf7c59bea3d0eeee545b55dbdf79c665a96bfe",
+    "MainLeftBottom_vm_dump.json": "7d79cecada92270dca0512dc4161d12c45a547ca8f9aeb74d0d2f87b5f996e43",
+    "MainLeftBottom_opcode_reference.txt": "5cc377fb5f69caae8b379741879d7bc1880c8bde04b103c5802d5863caf14901"
+  },
+  "prototype_count": 110,
+  "total_physical_instructions": 5580,
+  "verified_complete_functions_runtime": 0,
+  "static_candidates": [
+    "root/13",
+    "root/29",
+    "root/30",
+    "root/39",
+    "root/46/0"
+  ],
+  "major_targets": {
+    "root.children[45]": "417-instruction MainLoop gather/attack state machine; legacy root/46; structural/CFG and captures mapped, high-level Lua still pending",
+    "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
+    "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
+  },
+  "next_action": "Read corrected phase3 artifacts and 765KB full instruction listing first. Do not redo payload decode, opcode inventory, prototype inventory, or full physical-PC disassembly. Verify six static candidates and call sites, then reconstruct long functions.",
+  "authoritative_files": [
+    "01_原始资料校验与总账.md",
+    "02_原型总索引.json",
+    "03_函数状态清单.csv",
+    "04_闭包捕获映射.json",
+    "恢复候选_静态未验收/静态恢复候选.lua"
+  ],
+  "path_convention": "New work uses zero-based JSON paths root.children[n]; legacy root/46 means root.children[45].",
+  "static_foundation_complete": [
+    "71,216-byte stage3 payload and inner decode report",
+    "110 prototypes / 5,580 physical instructions VM dump",
+    "corrected opcode reference including OP_412",
+    "corrected physical-PC disassembly",
+    "closure creation/capture map",
+    "765 KB full instruction-level static devirtualization listing"
+  ],
+  "static_lua_candidates": [
+    "root.children[13]",
+    "root.children[29]",
+    "root.children[30]",
+    "root.children[39]",
+    "root.children[28].children[0]",
+    "root.children[46].children[0]"
+  ],
+  "static_candidate_count": 6
+}
