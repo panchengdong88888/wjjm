@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续从CSV中选择未开始、无子原型且指令数较少的函数；优先检查 Nested_LuaSendMsg（22条）及 Nested_blacklistTimer（28条），但必须先闭合其调用参数和父级捕获。随后集中静态复审第十二至二十一批，重点闭合 GetAvailableStoragePage PC22–50，并核实 Nested_dropTimer/Nested_shiquTimer 捕获来源。",
+  "next_action": "继续从CSV筛选未开始、无子原型的短函数；优先核查 Nested_blacklistTimer、Nested_TakeItems、Nested_ITEM_INDEX_BY_NAME。每个候选先核实父级闭包捕获及完整PC分支，再写普通Lua草稿。之后集中静态复审第十二至二十二批，重点闭合 GetAvailableStoragePage PC22–50，并复核 Nested_dropTimer/Nested_shiquTimer 捕获来源。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "42"
+    "last_checkpoint": "43"
   },
   "static_recovered_functions": [
     {
@@ -461,20 +461,19 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 42,
-    "target": "Nested_InitGatherMonsters and Nested_onDamageMsg first-pass ordinary Lua drafts",
-    "status": "two_drafts_saved_and_verified; complete_static_reconstruction and runtime_verified unchanged",
-    "source_file": "04_源码候选/短函数草稿_第二十一批.lua",
-    "audit_file": "docs/audit/检查点42_短函数草稿批次.md",
+    "checkpoint": 43,
+    "target": "Nested_LuaSendMsg first-pass ordinary Lua draft",
+    "status": "draft_saved_and_verified; complete_static_reconstruction and runtime_verified unchanged",
+    "source_file": "04_源码候选/短函数草稿_第二十二批.lua",
+    "audit_file": "docs/audit/检查点43_短函数草稿批次.md",
     "verified": [
-      "Nested_InitGatherMonsters branch and return behavior mapped from 17 physical instructions",
-      "Nested_InitGatherMonsters closure capture count and parent closure creation point confirmed",
-      "Nested_onDamageMsg pcall/fallback wrapper mapped from 18 physical instructions",
-      "Nested_onDamageMsg parent closure creation and original message handler capture context reviewed"
+      "22 physical instructions reconstructed into counter-based modulo selection",
+      "parent root/43/2 PC24 closure creation confirms three captures and initial counter 0",
+      "LuaSendMsg call target and seven argument order mapped"
     ],
     "unresolved": [
-      "Original source local names for captured values are unknown",
-      "No runtime validation performed"
+      "modulus and message-entry capture business names remain temporary",
+      "runtime validation not performed"
     ]
   },
   "corrections": [
@@ -570,32 +569,26 @@
       "status": "first_pass_draft_pending_static_review_not_runtime_verified"
     }
   ],
-  "draft_function_count": 26,
-  "ordinary_lua_draft_functions": 26,
-  "last_checkpoint": "42",
+  "draft_function_count": 27,
+  "ordinary_lua_draft_functions": 27,
+  "last_checkpoint": "43",
   "checkpoint": "35",
-  "drafts": 26,
-  "next": "继续从CSV中选择未开始、无子原型且指令数较少的函数；优先检查 Nested_LuaSendMsg（22条）及 Nested_blacklistTimer（28条），但必须先闭合其调用参数和父级捕获。随后集中静态复审第十二至二十一批，重点闭合 GetAvailableStoragePage PC22–50，并核实 Nested_dropTimer/Nested_shiquTimer 捕获来源。",
+  "drafts": 27,
+  "next": "继续从CSV筛选未开始、无子原型的短函数；优先核查 Nested_blacklistTimer、Nested_TakeItems、Nested_ITEM_INDEX_BY_NAME。每个候选先核实父级闭包捕获及完整PC分支，再写普通Lua草稿。之后集中静态复审第十二至二十二批，重点闭合 GetAvailableStoragePage PC22–50，并复核 Nested_dropTimer/Nested_shiquTimer 捕获来源。",
   "recent_checkpoint": {
-    "id": 42,
+    "id": 43,
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第二十一批.lua",
-    "audit_file": "docs/audit/检查点42_短函数草稿批次.md",
+    "source_file": "04_源码候选/短函数草稿_第二十二批.lua",
+    "audit_file": "docs/audit/检查点43_短函数草稿批次.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[7]",
-        "legacy": "root/43/8",
-        "name": "Nested_InitGatherMonsters",
-        "instructions": 17
-      },
-      {
-        "path": "root.children[6].children[0]",
-        "legacy": "root/7/1",
-        "name": "Nested_onDamageMsg",
-        "instructions": 18
+        "path": "root.children[42].children[1].children[0]",
+        "legacy": "root/43/2/1",
+        "name": "Nested_LuaSendMsg",
+        "instructions": 22
       }
     ],
-    "draft_count_total": 26,
+    "draft_count_total": 27,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0
   }
