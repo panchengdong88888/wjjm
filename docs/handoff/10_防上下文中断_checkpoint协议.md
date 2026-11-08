@@ -91,3 +91,11 @@
 - 尚未确定各自精确返回契约和调用方用途；未写源码、未标记完成。
 - 阶段报告：docs/audit/owner_id_helpers_阶段核验.md。
 - 下一步：精确模拟 PC 1–31 跳转与寄存器，再回溯根函数调用点。
+
+
+## 检查点 #6（2026-11-08）：owner helper 根闭包连线
+- 根原型 PC 191/192 分别创建 R31=GetOwnerIDText（root.children[7]）与 R32=GetOwnerID（root.children[38]），均无捕获。
+- 根原型后续创建 root.children[31]（旧 root/32），并将 R32/R31 送入后续闭包捕获/初始化流程；root.children[19]（MainLoop）在 PC 238 创建，捕获 7 项。
+- root.children[32]（旧 root/33）是 6 条指令的变参转发包装器：取 upvalue[0]/[1]，实际调用并返回 upvalue[0] 的结果；upvalue[1] 在其本体内未读取。
+- 两个 owner helper 的精确返回契约尚未确认。前 11 条处理 nil/空串/-1，后续含 type/tostring/相等比较；需回查 VM 跳转和融合指令语义，禁止按名字推断。
+- 报告：docs/audit/owner_id_helpers_阶段核验.md。
