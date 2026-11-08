@@ -21,7 +21,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续核对 FindMonsterCandidates 的忽略怪物配置表与候选筛选数据流（PC 25–78），特别是 SETTING_IDX_IGNORE_MONSTER 的返回结构、GetName/未知怪物处理及距离字段赋值；完成后再形成作者级 Lua。",
+  "next_action": "批量核查 root.children[7]（旧 root/8，GetOwnerIDText）与 root.children[38]（旧 root/39，GetOwnerID）两个归属辅助函数，确认其参数/返回值和调用点；随后再处理 DiuItems root.children[46]。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -121,26 +121,48 @@
         "description"
       ],
       "key_correction": "[\"unknown\",2] is the VM dump's serialized nil marker, not the string \"unknown\"."
+    },
+    {
+      "path": "root.children[28]",
+      "legacy_path": "root/29",
+      "name": "FindMonsterCandidates",
+      "physical_instructions": 102,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/root28_FindMonsterCandidates.lua",
+      "audit_file": "docs/audit/root28_FindMonsterCandidates_阶段分析.md",
+      "parameters": [],
+      "returns": [
+        "sorted candidate actor array, limited by GATHER_THRESHOLD"
+      ],
+      "notes": [
+        "Ignore setting uses first return item's true-valued keys",
+        "IsDie helper returns truthy for alive actor",
+        "Sorts by actor._distance ascending"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-08",
     "target": "root.children[28] / FindMonsterCandidates",
-    "status": "partial_static_analysis_checkpointed",
+    "status": "complete_static_reconstruction_checkpointed",
     "verified": [
-      "102条物理指令、19个常量、1个子原型",
-      "视野怪物列表获取与空列表返回路径",
-      "读取 MMO.SETTING_IDX_IGNORE_MONSTER 设置",
-      "未知怪物名称过滤路径",
-      "距离字段 _distance 赋值与 table.sort 比较器调用",
-      "子闭包比较 a._distance < b._distance",
-      "5个捕获槽位映射已由父函数 PC 187–199 确认：GetPlayerPosition、IsDie、GetPlayerMapPosition、DistanceCalculation、配置表"
+      "102/102 physical instruction semantics accounted for",
+      "5 closure captures mapped",
+      "ignore list first-item/table/true-key structure confirmed",
+      "alive filter via IsDie helper confirmed",
+      "GetName nil/false fallback to 未知怪物",
+      "ignored-name filtering",
+      "distance calculation and _distance assignment",
+      "ascending sort and GATHER_THRESHOLD prefix limit",
+      "nested comparator a._distance < b._distance"
     ],
     "unresolved": [
-      "忽略怪物配置表的数据结构及匹配语义",
-      "完整候选筛选与距离计算顺序"
+      "runtime verification",
+      "setting data runtime sample and threshold edge cases"
     ],
     "runtime_verified": false,
-    "report_file": "docs/audit/root28_FindMonsterCandidates_阶段分析.md"
+    "source_file": "04_源码候选/root28_FindMonsterCandidates.lua",
+    "audit_file": "docs/audit/root28_FindMonsterCandidates_阶段分析.md"
   }
 }
