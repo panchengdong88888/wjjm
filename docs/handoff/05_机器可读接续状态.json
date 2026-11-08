@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续草稿优先批量恢复。先复核 ShowLocalNoticeByType（root.children[20]）UP[0] 的父级捕获来源；然后处理 InitGatherMonsters（root.children[19]）的状态、计时器与 Schedule 调用主体，随后挑选其他短包装函数。PCallHelper（root.children[17]）和 GetPlayerPosition（root.children[18]）继续保留草稿状态，待融合参数复核。",
+  "next_action": "继续批量恢复 InitGatherMonsters（root.children[19]，36 条指令）主体：先把现有 7 个 upvalue 按调用/赋值用途命名为中性变量，恢复 gatherTimer 清理、状态切换、Schedule(MainLoop,CHECK_INTERVAL)、阈值启动提示；疑点注释保留。之后继续 PCallHelper 的融合调用参数复核。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -266,24 +266,41 @@
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
       "audit_file": "docs/audit/检查点21_PrintLog恢复.md"
+    },
+    {
+      "path": "root.children[20]",
+      "legacy_path": "root/21",
+      "name": "ShowLocalNoticeByType",
+      "physical_instructions": 15,
+      "source_file": "04_源码候选/其他短辅助函数_第二批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "audit_file": "docs/audit/检查点22_ShowLocalNoticeByType捕获闭合.md",
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "root initializer T[0]",
+          "usage": "screenH"
+        }
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "PrintLog 38-instruction helper",
+    "target": "ShowLocalNoticeByType parent capture closure",
     "status": "complete_static_reconstruction",
-    "source_file": "04_源码候选/PrintLog_日志辅助函数_第七批.lua",
+    "source_file": "04_源码候选/其他短辅助函数_第二批草稿.lua",
     "verified": [
-      "table argument path calls SL.dump(value, '【超本】') and returns",
-      "non-table path converts first argument with tostring",
-      "extra varargs trigger pcall(string.format, message, ...)",
-      "SL and SL.Print are only checked for existence; no Print invocation exists in active bytecode"
+      "root PC46 creates root.children[20] with one capture",
+      "root PC47 capture descriptor selects parent T[0]",
+      "child reads UP[0].screenH and computes Y=screenH-50",
+      "notice record fields and SL.ShowLocalNoticeByType(notice) call are fully reconstructed"
     ],
     "unresolved": [
       "Runtime validation"
     ],
     "runtime_verified": false,
-    "checkpoint_report": "docs/audit/检查点21_PrintLog恢复.md"
+    "checkpoint_report": "docs/audit/检查点22_ShowLocalNoticeByType捕获闭合.md"
   },
   "corrections": [
     {
