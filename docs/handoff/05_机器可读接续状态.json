@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续解析 PickUpItems PC65-101：逐条对照 raw instruction records、opcode 语义、融合载荷与 CFG 跳转边，证明 R0 是否始终为空及 R16/R17/R18 的寄存器身份；确认两组列表分流条件后，再恢复完整 PickUpItems 普通 Lua。",
+  "next_action": "继续处理剩余首版草稿候选，优先 root.children[32]、root.children[33] 两个相邻原型，先核对原型索引和父级闭包捕获；随后处理 root.children[57] 与 root.children[46]。每个原型单独核对后再决定能否升级完整静态恢复。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -38,7 +38,7 @@
     "root.children[33]",
     "root.children[57]"
   ],
-  "static_candidate_count": 4,
+  "static_candidate_count": 3,
   "repository": {
     "full_name": "panchengdong88888/wjjm",
     "url": "https://github.com/panchengdong88888/wjjm",
@@ -384,32 +384,51 @@
         "Cancels prior timer, sets captured running flag, transitions to IDLE, resets gather data, schedules MainLoop, and emits threshold notice",
         "SL:UnSchedule and SL:Schedule retain SL as method receiver"
       ]
+    },
+    {
+      "path": "root.children[21]",
+      "legacy_path": "root/22",
+      "name": "PickUpItems",
+      "physical_instructions": 172,
+      "constant_count": 34,
+      "child_count": 2,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/PickUpItems_拾取流程_第十批.lua",
+      "audit_file": "docs/audit/检查点29_PickUpItems完整静态恢复.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "root initializer T[5]",
+          "usage": "notification/log callback used for no-items and pickup messages"
+        }
+      ],
+      "notes": [
+        "GetDroppedItems returns item list and count; count==0 triggers notice and return",
+        "name fallback mName -> mONameStr -> Name -> name -> empty string",
+        "coordinate fallback mCurrMapX/MapX/mapX/x and mCurrMapY/MapY/mapY/y",
+        "distance is Manhattan distance",
+        "local nameRules table is created empty and never written; matching loop cannot match; all valid entries flow into ordinaryItems",
+        "sorts preferredItems by kIdx then dist and ordinaryItems by dist; merges in that order",
+        "moves to first candidate; if both axis deltas <=1 calls global.dropItemController:PickMainPlayerPosItem() and emits pickup message"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "target": "PickUpItems root/22 first-pass control-flow and data-flow audit",
-    "status": "analysis_checkpoint_only_not_complete_source",
-    "source_prototype": "root.children[21]",
-    "audit_file": "docs/audit/检查点28_PickUpItems主函数第一轮数据流.md",
+    "target": "PickUpItems complete static reconstruction",
+    "status": "complete_static_reconstruction",
+    "source_file": "04_源码候选/PickUpItems_拾取流程_第十批.lua",
+    "audit_file": "docs/audit/检查点29_PickUpItems完整静态恢复.md",
     "verified": [
-      "GetDroppedItems() two-return entry and empty-ground-items early notice/return",
-      "PlayerPos() two-coordinate read",
-      "name fallback priority mName -> mONameStr -> Name -> name -> empty string",
-      "coordinate fallback priority mCurrMapX -> MapX -> mapX -> x and mCurrMapY -> MapY -> mapY -> y",
-      "missing/false coordinate skips current item",
-      "Manhattan distance abs(playerX-itemX)+abs(playerY-itemY)",
-      "two lists sorted with Nested_dist and Nested_dist_2, then merged",
-      "nearest merged item passed to MoveTo(x,y,0)",
-      "per-axis absolute delta <= 1 gate before PickMainPlayerPosItem",
-      "pickup notice callback receives '拾取: ' .. item.mName"
+      "All 172 physical instructions and two child comparator closures accounted for",
+      "nameRules table proven empty and unchanged within prototype; inner string.find loop cannot match",
+      "all valid entries therefore enter ordinaryItems",
+      "Manhattan distance, sorting, merge, movement, one-tile pickup gate and notification callback confirmed"
     ],
-    "unresolved": [
-      "PC65-101 inner loop, list classification and R0/R16/R17/R18 roles",
-      "Need validate fused call argument windows and all CFG edges before simplifying the apparently empty R0 ipairs loop"
-    ],
-    "runtime_verified": false,
-    "static_recovered_count_unchanged": true
+    "runtime_verified": false
   },
   "corrections": [
     {
