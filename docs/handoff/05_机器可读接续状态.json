@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续追踪 root 初始化函数中用于 InitGatherMonsters 的父级 T[23]、T[13]、T[35] 的赋值来源，确认辅助函数和状态表的真实身份；随后批量恢复 PickUpItems 父函数中剩余可独立闭合的分支，或选择其他短包装函数。",
+  "next_action": "继续批量恢复 PickUpItems 父函数（root.children[21]）中尚未还原的控制流，优先拆解 172 条指令里的短路径和两个已完成比较闭包的调用位置；若出现长函数复杂分支，则转向其他独立短辅助函数。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -36,10 +36,9 @@
     "root.children[46]",
     "root.children[32]",
     "root.children[33]",
-    "root.children[57]",
-    "root.children[19]"
+    "root.children[57]"
   ],
-  "static_candidate_count": 5,
+  "static_candidate_count": 4,
   "repository": {
     "full_name": "panchengdong88888/wjjm",
     "url": "https://github.com/panchengdong88888/wjjm",
@@ -364,24 +363,43 @@
       "notes": [
         "dist ascending comparator"
       ]
+    },
+    {
+      "path": "root.children[19]",
+      "legacy_path": "root/20",
+      "name": "InitGatherMonsters",
+      "physical_instructions": 36,
+      "constant_count": 11,
+      "child_count": 1,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua",
+      "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
+      "parameters": [],
+      "returns": [],
+      "notes": [
+        "UP[2] is FormatStateChange created at root PC181",
+        "UP[3] is root T[13] state constants table with IDLE/GATHERING/ATTACKING",
+        "UP[4] is ResetGatherMonsterData closure created at root PC200",
+        "Cancels prior timer, sets captured running flag, transitions to IDLE, resets gather data, schedules MainLoop, and emits threshold notice",
+        "SL:UnSchedule and SL:Schedule retain SL as method receiver"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "target": "PCallHelper call-chain and PickUpItems comparator closures",
-    "status": "four_prototypes_complete_static_reconstruction",
-    "source_files": [
-      "04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua",
-      "04_源码候选/PickUpItems_距离比较闭包_第九批.lua"
-    ],
+    "target": "InitGatherMonsters exact capture identity and full static recovery",
+    "status": "complete_static_reconstruction",
+    "source_file": "04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua",
     "verified": [
-      "PCallHelper pcall result contract",
-      "Nested_tostring invokes capturedOuter(arg0) and forwards its full return window as trailing writeStringToFile arguments",
-      "Nested_dist compares kIdx ascending then dist ascending on ties",
-      "Nested_dist_2 compares dist ascending"
+      "All seven capture identities traced to root initialization definitions",
+      "FormatStateChange and ResetGatherMonsterData names confirmed by canonical prototype index",
+      "State constants table fields confirmed",
+      "UnSchedule and Schedule method receiver/self semantics confirmed",
+      "All 36 physical instructions accounted for"
     ],
     "runtime_verified": false,
-    "checkpoint_report": "docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md"
+    "checkpoint_report": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md"
   },
   "corrections": [
     {
@@ -404,43 +422,41 @@
       {
         "upvalue": 0,
         "parent_source": "root T[3]",
-        "role": "table containing gatherTimer"
+        "role": "runtime state table containing gatherTimer"
       },
       {
         "upvalue": 1,
         "parent_source": "root T[18]",
-        "role": "set to true"
+        "role": "captured gather-running flag; assigned true"
       },
       {
         "upvalue": 2,
         "parent_source": "root T[23]",
-        "role": "callable invoked with UP[3].IDLE"
+        "role": "FormatStateChange closure created at root PC181"
       },
       {
         "upvalue": 3,
         "parent_source": "root T[13]",
-        "role": "table/value source for IDLE member"
+        "role": "state constants table with IDLE/GATHERING/ATTACKING, created root PC168-171"
       },
       {
         "upvalue": 4,
         "parent_source": "root T[35]",
-        "role": "zero-argument callable"
+        "role": "ResetGatherMonsterData closure created at root PC200"
       },
       {
         "upvalue": 5,
         "parent_source": "root T[8]",
-        "role": "configuration containing CHECK_INTERVAL and GATHER_THRESHOLD"
+        "role": "configuration table with CHECK_INTERVAL and GATHER_THRESHOLD"
       },
       {
         "upvalue": 6,
         "parent_source": "root T[4]",
-        "role": "notification callback"
+        "role": "startup notice callback"
       }
     ],
-    "unresolved": [
-      "Domain identities of root T[23], T[13], T[35] not yet proven; do not promote semantic placeholder names to original identifiers."
-    ],
-    "audit_file": "docs/audit/检查点25_InitGatherMonsters捕获来源复核.md",
+    "unresolved": [],
+    "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   }
 }
