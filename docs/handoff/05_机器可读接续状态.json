@@ -9,19 +9,13 @@
   "prototype_count": 110,
   "total_physical_instructions": 5580,
   "verified_complete_functions_runtime": 0,
-  "static_candidates": [
-    "root/13",
-    "root/29",
-    "root/30",
-    "root/39",
-    "root/46/0"
-  ],
+  "static_candidates": [],
   "major_targets": {
     "root.children[45]": "417-instruction MainLoop gather/attack state machine; legacy root/46; structural/CFG and captures mapped, high-level Lua still pending",
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "独立复审 DiuItems 与首批 6 个短函数草稿，重点确认 IsDie 短路返回值、GetMapId/GetMapName false/nil 回退、关键词 matcher 的 plain=true 参数及闭包捕获。复审后批量继续其他短小辅助函数，不做逐函数冗长汇报；每批同步源码、CSV、JSON和检查点。",
+  "next_action": "继续批量恢复其他短小辅助函数/简单原型：从尚未恢复的短函数开始，优先用反汇编直接产出普通 Lua；疑点用注释保留。对有充分证据的短函数完成独立静态复核后直接标记完整静态恢复。随后处理较复杂函数主体。每批提交源码、CSV、JSON、检查点并从 GitHub 复读验证。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -39,15 +33,9 @@
     "765 KB full instruction-level static devirtualization listing"
   ],
   "static_lua_candidates": [
-    "root.children[13]",
-    "root.children[29]",
-    "root.children[30]",
-    "root.children[39]",
-    "root.children[28].children[0]",
-    "root.children[46].children[0]",
     "root.children[46]"
   ],
-  "static_candidate_count": 7,
+  "static_candidate_count": 1,
   "repository": {
     "full_name": "panchengdong88888/wjjm",
     "url": "https://github.com/panchengdong88888/wjjm",
@@ -141,26 +129,76 @@
         "IsDie helper returns truthy for alive actor",
         "Sorts by actor._distance ascending"
       ]
+    },
+    {
+      "path": "root.children[13]",
+      "legacy_path": "root/14",
+      "name": "GetMapId",
+      "physical_instructions": 9,
+      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[29]",
+      "legacy_path": "root/30",
+      "name": "IsDie",
+      "physical_instructions": 7,
+      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[30]",
+      "legacy_path": "root/31",
+      "name": "GetMapName",
+      "physical_instructions": 9,
+      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[39]",
+      "legacy_path": "root/40",
+      "name": "GetMainPlayerID",
+      "physical_instructions": 6,
+      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[28].children[0]",
+      "legacy_path": "root/29/1",
+      "name": "Nested_distance",
+      "physical_instructions": 8,
+      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[46].children[0]",
+      "legacy_path": "root/47/1",
+      "name": "Nested_string_2",
+      "physical_instructions": 20,
+      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
     }
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "First batch of six small helper Lua drafts",
-    "status": "six_small_helper_drafts_created_pending_review",
-    "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
+    "target": "DiuItems source-to-PC review and six small helper prototypes",
+    "status": "six_helpers_complete_static_diuitems_draft_reviewed",
     "verified": [
-      "GetMapId: SL:GetMetaValue('MAP_ID') or 0",
-      "IsDie: actor and not actor:IsDie(), preserving short-circuit false/nil return",
-      "GetMapName: SL:GetMetaValue('MAP_NAME') or empty string",
-      "GetMainPlayerID: global.gamePlayerController:GetMainPlayerID()",
-      "FindMonsterCandidates comparator: a._distance < b._distance",
-      "DiuItems nested keyword matcher: ipairs and plain string.find(text, keyword, 1, true)"
+      "DiuItems active-path draft checked against PC2-169 including PC157/158 increments; kept as draft because dead keyword construction is omitted and runtime unknown",
+      "Six short helper prototypes independently matched to corrected disassembly and accepted as complete static reconstructions: GetMapId, IsDie, GetMapName, GetMainPlayerID, Nested_distance, Nested_string_2"
     ],
     "unresolved": [
-      "Independent source-to-PC review for this helper batch",
-      "Runtime validation"
+      "DiuItems dead keyword construction remains intentionally omitted from readable active-path draft",
+      "No runtime validation has been performed"
     ],
-    "runtime_verified": false
+    "runtime_verified": false,
+    "checkpoint_report": "docs/audit/检查点15_DiuItems复核与短函数首批验收.md"
   },
   "corrections": [
     {
