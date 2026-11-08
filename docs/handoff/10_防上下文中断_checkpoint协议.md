@@ -67,3 +67,18 @@
   4. 父函数 R8 配置表（GATHER_THRESHOLD、CHECK_INTERVAL、ATTACK_WAIT_TIME）
 - 捕获顺序由 PC 195–199 的 T[27]、T[30]、T[28]、T[29]、T[8] 与 PC 187–193 的闭包创建顺序交叉确认。
 - 分析报告已补充映射；函数仍处于阶段分析，忽略列表数据结构和完整筛选逻辑尚未全部核清。
+
+
+## 检查点 #4（2026-11-08）：FindMonsterCandidates 完整静态恢复
+- 原型：`root.children[28]`（旧 `root/29`），102 条物理指令、19 个常量、1 个子原型。
+- 已确认忽略设置读取 `GET_SETTING(global.MMO.SETTING_IDX_IGNORE_MONSTER)`，使用返回值第 1 项；仅在其为 table 时遍历，且只将 value 严格为 true 的键纳入忽略集合。
+- 候选处理：视野怪物列表为空则返回 `{}`；遍历时仅保留 `IsDie(actor)` truthy 的对象（该辅助函数实际表示存活）；名称取 `GetName()`，nil/false 回退为“未知怪物”；忽略集合命中则跳过。
+- 距离：调用 `GetPlayerMapPosition(actor)` 与 `DistanceCalculation(playerPosition, actorPosition)`，写入 `actor._distance`。
+- 排序：`_distance` 升序；再按配置 `GATHER_THRESHOLD` 取前 N 个。
+- 5 个闭包捕获映射已确认；子闭包比较器为 `a._distance < b._distance`。
+- 普通 Lua 候选：`04_源码候选/root28_FindMonsterCandidates.lua`。
+- 逐指令审计：`docs/audit/root28_FindMonsterCandidates_阶段分析.md`。
+- 函数状态 CSV 已将第 37 项标记为“完整静态恢复（未运行时验证）”。
+- 本批尚未运行时验证；阈值边界和设置数据样例仍列为后续验收事项。
+- GitHub 提交：源码 `18a47d6a`；审计 `7630e410`；CSV `7234ad4e`；机器状态 `b8a5f3ae`。
+- 下一批：核查 `root.children[7]`（GetOwnerIDText）与 `root.children[38]`（GetOwnerID），随后 DiuItems。
