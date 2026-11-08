@@ -1,7 +1,7 @@
 # 检查点 #33：DiuItems 独立复审与短函数草稿批次
 
 日期：2026-11-09
-主仓库：panchengdong888888/wjjm（main）
+主仓库：panchengdong88888/wjjm（main）
 
 ## 一、DiuItems 首版草稿独立复审
 
