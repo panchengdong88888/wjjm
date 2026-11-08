@@ -242,3 +242,10 @@
 - 参数和捕获对象用工厂参数表达；代码按指令窗口恢复调用顺序及参数。
 - 函数状态 CSV 与机器状态 JSON 已同步，4 个原型列入完整静态恢复（未运行时验证）。
 - 详细报告：`docs/audit/检查点17_短闭包辅助函数第三批.md`。
+
+
+## 检查点 #18（2026-11-08）：代理与回调短函数第四批
+- 新增 `04_源码候选/代理与回调短函数_第四批.lua`。
+- Nested_FriendProxy（root.children[48].children[0]）9 指令完整静态恢复：返回 `global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)`，计入完整静态恢复。
+- AnonymousHelper_33 与 AnonymousHelper_34 已产出转发结构草稿，但捕获对象业务身份待父级调用点复核，不计完整恢复。
+- 函数状态 CSV、机器状态 JSON 已同步；详细报告 `docs/audit/检查点18_代理与回调短函数第四批.md`。
