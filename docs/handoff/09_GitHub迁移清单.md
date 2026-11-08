@@ -34,3 +34,15 @@
 3. 每次修改已有文件先 fetch 当前 blob SHA，再 update；同一路径不可并行写入。
 4. 新恢复普通 Lua 必须标注静态候选/调用点核验/完整静态恢复/运行时验证，不虚报完成。
 5. 用户验收完整明文后，再按用户要求清理临时工程文件。
+
+## 其他历史 ZIP 归档（也尚未作为二进制文件上传）
+Library 中另有以下相关归档，保留作原始历史包；GitHub 当前已迁移其中主要可读文本/源码，但没有复制 ZIP 本身：
+- `MainLeftBottom_明文恢复_接续工程包.zip`
+- `MainLeftBottom_明文恢复_跨对话接续包_2026-11-08.zip`
+- `MainLeftBottom_全量草稿第一阶段资料包.zip`
+- `MainLeftBottom_全量Lua源码草稿_第一遍资料包.zip`
+- `MainLeftBottom_全量Lua源码草稿_第二遍资料包.zip`
+- `MainLeftBottom_第三遍调用关系与关键函数校正资料包.zip`
+- `MainLeftBottom_decompile_package.zip`、`_v2.zip`、`_v3_phase2.zip`、`_v4_phase3.zip`
+
+以上是归档副本/历史包，不能与已经迁移到 GitHub 的文本文件混为一谈。
