@@ -3,7 +3,7 @@ TAB NAME: 03_函数状态清单.csv>
 index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,物理指令数,常量数,子原型数,状态,已核实内容/待办
 0,root,root,root,MainLeftBottom_Module,412,109,58,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 1,root/0,root.children[0],root/1,FileExistCheck_pcall_wrapper,32,5,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-2,root/0/0,root.children[0].children[0],root/1/1,Nested_removeFile,5,1,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+2,root/0/0,root.children[0].children[0],root/1/1,Nested_removeFile,5,1,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十五批.lua；读取 UP[0].removeFile 并以 UP[0] 为 self、UP[1] 为路径调用；捕获业务名待确认；检查点36。
 3,root/1,root.children[1],root/2,GetStorageItemData,77,16,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 4,root/2,root.children[2],root/3,GetWritablePath,10,4,0,部分核验,cc.FileUtils/getInstance/getWritablePath 路径明确；vararg/拼接融合指令未完全还原。
 5,root/3,root.children[3],root/4,MoveTo,51,20,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
@@ -20,7 +20,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 16,root/13,root.children[13],root/14,GetMapId,9,4,0,完整静态恢复（未运行时验证）,04_源码候选/小型辅助函数_首批草稿.lua；PC1-9 完整还原为 SL:GetMetaValue(""MAP_ID"") or 0。
 17,root/14,root.children[14],root/15,FindMonsterInCurrViewField,27,4,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十三批.lua；调用 SL:FindMonsterInCurrViewField(true,true)，使用捕获的 IsDie 过滤存活 actor，再按 actor:GetID() 构造映射表；检查点34。
 18,root/15,root.children[15],root/16,ClearBlacklistItems,63,17,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-19,root/15/0,root.children[15].children[0],root/16/1,Nested_SL,13,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+19,root/15/0,root.children[15].children[0],root/16/1,Nested_SL,13,4,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候稿/短函数草稿_第十五批.lua；调用 SL:RequestOutBlacklist(UP[0])，若 UP[1]._blacklistData 存在则删除对应键；捕获业务名待确认；检查点36。
 20,root/16,root.children[16],root/17,PrintLog,38,13,0,完整静态恢复（未运行时验证）,04_源码候选/PrintLog_日志辅助函数_第七批.lua；table 输入调用 SL.dump(value,"【超本】")；非 table 输入 tostring，存在额外参数时 pcall(string.format,message,...)；PC31-37 只检查 SL.Print 存在而无调用。
 21,root/17,root.children[17],root/18,PCallHelper,14,2,1,完整静态恢复（未运行时验证）,04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua；pcall失败或子闭包结果严格为false时返回false，否则true；子闭包调用 capturedOuter(arg0)，并将其全部返回值转发给 FileUtils:writeStringToFile。审计见docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md。
 22,root/17/0,root.children[17].children[0],root/18/1,Nested_tostring,14,5,0,完整静态恢复（未运行时验证）,04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua；cc.FileUtils:getInstance()，tostring(UP[0])，调用UP[1](UP[2])并将多返回值转发给writeStringToFile。审计见docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md。
@@ -62,7 +62,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 59,root/42/3/1,root.children[42].children[3].children[1],root/43/4/2,Nested_string,46,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 60,root/42/3/2,root.children[42].children[3].children[2],root/43/4/3,Nested_FFFFFF,65,17,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 61,root/42/3/3,root.children[42].children[3].children[3],root/43/4/4,Nested_Helper_3,168,31,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-62,root/42/3/4,root.children[42].children[3].children[4],root/43/4/5,Nested_UnSchedule,20,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+62,root/42/3/4,root.children[42].children[3].children[4],root/43/4/5,Nested_UnSchedule,20,8,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十五批.lua；通知“点击空白,关闭资源信息窗口”；取消并清空resTimer；调用GUI:Win_Close(resWin)；捕获对象名待确认；检查点36。
 63,root/42/4,root.children[42].children[4],root/43/5,Nested_OnGameLeaveWorld,5,3,0,完整静态恢复（未运行时验证）,04_源码候选/短闭包辅助函数_第三批草稿.lua；调用 global.gameWorldController:OnGameLeaveWorld()。
 64,root/42/5,root.children[42].children[5],root/43/6,Nested_ffffff,41,10,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 65,root/42/6,root.children[42].children[6],root/43/7,Nested_StopGatherMonsters,31,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
@@ -87,7 +87,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 84,root/42/22,root.children[42].children[22],root/43/23,Nested_Anonymous,8,0,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 85,root/42/22/0,root.children[42].children[22].children[0],root/43/23/1,Nested_str,27,13,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 86,root/42/22/0/0,root.children[42].children[22].children[0].children[0],root/43/23/1/1,Nested_match,50,14,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-87,root/42/22/0/0/0,root.children[42].children[22].children[0].children[0].children[0],root/43/23/1/1/1,Nested_Helper_11,4,1,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+87,root/42/22/0/0/0,root.children[42].children[22].children[0].children[0].children[0],root/43/23/1/1/1,Nested_Helper_11,4,1,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十五批.lua；调用捕获回调并传入“参数格式不对，请输入数字”；检查点36。
 88,root/43,root.children[43],root/44,GetOwnerDescription,20,7,0,完整静态恢复（未运行时验证）,调用 actor:GetOwnerID；VM 的 ["unknown",2] 是 nil 序列化标记；按 nil/空串/-1/主玩家 ID 分类；参数 actor、mainPlayerID 及返回顺序 ownerID、description 已由 MainLoop 调用点核验。
 89,root/44,root.children[44],root/45,GetPlayerMapPosition,17,5,0,部分核验,涉及 mCurrMapX/mCurrMapY 与 x/y；返回表/边界条件尚未完整还原。
 90,root/45,root.children[45],root/46,MainLoop,417,41,0,结构与部分调用点已核验，源码未恢复,417 条指令引怪状态机；22 个 upvalue 映射已复核；upvalue[9]/[17] 分别为 GetOwnerID/GetOwnerIDText，PC49-60 与 PC124-147 为对应调用及分支；完整 CFG/source 未完成。
