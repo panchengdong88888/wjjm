@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续恢复剩余 DiuItems（root.children[46] / legacy root/47，169条指令、64常量、1个子闭包）。先精确复核两个父级捕获 T[2]/T[5] 的身份，再分段闭合入口状态锁、掉落物扫描、背包容量/可丢弃物过滤、丢弃消息与计数循环；复杂分支未闭合前不要计入完整恢复。",
+  "next_action": "继续闭合 DiuItems PC89–98 与 PC143–156：回看原始 instruction tuple、opcode handler 及融合载荷消费规则，证明 R4 条件寄存器来源、关键词闭包调用的实际分支，并解出 LuaSendMsg 的确切参数表；随后逐条核对 PC128–160 的 35 件上限与迭代器循环。不要在这些疑点解决前生成最终函数源码或增加静态恢复数。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -460,16 +460,29 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "target": "PlayerPos and two tiny forwarding closures",
-    "status": "complete_static_reconstruction",
-    "source_file": "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
-    "audit_file": "docs/audit/检查点30_PlayerPos与匿名转发闭包.md",
+    "target": "DiuItems deep static audit",
+    "status": "analysis_checkpoint_only_not_complete_source",
+    "source_prototype": "root.children[46]",
+    "audit_file": "docs/audit/检查点31_DiuItems深层静态审计.md",
+    "verified": [
+      "UP[0] captures root T[2], shared isDiuing state table",
+      "UP[1] captures root T[5], notification callback",
+      "ground item count capped at 35 with over-limit notice",
+      "BAG_DATA acquisition and missing-data early return",
+      "28 keyword list and child closure performs string.find(name, keyword, 1, true)",
+      "bag entry existence, Name, MakeIndex and ITEM_IS_BIND checks",
+      "candidate record includes makeIndex, count=OverLap or 1, Name/name",
+      "empty candidate list notice",
+      "LuaSendMsg uses MSG_CS_MAP_ITEM_DISCARD and candidate data; final summary notification"
+    ],
+    "unresolved": [
+      "PC89-98 R4/R14 branch semantics and keyword matching route",
+      "exact candidate table fields and insertion/keyword-match branch",
+      "exact LuaSendMsg argument order and receiver/protocol payload",
+      "PC128-160 iterator and counter termination"
+    ],
     "runtime_verified": false,
-    "completed": [
-      "root.children[57] PlayerPos",
-      "root.children[32] AnonymousHelper_32",
-      "root.children[33] AnonymousHelper_33"
-    ]
+    "static_recovered_count_unchanged": true
   },
   "corrections": [
     {
