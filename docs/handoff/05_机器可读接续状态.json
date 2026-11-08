@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续处理剩余首版草稿候选，优先 root.children[32]、root.children[33] 两个相邻原型，先核对原型索引和父级闭包捕获；随后处理 root.children[57] 与 root.children[46]。每个原型单独核对后再决定能否升级完整静态恢复。",
+  "next_action": "继续恢复剩余 DiuItems（root.children[46] / legacy root/47，169条指令、64常量、1个子闭包）。先精确复核两个父级捕获 T[2]/T[5] 的身份，再分段闭合入口状态锁、掉落物扫描、背包容量/可丢弃物过滤、丢弃消息与计数循环；复杂分支未闭合前不要计入完整恢复。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -33,12 +33,9 @@
     "765 KB full instruction-level static devirtualization listing"
   ],
   "static_lua_candidates": [
-    "root.children[46]",
-    "root.children[32]",
-    "root.children[33]",
-    "root.children[57]"
+    "root.children[46]"
   ],
-  "static_candidate_count": 4,
+  "static_candidate_count": 1,
   "repository": {
     "full_name": "panchengdong88888/wjjm",
     "url": "https://github.com/panchengdong88888/wjjm",
@@ -414,21 +411,65 @@
         "sorts preferredItems by kIdx then dist and ordinaryItems by dist; merges in that order",
         "moves to first candidate; if both axis deltas <=1 calls global.dropItemController:PickMainPlayerPosItem() and emits pickup message"
       ]
+    },
+    {
+      "path": "root.children[32]",
+      "legacy_path": "root/33",
+      "name": "AnonymousHelper_32",
+      "physical_instructions": 6,
+      "constant_count": 0,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
+      "audit_file": "docs/audit/检查点30_PlayerPos与匿名转发闭包.md",
+      "notes": [
+        "捕获 root T[46] 与 T[42]；返回 upvalue0(upvalue1, 第一个参数)。PC5 vararg return 位于无条件返回后，不可达。"
+      ]
+    },
+    {
+      "path": "root.children[33]",
+      "legacy_path": "root/34",
+      "name": "AnonymousHelper_33",
+      "physical_instructions": 5,
+      "constant_count": 0,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
+      "audit_file": "docs/audit/检查点30_PlayerPos与匿名转发闭包.md",
+      "notes": [
+        "捕获 root T[45] 与 T[43]；返回 upvalue0(upvalue1)。PC4 的空 vararg return 位于无条件返回后，不可达。"
+      ]
+    },
+    {
+      "path": "root.children[57]",
+      "legacy_path": "root/58",
+      "name": "PlayerPos",
+      "physical_instructions": 10,
+      "constant_count": 4,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
+      "audit_file": "docs/audit/检查点30_PlayerPos与匿名转发闭包.md",
+      "notes": [
+        "依次调用 SL:GetMetaValue('X') 与 SL:GetMetaValue('Y')，返回两个值；不同于 GetPlayerPosition 的坐标表返回契约。"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "target": "PickUpItems complete static reconstruction",
+    "target": "PlayerPos and two tiny forwarding closures",
     "status": "complete_static_reconstruction",
-    "source_file": "04_源码候选/PickUpItems_拾取流程_第十批.lua",
-    "audit_file": "docs/audit/检查点29_PickUpItems完整静态恢复.md",
-    "verified": [
-      "All 172 physical instructions and two child comparator closures accounted for",
-      "nameRules table proven empty and unchanged within prototype; inner string.find loop cannot match",
-      "all valid entries therefore enter ordinaryItems",
-      "Manhattan distance, sorting, merge, movement, one-tile pickup gate and notification callback confirmed"
-    ],
-    "runtime_verified": false
+    "source_file": "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
+    "audit_file": "docs/audit/检查点30_PlayerPos与匿名转发闭包.md",
+    "runtime_verified": false,
+    "completed": [
+      "root.children[57] PlayerPos",
+      "root.children[32] AnonymousHelper_32",
+      "root.children[33] AnonymousHelper_33"
+    ]
   },
   "corrections": [
     {
