@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续闭合 DiuItems PC89–98 与 PC143–156：回看原始 instruction tuple、opcode handler 及融合载荷消费规则，证明 R4 条件寄存器来源、关键词闭包调用的实际分支，并解出 LuaSendMsg 的确切参数表；随后逐条核对 PC128–160 的 35 件上限与迭代器循环。不要在这些疑点解决前生成最终函数源码或增加静态恢复数。",
+  "next_action": "继续解析 DiuItems 的融合执行语义：重点逐项拆开 raw index 35 的 OP_299 六个融合载荷，确认 R4 在 OP_092 前的实际最终值与 PC91–98 可达性；再拆 raw index 142 的 OP_349 十一个融合载荷，追踪 R14、T[15..]、string.len(name) 与 raw index155 OP_013 的开放参数区，确定 LuaSendMsg 精确实参表。之后再闭合 PC128–160 循环。优先从已迁移 opcode reference、反汇编、VM dump、解释器/融合载荷资料交叉核对；不得将未证实的参数或分支写入最终源码。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -460,29 +460,26 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "target": "DiuItems deep static audit",
+    "checkpoint": 32,
+    "target": "DiuItems raw tuple and branch review",
     "status": "analysis_checkpoint_only_not_complete_source",
     "source_prototype": "root.children[46]",
-    "audit_file": "docs/audit/检查点31_DiuItems深层静态审计.md",
+    "audit_file": "docs/audit/检查点32_DiuItems原始元组与分支复核.md",
     "verified": [
-      "UP[0] captures root T[2], shared isDiuing state table",
-      "UP[1] captures root T[5], notification callback",
-      "ground item count capped at 35 with over-limit notice",
-      "BAG_DATA acquisition and missing-data early return",
-      "28 keyword list and child closure performs string.find(name, keyword, 1, true)",
-      "bag entry existence, Name, MakeIndex and ITEM_IS_BIND checks",
-      "candidate record includes makeIndex, count=OverLap or 1, Name/name",
-      "empty candidate list notice",
-      "LuaSendMsg uses MSG_CS_MAP_ITEM_DISCARD and candidate data; final summary notification"
+      "raw DiuItems prototype has 169 records, 64 constants, one child",
+      "capture descriptors: UP0 captures parent root T2; UP1 captures parent root T5",
+      "child closure captures DiuItems T5 and performs ipairs/string.find(name,keyword,1,true)",
+      "raw tuple at index 88 is OP_092 [224,92,1,4,1], condition (R4==1) ~= true",
+      "R4 has explicit earlier writes; OP_299 at raw index35 is fused and its complete execution must be decoded",
+      "LuaSendMsg load begins at raw index142 OP_349 with 11 fusion payloads; OP_013 at raw index155 invokes R14 with open T args"
     ],
     "unresolved": [
-      "PC89-98 R4/R14 branch semantics and keyword matching route",
-      "exact candidate table fields and insertion/keyword-match branch",
-      "exact LuaSendMsg argument order and receiver/protocol payload",
-      "PC128-160 iterator and counter termination"
+      "OP_299 fused payload register/write semantics and actual R4 at PC89",
+      "PC91-98 reachability and candidate insertion branch",
+      "OP_349 fused payload/T argument construction and exact LuaSendMsg argument order",
+      "PC128-160 iterator and 35-item loop boundary"
     ],
-    "runtime_verified": false,
-    "static_recovered_count_unchanged": true
+    "runtime_verified": false
   },
   "corrections": [
     {
