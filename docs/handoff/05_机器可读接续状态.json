@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续批量恢复 InitGatherMonsters（root.children[19]，36 条指令）主体：先把现有 7 个 upvalue 按调用/赋值用途命名为中性变量，恢复 gatherTimer 清理、状态切换、Schedule(MainLoop,CHECK_INTERVAL)、阈值启动提示；疑点注释保留。之后继续 PCallHelper 的融合调用参数复核。",
+  "next_action": "继续批量草稿恢复。优先复核 InitGatherMonsters 的 UP[2..4] 捕获角色和 PCallHelper 子闭包 OP_004/OP_252 调用参数；随后处理其余简单包装函数与 PickUpItems 的短子闭包。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -39,9 +39,10 @@
     "root.children[18]",
     "root.children[57]",
     "root.children[17]",
-    "root.children[17].children[0]"
+    "root.children[17].children[0]",
+    "root.children[19]"
   ],
-  "static_candidate_count": 7,
+  "static_candidate_count": 8,
   "repository": {
     "full_name": "panchengdong88888/wjjm",
     "url": "https://github.com/panchengdong88888/wjjm",
@@ -287,20 +288,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "ShowLocalNoticeByType parent capture closure",
-    "status": "complete_static_reconstruction",
-    "source_file": "04_源码候选/其他短辅助函数_第二批草稿.lua",
+    "target": "InitGatherMonsters initialization body",
+    "status": "first_pass_lua_draft_created",
+    "source_file": "04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua",
     "verified": [
-      "root PC46 creates root.children[20] with one capture",
-      "root PC47 capture descriptor selects parent T[0]",
-      "child reads UP[0].screenH and computes Y=screenH-50",
-      "notice record fields and SL.ShowLocalNoticeByType(notice) call are fully reconstructed"
+      "Existing gatherTimer cancellation and clearing",
+      "UP[1] set true",
+      "State transition helper called with IDLE member",
+      "Zero-argument helper called",
+      "SL.Schedule(MainLoop, CHECK_INTERVAL) result stored as gatherTimer",
+      "Formatted start notice includes GATHER_THRESHOLD"
     ],
     "unresolved": [
-      "Runtime validation"
+      "Domain identity of UP[2], UP[3], UP[4]",
+      "Runtime behavior of scheduler and notice APIs"
     ],
     "runtime_verified": false,
-    "checkpoint_report": "docs/audit/检查点22_ShowLocalNoticeByType捕获闭合.md"
+    "checkpoint_report": "docs/audit/检查点23_InitGatherMonsters主体草稿.md"
   },
   "corrections": [
     {
