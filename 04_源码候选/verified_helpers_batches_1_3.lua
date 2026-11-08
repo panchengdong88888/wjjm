@@ -162,21 +162,23 @@ local function IsActorAlive(actor)
     return not actor:IsDie()
 end
 
--- root/44 (20 VM records)
--- Returns both the human-readable owner category and the raw owner ID.
-local function GetOwnerCategory(actor, mainPlayerID)
+-- root.children[43] / legacy root/44 (20 VM records).
+-- The VM dump serializes nil as ["unknown", 2]; it is not the string "unknown".
+-- MainLoop call site confirms arguments (actor, mainPlayerID) and return order
+-- (raw ownerID, description).
+local function GetOwnerDescription(actor, mainPlayerID)
     local ownerID = actor:GetOwnerID()
-    local category
+    local description
 
-    if ownerID == "unknown" or ownerID == "" or ownerID == -1 then
-        category = "无归属"
+    if ownerID == nil or ownerID == "" or ownerID == -1 then
+        description = "无归属"
     elseif ownerID == mainPlayerID then
-        category = "自己"
+        description = "自己"
     else
-        category = "其他玩家"
+        description = "其他玩家"
     end
 
-    return category, ownerID
+    return ownerID, description
 end
 
 -- root/29/1 (8 VM records), used by table.sort in root/29.
