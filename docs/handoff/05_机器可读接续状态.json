@@ -21,7 +21,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "批量核查 root.children[7]（旧 root/8，GetOwnerIDText）与 root.children[38]（旧 root/39，GetOwnerID）两个归属辅助函数，确认其参数/返回值和调用点；随后再处理 DiuItems root.children[46]。",
+  "next_action": "继续精确模拟 root.children[7] 与 root.children[38] 的 PC 1–31 跳转和寄存器数据流，再从根函数闭包创建/调用点确认各自返回契约；暂不生成猜测源码。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -144,25 +144,21 @@
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "root.children[28] / FindMonsterCandidates",
-    "status": "complete_static_reconstruction_checkpointed",
+    "target": "owner ID helper pair: root.children[7] and root.children[38]",
+    "status": "partial_static_audit_checkpointed",
     "verified": [
-      "102/102 physical instruction semantics accounted for",
-      "5 closure captures mapped",
-      "ignore list first-item/table/true-key structure confirmed",
-      "alive filter via IsDie helper confirmed",
-      "GetName nil/false fallback to 未知怪物",
-      "ignored-name filtering",
-      "distance calculation and _distance assignment",
-      "ascending sort and GATHER_THRESHOLD prefix limit",
-      "nested comparator a._distance < b._distance"
+      "both prototypes call argument 1 GetOwnerID()",
+      "both test nil sentinel, empty string, and -1",
+      "both contain type/tostring conversion and equality branches",
+      "31 instructions each, no child prototypes"
     ],
     "unresolved": [
-      "runtime verification",
-      "setting data runtime sample and threshold edge cases"
+      "exact branch return values and polarity",
+      "GetOwnerIDText return contract",
+      "GetOwnerID return contract",
+      "caller argument and return-value usage"
     ],
     "runtime_verified": false,
-    "source_file": "04_源码候选/root28_FindMonsterCandidates.lua",
-    "audit_file": "docs/audit/root28_FindMonsterCandidates_阶段分析.md"
+    "report_file": "docs/audit/owner_id_helpers_阶段核验.md"
   }
 }
