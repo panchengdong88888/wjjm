@@ -1,0 +1,7000 @@
+--[=[
+MainLeftBottom.lua — 静态去虚拟化重建源码（指令级）
+原始文件：MainLeftBottom(2).lua
+
+重要说明：这是基于原始虚拟机分派器与全部字节码原型生成的去虚拟化明文清单。
+它完整保留所有原型、常量、指令顺序和融合指令语义；局部变量名按寄存器语义表示，
+分支/循环仍以虚拟 PC 跳转表示，因此不是原作者逐字源码，也不应直接作为游戏脚本替换运行。
+本文件不执行原始 Lua，仅进行静态解码和指令分析。
+
+校验：LZW 输出 71,216 字节，解析器消费 71,216 字节，无剩余。
+主原型 412 条指令；直接子原型 58 个；递归原型总数 110 个；总指令 5,580 条（4,047 条执行入口，1,533 条由融合指令消费）。
+356 种实际使用的 opcode 均在原始 dispatcher 中找到对应分支。
+
+功能线索：主界面 MainLeftBottom；引怪与主循环；怪物归属检测；拾取/丢弃/仓库存取；
+黑名单玩家检测与伤害消息记录；随机传送；快捷栏移动；配置文件；界面按钮/输入框/定时器；
+账号 UID 与 GAME_ID 校验。
+
+全局 log 函数：参数为 table 时调用 SL:dump(value, "【超本】")；其他值先 tostring，再 pcall(string.format, message, ...)，格式化成功时采用格式化结果，最后通过 SL:Print 输出（SL/Print 不存在时不输出）。
+
+主模块入口（由主原型的闭包创建和字段赋值确认）：
+- MainLeftBottom.a：状态/配置表，包含 version、Blocklist、SendHookList、RecvHookList、LuaSendMsg、
+  isHidden、isPaused、isRunning、isStoring、isTaking、isDiuing、isOutputted 等字段。
+- MainLeftBottom.a.hide / show / destroy：界面隐藏、显示和销毁入口。
+- MainLeftBottom.main：账号与游戏 ID 验证入口。
+- MainLeftBottom.doInit：界面初始化入口。
+- 根原型最终为裸 return；主要导出通过 MainLeftBottom 和 Lua 全局环境表赋值，不是返回一个函数/表。
+
+根原型还将以下闭包写入 Lua 环境表（属于脚本的全局辅助入口）：
+GetMapId、GetMapName、PlayerPos、GetDroppedItems、MoveTo、DiuItems、
+GetAvailableStoragePage、GetStorageItemData、StorageItems、TakeItems、PickUpItems、
+IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、
+MoveItemToQuickUse、BlacklistItems、ClearBlacklistItems、onDamageMsg。
+
+核心业务函数的具体线索：
+- MainLoop 的状态常量为 IDLE、GATHERING、ATTACKING；会读取 ATTACK_WAIT_TIME，
+  使用 os.time 计算归属等待时间，记录怪物名称/ID/归属，跳过死亡、离开视野、属于其他玩家或已属于自己的怪物；
+  全部目标取得归属后切换攻击状态，目标死亡或离开视野后切回空闲状态；白名单地图会停止引怪。
+- MoveTo(x, y, range)：把目标坐标转为数字，构造包含当前 MAP_ID、x、y 和 INPUT_MOVE_TYPE_AUTOMOVE 的输入参数，调用 Facade.InputMove；同时比较 PlayerPos() 与目标坐标的横纵绝对差，按 range 返回是否已进入目标范围。
+- FindMonsterCandidates 调用 SL:FindMonsterInCurrViewField(true, true)，再调用 GET_SETTING(SETTING_IDX_IGNORE_MONSTER) 读取忽略列表；按怪物名过滤，调用 GetName/GetOwnerDescription 和距离计算辅助函数，给候选项写入 _distance，按 _distance 升序排序，并以 GATHER_THRESHOLD 限制最终候选数量。
+- PickUpItems 调用 GetDroppedItems、PlayerPos、MoveTo 和 PickMainPlayerPosItem；从 mName/mONameStr/Name/name 取物品名，从 mCurrMapX/MapX/mapX/x 与 mCurrMapY/MapY/mapY/y 取坐标，按 |dx|+|dy| 计算曼哈顿距离，建立含 item/dist/kIdx/x/y 的记录并排序；移动到目标格后，横纵误差均不超过 1 格才调用 PickMainPlayerPosItem 并显示拾取名称。
+- TakeItems 使用 GetStorageItemData 和 MSG_CS_STORAGE_PICK_OUT_REQUEST，输出“仓库无可取物品”或取出数量。
+  它逐项读取仓库 Name，先 string.trim，再用内置名称模式表匹配；当前常量表只有占位字符串“待定”。匹配后发送 MSG_CS_STORAGE_PICK_OUT_REQUEST，参数包含 999999999、MakeIndex、0、0、名称长度，并记录“取: 名称”。
+  三个流程分别用 isStoring、isTaking、isDiuing 防止重复执行；完成或提前退出时会复位对应状态，并记录处理数量。
+- GetStorageItemData 检查 NPCStorageProxy，遍历 GetMaxPage() 的每一页并用 GetStorageDataByPage(page) 合并仓库物品；再结合 STORAGE_PER_PAGE_MAX、NPC_STORAGE_MAX_PAGE、GetOpenSize() 计算并记录可用格子数。
+- GetAvailableStoragePage 检查 NPCStorageProxy 是否初始化，读取最大页数、每页容量和已开放容量，计算可用仓库页；代理未初始化时记录提示。
+- StorageItems 使用 NPCStorageProxy、GetStorageDataByPage、GetAvailableStoragePage、ITEM_INDEX_BY_NAME、
+  ITEM_IS_BIND 和 MSG_CS_STORAGE_STORE_REQUEST；仓库满时输出“仓库已满,无法存仓”。
+  其内置名称常量包括：涅槃石、神彩、麻痹戒指、至尊、天神令、宝石精魄、金刚石、神装碎片、转生证明、魔神石、金罡、凤凰、玄铁、圣皇、复活戒指、真金矿石、切割神戒、BOSS头骨。另有聚灵珠信息辅助回调，会读取 StdMode、Dura、DuraMax、Name 并输出聚灵珠信息。
+- DiuItems 使用 MSG_CS_MAP_ITEM_DISCARD、ITEM_IS_BIND、ITEM_INDEX_BY_NAME 和 MakeIndex，检查地面物品数量，阈值为 35；处理背包无可丢弃物品、地面物品超过/达到上限等情况，并记录丢弃数量。
+  具体流程是先用 isDiuing 防重入，读取 BAG_DATA；遍历物品时要求 Name/MakeIndex 存在、ITEM_IS_BIND 不为真，且名称匹配内置清单；每次丢弃前重新读取地面物品数，达到 35 件即停止。发送参数为 MSG_CS_MAP_ITEM_DISCARD、makeIndex、count、0、0、string.len(name)，并输出“丢: 名称”。
+  其内置名称常量包括：时装晶魄、龙傲、敖顺、神凤、上古、悟道茶、残、熬光、经验卷、冰雪、敖闰、技能残页、麻痹、主印、血龙宝珠、转生水晶、复活、副印、晶石、之力、起源、点点、护身、称号卷、恶魔令牌、洗髓丹、声望卷、鸿蒙。
+- Builtsetting 通过 CHANGE_SETTING 调整“关闭屏蔽怪物、关闭游戏音乐、开启人物简装、开启怪物简装、
+  关闭高帧率、关闭背景音乐”等设置。
+- MoveItemToQuickUse(sourceIndex, targetPos) 使用 QuickUseProxy/Bag 代理；验证快捷栏位置 1..GetQuickUseSize，检查目标是否已有物品；支持快捷栏位置交换、快捷栏内部移动，以及从背包移动到快捷栏。返回布尔值和“参数无效/目标位置超出范围/物品已在目标位置/物品不存在/快捷栏交换/快捷栏移动/已从背包移动到快捷栏位置”等结果文本。
+- GetMapData2DPtr 使用 sceneManager 的地图数据指针、行列数、isObstacle 和 math.floor/abs 等操作，
+  为地图格子/障碍判断提供数据。
+
+长函数的功能线索（按常量、调用关系及分支操作归纳）：
+- MainLoop：围绕 IDLE / GATHERING / ATTACKING 三种状态扫描怪物、检查归属、等待归属变化并攻击。
+- IsInWhitelistMap：IN_SAFE_AREA 为真直接返回 true；否则 MAP_NAME 与白名单表 {"土城"} 匹配时返回 true，否则 false。
+- FindMonsterCandidates：读取视野怪物，结合忽略怪物设置和 GATHER_THRESHOLD 过滤，再按距离排序。
+- PickUpItems：获取地面掉落物，按与玩家位置的距离处理，并调用移动/拾取接口。
+- DiuItems：按内置物品名称清单检查背包物品，使用地图丢弃消息发送丢弃请求。
+- StorageItems / TakeItems：按物品名称和索引读取背包/仓库数据，发送存仓或取出消息并更新状态。存仓消息参数为 MSG_CS_STORAGE_STORE_REQUEST、999999999、MakeIndex、数量、0。
+- BlacklistPlayerDetection：扫描视野玩家，结合黑名单、地图白名单、距离和冷却时间，必要时使用随机传送石。
+- DeathAutoBlacklist / onDamageMsg：记录攻击者信息，并在死亡处理时尝试自动加入黑名单。
+- FindBlacklistPlayer(id)：读取好友代理的 _blacklistData[id]；未直接命中时读取 ACTOR_MASTER_ID 并再次按主 ID 查找；命中返回 true 和记录 Name，否则返回 false。
+- BlacklistPlayerDetection 还维护 lastHp、deathHandled、nextTryAt、alertAt、distance、noStoneWarned；读取 FIND_IN_VIEW_PLAYER_LIST、ACTOR_MAP_X/Y、ACTOR_NAME，按距离阈值和冷却时间判断是否使用随机传送；缺少随机传送石时提示“没有随机传送石，黑名单玩家传送暂停”，并用 noStoneWarned 避免重复提示。
+  它还读取 HP 并比较 lastHp；死亡时通过 deathHandled 防止重复处理，调用 DeathAutoBlacklist；读取 FIND_IN_VIEW_PLAYER_LIST 后逐个用 FindBlacklistPlayer 检查黑名单 ID/主 ID。
+- Builtsetting：通过 CHANGE_SETTING 调整屏蔽怪物、音乐、简装和帧率等游戏设置。
+- MoveItemToQuickUse：读取 QuickUseProxy 与 Bag 数据，支持快捷栏位置移动/交换，并检查参数和目标位置。
+
+直接子原型功能对应（child 索引为原型数组的 0-based 索引）：
+- child[1] GetStorageItemData；child[2] GetWritablePath；child[3] MoveTo；child[4] GetDroppedItems。
+- child[5] TakeItems；child[6] InstallDamageHook；child[9] ReadNumericConfig；child[12] LuaSendMsg。
+- child[13] GetMapId；child[14] FindMonsterInCurrViewField；child[15] ClearBlacklistItems。
+- child[19] InitGatherMonsters；child[20] ShowLocalNoticeByType；child[21] PickUpItems。
+- child[22] GetMapData2DPtr；child[23] Builtsetting；child[24] UseItemByIndex。
+  child[24] UseItemByIndex 会遍历捕获的物品名称列表，查询 ITEM_INDEX_BY_NAME 和 ITEM_COUNT，找到数量大于 0 的物品后调用 SL:UseItemByIndex，并返回对应索引。
+- child[25] DeathAutoBlacklist；child[27] StopGatherMonsters；child[28] FindMonsterCandidates。
+- child[30] GetMapName；child[31] IsInWhitelistMap；child[35] SetTargetID；child[56] ClearTargetID。
+- child[36] GetAvailableStoragePage；child[37] DestroyUI；child[40] ShowHideAllButtons。
+- child[41] MoveItemToQuickUse；child[42] doInit_UI；child[45] MainLoop；child[46] DiuItems。
+- child[47] BlacklistPlayerDetection；child[50] StorageItems；child[52] onDamageMsg。
+- child[55] AccountIDValidation；child[57] PlayerPos。
+
+账号验证分支已按融合指令消费顺序还原：
+1. 调用 SL:GetMetaValue("GAME_ID")，输出“游戏id：”及返回值。
+2. GAME_ID 必须等于 204208；不匹配时输出“游戏不一致，id：...”并返回。
+3. 调用 SL:GetMetaValue("UID")，输出“账号ID：”及返回值。
+4. UID 与 9 个白名单值逐项转成字符串比较：6324648、39770358、3548598、1957840929、
+   1488903257、1585201915、1627987432、1580027021、1304755149。
+5. 匹配时显示“[提示] 账号ID在允许列表中，功能已开启”，随后输出验证成功日志；
+   不匹配时输出账号不存在提示和验证失败日志，并停止初始化。
+6. 验证成功后以 0.5 秒间隔调度等待回调；回调检查 MainProperty、MainProperty._ui、
+   MainProperty._ui.Panel_mini_chat 是否就绪。就绪后取消定时任务并调用 MainLeftBottom.doInit。
+
+LuaSendMsg 的发送路径：
+- 把可变参数打包成消息参数表（msgId、param1～param4）。
+- 使用 Blocklist 检查 msgId；命中时跳过调试日志，未命中时把参数格式化为 LuaSendMsg(...) 并调用 log。
+- 查找 SendHookList[msgId]；若为函数则 pcall 调用，只有钩子成功返回 true 时才提前结束并拦截发送。
+- 没有钩子、钩子报错或返回值不是 true 时，调用 global.networkCtl:SendMsg(...) 发送原消息。
+
+黑名单运行状态表（由多个闭包共同捕获）：
+lastAttacker=nil、lastHp=nil、deathHandled=false、alertAt=0、nextTryAt=0、
+noStoneWarned=false、distance=nil。onDamageMsg 写入 lastAttacker；
+DeathAutoBlacklist 读取后立即清空；BlacklistPlayerDetection 维护 HP、提示和传送冷却。
+
+伤害消息钩子：child[6] 检查 gameMapController、mNetMsgHandle、MSG_SC_DAMAGE_HP，
+通过 __ylwHookedOrigin 防止重复挂接；包装函数 pcall 调用 onDamageMsg，再调用原处理函数。
+child[52] onDamageMsg 检查 MAIN_ACTOR_ID、UserID/AttackUserID、ACTOR_IS_HERO、
+ACTOR_MASTER_ID、ACTOR_NAME，并在满足条件时更新 lastAttacker。
+
+界面显隐/销毁回调的实际动作：
+- child[10] SetButtonVisibilityState：将状态字段 isHidden 设为 true，遍历捕获的按钮表，对每个控件调用 GUI.setVisible(button, true)。
+- child[40] ShowHideAllButtons：取消 rewardTimer 和 cruiseTimer，清空句柄；遍历按钮表调用 GUI.setVisible(button, false)，并隐藏/清空 hidebut。
+- child[37] DestroyUI：将 isHidden 设为 false；取消并清空 resTimer；调用 GUI.Win_CloseAll；遍历按钮表将控件设为不可见。
+注意：主对象字段名 hide/show 与这些回调的 setVisible(true/false) 结果看起来不完全直观；此处保留字节码实际动作，不按字段名称推断行为。
+
+doInit_UI 的初始化流程（按执行顺序）：
+- 输出“插件初始化完成”。
+- 创建资源统计名称表：元宝、绑定元宝、灵符、绑定灵符；物品统计名称表：声望卷、悟道茶、洗髓丹、
+  转生水晶、恶魔令牌、血龙宝珠。
+- 记录 initTime、initTimeStr，并通过 MoneyProxy 的 GetMoneyIdByName/GetMoneyCountById
+  构建 initSnapshot 初始资源快照。
+- 调用 Builtsetting。
+- 取消旧 cruiseTimer（如果存在），重新以 1 秒间隔 Schedule 巡航回调并保存句柄。
+- 通过 Facade:retrieveProxy(ProxyTable.NPCStorageProxy) 获取仓库代理，写入全局 NPCStorageProxy，
+  调用 RequestStorageData。
+- 调用 GUI:Attach_UITop；读取 MainProperty._ui.Panel_mini_chat 的 getWorldPosition/getContentSize，
+  以其位置和尺寸计算辅助面板/按钮位置。
+- 创建并绑定引怪、黑名单、清黑名单、资源统计、拾取、丢弃、快速小退、清怪物值、清距离值、
+  奖励、存仓、取仓等按钮及其回调；并创建黑名单距离和引怪阈值输入控件。
+
+doInit_UI 的界面常量线索：
+- 使用 GUI、Button_Create、Button_setTitleText、Button_setTitleFontSize、Button_setTitleFontName、
+  addOnClickEvent、getContentSize、getWorldPosition 和 Attach_UITop 创建/挂接控件。
+- 按钮背景资源为 res/public/fuzhu_btn.png，字体为 res/public/kaiti2.ttf。
+- 控件/状态字段包括 yinguaibut、shiqubut、diuqibut、blacklistbut、rewardbut、storagebut、
+  takebut、moneybut、clearblacklistbut、clearmonsterbut、cleardistancebut、hidebut、xiaotuibut。
+- 界面文本包括开拉怪/关拉怪、开拾取/关拾取、开丢物品/关丢物品、开黑名单/关黑名单、
+  开奖励/关奖励、清黑名单、清怪物值、清距离值、资源统计、快速小退、隐 藏。
+- 初始化还会读取 MainProperty._ui.Panel_mini_chat，访问 MoneyProxy/NPCStorageProxy，
+  并创建或管理 cruiseTimer、Schedule/ScheduleOnce 定时任务。
+- 传送道具名称分组包括：永久回城石/盟重回城石/盟重传送石；永久随机石/随机传送石；大陆传送石；免战回城石。
+
+doInit_UI 内部嵌套回调包括奖励开关、资源信息窗口、游戏离开事件、通用按钮创建、引怪/存仓/拾取/丢弃开关、
+黑名单距离输入、定时巡航协议、清空黑名单、怪物阈值输入、隐藏/显示按钮、快捷栏移动、取物开关等。
+
+主要嵌套原型的对应关系：
+- child[6].child[0]：伤害消息包装器，pcall 调用 onDamageMsg 后调用原始消息处理函数。
+- child[15].child[0]：清空黑名单时调用 RequestOutBlacklist 的辅助回调。
+- child[19].child[0]：引怪定时器回调，调用 MainLoop。
+- child[21].child[0]/child[1]：拾取排序比较器，使用 dist、kIdx 等字段。
+- child[25].child[0]：调用 RequestAddBlacklistByName 的死亡自动拉黑回调。
+- child[28].child[0]：怪物距离排序比较器。
+- child[42].child[0..22]：doInit_UI 的界面与事件回调；其中 child[3] 是资源信息窗口主体，
+  child[9] 是通用按钮创建函数，child[12] 是定时巡航协议，child[22] 是小型参数回调。
+- child[46].child[0]：丢弃物品名称/字符串匹配辅助函数。
+- child[50].child[0]：聚灵珠/物品耐久信息输出辅助函数；child[1] 是附属回调。
+- child[52].child[0]：JsonDecode 相关辅助函数。
+- child[55].child[0]：等待 MainProperty UI 就绪的定时回调；child[1]：UID 白名单检查函数。
+]=]
+
+--[=[ 主模块状态初始化的高层轮廓（字段和值均来自根原型）：
+MainLeftBottom.a = {
+    version = "10000",
+    screenW = SL:GetMetaValue("SCREEN_WIDTH"),
+    screenH = SL:GetMetaValue("SCREEN_HEIGHT"),
+    Blocklist = { 1, 9, 10, 60000 },
+    SendHookList = {},
+    RecvHookList = {},
+    isHidden = true,
+    hidebut = nil,
+    LuaSendMsg = <closure>
+}
+MainLeftBottom.b = {}
+MainLeftBottom.z = {
+    isPaused = false,
+    isRunning = false,
+    isStoring = false,
+    isTaking = false,
+    isDiuing = false,
+    isOutputted = false
+}
+MainLeftBottom.a.hide / show / destroy、MainLeftBottom.main、MainLeftBottom.doInit
+由后续闭包分别赋值。这里是结构轮廓，不是完整初始化语句的逐字替代。
+]=]
+
+--[=[ 高置信度高层源码片段（短函数按融合指令顺序重建）
+local function GetWritablePath(suffix)
+    return cc.FileUtils:getInstance():getWritablePath() .. suffix
+end
+
+local function GetDroppedItems()
+    return global.dropItemManager:FindDropItemInCurrViewFieldAll()
+end
+
+local function GetMapId()
+    return SL:GetMetaValue("MAP_ID") or 0
+end
+
+local function GetMapName()
+    return SL:GetMetaValue("MAP_NAME") or ""
+end
+
+local function PlayerPos()
+    return SL:GetMetaValue("X"), SL:GetMetaValue("Y")
+end
+
+local function SetButtonVisibilityState()
+    state.isHidden = true
+    for _, button in pairs(buttons) do
+        GUI:setVisible(button, true)
+    end
+end
+
+local function ShowHideAllButtons()
+    if timerState.rewardTimer then
+        SL:UnSchedule(timerState.rewardTimer)
+        timerState.rewardTimer = nil
+    end
+    if timerState.cruiseTimer then
+        SL:UnSchedule(timerState.cruiseTimer)
+        timerState.cruiseTimer = nil
+    end
+    for _, button in pairs(buttons) do
+        GUI:setVisible(button, false)
+    end
+    if state.hidebut then
+        GUI:setVisible(state.hidebut, false)
+        state.hidebut = nil
+    end
+end
+
+local function DestroyUI()
+    state.isHidden = false
+    if timerState.resTimer then
+        SL:UnSchedule(timerState.resTimer)
+        timerState.resTimer = nil
+    end
+    GUI:Win_CloseAll()
+    for _, button in pairs(buttons) do
+        GUI:setVisible(button, false)
+    end
+end
+
+local function IsInWhitelistMap()
+    if SL:GetMetaValue("IN_SAFE_AREA") then
+        return true
+    end
+
+    local mapName = SL:GetMetaValue("MAP_NAME")
+    local allowedMaps = { "土城" }
+    for _, name in ipairs(allowedMaps) do
+        if mapName == name then
+            return true
+        end
+    end
+    return false
+end
+
+local function SetTargetID(actorID)
+    local facade = global.Facade
+    if not facade then return false end
+
+    local proxy = facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)
+    if not proxy then return false end
+
+    proxy:SetTargetID(actorID, global.MMO.SELETE_TARGET_TYPE_FIND)
+    return true
+end
+
+local function ClearTargetID()
+    local facade = global.Facade
+    if not facade then return end
+
+    local proxy = facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)
+    if not proxy then return end
+
+    proxy:SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)
+end
+
+local function GetMainPlayerID()
+    return global.gamePlayerController:GetMainPlayerID()
+end
+
+local function log(value, ...)
+    if type(value) == "table" then
+        SL:dump(value, "【超本】")
+        return
+    end
+
+    local message = tostring(value)
+    local ok, formatted = pcall(string.format, message, ...)
+    if ok then message = formatted end
+
+    if SL and SL.Print then
+        SL:Print(message)
+    end
+end
+
+local function ShowLocalNoticeByType(message)
+    SL:ShowLocalNoticeByType({
+        Type = 10,
+        Msg = message,
+        FColor = 249,
+        BColor = 0,
+        X = 5,
+        Y = state.screenH - 50
+    })
+end
+
+local function FindBlacklistPlayer(actorID)
+    local friendProxy = getFriendProxy()
+    local blacklistData = friendProxy and friendProxy._blacklistData
+    if not blacklistData then return false end
+
+    local record = blacklistData[actorID]
+    if record then
+        return true, record.Name
+    end
+
+    local masterID = SL:GetMetaValue("ACTOR_MASTER_ID", actorID)
+    if masterID then
+        record = blacklistData[masterID]
+        if record then
+            return true, record.Name
+        end
+    end
+    return false
+end
+
+local function DeathAutoBlacklist()
+    local attacker = state.lastAttacker
+    state.lastAttacker = nil
+
+    if not attacker or not attacker.name or attacker.name == "" then
+        log("本次死亡没记录到凶手，跳过自动拉黑")
+        return
+    end
+
+    if FindBlacklistPlayer(attacker.id) then
+        log(string.format("凶手已在黑名单中：%s", attacker.name))
+        return
+    end
+
+    log(string.format("被 %s 击杀，自动加入黑名单", attacker.name))
+    for i = 0, 4 do
+        SL:ScheduleOnce(function()
+            SL:RequestAddBlacklistByName(attacker.name)
+        end, 0.5 * i)
+    end
+end
+
+local function AccountIDValidation()
+    local gameID = SL:GetMetaValue("GAME_ID")
+    log("游戏id：" .. gameID)
+    if gameID ~= 204208 then
+        log("游戏不一致，id：" .. gameID)
+        return
+    end
+
+    local uid = SL:GetMetaValue("UID")
+    log("账号ID：" .. uid)
+    local allowedUIDs = {
+        "6324648", "39770358", "3548598", "1957840929", "1488903257",
+        "1585201915", "1627987432", "1580027021", "1304755149"
+    }
+
+    local allowed = false
+    for _, value in ipairs(allowedUIDs) do
+        if tostring(uid) == tostring(value) then
+            ShowLocalNoticeByType("[提示] 账号ID在允许列表中，功能已开启")
+            allowed = true
+            break
+        end
+    end
+
+    if not allowed then
+        log("账号不存在，功能已限制，账号ID：" .. tostring(uid))
+        log("[验证失败] 账号ID未在允许列表中")
+        return
+    end
+
+    log("[验证成功] 账号ID验证通过")
+    local timerHandle
+    timerHandle = SL:Schedule(function()
+        if MainProperty and MainProperty._ui
+            and MainProperty._ui.Panel_mini_chat then
+            SL:UnSchedule(timerHandle)
+            MainLeftBottom.doInit()
+        else
+            log("等待主界面属性栏(MainProperty)初始化完成...")
+        end
+    end, 0.5)
+end
+
+local function Builtsetting()
+    CHANGE_SETTING(27, { 0 })
+    ShowLocalNoticeByType("关闭背景音乐")
+    CHANGE_SETTING(52, { 0 })
+    ShowLocalNoticeByType("关闭游戏音乐")
+    CHANGE_SETTING(1002, { 0 })
+    ShowLocalNoticeByType("关闭高帧率")
+    CHANGE_SETTING(57, { 1 })
+    ShowLocalNoticeByType("开启人物简装")
+    CHANGE_SETTING(58, { 1 })
+    ShowLocalNoticeByType("开启怪物简装")
+    CHANGE_SETTING(2005, { 0 })
+    ShowLocalNoticeByType("关闭屏蔽怪物")
+end
+
+local function IsDie(actor)
+    if not actor then return actor end
+    return not actor:IsDie()
+end
+
+local function GetOwnerDescription(actor, selfID)
+    local ownerID = actor:GetOwnerID()
+    if ownerID == nil or ownerID == "" or ownerID == -1 then
+        return "无归属"
+    elseif ownerID == selfID then
+        return "自己"
+    else
+        return "其他玩家", ownerID
+    end
+end
+
+local function GetPlayerMapPosition(actor)
+    if not actor then return nil end
+    local x = actor.mCurrMapX
+    if x == nil then x = 0 end
+    local y = actor.mCurrMapY
+    if y == nil then y = 0 end
+    return { x = x, y = y }
+end
+
+local function IsAllowedUID(uid, allowedUIDs)
+    for _, value in ipairs(allowedUIDs) do
+        if tostring(uid) == tostring(value) then
+            ShowLocalNoticeByType("[提示] 账号ID在允许列表中，功能已开启")
+            return true
+        end
+    end
+    log("账号不存在，功能已限制，账号ID：" .. tostring(uid))
+    return false
+end
+
+-- AccountIDValidation 的已还原控制流：
+-- 读取并记录 GAME_ID；不等于 204208 时记录不一致信息并 return。
+-- 读取 UID 并记录；使用上面的 IsAllowedUID 检查 9 个固定白名单值。
+-- 未通过时记录“[验证失败] 账号ID未在允许列表中”并 return；
+-- 通过时记录“[验证成功] 账号ID验证通过”，然后每 0.5 秒检查 MainProperty._ui.Panel_mini_chat。
+-- UI 就绪后取消 Schedule 返回的任务句柄，并调用 MainLeftBottom.doInit()。
+
+local function Schedule(callback, interval)
+    return SL:Schedule(callback, interval)
+end
+
+local function ScheduleOnce(callback, delay)
+    return SL:ScheduleOnce(callback, delay)
+end
+
+local function TakeItems()
+    if state.isTaking then return end
+    state.isTaking = true
+
+    local items = GetStorageItemData()
+    if not items or #items == 0 then
+        ShowLocalNoticeByType("仓库无可取物品")
+        state.isTaking = false
+        return
+    end
+
+    local namePatterns = { "待定" }
+    local count = 0
+    for _, item in ipairs(items) do
+        local name = string.trim(item.Name)
+        for _, pattern in ipairs(namePatterns) do
+            if string.find(name, pattern) then
+                LuaSendMsg(global.MsgType.MSG_CS_STORAGE_PICK_OUT_REQUEST,
+                    999999999, item.MakeIndex, 0, 0, string.len(name))
+                log("取: " .. name)
+                count = count + 1
+                break
+            end
+        end
+    end
+
+    if count > 0 then
+        log("取出物品完成, 共取出 " .. count .. " 件")
+    end
+    state.isTaking = false
+end
+
+local function ReadNumericConfig(fileName)
+    local fileUtils = cc.FileUtils:getInstance()
+    local path = GetWritablePath(fileName)
+    if not fileUtils:isFileExist(path) then
+        return nil
+    end
+
+    local content = fileUtils:getStringFromFile(path)
+    if type(content) ~= "string" then
+        return nil
+    end
+
+    content = string.gsub(content, "%s", "")
+    if string.match(content, "^%d+$") then
+        return tonumber(content)
+    end
+    return nil
+end
+
+-- ClearBlacklistItems 的主体逻辑：
+-- 取得好友/黑名单代理及其 _blacklistData；代理不存在时显示“取不到好友代理，清空失败”，
+-- 数据不存在时显示“清空黑名单失败”。把 _blacklistData 的 ID 键收集到数组；
+-- 数组为空时提示“黑名单本来就是空的”并记录“黑名单为空”。
+-- 否则报告人数，按 ipairs 顺序以 0.01 * (index - 1) 秒错开 ScheduleOnce；
+-- 每个回调执行 SL:RequestOutBlacklist(id)，随后将 _blacklistData[id] 置 nil。
+-- 全部排程完成后把 lastAttacker 清空。
+
+local function onDamageMsg(_, rawMessage)
+    if not rawMessage or rawMessage == "" then return end
+
+    local ok, message = pcall(function()
+        return SL:JsonDecode(rawMessage)
+    end)
+    if not ok or type(message) ~= "table" then return end
+
+    local mainID = SL:GetMetaValue("MAIN_ACTOR_ID")
+    if message.UserID and message.UserID ~= mainID then
+        return
+    end
+
+    local attackerID = message.AttackUserID
+    if not attackerID or attackerID == mainID then return end
+
+    if SL:GetMetaValue("ACTOR_IS_HERO", attackerID) then
+        local masterID = SL:GetMetaValue("ACTOR_MASTER_ID", attackerID)
+        if masterID then attackerID = masterID end
+    end
+
+    local attackerName = SL:GetMetaValue("ACTOR_NAME", attackerID)
+    if not attackerName or attackerName == "" then return end
+    if string.find(attackerName, "分身") then return end
+
+    state.lastAttacker = { id = attackerID, name = attackerName }
+end
+
+local function InstallDamageHook()
+    local controller = global.gameMapController
+    if not controller then return end
+
+    local handlers = controller.mNetMsgHandle
+    if type(handlers) ~= "table" then return end
+
+    local msgType = global.MsgType
+    local msgId = msgType and msgType.MSG_SC_DAMAGE_HP
+    if not msgId then return end
+
+    local original = handlers[msgId]
+    if type(original) ~= "function" then return end
+    if handlers.__ylwHookedOrigin == original then return end
+
+    handlers[msgId] = function(...)
+        pcall(onDamageMsg, ...)
+        return original(...)
+    end
+    handlers.__ylwHookedOrigin = original
+    log("已挂接伤害消息钩子（击杀拉黑用）")
+end
+
+-- InitGatherMonsters：取消旧 gatherTimer，清空句柄，启用引怪状态，
+-- 调用 MainLoop，并以 CHECK_INTERVAL 周期调度 MainLoop；保存新句柄并显示启动阈值。
+-- StopGatherMonsters：关闭引怪状态，取消并清空 gatherTimer，将状态恢复为 IDLE，
+-- 并显示“引怪功能已停止”。
+-- DeathAutoBlacklist：读取并清空 lastAttacker；没有有效凶手时跳过；
+-- 已在黑名单时提示；否则提示击杀者并通过 ScheduleOnce 延迟执行 RequestAddBlacklistByName。
+
+-- MainLoop 的控制流轮廓（按 22 个闭包捕获项和所有分支目标归纳）：
+-- 1. isRunning 为 false 立即返回。
+-- 2. 若 IsInWhitelistMap() 为 true：当前状态不是 IDLE 时记录“在白名单地图, 停止引怪”，
+--    将状态设为 IDLE，调用 ResetGatherMonsterData，然后返回。
+-- 3. IDLE 状态：记录“扫描怪物中”，调用 FindMonsterCandidates；
+--    候选为空则提示“视野内没有可攻击怪物”；筛选后为空则提示“没有可攻击的怪物”。
+--    保存目标列表，记录目标数量，切换到 GATHERING。
+-- 4. GATHERING 状态：记录“引怪中”，根据 os.time() 与 ATTACK_WAIT_TIME 管理归属等待；
+--    遍历目标列表，通过 GetID/FindMonsterInCurrViewField 重新确认怪物仍在视野，
+--    通过 IsDie 跳过死亡怪物，通过 GetOwnerDescription 区分无归属、自己、其他玩家。
+--    其他玩家拥有的目标会跳过；自己已拥有的目标会跳过；未归属目标调用 SetTargetID 锁定。
+--    全部目标取得归属后记录“所有怪物归属已获取，切换到攻击状态”，切换 ATTACKING；
+--    未全部取得归属时记录“怪物列表处理完毕但未全部获取归属，重新扫描”，恢复 IDLE。
+-- 5. ATTACKING 状态：记录“攻击中”，逐个确认目标仍在视野且未死亡，调用 SetTargetID，
+--    对死亡/离开视野目标记录原因，并在目标处理流程中调用 PickUpItems。
+--    全部目标死亡或离开视野时记录相应提示、切换 IDLE 并重置目标数据。
+-- 以上保留了字节码中出现的状态名、日志和关键调用；计数器/等待标记的局部变量名不代表原作者命名。
+
+以上片段是可直接识别的短函数和已核实的控制流。MainLoop、doInit_UI、寻路、仓库存取、
+拾取/丢弃和黑名单扫描等长函数仍以本文件后面的完整 VM 级指令清单为准；
+这些片段不代表整份原始源码。
+]=]
+
+--[=[ 58 个直接子原型目录：child索引、函数识别名、参数数、原始指令、执行入口、融合消费记录、嵌套原型 ]=]
+-- child[00] FileExistCheck_pcall_wrapper | params=1 | raw=32 | active=26 | fused=6 | nested=1
+-- child[01] GetStorageItemData | params=0 | raw=77 | active=54 | fused=23 | nested=0
+-- child[02] GetWritablePath | params=1 | raw=10 | active=9 | fused=1 | nested=0
+-- child[03] MoveTo | params=3 | raw=51 | active=33 | fused=18 | nested=0
+-- child[04] GetDroppedItems | params=0 | raw=8 | active=6 | fused=2 | nested=0
+-- child[05] TakeItems | params=0 | raw=99 | active=70 | fused=29 | nested=0
+-- child[06] InstallDamageHook | params=0 | raw=40 | active=32 | fused=8 | nested=1
+-- child[07] GetOwnerIDText | params=2 | raw=31 | active=29 | fused=2 | nested=0
+-- child[08] FormatStateChange | params=1 | raw=10 | active=5 | fused=5 | nested=0
+-- child[09] ReadNumericConfig | params=1 | raw=45 | active=33 | fused=12 | nested=0
+-- child[10] SetButtonVisibilityState | params=0 | raw=15 | active=11 | fused=4 | nested=0
+-- child[11] DistanceCalculation | params=2 | raw=25 | active=15 | fused=10 | nested=0
+-- child[12] LuaSendMsg | params=0 | raw=92 | active=56 | fused=36 | nested=0
+-- child[13] GetMapId | params=0 | raw=9 | active=9 | fused=0 | nested=0
+-- child[14] FindMonsterInCurrViewField | params=0 | raw=27 | active=25 | fused=2 | nested=0
+-- child[15] ClearBlacklistItems | params=0 | raw=63 | active=52 | fused=11 | nested=1
+-- child[16] PrintLog | params=1 | raw=38 | active=29 | fused=9 | nested=0
+-- child[17] PCallHelper | params=2 | raw=14 | active=11 | fused=3 | nested=1
+-- child[18] GetPlayerPosition | params=0 | raw=19 | active=12 | fused=7 | nested=0
+-- child[19] InitGatherMonsters | params=0 | raw=36 | active=27 | fused=9 | nested=1
+-- child[20] ShowLocalNoticeByType | params=1 | raw=15 | active=6 | fused=9 | nested=0
+-- child[21] PickUpItems | params=0 | raw=172 | active=124 | fused=48 | nested=2
+-- child[22] GetMapData2DPtr | params=5 | raw=144 | active=130 | fused=14 | nested=0
+-- child[23] Builtsetting | params=0 | raw=55 | active=45 | fused=10 | nested=0
+-- child[24] UseItemByIndex | params=0 | raw=33 | active=24 | fused=9 | nested=0
+-- child[25] DeathAutoBlacklist | params=0 | raw=47 | active=36 | fused=11 | nested=1
+-- child[26] ResetGatherMonsterData | params=0 | raw=20 | active=10 | fused=10 | nested=0
+-- child[27] StopGatherMonsters | params=0 | raw=25 | active=19 | fused=6 | nested=0
+-- child[28] FindMonsterCandidates | params=0 | raw=102 | active=76 | fused=26 | nested=1
+-- child[29] IsDie | params=1 | raw=7 | active=7 | fused=0 | nested=0
+-- child[30] GetMapName | params=0 | raw=9 | active=8 | fused=1 | nested=0
+-- child[31] IsInWhitelistMap | params=0 | raw=28 | active=24 | fused=4 | nested=0
+-- child[32] AnonymousHelper_32 | params=1 | raw=6 | active=6 | fused=0 | nested=0
+-- child[33] AnonymousHelper_33 | params=0 | raw=5 | active=4 | fused=1 | nested=0
+-- child[34] Schedule | params=2 | raw=7 | active=4 | fused=3 | nested=0
+-- child[35] SetTargetID | params=1 | raw=26 | active=19 | fused=7 | nested=0
+-- child[36] GetAvailableStoragePage | params=0 | raw=51 | active=39 | fused=12 | nested=0
+-- child[37] DestroyUI | params=0 | raw=31 | active=25 | fused=6 | nested=0
+-- child[38] GetOwnerID | params=2 | raw=31 | active=29 | fused=2 | nested=0
+-- child[39] GetMainPlayerID | params=0 | raw=6 | active=4 | fused=2 | nested=0
+-- child[40] ShowHideAllButtons | params=0 | raw=47 | active=34 | fused=13 | nested=0
+-- child[41] MoveItemToQuickUse | params=2 | raw=133 | active=102 | fused=31 | nested=0
+-- child[42] doInit_UI | params=0 | raw=419 | active=276 | fused=143 | nested=23
+-- child[43] GetOwnerDescription | params=2 | raw=20 | active=18 | fused=2 | nested=0
+-- child[44] GetPlayerMapPosition | params=1 | raw=17 | active=13 | fused=4 | nested=0
+-- child[45] MainLoop | params=0 | raw=417 | active=313 | fused=104 | nested=0
+-- child[46] DiuItems | params=0 | raw=169 | active=95 | fused=74 | nested=1
+-- child[47] BlacklistPlayerDetection | params=0 | raw=216 | active=168 | fused=48 | nested=0
+-- child[48] PCallHelper_2 | params=0 | raw=10 | active=10 | fused=0 | nested=1
+-- child[49] AnonymousHelper_49 | params=0 | raw=5 | active=4 | fused=1 | nested=0
+-- child[50] StorageItems | params=0 | raw=224 | active=142 | fused=82 | nested=2
+-- child[51] FindBlacklistPlayer | params=1 | raw=35 | active=32 | fused=3 | nested=0
+-- child[52] onDamageMsg | params=2 | raw=72 | active=61 | fused=11 | nested=1
+-- child[53] ScheduleOnce | params=2 | raw=7 | active=7 | fused=0 | nested=0
+-- child[54] AnonymousHelper_54 | params=1 | raw=6 | active=6 | fused=0 | nested=0
+-- child[55] AccountIDValidation | params=0 | raw=64 | active=45 | fused=19 | nested=2
+-- child[56] ClearTargetID | params=0 | raw=22 | active=12 | fused=10 | nested=0
+-- child[57] PlayerPos | params=0 | raw=10 | active=6 | fused=4 | nested=0
+--[=[ 直接子原型目录结束 ]=]
+
+-- VM 变量约定：R=寄存器，UP=闭包 upvalue，ENV=Lua 环境，PROTO=子原型，CODE=当前指令表。
+-- 每个 opcode 执行后，VM 主循环还会隐式执行 PC = PC + 1；融合 opcode 内部还可能推进 PC。
+-- 因此 PC 跳转的实际下一条执行位置要再考虑该隐式 +1。
+
+--[=[ 原始分派器 opcode 语义参考 ]=]
+-- OP   1: return
+-- OP   2: if (R[W[3]]<R[W[4]])~=(W[2]~=0) then PC=PC+1 end
+-- OP   3: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]
+-- OP   4: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]
+-- OP   5: R[W[2]]=W[3]*R[W[4]]
+-- OP   6: B=W[2]+A-1; for I=W[2],B do R[I]=X[I-W[2]] end
+-- OP   7: R[W[2]]=R[W[3]][R[W[4]]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP   8: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=W[4]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP   9: R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]
+-- OP  10: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP  11: R[W[2]]=W[3]~=0; if W[4]~=0 then PC=PC+1 end
+-- OP  12: B=W[2]+A-1; for I=W[2],B do R[I]=X[I-W[2]] end
+-- OP  13: R[W[2]](U(T,W[2]+1,B))
+-- OP  14: do local I={ R[W[2]](U(T,W[2]+1,B)) }; local F=0; for U=W[2],W[4] do F=F+1; R[U]=I[F] end end
+-- OP  15: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; for I=W[2],W[3] do R[I]=nil end; PC=PC+1; W=CODE[PC]; UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; UP[W[3]]=R[W[2]]
+-- OP  16: if (not not R[W[2]])~=(W[4]~=0) then PC=PC+1 end
+-- OP  19: R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]={}
+-- OP  20: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][R[W[4]]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP  21: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]
+-- OP  22: R[W[2]]=R[W[3]]/W[4]
+-- OP  23: R[W[2]]=R[W[2]]-R[W[2]+2]; Q=W[3]
+-- OP  24: R[W[2]]=R[W[3]]*W[4]
+-- OP  25: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP  26: R[W[2]]=R[W[3]]-W[4]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]*R[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]
+-- OP  27: do local I=O[W[3]]; local F={}; F[-1]=W[4]; local U=K({}, {__index=function(_,L)local N=F[L]; return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L]; I[1][I[2]]=N end}); for L=0,W[4]-1 do PC=PC+1; local N=CODE[PC]; if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end; H[#H+1]=F end; R[W[2]]=M(I,U,S) end
+-- OP  28: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][R[W[4]]]
+-- OP  29: R[W[2]]=R[W[3]]+R[W[4]]
+-- OP  30: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP  31: R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP  32: R[W[2]]=R[W[3]][W[4]]
+-- OP  33: local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]
+-- OP  34: R[W[2]]=R[W[3]]-W[4]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP  35: local I=R[W[3]]; if (not not I)==(W[4]~=0) then R[W[2]]=I else PC=PC+1 end
+-- OP  36: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]
+-- OP  37: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP  38: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP  40: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP  41: R[W[2]]={}; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP  42: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP  43: if (R[W[3]]<W[4])~=(W[2]~=0) then PC=PC+1 end
+-- OP  44: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP  45: if (R[W[3]]==W[4])~=(W[2]~=0) then PC=PC+1 end
+-- OP  46: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP  47: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; do local I=R[W[4]]; for F=W[4]-1,W[3],-1 do I=R[F]..I end; R[W[2]]=I end
+-- OP  48: if (W[3]<=R[W[4]])~=(W[2]~=0) then PC=PC+1 end
+-- OP  49: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP  50: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP  51: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP  52: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP  53: R[W[2]]=R[W[3]][W[4]]
+-- OP  54: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP  55: return
+-- OP  56: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP  57: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]
+-- OP  58: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP  59: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP  61: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP  62: R[W[2]]=R[W[3]]/R[W[4]]
+-- OP  63: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]
+-- OP  64: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]
+-- OP  65: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP  66: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP  67: UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; for I=W[2],W[3] do R[I]=nil end; PC=PC+1; W=CODE[PC]; UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP  68: R[W[2]]=R[W[2]](U(T,W[2]+1,W[3]))
+-- OP  69: do local I=R[W[3]]; local F=W[4]; R[W[2]][I]=F end
+-- OP  70: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]
+-- OP  71: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP  72: UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=#R[W[3]]
+-- OP  73: R[W[2]]=R[W[3]]-W[4]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]*R[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]
+-- OP  75: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP  76: do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP  77: R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]
+-- OP  78: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP  80: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP  82: R[W[2]]=W[3]~=0; if W[4]~=0 then PC=PC+1 end
+-- OP  83: R[W[2]]={}; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=W[4]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=W[4]; R[W[2]][I]=F end
+-- OP  87: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP  88: do local I=W[3]; if I==0 then I=math.max(0,B-W[2]) end; local F=R[W[2]]; local L=(W[4]-1)*50; if L==0 then local N={}; for O=1,I do N[O]=R[W[2]+O] end; local O={U(N,1,I)}; for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end; R[W[2]]=O else for O=1,I do F[L+O]=R[W[2]+O] end end; end
+-- OP  89: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=W[4]; R[W[2]][I]=F end
+-- OP  90: R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP  91: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=R[W[4]]; for F=W[4]-1,W[3],-1 do I=R[F]..I end; R[W[2]]=I end
+-- OP  92: if (R[W[3]]==W[4])~=(W[2]~=0) then PC=PC+1 end
+-- OP  93: R[W[2]](U(T,W[2]+1,B))
+-- OP  94: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP  95: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]
+-- OP  96: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; do local I=R[W[4]]; for F=W[4]-1,W[3],-1 do I=R[F]..I end; R[W[2]]=I end
+-- OP  97: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=R[W[4]]; for F=W[4]-1,W[3],-1 do I=R[F]..I end; R[W[2]]=I end
+-- OP  98: R[W[2]]=R[W[2]](U(T,W[2]+1,W[3]))
+-- OP  99: if (R[W[3]]==R[W[4]])~=(W[2]~=0) then PC=PC+1 end
+-- OP 100: return
+-- OP 101: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 102: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 105: R[W[2]]={}
+-- OP 106: UP[W[3]]=R[W[2]]
+-- OP 107: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 108: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-W[4]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]*R[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]
+-- OP 109: do local I=R[W[3]]; local F=W[4]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 110: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 111: R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 112: do local I=W[3]; if I==0 then I=math.max(0,B-W[2]) end; local F=R[W[2]]; local L=(W[4]-1)*50; if L==0 then local N={}; for O=1,I do N[O]=R[W[2]+O] end; local O={U(N,1,I)}; for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end; R[W[2]]=O else for O=1,I do F[L+O]=R[W[2]+O] end end; end
+-- OP 113: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 114: UP[W[3]]=R[W[2]]
+-- OP 115: R[W[2]]=#R[W[3]]
+-- OP 116: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 117: do local I,F=E(R[W[2]](R[W[2]+1],R[W[2]+2])); for U=1,W[3] do R[W[2]+2+U]=I[U] end; if R[W[2]+3]==nil then PC=PC+1 else R[W[2]+2]=R[W[2]+3] end end
+-- OP 119: do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 120: R[W[2]]={}
+-- OP 121: local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]
+-- OP 122: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]*R[W[4]]
+-- OP 124: R[W[2]]=R[W[3]]+W[4]
+-- OP 125: for I=W[2],W[3] do R[I]=nil end
+-- OP 126: do local I=W[2]; local F=R[I+2]; local U=R[I]+F; R[I]=U; local L=R[I+1]; if (F>0 and U<=L) or (F<=0 and U>=L) then R[I+3]=U; Q=W[3] end end
+-- OP 127: R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 128: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 129: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 130: R[W[2]]=UP[W[3]]
+-- OP 131: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 132: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 133: return R[W[2]](U(T,W[2]+1,B))
+-- OP 134: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 136: local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 137: R[W[2]]=ENV[W[3]]
+-- OP 138: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 140: if W[2]>0 then do local I=W[2]-1; local F={}; for U=1,#H do local L=H[U]; local N=L[-1] or 0; for O=0,N-1 do local K=L[O]; if K then local Z=K[1]; local C=K[2]; if Z==T and I<=C then F[C]=Z[C]; K[1]=F end end end end end end; Q=W[3]
+-- OP 141: ENV[W[3]]=R[W[2]]
+-- OP 142: local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 143: return U(T,W[2],B)
+-- OP 144: do local I=W[3]; local F=W[4]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-W[4]
+-- OP 145: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; do local I=R[W[4]]; for F=W[4]-1,W[3],-1 do I=R[F]..I end; R[W[2]]=I end
+-- OP 146: do local I=W[3]; local F=W[4]; R[W[2]][I]=F end
+-- OP 147: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 148: R[W[2]]={}; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 149: return R[W[2]](U(T,W[2]+1,W[3]))
+-- OP 150: if (W[3]<=R[W[4]])~=(W[2]~=0) then PC=PC+1 end
+-- OP 151: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 153: do local I=W[3]; if I==0 then I=math.max(0,B-W[2]) end; local F=R[W[2]]; local L=(W[4]-1)*50; if L==0 then local N={}; for O=1,I do N[O]=R[W[2]+O] end; local O={U(N,1,I)}; for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end; R[W[2]]=O else for O=1,I do F[L+O]=R[W[2]+O] end end; end
+-- OP 154: do local I=O[W[3]]; local F={}; F[-1]=W[4]; local U=K({}, {__index=function(_,L)local N=F[L]; return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L]; I[1][I[2]]=N end}); for L=0,W[4]-1 do PC=PC+1; local N=CODE[PC]; if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end; H[#H+1]=F end; R[W[2]]=M(I,U,S) end
+-- OP 155: R[W[2]]=R[W[3]]+R[W[4]]
+-- OP 156: do local I=W[3]; local F=W[4]; R[W[2]][I]=F end
+-- OP 158: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][R[W[4]]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 159: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 160: R[W[2]]=W[3]*R[W[4]]
+-- OP 161: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]
+-- OP 164: return R[W[2]](U(T,W[2]+1,W[3]))
+-- OP 165: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 166: R[W[2]]=R[W[3]]%W[4]
+-- OP 167: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-W[4]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]*R[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]
+-- OP 168: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 169: local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 171: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 172: R[W[2]]=not R[W[3]]
+-- OP 173: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 174: do local I=R[W[3]]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 175: return U(T,W[2],B)
+-- OP 176: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 178: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 179: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 180: if (R[W[3]]<R[W[4]])~=(W[2]~=0) then PC=PC+1 end
+-- OP 181: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 182: ENV[W[3]]=R[W[2]]
+-- OP 183: do local I={ R[W[2]](U(T,W[2]+1,W[3])) }; local F=0; for U=W[2],W[4] do F=F+1; R[U]=I[F] end end
+-- OP 184: R[W[2]]=R[W[3]]
+-- OP 186: local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 187: R[W[2]](U(T,W[2]+1,W[3]))
+-- OP 189: R[W[2]]=R[W[3]]+R[W[4]]
+-- OP 190: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 191: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 193: do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 194: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]
+-- OP 196: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 197: R[W[2]]=R[W[3]]/W[4]
+-- OP 198: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 199: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=R[W[4]]; for F=W[4]-1,W[3],-1 do I=R[F]..I end; R[W[2]]=I end
+-- OP 200: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 201: local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 202: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 203: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]
+-- OP 204: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][R[W[4]]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]
+-- OP 205: local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 206: R[W[2]]=R[W[3]][R[W[4]]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]+W[4]; PC=PC+1; W=CODE[PC]; do local I=R[W[3]]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]+W[4]
+-- OP 207: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 209: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]
+-- OP 210: do local I=R[W[4]]; for F=W[4]-1,W[3],-1 do I=R[F]..I end; R[W[2]]=I end
+-- OP 213: UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]
+-- OP 215: if W[2]>0 then do local I=W[2]-1; local F={}; for U=1,#H do local L=H[U]; local N=L[-1] or 0; for O=0,N-1 do local K=L[O]; if K then local Z=K[1]; local C=K[2]; if Z==T and I<=C then F[C]=Z[C]; K[1]=F end end end end end end; Q=W[3]
+-- OP 216: if (R[W[3]]<=W[4])~=(W[2]~=0) then PC=PC+1 end
+-- OP 217: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 218: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]
+-- OP 219: if (R[W[3]]<R[W[4]])~=(W[2]~=0) then PC=PC+1 end
+-- OP 220: return U(T,W[2],W[3])
+-- OP 222: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 223: R[W[2]]=R[W[2]](U(T,W[2]+1,B))
+-- OP 225: R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 226: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 227: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 228: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]
+-- OP 229: do local I=W[3]; local F=W[4]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 230: R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 231: R[W[2]]=R[W[3]][R[W[4]]]
+-- OP 232: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 233: do local I={ R[W[2]](U(T,W[2]+1,W[3])) }; local F=0; for U=W[2],W[4] do F=F+1; R[U]=I[F] end end
+-- OP 234: for I=W[2],W[3] do R[I]=nil end
+-- OP 236: if (R[W[3]]<=R[W[4]])~=(W[2]~=0) then PC=PC+1 end
+-- OP 237: do local I=W[3]; if I==0 then I=math.max(0,B-W[2]) end; local F=R[W[2]]; local L=(W[4]-1)*50; if L==0 then local N={}; for O=1,I do N[O]=R[W[2]+O] end; local O={U(N,1,I)}; for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end; R[W[2]]=O else for O=1,I do F[L+O]=R[W[2]+O] end end; end
+-- OP 238: local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]
+-- OP 240: R[W[2]]=R[W[3]]/R[W[4]]
+-- OP 241: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]
+-- OP 242: R[W[2]]=R[W[2]](U(T,W[2]+1,B))
+-- OP 245: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 247: local I=R[W[3]]; if (not not I)==(W[4]~=0) then R[W[2]]=I else PC=PC+1 end
+-- OP 248: for I=W[2],W[3] do R[I]=nil end
+-- OP 249: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 250: return
+-- OP 251: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]
+-- OP 252: do local I,F=E(R[W[2]](U(T,W[2]+1,W[3]))); B=F+W[2]-1; local U=0; for L=W[2],B do U=U+1; R[L]=I[U] end end
+-- OP 253: if (R[W[3]]<R[W[4]])~=(W[2]~=0) then PC=PC+1 end
+-- OP 254: UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; for I=W[2],W[3] do R[I]=nil end; PC=PC+1; W=CODE[PC]; UP[W[3]]=R[W[2]]
+-- OP 255: if W[2]>0 then do local I=W[2]-1; local F={}; for U=1,#H do local L=H[U]; local N=L[-1] or 0; for O=0,N-1 do local K=L[O]; if K then local Z=K[1]; local C=K[2]; if Z==T and I<=C then F[C]=Z[C]; K[1]=F end end end end end end; Q=W[3]
+-- OP 257: if (R[W[3]]<=W[4])~=(W[2]~=0) then PC=PC+1 end
+-- OP 258: if (R[W[3]]<=R[W[4]])~=(W[2]~=0) then PC=PC+1 end
+-- OP 260: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 262: do local I=W[2]; local F={}; for U=1,#H do local L=H[U]; local N=L[-1] or 0; for O=0,N-1 do local K=L[O]; if K then local Z=K[1]; local C=K[2]; if Z==T and I<=C then F[C]=Z[C]; K[1]=F end end end end end
+-- OP 263: R[W[2]]=R[W[3]]*R[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]
+-- OP 264: R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 265: UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 266: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; do local I=R[W[4]]; for F=W[4]-1,W[3],-1 do I=R[F]..I end; R[W[2]]=I end
+-- OP 267: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 268: do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 269: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 270: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]
+-- OP 271: if (R[W[3]]==W[4])~=(W[2]~=0) then PC=PC+1 end
+-- OP 272: do local I,F=E(R[W[2]](U(T,W[2]+1,B))); B=F+W[2]-1; local U=0; for L=W[2],B do U=U+1; R[L]=I[U] end end
+-- OP 273: R[W[2]]=R[W[3]]+R[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 274: R[W[2]]=R[W[3]]+W[4]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]+W[4]
+-- OP 275: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=#R[W[3]]
+-- OP 276: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 277: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]
+-- OP 278: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][R[W[4]]]
+-- OP 279: if (R[W[3]]==W[4])~=(W[2]~=0) then PC=PC+1 end
+-- OP 280: R[W[2]]=R[W[3]]%R[W[4]]
+-- OP 281: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=R[W[4]]; for F=W[4]-1,W[3],-1 do I=R[F]..I end; R[W[2]]=I end
+-- OP 282: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 283: do local I=R[W[3]]; local F=W[4]; R[W[2]][I]=F end
+-- OP 284: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 285: do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 286: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 287: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 288: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 289: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 291: do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]
+-- OP 292: R[W[2]]=R[W[2]]-R[W[2]+2]; Q=W[3]
+-- OP 293: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; do local I=R[W[4]]; for F=W[4]-1,W[3],-1 do I=R[F]..I end; R[W[2]]=I end
+-- OP 294: if (R[W[3]]==R[W[4]])~=(W[2]~=0) then PC=PC+1 end
+-- OP 295: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 296: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 297: local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 298: do local I=R[W[3]]; local F=W[4]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][R[W[4]]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]+W[4]; PC=PC+1; W=CODE[PC]; do local I=R[W[3]]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]+W[4]
+-- OP 299: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 300: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 301: do local I=W[3]; local F=W[4]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]
+-- OP 302: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 303: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 304: R[W[2]]=R[W[3]][R[W[4]]]
+-- OP 305: do local I=W[3]; local F=W[4]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=W[4]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=W[4]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-W[4]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]
+-- OP 306: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; UP[W[3]]=R[W[2]]
+-- OP 307: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 308: R[W[2]]=R[W[3]]
+-- OP 309: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]
+-- OP 310: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 311: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 312: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 313: R[W[2]]=R[W[3]]-W[4]
+-- OP 314: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 315: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=W[4]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]
+-- OP 316: R[W[2]]=R[W[3]]*R[W[4]]
+-- OP 317: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; do local I=R[W[4]]; for F=W[4]-1,W[3],-1 do I=R[F]..I end; R[W[2]]=I end
+-- OP 318: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]
+-- OP 319: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 320: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; do local I=R[W[4]]; for F=W[4]-1,W[3],-1 do I=R[F]..I end; R[W[2]]=I end
+-- OP 321: do local I=R[W[3]]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]+W[4]
+-- OP 323: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 324: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=#R[W[3]]
+-- OP 325: R[W[2]]=UP[W[3]]
+-- OP 326: do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 327: do local I=R[W[3]]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 328: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 329: local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 330: local I=R[W[3]]; if (not not I)==(W[4]~=0) then R[W[2]]=I else PC=PC+1 end
+-- OP 331: do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 332: UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]
+-- OP 334: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=#R[W[3]]
+-- OP 335: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]
+-- OP 337: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]
+-- OP 338: R[W[2]]=W[3]~=0; if W[4]~=0 then PC=PC+1 end
+-- OP 339: do local I,F=E(R[W[2]](R[W[2]+1],R[W[2]+2])); for U=1,W[3] do R[W[2]+2+U]=I[U] end; if R[W[2]+3]==nil then PC=PC+1 else R[W[2]+2]=R[W[2]+3] end end
+-- OP 340: R[W[2]]=R[W[3]]-R[W[4]]
+-- OP 342: if (not not R[W[2]])~=(W[4]~=0) then PC=PC+1 end
+-- OP 344: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 345: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; do local I=R[W[4]]; for F=W[4]-1,W[3],-1 do I=R[F]..I end; R[W[2]]=I end
+-- OP 346: R[W[2]]=W[3]
+-- OP 347: R[W[2]]=R[W[3]]-W[4]
+-- OP 348: R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 349: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 350: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 351: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=R[W[3]]; local F=W[4]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][R[W[4]]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]+W[4]; PC=PC+1; W=CODE[PC]; do local I=R[W[3]]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]+W[4]
+-- OP 352: if (W[3]<R[W[4]])~=(W[2]~=0) then PC=PC+1 end
+-- OP 353: do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 354: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 355: do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 358: R[W[2]](U(T,W[2]+1,W[3]))
+-- OP 359: do local I={ R[W[2]](U(T,W[2]+1,W[3])) }; local F=0; for U=W[2],W[4] do F=F+1; R[U]=I[F] end end
+-- OP 360: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 361: R[W[2]]=R[W[3]]/W[4]
+-- OP 362: local I=R[W[3]]; if (not not I)==(W[4]~=0) then R[W[2]]=I else PC=PC+1 end
+-- OP 363: R[W[2]]=R[W[3]][W[4]]
+-- OP 364: if (W[3]<R[W[4]])~=(W[2]~=0) then PC=PC+1 end
+-- OP 365: UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 366: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][R[W[4]]]
+-- OP 367: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 368: do local I=R[W[3]]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 370: R[W[2]](U(T,W[2]+1,B))
+-- OP 371: R[W[2]]=W[3]
+-- OP 372: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 374: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]
+-- OP 375: R[W[2]]=R[W[3]][W[4]]
+-- OP 376: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 377: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]
+-- OP 379: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 380: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 381: if (R[W[3]]==R[W[4]])~=(W[2]~=0) then PC=PC+1 end
+-- OP 383: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 384: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]-R[W[4]]
+-- OP 385: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 386: do local I,F=E(R[W[2]](R[W[2]+1],R[W[2]+2])); for U=1,W[3] do R[W[2]+2+U]=I[U] end; if R[W[2]+3]==nil then PC=PC+1 else R[W[2]+2]=R[W[2]+3] end end
+-- OP 387: R[W[2]]=R[W[3]]
+-- OP 388: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 389: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 390: R[W[2]]=R[W[3]]/W[4]
+-- OP 391: R[W[2]]=W[3]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 392: do local I,F=E(R[W[2]](U(T,W[2]+1,W[3]))); B=F+W[2]-1; local U=0; for L=W[2],B do U=U+1; R[L]=I[U] end end
+-- OP 394: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; local I=R[W[3]]; R[W[2]+1]=I; R[W[2]]=I[W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 395: R[W[2]]=R[W[2]]-R[W[2]+2]; Q=W[3]
+-- OP 397: R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 398: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 399: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]={}; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 400: R[W[2]]=R[W[3]]+W[4]; PC=PC+1; W=CODE[PC]; do local I=R[W[3]]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]+W[4]
+-- OP 401: R[W[2]]=W[3]~=0; if W[4]~=0 then PC=PC+1 end
+-- OP 402: do local I=W[3]; if I==0 then I=math.max(0,B-W[2]) end; local F=R[W[2]]; local L=(W[4]-1)*50; if L==0 then local N={}; for O=1,I do N[O]=R[W[2]+O] end; local O={U(N,1,I)}; for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end; R[W[2]]=O else for O=1,I do F[L+O]=R[W[2]+O] end end; end
+-- OP 404: R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end
+-- OP 405: return R[W[2]](U(T,W[2]+1,W[3]))
+-- OP 406: R[W[2]]=R[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=ENV[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]][W[4]]
+-- OP 408: do local I=W[3]; local F=R[W[4]]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; do local I=W[3]; local F=W[4]; R[W[2]][I]=F end
+-- OP 409: UP[W[3]]=R[W[2]]; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=W[3]
+-- OP 410: R[W[2]]={}
+-- OP 411: do local I=W[3]; local F=W[4]; R[W[2]][I]=F end; PC=PC+1; W=CODE[PC]; R[W[2]]=UP[W[3]]; PC=PC+1; W=CODE[PC]; R[W[2]]=R[W[3]]
+-- OP 412: do local I=W[2]; local F=R[I+2]; local U=R[I]+F; R[I]=U; local L=R[I+1]; if (F>0 and U<=L) or (F<=0 and U>=L) then R[I+3]=U; Q=W[3] end end
+
+--[=[ 所有原型的去虚拟化指令清单 ]=]
+
+-- ============================================================================
+-- PROTO_000 MainLeftBottom_Module | path=root | parent=root
+-- 参数=0 | 常量=109 | 指令=412 | 子原型=58
+-- 字符串线索：10000 | isHidden | TakeItems | StopGatherMonsters | onDamageMsg | LuaSendMsg | hidebut | floor | Builtsetting | distance | isTaking | 累计登录 2 天 | log | isOutputted | InitGatherMonsters | destroy | isDiuing | 在线时长90分钟 | BlacklistItems | screenH | 在线时长5分钟 | MoveTo
+-- 常量池：
+--   K[0] = '10000'
+--   K[1] = 10.0
+--   K[2] = 'isHidden'
+--   K[3] = 'TakeItems'
+--   K[4] = 21.0
+--   K[5] = 3600.0
+--   K[6] = 'StopGatherMonsters'
+--   K[7] = 'onDamageMsg'
+--   K[8] = 'LuaSendMsg'
+--   K[9] = 0.01
+--   K[10] = 30.0
+--   K[11] = 'hidebut'
+--   K[12] = 'floor'
+--   K[13] = 'Builtsetting'
+--   K[14] = 'distance'
+--   K[15] = 'isTaking'
+--   K[16] = '累计登录 2 天'
+--   K[17] = 'log'
+--   K[18] = 'isOutputted'
+--   K[19] = False
+--   K[20] = 'InitGatherMonsters'
+--   K[21] = 'destroy'
+--   K[22] = 'isDiuing'
+--   K[23] = '在线时长90分钟'
+--   K[24] = 18.0
+--   K[25] = 'BlacklistItems'
+--   K[26] = 'screenH'
+--   K[27] = '在线时长5分钟'
+--   K[28] = 20.0
+--   K[29] = 'MoveTo'
+--   K[30] = 19.0
+--   K[31] = 0
+--   K[32] = 'GetAvailableStoragePage'
+--   K[33] = 'screenW'
+--   K[34] = 'alertAt'
+--   K[35] = 'StorageItems'
+--   K[36] = '空闲状态'
+--   K[37] = -1.0
+--   K[38] = 'hide'
+--   K[39] = 'SendHookList'
+--   K[40] = '累计登录 4 天'
+--   K[41] = 'RecvHookList'
+--   K[42] = 'GATHER_THRESHOLD'
+--   K[43] = 9.0
+--   K[44] = 'ATTACKING'
+--   K[45] = '累计登录 7 天'
+--   K[46] = 'noStoneWarned'
+--   K[47] = 'isStoring'
+--   K[48] = 'SCREEN_WIDTH'
+--   K[49] = 'doInit'
+--   K[50] = 'GetMapName'
+--   K[51] = '在线时长30分钟'
+--   K[52] = 'nextTryAt'
+--   K[53] = 'deathHandled'
+--   K[54] = 'SL'
+--   K[55] = '在线时长10分钟'
+--   K[56] = '累计登录 1 天'
+--   K[57] = 'blacklist_distance.txt'
+--   K[58] = 'math'
+--   K[59] = 56011.0
+--   K[60] = '在线时长60分钟'
+--   K[61] = 'main'
+--   K[62] = '在线时长120分钟'
+--   K[63] = None
+--   K[64] = '引怪中'
+--   K[65] = '攻击中'
+--   K[66] = 'GATHERING'
+--   K[67] = 'z'
+--   K[68] = '累计登录 3 天'
+--   K[69] = 'IsInWhitelistMap'
+--   K[70] = 'isRunning'
+--   K[71] = '累计登录 6 天'
+--   K[72] = 0.5
+--   K[73] = 'show'
+--   K[74] = 'version'
+--   K[75] = 'PlayerPos'
+--   K[76] = 'a'
+--   K[77] = 'DiuItems'
+--   K[78] = 56061.0
+--   K[79] = 'isPaused'
+--   K[80] = 'GetStorageItemData'
+--   K[81] = 'MainLeftBottom'
+--   K[82] = 'MoveItemToQuickUse'
+--   K[83] = 'ATTACK_WAIT_TIME'
+--   K[84] = 'PickUpItems'
+--   K[85] = 'gather_monster_count.txt'
+--   K[86] = 'GetMapId'
+--   K[87] = 'b'
+--   K[88] = '累计登录 5 天'
+--   K[89] = 'Blocklist'
+--   K[90] = '_G'
+--   K[91] = 'ClearBlacklistItems'
+--   K[92] = 'lastAttacker'
+--   K[93] = 2.0
+--   K[94] = 'GetMetaValue'
+--   K[95] = 'IDLE'
+--   K[96] = 0.2
+--   K[97] = ''
+--   K[98] = '在线时长20分钟'
+--   K[99] = 1.0
+--   K[100] = '随机传送石'
+--   K[101] = 60000.0
+--   K[102] = 'lastHp'
+--   K[103] = 'CHECK_INTERVAL'
+--   K[104] = True
+--   K[105] = 'MainLoop'
+--   K[106] = 'GetDroppedItems'
+--   K[107] = 'blacklist'
+--   K[108] = 'SCREEN_HEIGHT'
+-- 指令：
+--   [0001] OP 410  A=0 B=0 C=0 flags=192
+--       R[0]={}
+--   [0002] OP 141  A=0 B='MainLeftBottom' C=None flags=146
+--       ENV["MainLeftBottom"]=R[0]
+--   [0003] OP   9  A=0 B=0 C=0 flags=128
+--       R[0]={}
+--       R[1]=ENV["MainLeftBottom"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(137, 1, 'MainLeftBottom', None, 210)]）
+--   [0005] OP 355  A=1 B='a' C=0 flags=144
+--       do local I="a";local F=R[0];R[1][I]=F end
+--   [0006] OP 146  A=0 B='version' C='10000' flags=112
+--       do local I="version";local F="10000";R[0][I]=F end
+--   [0007] OP 137  A=1 B='SL' C=None flags=210
+--       R[1]=ENV["SL"]
+--   [0008] OP 297  A=1 B=1 C='GetMetaValue' flags=32
+--       local I=R[1];R[1+1]=I;R[1]=I["GetMetaValue"]
+--       R[3]="SCREEN_WIDTH"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 3, 'SCREEN_WIDTH', None, 146)]）
+--   [0010] OP  98  A=1 B=3 C=0 flags=128
+--       R[1]=R[1](U(T,1+1,3))
+--   [0011] OP 355  A=0 B='screenW' C=1 flags=16
+--       do local I="screenW";local F=R[1];R[0][I]=F end
+--   [0012] OP 137  A=1 B='SL' C=None flags=82
+--       R[1]=ENV["SL"]
+--   [0013] OP 297  A=1 B=1 C='GetMetaValue' flags=160
+--       local I=R[1];R[1+1]=I;R[1]=I["GetMetaValue"]
+--       R[3]="SCREEN_HEIGHT"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 3, 'SCREEN_HEIGHT', None, 82)]）
+--   [0015] OP  68  A=1 B=3 C=0 flags=128
+--       R[1]=R[1](U(T,1+1,3))
+--   [0016] OP 268  A=0 B='screenH' C=1 flags=144
+--       do local I="screenH";local F=R[1];R[0][I]=F end
+--   [0017] OP  90  A=1 B=4 C=0 flags=192
+--       R[1]={}
+--       R[2]=1.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 2, 1.0, None, 18)]）
+--   [0019] OP 371  A=3 B=9.0 C=None flags=146
+--       R[3]=9.0
+--   [0020] OP 282  A=4 B=10.0 C=None flags=210
+--       R[4]=10.0
+--       R[5]=60000.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 5, 60000.0, None, 18)]）
+--   [0022] OP 402  A=1 B=4 C=1 flags=192
+--       do local I=4;if I==0 then I=math.max(0,B-1) end;local F=R[1];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[1+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[1]=O else for O=1,I do F[L+O]=R[1+O] end end;end
+--   [0023] OP 268  A=0 B='Blocklist' C=1 flags=144
+--       do local I="Blocklist";local F=R[1];R[0][I]=F end
+--   [0024] OP 105  A=1 B=0 C=0 flags=0
+--       R[1]={}
+--   [0025] OP 355  A=0 B='SendHookList' C=1 flags=16
+--       do local I="SendHookList";local F=R[1];R[0][I]=F end
+--   [0026] OP 410  A=1 B=0 C=0 flags=64
+--       R[1]={}
+--   [0027] OP 408  A=0 B='RecvHookList' C=1 flags=80
+--       do local I="RecvHookList";local F=R[1];R[0][I]=F end
+--       do local I="isHidden";local F=true;R[0][I]=F end
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(146, 0, 'isHidden', True, 176)]）
+--   [0029] OP 146  A=0 B='hidebut' C=None flags=240
+--       do local I="hidebut";local F=nil;R[0][I]=F end
+--   [0030] OP 120  A=1 B=0 C=0 flags=64
+--       R[1]={}
+--   [0031] OP 137  A=2 B='MainLeftBottom' C=None flags=82
+--       R[2]=ENV["MainLeftBottom"]
+--   [0032] OP 268  A=2 B='b' C=1 flags=144
+--       do local I="b";local F=R[1];R[2][I]=F end
+--   [0033] OP   9  A=2 B=0 C=0 flags=64
+--       R[2]={}
+--       R[3]=ENV["MainLeftBottom"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(137, 3, 'MainLeftBottom', None, 18)]）
+--   [0035] OP 408  A=3 B='z' C=2 flags=80
+--       do local I="z";local F=R[2];R[3][I]=F end
+--       do local I="isPaused";local F=false;R[2][I]=F end
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(146, 2, 'isPaused', False, 112)]）
+--   [0037] OP 156  A=2 B='isRunning' C=False flags=176
+--       do local I="isRunning";local F=false;R[2][I]=F end
+--   [0038] OP 156  A=2 B='isStoring' C=False flags=176
+--       do local I="isStoring";local F=false;R[2][I]=F end
+--   [0039] OP 146  A=2 B='isTaking' C=False flags=48
+--       do local I="isTaking";local F=false;R[2][I]=F end
+--   [0040] OP 146  A=2 B='isDiuing' C=False flags=48
+--       do local I="isDiuing";local F=false;R[2][I]=F end
+--   [0041] OP 156  A=2 B='isOutputted' C=False flags=48
+--       do local I="isOutputted";local F=false;R[2][I]=F end
+--   [0042] OP 120  A=3 B=0 C=0 flags=64
+--       R[3]={}
+--   [0043] OP  27  A=4 B=16 C=0 flags=0 ; 创建子原型 child[16]，捕获 0 个 upvalue
+--       R[4] = makeClosure(PROTO[16], captures={})
+--   [0044] OP 137  A=5 B='_G' C=None flags=18
+--       R[5]=ENV["_G"]
+--   [0045] OP 355  A=5 B='log' C=4 flags=208
+--       do local I="log";local F=R[4];R[5][I]=F end
+--   [0046] OP  27  A=5 B=20 C=1 flags=192 ; 创建子原型 child[20]，捕获 1 个 upvalue
+--       R[5] = makeClosure(PROTO[20], captures={capture#0: R[0] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 0, 0, 128)]）
+--   [0048] OP 154  A=6 B=12 C=2 flags=0 ; 创建子原型 child[12]，捕获 2 个 upvalue
+--       R[6] = makeClosure(PROTO[12], captures={capture#0: R[0] (local register); capture#1: R[4] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 0, 0, 192), (387, 0, 4, 0, 128)]）
+--   [0051] OP 355  A=0 B='LuaSendMsg' C=6 flags=80
+--       do local I="LuaSendMsg";local F=R[6];R[0][I]=F end
+--   [0052] OP  27  A=6 B=53 C=0 flags=0 ; 创建子原型 child[53]，捕获 0 个 upvalue
+--       R[6] = makeClosure(PROTO[53], captures={})
+--   [0053] OP 154  A=7 B=34 C=0 flags=192 ; 创建子原型 child[34]，捕获 0 个 upvalue
+--       R[7] = makeClosure(PROTO[34], captures={})
+--   [0054] OP 154  A=8 B=13 C=0 flags=192 ; 创建子原型 child[13]，捕获 0 个 upvalue
+--       R[8] = makeClosure(PROTO[13], captures={})
+--   [0055] OP 141  A=8 B='GetMapId' C=None flags=210
+--       ENV["GetMapId"]=R[8]
+--   [0056] OP  27  A=8 B=30 C=0 flags=192 ; 创建子原型 child[30]，捕获 0 个 upvalue
+--       R[8] = makeClosure(PROTO[30], captures={})
+--   [0057] OP 141  A=8 B='GetMapName' C=None flags=146
+--       ENV["GetMapName"]=R[8]
+--   [0058] OP  27  A=8 B=57 C=0 flags=192 ; 创建子原型 child[57]，捕获 0 个 upvalue
+--       R[8] = makeClosure(PROTO[57], captures={})
+--   [0059] OP 182  A=8 B='PlayerPos' C=None flags=82
+--       ENV["PlayerPos"]=R[8]
+--   [0060] OP  27  A=8 B=4 C=0 flags=192 ; 创建子原型 child[4]，捕获 0 个 upvalue
+--       R[8] = makeClosure(PROTO[4], captures={})
+--   [0061] OP 141  A=8 B='GetDroppedItems' C=None flags=82
+--       ENV["GetDroppedItems"]=R[8]
+--   [0062] OP  27  A=8 B=3 C=0 flags=192 ; 创建子原型 child[3]，捕获 0 个 upvalue
+--       R[8] = makeClosure(PROTO[3], captures={})
+--   [0063] OP 182  A=8 B='MoveTo' C=None flags=82
+--       ENV["MoveTo"]=R[8]
+--   [0064] OP  27  A=8 B=46 C=2 flags=0 ; 创建子原型 child[46]，捕获 2 个 upvalue
+--       R[8] = makeClosure(PROTO[46], captures={capture#0: R[2] (local register); capture#1: R[5] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 2, 0, 192), (387, 0, 5, 0, 128)]）
+--   [0067] OP 182  A=8 B='DiuItems' C=None flags=18
+--       ENV["DiuItems"]=R[8]
+--   [0068] OP  27  A=8 B=36 C=1 flags=0 ; 创建子原型 child[36]，捕获 1 个 upvalue
+--       R[8] = makeClosure(PROTO[36], captures={capture#0: R[4] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 4, 0, 128)]）
+--   [0070] OP 141  A=8 B='GetAvailableStoragePage' C=None flags=18
+--       ENV["GetAvailableStoragePage"]=R[8]
+--   [0071] OP 154  A=8 B=1 C=1 flags=128 ; 创建子原型 child[1]，捕获 1 个 upvalue
+--       R[8] = makeClosure(PROTO[1], captures={capture#0: R[4] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 4, 0, 0)]）
+--   [0073] OP 182  A=8 B='GetStorageItemData' C=None flags=82
+--       ENV["GetStorageItemData"]=R[8]
+--   [0074] OP  27  A=8 B=50 C=3 flags=128 ; 创建子原型 child[50]，捕获 3 个 upvalue
+--       R[8] = makeClosure(PROTO[50], captures={capture#0: R[2] (local register); capture#1: R[4] (local register); capture#2: R[5] (local register)})
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(387, 0, 2, 0, 64), (387, 0, 4, 0, 192), (387, 0, 5, 0, 192)]）
+--   [0078] OP 141  A=8 B='StorageItems' C=None flags=210
+--       ENV["StorageItems"]=R[8]
+--   [0079] OP 154  A=8 B=5 C=2 flags=128 ; 创建子原型 child[5]，捕获 2 个 upvalue
+--       R[8] = makeClosure(PROTO[5], captures={capture#0: R[2] (local register); capture#1: R[5] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 2, 0, 192), (387, 0, 5, 0, 192)]）
+--   [0082] OP 182  A=8 B='TakeItems' C=None flags=210
+--       ENV["TakeItems"]=R[8]
+--   [0083] OP 154  A=8 B=21 C=1 flags=192 ; 创建子原型 child[21]，捕获 1 个 upvalue
+--       R[8] = makeClosure(PROTO[21], captures={capture#0: R[5] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 5, 0, 64)]）
+--   [0085] OP 182  A=8 B='PickUpItems' C=None flags=146
+--       ENV["PickUpItems"]=R[8]
+--   [0086] OP 105  A=8 B=0 C=3 flags=192
+--       R[8]={}
+--   [0087] OP 156  A=8 B='GATHER_THRESHOLD' C=10.0 flags=112
+--       do local I="GATHER_THRESHOLD";local F=10.0;R[8][I]=F end
+--   [0088] OP 156  A=8 B='CHECK_INTERVAL' C=0.5 flags=240
+--       do local I="CHECK_INTERVAL";local F=0.5;R[8][I]=F end
+--   [0089] OP 146  A=8 B='ATTACK_WAIT_TIME' C=1.0 flags=112
+--       do local I="ATTACK_WAIT_TIME";local F=1.0;R[8][I]=F end
+--   [0090] OP 346  A=9 B=0.2 C=None flags=210
+--       R[9]=0.2
+--   [0091] OP 217  A=10 B=3600.0 C=None flags=82
+--       R[10]=3600.0
+--       R[11]=ENV["math"]
+--       R[11]=R[11]["floor"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(397, 11, 'math', None, 146), (363, 11, 11, 'floor', 96)]）
+--   [0094] OP  62  A=12 B=10 C=9 flags=64
+--       R[12]=R[10]/R[9]
+--   [0095] OP  98  A=11 B=12 C=0 flags=0
+--       R[11]=R[11](U(T,11+1,12))
+--   [0096] OP  19  A=12 B=14 C=0 flags=0
+--       R[12]={}
+--       R[13]={}
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(90, 13, 3, 0, 128)]）
+--   [0098] OP 282  A=14 B=56061.0 C=None flags=210
+--       R[14]=56061.0
+--       R[15]="累计登录 1 天"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(282, 15, '累计登录 1 天', None, 82)]）
+--   [0100] OP 371  A=16 B=18.0 C=None flags=82
+--       R[16]=18.0
+--   [0101] OP 402  A=13 B=3 C=1 flags=64
+--       do local I=3;if I==0 then I=math.max(0,B-13) end;local F=R[13];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[13+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[13]=O else for O=1,I do F[L+O]=R[13+O] end end;end
+--   [0102] OP 120  A=14 B=3 C=0 flags=128
+--       R[14]={}
+--   [0103] OP 346  A=15 B=56061.0 C=None flags=82
+--       R[15]=56061.0
+--   [0104] OP 282  A=16 B='累计登录 2 天' C=None flags=18
+--       R[16]="累计登录 2 天"
+--       R[17]=18.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 17, 18.0, None, 146)]）
+--   [0106] OP  88  A=14 B=3 C=1 flags=128
+--       do local I=3;if I==0 then I=math.max(0,B-14) end;local F=R[14];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[14+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[14]=O else for O=1,I do F[L+O]=R[14+O] end end;end
+--   [0107] OP  90  A=15 B=3 C=0 flags=192
+--       R[15]={}
+--       R[16]=56061.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(61, 16, 56061.0, None, 146)]）
+--   [0109] OP 282  A=17 B='累计登录 3 天' C=None flags=146
+--       R[17]="累计登录 3 天"
+--       R[18]=18.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 18, 18.0, None, 146)]）
+--   [0111] OP 402  A=15 B=3 C=1 flags=128
+--       do local I=3;if I==0 then I=math.max(0,B-15) end;local F=R[15];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[15+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[15]=O else for O=1,I do F[L+O]=R[15+O] end end;end
+--   [0112] OP  90  A=16 B=3 C=0 flags=192
+--       R[16]={}
+--       R[17]=56061.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 17, 56061.0, None, 18)]）
+--   [0114] OP 282  A=18 B='累计登录 4 天' C=None flags=146
+--       R[18]="累计登录 4 天"
+--       R[19]=18.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 19, 18.0, None, 146)]）
+--   [0116] OP 153  A=16 B=3 C=1 flags=64
+--       do local I=3;if I==0 then I=math.max(0,B-16) end;local F=R[16];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[16+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[16]=O else for O=1,I do F[L+O]=R[16+O] end end;end
+--   [0117] OP  90  A=17 B=3 C=0 flags=192
+--       R[17]={}
+--       R[18]=56061.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 18, 56061.0, None, 18)]）
+--   [0119] OP 282  A=19 B='累计登录 5 天' C=None flags=18
+--       R[19]="累计登录 5 天"
+--       R[20]=18.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 20, 18.0, None, 82)]）
+--   [0121] OP  88  A=17 B=3 C=1 flags=64
+--       do local I=3;if I==0 then I=math.max(0,B-17) end;local F=R[17];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[17+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[17]=O else for O=1,I do F[L+O]=R[17+O] end end;end
+--   [0122] OP 120  A=18 B=3 C=0 flags=64
+--       R[18]={}
+--   [0123] OP 371  A=19 B=56061.0 C=None flags=146
+--       R[19]=56061.0
+--   [0124] OP 371  A=20 B='累计登录 6 天' C=None flags=146
+--       R[20]="累计登录 6 天"
+--   [0125] OP 371  A=21 B=18.0 C=None flags=82
+--       R[21]=18.0
+--   [0126] OP 112  A=18 B=3 C=1 flags=192
+--       do local I=3;if I==0 then I=math.max(0,B-18) end;local F=R[18];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[18+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[18]=O else for O=1,I do F[L+O]=R[18+O] end end;end
+--   [0127] OP  90  A=19 B=3 C=0 flags=64
+--       R[19]={}
+--       R[20]=56061.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 20, 56061.0, None, 18)]）
+--   [0129] OP 282  A=21 B='累计登录 7 天' C=None flags=18
+--       R[21]="累计登录 7 天"
+--       R[22]=18.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 22, 18.0, None, 18)]）
+--   [0131] OP  88  A=19 B=3 C=1 flags=64
+--       do local I=3;if I==0 then I=math.max(0,B-19) end;local F=R[19];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[19+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[19]=O else for O=1,I do F[L+O]=R[19+O] end end;end
+--   [0132] OP  90  A=20 B=3 C=0 flags=128
+--       R[20]={}
+--       R[21]=56011.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(61, 21, 56011.0, None, 210)]）
+--   [0134] OP 282  A=22 B='在线时长5分钟' C=None flags=82
+--       R[22]="在线时长5分钟"
+--       R[23]=19.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 23, 19.0, None, 18)]）
+--   [0136] OP 237  A=20 B=3 C=1 flags=64
+--       do local I=3;if I==0 then I=math.max(0,B-20) end;local F=R[20];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[20+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[20]=O else for O=1,I do F[L+O]=R[20+O] end end;end
+--   [0137] OP 120  A=21 B=3 C=0 flags=64
+--       R[21]={}
+--   [0138] OP 371  A=22 B=56011.0 C=None flags=82
+--       R[22]=56011.0
+--   [0139] OP 282  A=23 B='在线时长10分钟' C=None flags=18
+--       R[23]="在线时长10分钟"
+--       R[24]=20.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 24, 20.0, None, 18)]）
+--   [0141] OP 112  A=21 B=3 C=1 flags=128
+--       do local I=3;if I==0 then I=math.max(0,B-21) end;local F=R[21];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[21+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[21]=O else for O=1,I do F[L+O]=R[21+O] end end;end
+--   [0142] OP  90  A=22 B=3 C=0 flags=128
+--       R[22]={}
+--       R[23]=56011.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(61, 23, 56011.0, None, 18)]）
+--   [0144] OP 282  A=24 B='在线时长20分钟' C=None flags=18
+--       R[24]="在线时长20分钟"
+--       R[25]=20.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 25, 20.0, None, 82)]）
+--   [0146] OP 112  A=22 B=3 C=1 flags=128
+--       do local I=3;if I==0 then I=math.max(0,B-22) end;local F=R[22];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[22+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[22]=O else for O=1,I do F[L+O]=R[22+O] end end;end
+--   [0147] OP  90  A=23 B=3 C=0 flags=128
+--       R[23]={}
+--       R[24]=56011.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(61, 24, 56011.0, None, 210)]）
+--   [0149] OP 282  A=25 B='在线时长30分钟' C=None flags=82
+--       R[25]="在线时长30分钟"
+--       R[26]=20.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 26, 20.0, None, 18)]）
+--   [0151] OP 112  A=23 B=3 C=1 flags=0
+--       do local I=3;if I==0 then I=math.max(0,B-23) end;local F=R[23];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[23+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[23]=O else for O=1,I do F[L+O]=R[23+O] end end;end
+--   [0152] OP 410  A=24 B=3 C=0 flags=192
+--       R[24]={}
+--   [0153] OP  61  A=25 B=56011.0 C=None flags=146
+--       R[25]=56011.0
+--       R[26]="在线时长60分钟"
+--       R[27]=20.0
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(282, 26, '在线时长60分钟', None, 18), (346, 27, 20.0, None, 18)]）
+--   [0156] OP 112  A=24 B=3 C=1 flags=0
+--       do local I=3;if I==0 then I=math.max(0,B-24) end;local F=R[24];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[24+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[24]=O else for O=1,I do F[L+O]=R[24+O] end end;end
+--   [0157] OP 120  A=25 B=3 C=0 flags=0
+--       R[25]={}
+--   [0158] OP  61  A=26 B=56011.0 C=None flags=210
+--       R[26]=56011.0
+--       R[27]="在线时长90分钟"
+--       R[28]=20.0
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(282, 27, '在线时长90分钟', None, 210), (346, 28, 20.0, None, 82)]）
+--   [0161] OP 237  A=25 B=3 C=1 flags=0
+--       do local I=3;if I==0 then I=math.max(0,B-25) end;local F=R[25];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[25+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[25]=O else for O=1,I do F[L+O]=R[25+O] end end;end
+--   [0162] OP  90  A=26 B=3 C=0 flags=0
+--       R[26]={}
+--       R[27]=56011.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(61, 27, 56011.0, None, 146)]）
+--   [0164] OP 282  A=28 B='在线时长120分钟' C=None flags=146
+--       R[28]="在线时长120分钟"
+--       R[29]=21.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 29, 21.0, None, 210)]）
+--   [0166] OP 237  A=26 B=3 C=1 flags=0
+--       do local I=3;if I==0 then I=math.max(0,B-26) end;local F=R[26];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[26+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[26]=O else for O=1,I do F[L+O]=R[26+O] end end;end
+--   [0167] OP 402  A=12 B=14 C=1 flags=192
+--       do local I=14;if I==0 then I=math.max(0,B-12) end;local F=R[12];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[12+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[12]=O else for O=1,I do F[L+O]=R[12+O] end end;end
+--   [0168] OP 105  A=13 B=0 C=3 flags=0
+--       R[13]={}
+--   [0169] OP 156  A=13 B='IDLE' C='空闲状态' flags=112
+--       do local I="IDLE";local F="空闲状态";R[13][I]=F end
+--   [0170] OP 146  A=13 B='GATHERING' C='引怪中' flags=112
+--       do local I="GATHERING";local F="引怪中";R[13][I]=F end
+--   [0171] OP 156  A=13 B='ATTACKING' C='攻击中' flags=176
+--       do local I="ATTACKING";local F="攻击中";R[13][I]=F end
+--   [0172] OP  53  A=14 B=13 C='IDLE' flags=160
+--       R[14]=R[13]["IDLE"]
+--   [0173] OP  90  A=15 B=0 C=0 flags=192
+--       R[15]={}
+--       R[16]=0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 16, 0, None, 210)]）
+--   [0175] OP 346  A=17 B=0 C=None flags=146
+--       R[17]=0
+--   [0176] OP 401  A=18 B=0 C=0 flags=128
+--       R[18]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0177] OP 338  A=19 B=0 C=0 flags=64
+--       R[19]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0178] OP 346  A=20 B=0 C=None flags=210
+--       R[20]=0
+--   [0179] OP 125  A=21 B=21 C=0 flags=128
+--       for I=21,21 do R[I]=nil end
+--   [0180] OP 346  A=22 B='' C=None flags=82
+--       R[22]=""
+--   [0181] OP 154  A=23 B=8 C=2 flags=0 ; 创建子原型 child[8]，捕获 2 个 upvalue
+--       R[23] = makeClosure(PROTO[8], captures={capture#0: R[4] (local register); capture#1: R[14] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 4, 0, 192), (387, 0, 14, 0, 64)]）
+--   [0184] OP 154  A=24 B=35 C=0 flags=64 ; 创建子原型 child[35]，捕获 0 个 upvalue
+--       R[24] = makeClosure(PROTO[35], captures={})
+--   [0185] OP 154  A=25 B=56 C=0 flags=192 ; 创建子原型 child[56]，捕获 0 个 upvalue
+--       R[25] = makeClosure(PROTO[56], captures={})
+--   [0186] OP 154  A=26 B=39 C=0 flags=0 ; 创建子原型 child[39]，捕获 0 个 upvalue
+--       R[26] = makeClosure(PROTO[39], captures={})
+--   [0187] OP 154  A=27 B=18 C=0 flags=0 ; 创建子原型 child[18]，捕获 0 个 upvalue
+--       R[27] = makeClosure(PROTO[18], captures={})
+--   [0188] OP  27  A=28 B=44 C=0 flags=0 ; 创建子原型 child[44]，捕获 0 个 upvalue
+--       R[28] = makeClosure(PROTO[44], captures={})
+--   [0189] OP 154  A=29 B=11 C=0 flags=192 ; 创建子原型 child[11]，捕获 0 个 upvalue
+--       R[29] = makeClosure(PROTO[11], captures={})
+--   [0190] OP  27  A=30 B=29 C=0 flags=128 ; 创建子原型 child[29]，捕获 0 个 upvalue
+--       R[30] = makeClosure(PROTO[29], captures={})
+--   [0191] OP  27  A=31 B=7 C=0 flags=0 ; 创建子原型 child[7]，捕获 0 个 upvalue
+--       R[31] = makeClosure(PROTO[7], captures={})
+--   [0192] OP 154  A=32 B=38 C=0 flags=0 ; 创建子原型 child[38]，捕获 0 个 upvalue
+--       R[32] = makeClosure(PROTO[38], captures={})
+--   [0193] OP  27  A=33 B=43 C=0 flags=0 ; 创建子原型 child[43]，捕获 0 个 upvalue
+--       R[33] = makeClosure(PROTO[43], captures={})
+--   [0194] OP  27  A=34 B=28 C=5 flags=64 ; 创建子原型 child[28]，捕获 5 个 upvalue
+--       R[34] = makeClosure(PROTO[28], captures={capture#0: R[27] (local register); capture#1: R[30] (local register); capture#2: R[28] (local register); capture#3: R[29] (local register); capture#4: R[8] (local register)})
+--       （该融合指令内部消费后续 5 条记录；原始记录=[(387, 0, 27, 0, 64), (387, 0, 30, 0, 64), (387, 0, 28, 0, 128), (387, 0, 29, 0, 192), (387, 0, 8, 0, 192)]）
+--   [0200] OP 154  A=35 B=26 C=9 flags=64 ; 创建子原型 child[26]，捕获 9 个 upvalue
+--       R[35] = makeClosure(PROTO[26], captures={capture#0: R[15] (local register); capture#1: R[16] (local register); capture#2: R[17] (local register); capture#3: R[25] (local register); capture#4: R[19] (local register); capture#5: R[20] (local register); capture#6: R[21] (local register); capture#7: R[22] (local register); capture#8: R[4] (local register)})
+--       （该融合指令内部消费后续 9 条记录；原始记录=[(387, 0, 15, 0, 128), (387, 0, 16, 0, 0), (387, 0, 17, 0, 64), (387, 0, 25, 0, 64), (387, 0, 19, 0, 192), (387, 0, 20, 0, 64), (387, 0, 21, 0, 0), (387, 0, 22, 0, 0), (387, 0, 4, 0, 128)]）
+--   [0210] OP 154  A=36 B=14 C=1 flags=64 ; 创建子原型 child[14]，捕获 1 个 upvalue
+--       R[36] = makeClosure(PROTO[14], captures={capture#0: R[30] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 30, 0, 64)]）
+--   [0212] OP 154  A=37 B=31 C=0 flags=192 ; 创建子原型 child[31]，捕获 0 个 upvalue
+--       R[37] = makeClosure(PROTO[31], captures={})
+--   [0213] OP 182  A=37 B='IsInWhitelistMap' C=None flags=82
+--       ENV["IsInWhitelistMap"]=R[37]
+--   [0214] OP  27  A=37 B=45 C=22 flags=128 ; 创建子原型 child[45]，捕获 22 个 upvalue
+--       R[37] = makeClosure(PROTO[45], captures={capture#0: R[18] (local register); capture#1: R[14] (local register); capture#2: R[13] (local register); capture#3: R[4] (local register); capture#4: R[23] (local register); capture#5: R[35] (local register); capture#6: R[26] (local register); capture#7: R[34] (local register); capture#8: R[15] (local register); capture#9: R[32] (local register); capture#10: R[17] (local register); capture#11: R[16] (local register); capture#12: R[19] (local register); capture#13: R[20] (local register); capture#14: R[22] (local register); capture#15: R[36] (local register); capture#16: R[21] (local register); capture#17: R[31] (local register); capture#18: R[30] (local register); capture#19: R[33] (local register); capture#20: R[24] (local register); capture#21: R[8] (local register)})
+--       （该融合指令内部消费后续 22 条记录；原始记录=[(387, 0, 18, 0, 64), (387, 0, 14, 0, 192), (387, 0, 13, 0, 192), (387, 0, 4, 0, 128), (387, 0, 23, 0, 192), (387, 0, 35, 0, 0), (387, 0, 26, 0, 64), (387, 0, 34, 0, 128), (387, 0, 15, 0, 192), (387, 0, 32, 0, 64), (387, 0, 17, 0, 0), (387, 0, 16, 0, 192), (387, 0, 19, 0, 64), (387, 0, 20, 0, 192), (387, 0, 22, 0, 128), (387, 0, 36, 0, 192), (387, 0, 21, 0, 192), (387, 0, 31, 0, 192), (387, 0, 30, 0, 128), (387, 0, 33, 0, 128), (387, 0, 24, 0, 128), (387, 0, 8, 0, 128)]）
+--   [0237] OP 141  A=37 B='MainLoop' C=None flags=18
+--       ENV["MainLoop"]=R[37]
+--   [0238] OP  27  A=37 B=19 C=7 flags=0 ; 创建子原型 child[19]，捕获 7 个 upvalue
+--       R[37] = makeClosure(PROTO[19], captures={capture#0: R[3] (local register); capture#1: R[18] (local register); capture#2: R[23] (local register); capture#3: R[13] (local register); capture#4: R[35] (local register); capture#5: R[8] (local register); capture#6: R[4] (local register)})
+--       （该融合指令内部消费后续 7 条记录；原始记录=[(387, 0, 3, 0, 192), (387, 0, 18, 0, 128), (387, 0, 23, 0, 128), (387, 0, 13, 0, 0), (387, 0, 35, 0, 0), (387, 0, 8, 0, 64), (387, 0, 4, 0, 128)]）
+--   [0246] OP 141  A=37 B='InitGatherMonsters' C=None flags=146
+--       ENV["InitGatherMonsters"]=R[37]
+--   [0247] OP  27  A=37 B=27 C=7 flags=192 ; 创建子原型 child[27]，捕获 7 个 upvalue
+--       R[37] = makeClosure(PROTO[27], captures={capture#0: R[18] (local register); capture#1: R[3] (local register); capture#2: R[25] (local register); capture#3: R[23] (local register); capture#4: R[13] (local register); capture#5: R[35] (local register); capture#6: R[4] (local register)})
+--       （该融合指令内部消费后续 7 条记录；原始记录=[(387, 0, 18, 0, 192), (387, 0, 3, 0, 192), (387, 0, 25, 0, 128), (387, 0, 23, 0, 192), (387, 0, 13, 0, 64), (387, 0, 35, 0, 192), (387, 0, 4, 0, 64)]）
+--   [0255] OP 182  A=37 B='StopGatherMonsters' C=None flags=210
+--       ENV["StopGatherMonsters"]=R[37]
+--   [0256] OP 154  A=37 B=23 C=1 flags=64 ; 创建子原型 child[23]，捕获 1 个 upvalue
+--       R[37] = makeClosure(PROTO[23], captures={capture#0: R[5] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 5, 0, 0)]）
+--   [0258] OP 141  A=37 B='Builtsetting' C=None flags=146
+--       ENV["Builtsetting"]=R[37]
+--   [0259] OP 154  A=37 B=41 C=0 flags=64 ; 创建子原型 child[41]，捕获 0 个 upvalue
+--       R[37] = makeClosure(PROTO[41], captures={})
+--   [0260] OP 182  A=37 B='MoveItemToQuickUse' C=None flags=210
+--       ENV["MoveItemToQuickUse"]=R[37]
+--   [0261] OP 154  A=37 B=37 C=3 flags=64 ; 创建子原型 child[37]，捕获 3 个 upvalue
+--       R[37] = makeClosure(PROTO[37], captures={capture#0: R[0] (local register); capture#1: R[3] (local register); capture#2: R[1] (local register)})
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(387, 0, 0, 0, 0), (387, 0, 3, 0, 192), (387, 0, 1, 0, 192)]）
+--   [0265] OP 355  A=0 B='hide' C=37 flags=144
+--       do local I="hide";local F=R[37];R[0][I]=F end
+--   [0266] OP  27  A=37 B=10 C=2 flags=64 ; 创建子原型 child[10]，捕获 2 个 upvalue
+--       R[37] = makeClosure(PROTO[10], captures={capture#0: R[0] (local register); capture#1: R[1] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 0, 0, 64), (387, 0, 1, 0, 128)]）
+--   [0269] OP 268  A=0 B='show' C=37 flags=144
+--       do local I="show";local F=R[37];R[0][I]=F end
+--   [0270] OP 154  A=37 B=40 C=3 flags=128 ; 创建子原型 child[40]，捕获 3 个 upvalue
+--       R[37] = makeClosure(PROTO[40], captures={capture#0: R[3] (local register); capture#1: R[1] (local register); capture#2: R[0] (local register)})
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(387, 0, 3, 0, 0), (387, 0, 1, 0, 0), (387, 0, 0, 0, 0)]）
+--   [0274] OP 355  A=0 B='destroy' C=37 flags=16
+--       do local I="destroy";local F=R[37];R[0][I]=F end
+--   [0275] OP 137  A=37 B='MainLeftBottom' C=None flags=146
+--       R[37]=ENV["MainLeftBottom"]
+--   [0276] OP  27  A=38 B=55 C=2 flags=0 ; 创建子原型 child[55]，捕获 2 个 upvalue
+--       R[38] = makeClosure(PROTO[55], captures={capture#0: R[4] (local register); capture#1: R[5] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 4, 0, 0), (387, 0, 5, 0, 0)]）
+--   [0279] OP 268  A=37 B='main' C=38 flags=208
+--       do local I="main";local F=R[38];R[37][I]=F end
+--   [0280] OP  90  A=37 B=1 C=0 flags=0
+--       R[37]={}
+--       R[38]="随机传送石"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 38, '随机传送石', None, 82)]）
+--   [0282] OP 153  A=37 B=1 C=1 flags=128
+--       do local I=1;if I==0 then I=math.max(0,B-37) end;local F=R[37];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[37+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[37]=O else for O=1,I do F[L+O]=R[37+O] end end;end
+--   [0283] OP 346  A=38 B=2.0 C=None flags=146
+--       R[38]=2.0
+--   [0284] OP 282  A=39 B=0.01 C=None flags=18
+--       R[39]=0.01
+--       R[40]=30.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 40, 30.0, None, 210)]）
+--   [0286] OP 120  A=41 B=0 C=7 flags=128
+--       R[41]={}
+--   [0287] OP 146  A=41 B='lastAttacker' C=None flags=176
+--       do local I="lastAttacker";local F=nil;R[41][I]=F end
+--   [0288] OP 146  A=41 B='lastHp' C=None flags=112
+--       do local I="lastHp";local F=nil;R[41][I]=F end
+--   [0289] OP 146  A=41 B='deathHandled' C=False flags=112
+--       do local I="deathHandled";local F=false;R[41][I]=F end
+--   [0290] OP 146  A=41 B='alertAt' C=0 flags=112
+--       do local I="alertAt";local F=0;R[41][I]=F end
+--   [0291] OP 156  A=41 B='nextTryAt' C=0 flags=112
+--       do local I="nextTryAt";local F=0;R[41][I]=F end
+--   [0292] OP 156  A=41 B='noStoneWarned' C=False flags=240
+--       do local I="noStoneWarned";local F=false;R[41][I]=F end
+--   [0293] OP 156  A=41 B='distance' C=None flags=48
+--       do local I="distance";local F=nil;R[41][I]=F end
+--   [0294] OP 268  A=0 B='blacklist' C=41 flags=80
+--       do local I="blacklist";local F=R[41];R[0][I]=F end
+--   [0295] OP 282  A=42 B='blacklist_distance.txt' C=None flags=18
+--       R[42]="blacklist_distance.txt"
+--       R[43]="gather_monster_count.txt"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 43, 'gather_monster_count.txt', None, 146)]）
+--   [0297] OP 154  A=44 B=2 C=0 flags=192 ; 创建子原型 child[2]，捕获 0 个 upvalue
+--       R[44] = makeClosure(PROTO[2], captures={})
+--   [0298] OP  27  A=45 B=9 C=1 flags=0 ; 创建子原型 child[9]，捕获 1 个 upvalue
+--       R[45] = makeClosure(PROTO[9], captures={capture#0: R[44] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 44, 0, 192)]）
+--   [0300] OP  27  A=46 B=17 C=1 flags=64 ; 创建子原型 child[17]，捕获 1 个 upvalue
+--       R[46] = makeClosure(PROTO[17], captures={capture#0: R[44] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 44, 0, 192)]）
+--   [0302] OP 154  A=47 B=0 C=1 flags=64 ; 创建子原型 child[0]，捕获 1 个 upvalue
+--       R[47] = makeClosure(PROTO[0], captures={capture#0: R[44] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 44, 0, 128)]）
+--   [0304] OP 154  A=48 B=49 C=2 flags=128 ; 创建子原型 child[49]，捕获 2 个 upvalue
+--       R[48] = makeClosure(PROTO[49], captures={capture#0: R[45] (local register); capture#1: R[42] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 45, 0, 0), (387, 0, 42, 0, 0)]）
+--   [0307] OP  27  A=49 B=32 C=2 flags=0 ; 创建子原型 child[32]，捕获 2 个 upvalue
+--       R[49] = makeClosure(PROTO[32], captures={capture#0: R[46] (local register); capture#1: R[42] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 46, 0, 128), (387, 0, 42, 0, 0)]）
+--   [0310] OP 154  A=50 B=33 C=2 flags=64 ; 创建子原型 child[33]，捕获 2 个 upvalue
+--       R[50] = makeClosure(PROTO[33], captures={capture#0: R[45] (local register); capture#1: R[43] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 45, 0, 64), (387, 0, 43, 0, 0)]）
+--   [0313] OP  27  A=51 B=54 C=2 flags=128 ; 创建子原型 child[54]，捕获 2 个 upvalue
+--       R[51] = makeClosure(PROTO[54], captures={capture#0: R[46] (local register); capture#1: R[43] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 46, 0, 128), (387, 0, 43, 0, 192)]）
+--   [0316] OP  19  A=52 B=8 C=0 flags=128
+--       R[52]={}
+--       R[53]={}
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(90, 53, 2, 0, 0)]）
+--   [0318] OP 282  A=54 B=1.0 C=None flags=210
+--       R[54]=1.0
+--       R[55]=0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 55, 0, None, 146)]）
+--   [0320] OP 153  A=53 B=2 C=1 flags=128
+--       do local I=2;if I==0 then I=math.max(0,B-53) end;local F=R[53];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[53+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[53]=O else for O=1,I do F[L+O]=R[53+O] end end;end
+--   [0321] OP 105  A=54 B=2 C=0 flags=0
+--       R[54]={}
+--   [0322] OP 371  A=55 B=-1.0 C=None flags=82
+--       R[55]=-1.0
+--   [0323] OP 346  A=56 B=0 C=None flags=18
+--       R[56]=0
+--   [0324] OP  88  A=54 B=2 C=1 flags=192
+--       do local I=2;if I==0 then I=math.max(0,B-54) end;local F=R[54];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[54+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[54]=O else for O=1,I do F[L+O]=R[54+O] end end;end
+--   [0325] OP  90  A=55 B=2 C=0 flags=128
+--       R[55]={}
+--       R[56]=0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(282, 56, 0, None, 146)]）
+--   [0327] OP 371  A=57 B=1.0 C=None flags=146
+--       R[57]=1.0
+--   [0328] OP 112  A=55 B=2 C=1 flags=192
+--       do local I=2;if I==0 then I=math.max(0,B-55) end;local F=R[55];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[55+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[55]=O else for O=1,I do F[L+O]=R[55+O] end end;end
+--   [0329] OP  90  A=56 B=2 C=0 flags=0
+--       R[56]={}
+--       R[57]=0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(282, 57, 0, None, 82)]）
+--   [0331] OP 346  A=58 B=-1.0 C=None flags=210
+--       R[58]=-1.0
+--   [0332] OP 153  A=56 B=2 C=1 flags=64
+--       do local I=2;if I==0 then I=math.max(0,B-56) end;local F=R[56];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[56+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[56]=O else for O=1,I do F[L+O]=R[56+O] end end;end
+--   [0333] OP  90  A=57 B=2 C=0 flags=128
+--       R[57]={}
+--       R[58]=1.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(282, 58, 1.0, None, 82)]）
+--   [0335] OP 346  A=59 B=1.0 C=None flags=146
+--       R[59]=1.0
+--   [0336] OP 402  A=57 B=2 C=1 flags=192
+--       do local I=2;if I==0 then I=math.max(0,B-57) end;local F=R[57];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[57+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[57]=O else for O=1,I do F[L+O]=R[57+O] end end;end
+--   [0337] OP  90  A=58 B=2 C=0 flags=64
+--       R[58]={}
+--       R[59]=1.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(282, 59, 1.0, None, 18)]）
+--   [0339] OP 371  A=60 B=-1.0 C=None flags=210
+--       R[60]=-1.0
+--   [0340] OP 237  A=58 B=2 C=1 flags=64
+--       do local I=2;if I==0 then I=math.max(0,B-58) end;local F=R[58];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[58+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[58]=O else for O=1,I do F[L+O]=R[58+O] end end;end
+--   [0341] OP  90  A=59 B=2 C=0 flags=192
+--       R[59]={}
+--       R[60]=-1.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(282, 60, -1.0, None, 82)]）
+--   [0343] OP 346  A=61 B=1.0 C=None flags=18
+--       R[61]=1.0
+--   [0344] OP 153  A=59 B=2 C=1 flags=192
+--       do local I=2;if I==0 then I=math.max(0,B-59) end;local F=R[59];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[59+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[59]=O else for O=1,I do F[L+O]=R[59+O] end end;end
+--   [0345] OP  90  A=60 B=2 C=0 flags=0
+--       R[60]={}
+--       R[61]=-1.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(282, 61, -1.0, None, 18)]）
+--   [0347] OP 346  A=62 B=-1.0 C=None flags=210
+--       R[62]=-1.0
+--   [0348] OP  88  A=60 B=2 C=1 flags=64
+--       do local I=2;if I==0 then I=math.max(0,B-60) end;local F=R[60];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[60+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[60]=O else for O=1,I do F[L+O]=R[60+O] end end;end
+--   [0349] OP 112  A=52 B=8 C=1 flags=128
+--       do local I=8;if I==0 then I=math.max(0,B-52) end;local F=R[52];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[52+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[52]=O else for O=1,I do F[L+O]=R[52+O] end end;end
+--   [0350] OP 154  A=53 B=22 C=1 flags=0 ; 创建子原型 child[22]，捕获 1 个 upvalue
+--       R[53] = makeClosure(PROTO[22], captures={capture#0: R[52] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 52, 0, 128)]）
+--   [0352] OP 154  A=54 B=48 C=0 flags=0 ; 创建子原型 child[48]，捕获 0 个 upvalue
+--       R[54] = makeClosure(PROTO[48], captures={})
+--   [0353] OP 154  A=55 B=51 C=1 flags=0 ; 创建子原型 child[51]，捕获 1 个 upvalue
+--       R[55] = makeClosure(PROTO[51], captures={capture#0: R[54] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 54, 0, 192)]）
+--   [0355] OP 154  A=56 B=24 C=1 flags=0 ; 创建子原型 child[24]，捕获 1 个 upvalue
+--       R[56] = makeClosure(PROTO[24], captures={capture#0: R[37] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 37, 0, 128)]）
+--   [0357] OP  27  A=57 B=52 C=1 flags=64 ; 创建子原型 child[52]，捕获 1 个 upvalue
+--       R[57] = makeClosure(PROTO[52], captures={capture#0: R[41] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 41, 0, 0)]）
+--   [0359] OP 355  A=0 B='onDamageMsg' C=57 flags=208
+--       do local I="onDamageMsg";local F=R[57];R[0][I]=F end
+--   [0360] OP  27  A=57 B=6 C=2 flags=0 ; 创建子原型 child[6]，捕获 2 个 upvalue
+--       R[57] = makeClosure(PROTO[6], captures={capture#0: R[0] (local register); capture#1: R[4] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 0, 0, 192), (387, 0, 4, 0, 64)]）
+--   [0363] OP  27  A=58 B=25 C=4 flags=192 ; 创建子原型 child[25]，捕获 4 个 upvalue
+--       R[58] = makeClosure(PROTO[25], captures={capture#0: R[41] (local register); capture#1: R[4] (local register); capture#2: R[55] (local register); capture#3: R[5] (local register)})
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(387, 0, 41, 0, 128), (387, 0, 4, 0, 0), (387, 0, 55, 0, 0), (387, 0, 5, 0, 0)]）
+--   [0368] OP 154  A=59 B=47 C=13 flags=0 ; 创建子原型 child[47]，捕获 13 个 upvalue
+--       R[59] = makeClosure(PROTO[47], captures={capture#0: R[2] (local register); capture#1: R[57] (local register); capture#2: R[41] (local register); capture#3: R[58] (local register); capture#4: R[55] (local register); capture#5: R[53] (local register); capture#6: R[38] (local register); capture#7: R[4] (local register); capture#8: R[56] (local register); capture#9: R[39] (local register); capture#10: R[5] (local register); capture#11: R[40] (local register); capture#12: R[37] (local register)})
+--       （该融合指令内部消费后续 13 条记录；原始记录=[(387, 0, 2, 0, 192), (387, 0, 57, 0, 192), (387, 0, 41, 0, 128), (387, 0, 58, 0, 0), (387, 0, 55, 0, 0), (387, 0, 53, 0, 64), (387, 0, 38, 0, 192), (387, 0, 4, 0, 192), (387, 0, 56, 0, 64), (387, 0, 39, 0, 64), (387, 0, 5, 0, 0), (387, 0, 40, 0, 64), (387, 0, 37, 0, 128)]）
+--   [0382] OP 182  A=59 B='BlacklistItems' C=None flags=146
+--       ENV["BlacklistItems"]=R[59]
+--   [0383] OP  27  A=59 B=15 C=4 flags=192 ; 创建子原型 child[15]，捕获 4 个 upvalue
+--       R[59] = makeClosure(PROTO[15], captures={capture#0: R[54] (local register); capture#1: R[4] (local register); capture#2: R[5] (local register); capture#3: R[41] (local register)})
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(387, 0, 54, 0, 128), (387, 0, 4, 0, 128), (387, 0, 5, 0, 128), (387, 0, 41, 0, 64)]）
+--   [0388] OP 141  A=59 B='ClearBlacklistItems' C=None flags=146
+--       ENV["ClearBlacklistItems"]=R[59]
+--   [0389] OP 137  A=59 B='MainLeftBottom' C=None flags=82
+--       R[59]=ENV["MainLeftBottom"]
+--   [0390] OP  27  A=60 B=42 C=20 flags=0 ; 创建子原型 child[42]，捕获 20 个 upvalue
+--       R[60] = makeClosure(PROTO[42], captures={capture#0: R[4] (local register); capture#1: R[2] (local register); capture#2: R[3] (local register); capture#3: R[0] (local register); capture#4: R[1] (local register); capture#5: R[41] (local register); capture#6: R[48] (local register); capture#7: R[7] (local register); capture#8: R[8] (local register); capture#9: R[50] (local register); capture#10: R[49] (local register); capture#11: R[5] (local register); capture#12: R[44] (local register); capture#13: R[42] (local register); capture#14: R[51] (local register); capture#15: R[43] (local register); capture#16: R[47] (local register); capture#17: R[11] (local register); capture#18: R[12] (local register); capture#19: R[9] (local register)})
+--       （该融合指令内部消费后续 20 条记录；原始记录=[(387, 0, 4, 0, 128), (387, 0, 2, 0, 192), (387, 0, 3, 0, 0), (387, 0, 0, 0, 0), (387, 0, 1, 0, 64), (387, 0, 41, 0, 0), (387, 0, 48, 0, 64), (387, 0, 7, 0, 0), (387, 0, 8, 0, 192), (387, 0, 50, 0, 64), (387, 0, 49, 0, 0), (387, 0, 5, 0, 0), (387, 0, 44, 0, 0), (387, 0, 42, 0, 128), (387, 0, 51, 0, 192), (387, 0, 43, 0, 64), (387, 0, 47, 0, 192), (387, 0, 11, 0, 64), (387, 0, 12, 0, 192), (387, 0, 9, 0, 0)]）
+--   [0411] OP 268  A=59 B='doInit' C=60 flags=144
+--       do local I="doInit";local F=R[60];R[59][I]=F end
+--   [0412] OP   1  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_001 FileExistCheck_pcall_wrapper | path=root.0 | parent=PROTO_000 / child[0]
+-- 参数=1 | 常量=5 | 指令=32 | 子原型=1
+-- 字符串线索：pcall | isFileExist | cc | getInstance | FileUtils
+-- 常量池：
+--   K[0] = 'pcall'
+--   K[1] = 'isFileExist'
+--   K[2] = 'cc'
+--   K[3] = 'getInstance'
+--   K[4] = 'FileUtils'
+-- 指令：
+--   [0001] OP 309  A=1 B='cc' C=None flags=210
+--       R[1]=ENV["cc"]
+--       R[1]=R[1]["FileUtils"]
+--       local I=R[1];R[1+1]=I;R[1]=I["getInstance"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(270, 1, 1, 'FileUtils', 160), (238, 1, 1, 'getInstance', 224)]）
+--   [0004] OP  68  A=1 B=2 C=0 flags=64
+--       R[1]=R[1](U(T,1+1,2))
+--   [0005] OP 130  A=2 B=0 C=0 flags=0
+--       R[2]=UP[0]
+--   [0006] OP 308  A=3 B=0 C=0 flags=192
+--       R[3]=R[0]
+--   [0007] OP  98  A=2 B=3 C=0 flags=192
+--       R[2]=R[2](U(T,2+1,3))
+--   [0008] OP 142  A=3 B=1 C='isFileExist' flags=160
+--       local I=R[1];R[3+1]=I;R[3]=I["isFileExist"]
+--       R[5]=R[2]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 5, 2, 0, 0)]）
+--   [0010] OP  98  A=3 B=5 C=0 flags=128
+--       R[3]=R[3](U(T,3+1,5))
+--   [0011] OP 342  A=3 B=0 C=1 flags=64
+--       if (not not R[3])~=(1~=0) then PC=PC+1 end
+--   [0012] OP 215  A=0 B=15 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=15
+--   [0013] OP  11  A=3 B=1 C=0 flags=64
+--       R[3]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0014] OP 184  A=4 B=2 C=0 flags=64
+--       R[4]=R[2]
+--   [0015] OP 220  A=3 B=4 C=0 flags=64
+--       return U(T,3,4)
+--   [0016] OP 137  A=3 B='pcall' C=None flags=82
+--       R[3]=ENV["pcall"]
+--   [0017] OP  27  A=4 B=0 C=2 flags=192 ; 创建子原型 child[0]，捕获 2 个 upvalue
+--       R[4] = makeClosure(PROTO[0], captures={capture#0: R[1] (local register); capture#1: R[2] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 1, 0, 64), (387, 0, 2, 0, 128)]）
+--   [0020] OP  68  A=3 B=4 C=0 flags=192
+--       R[3]=R[3](U(T,3+1,4))
+--   [0021] OP 342  A=3 B=0 C=1 flags=64
+--       if (not not R[3])~=(1~=0) then PC=PC+1 end
+--   [0022] OP 215  A=0 B=25 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=25
+--   [0023] OP  11  A=4 B=0 C=0 flags=0
+--       R[4]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0024] OP 308  A=5 B=2 C=0 flags=0
+--       R[5]=R[2]
+--   [0025] OP 220  A=4 B=5 C=0 flags=0
+--       return U(T,4,5)
+--   [0026] OP 142  A=4 B=1 C='isFileExist' flags=96
+--       local I=R[1];R[4+1]=I;R[4]=I["isFileExist"]
+--       R[6]=R[2]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 6, 2, 0, 0)]）
+--   [0028] OP  68  A=4 B=6 C=0 flags=192
+--       R[4]=R[4](U(T,4+1,6))
+--   [0029] OP 172  A=4 B=4 C=0 flags=64
+--       R[4]=not R[4]
+--   [0030] OP 184  A=5 B=2 C=0 flags=192
+--       R[5]=R[2]
+--   [0031] OP 220  A=4 B=5 C=0 flags=0
+--       return U(T,4,5)
+--   [0032] OP 250  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_002 Nested_removeFile | path=root.0.0 | parent=PROTO_001 / child[0]
+-- 参数=0 | 常量=1 | 指令=5 | 子原型=0
+-- 字符串线索：removeFile
+-- 常量池：
+--   K[0] = 'removeFile'
+-- 指令：
+--   [0001] OP 130  A=0 B=0 C=0 flags=64
+--       R[0]=UP[0]
+--   [0002] OP 238  A=0 B=0 C='removeFile' flags=160
+--       local I=R[0];R[0+1]=I;R[0]=I["removeFile"]
+--   [0003] OP 130  A=2 B=1 C=0 flags=128
+--       R[2]=UP[1]
+--   [0004] OP 187  A=0 B=2 C=0 flags=128
+--       R[0](U(T,0+1,2))
+--   [0005] OP 250  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_003 GetStorageItemData | path=root.1 | parent=PROTO_000 / child[1]
+-- 参数=0 | 常量=16 | 指令=77 | 子原型=0
+-- 字符串线索：仓库总可用格子:  | GUIDefine | type | GetOpenSize | table | insert | global | ipairs | NPC_STORAGE_MAX_PAGE | NPCStorageProxy | MMO | STORAGE_PER_PAGE_MAX | GetMaxPage | GetStorageDataByPage
+-- 常量池：
+--   K[0] = '仓库总可用格子: '
+--   K[1] = 'GUIDefine'
+--   K[2] = 'type'
+--   K[3] = 'GetOpenSize'
+--   K[4] = 'table'
+--   K[5] = 'insert'
+--   K[6] = 0
+--   K[7] = 'global'
+--   K[8] = 'ipairs'
+--   K[9] = 'NPC_STORAGE_MAX_PAGE'
+--   K[10] = 'NPCStorageProxy'
+--   K[11] = 'MMO'
+--   K[12] = 1.0
+--   K[13] = 'STORAGE_PER_PAGE_MAX'
+--   K[14] = 'GetMaxPage'
+--   K[15] = 'GetStorageDataByPage'
+-- 指令：
+--   [0001] OP   9  A=0 B=0 C=0 flags=128
+--       R[0]={}
+--       R[1]=ENV["NPCStorageProxy"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(137, 1, 'NPCStorageProxy', None, 82)]）
+--   [0003] OP 342  A=1 B=0 C=1 flags=192
+--       if (not not R[1])~=(1~=0) then PC=PC+1 end
+--   [0004] OP 140  A=0 B=6 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=6
+--   [0005] OP 234  A=1 B=1 C=0 flags=64
+--       for I=1,1 do R[I]=nil end
+--   [0006] OP 220  A=1 B=1 C=0 flags=128
+--       return U(T,1,1)
+--   [0007] OP 137  A=1 B='NPCStorageProxy' C=None flags=210
+--       R[1]=ENV["NPCStorageProxy"]
+--   [0008] OP  16  A=1 B=0 C=0 flags=128
+--       if (not not R[1])~=(0~=0) then PC=PC+1 end
+--   [0009] OP 215  A=0 B=75 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=75
+--   [0010] OP 335  A=1 B='NPCStorageProxy' C=None flags=82
+--       R[1]=ENV["NPCStorageProxy"]
+--       local I=R[1];R[1+1]=I;R[1]=I["GetMaxPage"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(33, 1, 1, 'GetMaxPage', 224)]）
+--   [0012] OP  98  A=1 B=2 C=0 flags=0
+--       R[1]=R[1](U(T,1+1,2))
+--   [0013] OP 314  A=2 B=0 C=None flags=210
+--       R[2]=0
+--       R[3]=1.0
+--       R[4]=R[1]
+--       R[5]=1.0
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(101, 3, 1.0, None, 18), (288, 4, 1, 0, 128), (346, 5, 1.0, None, 82)]）
+--   [0017] OP  23  A=3 B=67 C=None flags=130
+--       R[3]=R[3]-R[3+2];PC=67
+--   [0018] OP 300  A=7 B='NPCStorageProxy' C=None flags=146
+--       R[7]=ENV["NPCStorageProxy"]
+--       local I=R[7];R[7+1]=I;R[7]=I["GetStorageDataByPage"]
+--       R[9]=R[6]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(142, 7, 7, 'GetStorageDataByPage', 224), (308, 9, 6, 0, 128)]）
+--   [0021] OP  98  A=7 B=9 C=0 flags=192
+--       R[7]=R[7](U(T,7+1,9))
+--   [0022] OP  16  A=7 B=0 C=0 flags=64
+--       if (not not R[7])~=(0~=0) then PC=PC+1 end
+--   [0023] OP 215  A=0 B=41 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=41
+--   [0024] OP  71  A=8 B='type' C=None flags=210
+--       R[8]=ENV["type"]
+--       R[9]=R[7]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 9, 7, 0, 64)]）
+--   [0026] OP  98  A=8 B=9 C=0 flags=192
+--       R[8]=R[8](U(T,8+1,9))
+--   [0027] OP 271  A=0 B=8 C='table' flags=160
+--       if (R[8]=="table")~=(0~=0) then PC=PC+1 end
+--   [0028] OP 215  A=0 B=41 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=41
+--   [0029] OP  71  A=8 B='ipairs' C=None flags=210
+--       R[8]=ENV["ipairs"]
+--       R[9]=R[7]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 9, 7, 0, 0)]）
+--   [0031] OP 359  A=8 B=9 C=10 flags=64
+--       do local I={ R[8](U(T,8+1,9)) };local F=0;for U=8,10 do F=F+1;R[U]=I[F] end end
+--   [0032] OP 255  A=0 B=39 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=39
+--   [0033] OP  16  A=12 B=0 C=0 flags=128
+--       if (not not R[12])~=(0~=0) then PC=PC+1 end
+--   [0034] OP 255  A=0 B=39 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=39
+--   [0035] OP  10  A=13 B='table' C=None flags=210
+--       R[13]=ENV["table"]
+--       R[13]=R[13]["insert"]
+--       R[14]=R[0]
+--       R[15]=R[12]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(363, 13, 13, 'insert', 160), (78, 14, 0, 0, 192), (308, 15, 12, 0, 128)]）
+--   [0039] OP 187  A=13 B=15 C=0 flags=0
+--       R[13](U(T,13+1,15))
+--   [0040] OP 339  A=8 B=2 C=0 flags=0
+--       do local I,F=E(R[8](R[8+1],R[8+2]));for U=1,2 do R[8+2+U]=I[U] end;if R[8+3]==nil then PC=PC+1 else R[8+2]=R[8+3] end end
+--   [0041] OP 255  A=0 B=32 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=32
+--   [0042] OP  16  A=7 B=0 C=0 flags=64
+--       if (not not R[7])~=(0~=0) then PC=PC+1 end
+--   [0043] OP 140  A=0 B=46 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=46
+--   [0044] OP 115  A=8 B=7 C=0 flags=128
+--       R[8]=#R[7]
+--   [0045] OP 342  A=8 B=0 C=1 flags=192
+--       if (not not R[8])~=(1~=0) then PC=PC+1 end
+--   [0046] OP 255  A=0 B=47 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=47
+--   [0047] OP 217  A=8 B=0 C=None flags=146
+--       R[8]=0
+--       R[9]=ENV["GUIDefine"]
+--       R[9]=R[9]["STORAGE_PER_PAGE_MAX"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(137, 9, 'GUIDefine', None, 146), (363, 9, 9, 'STORAGE_PER_PAGE_MAX', 224)]）
+--   [0050] OP 342  A=9 B=0 C=1 flags=192
+--       if (not not R[9])~=(1~=0) then PC=PC+1 end
+--   [0051] OP 140  A=0 B=54 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=54
+--   [0052] OP  70  A=9 B='global' C=None flags=210
+--       R[9]=ENV["global"]
+--       R[9]=R[9]["MMO"]
+--       R[9]=R[9]["NPC_STORAGE_MAX_PAGE"]
+--       R[10]=ENV["NPCStorageProxy"]
+--       local I=R[10];R[10+1]=I;R[10]=I["GetOpenSize"]
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(49, 9, 9, 'MMO', 96), (32, 9, 9, 'NPC_STORAGE_MAX_PAGE', 32), (335, 10, 'NPCStorageProxy', None, 18), (33, 10, 10, 'GetOpenSize', 32)]）
+--   [0057] OP  68  A=10 B=11 C=0 flags=128
+--       R[10]=R[10](U(T,10+1,11))
+--   [0058] OP  73  A=11 B=6 C=1.0 flags=96
+--       R[11]=R[6]-1.0
+--       R[11]=R[11]*R[9]
+--       R[10]=R[10]-R[11]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(316, 11, 11, 9, 64), (340, 10, 10, 11, 64)]）
+--   [0061] OP 253  A=0 B=9 C=10 flags=192
+--       if (R[9]<R[10])~=(0~=0) then PC=PC+1 end
+--   [0062] OP 215  A=0 B=63 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=63
+--   [0063] OP 308  A=10 B=9 C=0 flags=128
+--       R[10]=R[9]
+--   [0064] OP 364  A=0 B=0 C=10 flags=80
+--       if (0<R[10])~=(0~=0) then PC=PC+1 end
+--   [0065] OP 255  A=0 B=67 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=67
+--   [0066] OP 340  A=11 B=10 C=8 flags=192
+--       R[11]=R[10]-R[8]
+--   [0067] OP  29  A=2 B=2 C=11 flags=0
+--       R[2]=R[2]+R[11]
+--   [0068] OP 412  A=3 B=17 C=None flags=130
+--       do local I=3;local F=R[I+2];local U=R[I]+F;R[I]=U;local L=R[I+1];if (F>0 and U<=L) or (F<=0 and U>=L) then R[I+3]=U;PC=17 end end
+--   [0069] OP 364  A=0 B=0 C=2 flags=16
+--       if (0<R[2])~=(0~=0) then PC=PC+1 end
+--   [0070] OP 215  A=0 B=75 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=75
+--   [0071] OP 145  A=3 B=0 C=0 flags=192
+--       R[3]=UP[0]
+--       R[4]="仓库总可用格子: "
+--       R[5]=R[2]
+--       do local I=R[5];for F=5-1,4,-1 do I=R[F]..I end;R[4]=I end
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(320, 4, '仓库总可用格子: ', None, 18), (345, 5, 2, 0, 64), (210, 4, 4, 5, 192)]）
+--   [0075] OP 358  A=3 B=4 C=0 flags=0
+--       R[3](U(T,3+1,4))
+--   [0076] OP 220  A=0 B=0 C=0 flags=0
+--       return U(T,0,0)
+--   [0077] OP  55  A=0 B=0 C=0 flags=64
+--       return
+
+-- ============================================================================
+-- PROTO_004 GetWritablePath | path=root.2 | parent=PROTO_000 / child[2]
+-- 参数=1 | 常量=4 | 指令=10 | 子原型=0
+-- 字符串线索：FileUtils | getInstance | getWritablePath | cc
+-- 常量池：
+--   K[0] = 'FileUtils'
+--   K[1] = 'getInstance'
+--   K[2] = 'getWritablePath'
+--   K[3] = 'cc'
+-- 指令：
+--   [0001] OP 137  A=1 B='cc' C=None flags=210
+--       R[1]=ENV["cc"]
+--   [0002] OP 270  A=1 B=1 C='FileUtils' flags=224
+--       R[1]=R[1]["FileUtils"]
+--       local I=R[1];R[1+1]=I;R[1]=I["getInstance"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(33, 1, 1, 'getInstance', 32)]）
+--   [0004] OP  98  A=1 B=2 C=0 flags=0
+--       R[1]=R[1](U(T,1+1,2))
+--   [0005] OP 121  A=1 B=1 C='getWritablePath' flags=96
+--       local I=R[1];R[1+1]=I;R[1]=I["getWritablePath"]
+--   [0006] OP  98  A=1 B=2 C=0 flags=64
+--       R[1]=R[1](U(T,1+1,2))
+--   [0007] OP 184  A=2 B=0 C=0 flags=128
+--       R[2]=R[0]
+--   [0008] OP 210  A=1 B=1 C=2 flags=192
+--       do local I=R[2];for F=2-1,1,-1 do I=R[F]..I end;R[1]=I end
+--   [0009] OP 220  A=1 B=1 C=0 flags=192
+--       return U(T,1,1)
+--   [0010] OP 100  A=0 B=0 C=0 flags=0
+--       return
+
+-- ============================================================================
+-- PROTO_005 MoveTo | path=root.3 | parent=PROTO_000 / child[3]
+-- 参数=3 | 常量=20 | 指令=51 | 子原型=0
+-- 字符串线索：sendNotification | global | range | Facade | x | PlayerPos | InputMove | NoticeTable | GetMetaValue | mapID | INPUT_MOVE_TYPE_AUTOMOVE | SL | abs | y | math | MMO | tonumber | type | MAP_ID
+-- 常量池：
+--   K[0] = 'sendNotification'
+--   K[1] = 'global'
+--   K[2] = 'range'
+--   K[3] = 'Facade'
+--   K[4] = 'x'
+--   K[5] = 'PlayerPos'
+--   K[6] = 'InputMove'
+--   K[7] = 'NoticeTable'
+--   K[8] = 'GetMetaValue'
+--   K[9] = 'mapID'
+--   K[10] = 'INPUT_MOVE_TYPE_AUTOMOVE'
+--   K[11] = 'SL'
+--   K[12] = 'abs'
+--   K[13] = 'y'
+--   K[14] = 'math'
+--   K[15] = 'MMO'
+--   K[16] = 'tonumber'
+--   K[17] = 0
+--   K[18] = 'type'
+--   K[19] = 'MAP_ID'
+-- 指令：
+--   [0001] OP 225  A=3 B=0 C=5 flags=128
+--       R[3]={}
+--       R[4]=ENV["SL"]
+--       local I=R[4];R[4+1]=I;R[4]=I["GetMetaValue"]
+--       R[6]="MAP_ID"
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(137, 4, 'SL', None, 18), (238, 4, 4, 'GetMetaValue', 160), (346, 6, 'MAP_ID', None, 210)]）
+--   [0005] OP  98  A=4 B=6 C=0 flags=128
+--       R[4]=R[4](U(T,4+1,6))
+--   [0006] OP 268  A=3 B='mapID' C=4 flags=16
+--       do local I="mapID";local F=R[4];R[3][I]=F end
+--   [0007] OP 137  A=4 B='tonumber' C=None flags=82
+--       R[4]=ENV["tonumber"]
+--   [0008] OP 184  A=5 B=0 C=0 flags=64
+--       R[5]=R[0]
+--   [0009] OP  68  A=4 B=5 C=0 flags=64
+--       R[4]=R[4](U(T,4+1,5))
+--   [0010] OP 353  A=3 B='x' C=4 flags=144
+--       do local I="x";local F=R[4];R[3][I]=F end
+--       R[4]=ENV["tonumber"]
+--       R[5]=R[1]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(137, 4, 'tonumber', None, 146), (184, 5, 1, 0, 128)]）
+--   [0013] OP  68  A=4 B=5 C=0 flags=128
+--       R[4]=R[4](U(T,4+1,5))
+--   [0014] OP 355  A=3 B='y' C=4 flags=16
+--       do local I="y";local F=R[4];R[3][I]=F end
+--   [0015] OP 137  A=4 B='global' C=None flags=18
+--       R[4]=ENV["global"]
+--   [0016] OP  32  A=4 B=4 C='MMO' flags=224
+--       R[4]=R[4]["MMO"]
+--   [0017] OP 404  A=4 B=4 C='INPUT_MOVE_TYPE_AUTOMOVE' flags=224
+--       R[4]=R[4]["INPUT_MOVE_TYPE_AUTOMOVE"]
+--       do local I="type";local F=R[4];R[3][I]=F end
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(268, 3, 'type', 4, 80)]）
+--   [0019] OP 362  A=4 B=2 C=1 flags=192
+--       local I=R[2];if (not not I)==(1~=0) then R[4]=I else PC=PC+1 end
+--   [0020] OP 255  A=0 B=21 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=21
+--   [0021] OP 222  A=4 B=0 C=None flags=210
+--       R[4]=0
+--       do local I="range";local F=R[4];R[3][I]=F end
+--       R[4]=ENV["global"]
+--       R[4]=R[4]["Facade"]
+--       local I=R[4];R[4+1]=I;R[4]=I["sendNotification"]
+--       R[6]=ENV["global"]
+--       R[6]=R[6]["NoticeTable"]
+--       （该融合指令内部消费后续 6 条记录；原始记录=[(355, 3, 'range', 4, 144), (394, 4, 'global', None, 210), (260, 4, 4, 'Facade', 160), (205, 4, 4, 'sendNotification', 160), (296, 6, 'global', None, 146), (389, 6, 6, 'NoticeTable', 160)]）
+--   [0028] OP 398  A=6 B=6 C='InputMove' flags=96
+--       R[6]=R[6]["InputMove"]
+--       R[7]=R[3]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 7, 3, 0, 0)]）
+--   [0030] OP 187  A=4 B=7 C=0 flags=0
+--       R[4](U(T,4+1,7))
+--   [0031] OP 137  A=4 B='PlayerPos' C=None flags=18
+--       R[4]=ENV["PlayerPos"]
+--   [0032] OP 359  A=4 B=4 C=5 flags=0
+--       do local I={ R[4](U(T,4+1,4)) };local F=0;for U=4,5 do F=F+1;R[U]=I[F] end end
+--   [0033] OP 137  A=6 B='math' C=None flags=146
+--       R[6]=ENV["math"]
+--   [0034] OP 228  A=6 B=6 C='abs' flags=160
+--       R[6]=R[6]["abs"]
+--       R[7]=R[3]["x"]
+--       R[7]=R[7]-R[4]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(384, 7, 3, 'x', 32), (340, 7, 7, 4, 64)]）
+--   [0037] OP  98  A=6 B=7 C=0 flags=0
+--       R[6]=R[6](U(T,6+1,7))
+--   [0038] OP 236  A=0 B=6 C=2 flags=0
+--       if (R[6]<=R[2])~=(0~=0) then PC=PC+1 end
+--   [0039] OP 255  A=0 B=48 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=48
+--   [0040] OP 203  A=6 B='math' C=None flags=18
+--       R[6]=ENV["math"]
+--       R[6]=R[6]["abs"]
+--       R[7]=R[3]["y"]
+--       R[7]=R[7]-R[5]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(32, 6, 6, 'abs', 32), (384, 7, 3, 'y', 224), (340, 7, 7, 5, 192)]）
+--   [0044] OP  68  A=6 B=7 C=0 flags=64
+--       R[6]=R[6](U(T,6+1,7))
+--   [0045] OP 258  A=0 B=6 C=2 flags=64
+--       if (R[6]<=R[2])~=(0~=0) then PC=PC+1 end
+--   [0046] OP 215  A=0 B=48 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=48
+--   [0047] OP  11  A=6 B=1 C=0 flags=64
+--       R[6]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0048] OP 220  A=6 B=6 C=0 flags=192
+--       return U(T,6,6)
+--   [0049] OP  11  A=6 B=0 C=0 flags=64
+--       R[6]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0050] OP 220  A=6 B=6 C=0 flags=64
+--       return U(T,6,6)
+--   [0051] OP   1  A=0 B=0 C=0 flags=64
+--       return
+
+-- ============================================================================
+-- PROTO_006 GetDroppedItems | path=root.4 | parent=PROTO_000 / child[4]
+-- 参数=0 | 常量=3 | 指令=8 | 子原型=0
+-- 字符串线索：FindDropItemInCurrViewFieldAll | global | dropItemManager
+-- 常量池：
+--   K[0] = 'FindDropItemInCurrViewFieldAll'
+--   K[1] = 'global'
+--   K[2] = 'dropItemManager'
+-- 指令：
+--   [0001] OP 309  A=0 B='global' C=None flags=18
+--       R[0]=ENV["global"]
+--       R[0]=R[0]["dropItemManager"]
+--       local I=R[0];R[1+1]=I;R[1]=I["FindDropItemInCurrViewFieldAll"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(270, 0, 0, 'dropItemManager', 160), (121, 1, 0, 'FindDropItemInCurrViewFieldAll', 96)]）
+--   [0004] OP 233  A=1 B=2 C=2 flags=128
+--       do local I={ R[1](U(T,1+1,2)) };local F=0;for U=1,2 do F=F+1;R[U]=I[F] end end
+--   [0005] OP 308  A=3 B=1 C=0 flags=128
+--       R[3]=R[1]
+--   [0006] OP 184  A=4 B=2 C=0 flags=192
+--       R[4]=R[2]
+--   [0007] OP 220  A=3 B=4 C=0 flags=64
+--       return U(T,3,4)
+--   [0008] OP  55  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_007 TakeItems | path=root.5 | parent=PROTO_000 / child[5]
+-- 参数=0 | 常量=23 | 指令=99 | 子原型=0
+-- 字符串线索：取:  | string | isTaking | MakeIndex | LuaSendMsg | global | 待定 | len | GetStorageItemData | MSG_CS_STORAGE_PICK_OUT_REQUEST | find | MsgType | ipairs | 取出物品完成, 共取出  | trim |  件 | Name | 仓库无可取物品
+-- 常量池：
+--   K[0] = '取: '
+--   K[1] = 'string'
+--   K[2] = 'isTaking'
+--   K[3] = 'MakeIndex'
+--   K[4] = 999999999.0
+--   K[5] = 0
+--   K[6] = False
+--   K[7] = 'LuaSendMsg'
+--   K[8] = 'global'
+--   K[9] = '待定'
+--   K[10] = 'len'
+--   K[11] = 'GetStorageItemData'
+--   K[12] = 'MSG_CS_STORAGE_PICK_OUT_REQUEST'
+--   K[13] = 'find'
+--   K[14] = 'MsgType'
+--   K[15] = 'ipairs'
+--   K[16] = '取出物品完成, 共取出 '
+--   K[17] = 1.0
+--   K[18] = 'trim'
+--   K[19] = ' 件'
+--   K[20] = True
+--   K[21] = 'Name'
+--   K[22] = '仓库无可取物品'
+-- 指令：
+--   [0001] OP 130  A=0 B=0 C=0 flags=192
+--       R[0]=UP[0]
+--   [0002] OP 375  A=0 B=0 C='isTaking' flags=224
+--       R[0]=R[0]["isTaking"]
+--   [0003] OP  16  A=0 B=0 C=0 flags=128
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0004] OP 140  A=0 B=5 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=5
+--   [0005] OP  55  A=0 B=0 C=0 flags=0
+--       return
+--   [0006] OP   8  A=0 B=0 C=0 flags=128
+--       R[0]=UP[0]
+--       do local I="isTaking";local F=true;R[0][I]=F end
+--       R[0]=1.0
+--       R[1]={}
+--       R[2]="待定"
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(156, 0, 'isTaking', True, 176), (40, 0, 1.0, None, 146), (90, 1, 1, 0, 192), (346, 2, '待定', None, 146)]）
+--   [0011] OP 402  A=1 B=1 C=1 flags=64
+--       do local I=1;if I==0 then I=math.max(0,B-1) end;local F=R[1];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[1+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[1]=O else for O=1,I do F[L+O]=R[1+O] end end;end
+--   [0012] OP 137  A=2 B='GetStorageItemData' C=None flags=18
+--       R[2]=ENV["GetStorageItemData"]
+--   [0013] OP  68  A=2 B=2 C=0 flags=192
+--       R[2]=R[2](U(T,2+1,2))
+--   [0014] OP  16  A=2 B=0 C=0 flags=128
+--       if (not not R[2])~=(0~=0) then PC=PC+1 end
+--   [0015] OP 215  A=0 B=18 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=18
+--   [0016] OP 115  A=3 B=2 C=0 flags=0
+--       R[3]=#R[2]
+--   [0017] OP  45  A=0 B=3 C=0 flags=32
+--       if (R[3]==0)~=(0~=0) then PC=PC+1 end
+--   [0018] OP 140  A=0 B=24 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=24
+--   [0019] OP 130  A=3 B=1 C=0 flags=64
+--       R[3]=UP[1]
+--   [0020] OP 371  A=4 B='仓库无可取物品' C=None flags=82
+--       R[4]="仓库无可取物品"
+--   [0021] OP 358  A=3 B=4 C=0 flags=0
+--       R[3](U(T,3+1,4))
+--   [0022] OP  89  A=3 B=0 C=0 flags=128
+--       R[3]=UP[0]
+--       do local I="isTaking";local F=false;R[3][I]=F end
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(146, 3, 'isTaking', False, 176)]）
+--   [0024] OP 250  A=0 B=0 C=0 flags=128
+--       return
+--   [0025] OP 173  A=3 B=0 C=None flags=18
+--       R[3]=0
+--       R[4]=ENV["ipairs"]
+--       R[5]=R[2]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(137, 4, 'ipairs', None, 210), (184, 5, 2, 0, 128)]）
+--   [0028] OP 359  A=4 B=5 C=6 flags=64
+--       do local I={ R[4](U(T,4+1,5)) };local F=0;for U=4,6 do F=F+1;R[U]=I[F] end end
+--   [0029] OP 140  A=0 B=86 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=86
+--   [0030] OP  16  A=8 B=0 C=0 flags=0
+--       if (not not R[8])~=(0~=0) then PC=PC+1 end
+--   [0031] OP 255  A=0 B=86 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=86
+--   [0032] OP 363  A=9 B=8 C='Name' flags=160
+--       R[9]=R[8]["Name"]
+--   [0033] OP  16  A=9 B=0 C=0 flags=64
+--       if (not not R[9])~=(0~=0) then PC=PC+1 end
+--   [0034] OP 255  A=0 B=86 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=86
+--   [0035] OP  32  A=9 B=8 C='MakeIndex' flags=224
+--       R[9]=R[8]["MakeIndex"]
+--   [0036] OP  16  A=9 B=0 C=0 flags=192
+--       if (not not R[9])~=(0~=0) then PC=PC+1 end
+--   [0037] OP 140  A=0 B=86 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=86
+--   [0038] OP 198  A=9 B='string' C=None flags=210
+--       R[9]=ENV["string"]
+--       R[9]=R[9]["trim"]
+--       R[10]=R[8]["Name"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(375, 9, 9, 'trim', 32), (375, 10, 8, 'Name', 224)]）
+--   [0041] OP  98  A=9 B=10 C=0 flags=64
+--       R[9]=R[9](U(T,9+1,10))
+--   [0042] OP  92  A=1 B=0 C=1.0 flags=32
+--       if (R[0]==1.0)~=(1~=0) then PC=PC+1 end
+--   [0043] OP 140  A=0 B=44 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=44
+--   [0044] OP  82  A=10 B=0 C=1 flags=128
+--       R[10]=0~=0;if 1~=0 then PC=PC+1 end
+--   [0045] OP 338  A=10 B=1 C=0 flags=192
+--       R[10]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0046] OP 271  A=0 B=0 C=0 flags=224
+--       if (R[0]==0)~=(0~=0) then PC=PC+1 end
+--   [0047] OP 140  A=0 B=64 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=64
+--   [0048] OP  71  A=11 B='ipairs' C=None flags=18
+--       R[11]=ENV["ipairs"]
+--       R[12]=R[1]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 12, 1, 0, 192)]）
+--   [0050] OP 233  A=11 B=12 C=13 flags=64
+--       do local I={ R[11](U(T,11+1,12)) };local F=0;for U=11,13 do F=F+1;R[U]=I[F] end end
+--   [0051] OP 215  A=0 B=62 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=62
+--   [0052] OP 397  A=16 B='string' C=None flags=210
+--       R[16]=ENV["string"]
+--       R[16]=R[16]["find"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(375, 16, 16, 'find', 96)]）
+--   [0054] OP 184  A=17 B=9 C=0 flags=192
+--       R[17]=R[9]
+--   [0055] OP 184  A=18 B=15 C=0 flags=0
+--       R[18]=R[15]
+--   [0056] OP 346  A=19 B=1.0 C=None flags=146
+--       R[19]=1.0
+--   [0057] OP 401  A=20 B=1 C=0 flags=192
+--       R[20]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0058] OP  68  A=16 B=20 C=0 flags=0
+--       R[16]=R[16](U(T,16+1,20))
+--   [0059] OP  16  A=16 B=0 C=0 flags=192
+--       if (not not R[16])~=(0~=0) then PC=PC+1 end
+--   [0060] OP 215  A=0 B=62 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=62
+--   [0061] OP 338  A=10 B=1 C=0 flags=128
+--       R[10]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0062] OP 140  A=0 B=64 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=64
+--   [0063] OP 386  A=11 B=2 C=0 flags=192
+--       do local I,F=E(R[11](R[11+1],R[11+2]));for U=1,2 do R[11+2+U]=I[U] end;if R[11+3]==nil then PC=PC+1 else R[11+2]=R[11+3] end end
+--   [0064] OP 255  A=0 B=51 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=51
+--   [0065] OP  16  A=10 B=0 C=0 flags=128
+--       if (not not R[10])~=(0~=0) then PC=PC+1 end
+--   [0066] OP 255  A=0 B=86 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=86
+--   [0067] OP 145  A=11 B=1 C=0 flags=0
+--       R[11]=UP[1]
+--       R[12]="取: "
+--       R[13]=R[9]
+--       do local I=R[13];for F=13-1,12,-1 do I=R[F]..I end;R[12]=I end
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(320, 12, '取: ', None, 146), (345, 13, 9, 0, 192), (210, 12, 12, 13, 64)]）
+--   [0071] OP 358  A=11 B=12 C=0 flags=128
+--       R[11](U(T,11+1,12))
+--   [0072] OP 276  A=11 B='LuaSendMsg' C=None flags=18
+--       R[11]=ENV["LuaSendMsg"]
+--       R[12]=ENV["global"]
+--       R[12]=R[12]["MsgType"]
+--       R[12]=R[12]["MSG_CS_STORAGE_PICK_OUT_REQUEST"]
+--       R[13]=999999999.0
+--       R[14]=R[8]["MakeIndex"]
+--       （该融合指令内部消费后续 5 条记录；原始记录=[(397, 12, 'global', None, 18), (375, 12, 12, 'MsgType', 32), (46, 12, 12, 'MSG_CS_STORAGE_PICK_OUT_REQUEST', 32), (295, 13, 999999999.0, None, 82), (25, 14, 8, 'MakeIndex', 224)]）
+--   [0078] OP  50  A=15 B=0 C=None flags=18
+--       R[15]=0
+--       R[16]=0
+--       R[17]=R[9]
+--       R[18]=ENV["string"]
+--       R[18]=R[18]["len"]
+--       R[19]=R[9]
+--       （该融合指令内部消费后续 5 条记录；原始记录=[(232, 16, 0, None, 18), (113, 17, 9, 0, 64), (307, 18, 'string', None, 82), (398, 18, 18, 'len', 160), (308, 19, 9, 0, 192)]）
+--   [0084] OP 392  A=18 B=19 C=0 flags=64
+--       do local I,F=E(R[18](U(T,18+1,19)));B=F+18-1;local U=0;for L=18,B do U=U+1;R[L]=I[U] end end
+--   [0085] OP 370  A=11 B=0 C=0 flags=128
+--       R[11](U(T,11+1,B))
+--   [0086] OP 124  A=3 B=3 C=1.0 flags=32
+--       R[3]=R[3]+1.0
+--   [0087] OP 386  A=4 B=2 C=0 flags=192
+--       do local I,F=E(R[4](R[4+1],R[4+2]));for U=1,2 do R[4+2+U]=I[U] end;if R[4+3]==nil then PC=PC+1 else R[4+2]=R[4+3] end end
+--   [0088] OP 255  A=0 B=29 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=29
+--   [0089] OP  89  A=4 B=0 C=0 flags=128
+--       R[4]=UP[0]
+--       do local I="isTaking";local F=false;R[4][I]=F end
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(146, 4, 'isTaking', False, 112)]）
+--   [0091] OP 352  A=0 B=0 C=3 flags=208
+--       if (0<R[3])~=(0~=0) then PC=PC+1 end
+--   [0092] OP 255  A=0 B=98 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=98
+--   [0093] OP 266  A=4 B=1 C=0 flags=0
+--       R[4]=UP[1]
+--       R[5]="取出物品完成, 共取出 "
+--       R[6]=R[3]
+--       R[7]=" 件"
+--       do local I=R[7];for F=7-1,5,-1 do I=R[F]..I end;R[5]=I end
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(101, 5, '取出物品完成, 共取出 ', None, 210), (293, 6, 3, 0, 128), (371, 7, ' 件', None, 146), (210, 5, 5, 7, 128)]）
+--   [0098] OP 358  A=4 B=5 C=0 flags=0
+--       R[4](U(T,4+1,5))
+--   [0099] OP 100  A=0 B=0 C=0 flags=128
+--       return
+
+-- ============================================================================
+-- PROTO_008 InstallDamageHook | path=root.6 | parent=PROTO_000 / child[6]
+-- 参数=0 | 常量=9 | 指令=40 | 子原型=1
+-- 字符串线索：gameMapController | __ylwHookedOrigin | 已挂接伤害消息钩子（击杀拉黑用） | MSG_SC_DAMAGE_HP | mNetMsgHandle | type | global | MsgType | table
+-- 常量池：
+--   K[0] = 'gameMapController'
+--   K[1] = '__ylwHookedOrigin'
+--   K[2] = '已挂接伤害消息钩子（击杀拉黑用）'
+--   K[3] = 'MSG_SC_DAMAGE_HP'
+--   K[4] = 'mNetMsgHandle'
+--   K[5] = 'type'
+--   K[6] = 'global'
+--   K[7] = 'MsgType'
+--   K[8] = 'table'
+-- 指令：
+--   [0001] OP 397  A=0 B='global' C=None flags=18
+--       R[0]=ENV["global"]
+--       R[0]=R[0]["gameMapController"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(363, 0, 0, 'gameMapController', 160)]）
+--   [0003] OP  16  A=0 B=0 C=0 flags=0
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0004] OP 255  A=0 B=9 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=9
+--   [0005] OP 137  A=1 B='type' C=None flags=18
+--       R[1]=ENV["type"]
+--   [0006] OP 363  A=2 B=0 C='mNetMsgHandle' flags=160
+--       R[2]=R[0]["mNetMsgHandle"]
+--   [0007] OP  68  A=1 B=2 C=0 flags=192
+--       R[1]=R[1](U(T,1+1,2))
+--   [0008] OP  45  A=1 B=1 C='table' flags=96
+--       if (R[1]=="table")~=(1~=0) then PC=PC+1 end
+--   [0009] OP 140  A=0 B=10 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=10
+--   [0010] OP   1  A=0 B=0 C=0 flags=64
+--       return
+--   [0011] OP 397  A=1 B='global' C=None flags=82
+--       R[1]=ENV["global"]
+--       R[1]=R[1]["MsgType"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(375, 1, 1, 'MsgType', 160)]）
+--   [0013] OP  16  A=1 B=0 C=0 flags=192
+--       if (not not R[1])~=(0~=0) then PC=PC+1 end
+--   [0014] OP 255  A=0 B=17 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=17
+--   [0015] OP 198  A=1 B='global' C=None flags=18
+--       R[1]=ENV["global"]
+--       R[1]=R[1]["MsgType"]
+--       R[1]=R[1]["MSG_SC_DAMAGE_HP"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(363, 1, 1, 'MsgType', 96), (53, 1, 1, 'MSG_SC_DAMAGE_HP', 160)]）
+--   [0018] OP 342  A=1 B=0 C=1 flags=192
+--       if (not not R[1])~=(1~=0) then PC=PC+1 end
+--   [0019] OP 140  A=0 B=20 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=20
+--   [0020] OP   1  A=0 B=0 C=0 flags=192
+--       return
+--   [0021] OP 366  A=2 B=0 C='mNetMsgHandle' flags=160
+--       R[2]=R[0]["mNetMsgHandle"]
+--       R[2]=R[2][R[1]]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(231, 2, 2, 1, 192)]）
+--   [0023] OP  16  A=2 B=0 C=0 flags=64
+--       if (not not R[2])~=(0~=0) then PC=PC+1 end
+--   [0024] OP 140  A=0 B=27 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=27
+--   [0025] OP 375  A=3 B=0 C='__ylwHookedOrigin' flags=32
+--       R[3]=R[0]["__ylwHookedOrigin"]
+--   [0026] OP  99  A=0 B=3 C=2 flags=0
+--       if (R[3]==R[2])~=(0~=0) then PC=PC+1 end
+--   [0027] OP 255  A=0 B=28 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=28
+--   [0028] OP   1  A=0 B=0 C=0 flags=0
+--       return
+--   [0029] OP  32  A=3 B=0 C='mNetMsgHandle' flags=96
+--       R[3]=R[0]["mNetMsgHandle"]
+--   [0030] OP  27  A=4 B=0 C=2 flags=64 ; 创建子原型 child[0]，捕获 2 个 upvalue
+--       R[4] = makeClosure(PROTO[0], captures={capture#0: UP[0] (outer upvalue); capture#1: R[2] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(325, 0, 0, 0, 128), (387, 0, 2, 0, 128)]）
+--   [0033] OP 174  A=3 B=1 C=4 flags=128
+--       do local I=R[1];local F=R[4];R[3][I]=F end
+--   [0034] OP  53  A=3 B=0 C='mNetMsgHandle' flags=32
+--       R[3]=R[0]["mNetMsgHandle"]
+--   [0035] OP 304  A=3 B=3 C=1 flags=64
+--       R[3]=R[3][R[1]]
+--   [0036] OP 268  A=0 B='__ylwHookedOrigin' C=3 flags=16
+--       do local I="__ylwHookedOrigin";local F=R[3];R[0][I]=F end
+--   [0037] OP 134  A=3 B=1 C=0 flags=128
+--       R[3]=UP[1]
+--       R[4]="已挂接伤害消息钩子（击杀拉黑用）"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 4, '已挂接伤害消息钩子（击杀拉黑用）', None, 82)]）
+--   [0039] OP 187  A=3 B=4 C=0 flags=192
+--       R[3](U(T,3+1,4))
+--   [0040] OP   1  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_009 Nested_onDamageMsg | path=root.6.0 | parent=PROTO_008 / child[0]
+-- 参数=2 | 常量=4 | 指令=18 | 子原型=0
+-- 字符串线索：onDamageMsg | pcall | type | function
+-- 常量池：
+--   K[0] = 'onDamageMsg'
+--   K[1] = 'pcall'
+--   K[2] = 'type'
+--   K[3] = 'function'
+-- 指令：
+--   [0001] OP  95  A=2 B='type' C=None flags=210
+--       R[2]=ENV["type"]
+--       R[3]=UP[0]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(159, 3, 0, 0, 128)]）
+--   [0003] OP  32  A=3 B=3 C='onDamageMsg' flags=32
+--       R[3]=R[3]["onDamageMsg"]
+--   [0004] OP  98  A=2 B=3 C=0 flags=0
+--       R[2]=R[2](U(T,2+1,3))
+--   [0005] OP 271  A=0 B=2 C='function' flags=160
+--       if (R[2]=="function")~=(0~=0) then PC=PC+1 end
+--   [0006] OP 255  A=0 B=12 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=12
+--   [0007] OP 137  A=2 B='pcall' C=None flags=82
+--       R[2]=ENV["pcall"]
+--   [0008] OP 159  A=3 B=0 C=0 flags=64
+--       R[3]=UP[0]
+--       R[3]=R[3]["onDamageMsg"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(32, 3, 3, 'onDamageMsg', 32)]）
+--   [0010] OP  78  A=4 B=0 C=0 flags=192
+--       R[4]=R[0]
+--       R[5]=R[1]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 5, 1, 0, 192)]）
+--   [0012] OP 358  A=2 B=5 C=0 flags=0
+--       R[2](U(T,2+1,5))
+--   [0013] OP 348  A=2 B=1 C=0 flags=0
+--       R[2]=UP[1]
+--       R[3]=R[0]
+--       R[4]=R[1]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(78, 3, 0, 0, 128), (184, 4, 1, 0, 0)]）
+--   [0016] OP 164  A=2 B=4 C=0 flags=64
+--       return R[2](U(T,2+1,4))
+--   [0017] OP 143  A=2 B=0 C=0 flags=192
+--       return U(T,2,B)
+--   [0018] OP 250  A=0 B=0 C=0 flags=128
+--       return
+
+-- ============================================================================
+-- PROTO_010 GetOwnerIDText | path=root.7 | parent=PROTO_000 / child[7]
+-- 参数=2 | 常量=7 | 指令=31 | 子原型=0
+-- 字符串线索：type | string |  | GetOwnerID | tostring
+-- 常量池：
+--   K[0] = -1.0
+--   K[1] = 'type'
+--   K[2] = 'string'
+--   K[3] = ''
+--   K[4] = 'GetOwnerID'
+--   K[5] = 'tostring'
+--   K[6] = None
+-- 指令：
+--   [0001] OP  33  A=2 B=0 C='GetOwnerID' flags=224
+--       local I=R[0];R[2+1]=I;R[2]=I["GetOwnerID"]
+--   [0002] OP  98  A=2 B=3 C=0 flags=0
+--       R[2]=R[2](U(T,2+1,3))
+--   [0003] OP 279  A=1 B=2 C=None flags=32
+--       if (R[2]==nil)~=(1~=0) then PC=PC+1 end
+--   [0004] OP 140  A=0 B=8 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=8
+--   [0005] OP 271  A=1 B=2 C='' flags=160
+--       if (R[2]=="")~=(1~=0) then PC=PC+1 end
+--   [0006] OP 215  A=0 B=8 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=8
+--   [0007] OP 279  A=0 B=2 C=-1.0 flags=160
+--       if (R[2]==-1.0)~=(0~=0) then PC=PC+1 end
+--   [0008] OP 215  A=0 B=11 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=11
+--   [0009] OP 401  A=3 B=0 C=0 flags=0
+--       R[3]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0010] OP 220  A=3 B=3 C=0 flags=192
+--       return U(T,3,3)
+--   [0011] OP 255  A=0 B=30 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=30
+--   [0012] OP  71  A=3 B='type' C=None flags=210
+--       R[3]=ENV["type"]
+--       R[4]=R[2]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 4, 2, 0, 192)]）
+--   [0014] OP  68  A=3 B=4 C=0 flags=192
+--       R[3]=R[3](U(T,3+1,4))
+--   [0015] OP  45  A=0 B=3 C='string' flags=160
+--       if (R[3]=="string")~=(0~=0) then PC=PC+1 end
+--   [0016] OP 255  A=0 B=25 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=25
+--   [0017] OP  71  A=3 B='tostring' C=None flags=146
+--       R[3]=ENV["tostring"]
+--       R[4]=R[1]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 4, 1, 0, 192)]）
+--   [0019] OP  68  A=3 B=4 C=0 flags=128
+--       R[3]=R[3](U(T,3+1,4))
+--   [0020] OP 294  A=1 B=2 C=3 flags=64
+--       if (R[2]==R[3])~=(1~=0) then PC=PC+1 end
+--   [0021] OP 255  A=0 B=22 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=22
+--   [0022] OP  82  A=3 B=0 C=1 flags=64
+--       R[3]=0~=0;if 1~=0 then PC=PC+1 end
+--   [0023] OP  11  A=3 B=1 C=0 flags=0
+--       R[3]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0024] OP 220  A=3 B=3 C=0 flags=64
+--       return U(T,3,3)
+--   [0025] OP 140  A=0 B=30 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=30
+--   [0026] OP 381  A=1 B=2 C=1 flags=0
+--       if (R[2]==R[1])~=(1~=0) then PC=PC+1 end
+--   [0027] OP 255  A=0 B=28 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=28
+--   [0028] OP  82  A=3 B=0 C=1 flags=192
+--       R[3]=0~=0;if 1~=0 then PC=PC+1 end
+--   [0029] OP 338  A=3 B=1 C=0 flags=0
+--       R[3]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0030] OP 220  A=3 B=3 C=0 flags=0
+--       return U(T,3,3)
+--   [0031] OP   1  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_011 FormatStateChange | path=root.8 | parent=PROTO_000 / child[8]
+-- 参数=1 | 常量=3 | 指令=10 | 子原型=0
+-- 字符串线索：format | 状态切换: %s -> %s | string
+-- 常量池：
+--   K[0] = 'format'
+--   K[1] = '状态切换: %s -> %s'
+--   K[2] = 'string'
+-- 指令：
+--   [0001] OP  52  A=1 B=0 C=0 flags=192
+--       R[1]=UP[0]
+--       R[2]=ENV["string"]
+--       R[2]=R[2]["format"]
+--       R[3]="状态切换: %s -> %s"
+--       R[4]=UP[1]
+--       R[5]=R[0]
+--       （该融合指令内部消费后续 5 条记录；原始记录=[(132, 2, 'string', None, 18), (363, 2, 2, 'format', 224), (80, 3, '状态切换: %s -> %s', None, 146), (131, 4, 1, 0, 192), (308, 5, 0, 0, 64)]）
+--   [0007] OP 252  A=2 B=5 C=0 flags=0
+--       do local I,F=E(R[2](U(T,2+1,5)));B=F+2-1;local U=0;for L=2,B do U=U+1;R[L]=I[U] end end
+--   [0008] OP  93  A=1 B=0 C=0 flags=128
+--       R[1](U(T,1+1,B))
+--   [0009] OP 114  A=0 B=1 C=0 flags=192
+--       UP[1]=R[0]
+--   [0010] OP   1  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_012 ReadNumericConfig | path=root.9 | parent=PROTO_000 / child[9]
+-- 参数=1 | 常量=13 | 指令=45 | 子原型=0
+-- 字符串线索：%s | string | gsub | tonumber |  | getStringFromFile | match | ^%d+$ | getInstance | isFileExist | type | cc | FileUtils
+-- 常量池：
+--   K[0] = '%s'
+--   K[1] = 'string'
+--   K[2] = 'gsub'
+--   K[3] = 'tonumber'
+--   K[4] = ''
+--   K[5] = 'getStringFromFile'
+--   K[6] = 'match'
+--   K[7] = '^%d+$'
+--   K[8] = 'getInstance'
+--   K[9] = 'isFileExist'
+--   K[10] = 'type'
+--   K[11] = 'cc'
+--   K[12] = 'FileUtils'
+-- 指令：
+--   [0001] OP 309  A=1 B='cc' C=None flags=82
+--       R[1]=ENV["cc"]
+--       R[1]=R[1]["FileUtils"]
+--       local I=R[1];R[1+1]=I;R[1]=I["getInstance"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(375, 1, 1, 'FileUtils', 96), (33, 1, 1, 'getInstance', 32)]）
+--   [0004] OP  98  A=1 B=2 C=0 flags=192
+--       R[1]=R[1](U(T,1+1,2))
+--   [0005] OP 131  A=2 B=0 C=0 flags=128
+--       R[2]=UP[0]
+--       R[3]=R[0]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 3, 0, 0, 0)]）
+--   [0007] OP  68  A=2 B=3 C=0 flags=64
+--       R[2]=R[2](U(T,2+1,3))
+--   [0008] OP 142  A=3 B=1 C='isFileExist' flags=96
+--       local I=R[1];R[3+1]=I;R[3]=I["isFileExist"]
+--       R[5]=R[2]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 5, 2, 0, 192)]）
+--   [0010] OP  68  A=3 B=5 C=0 flags=64
+--       R[3]=R[3](U(T,3+1,5))
+--   [0011] OP 342  A=3 B=0 C=1 flags=0
+--       if (not not R[3])~=(1~=0) then PC=PC+1 end
+--   [0012] OP 215  A=0 B=14 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=14
+--   [0013] OP 248  A=3 B=3 C=0 flags=192
+--       for I=3,3 do R[I]=nil end
+--   [0014] OP 220  A=3 B=3 C=0 flags=0
+--       return U(T,3,3)
+--   [0015] OP 142  A=3 B=1 C='getStringFromFile' flags=32
+--       local I=R[1];R[3+1]=I;R[3]=I["getStringFromFile"]
+--       R[5]=R[2]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 5, 2, 0, 0)]）
+--   [0017] OP  68  A=3 B=5 C=0 flags=64
+--       R[3]=R[3](U(T,3+1,5))
+--   [0018] OP  71  A=4 B='type' C=None flags=210
+--       R[4]=ENV["type"]
+--       R[5]=R[3]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 5, 3, 0, 128)]）
+--   [0020] OP  98  A=4 B=5 C=0 flags=128
+--       R[4]=R[4](U(T,4+1,5))
+--   [0021] OP 279  A=1 B=4 C='string' flags=160
+--       if (R[4]=="string")~=(1~=0) then PC=PC+1 end
+--   [0022] OP 140  A=0 B=24 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=24
+--   [0023] OP 248  A=4 B=4 C=0 flags=0
+--       for I=4,4 do R[I]=nil end
+--   [0024] OP 220  A=4 B=4 C=0 flags=128
+--       return U(T,4,4)
+--   [0025] OP 307  A=4 B='string' C=None flags=146
+--       R[4]=ENV["string"]
+--       R[4]=R[4]["gsub"]
+--       R[5]=R[3]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(383, 4, 4, 'gsub', 224), (308, 5, 3, 0, 128)]）
+--   [0028] OP 371  A=6 B='%s' C=None flags=18
+--       R[6]="%s"
+--   [0029] OP 371  A=7 B='' C=None flags=146
+--       R[7]=""
+--   [0030] OP  98  A=4 B=7 C=0 flags=64
+--       R[4]=R[4](U(T,4+1,7))
+--   [0031] OP 113  A=3 B=4 C=0 flags=192
+--       R[3]=R[4]
+--       R[4]=ENV["string"]
+--       R[4]=R[4]["match"]
+--       R[5]=R[3]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(307, 4, 'string', None, 82), (176, 4, 4, 'match', 224), (288, 5, 3, 0, 192)]）
+--   [0035] OP 371  A=6 B='^%d+$' C=None flags=146
+--       R[6]="^%d+$"
+--   [0036] OP  68  A=4 B=6 C=0 flags=64
+--       R[4]=R[4](U(T,4+1,6))
+--   [0037] OP 342  A=4 B=0 C=1 flags=128
+--       if (not not R[4])~=(1~=0) then PC=PC+1 end
+--   [0038] OP 140  A=0 B=40 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=40
+--   [0039] OP 125  A=4 B=4 C=0 flags=192
+--       for I=4,4 do R[I]=nil end
+--   [0040] OP 220  A=4 B=4 C=0 flags=128
+--       return U(T,4,4)
+--   [0041] OP  71  A=4 B='tonumber' C=None flags=146
+--       R[4]=ENV["tonumber"]
+--       R[5]=R[3]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 5, 3, 0, 64)]）
+--   [0043] OP 149  A=4 B=5 C=0 flags=0
+--       return R[4](U(T,4+1,5))
+--   [0044] OP 143  A=4 B=0 C=0 flags=128
+--       return U(T,4,B)
+--   [0045] OP 250  A=0 B=0 C=0 flags=64
+--       return
+
+-- ============================================================================
+-- PROTO_013 SetButtonVisibilityState | path=root.10 | parent=PROTO_000 / child[10]
+-- 参数=0 | 常量=5 | 指令=15 | 子原型=0
+-- 字符串线索：isHidden | setVisible | pairs | GUI
+-- 常量池：
+--   K[0] = 'isHidden'
+--   K[1] = 'setVisible'
+--   K[2] = 'pairs'
+--   K[3] = 'GUI'
+--   K[4] = True
+-- 指令：
+--   [0001] OP 315  A=0 B=0 C=0 flags=64
+--       R[0]=UP[0]
+--       do local I="isHidden";local F=true;R[0][I]=F end
+--       R[0]=ENV["pairs"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(146, 0, 'isHidden', True, 48), (95, 0, 'pairs', None, 146)]）
+--   [0004] OP 130  A=1 B=1 C=0 flags=0
+--       R[1]=UP[1]
+--   [0005] OP 183  A=0 B=1 C=2 flags=192
+--       do local I={ R[0](U(T,0+1,1)) };local F=0;for U=0,2 do F=F+1;R[U]=I[F] end end
+--   [0006] OP 255  A=0 B=12 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=12
+--   [0007] OP 335  A=5 B='GUI' C=None flags=210
+--       R[5]=ENV["GUI"]
+--       local I=R[5];R[5+1]=I;R[5]=I["setVisible"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(33, 5, 5, 'setVisible', 160)]）
+--   [0009] OP  28  A=7 B=1 C=0 flags=192
+--       R[7]=UP[1]
+--       R[7]=R[7][R[3]]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(231, 7, 7, 3, 0)]）
+--   [0011] OP 401  A=8 B=1 C=0 flags=0
+--       R[8]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0012] OP 187  A=5 B=8 C=0 flags=64
+--       R[5](U(T,5+1,8))
+--   [0013] OP 117  A=0 B=2 C=0 flags=64
+--       do local I,F=E(R[0](R[0+1],R[0+2]));for U=1,2 do R[0+2+U]=I[U] end;if R[0+3]==nil then PC=PC+1 else R[0+2]=R[0+3] end end
+--   [0014] OP 215  A=0 B=6 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=6
+--   [0015] OP 250  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_014 DistanceCalculation | path=root.11 | parent=PROTO_000 / child[11]
+-- 参数=2 | 常量=6 | 指令=25 | 子原型=0
+-- 字符串线索：x | abs | y | max | math
+-- 常量池：
+--   K[0] = 'x'
+--   K[1] = 'abs'
+--   K[2] = 'y'
+--   K[3] = 'max'
+--   K[4] = 'math'
+--   K[5] = 99999.0
+-- 指令：
+--   [0001] OP  16  A=0 B=0 C=0 flags=192
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0002] OP 140  A=0 B=4 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=4
+--   [0003] OP 342  A=1 B=0 C=1 flags=64
+--       if (not not R[1])~=(1~=0) then PC=PC+1 end
+--   [0004] OP 140  A=0 B=6 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=6
+--   [0005] OP 371  A=2 B=99999.0 C=None flags=210
+--       R[2]=99999.0
+--   [0006] OP 220  A=2 B=2 C=0 flags=128
+--       return U(T,2,2)
+--   [0007] OP 251  A=2 B='math' C=None flags=146
+--       R[2]=ENV["math"]
+--       R[2]=R[2]["abs"]
+--       R[3]=R[0]["x"]
+--       R[4]=R[1]["x"]
+--       R[3]=R[3]-R[4]
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(63, 2, 2, 'abs', 96), (53, 3, 0, 'x', 224), (384, 4, 1, 'x', 224), (340, 3, 3, 4, 64)]）
+--   [0012] OP  98  A=2 B=3 C=0 flags=0
+--       R[2]=R[2](U(T,2+1,3))
+--   [0013] OP 251  A=3 B='math' C=None flags=18
+--       R[3]=ENV["math"]
+--       R[3]=R[3]["abs"]
+--       R[4]=R[0]["y"]
+--       R[5]=R[1]["y"]
+--       R[4]=R[4]-R[5]
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(49, 3, 3, 'abs', 224), (228, 4, 0, 'y', 160), (384, 5, 1, 'y', 224), (340, 4, 4, 5, 0)]）
+--   [0018] OP  98  A=3 B=4 C=0 flags=192
+--       R[3]=R[3](U(T,3+1,4))
+--   [0019] OP 137  A=4 B='math' C=None flags=82
+--       R[4]=ENV["math"]
+--   [0020] OP 269  A=4 B=4 C='max' flags=96
+--       R[4]=R[4]["max"]
+--       R[5]=R[2]
+--       R[6]=R[3]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(184, 5, 2, 0, 192), (184, 6, 3, 0, 128)]）
+--   [0023] OP 405  A=4 B=6 C=0 flags=128
+--       return R[4](U(T,4+1,6))
+--   [0024] OP 143  A=4 B=0 C=0 flags=64
+--       return U(T,4,B)
+--   [0025] OP  55  A=0 B=0 C=0 flags=64
+--       return
+
+-- ============================================================================
+-- PROTO_015 LuaSendMsg | path=root.12 | parent=PROTO_000 / child[12]
+-- 参数=0 | 常量=34 | 指令=92 | 子原型=0
+-- 字符串线索：) | string | ,  | param4 | networkCtl | tonumber | recog | Blocklist | ipairs | table | concat | SendHookList | type | param1 | tostring | global | find | SendMsg | LuaSendMsg( | param3 | insert | msgId
+-- 常量池：
+--   K[0] = 2.0
+--   K[1] = ')'
+--   K[2] = 'string'
+--   K[3] = ', '
+--   K[4] = 'param4'
+--   K[5] = 'networkCtl'
+--   K[6] = 'tonumber'
+--   K[7] = 'recog'
+--   K[8] = 'Blocklist'
+--   K[9] = 'ipairs'
+--   K[10] = 'table'
+--   K[11] = 'concat'
+--   K[12] = 0
+--   K[13] = True
+--   K[14] = 'SendHookList'
+--   K[15] = 'type'
+--   K[16] = 'param1'
+--   K[17] = 5.0
+--   K[18] = 'tostring'
+--   K[19] = 'global'
+--   K[20] = 'find'
+--   K[21] = 3.0
+--   K[22] = 'SendMsg'
+--   K[23] = 'LuaSendMsg('
+--   K[24] = 6.0
+--   K[25] = 1.0
+--   K[26] = 'param3'
+--   K[27] = 'insert'
+--   K[28] = 'msgId'
+--   K[29] = 'function'
+--   K[30] = 'pcall'
+--   K[31] = 4.0
+--   K[32] = "'"
+--   K[33] = 'param2'
+-- 指令：
+--   [0001] OP 410  A=1 B=0 C=0 flags=0
+--       R[1]={}
+--   [0002] OP   6  A=2 B=0 C=0 flags=0
+--       B=2+A-1;for I=2,B do R[I]=X[I-2] end
+--   [0003] OP 402  A=1 B=0 C=1 flags=64
+--       do local I=0;if I==0 then I=math.max(0,B-1) end;local F=R[1];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[1+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[1]=O else for O=1,I do F[L+O]=R[1+O] end end;end
+--   [0004] OP 363  A=2 B=1 C=6.0 flags=160
+--       R[2]=R[1][6.0]
+--   [0005] OP 375  A=3 B=1 C=1.0 flags=96
+--       R[3]=R[1][1.0]
+--   [0006] OP 105  A=4 B=0 C=6 flags=64
+--       R[4]={}
+--   [0007] OP 229  A=4 B='recog' C=0 flags=240
+--       do local I="recog";local F=0;R[4][I]=F end
+--       R[5]=R[1][1.0]
+--       do local I="msgId";local F=R[5];R[4][I]=F end
+--       R[5]=R[1][2.0]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(302, 5, 1, 1.0, 160), (268, 4, 'msgId', 5, 16), (377, 5, 1, 2.0, 32)]）
+--   [0011] OP 326  A=4 B='param1' C=5 flags=80
+--       do local I="param1";local F=R[5];R[4][I]=F end
+--       R[5]=R[1][3.0]
+--       do local I="param2";local F=R[5];R[4][I]=F end
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(53, 5, 1, 3.0, 160), (268, 4, 'param2', 5, 16)]）
+--   [0014] OP  36  A=5 B=1 C=4.0 flags=96
+--       R[5]=R[1][4.0]
+--       do local I="param3";local F=R[5];R[4][I]=F end
+--       R[5]=R[1][5.0]
+--       do local I="param4";local F=R[5];R[4][I]=F end
+--       R[5]=ENV["table"]
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(355, 4, 'param3', 5, 144), (161, 5, 1, 5.0, 96), (291, 4, 'param4', 5, 208), (284, 5, 'table', None, 18)]）
+--   [0019] OP 227  A=5 B=5 C='find' flags=32
+--       R[5]=R[5]["find"]
+--       R[6]=UP[0]
+--       R[6]=R[6]["Blocklist"]
+--       R[7]=ENV["tonumber"]
+--       R[8]=R[3]
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(209, 6, 0, 0, 64), (181, 6, 6, 'Blocklist', 32), (71, 7, 'tonumber', None, 210), (308, 8, 3, 0, 0)]）
+--   [0024] OP 392  A=7 B=8 C=0 flags=192
+--       do local I,F=E(R[7](U(T,7+1,8)));B=F+7-1;local U=0;for L=7,B do U=U+1;R[L]=I[U] end end
+--   [0025] OP 242  A=5 B=0 C=0 flags=128
+--       R[5]=R[5](U(T,5+1,B))
+--   [0026] OP 342  A=5 B=0 C=1 flags=64
+--       if (not not R[5])~=(1~=0) then PC=PC+1 end
+--   [0027] OP 255  A=0 B=62 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=62
+--   [0028] OP 230  A=5 B=0 C=0 flags=128
+--       R[5]={}
+--       R[6]=ENV["ipairs"]
+--       R[7]=R[1]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(71, 6, 'ipairs', None, 18), (308, 7, 1, 0, 0)]）
+--   [0031] OP 233  A=6 B=7 C=8 flags=192
+--       do local I={ R[6](U(T,6+1,7)) };local F=0;for U=6,8 do F=F+1;R[U]=I[F] end end
+--   [0032] OP 255  A=0 B=50 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=50
+--   [0033] OP 137  A=11 B='table' C=None flags=82
+--       R[11]=ENV["table"]
+--   [0034] OP 200  A=11 B=11 C='insert' flags=160
+--       R[11]=R[11]["insert"]
+--       R[12]=R[5]
+--       R[13]=ENV["type"]
+--       R[14]=R[10]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(44, 12, 5, 0, 64), (71, 13, 'type', None, 210), (308, 14, 10, 0, 192)]）
+--   [0038] OP  98  A=13 B=14 C=0 flags=192
+--       R[13]=R[13](U(T,13+1,14))
+--   [0039] OP  45  A=0 B=13 C='string' flags=96
+--       if (R[13]=="string")~=(0~=0) then PC=PC+1 end
+--   [0040] OP 140  A=0 B=46 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=46
+--   [0041] OP 317  A=13 B="'" C=None flags=82
+--       R[13]="'"
+--       R[14]=R[10]
+--       R[15]="'"
+--       do local I=R[15];for F=15-1,13,-1 do I=R[F]..I end;R[13]=I end
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(293, 14, 10, 0, 192), (346, 15, "'", None, 18), (210, 13, 13, 15, 128)]）
+--   [0045] OP 342  A=13 B=0 C=1 flags=0
+--       if (not not R[13])~=(1~=0) then PC=PC+1 end
+--   [0046] OP 255  A=0 B=49 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=49
+--   [0047] OP  71  A=13 B='tostring' C=None flags=18
+--       R[13]=ENV["tostring"]
+--       R[14]=R[10]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 14, 10, 0, 64)]）
+--   [0049] OP  68  A=13 B=14 C=0 flags=192
+--       R[13]=R[13](U(T,13+1,14))
+--   [0050] OP 187  A=11 B=13 C=0 flags=128
+--       R[11](U(T,11+1,13))
+--   [0051] OP 386  A=6 B=2 C=0 flags=192
+--       do local I,F=E(R[6](R[6+1],R[6+2]));for U=1,2 do R[6+2+U]=I[U] end;if R[6+3]==nil then PC=PC+1 else R[6+2]=R[6+3] end end
+--   [0052] OP 255  A=0 B=32 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=32
+--   [0053] OP 134  A=6 B=1 C=0 flags=0
+--       R[6]=UP[1]
+--       R[7]="LuaSendMsg("
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(102, 7, 'LuaSendMsg(', None, 18)]）
+--   [0055] OP 137  A=8 B='table' C=None flags=18
+--       R[8]=ENV["table"]
+--   [0056] OP 176  A=8 B=8 C='concat' flags=32
+--       R[8]=R[8]["concat"]
+--       R[9]=R[5]
+--       R[10]=", "
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(288, 9, 5, 0, 192), (371, 10, ', ', None, 82)]）
+--   [0059] OP  98  A=8 B=10 C=0 flags=64
+--       R[8]=R[8](U(T,8+1,10))
+--   [0060] OP  47  A=9 B=')' C=None flags=146
+--       R[9]=")"
+--       do local I=R[9];for F=9-1,7,-1 do I=R[F]..I end;R[7]=I end
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(210, 7, 7, 9, 0)]）
+--   [0062] OP 187  A=6 B=7 C=0 flags=64
+--       R[6](U(T,6+1,7))
+--   [0063] OP 130  A=5 B=0 C=0 flags=64
+--       R[5]=UP[0]
+--   [0064] OP 366  A=5 B=5 C='SendHookList' flags=160
+--       R[5]=R[5]["SendHookList"]
+--       R[5]=R[5][R[3]]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(231, 5, 5, 3, 192)]）
+--   [0066] OP  16  A=5 B=0 C=0 flags=192
+--       if (not not R[5])~=(0~=0) then PC=PC+1 end
+--   [0067] OP 255  A=0 B=86 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=86
+--   [0068] OP 158  A=5 B=0 C=0 flags=64
+--       R[5]=UP[0]
+--       R[5]=R[5]["SendHookList"]
+--       R[5]=R[5][R[3]]
+--       R[6]=ENV["type"]
+--       R[7]=R[5]
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(20, 5, 5, 'SendHookList', 160), (7, 5, 5, 3, 192), (137, 6, 'type', None, 18), (308, 7, 5, 0, 0)]）
+--   [0073] OP  98  A=6 B=7 C=0 flags=128
+--       R[6]=R[6](U(T,6+1,7))
+--   [0074] OP  92  A=0 B=6 C='function' flags=160
+--       if (R[6]=="function")~=(0~=0) then PC=PC+1 end
+--   [0075] OP 215  A=0 B=86 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=86
+--   [0076] OP 303  A=6 B='pcall' C=None flags=18
+--       R[6]=ENV["pcall"]
+--       R[7]=R[5]
+--       R[8]=R[3]
+--       R[9]=R[2]
+--       R[10]=R[4]
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(372, 7, 5, 0, 64), (385, 8, 3, 0, 0), (78, 9, 2, 0, 0), (184, 10, 4, 0, 128)]）
+--   [0081] OP 233  A=6 B=10 C=7 flags=128
+--       do local I={ R[6](U(T,6+1,10)) };local F=0;for U=6,7 do F=F+1;R[U]=I[F] end end
+--   [0082] OP 342  A=6 B=0 C=1 flags=0
+--       if (not not R[6])~=(1~=0) then PC=PC+1 end
+--   [0083] OP 140  A=0 B=83 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=83
+--   [0084] OP  45  A=0 B=7 C=True flags=32
+--       if (R[7]==true)~=(0~=0) then PC=PC+1 end
+--   [0085] OP 140  A=0 B=86 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=86
+--   [0086] OP  55  A=0 B=0 C=0 flags=128
+--       return
+--   [0087] OP 137  A=5 B='global' C=None flags=18
+--       R[5]=ENV["global"]
+--   [0088] OP 270  A=5 B=5 C='networkCtl' flags=32
+--       R[5]=R[5]["networkCtl"]
+--       local I=R[5];R[5+1]=I;R[5]=I["SendMsg"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(238, 5, 5, 'SendMsg', 32)]）
+--   [0090] OP  12  A=7 B=0 C=0 flags=128
+--       B=7+A-1;for I=7,B do R[I]=X[I-7] end
+--   [0091] OP 370  A=5 B=0 C=0 flags=128
+--       R[5](U(T,5+1,B))
+--   [0092] OP   1  A=0 B=0 C=0 flags=128
+--       return
+
+-- ============================================================================
+-- PROTO_016 GetMapId | path=root.13 | parent=PROTO_000 / child[13]
+-- 参数=0 | 常量=4 | 指令=9 | 子原型=0
+-- 字符串线索：SL | MAP_ID | GetMetaValue
+-- 常量池：
+--   K[0] = 'SL'
+--   K[1] = 'MAP_ID'
+--   K[2] = 0
+--   K[3] = 'GetMetaValue'
+-- 指令：
+--   [0001] OP 137  A=0 B='SL' C=None flags=210
+--       R[0]=ENV["SL"]
+--   [0002] OP 121  A=0 B=0 C='GetMetaValue' flags=32
+--       local I=R[0];R[0+1]=I;R[0]=I["GetMetaValue"]
+--   [0003] OP 371  A=2 B='MAP_ID' C=None flags=18
+--       R[2]="MAP_ID"
+--   [0004] OP  68  A=0 B=2 C=0 flags=128
+--       R[0]=R[0](U(T,0+1,2))
+--   [0005] OP 342  A=0 B=0 C=1 flags=192
+--       if (not not R[0])~=(1~=0) then PC=PC+1 end
+--   [0006] OP 255  A=0 B=7 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=7
+--   [0007] OP 371  A=0 B=0 C=None flags=146
+--       R[0]=0
+--   [0008] OP 220  A=0 B=0 C=0 flags=64
+--       return U(T,0,0)
+--   [0009] OP 100  A=0 B=0 C=0 flags=128
+--       return
+
+-- ============================================================================
+-- PROTO_017 FindMonsterInCurrViewField | path=root.14 | parent=PROTO_000 / child[14]
+-- 参数=0 | 常量=4 | 指令=27 | 子原型=0
+-- 字符串线索：FindMonsterInCurrViewField | ipairs | SL | GetID
+-- 常量池：
+--   K[0] = 'FindMonsterInCurrViewField'
+--   K[1] = 'ipairs'
+--   K[2] = 'SL'
+--   K[3] = 'GetID'
+-- 指令：
+--   [0001] OP 137  A=0 B='SL' C=None flags=18
+--       R[0]=ENV["SL"]
+--   [0002] OP 121  A=0 B=0 C='FindMonsterInCurrViewField' flags=224
+--       local I=R[0];R[0+1]=I;R[0]=I["FindMonsterInCurrViewField"]
+--   [0003] OP  11  A=2 B=1 C=0 flags=192
+--       R[2]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0004] OP  11  A=3 B=1 C=0 flags=128
+--       R[3]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0005] OP  98  A=0 B=3 C=0 flags=64
+--       R[0]=R[0](U(T,0+1,3))
+--   [0006] OP 342  A=0 B=0 C=1 flags=128
+--       if (not not R[0])~=(1~=0) then PC=PC+1 end
+--   [0007] OP 140  A=0 B=8 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=8
+--   [0008] OP 410  A=0 B=0 C=0 flags=128
+--       R[0]={}
+--   [0009] OP 410  A=1 B=0 C=0 flags=0
+--       R[1]={}
+--   [0010] OP  71  A=2 B='ipairs' C=None flags=18
+--       R[2]=ENV["ipairs"]
+--       R[3]=R[0]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 3, 0, 0, 0)]）
+--   [0012] OP 233  A=2 B=3 C=4 flags=192
+--       do local I={ R[2](U(T,2+1,3)) };local F=0;for U=2,4 do F=F+1;R[U]=I[F] end end
+--   [0013] OP 215  A=0 B=23 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=23
+--   [0014] OP 131  A=7 B=0 C=0 flags=128
+--       R[7]=UP[0]
+--       R[8]=R[6]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 8, 6, 0, 64)]）
+--   [0016] OP  68  A=7 B=8 C=0 flags=64
+--       R[7]=R[7](U(T,7+1,8))
+--   [0017] OP  16  A=7 B=0 C=0 flags=0
+--       if (not not R[7])~=(0~=0) then PC=PC+1 end
+--   [0018] OP 255  A=0 B=23 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=23
+--   [0019] OP 238  A=7 B=6 C='GetID' flags=32
+--       local I=R[6];R[7+1]=I;R[7]=I["GetID"]
+--   [0020] OP  68  A=7 B=8 C=0 flags=0
+--       R[7]=R[7](U(T,7+1,8))
+--   [0021] OP  16  A=7 B=0 C=0 flags=64
+--       if (not not R[7])~=(0~=0) then PC=PC+1 end
+--   [0022] OP 140  A=0 B=23 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=23
+--   [0023] OP 327  A=1 B=7 C=6 flags=128
+--       do local I=R[7];local F=R[6];R[1][I]=F end
+--   [0024] OP 117  A=2 B=2 C=0 flags=0
+--       do local I,F=E(R[2](R[2+1],R[2+2]));for U=1,2 do R[2+2+U]=I[U] end;if R[2+3]==nil then PC=PC+1 else R[2+2]=R[2+3] end end
+--   [0025] OP 255  A=0 B=13 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=13
+--   [0026] OP 220  A=1 B=1 C=0 flags=0
+--       return U(T,1,1)
+--   [0027] OP   1  A=0 B=0 C=0 flags=0
+--       return
+
+-- ============================================================================
+-- PROTO_018 ClearBlacklistItems | path=root.15 | parent=PROTO_000 / child[15]
+-- 参数=0 | 常量=17 | 指令=63 | 子原型=1
+-- 字符串线索：_blacklistData | SL | pairs | ScheduleOnce | 清空黑名单失败 | 黑名单本来就是空的 | ipairs | 黑名单为空 | 开始清空黑名单，共 %d 人 | 清空黑名单  |  人 | lastAttacker | 取不到好友代理，清空失败
+-- 常量池：
+--   K[0] = '_blacklistData'
+--   K[1] = 'SL'
+--   K[2] = 'pairs'
+--   K[3] = 'ScheduleOnce'
+--   K[4] = '清空黑名单失败'
+--   K[5] = '黑名单本来就是空的'
+--   K[6] = None
+--   K[7] = 0.01
+--   K[8] = 1.0
+--   K[9] = 'ipairs'
+--   K[10] = 0
+--   K[11] = '黑名单为空'
+--   K[12] = '开始清空黑名单，共 %d 人'
+--   K[13] = '清空黑名单 '
+--   K[14] = ' 人'
+--   K[15] = 'lastAttacker'
+--   K[16] = '取不到好友代理，清空失败'
+-- 指令：
+--   [0001] OP 130  A=0 B=0 C=0 flags=192
+--       R[0]=UP[0]
+--   [0002] OP  68  A=0 B=0 C=0 flags=192
+--       R[0]=R[0](U(T,0+1,0))
+--   [0003] OP 247  A=1 B=0 C=0 flags=0
+--       local I=R[0];if (not not I)==(0~=0) then R[1]=I else PC=PC+1 end
+--   [0004] OP 255  A=0 B=5 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=5
+--   [0005] OP  32  A=1 B=0 C='_blacklistData' flags=96
+--       R[1]=R[0]["_blacklistData"]
+--   [0006] OP 342  A=1 B=0 C=1 flags=128
+--       if (not not R[1])~=(1~=0) then PC=PC+1 end
+--   [0007] OP 215  A=0 B=14 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=14
+--   [0008] OP 134  A=2 B=1 C=0 flags=192
+--       R[2]=UP[1]
+--       R[3]="取不到好友代理，清空失败"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 3, '取不到好友代理，清空失败', None, 18)]）
+--   [0010] OP 187  A=2 B=3 C=0 flags=0
+--       R[2](U(T,2+1,3))
+--   [0011] OP 134  A=2 B=2 C=0 flags=0
+--       R[2]=UP[2]
+--       R[3]="清空黑名单失败"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 3, '清空黑名单失败', None, 82)]）
+--   [0013] OP 187  A=2 B=3 C=0 flags=0
+--       R[2](U(T,2+1,3))
+--   [0014] OP 250  A=0 B=0 C=0 flags=64
+--       return
+--   [0015] OP 410  A=2 B=0 C=0 flags=0
+--       R[2]={}
+--   [0016] OP  71  A=3 B='pairs' C=None flags=18
+--       R[3]=ENV["pairs"]
+--       R[4]=R[1]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 4, 1, 0, 192)]）
+--   [0018] OP 359  A=3 B=4 C=5 flags=64
+--       do local I={ R[3](U(T,3+1,4)) };local F=0;for U=3,5 do F=F+1;R[U]=I[F] end end
+--   [0019] OP 215  A=0 B=22 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=22
+--   [0020] OP 115  A=7 B=2 C=0 flags=64
+--       R[7]=#R[2]
+--   [0021] OP 124  A=7 B=7 C=1.0 flags=224
+--       R[7]=R[7]+1.0
+--   [0022] OP 368  A=2 B=7 C=6 flags=64
+--       do local I=R[7];local F=R[6];R[2][I]=F end
+--   [0023] OP 386  A=3 B=1 C=0 flags=64
+--       do local I,F=E(R[3](R[3+1],R[3+2]));for U=1,1 do R[3+2+U]=I[U] end;if R[3+3]==nil then PC=PC+1 else R[3+2]=R[3+3] end end
+--   [0024] OP 255  A=0 B=19 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=19
+--   [0025] OP 115  A=3 B=2 C=0 flags=0
+--       R[3]=#R[2]
+--   [0026] OP  45  A=0 B=3 C=0 flags=96
+--       if (R[3]==0)~=(0~=0) then PC=PC+1 end
+--   [0027] OP 255  A=0 B=34 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=34
+--   [0028] OP 134  A=3 B=1 C=0 flags=64
+--       R[3]=UP[1]
+--       R[4]="黑名单本来就是空的"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 4, '黑名单本来就是空的', None, 18)]）
+--   [0030] OP 358  A=3 B=4 C=0 flags=0
+--       R[3](U(T,3+1,4))
+--   [0031] OP 134  A=3 B=2 C=0 flags=0
+--       R[3]=UP[2]
+--       R[4]="黑名单为空"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 4, '黑名单为空', None, 210)]）
+--   [0033] OP 358  A=3 B=4 C=0 flags=64
+--       R[3](U(T,3+1,4))
+--   [0034] OP  55  A=0 B=0 C=0 flags=64
+--       return
+--   [0035] OP 134  A=3 B=1 C=0 flags=64
+--       R[3]=UP[1]
+--       R[4]="开始清空黑名单，共 %d 人"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 4, '开始清空黑名单，共 %d 人', None, 146)]）
+--   [0037] OP 115  A=5 B=2 C=0 flags=192
+--       R[5]=#R[2]
+--   [0038] OP 358  A=3 B=5 C=0 flags=128
+--       R[3](U(T,3+1,5))
+--   [0039] OP 134  A=3 B=2 C=0 flags=64
+--       R[3]=UP[2]
+--       R[4]="清空黑名单 "
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 4, '清空黑名单 ', None, 146)]）
+--   [0041] OP 115  A=5 B=2 C=0 flags=64
+--       R[5]=#R[2]
+--   [0042] OP  47  A=6 B=' 人' C=None flags=18
+--       R[6]=" 人"
+--       do local I=R[6];for F=6-1,4,-1 do I=R[F]..I end;R[4]=I end
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(210, 4, 4, 6, 128)]）
+--   [0044] OP 187  A=3 B=4 C=0 flags=0
+--       R[3](U(T,3+1,4))
+--   [0045] OP  71  A=3 B='ipairs' C=None flags=18
+--       R[3]=ENV["ipairs"]
+--       R[4]=R[2]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 4, 2, 0, 0)]）
+--   [0047] OP 183  A=3 B=4 C=5 flags=64
+--       do local I={ R[3](U(T,3+1,4)) };local F=0;for U=3,5 do F=F+1;R[U]=I[F] end end
+--   [0048] OP 215  A=0 B=58 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=58
+--   [0049] OP 184  A=8 B=7 C=0 flags=0
+--       R[8]=R[7]
+--   [0050] OP 137  A=9 B='SL' C=None flags=210
+--       R[9]=ENV["SL"]
+--   [0051] OP  33  A=9 B=9 C='ScheduleOnce' flags=160
+--       local I=R[9];R[9+1]=I;R[9]=I["ScheduleOnce"]
+--   [0052] OP 154  A=11 B=0 C=2 flags=192 ; 创建子原型 child[0]，捕获 2 个 upvalue
+--       R[11] = makeClosure(PROTO[0], captures={capture#0: R[8] (local register); capture#1: R[0] (local register)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 8, 0, 0), (387, 0, 0, 0, 128)]）
+--   [0055] OP 347  A=12 B=6 C=1.0 flags=160
+--       R[12]=R[6]-1.0
+--   [0056] OP 160  A=12 B=0.01 C=12 flags=208
+--       R[12]=0.01*R[12]
+--   [0057] OP 358  A=9 B=12 C=0 flags=192
+--       R[9](U(T,9+1,12))
+--   [0058] OP 262  A=8 B=0 C=0 flags=192
+--       do local I=8;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end
+--   [0059] OP 386  A=3 B=2 C=0 flags=0
+--       do local I,F=E(R[3](R[3+1],R[3+2]));for U=1,2 do R[3+2+U]=I[U] end;if R[3+3]==nil then PC=PC+1 else R[3+2]=R[3+3] end end
+--   [0060] OP 215  A=0 B=48 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=48
+--   [0061] OP 130  A=3 B=3 C=0 flags=64
+--       R[3]=UP[3]
+--   [0062] OP 146  A=3 B='lastAttacker' C=None flags=176
+--       do local I="lastAttacker";local F=nil;R[3][I]=F end
+--   [0063] OP   1  A=0 B=0 C=0 flags=64
+--       return
+
+-- ============================================================================
+-- PROTO_019 Nested_SL | path=root.15.0 | parent=PROTO_018 / child[0]
+-- 参数=0 | 常量=4 | 指令=13 | 子原型=0
+-- 字符串线索：SL | RequestOutBlacklist | _blacklistData
+-- 常量池：
+--   K[0] = 'SL'
+--   K[1] = 'RequestOutBlacklist'
+--   K[2] = None
+--   K[3] = '_blacklistData'
+-- 指令：
+--   [0001] OP 137  A=0 B='SL' C=None flags=146
+--       R[0]=ENV["SL"]
+--   [0002] OP 121  A=0 B=0 C='RequestOutBlacklist' flags=224
+--       local I=R[0];R[0+1]=I;R[0]=I["RequestOutBlacklist"]
+--   [0003] OP 130  A=2 B=0 C=0 flags=64
+--       R[2]=UP[0]
+--   [0004] OP 187  A=0 B=2 C=0 flags=0
+--       R[0](U(T,0+1,2))
+--   [0005] OP 159  A=0 B=1 C=0 flags=192
+--       R[0]=UP[1]
+--       R[0]=R[0]["_blacklistData"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(53, 0, 0, '_blacklistData', 160)]）
+--   [0007] OP  16  A=0 B=0 C=0 flags=0
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0008] OP 140  A=0 B=12 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=12
+--   [0009] OP 159  A=0 B=1 C=0 flags=64
+--       R[0]=UP[1]
+--       R[0]=R[0]["_blacklistData"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(32, 0, 0, '_blacklistData', 96)]）
+--   [0011] OP 130  A=1 B=0 C=0 flags=192
+--       R[1]=UP[0]
+--   [0012] OP  69  A=0 B=1 C=None flags=160
+--       do local I=R[1];local F=nil;R[0][I]=F end
+--   [0013] OP   1  A=0 B=0 C=0 flags=64
+--       return
+
+-- ============================================================================
+-- PROTO_020 PrintLog | path=root.16 | parent=PROTO_000 / child[16]
+-- 参数=1 | 常量=13 | 指令=38 | 子原型=0
+-- 字符串线索：format | # | Print | type | pcall | tostring | string | table | dump | SL | select | 【超本】
+-- 常量池：
+--   K[0] = 'format'
+--   K[1] = '#'
+--   K[2] = 'Print'
+--   K[3] = 'type'
+--   K[4] = 'pcall'
+--   K[5] = 'tostring'
+--   K[6] = 'string'
+--   K[7] = 'table'
+--   K[8] = 'dump'
+--   K[9] = 'SL'
+--   K[10] = 'select'
+--   K[11] = '【超本】'
+--   K[12] = 0
+-- 指令：
+--   [0001] OP  71  A=2 B='type' C=None flags=146
+--       R[2]=ENV["type"]
+--       R[3]=R[0]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 3, 0, 0, 64)]）
+--   [0003] OP  68  A=2 B=3 C=0 flags=0
+--       R[2]=R[2](U(T,2+1,3))
+--   [0004] OP  92  A=0 B=2 C='table' flags=224
+--       if (R[2]=="table")~=(0~=0) then PC=PC+1 end
+--   [0005] OP 255  A=0 B=11 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=11
+--   [0006] OP 287  A=2 B='SL' C=None flags=210
+--       R[2]=ENV["SL"]
+--       local I=R[2];R[2+1]=I;R[2]=I["dump"]
+--       R[4]=R[0]
+--       R[5]="【超本】"
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(33, 2, 2, 'dump', 32), (184, 4, 0, 0, 192), (346, 5, '【超本】', None, 18)]）
+--   [0010] OP 187  A=2 B=5 C=0 flags=192
+--       R[2](U(T,2+1,5))
+--   [0011] OP 250  A=0 B=0 C=0 flags=64
+--       return
+--   [0012] OP  71  A=2 B='tostring' C=None flags=82
+--       R[2]=ENV["tostring"]
+--       R[3]=R[0]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 3, 0, 0, 128)]）
+--   [0014] OP  68  A=2 B=3 C=0 flags=0
+--       R[2]=R[2](U(T,2+1,3))
+--   [0015] OP 168  A=3 B='select' C=None flags=210
+--       R[3]=ENV["select"]
+--       R[4]="#"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 4, '#', None, 82)]）
+--   [0017] OP   6  A=5 B=0 C=0 flags=192
+--       B=5+A-1;for I=5,B do R[I]=X[I-5] end
+--   [0018] OP 223  A=3 B=0 C=0 flags=128
+--       R[3]=R[3](U(T,3+1,B))
+--   [0019] OP 352  A=0 B=0 C=3 flags=80
+--       if (0<R[3])~=(0~=0) then PC=PC+1 end
+--   [0020] OP 215  A=0 B=30 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=30
+--   [0021] OP 137  A=3 B='pcall' C=None flags=18
+--       R[3]=ENV["pcall"]
+--   [0022] OP 307  A=4 B='string' C=None flags=82
+--       R[4]=ENV["string"]
+--       R[4]=R[4]["format"]
+--       R[5]=R[0]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(398, 4, 4, 'format', 32), (308, 5, 0, 0, 0)]）
+--   [0025] OP   6  A=6 B=0 C=0 flags=128
+--       B=6+A-1;for I=6,B do R[I]=X[I-6] end
+--   [0026] OP  14  A=3 B=0 C=4 flags=0
+--       do local I={ R[3](U(T,3+1,B)) };local F=0;for U=3,4 do F=F+1;R[U]=I[F] end end
+--   [0027] OP  16  A=3 B=0 C=0 flags=64
+--       if (not not R[3])~=(0~=0) then PC=PC+1 end
+--   [0028] OP 255  A=0 B=30 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=30
+--   [0029] OP  35  A=2 B=4 C=1 flags=192
+--       local I=R[4];if (not not I)==(1~=0) then R[2]=I else PC=PC+1 end
+--   [0030] OP 140  A=0 B=30 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=30
+--   [0031] OP 137  A=3 B='SL' C=None flags=146
+--       R[3]=ENV["SL"]
+--   [0032] OP  16  A=3 B=0 C=0 flags=64
+--       if (not not R[3])~=(0~=0) then PC=PC+1 end
+--   [0033] OP 215  A=0 B=37 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=37
+--   [0034] OP 397  A=3 B='SL' C=None flags=82
+--       R[3]=ENV["SL"]
+--       R[3]=R[3]["Print"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(363, 3, 3, 'Print', 96)]）
+--   [0036] OP  16  A=3 B=0 C=0 flags=128
+--       if (not not R[3])~=(0~=0) then PC=PC+1 end
+--   [0037] OP 140  A=0 B=37 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=37
+--   [0038] OP   1  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_021 PCallHelper | path=root.17 | parent=PROTO_000 / child[17]
+-- 参数=2 | 常量=2 | 指令=14 | 子原型=1
+-- 字符串线索：pcall
+-- 常量池：
+--   K[0] = False
+--   K[1] = 'pcall'
+-- 指令：
+--   [0001] OP 137  A=2 B='pcall' C=None flags=146
+--       R[2]=ENV["pcall"]
+--   [0002] OP 154  A=3 B=0 C=3 flags=0 ; 创建子原型 child[0]，捕获 3 个 upvalue
+--       R[3] = makeClosure(PROTO[0], captures={capture#0: R[1] (local register); capture#1: UP[0] (outer upvalue); capture#2: R[0] (local register)})
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(387, 0, 1, 0, 64), (325, 0, 0, 0, 0), (387, 0, 0, 0, 128)]）
+--   [0006] OP 233  A=2 B=3 C=3 flags=64
+--       do local I={ R[2](U(T,2+1,3)) };local F=0;for U=2,3 do F=F+1;R[U]=I[F] end end
+--   [0007] OP 247  A=4 B=2 C=0 flags=0
+--       local I=R[2];if (not not I)==(0~=0) then R[4]=I else PC=PC+1 end
+--   [0008] OP 215  A=0 B=12 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=12
+--   [0009] OP  92  A=0 B=3 C=False flags=160
+--       if (R[3]==false)~=(0~=0) then PC=PC+1 end
+--   [0010] OP 140  A=0 B=11 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=11
+--   [0011] OP  82  A=4 B=0 C=1 flags=128
+--       R[4]=0~=0;if 1~=0 then PC=PC+1 end
+--   [0012] OP  11  A=4 B=1 C=0 flags=128
+--       R[4]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0013] OP 220  A=4 B=4 C=0 flags=128
+--       return U(T,4,4)
+--   [0014] OP   1  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_022 Nested_tostring | path=root.17.0 | parent=PROTO_021 / child[0]
+-- 参数=0 | 常量=5 | 指令=14 | 子原型=0
+-- 字符串线索：tostring | cc | getInstance | FileUtils | writeStringToFile
+-- 常量池：
+--   K[0] = 'tostring'
+--   K[1] = 'cc'
+--   K[2] = 'getInstance'
+--   K[3] = 'FileUtils'
+--   K[4] = 'writeStringToFile'
+-- 指令：
+--   [0001] OP 309  A=0 B='cc' C=None flags=210
+--       R[0]=ENV["cc"]
+--       R[0]=R[0]["FileUtils"]
+--       local I=R[0];R[0+1]=I;R[0]=I["getInstance"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(270, 0, 0, 'FileUtils', 96), (121, 0, 0, 'getInstance', 224)]）
+--   [0004] OP  98  A=0 B=1 C=0 flags=128
+--       R[0]=R[0](U(T,0+1,1))
+--   [0005] OP 121  A=0 B=0 C='writeStringToFile' flags=224
+--       local I=R[0];R[0+1]=I;R[0]=I["writeStringToFile"]
+--   [0006] OP  95  A=2 B='tostring' C=None flags=210
+--       R[2]=ENV["tostring"]
+--       R[3]=UP[0]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(130, 3, 0, 0, 192)]）
+--   [0008] OP  98  A=2 B=3 C=0 flags=192
+--       R[2]=R[2](U(T,2+1,3))
+--   [0009] OP   4  A=3 B=1 C=0 flags=128
+--       R[3]=UP[1]
+--       R[4]=UP[2]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(130, 4, 2, 0, 192)]）
+--   [0011] OP 252  A=3 B=4 C=0 flags=192
+--       do local I,F=E(R[3](U(T,3+1,4)));B=F+3-1;local U=0;for L=3,B do U=U+1;R[L]=I[U] end end
+--   [0012] OP 133  A=0 B=0 C=0 flags=64
+--       return R[0](U(T,0+1,B))
+--   [0013] OP 175  A=0 B=0 C=0 flags=64
+--       return U(T,0,B)
+--   [0014] OP 100  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_023 GetPlayerPosition | path=root.18 | parent=PROTO_000 / child[18]
+-- 参数=0 | 常量=7 | 指令=19 | 子原型=0
+-- 字符串线索：X | y | GetMetaValue | x | Y | SL
+-- 常量池：
+--   K[0] = 'X'
+--   K[1] = 'y'
+--   K[2] = 'GetMetaValue'
+--   K[3] = 'x'
+--   K[4] = 'Y'
+--   K[5] = 0
+--   K[6] = 'SL'
+-- 指令：
+--   [0001] OP 137  A=0 B='SL' C=None flags=82
+--       R[0]=ENV["SL"]
+--   [0002] OP 297  A=0 B=0 C='GetMetaValue' flags=32
+--       local I=R[0];R[0+1]=I;R[0]=I["GetMetaValue"]
+--       R[2]="X"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 2, 'X', None, 210)]）
+--   [0004] OP  98  A=0 B=2 C=0 flags=128
+--       R[0]=R[0](U(T,0+1,2))
+--   [0005] OP 342  A=0 B=0 C=1 flags=0
+--       if (not not R[0])~=(1~=0) then PC=PC+1 end
+--   [0006] OP 255  A=0 B=7 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=7
+--   [0007] OP 328  A=0 B=0 C=None flags=18
+--       R[0]=0
+--       R[1]=ENV["SL"]
+--       local I=R[1];R[1+1]=I;R[1]=I["GetMetaValue"]
+--       R[3]="Y"
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(137, 1, 'SL', None, 18), (238, 1, 1, 'GetMetaValue', 96), (346, 3, 'Y', None, 18)]）
+--   [0011] OP  68  A=1 B=3 C=0 flags=0
+--       R[1]=R[1](U(T,1+1,3))
+--   [0012] OP 342  A=1 B=0 C=1 flags=0
+--       if (not not R[1])~=(1~=0) then PC=PC+1 end
+--   [0013] OP 215  A=0 B=14 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=14
+--   [0014] OP 107  A=1 B=0 C=None flags=146
+--       R[1]=0
+--       R[2]={}
+--       do local I="x";local F=R[0];R[2][I]=F end
+--       do local I="y";local F=R[1];R[2][I]=F end
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(410, 2, 0, 2, 0), (285, 2, 'x', 0, 80), (268, 2, 'y', 1, 80)]）
+--   [0018] OP 220  A=2 B=2 C=0 flags=64
+--       return U(T,2,2)
+--   [0019] OP   1  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_024 InitGatherMonsters | path=root.19 | parent=PROTO_000 / child[19]
+-- 参数=0 | 常量=11 | 指令=36 | 子原型=1
+-- 字符串线索：gatherTimer | CHECK_INTERVAL | format | IDLE | Schedule | GATHER_THRESHOLD | 引怪功能已启动 (阈值: %d) | SL | string | UnSchedule
+-- 常量池：
+--   K[0] = 'gatherTimer'
+--   K[1] = 'CHECK_INTERVAL'
+--   K[2] = 'format'
+--   K[3] = 'IDLE'
+--   K[4] = 'Schedule'
+--   K[5] = 'GATHER_THRESHOLD'
+--   K[6] = '引怪功能已启动 (阈值: %d)'
+--   K[7] = 'SL'
+--   K[8] = 'string'
+--   K[9] = None
+--   K[10] = 'UnSchedule'
+-- 指令：
+--   [0001] OP 130  A=0 B=0 C=0 flags=64
+--       R[0]=UP[0]
+--   [0002] OP  53  A=0 B=0 C='gatherTimer' flags=32
+--       R[0]=R[0]["gatherTimer"]
+--   [0003] OP  16  A=0 B=0 C=0 flags=64
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0004] OP 215  A=0 B=11 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=11
+--   [0005] OP 335  A=0 B='SL' C=None flags=82
+--       R[0]=ENV["SL"]
+--       local I=R[0];R[0+1]=I;R[0]=I["UnSchedule"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(238, 0, 0, 'UnSchedule', 224)]）
+--   [0007] OP 130  A=2 B=0 C=0 flags=0
+--       R[2]=UP[0]
+--   [0008] OP 375  A=2 B=2 C='gatherTimer' flags=32
+--       R[2]=R[2]["gatherTimer"]
+--   [0009] OP 358  A=0 B=2 C=0 flags=192
+--       R[0](U(T,0+1,2))
+--   [0010] OP 130  A=0 B=0 C=0 flags=192
+--       R[0]=UP[0]
+--   [0011] OP 156  A=0 B='gatherTimer' C=None flags=176
+--       do local I="gatherTimer";local F=nil;R[0][I]=F end
+--   [0012] OP 338  A=0 B=1 C=0 flags=0
+--       R[0]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0013] OP 106  A=0 B=1 C=0 flags=64
+--       UP[1]=R[0]
+--   [0014] OP  87  A=0 B=2 C=0 flags=0
+--       R[0]=UP[2]
+--       R[1]=UP[3]
+--       R[1]=R[1]["IDLE"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(159, 1, 3, 0, 192), (375, 1, 1, 'IDLE', 224)]）
+--   [0017] OP 358  A=0 B=1 C=0 flags=64
+--       R[0](U(T,0+1,1))
+--   [0018] OP 130  A=0 B=4 C=0 flags=192
+--       R[0]=UP[4]
+--   [0019] OP 358  A=0 B=0 C=0 flags=128
+--       R[0](U(T,0+1,0))
+--   [0020] OP 130  A=0 B=0 C=0 flags=192
+--       R[0]=UP[0]
+--   [0021] OP 335  A=1 B='SL' C=None flags=82
+--       R[1]=ENV["SL"]
+--       local I=R[1];R[1+1]=I;R[1]=I["Schedule"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(121, 1, 1, 'Schedule', 32)]）
+--   [0023] OP  27  A=3 B=0 C=0 flags=128 ; 创建子原型 child[0]，捕获 0 个 upvalue
+--       R[3] = makeClosure(PROTO[0], captures={})
+--   [0024] OP 159  A=4 B=5 C=0 flags=64
+--       R[4]=UP[5]
+--       R[4]=R[4]["CHECK_INTERVAL"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(375, 4, 4, 'CHECK_INTERVAL', 32)]）
+--   [0026] OP  98  A=1 B=4 C=0 flags=192
+--       R[1]=R[1](U(T,1+1,4))
+--   [0027] OP 355  A=0 B='gatherTimer' C=1 flags=80
+--       do local I="gatherTimer";local F=R[1];R[0][I]=F end
+--   [0028] OP 344  A=0 B=6 C=0 flags=192
+--       R[0]=UP[6]
+--       R[1]=ENV["string"]
+--       R[1]=R[1]["format"]
+--       R[2]="引怪功能已启动 (阈值: %d)"
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(194, 1, 'string', None, 82), (375, 1, 1, 'format', 224), (391, 2, '引怪功能已启动 (阈值: %d)', None, 18)]）
+--   [0032] OP 159  A=3 B=5 C=0 flags=192
+--       R[3]=UP[5]
+--       R[3]=R[3]["GATHER_THRESHOLD"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(32, 3, 3, 'GATHER_THRESHOLD', 224)]）
+--   [0034] OP 392  A=1 B=3 C=0 flags=192
+--       do local I,F=E(R[1](U(T,1+1,3)));B=F+1-1;local U=0;for L=1,B do U=U+1;R[L]=I[U] end end
+--   [0035] OP  93  A=0 B=0 C=0 flags=64
+--       R[0](U(T,0+1,B))
+--   [0036] OP 250  A=0 B=0 C=0 flags=0
+--       return
+
+-- ============================================================================
+-- PROTO_025 Nested_MainLoop | path=root.19.0 | parent=PROTO_024 / child[0]
+-- 参数=0 | 常量=1 | 指令=3 | 子原型=0
+-- 字符串线索：MainLoop
+-- 常量池：
+--   K[0] = 'MainLoop'
+-- 指令：
+--   [0001] OP 137  A=0 B='MainLoop' C=None flags=82
+--       R[0]=ENV["MainLoop"]
+--   [0002] OP 187  A=0 B=0 C=0 flags=128
+--       R[0](U(T,0+1,0))
+--   [0003] OP 250  A=0 B=0 C=0 flags=0
+--       return
+
+-- ============================================================================
+-- PROTO_026 ShowLocalNoticeByType | path=root.20 | parent=PROTO_000 / child[20]
+-- 参数=1 | 常量=14 | 指令=15 | 子原型=0
+-- 字符串线索：screenH | Y | SL | Type | Msg | ShowLocalNoticeByType | BColor | FColor | X
+-- 常量池：
+--   K[0] = 5.0
+--   K[1] = 'screenH'
+--   K[2] = 'Y'
+--   K[3] = 'SL'
+--   K[4] = 0
+--   K[5] = 'Type'
+--   K[6] = 'Msg'
+--   K[7] = 'ShowLocalNoticeByType'
+--   K[8] = 249.0
+--   K[9] = 'BColor'
+--   K[10] = 'FColor'
+--   K[11] = 'X'
+--   K[12] = 50.0
+--   K[13] = 10.0
+-- 指令：
+--   [0001] OP  83  A=1 B=0 C=6 flags=0
+--       R[1]={}
+--       do local I="Type";local F=10.0;R[1][I]=F end
+--       do local I="Msg";local F=R[0];R[1][I]=F end
+--       do local I="FColor";local F=249.0;R[1][I]=F end
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(146, 1, 'Type', 10.0, 240), (408, 1, 'Msg', 0, 80), (305, 1, 'FColor', 249.0, 240)]）
+--   [0005] OP 146  A=1 B='BColor' C=0 flags=240
+--       do local I="BColor";local F=0;R[1][I]=F end
+--   [0006] OP 144  A=1 B='X' C=5.0 flags=176
+--       do local I="X";local F=5.0;R[1][I]=F end
+--       R[2]=UP[0]
+--       R[2]=R[2]["screenH"]
+--       R[2]=R[2]-50.0
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(130, 2, 0, 0, 128), (363, 2, 2, 'screenH', 96), (34, 2, 2, 50.0, 32)]）
+--   [0010] OP 193  A=1 B='Y' C=2 flags=16
+--       do local I="Y";local F=R[2];R[1][I]=F end
+--       R[2]=ENV["SL"]
+--       local I=R[2];R[2+1]=I;R[2]=I["ShowLocalNoticeByType"]
+--       R[4]=R[1]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(300, 2, 'SL', None, 146), (142, 2, 2, 'ShowLocalNoticeByType', 96), (308, 4, 1, 0, 192)]）
+--   [0014] OP 187  A=2 B=4 C=0 flags=64
+--       R[2](U(T,2+1,4))
+--   [0015] OP  55  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_027 PickUpItems | path=root.21 | parent=PROTO_000 / child[21]
+-- 参数=0 | 常量=34 | 指令=172 | 子原型=2
+-- 字符串线索：地面无可拾取物品 | abs | MoveTo | PlayerPos | mapY | global | sort | ipairs | dist | find | MapY | math | mCurrMapX | mapX | MapX |  | mName | string | mCurrMapY | item | mONameStr | table
+-- 常量池：
+--   K[0] = '地面无可拾取物品'
+--   K[1] = 'abs'
+--   K[2] = 'MoveTo'
+--   K[3] = 'PlayerPos'
+--   K[4] = 'mapY'
+--   K[5] = 'global'
+--   K[6] = 'sort'
+--   K[7] = 'ipairs'
+--   K[8] = 'dist'
+--   K[9] = 'find'
+--   K[10] = 'MapY'
+--   K[11] = 'math'
+--   K[12] = 'mCurrMapX'
+--   K[13] = 'mapX'
+--   K[14] = 'MapX'
+--   K[15] = 0
+--   K[16] = ''
+--   K[17] = 'mName'
+--   K[18] = 'string'
+--   K[19] = 1.0
+--   K[20] = 'mCurrMapY'
+--   K[21] = 'item'
+--   K[22] = 'mONameStr'
+--   K[23] = 'table'
+--   K[24] = 'GetDroppedItems'
+--   K[25] = 'name'
+--   K[26] = 'x'
+--   K[27] = 'kIdx'
+--   K[28] = 'PickMainPlayerPosItem'
+--   K[29] = 'insert'
+--   K[30] = 'dropItemController'
+--   K[31] = 'y'
+--   K[32] = 'Name'
+--   K[33] = '拾取: '
+-- 指令：
+--   [0001] OP   9  A=0 B=0 C=0 flags=64
+--       R[0]={}
+--       R[1]=ENV["GetDroppedItems"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(137, 1, 'GetDroppedItems', None, 82)]）
+--   [0003] OP 233  A=1 B=1 C=2 flags=64
+--       do local I={ R[1](U(T,1+1,1)) };local F=0;for U=1,2 do F=F+1;R[U]=I[F] end end
+--   [0004] OP  45  A=0 B=2 C=0 flags=224
+--       if (R[2]==0)~=(0~=0) then PC=PC+1 end
+--   [0005] OP 255  A=0 B=9 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=9
+--   [0006] OP 134  A=3 B=0 C=0 flags=0
+--       R[3]=UP[0]
+--       R[4]="地面无可拾取物品"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 4, '地面无可拾取物品', None, 146)]）
+--   [0008] OP 187  A=3 B=4 C=0 flags=0
+--       R[3](U(T,3+1,4))
+--   [0009] OP 100  A=0 B=0 C=0 flags=64
+--       return
+--   [0010] OP 137  A=3 B='PlayerPos' C=None flags=210
+--       R[3]=ENV["PlayerPos"]
+--   [0011] OP 183  A=3 B=3 C=4 flags=128
+--       do local I={ R[3](U(T,3+1,3)) };local F=0;for U=3,4 do F=F+1;R[U]=I[F] end end
+--   [0012] OP 264  A=5 B=0 C=0 flags=192
+--       R[5]={}
+--       R[6]={}
+--       R[7]=ENV["ipairs"]
+--       R[8]=R[1]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(230, 6, 0, 0, 192), (71, 7, 'ipairs', None, 82), (308, 8, 1, 0, 128)]）
+--   [0016] OP 233  A=7 B=8 C=9 flags=192
+--       do local I={ R[7](U(T,7+1,8)) };local F=0;for U=7,9 do F=F+1;R[U]=I[F] end end
+--   [0017] OP 140  A=0 B=101 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=101
+--   [0018] OP  53  A=12 B=11 C='mName' flags=96
+--       R[12]=R[11]["mName"]
+--   [0019] OP 342  A=12 B=0 C=1 flags=192
+--       if (not not R[12])~=(1~=0) then PC=PC+1 end
+--   [0020] OP 255  A=0 B=30 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=30
+--   [0021] OP  53  A=12 B=11 C='mONameStr' flags=160
+--       R[12]=R[11]["mONameStr"]
+--   [0022] OP 342  A=12 B=0 C=1 flags=192
+--       if (not not R[12])~=(1~=0) then PC=PC+1 end
+--   [0023] OP 140  A=0 B=30 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=30
+--   [0024] OP 375  A=12 B=11 C='Name' flags=224
+--       R[12]=R[11]["Name"]
+--   [0025] OP 342  A=12 B=0 C=1 flags=128
+--       if (not not R[12])~=(1~=0) then PC=PC+1 end
+--   [0026] OP 255  A=0 B=30 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=30
+--   [0027] OP  32  A=12 B=11 C='name' flags=160
+--       R[12]=R[11]["name"]
+--   [0028] OP 342  A=12 B=0 C=1 flags=64
+--       if (not not R[12])~=(1~=0) then PC=PC+1 end
+--   [0029] OP 140  A=0 B=30 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=30
+--   [0030] OP 165  A=12 B='' C=None flags=18
+--       R[12]=""
+--       R[13]=R[11]["mCurrMapX"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(32, 13, 11, 'mCurrMapX', 96)]）
+--   [0032] OP 342  A=13 B=0 C=1 flags=64
+--       if (not not R[13])~=(1~=0) then PC=PC+1 end
+--   [0033] OP 140  A=0 B=40 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=40
+--   [0034] OP 363  A=13 B=11 C='MapX' flags=224
+--       R[13]=R[11]["MapX"]
+--   [0035] OP 342  A=13 B=0 C=1 flags=192
+--       if (not not R[13])~=(1~=0) then PC=PC+1 end
+--   [0036] OP 215  A=0 B=40 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=40
+--   [0037] OP 375  A=13 B=11 C='mapX' flags=32
+--       R[13]=R[11]["mapX"]
+--   [0038] OP 342  A=13 B=0 C=1 flags=192
+--       if (not not R[13])~=(1~=0) then PC=PC+1 end
+--   [0039] OP 215  A=0 B=40 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=40
+--   [0040] OP  49  A=13 B=11 C='x' flags=160
+--       R[13]=R[11]["x"]
+--       R[14]=R[11]["mCurrMapY"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(32, 14, 11, 'mCurrMapY', 160)]）
+--   [0042] OP 342  A=14 B=0 C=1 flags=64
+--       if (not not R[14])~=(1~=0) then PC=PC+1 end
+--   [0043] OP 215  A=0 B=50 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=50
+--   [0044] OP 375  A=14 B=11 C='MapY' flags=160
+--       R[14]=R[11]["MapY"]
+--   [0045] OP 342  A=14 B=0 C=1 flags=64
+--       if (not not R[14])~=(1~=0) then PC=PC+1 end
+--   [0046] OP 215  A=0 B=50 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=50
+--   [0047] OP 363  A=14 B=11 C='mapY' flags=160
+--       R[14]=R[11]["mapY"]
+--   [0048] OP 342  A=14 B=0 C=1 flags=128
+--       if (not not R[14])~=(1~=0) then PC=PC+1 end
+--   [0049] OP 255  A=0 B=50 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=50
+--   [0050] OP  32  A=14 B=11 C='y' flags=96
+--       R[14]=R[11]["y"]
+--   [0051] OP  16  A=13 B=0 C=0 flags=128
+--       if (not not R[13])~=(0~=0) then PC=PC+1 end
+--   [0052] OP 255  A=0 B=101 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=101
+--   [0053] OP  16  A=14 B=0 C=0 flags=64
+--       if (not not R[14])~=(0~=0) then PC=PC+1 end
+--   [0054] OP 255  A=0 B=101 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=101
+--   [0055] OP 397  A=15 B='math' C=None flags=146
+--       R[15]=ENV["math"]
+--       R[15]=R[15]["abs"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(384, 15, 15, 'abs', 96)]）
+--   [0057] OP 340  A=16 B=3 C=13 flags=0
+--       R[16]=R[3]-R[13]
+--   [0058] OP  68  A=15 B=16 C=0 flags=192
+--       R[15]=R[15](U(T,15+1,16))
+--   [0059] OP  21  A=16 B='math' C=None flags=146
+--       R[16]=ENV["math"]
+--       R[16]=R[16]["abs"]
+--       R[17]=R[4]-R[14]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(384, 16, 16, 'abs', 96), (340, 17, 4, 14, 64)]）
+--   [0062] OP  98  A=16 B=17 C=0 flags=0
+--       R[16]=R[16](U(T,16+1,17))
+--   [0063] OP 273  A=15 B=15 C=16 flags=0
+--       R[15]=R[15]+R[16]
+--       R[16]=0
+--       R[17]=ENV["ipairs"]
+--       R[18]=R[0]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(173, 16, 0, None, 210), (137, 17, 'ipairs', None, 18), (308, 18, 0, 0, 64)]）
+--   [0067] OP 359  A=17 B=18 C=19 flags=192
+--       do local I={ R[17](U(T,17+1,18)) };local F=0;for U=17,19 do F=F+1;R[U]=I[F] end end
+--   [0068] OP 140  A=0 B=77 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=77
+--   [0069] OP  10  A=22 B='string' C=None flags=82
+--       R[22]=ENV["string"]
+--       R[22]=R[22]["find"]
+--       R[23]=R[12]
+--       R[24]=R[21]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(269, 22, 22, 'find', 96), (78, 23, 12, 0, 0), (184, 24, 21, 0, 192)]）
+--   [0073] OP  68  A=22 B=24 C=0 flags=0
+--       R[22]=R[22](U(T,22+1,24))
+--   [0074] OP  16  A=22 B=0 C=0 flags=64
+--       if (not not R[22])~=(0~=0) then PC=PC+1 end
+--   [0075] OP 215  A=0 B=77 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=77
+--   [0076] OP 308  A=16 B=20 C=0 flags=192
+--       R[16]=R[20]
+--   [0077] OP 215  A=0 B=79 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=79
+--   [0078] OP 386  A=17 B=2 C=0 flags=64
+--       do local I,F=E(R[17](R[17+1],R[17+2]));for U=1,2 do R[17+2+U]=I[U] end;if R[17+3]==nil then PC=PC+1 else R[17+2]=R[17+3] end end
+--   [0079] OP 255  A=0 B=68 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=68
+--   [0080] OP 352  A=0 B=0 C=16 flags=16
+--       if (0<R[16])~=(0~=0) then PC=PC+1 end
+--   [0081] OP 140  A=0 B=92 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=92
+--   [0082] OP 137  A=17 B='table' C=None flags=210
+--       R[17]=ENV["table"]
+--   [0083] OP  51  A=17 B=17 C='insert' flags=32
+--       R[17]=R[17]["insert"]
+--       R[18]=R[5]
+--       R[19]={}
+--       do local I="item";local F=R[11];R[19][I]=F end
+--       do local I="dist";local F=R[15];R[19][I]=F end
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(249, 18, 5, 0, 192), (148, 19, 0, 5, 192), (268, 19, 'item', 11, 208), (76, 19, 'dist', 15, 80)]）
+--   [0088] OP 119  A=19 B='kIdx' C=16 flags=80
+--       do local I="kIdx";local F=R[16];R[19][I]=F end
+--       do local I="x";local F=R[13];R[19][I]=F end
+--       do local I="y";local F=R[14];R[19][I]=F end
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(268, 19, 'x', 13, 80), (268, 19, 'y', 14, 80)]）
+--   [0091] OP 187  A=17 B=19 C=0 flags=64
+--       R[17](U(T,17+1,19))
+--   [0092] OP 140  A=0 B=101 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=101
+--   [0093] OP 350  A=17 B='table' C=None flags=146
+--       R[17]=ENV["table"]
+--       R[17]=R[17]["insert"]
+--       R[18]=R[6]
+--       R[19]={}
+--       do local I="item";local F=R[11];R[19][I]=F end
+--       do local I="dist";local F=R[15];R[19][I]=F end
+--       do local I="x";local F=R[13];R[19][I]=F end
+--       do local I="y";local F=R[14];R[19][I]=F end
+--       （该融合指令内部消费后续 7 条记录；原始记录=[(360, 17, 17, 'insert', 224), (399, 18, 6, 0, 192), (41, 19, 0, 4, 128), (76, 19, 'item', 11, 208), (119, 19, 'dist', 15, 16), (285, 19, 'x', 13, 80), (268, 19, 'y', 14, 80)]）
+--   [0101] OP 358  A=17 B=19 C=0 flags=64
+--       R[17](U(T,17+1,19))
+--   [0102] OP 386  A=7 B=2 C=0 flags=64
+--       do local I,F=E(R[7](R[7+1],R[7+2]));for U=1,2 do R[7+2+U]=I[U] end;if R[7+3]==nil then PC=PC+1 else R[7+2]=R[7+3] end end
+--   [0103] OP 255  A=0 B=17 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=17
+--   [0104] OP  27  A=7 B=0 C=0 flags=192 ; 创建子原型 child[0]，捕获 0 个 upvalue
+--       R[7] = makeClosure(PROTO[0], captures={})
+--   [0105] OP 307  A=8 B='table' C=None flags=210
+--       R[8]=ENV["table"]
+--       R[8]=R[8]["sort"]
+--       R[9]=R[5]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(363, 8, 8, 'sort', 160), (78, 9, 5, 0, 128)]）
+--   [0108] OP 308  A=10 B=7 C=0 flags=64
+--       R[10]=R[7]
+--   [0109] OP 187  A=8 B=10 C=0 flags=0
+--       R[8](U(T,8+1,10))
+--   [0110] OP 307  A=8 B='table' C=None flags=146
+--       R[8]=ENV["table"]
+--       R[8]=R[8]["sort"]
+--       R[9]=R[6]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(398, 8, 8, 'sort', 96), (184, 9, 6, 0, 0)]）
+--   [0113] OP  27  A=10 B=1 C=0 flags=192 ; 创建子原型 child[1]，捕获 0 个 upvalue
+--       R[10] = makeClosure(PROTO[1], captures={})
+--   [0114] OP 187  A=8 B=10 C=0 flags=0
+--       R[8](U(T,8+1,10))
+--   [0115] OP 120  A=8 B=0 C=0 flags=128
+--       R[8]={}
+--   [0116] OP  71  A=9 B='ipairs' C=None flags=18
+--       R[9]=ENV["ipairs"]
+--       R[10]=R[5]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 10, 5, 0, 128)]）
+--   [0118] OP 183  A=9 B=10 C=11 flags=192
+--       do local I={ R[9](U(T,9+1,10)) };local F=0;for U=9,11 do F=F+1;R[U]=I[F] end end
+--   [0119] OP 140  A=0 B=124 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=124
+--   [0120] OP  10  A=14 B='table' C=None flags=210
+--       R[14]=ENV["table"]
+--       R[14]=R[14]["insert"]
+--       R[15]=R[8]
+--       R[16]=R[13]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(269, 14, 14, 'insert', 160), (308, 15, 8, 0, 0), (308, 16, 13, 0, 64)]）
+--   [0124] OP 358  A=14 B=16 C=0 flags=0
+--       R[14](U(T,14+1,16))
+--   [0125] OP 117  A=9 B=2 C=0 flags=192
+--       do local I,F=E(R[9](R[9+1],R[9+2]));for U=1,2 do R[9+2+U]=I[U] end;if R[9+3]==nil then PC=PC+1 else R[9+2]=R[9+3] end end
+--   [0126] OP 255  A=0 B=119 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=119
+--   [0127] OP 137  A=9 B='ipairs' C=None flags=210
+--       R[9]=ENV["ipairs"]
+--   [0128] OP 184  A=10 B=6 C=0 flags=0
+--       R[10]=R[6]
+--   [0129] OP 183  A=9 B=10 C=11 flags=192
+--       do local I={ R[9](U(T,9+1,10)) };local F=0;for U=9,11 do F=F+1;R[U]=I[F] end end
+--   [0130] OP 255  A=0 B=135 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=135
+--   [0131] OP 397  A=14 B='table' C=None flags=82
+--       R[14]=ENV["table"]
+--       R[14]=R[14]["insert"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(269, 14, 14, 'insert', 224)]）
+--   [0133] OP  78  A=15 B=8 C=0 flags=64
+--       R[15]=R[8]
+--       R[16]=R[13]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 16, 13, 0, 192)]）
+--   [0135] OP 187  A=14 B=16 C=0 flags=192
+--       R[14](U(T,14+1,16))
+--   [0136] OP 117  A=9 B=2 C=0 flags=128
+--       do local I,F=E(R[9](R[9+1],R[9+2]));for U=1,2 do R[9+2+U]=I[U] end;if R[9+3]==nil then PC=PC+1 else R[9+2]=R[9+3] end end
+--   [0137] OP 215  A=0 B=130 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=130
+--   [0138] OP 115  A=9 B=8 C=0 flags=64
+--       R[9]=#R[8]
+--   [0139] OP  92  A=0 B=9 C=0 flags=96
+--       if (R[9]==0)~=(0~=0) then PC=PC+1 end
+--   [0140] OP 140  A=0 B=141 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=141
+--   [0141] OP 250  A=0 B=0 C=0 flags=128
+--       return
+--   [0142] OP  42  A=9 B=8 C=1.0 flags=160
+--       R[9]=R[8][1.0]
+--       R[10]=ENV["MoveTo"]
+--       R[11]=R[9]["x"]
+--       R[12]=R[9]["y"]
+--       R[13]=0
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(137, 10, 'MoveTo', None, 146), (312, 11, 9, 'x', 224), (363, 12, 9, 'y', 224), (371, 13, 0, None, 146)]）
+--   [0147] OP 358  A=10 B=13 C=0 flags=192
+--       R[10](U(T,10+1,13))
+--   [0148] OP 137  A=10 B='math' C=None flags=82
+--       R[10]=ENV["math"]
+--   [0149] OP 228  A=10 B=10 C='abs' flags=224
+--       R[10]=R[10]["abs"]
+--       R[11]=R[9]["x"]
+--       R[11]=R[3]-R[11]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(32, 11, 9, 'x', 224), (340, 11, 3, 11, 192)]）
+--   [0152] OP  68  A=10 B=11 C=0 flags=192
+--       R[10]=R[10](U(T,10+1,11))
+--   [0153] OP 216  A=0 B=10 C=1.0 flags=160
+--       if (R[10]<=1.0)~=(0~=0) then PC=PC+1 end
+--   [0154] OP 255  A=0 B=165 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=165
+--   [0155] OP 137  A=10 B='math' C=None flags=82
+--       R[10]=ENV["math"]
+--   [0156] OP 375  A=10 B=10 C='abs' flags=224
+--       R[10]=R[10]["abs"]
+--   [0157] OP 384  A=11 B=9 C='y' flags=224
+--       R[11]=R[9]["y"]
+--       R[11]=R[4]-R[11]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(340, 11, 4, 11, 128)]）
+--   [0159] OP  98  A=10 B=11 C=0 flags=128
+--       R[10]=R[10](U(T,10+1,11))
+--   [0160] OP 216  A=0 B=10 C=1.0 flags=32
+--       if (R[10]<=1.0)~=(0~=0) then PC=PC+1 end
+--   [0161] OP 140  A=0 B=165 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=165
+--   [0162] OP 137  A=10 B='global' C=None flags=18
+--       R[10]=ENV["global"]
+--   [0163] OP  53  A=10 B=10 C='dropItemController' flags=96
+--       R[10]=R[10]["dropItemController"]
+--   [0164] OP 121  A=10 B=10 C='PickMainPlayerPosItem' flags=160
+--       local I=R[10];R[10+1]=I;R[10]=I["PickMainPlayerPosItem"]
+--   [0165] OP 187  A=10 B=11 C=0 flags=0
+--       R[10](U(T,10+1,11))
+--   [0166] OP 130  A=10 B=0 C=0 flags=64
+--       R[10]=UP[0]
+--   [0167] OP 165  A=11 B='拾取: ' C=None flags=18
+--       R[11]="拾取: "
+--       R[12]=R[9]["item"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(281, 12, 9, 'item', 224)]）
+--   [0169] OP  97  A=12 B=12 C='mName' flags=96
+--       R[12]=R[12]["mName"]
+--       do local I=R[12];for F=12-1,11,-1 do I=R[F]..I end;R[11]=I end
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(210, 11, 11, 12, 64)]）
+--   [0171] OP 187  A=10 B=11 C=0 flags=64
+--       R[10](U(T,10+1,11))
+--   [0172] OP  55  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_028 Nested_dist | path=root.21.0 | parent=PROTO_027 / child[0]
+-- 参数=2 | 常量=2 | 指令=19 | 子原型=0
+-- 字符串线索：dist | kIdx
+-- 常量池：
+--   K[0] = 'dist'
+--   K[1] = 'kIdx'
+-- 指令：
+--   [0001] OP  49  A=2 B=0 C='kIdx' flags=224
+--       R[2]=R[0]["kIdx"]
+--       R[3]=R[1]["kIdx"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(32, 3, 1, 'kIdx', 224)]）
+--   [0003] OP 381  A=1 B=2 C=3 flags=128
+--       if (R[2]==R[3])~=(1~=0) then PC=PC+1 end
+--   [0004] OP 215  A=0 B=11 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=11
+--   [0005] OP  49  A=2 B=0 C='kIdx' flags=32
+--       R[2]=R[0]["kIdx"]
+--       R[3]=R[1]["kIdx"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(32, 3, 1, 'kIdx', 160)]）
+--   [0007] OP 180  A=1 B=2 C=3 flags=0
+--       if (R[2]<R[3])~=(1~=0) then PC=PC+1 end
+--   [0008] OP 140  A=0 B=9 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=9
+--   [0009] OP  82  A=2 B=0 C=1 flags=192
+--       R[2]=0~=0;if 1~=0 then PC=PC+1 end
+--   [0010] OP  11  A=2 B=1 C=0 flags=128
+--       R[2]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0011] OP 220  A=2 B=2 C=0 flags=0
+--       return U(T,2,2)
+--   [0012] OP  49  A=2 B=0 C='dist' flags=160
+--       R[2]=R[0]["dist"]
+--       R[3]=R[1]["dist"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(363, 3, 1, 'dist', 32)]）
+--   [0014] OP   2  A=1 B=2 C=3 flags=192
+--       if (R[2]<R[3])~=(1~=0) then PC=PC+1 end
+--   [0015] OP 215  A=0 B=16 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=16
+--   [0016] OP  82  A=2 B=0 C=1 flags=128
+--       R[2]=0~=0;if 1~=0 then PC=PC+1 end
+--   [0017] OP 401  A=2 B=1 C=0 flags=192
+--       R[2]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0018] OP 220  A=2 B=2 C=0 flags=128
+--       return U(T,2,2)
+--   [0019] OP 250  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_029 Nested_dist_2 | path=root.21.1 | parent=PROTO_027 / child[1]
+-- 参数=2 | 常量=1 | 指令=8 | 子原型=0
+-- 字符串线索：dist
+-- 常量池：
+--   K[0] = 'dist'
+-- 指令：
+--   [0001] OP  49  A=2 B=0 C='dist' flags=96
+--       R[2]=R[0]["dist"]
+--       R[3]=R[1]["dist"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(375, 3, 1, 'dist', 224)]）
+--   [0003] OP 219  A=1 B=2 C=3 flags=192
+--       if (R[2]<R[3])~=(1~=0) then PC=PC+1 end
+--   [0004] OP 255  A=0 B=5 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=5
+--   [0005] OP  82  A=2 B=0 C=1 flags=128
+--       R[2]=0~=0;if 1~=0 then PC=PC+1 end
+--   [0006] OP 338  A=2 B=1 C=0 flags=192
+--       R[2]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0007] OP 220  A=2 B=2 C=0 flags=0
+--       return U(T,2,2)
+--   [0008] OP   1  A=0 B=0 C=0 flags=0
+--       return
+
+-- ============================================================================
+-- PROTO_030 GetMapData2DPtr | path=root.22 | parent=PROTO_000 / child[22]
+-- 参数=5 | 常量=15 | 指令=144 | 子原型=0
+-- 字符串线索：GetMapData2DPtr | abs | isObstacle | getMapDataCols | global | floor | math | getMapDataRows | max | sceneManager
+-- 常量池：
+--   K[0] = 'GetMapData2DPtr'
+--   K[1] = 'abs'
+--   K[2] = 'isObstacle'
+--   K[3] = None
+--   K[4] = 10000.0
+--   K[5] = 'getMapDataCols'
+--   K[6] = 0
+--   K[7] = 'global'
+--   K[8] = 'floor'
+--   K[9] = 'math'
+--   K[10] = 1.0
+--   K[11] = 2.0
+--   K[12] = 'getMapDataRows'
+--   K[13] = 'max'
+--   K[14] = 'sceneManager'
+-- 指令：
+--   [0001] OP  16  A=0 B=0 C=0 flags=0
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0002] OP 215  A=0 B=10 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=10
+--   [0003] OP  16  A=1 B=0 C=0 flags=128
+--       if (not not R[1])~=(0~=0) then PC=PC+1 end
+--   [0004] OP 140  A=0 B=10 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=10
+--   [0005] OP  16  A=2 B=0 C=0 flags=0
+--       if (not not R[2])~=(0~=0) then PC=PC+1 end
+--   [0006] OP 215  A=0 B=10 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=10
+--   [0007] OP  16  A=3 B=0 C=0 flags=128
+--       if (not not R[3])~=(0~=0) then PC=PC+1 end
+--   [0008] OP 140  A=0 B=10 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=10
+--   [0009] OP 342  A=4 B=0 C=1 flags=64
+--       if (not not R[4])~=(1~=0) then PC=PC+1 end
+--   [0010] OP 255  A=0 B=12 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=12
+--   [0011] OP 248  A=5 B=5 C=0 flags=192
+--       for I=5,5 do R[I]=nil end
+--   [0012] OP 220  A=5 B=5 C=0 flags=128
+--       return U(T,5,5)
+--   [0013] OP  99  A=0 B=0 C=2 flags=192
+--       if (R[0]==R[2])~=(0~=0) then PC=PC+1 end
+--   [0014] OP 215  A=0 B=18 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=18
+--   [0015] OP  99  A=0 B=1 C=3 flags=0
+--       if (R[1]==R[3])~=(0~=0) then PC=PC+1 end
+--   [0016] OP 140  A=0 B=18 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=18
+--   [0017] OP 371  A=5 B=0 C=None flags=82
+--       R[5]=0
+--   [0018] OP 220  A=5 B=5 C=0 flags=64
+--       return U(T,5,5)
+--   [0019] OP 216  A=0 B=4 C=0 flags=32
+--       if (R[4]<=0)~=(0~=0) then PC=PC+1 end
+--   [0020] OP 255  A=0 B=22 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=22
+--   [0021] OP 125  A=5 B=5 C=0 flags=64
+--       for I=5,5 do R[I]=nil end
+--   [0022] OP 220  A=5 B=5 C=0 flags=128
+--       return U(T,5,5)
+--   [0023] OP 397  A=5 B='math' C=None flags=18
+--       R[5]=ENV["math"]
+--       R[5]=R[5]["max"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(375, 5, 5, 'max', 160)]）
+--   [0025] OP  21  A=6 B='math' C=None flags=82
+--       R[6]=ENV["math"]
+--       R[6]=R[6]["abs"]
+--       R[7]=R[2]-R[0]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(384, 6, 6, 'abs', 96), (340, 7, 2, 0, 64)]）
+--   [0028] OP  98  A=6 B=7 C=0 flags=64
+--       R[6]=R[6](U(T,6+1,7))
+--   [0029] OP  21  A=7 B='math' C=None flags=18
+--       R[7]=ENV["math"]
+--       R[7]=R[7]["abs"]
+--       R[8]=R[3]-R[1]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(384, 7, 7, 'abs', 160), (340, 8, 3, 1, 64)]）
+--   [0032] OP 252  A=7 B=8 C=0 flags=64
+--       do local I,F=E(R[7](U(T,7+1,8)));B=F+7-1;local U=0;for L=7,B do U=U+1;R[L]=I[U] end end
+--   [0033] OP 242  A=5 B=0 C=0 flags=64
+--       R[5]=R[5](U(T,5+1,B))
+--   [0034] OP 219  A=0 B=4 C=5 flags=192
+--       if (R[4]<R[5])~=(0~=0) then PC=PC+1 end
+--   [0035] OP 215  A=0 B=37 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=37
+--   [0036] OP 125  A=5 B=5 C=0 flags=192
+--       for I=5,5 do R[I]=nil end
+--   [0037] OP 220  A=5 B=5 C=0 flags=192
+--       return U(T,5,5)
+--   [0038] OP 137  A=5 B='global' C=None flags=82
+--       R[5]=ENV["global"]
+--   [0039] OP 375  A=5 B=5 C='sceneManager' flags=224
+--       R[5]=R[5]["sceneManager"]
+--   [0040] OP  16  A=5 B=0 C=0 flags=128
+--       if (not not R[5])~=(0~=0) then PC=PC+1 end
+--   [0041] OP 215  A=0 B=45 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=45
+--   [0042] OP 309  A=5 B='global' C=None flags=82
+--       R[5]=ENV["global"]
+--       R[5]=R[5]["sceneManager"]
+--       local I=R[5];R[5+1]=I;R[5]=I["GetMapData2DPtr"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(270, 5, 5, 'sceneManager', 160), (121, 5, 5, 'GetMapData2DPtr', 160)]）
+--   [0045] OP  68  A=5 B=6 C=0 flags=192
+--       R[5]=R[5](U(T,5+1,6))
+--   [0046] OP 342  A=5 B=0 C=1 flags=192
+--       if (not not R[5])~=(1~=0) then PC=PC+1 end
+--   [0047] OP 140  A=0 B=49 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=49
+--   [0048] OP 125  A=6 B=6 C=0 flags=64
+--       for I=6,6 do R[I]=nil end
+--   [0049] OP 220  A=6 B=6 C=0 flags=0
+--       return U(T,6,6)
+--   [0050] OP 121  A=6 B=5 C='getMapDataRows' flags=160
+--       local I=R[5];R[6+1]=I;R[6]=I["getMapDataRows"]
+--   [0051] OP  68  A=6 B=7 C=0 flags=128
+--       R[6]=R[6](U(T,6+1,7))
+--   [0052] OP 238  A=7 B=5 C='getMapDataCols' flags=224
+--       local I=R[5];R[7+1]=I;R[7]=I["getMapDataCols"]
+--   [0053] OP  68  A=7 B=8 C=0 flags=64
+--       R[7]=R[7](U(T,7+1,8))
+--   [0054] OP  43  A=1 B=2 C=0 flags=32
+--       if (R[2]<0)~=(1~=0) then PC=PC+1 end
+--   [0055] OP 140  A=0 B=61 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=61
+--   [0056] OP  43  A=1 B=3 C=0 flags=96
+--       if (R[3]<0)~=(1~=0) then PC=PC+1 end
+--   [0057] OP 215  A=0 B=61 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=61
+--   [0058] OP 236  A=1 B=7 C=2 flags=128
+--       if (R[7]<=R[2])~=(1~=0) then PC=PC+1 end
+--   [0059] OP 255  A=0 B=61 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=61
+--   [0060] OP 236  A=0 B=6 C=3 flags=192
+--       if (R[6]<=R[3])~=(0~=0) then PC=PC+1 end
+--   [0061] OP 215  A=0 B=63 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=63
+--   [0062] OP 248  A=8 B=8 C=0 flags=0
+--       for I=8,8 do R[I]=nil end
+--   [0063] OP 220  A=8 B=8 C=0 flags=128
+--       return U(T,8,8)
+--   [0064] OP 136  A=8 B=5 C='isObstacle' flags=32
+--       local I=R[5];R[8+1]=I;R[8]=I["isObstacle"]
+--       R[10]=R[2]
+--       R[11]=R[3]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(78, 10, 2, 0, 192), (308, 11, 3, 0, 192)]）
+--   [0067] OP  98  A=8 B=11 C=0 flags=64
+--       R[8]=R[8](U(T,8+1,11))
+--   [0068] OP  45  A=1 B=8 C=0 flags=160
+--       if (R[8]==0)~=(1~=0) then PC=PC+1 end
+--   [0069] OP 140  A=0 B=71 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=71
+--   [0070] OP 234  A=8 B=8 C=0 flags=192
+--       for I=8,8 do R[I]=nil end
+--   [0071] OP 220  A=8 B=8 C=0 flags=192
+--       return U(T,8,8)
+--   [0072] OP 120  A=8 B=0 C=1 flags=0
+--       R[8]={}
+--   [0073] OP 316  A=9 B=0 C=6 flags=192
+--       R[9]=R[0]*R[6]
+--   [0074] OP  29  A=9 B=9 C=1 flags=0
+--       R[9]=R[9]+R[1]
+--   [0075] OP 283  A=8 B=9 C=0 flags=160
+--       do local I=R[9];local F=0;R[8][I]=F end
+--   [0076] OP 410  A=9 B=1 C=0 flags=192
+--       R[9]={}
+--   [0077] OP 316  A=10 B=0 C=6 flags=0
+--       R[10]=R[0]*R[6]
+--   [0078] OP 155  A=10 B=10 C=1 flags=0
+--       R[10]=R[10]+R[1]
+--   [0079] OP 112  A=9 B=1 C=1 flags=192
+--       do local I=1;if I==0 then I=math.max(0,B-9) end;local F=R[9];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[9+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[9]=O else for O=1,I do F[L+O]=R[9+O] end end;end
+--   [0080] OP 371  A=10 B=1.0 C=None flags=82
+--       R[10]=1.0
+--   [0081] OP 115  A=11 B=9 C=0 flags=192
+--       R[11]=#R[9]
+--   [0082] OP 236  A=0 B=10 C=11 flags=64
+--       if (R[10]<=R[11])~=(0~=0) then PC=PC+1 end
+--   [0083] OP 255  A=0 B=141 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=141
+--   [0084] OP 364  A=0 B=10000.0 C=10 flags=80
+--       if (10000.0<R[10])~=(0~=0) then PC=PC+1 end
+--   [0085] OP 255  A=0 B=87 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=87
+--   [0086] OP 234  A=11 B=11 C=0 flags=64
+--       for I=11,11 do R[I]=nil end
+--   [0087] OP 220  A=11 B=11 C=0 flags=192
+--       return U(T,11,11)
+--   [0088] OP 304  A=11 B=9 C=10 flags=128
+--       R[11]=R[9][R[10]]
+--   [0089] OP 124  A=10 B=10 C=1.0 flags=32
+--       R[10]=R[10]+1.0
+--   [0090] OP 231  A=12 B=8 C=11 flags=64
+--       R[12]=R[8][R[11]]
+--   [0091] OP   2  A=0 B=12 C=4 flags=0
+--       if (R[12]<R[4])~=(0~=0) then PC=PC+1 end
+--   [0092] OP 215  A=0 B=80 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=80
+--   [0093] OP 137  A=13 B='math' C=None flags=210
+--       R[13]=ENV["math"]
+--   [0094] OP  32  A=13 B=13 C='floor' flags=160
+--       R[13]=R[13]["floor"]
+--   [0095] OP 240  A=14 B=11 C=6 flags=192
+--       R[14]=R[11]/R[6]
+--   [0096] OP  98  A=13 B=14 C=0 flags=64
+--       R[13]=R[13](U(T,13+1,14))
+--   [0097] OP 280  A=14 B=11 C=6 flags=64
+--       R[14]=R[11]%R[6]
+--   [0098] OP 346  A=15 B=1.0 C=None flags=82
+--       R[15]=1.0
+--   [0099] OP 324  A=16 B=0 C=0 flags=128
+--       R[16]=UP[0]
+--       R[16]=#R[16]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(115, 16, 16, 0, 0)]）
+--   [0101] OP 371  A=17 B=1.0 C=None flags=146
+--       R[17]=1.0
+--   [0102] OP  23  A=15 B=139 C=None flags=2
+--       R[15]=R[15]-R[15+2];PC=139
+--   [0103] OP  28  A=19 B=0 C=0 flags=64
+--       R[19]=UP[0]
+--       R[19]=R[19][R[18]]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(304, 19, 19, 18, 64)]）
+--   [0105] OP 363  A=19 B=19 C=1.0 flags=32
+--       R[19]=R[19][1.0]
+--   [0106] OP 155  A=19 B=13 C=19 flags=192
+--       R[19]=R[13]+R[19]
+--   [0107] OP  28  A=20 B=0 C=0 flags=192
+--       R[20]=UP[0]
+--       R[20]=R[20][R[18]]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(231, 20, 20, 18, 0)]）
+--   [0109] OP  32  A=20 B=20 C=2.0 flags=96
+--       R[20]=R[20][2.0]
+--   [0110] OP  29  A=20 B=14 C=20 flags=0
+--       R[20]=R[14]+R[20]
+--   [0111] OP  48  A=0 B=0 C=19 flags=80
+--       if (0<=R[19])~=(0~=0) then PC=PC+1 end
+--   [0112] OP 215  A=0 B=139 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=139
+--   [0113] OP 150  A=0 B=0 C=20 flags=144
+--       if (0<=R[20])~=(0~=0) then PC=PC+1 end
+--   [0114] OP 255  A=0 B=139 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=139
+--   [0115] OP   2  A=0 B=19 C=7 flags=192
+--       if (R[19]<R[7])~=(0~=0) then PC=PC+1 end
+--   [0116] OP 140  A=0 B=139 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=139
+--   [0117] OP 180  A=0 B=20 C=6 flags=64
+--       if (R[20]<R[6])~=(0~=0) then PC=PC+1 end
+--   [0118] OP 140  A=0 B=139 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=139
+--   [0119] OP 136  A=21 B=5 C='isObstacle' flags=96
+--       local I=R[5];R[21+1]=I;R[21]=I["isObstacle"]
+--       R[23]=R[19]
+--       R[24]=R[20]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(78, 23, 19, 0, 0), (184, 24, 20, 0, 64)]）
+--   [0122] OP  68  A=21 B=24 C=0 flags=64
+--       R[21]=R[21](U(T,21+1,24))
+--   [0123] OP  45  A=0 B=21 C=0 flags=32
+--       if (R[21]==0)~=(0~=0) then PC=PC+1 end
+--   [0124] OP 215  A=0 B=139 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=139
+--   [0125] OP 316  A=21 B=19 C=6 flags=64
+--       R[21]=R[19]*R[6]
+--   [0126] OP 155  A=21 B=21 C=20 flags=192
+--       R[21]=R[21]+R[20]
+--   [0127] OP 231  A=22 B=8 C=21 flags=192
+--       R[22]=R[8][R[21]]
+--   [0128] OP 279  A=0 B=22 C=None flags=96
+--       if (R[22]==nil)~=(0~=0) then PC=PC+1 end
+--   [0129] OP 215  A=0 B=139 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=139
+--   [0130] OP 124  A=22 B=12 C=1.0 flags=160
+--       R[22]=R[12]+1.0
+--   [0131] OP 294  A=0 B=19 C=2 flags=192
+--       if (R[19]==R[2])~=(0~=0) then PC=PC+1 end
+--   [0132] OP 215  A=0 B=135 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=135
+--   [0133] OP 294  A=0 B=20 C=3 flags=0
+--       if (R[20]==R[3])~=(0~=0) then PC=PC+1 end
+--   [0134] OP 215  A=0 B=135 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=135
+--   [0135] OP 220  A=22 B=22 C=0 flags=128
+--       return U(T,22,22)
+--   [0136] OP 174  A=8 B=21 C=22 flags=128
+--       do local I=R[21];local F=R[22];R[8][I]=F end
+--   [0137] OP 115  A=23 B=9 C=0 flags=64
+--       R[23]=#R[9]
+--   [0138] OP 124  A=23 B=23 C=1.0 flags=32
+--       R[23]=R[23]+1.0
+--   [0139] OP 368  A=9 B=23 C=21 flags=64
+--       do local I=R[23];local F=R[21];R[9][I]=F end
+--   [0140] OP 126  A=15 B=102 C=None flags=2
+--       do local I=15;local F=R[I+2];local U=R[I]+F;R[I]=U;local L=R[I+1];if (F>0 and U<=L) or (F<=0 and U>=L) then R[I+3]=U;PC=102 end end
+--   [0141] OP 140  A=0 B=80 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=80
+--   [0142] OP 125  A=11 B=11 C=0 flags=0
+--       for I=11,11 do R[I]=nil end
+--   [0143] OP 220  A=11 B=11 C=0 flags=192
+--       return U(T,11,11)
+--   [0144] OP   1  A=0 B=0 C=0 flags=64
+--       return
+
+-- ============================================================================
+-- PROTO_031 Builtsetting | path=root.23 | parent=PROTO_000 / child[23]
+-- 参数=0 | 常量=15 | 指令=55 | 子原型=0
+-- 字符串线索：CHANGE_SETTING | 关闭屏蔽怪物 | 关闭游戏音乐 | 开启人物简装 | 开启怪物简装 | 关闭高帧率 | 关闭背景音乐
+-- 常量池：
+--   K[0] = 58.0
+--   K[1] = 'CHANGE_SETTING'
+--   K[2] = 2005.0
+--   K[3] = 57.0
+--   K[4] = '关闭屏蔽怪物'
+--   K[5] = '关闭游戏音乐'
+--   K[6] = 0
+--   K[7] = '开启人物简装'
+--   K[8] = 1002.0
+--   K[9] = '开启怪物简装'
+--   K[10] = '关闭高帧率'
+--   K[11] = 27.0
+--   K[12] = 1.0
+--   K[13] = 52.0
+--   K[14] = '关闭背景音乐'
+-- 指令：
+--   [0001] OP 168  A=0 B='CHANGE_SETTING' C=None flags=210
+--       R[0]=ENV["CHANGE_SETTING"]
+--       R[1]=27.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 1, 27.0, None, 210)]）
+--   [0003] OP  90  A=2 B=1 C=0 flags=64
+--       R[2]={}
+--       R[3]=0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 3, 0, None, 210)]）
+--   [0005] OP 153  A=2 B=1 C=1 flags=64
+--       do local I=1;if I==0 then I=math.max(0,B-2) end;local F=R[2];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[2+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[2]=O else for O=1,I do F[L+O]=R[2+O] end end;end
+--   [0006] OP 358  A=0 B=2 C=0 flags=128
+--       R[0](U(T,0+1,2))
+--   [0007] OP 134  A=0 B=0 C=0 flags=128
+--       R[0]=UP[0]
+--       R[1]="关闭背景音乐"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 1, '关闭背景音乐', None, 146)]）
+--   [0009] OP 187  A=0 B=1 C=0 flags=192
+--       R[0](U(T,0+1,1))
+--   [0010] OP 168  A=0 B='CHANGE_SETTING' C=None flags=146
+--       R[0]=ENV["CHANGE_SETTING"]
+--       R[1]=52.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 1, 52.0, None, 210)]）
+--   [0012] OP 410  A=2 B=1 C=0 flags=192
+--       R[2]={}
+--   [0013] OP 346  A=3 B=0 C=None flags=82
+--       R[3]=0
+--   [0014] OP 402  A=2 B=1 C=1 flags=0
+--       do local I=1;if I==0 then I=math.max(0,B-2) end;local F=R[2];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[2+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[2]=O else for O=1,I do F[L+O]=R[2+O] end end;end
+--   [0015] OP 358  A=0 B=2 C=0 flags=0
+--       R[0](U(T,0+1,2))
+--   [0016] OP 130  A=0 B=0 C=0 flags=0
+--       R[0]=UP[0]
+--   [0017] OP 371  A=1 B='关闭游戏音乐' C=None flags=210
+--       R[1]="关闭游戏音乐"
+--   [0018] OP 358  A=0 B=1 C=0 flags=192
+--       R[0](U(T,0+1,1))
+--   [0019] OP 168  A=0 B='CHANGE_SETTING' C=None flags=146
+--       R[0]=ENV["CHANGE_SETTING"]
+--       R[1]=1002.0
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 1, 1002.0, None, 210)]）
+--   [0021] OP 120  A=2 B=1 C=0 flags=0
+--       R[2]={}
+--   [0022] OP 346  A=3 B=0 C=None flags=82
+--       R[3]=0
+--   [0023] OP 237  A=2 B=1 C=1 flags=128
+--       do local I=1;if I==0 then I=math.max(0,B-2) end;local F=R[2];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[2+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[2]=O else for O=1,I do F[L+O]=R[2+O] end end;end
+--   [0024] OP 187  A=0 B=2 C=0 flags=192
+--       R[0](U(T,0+1,2))
+--   [0025] OP 130  A=0 B=0 C=0 flags=0
+--       R[0]=UP[0]
+--   [0026] OP 371  A=1 B='关闭高帧率' C=None flags=82
+--       R[1]="关闭高帧率"
+--   [0027] OP 358  A=0 B=1 C=0 flags=192
+--       R[0](U(T,0+1,1))
+--   [0028] OP 137  A=0 B='CHANGE_SETTING' C=None flags=82
+--       R[0]=ENV["CHANGE_SETTING"]
+--   [0029] OP  40  A=1 B=57.0 C=None flags=146
+--       R[1]=57.0
+--       R[2]={}
+--       R[3]=1.0
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(90, 2, 1, 0, 0), (346, 3, 1.0, None, 210)]）
+--   [0032] OP 112  A=2 B=1 C=1 flags=128
+--       do local I=1;if I==0 then I=math.max(0,B-2) end;local F=R[2];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[2+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[2]=O else for O=1,I do F[L+O]=R[2+O] end end;end
+--   [0033] OP 358  A=0 B=2 C=0 flags=128
+--       R[0](U(T,0+1,2))
+--   [0034] OP 134  A=0 B=0 C=0 flags=192
+--       R[0]=UP[0]
+--       R[1]="开启人物简装"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 1, '开启人物简装', None, 82)]）
+--   [0036] OP 187  A=0 B=1 C=0 flags=0
+--       R[0](U(T,0+1,1))
+--   [0037] OP 137  A=0 B='CHANGE_SETTING' C=None flags=82
+--       R[0]=ENV["CHANGE_SETTING"]
+--   [0038] OP  40  A=1 B=58.0 C=None flags=146
+--       R[1]=58.0
+--       R[2]={}
+--       R[3]=1.0
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(90, 2, 1, 0, 64), (346, 3, 1.0, None, 146)]）
+--   [0041] OP  88  A=2 B=1 C=1 flags=128
+--       do local I=1;if I==0 then I=math.max(0,B-2) end;local F=R[2];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[2+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[2]=O else for O=1,I do F[L+O]=R[2+O] end end;end
+--   [0042] OP 358  A=0 B=2 C=0 flags=0
+--       R[0](U(T,0+1,2))
+--   [0043] OP 130  A=0 B=0 C=0 flags=128
+--       R[0]=UP[0]
+--   [0044] OP 371  A=1 B='开启怪物简装' C=None flags=210
+--       R[1]="开启怪物简装"
+--   [0045] OP 358  A=0 B=1 C=0 flags=0
+--       R[0](U(T,0+1,1))
+--   [0046] OP 137  A=0 B='CHANGE_SETTING' C=None flags=82
+--       R[0]=ENV["CHANGE_SETTING"]
+--   [0047] OP 346  A=1 B=2005.0 C=None flags=210
+--       R[1]=2005.0
+--   [0048] OP 105  A=2 B=1 C=0 flags=128
+--       R[2]={}
+--   [0049] OP 371  A=3 B=0 C=None flags=18
+--       R[3]=0
+--   [0050] OP 112  A=2 B=1 C=1 flags=64
+--       do local I=1;if I==0 then I=math.max(0,B-2) end;local F=R[2];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[2+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[2]=O else for O=1,I do F[L+O]=R[2+O] end end;end
+--   [0051] OP 187  A=0 B=2 C=0 flags=192
+--       R[0](U(T,0+1,2))
+--   [0052] OP 130  A=0 B=0 C=0 flags=64
+--       R[0]=UP[0]
+--   [0053] OP 371  A=1 B='关闭屏蔽怪物' C=None flags=18
+--       R[1]="关闭屏蔽怪物"
+--   [0054] OP 187  A=0 B=1 C=0 flags=192
+--       R[0](U(T,0+1,1))
+--   [0055] OP 100  A=0 B=0 C=0 flags=64
+--       return
+
+-- ============================================================================
+-- PROTO_032 UseItemByIndex | path=root.24 | parent=PROTO_000 / child[24]
+-- 参数=0 | 常量=8 | 指令=33 | 子原型=0
+-- 字符串线索：GetMetaValue | ITEM_COUNT | ipairs | tonumber | ITEM_INDEX_BY_NAME | SL | UseItemByIndex
+-- 常量池：
+--   K[0] = 'GetMetaValue'
+--   K[1] = 'ITEM_COUNT'
+--   K[2] = 'ipairs'
+--   K[3] = 'tonumber'
+--   K[4] = 'ITEM_INDEX_BY_NAME'
+--   K[5] = 'SL'
+--   K[6] = 'UseItemByIndex'
+--   K[7] = 0
+-- 指令：
+--   [0001] OP  95  A=0 B='ipairs' C=None flags=146
+--       R[0]=ENV["ipairs"]
+--       R[1]=UP[0]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(130, 1, 0, 0, 192)]）
+--   [0003] OP 233  A=0 B=1 C=2 flags=64
+--       do local I={ R[0](U(T,0+1,1)) };local F=0;for U=0,2 do F=F+1;R[U]=I[F] end end
+--   [0004] OP 255  A=0 B=28 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=28
+--   [0005] OP 191  A=5 B='SL' C=None flags=146
+--       R[5]=ENV["SL"]
+--       local I=R[5];R[5+1]=I;R[5]=I["GetMetaValue"]
+--       R[7]="ITEM_INDEX_BY_NAME"
+--       R[8]=R[4]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(186, 5, 5, 'GetMetaValue', 32), (346, 7, 'ITEM_INDEX_BY_NAME', None, 210), (308, 8, 4, 0, 192)]）
+--   [0009] OP  68  A=5 B=8 C=0 flags=192
+--       R[5]=R[5](U(T,5+1,8))
+--   [0010] OP 137  A=6 B='tonumber' C=None flags=146
+--       R[6]=ENV["tonumber"]
+--   [0011] OP 191  A=7 B='SL' C=None flags=82
+--       R[7]=ENV["SL"]
+--       local I=R[7];R[7+1]=I;R[7]=I["GetMetaValue"]
+--       R[9]="ITEM_COUNT"
+--       R[10]=R[4]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(186, 7, 7, 'GetMetaValue', 160), (286, 9, 'ITEM_COUNT', None, 210), (308, 10, 4, 0, 0)]）
+--   [0015] OP 252  A=7 B=10 C=0 flags=64
+--       do local I,F=E(R[7](U(T,7+1,10)));B=F+7-1;local U=0;for L=7,B do U=U+1;R[L]=I[U] end end
+--   [0016] OP 223  A=6 B=0 C=0 flags=128
+--       R[6]=R[6](U(T,6+1,B))
+--   [0017] OP 342  A=6 B=0 C=1 flags=0
+--       if (not not R[6])~=(1~=0) then PC=PC+1 end
+--   [0018] OP 140  A=0 B=19 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=19
+--   [0019] OP 371  A=6 B=0 C=None flags=146
+--       R[6]=0
+--   [0020] OP  16  A=5 B=0 C=0 flags=64
+--       if (not not R[5])~=(0~=0) then PC=PC+1 end
+--   [0021] OP 140  A=0 B=28 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=28
+--   [0022] OP 364  A=0 B=0 C=6 flags=80
+--       if (0<R[6])~=(0~=0) then PC=PC+1 end
+--   [0023] OP 140  A=0 B=28 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=28
+--   [0024] OP 300  A=7 B='SL' C=None flags=18
+--       R[7]=ENV["SL"]
+--       local I=R[7];R[7+1]=I;R[7]=I["UseItemByIndex"]
+--       R[9]=R[5]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(142, 7, 7, 'UseItemByIndex', 224), (184, 9, 5, 0, 128)]）
+--   [0027] OP 358  A=7 B=9 C=0 flags=64
+--       R[7](U(T,7+1,9))
+--   [0028] OP 220  A=4 B=4 C=0 flags=192
+--       return U(T,4,4)
+--   [0029] OP 339  A=0 B=2 C=0 flags=64
+--       do local I,F=E(R[0](R[0+1],R[0+2]));for U=1,2 do R[0+2+U]=I[U] end;if R[0+3]==nil then PC=PC+1 else R[0+2]=R[0+3] end end
+--   [0030] OP 140  A=0 B=4 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=4
+--   [0031] OP 234  A=0 B=0 C=0 flags=192
+--       for I=0,0 do R[I]=nil end
+--   [0032] OP 220  A=0 B=0 C=0 flags=192
+--       return U(T,0,0)
+--   [0033] OP 250  A=0 B=0 C=0 flags=128
+--       return
+
+-- ============================================================================
+-- PROTO_033 DeathAutoBlacklist | path=root.25 | parent=PROTO_000 / child[25]
+-- 参数=0 | 常量=15 | 指令=47 | 子原型=1
+-- 字符串线索：被 %s 击杀，自动加入黑名单 | ScheduleOnce | 本次死亡没记录到凶手，跳过自动拉黑 | lastAttacker |  | 自动拉黑： | 凶手已在黑名单中：%s | id | SL | name
+-- 常量池：
+--   K[0] = 5.0
+--   K[1] = '被 %s 击杀，自动加入黑名单'
+--   K[2] = 'ScheduleOnce'
+--   K[3] = '本次死亡没记录到凶手，跳过自动拉黑'
+--   K[4] = 'lastAttacker'
+--   K[5] = None
+--   K[6] = ''
+--   K[7] = 1.0
+--   K[8] = 0
+--   K[9] = '自动拉黑：'
+--   K[10] = '凶手已在黑名单中：%s'
+--   K[11] = 'id'
+--   K[12] = 0.5
+--   K[13] = 'SL'
+--   K[14] = 'name'
+-- 指令：
+--   [0001] OP 159  A=0 B=0 C=0 flags=128
+--       R[0]=UP[0]
+--       R[0]=R[0]["lastAttacker"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(375, 0, 0, 'lastAttacker', 32)]）
+--   [0003] OP  89  A=1 B=0 C=0 flags=0
+--       R[1]=UP[0]
+--       do local I="lastAttacker";local F=nil;R[1][I]=F end
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(156, 1, 'lastAttacker', None, 112)]）
+--   [0005] OP  16  A=0 B=0 C=0 flags=192
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0006] OP 255  A=0 B=12 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=12
+--   [0007] OP  32  A=1 B=0 C='name' flags=224
+--       R[1]=R[0]["name"]
+--   [0008] OP  16  A=1 B=0 C=0 flags=192
+--       if (not not R[1])~=(0~=0) then PC=PC+1 end
+--   [0009] OP 140  A=0 B=12 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=12
+--   [0010] OP  32  A=1 B=0 C='name' flags=224
+--       R[1]=R[0]["name"]
+--   [0011] OP  45  A=0 B=1 C='' flags=224
+--       if (R[1]=="")~=(0~=0) then PC=PC+1 end
+--   [0012] OP 255  A=0 B=16 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=16
+--   [0013] OP 134  A=1 B=1 C=0 flags=128
+--       R[1]=UP[1]
+--       R[2]="本次死亡没记录到凶手，跳过自动拉黑"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 2, '本次死亡没记录到凶手，跳过自动拉黑', None, 18)]）
+--   [0015] OP 358  A=1 B=2 C=0 flags=64
+--       R[1](U(T,1+1,2))
+--   [0016] OP 100  A=0 B=0 C=0 flags=64
+--       return
+--   [0017] OP 130  A=1 B=2 C=0 flags=192
+--       R[1]=UP[2]
+--   [0018] OP  53  A=2 B=0 C='id' flags=96
+--       R[2]=R[0]["id"]
+--   [0019] OP  68  A=1 B=2 C=0 flags=128
+--       R[1]=R[1](U(T,1+1,2))
+--   [0020] OP  16  A=1 B=0 C=0 flags=0
+--       if (not not R[1])~=(0~=0) then PC=PC+1 end
+--   [0021] OP 140  A=0 B=26 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=26
+--   [0022] OP 134  A=1 B=1 C=0 flags=0
+--       R[1]=UP[1]
+--       R[2]="凶手已在黑名单中：%s"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(165, 2, '凶手已在黑名单中：%s', None, 18)]）
+--   [0024] OP 375  A=3 B=0 C='name' flags=160
+--       R[3]=R[0]["name"]
+--   [0025] OP 358  A=1 B=3 C=0 flags=0
+--       R[1](U(T,1+1,3))
+--   [0026] OP   1  A=0 B=0 C=0 flags=128
+--       return
+--   [0027] OP 134  A=1 B=1 C=0 flags=128
+--       R[1]=UP[1]
+--       R[2]="被 %s 击杀，自动加入黑名单"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(165, 2, '被 %s 击杀，自动加入黑名单', None, 82)]）
+--   [0029] OP  53  A=3 B=0 C='name' flags=32
+--       R[3]=R[0]["name"]
+--   [0030] OP 187  A=1 B=3 C=0 flags=128
+--       R[1](U(T,1+1,3))
+--   [0031] OP 130  A=1 B=3 C=0 flags=192
+--       R[1]=UP[3]
+--   [0032] OP  91  A=2 B='自动拉黑：' C=None flags=18
+--       R[2]="自动拉黑："
+--       R[3]=R[0]["name"]
+--       do local I=R[3];for F=3-1,2,-1 do I=R[F]..I end;R[2]=I end
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(97, 3, 0, 'name', 32), (210, 2, 2, 3, 192)]）
+--   [0035] OP 187  A=1 B=2 C=0 flags=128
+--       R[1](U(T,1+1,2))
+--   [0036] OP  61  A=1 B=0 C=None flags=146
+--       R[1]=0
+--       R[2]=5.0
+--       R[3]=1.0
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(282, 2, 5.0, None, 18), (346, 3, 1.0, None, 210)]）
+--   [0039] OP 292  A=1 B=45 C=None flags=2
+--       R[1]=R[1]-R[1+2];PC=45
+--   [0040] OP 335  A=5 B='SL' C=None flags=82
+--       R[5]=ENV["SL"]
+--       local I=R[5];R[5+1]=I;R[5]=I["ScheduleOnce"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(121, 5, 5, 'ScheduleOnce', 224)]）
+--   [0042] OP  27  A=7 B=0 C=1 flags=0 ; 创建子原型 child[0]，捕获 1 个 upvalue
+--       R[7] = makeClosure(PROTO[0], captures={capture#0: R[0] (local register)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(387, 0, 0, 0, 0)]）
+--   [0044] OP   5  A=8 B=0.5 C=4 flags=80
+--       R[8]=0.5*R[4]
+--   [0045] OP 358  A=5 B=8 C=0 flags=128
+--       R[5](U(T,5+1,8))
+--   [0046] OP 126  A=1 B=39 C=None flags=130
+--       do local I=1;local F=R[I+2];local U=R[I]+F;R[I]=U;local L=R[I+1];if (F>0 and U<=L) or (F<=0 and U>=L) then R[I+3]=U;PC=39 end end
+--   [0047] OP  55  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_034 Nested_RequestAddBlacklistByName | path=root.25.0 | parent=PROTO_033 / child[0]
+-- 参数=0 | 常量=3 | 指令=6 | 子原型=0
+-- 字符串线索：RequestAddBlacklistByName | name | SL
+-- 常量池：
+--   K[0] = 'RequestAddBlacklistByName'
+--   K[1] = 'name'
+--   K[2] = 'SL'
+-- 指令：
+--   [0001] OP 137  A=0 B='SL' C=None flags=210
+--       R[0]=ENV["SL"]
+--   [0002] OP 121  A=0 B=0 C='RequestAddBlacklistByName' flags=160
+--       local I=R[0];R[0+1]=I;R[0]=I["RequestAddBlacklistByName"]
+--   [0003] OP 159  A=2 B=0 C=0 flags=64
+--       R[2]=UP[0]
+--       R[2]=R[2]["name"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(375, 2, 2, 'name', 96)]）
+--   [0005] OP 358  A=0 B=2 C=0 flags=128
+--       R[0](U(T,0+1,2))
+--   [0006] OP   1  A=0 B=0 C=0 flags=128
+--       return
+
+-- ============================================================================
+-- PROTO_035 ResetGatherMonsterData | path=root.26 | parent=PROTO_000 / child[26]
+-- 参数=0 | 常量=3 | 指令=20 | 子原型=0
+-- 字符串线索：数据已重置 | 
+-- 常量池：
+--   K[0] = '数据已重置'
+--   K[1] = 0
+--   K[2] = ''
+-- 指令：
+--   [0001] OP 120  A=0 B=0 C=0 flags=64
+--       R[0]={}
+--   [0002] OP 114  A=0 B=0 C=0 flags=64
+--       UP[0]=R[0]
+--   [0003] OP 371  A=0 B=0 C=None flags=82
+--       R[0]=0
+--   [0004] OP 213  A=0 B=1 C=0 flags=128
+--       UP[1]=R[0]
+--       R[0]=0
+--       UP[2]=R[0]
+--       R[0]=UP[3]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(3, 0, 0, None, 146), (332, 0, 2, 0, 192), (130, 0, 3, 0, 0)]）
+--   [0008] OP 187  A=0 B=0 C=0 flags=192
+--       R[0](U(T,0+1,0))
+--   [0009] OP 338  A=0 B=0 C=0 flags=192
+--       R[0]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0010] OP 254  A=0 B=4 C=0 flags=64
+--       UP[4]=R[0]
+--       R[0]=0
+--       UP[5]=R[0]
+--       for I=0,0 do R[I]=nil end
+--       UP[6]=R[0]
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(15, 0, 0, None, 146), (67, 0, 5, 0, 0), (125, 0, 0, 0, 192), (265, 0, 6, 0, 0)]）
+--   [0015] OP 289  A=0 B='' C=None flags=146
+--       R[0]=""
+--       UP[7]=R[0]
+--       R[0]=UP[8]
+--       R[1]="数据已重置"
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(409, 0, 7, 0, 64), (134, 0, 8, 0, 192), (371, 1, '数据已重置', None, 82)]）
+--   [0019] OP 187  A=0 B=1 C=0 flags=0
+--       R[0](U(T,0+1,1))
+--   [0020] OP   1  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_036 StopGatherMonsters | path=root.27 | parent=PROTO_000 / child[27]
+-- 参数=0 | 常量=6 | 指令=25 | 子原型=0
+-- 字符串线索：引怪功能已停止 | UnSchedule | IDLE | gatherTimer | SL
+-- 常量池：
+--   K[0] = '引怪功能已停止'
+--   K[1] = 'UnSchedule'
+--   K[2] = None
+--   K[3] = 'IDLE'
+--   K[4] = 'gatherTimer'
+--   K[5] = 'SL'
+-- 指令：
+--   [0001] OP 338  A=0 B=0 C=0 flags=0
+--       R[0]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0002] OP 332  A=0 B=0 C=0 flags=128
+--       UP[0]=R[0]
+--       R[0]=UP[1]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(159, 0, 1, 0, 0)]）
+--   [0004] OP 363  A=0 B=0 C='gatherTimer' flags=32
+--       R[0]=R[0]["gatherTimer"]
+--   [0005] OP  16  A=0 B=0 C=0 flags=192
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0006] OP 215  A=0 B=13 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=13
+--   [0007] OP 335  A=0 B='SL' C=None flags=146
+--       R[0]=ENV["SL"]
+--       local I=R[0];R[0+1]=I;R[0]=I["UnSchedule"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(121, 0, 0, 'UnSchedule', 224)]）
+--   [0009] OP 159  A=2 B=1 C=0 flags=0
+--       R[2]=UP[1]
+--       R[2]=R[2]["gatherTimer"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(53, 2, 2, 'gatherTimer', 224)]）
+--   [0011] OP 187  A=0 B=2 C=0 flags=192
+--       R[0](U(T,0+1,2))
+--   [0012] OP  89  A=0 B=1 C=0 flags=192
+--       R[0]=UP[1]
+--       do local I="gatherTimer";local F=nil;R[0][I]=F end
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(146, 0, 'gatherTimer', None, 48)]）
+--   [0014] OP 130  A=0 B=2 C=0 flags=0
+--       R[0]=UP[2]
+--   [0015] OP 187  A=0 B=0 C=0 flags=64
+--       R[0](U(T,0+1,0))
+--   [0016] OP 130  A=0 B=3 C=0 flags=192
+--       R[0]=UP[3]
+--   [0017] OP 159  A=1 B=4 C=0 flags=64
+--       R[1]=UP[4]
+--       R[1]=R[1]["IDLE"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(32, 1, 1, 'IDLE', 224)]）
+--   [0019] OP 358  A=0 B=1 C=0 flags=64
+--       R[0](U(T,0+1,1))
+--   [0020] OP 130  A=0 B=5 C=0 flags=192
+--       R[0]=UP[5]
+--   [0021] OP 358  A=0 B=0 C=0 flags=128
+--       R[0](U(T,0+1,0))
+--   [0022] OP 134  A=0 B=6 C=0 flags=64
+--       R[0]=UP[6]
+--       R[1]="引怪功能已停止"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 1, '引怪功能已停止', None, 146)]）
+--   [0024] OP 187  A=0 B=1 C=0 flags=128
+--       R[0](U(T,0+1,1))
+--   [0025] OP 250  A=0 B=0 C=0 flags=64
+--       return
+
+-- ============================================================================
+-- PROTO_037 FindMonsterCandidates | path=root.28 | parent=PROTO_000 / child[28]
+-- 参数=0 | 常量=19 | 指令=102 | 子原型=1
+-- 字符串线索：global | ipairs | FindMonsterInCurrViewField | 未知怪物 | type | SETTING_IDX_IGNORE_MONSTER | SL | insert | GetName | GET_SETTING | table | MMO | sort | _distance | GATHER_THRESHOLD | pairs
+-- 常量池：
+--   K[0] = 'global'
+--   K[1] = 0
+--   K[2] = 'ipairs'
+--   K[3] = 'FindMonsterInCurrViewField'
+--   K[4] = 1.0
+--   K[5] = '未知怪物'
+--   K[6] = 'type'
+--   K[7] = 'SETTING_IDX_IGNORE_MONSTER'
+--   K[8] = 'SL'
+--   K[9] = 'insert'
+--   K[10] = 'GetName'
+--   K[11] = 'GET_SETTING'
+--   K[12] = 'table'
+--   K[13] = 'MMO'
+--   K[14] = 'sort'
+--   K[15] = '_distance'
+--   K[16] = 'GATHER_THRESHOLD'
+--   K[17] = 'pairs'
+--   K[18] = True
+-- 指令：
+--   [0001] OP 335  A=0 B='SL' C=None flags=82
+--       R[0]=ENV["SL"]
+--       local I=R[0];R[0+1]=I;R[0]=I["FindMonsterInCurrViewField"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(121, 0, 0, 'FindMonsterInCurrViewField', 160)]）
+--   [0003] OP 338  A=2 B=1 C=0 flags=0
+--       R[2]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0004] OP 401  A=3 B=1 C=0 flags=0
+--       R[3]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0005] OP  68  A=0 B=3 C=0 flags=64
+--       R[0]=R[0](U(T,0+1,3))
+--   [0006] OP  16  A=0 B=0 C=0 flags=192
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0007] OP 140  A=0 B=10 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=10
+--   [0008] OP 115  A=1 B=0 C=0 flags=192
+--       R[1]=#R[0]
+--   [0009] OP 279  A=0 B=1 C=0 flags=96
+--       if (R[1]==0)~=(0~=0) then PC=PC+1 end
+--   [0010] OP 255  A=0 B=12 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=12
+--   [0011] OP 105  A=1 B=0 C=0 flags=128
+--       R[1]={}
+--   [0012] OP 220  A=1 B=1 C=0 flags=0
+--       return U(T,1,1)
+--   [0013] OP  77  A=1 B=0 C=0 flags=192
+--       R[1]={}
+--       R[2]=UP[0]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(130, 2, 0, 0, 192)]）
+--   [0015] OP  98  A=2 B=2 C=0 flags=0
+--       R[2]=R[2](U(T,2+1,2))
+--   [0016] OP 376  A=3 B='GET_SETTING' C=None flags=18
+--       R[3]=ENV["GET_SETTING"]
+--       R[4]=ENV["global"]
+--       R[4]=R[4]["MMO"]
+--       R[4]=R[4]["SETTING_IDX_IGNORE_MONSTER"]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(137, 4, 'global', None, 210), (375, 4, 4, 'MMO', 32), (53, 4, 4, 'SETTING_IDX_IGNORE_MONSTER', 96)]）
+--   [0020] OP  98  A=3 B=4 C=0 flags=192
+--       R[3]=R[3](U(T,3+1,4))
+--   [0021] OP  19  A=4 B=0 C=0 flags=192
+--       R[4]={}
+--       R[5]={}
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(410, 5, 0, 0, 64)]）
+--   [0023] OP  16  A=3 B=0 C=0 flags=0
+--       if (not not R[3])~=(0~=0) then PC=PC+1 end
+--   [0024] OP 215  A=0 B=46 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=46
+--   [0025] OP  32  A=6 B=3 C=1.0 flags=224
+--       R[6]=R[3][1.0]
+--   [0026] OP  16  A=6 B=0 C=0 flags=64
+--       if (not not R[6])~=(0~=0) then PC=PC+1 end
+--   [0027] OP 140  A=0 B=46 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=46
+--   [0028] OP 397  A=6 B='type' C=None flags=146
+--       R[6]=ENV["type"]
+--       R[7]=R[3][1.0]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(32, 7, 3, 1.0, 224)]）
+--   [0030] OP  68  A=6 B=7 C=0 flags=0
+--       R[6]=R[6](U(T,6+1,7))
+--   [0031] OP  45  A=0 B=6 C='table' flags=224
+--       if (R[6]=="table")~=(0~=0) then PC=PC+1 end
+--   [0032] OP 255  A=0 B=46 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=46
+--   [0033] OP 397  A=6 B='pairs' C=None flags=146
+--       R[6]=ENV["pairs"]
+--       R[7]=R[3][1.0]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(32, 7, 3, 1.0, 96)]）
+--   [0035] OP 183  A=6 B=7 C=8 flags=192
+--       do local I={ R[6](U(T,6+1,7)) };local F=0;for U=6,8 do F=F+1;R[U]=I[F] end end
+--   [0036] OP 255  A=0 B=44 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=44
+--   [0037] OP  45  A=0 B=10 C=1.0 flags=224
+--       if (R[10]==1.0)~=(0~=0) then PC=PC+1 end
+--   [0038] OP 215  A=0 B=44 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=44
+--   [0039] OP 109  A=4 B=9 C=True flags=224
+--       do local I=R[9];local F=true;R[4][I]=F end
+--       R[11]=ENV["table"]
+--       R[11]=R[11]["insert"]
+--       R[12]=R[5]
+--       R[13]=R[9]
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(10, 11, 'table', None, 18), (363, 11, 11, 'insert', 224), (78, 12, 5, 0, 0), (308, 13, 9, 0, 128)]）
+--   [0044] OP 358  A=11 B=13 C=0 flags=128
+--       R[11](U(T,11+1,13))
+--   [0045] OP 386  A=6 B=2 C=0 flags=0
+--       do local I,F=E(R[6](R[6+1],R[6+2]));for U=1,2 do R[6+2+U]=I[U] end;if R[6+3]==nil then PC=PC+1 else R[6+2]=R[6+3] end end
+--   [0046] OP 255  A=0 B=36 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=36
+--   [0047] OP  71  A=6 B='ipairs' C=None flags=18
+--       R[6]=ENV["ipairs"]
+--       R[7]=R[0]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 7, 0, 0, 0)]）
+--   [0049] OP 183  A=6 B=7 C=8 flags=192
+--       do local I={ R[6](U(T,6+1,7)) };local F=0;for U=6,8 do F=F+1;R[U]=I[F] end end
+--   [0050] OP 140  A=0 B=76 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=76
+--   [0051] OP 130  A=11 B=1 C=0 flags=192
+--       R[11]=UP[1]
+--   [0052] OP 184  A=12 B=10 C=0 flags=64
+--       R[12]=R[10]
+--   [0053] OP  98  A=11 B=12 C=0 flags=192
+--       R[11]=R[11](U(T,11+1,12))
+--   [0054] OP  16  A=11 B=0 C=0 flags=0
+--       if (not not R[11])~=(0~=0) then PC=PC+1 end
+--   [0055] OP 215  A=0 B=76 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=76
+--   [0056] OP  33  A=11 B=10 C='GetName' flags=96
+--       local I=R[10];R[11+1]=I;R[11]=I["GetName"]
+--   [0057] OP  98  A=11 B=12 C=0 flags=64
+--       R[11]=R[11](U(T,11+1,12))
+--   [0058] OP 342  A=11 B=0 C=1 flags=192
+--       if (not not R[11])~=(1~=0) then PC=PC+1 end
+--   [0059] OP 140  A=0 B=60 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=60
+--   [0060] OP 278  A=11 B='未知怪物' C=None flags=146
+--       R[11]="未知怪物"
+--       R[12]=R[4][R[11]]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(231, 12, 4, 11, 0)]）
+--   [0062] OP 342  A=12 B=0 C=1 flags=192
+--       if (not not R[12])~=(1~=0) then PC=PC+1 end
+--   [0063] OP 255  A=0 B=76 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=76
+--   [0064] OP 130  A=12 B=2 C=0 flags=0
+--       R[12]=UP[2]
+--   [0065] OP 308  A=13 B=10 C=0 flags=64
+--       R[13]=R[10]
+--   [0066] OP  98  A=12 B=13 C=0 flags=0
+--       R[12]=R[12](U(T,12+1,13))
+--   [0067] OP 348  A=13 B=3 C=0 flags=128
+--       R[13]=UP[3]
+--       R[14]=R[2]
+--       R[15]=R[12]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(78, 14, 2, 0, 128), (184, 15, 12, 0, 0)]）
+--   [0070] OP  98  A=13 B=15 C=0 flags=192
+--       R[13]=R[13](U(T,13+1,15))
+--   [0071] OP 268  A=10 B='_distance' C=13 flags=16
+--       do local I="_distance";local F=R[13];R[10][I]=F end
+--   [0072] OP 137  A=14 B='table' C=None flags=146
+--       R[14]=ENV["table"]
+--   [0073] OP 363  A=14 B=14 C='insert' flags=96
+--       R[14]=R[14]["insert"]
+--   [0074] OP  78  A=15 B=1 C=0 flags=0
+--       R[15]=R[1]
+--       R[16]=R[10]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 16, 10, 0, 192)]）
+--   [0076] OP 187  A=14 B=16 C=0 flags=192
+--       R[14](U(T,14+1,16))
+--   [0077] OP 117  A=6 B=2 C=0 flags=64
+--       do local I,F=E(R[6](R[6+1],R[6+2]));for U=1,2 do R[6+2+U]=I[U] end;if R[6+3]==nil then PC=PC+1 else R[6+2]=R[6+3] end end
+--   [0078] OP 215  A=0 B=50 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=50
+--   [0079] OP 307  A=6 B='table' C=None flags=82
+--       R[6]=ENV["table"]
+--       R[6]=R[6]["sort"]
+--       R[7]=R[1]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(398, 6, 6, 'sort', 96), (184, 7, 1, 0, 192)]）
+--   [0082] OP  27  A=8 B=0 C=0 flags=128 ; 创建子原型 child[0]，捕获 0 个 upvalue
+--       R[8] = makeClosure(PROTO[0], captures={})
+--   [0083] OP 358  A=6 B=8 C=0 flags=128
+--       R[6](U(T,6+1,8))
+--   [0084] OP 127  A=6 B=0 C=0 flags=64
+--       R[6]={}
+--       R[7]=UP[4]
+--       R[7]=R[7]["GATHER_THRESHOLD"]
+--       R[8]=ENV["ipairs"]
+--       R[9]=R[1]
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(130, 7, 4, 0, 0), (181, 7, 7, 'GATHER_THRESHOLD', 224), (71, 8, 'ipairs', None, 210), (308, 9, 1, 0, 192)]）
+--   [0089] OP 233  A=8 B=9 C=10 flags=128
+--       do local I={ R[8](U(T,8+1,9)) };local F=0;for U=8,10 do F=F+1;R[U]=I[F] end end
+--   [0090] OP 215  A=0 B=98 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=98
+--   [0091] OP 180  A=0 B=7 C=11 flags=0
+--       if (R[7]<R[11])~=(0~=0) then PC=PC+1 end
+--   [0092] OP 255  A=0 B=93 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=93
+--   [0093] OP 140  A=0 B=100 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=100
+--   [0094] OP  10  A=13 B='table' C=None flags=146
+--       R[13]=ENV["table"]
+--       R[13]=R[13]["insert"]
+--       R[14]=R[6]
+--       R[15]=R[12]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(269, 13, 13, 'insert', 96), (78, 14, 6, 0, 0), (184, 15, 12, 0, 192)]）
+--   [0098] OP 187  A=13 B=15 C=0 flags=64
+--       R[13](U(T,13+1,15))
+--   [0099] OP 339  A=8 B=2 C=0 flags=64
+--       do local I,F=E(R[8](R[8+1],R[8+2]));for U=1,2 do R[8+2+U]=I[U] end;if R[8+3]==nil then PC=PC+1 else R[8+2]=R[8+3] end end
+--   [0100] OP 255  A=0 B=90 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=90
+--   [0101] OP 220  A=6 B=6 C=0 flags=0
+--       return U(T,6,6)
+--   [0102] OP  55  A=0 B=0 C=0 flags=128
+--       return
+
+-- ============================================================================
+-- PROTO_038 Nested_distance | path=root.28.0 | parent=PROTO_037 / child[0]
+-- 参数=2 | 常量=1 | 指令=8 | 子原型=0
+-- 字符串线索：_distance
+-- 常量池：
+--   K[0] = '_distance'
+-- 指令：
+--   [0001] OP 363  A=2 B=0 C='_distance' flags=96
+--       R[2]=R[0]["_distance"]
+--   [0002] OP  32  A=3 B=1 C='_distance' flags=160
+--       R[3]=R[1]["_distance"]
+--   [0003] OP 180  A=1 B=2 C=3 flags=128
+--       if (R[2]<R[3])~=(1~=0) then PC=PC+1 end
+--   [0004] OP 255  A=0 B=5 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=5
+--   [0005] OP  82  A=2 B=0 C=1 flags=192
+--       R[2]=0~=0;if 1~=0 then PC=PC+1 end
+--   [0006] OP 338  A=2 B=1 C=0 flags=64
+--       R[2]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0007] OP 220  A=2 B=2 C=0 flags=192
+--       return U(T,2,2)
+--   [0008] OP  55  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_039 IsDie | path=root.29 | parent=PROTO_000 / child[29]
+-- 参数=1 | 常量=1 | 指令=7 | 子原型=0
+-- 字符串线索：IsDie
+-- 常量池：
+--   K[0] = 'IsDie'
+-- 指令：
+--   [0001] OP 247  A=1 B=0 C=0 flags=192
+--       local I=R[0];if (not not I)==(0~=0) then R[1]=I else PC=PC+1 end
+--   [0002] OP 255  A=0 B=5 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=5
+--   [0003] OP 121  A=1 B=0 C='IsDie' flags=224
+--       local I=R[0];R[1+1]=I;R[1]=I["IsDie"]
+--   [0004] OP  68  A=1 B=2 C=0 flags=0
+--       R[1]=R[1](U(T,1+1,2))
+--   [0005] OP 172  A=1 B=1 C=0 flags=64
+--       R[1]=not R[1]
+--   [0006] OP 220  A=1 B=1 C=0 flags=128
+--       return U(T,1,1)
+--   [0007] OP   1  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_040 GetMapName | path=root.30 | parent=PROTO_000 / child[30]
+-- 参数=0 | 常量=4 | 指令=9 | 子原型=0
+-- 字符串线索：GetMetaValue | MAP_NAME |  | SL
+-- 常量池：
+--   K[0] = 'GetMetaValue'
+--   K[1] = 'MAP_NAME'
+--   K[2] = ''
+--   K[3] = 'SL'
+-- 指令：
+--   [0001] OP 137  A=0 B='SL' C=None flags=146
+--       R[0]=ENV["SL"]
+--   [0002] OP 297  A=0 B=0 C='GetMetaValue' flags=224
+--       local I=R[0];R[0+1]=I;R[0]=I["GetMetaValue"]
+--       R[2]="MAP_NAME"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 2, 'MAP_NAME', None, 146)]）
+--   [0004] OP  98  A=0 B=2 C=0 flags=192
+--       R[0]=R[0](U(T,0+1,2))
+--   [0005] OP 342  A=0 B=0 C=1 flags=64
+--       if (not not R[0])~=(1~=0) then PC=PC+1 end
+--   [0006] OP 215  A=0 B=7 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=7
+--   [0007] OP 371  A=0 B='' C=None flags=18
+--       R[0]=""
+--   [0008] OP 220  A=0 B=0 C=0 flags=0
+--       return U(T,0,0)
+--   [0009] OP 100  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_041 IsInWhitelistMap | path=root.31 | parent=PROTO_000 / child[31]
+-- 参数=0 | 常量=6 | 指令=28 | 子原型=0
+-- 字符串线索：MAP_NAME | GetMetaValue | 土城 | IN_SAFE_AREA | ipairs | SL
+-- 常量池：
+--   K[0] = 'MAP_NAME'
+--   K[1] = 'GetMetaValue'
+--   K[2] = '土城'
+--   K[3] = 'IN_SAFE_AREA'
+--   K[4] = 'ipairs'
+--   K[5] = 'SL'
+-- 指令：
+--   [0001] OP 137  A=0 B='SL' C=None flags=18
+--       R[0]=ENV["SL"]
+--   [0002] OP  33  A=0 B=0 C='GetMetaValue' flags=160
+--       local I=R[0];R[0+1]=I;R[0]=I["GetMetaValue"]
+--   [0003] OP 346  A=2 B='IN_SAFE_AREA' C=None flags=82
+--       R[2]="IN_SAFE_AREA"
+--   [0004] OP  98  A=0 B=2 C=0 flags=128
+--       R[0]=R[0](U(T,0+1,2))
+--   [0005] OP  16  A=0 B=0 C=0 flags=128
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0006] OP 140  A=0 B=8 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=8
+--   [0007] OP  11  A=1 B=1 C=0 flags=128
+--       R[1]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0008] OP 220  A=1 B=1 C=0 flags=64
+--       return U(T,1,1)
+--   [0009] OP 380  A=1 B='SL' C=None flags=146
+--       R[1]=ENV["SL"]
+--       local I=R[1];R[1+1]=I;R[1]=I["GetMetaValue"]
+--       R[3]="MAP_NAME"
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(297, 1, 1, 'GetMetaValue', 160), (371, 3, 'MAP_NAME', None, 146)]）
+--   [0012] OP  98  A=1 B=3 C=0 flags=128
+--       R[1]=R[1](U(T,1+1,3))
+--   [0013] OP  90  A=2 B=1 C=0 flags=192
+--       R[2]={}
+--       R[3]="土城"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 3, '土城', None, 82)]）
+--   [0015] OP 112  A=2 B=1 C=1 flags=0
+--       do local I=1;if I==0 then I=math.max(0,B-2) end;local F=R[2];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[2+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[2]=O else for O=1,I do F[L+O]=R[2+O] end end;end
+--   [0016] OP  71  A=3 B='ipairs' C=None flags=146
+--       R[3]=ENV["ipairs"]
+--       R[4]=R[2]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 4, 2, 0, 128)]）
+--   [0018] OP 183  A=3 B=4 C=5 flags=128
+--       do local I={ R[3](U(T,3+1,4)) };local F=0;for U=3,5 do F=F+1;R[U]=I[F] end end
+--   [0019] OP 255  A=0 B=23 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=23
+--   [0020] OP  99  A=0 B=1 C=7 flags=0
+--       if (R[1]==R[7])~=(0~=0) then PC=PC+1 end
+--   [0021] OP 140  A=0 B=23 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=23
+--   [0022] OP 401  A=8 B=1 C=0 flags=64
+--       R[8]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0023] OP 220  A=8 B=8 C=0 flags=0
+--       return U(T,8,8)
+--   [0024] OP 386  A=3 B=2 C=0 flags=64
+--       do local I,F=E(R[3](R[3+1],R[3+2]));for U=1,2 do R[3+2+U]=I[U] end;if R[3+3]==nil then PC=PC+1 else R[3+2]=R[3+3] end end
+--   [0025] OP 255  A=0 B=19 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=19
+--   [0026] OP  11  A=3 B=0 C=0 flags=128
+--       R[3]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0027] OP 220  A=3 B=3 C=0 flags=192
+--       return U(T,3,3)
+--   [0028] OP 250  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_042 AnonymousHelper_32 | path=root.32 | parent=PROTO_000 / child[32]
+-- 参数=1 | 常量=0 | 指令=6 | 子原型=0
+-- 常量池：
+-- 指令：
+--   [0001] OP 130  A=1 B=0 C=0 flags=64
+--       R[1]=UP[0]
+--   [0002] OP 130  A=2 B=1 C=0 flags=64
+--       R[2]=UP[1]
+--   [0003] OP 184  A=3 B=0 C=0 flags=64
+--       R[3]=R[0]
+--   [0004] OP 405  A=1 B=3 C=0 flags=0
+--       return R[1](U(T,1+1,3))
+--   [0005] OP 143  A=1 B=0 C=0 flags=64
+--       return U(T,1,B)
+--   [0006] OP 250  A=0 B=0 C=0 flags=64
+--       return
+
+-- ============================================================================
+-- PROTO_043 AnonymousHelper_33 | path=root.33 | parent=PROTO_000 / child[33]
+-- 参数=0 | 常量=0 | 指令=5 | 子原型=0
+-- 常量池：
+-- 指令：
+--   [0001] OP   4  A=0 B=0 C=0 flags=0
+--       R[0]=UP[0]
+--       R[1]=UP[1]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(130, 1, 1, 0, 128)]）
+--   [0003] OP 405  A=0 B=1 C=0 flags=0
+--       return R[0](U(T,0+1,1))
+--   [0004] OP 143  A=0 B=0 C=0 flags=0
+--       return U(T,0,B)
+--   [0005] OP  55  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_044 Schedule | path=root.34 | parent=PROTO_000 / child[34]
+-- 参数=2 | 常量=2 | 指令=7 | 子原型=0
+-- 字符串线索：SL | Schedule
+-- 常量池：
+--   K[0] = 'SL'
+--   K[1] = 'Schedule'
+-- 指令：
+--   [0001] OP  58  A=2 B='SL' C=None flags=18
+--       R[2]=ENV["SL"]
+--       local I=R[2];R[2+1]=I;R[2]=I["Schedule"]
+--       R[4]=R[0]
+--       R[5]=R[1]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(136, 2, 2, 'Schedule', 160), (308, 4, 0, 0, 0), (184, 5, 1, 0, 64)]）
+--   [0005] OP 149  A=2 B=5 C=0 flags=192
+--       return R[2](U(T,2+1,5))
+--   [0006] OP 143  A=2 B=0 C=0 flags=0
+--       return U(T,2,B)
+--   [0007] OP  55  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_045 SetTargetID | path=root.35 | parent=PROTO_000 / child[35]
+-- 参数=1 | 常量=8 | 指令=26 | 子原型=0
+-- 字符串线索：retrieveProxy | Facade | ProxyTable | SELETE_TARGET_TYPE_FIND | MMO | PlayerInputProxy | SetTargetID | global
+-- 常量池：
+--   K[0] = 'retrieveProxy'
+--   K[1] = 'Facade'
+--   K[2] = 'ProxyTable'
+--   K[3] = 'SELETE_TARGET_TYPE_FIND'
+--   K[4] = 'MMO'
+--   K[5] = 'PlayerInputProxy'
+--   K[6] = 'SetTargetID'
+--   K[7] = 'global'
+-- 指令：
+--   [0001] OP 397  A=1 B='global' C=None flags=146
+--       R[1]=ENV["global"]
+--       R[1]=R[1]["Facade"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(53, 1, 1, 'Facade', 96)]）
+--   [0003] OP 342  A=1 B=0 C=1 flags=192
+--       if (not not R[1])~=(1~=0) then PC=PC+1 end
+--   [0004] OP 215  A=0 B=6 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=6
+--   [0005] OP  11  A=1 B=0 C=0 flags=0
+--       R[1]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0006] OP 220  A=1 B=1 C=0 flags=192
+--       return U(T,1,1)
+--   [0007] OP 397  A=1 B='global' C=None flags=82
+--       R[1]=ENV["global"]
+--       R[1]=R[1]["Facade"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(260, 1, 1, 'Facade', 160)]）
+--   [0009] OP 121  A=1 B=1 C='retrieveProxy' flags=160
+--       local I=R[1];R[1+1]=I;R[1]=I["retrieveProxy"]
+--   [0010] OP 137  A=3 B='global' C=None flags=146
+--       R[3]=ENV["global"]
+--   [0011] OP  49  A=3 B=3 C='ProxyTable' flags=160
+--       R[3]=R[3]["ProxyTable"]
+--       R[3]=R[3]["PlayerInputProxy"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(53, 3, 3, 'PlayerInputProxy', 96)]）
+--   [0013] OP  98  A=1 B=3 C=0 flags=64
+--       R[1]=R[1](U(T,1+1,3))
+--   [0014] OP 342  A=1 B=0 C=1 flags=192
+--       if (not not R[1])~=(1~=0) then PC=PC+1 end
+--   [0015] OP 140  A=0 B=17 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=17
+--   [0016] OP 401  A=2 B=0 C=0 flags=128
+--       R[2]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0017] OP 220  A=2 B=2 C=0 flags=128
+--       return U(T,2,2)
+--   [0018] OP 329  A=2 B=1 C='SetTargetID' flags=160
+--       local I=R[1];R[2+1]=I;R[2]=I["SetTargetID"]
+--       R[4]=R[0]
+--       R[5]=ENV["global"]
+--       R[5]=R[5]["MMO"]
+--       R[5]=R[5]["SELETE_TARGET_TYPE_FIND"]
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(406, 4, 0, 0, 64), (198, 5, 'global', None, 18), (49, 5, 5, 'MMO', 96), (375, 5, 5, 'SELETE_TARGET_TYPE_FIND', 224)]）
+--   [0023] OP 187  A=2 B=5 C=0 flags=0
+--       R[2](U(T,2+1,5))
+--   [0024] OP 338  A=2 B=1 C=0 flags=0
+--       R[2]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0025] OP 220  A=2 B=2 C=0 flags=64
+--       return U(T,2,2)
+--   [0026] OP  55  A=0 B=0 C=0 flags=64
+--       return
+
+-- ============================================================================
+-- PROTO_046 GetAvailableStoragePage | path=root.36 | parent=PROTO_000 / child[36]
+-- 参数=0 | 常量=12 | 指令=51 | 子原型=0
+-- 字符串线索：STORAGE_PER_PAGE_MAX | GetOpenSize | NPC_STORAGE_MAX_PAGE | 仓库代理未初始化 | GetMaxPage | GUIDefine | NPCStorageProxy | global | GetStorageDataByPage | MMO
+-- 常量池：
+--   K[0] = 'STORAGE_PER_PAGE_MAX'
+--   K[1] = 'GetOpenSize'
+--   K[2] = 'NPC_STORAGE_MAX_PAGE'
+--   K[3] = '仓库代理未初始化'
+--   K[4] = 'GetMaxPage'
+--   K[5] = 0
+--   K[6] = 'GUIDefine'
+--   K[7] = 'NPCStorageProxy'
+--   K[8] = 1.0
+--   K[9] = 'global'
+--   K[10] = 'GetStorageDataByPage'
+--   K[11] = 'MMO'
+-- 指令：
+--   [0001] OP 137  A=0 B='NPCStorageProxy' C=None flags=210
+--       R[0]=ENV["NPCStorageProxy"]
+--   [0002] OP 342  A=0 B=0 C=1 flags=128
+--       if (not not R[0])~=(1~=0) then PC=PC+1 end
+--   [0003] OP 140  A=0 B=8 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=8
+--   [0004] OP 130  A=0 B=0 C=0 flags=192
+--       R[0]=UP[0]
+--   [0005] OP 346  A=1 B='仓库代理未初始化' C=None flags=18
+--       R[1]="仓库代理未初始化"
+--   [0006] OP 187  A=0 B=1 C=0 flags=128
+--       R[0](U(T,0+1,1))
+--   [0007] OP 125  A=0 B=0 C=0 flags=64
+--       for I=0,0 do R[I]=nil end
+--   [0008] OP 220  A=0 B=0 C=0 flags=192
+--       return U(T,0,0)
+--   [0009] OP 335  A=0 B='NPCStorageProxy' C=None flags=146
+--       R[0]=ENV["NPCStorageProxy"]
+--       local I=R[0];R[0+1]=I;R[0]=I["GetMaxPage"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(121, 0, 0, 'GetMaxPage', 32)]）
+--   [0011] OP  68  A=0 B=1 C=0 flags=192
+--       R[0]=R[0](U(T,0+1,1))
+--   [0012] OP 101  A=1 B=1.0 C=None flags=18
+--       R[1]=1.0
+--       R[2]=R[0]
+--       R[3]=1.0
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(288, 2, 0, 0, 64), (371, 3, 1.0, None, 18)]）
+--   [0015] OP 292  A=1 B=47 C=None flags=66
+--       R[1]=R[1]-R[1+2];PC=47
+--   [0016] OP 300  A=5 B='NPCStorageProxy' C=None flags=210
+--       R[5]=ENV["NPCStorageProxy"]
+--       local I=R[5];R[5+1]=I;R[5]=I["GetStorageDataByPage"]
+--       R[7]=R[4]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(121, 5, 5, 'GetStorageDataByPage', 32), (184, 7, 4, 0, 64)]）
+--   [0019] OP  98  A=5 B=7 C=0 flags=64
+--       R[5]=R[5](U(T,5+1,7))
+--   [0020] OP  16  A=5 B=0 C=0 flags=128
+--       if (not not R[5])~=(0~=0) then PC=PC+1 end
+--   [0021] OP 215  A=0 B=24 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=24
+--   [0022] OP 115  A=6 B=5 C=0 flags=0
+--       R[6]=#R[5]
+--   [0023] OP 342  A=6 B=0 C=1 flags=0
+--       if (not not R[6])~=(1~=0) then PC=PC+1 end
+--   [0024] OP 140  A=0 B=25 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=25
+--   [0025] OP 217  A=6 B=0 C=None flags=18
+--       R[6]=0
+--       R[7]=ENV["GUIDefine"]
+--       R[7]=R[7]["STORAGE_PER_PAGE_MAX"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(397, 7, 'GUIDefine', None, 82), (53, 7, 7, 'STORAGE_PER_PAGE_MAX', 160)]）
+--   [0028] OP 342  A=7 B=0 C=1 flags=192
+--       if (not not R[7])~=(1~=0) then PC=PC+1 end
+--   [0029] OP 255  A=0 B=32 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=32
+--   [0030] OP  70  A=7 B='global' C=None flags=82
+--       R[7]=ENV["global"]
+--       R[7]=R[7]["MMO"]
+--       R[7]=R[7]["NPC_STORAGE_MAX_PAGE"]
+--       R[8]=ENV["NPCStorageProxy"]
+--       local I=R[8];R[8+1]=I;R[8]=I["GetOpenSize"]
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(53, 7, 7, 'MMO', 224), (64, 7, 7, 'NPC_STORAGE_MAX_PAGE', 96), (137, 8, 'NPCStorageProxy', None, 18), (121, 8, 8, 'GetOpenSize', 224)]）
+--   [0035] OP  98  A=8 B=9 C=0 flags=0
+--       R[8]=R[8](U(T,8+1,9))
+--   [0036] OP 347  A=9 B=4 C=1.0 flags=96
+--       R[9]=R[4]-1.0
+--   [0037] OP 263  A=9 B=9 C=7 flags=64
+--       R[9]=R[9]*R[7]
+--       R[8]=R[8]-R[9]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(340, 8, 8, 9, 64)]）
+--   [0039] OP 253  A=0 B=7 C=8 flags=0
+--       if (R[7]<R[8])~=(0~=0) then PC=PC+1 end
+--   [0040] OP 215  A=0 B=41 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=41
+--   [0041] OP 308  A=8 B=7 C=0 flags=192
+--       R[8]=R[7]
+--   [0042] OP 364  A=0 B=0 C=8 flags=208
+--       if (0<R[8])~=(0~=0) then PC=PC+1 end
+--   [0043] OP 140  A=0 B=47 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=47
+--   [0044] OP 340  A=9 B=8 C=6 flags=0
+--       R[9]=R[8]-R[6]
+--   [0045] OP 352  A=0 B=0 C=9 flags=16
+--       if (0<R[9])~=(0~=0) then PC=PC+1 end
+--   [0046] OP 215  A=0 B=47 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=47
+--   [0047] OP 220  A=4 B=4 C=0 flags=64
+--       return U(T,4,4)
+--   [0048] OP 412  A=1 B=15 C=None flags=2
+--       do local I=1;local F=R[I+2];local U=R[I]+F;R[I]=U;local L=R[I+1];if (F>0 and U<=L) or (F<=0 and U>=L) then R[I+3]=U;PC=15 end end
+--   [0049] OP 248  A=1 B=1 C=0 flags=64
+--       for I=1,1 do R[I]=nil end
+--   [0050] OP 220  A=1 B=1 C=0 flags=0
+--       return U(T,1,1)
+--   [0051] OP 100  A=0 B=0 C=0 flags=128
+--       return
+
+-- ============================================================================
+-- PROTO_047 DestroyUI | path=root.37 | parent=PROTO_000 / child[37]
+-- 参数=0 | 常量=11 | 指令=31 | 子原型=0
+-- 字符串线索：UnSchedule | isHidden | GUI | setVisible | SL | resWin | resTimer | Win_CloseAll | pairs
+-- 常量池：
+--   K[0] = None
+--   K[1] = 'UnSchedule'
+--   K[2] = 'isHidden'
+--   K[3] = 'GUI'
+--   K[4] = 'setVisible'
+--   K[5] = 'SL'
+--   K[6] = 'resWin'
+--   K[7] = 'resTimer'
+--   K[8] = 'Win_CloseAll'
+--   K[9] = False
+--   K[10] = 'pairs'
+-- 指令：
+--   [0001] OP 130  A=0 B=0 C=0 flags=0
+--       R[0]=UP[0]
+--   [0002] OP 156  A=0 B='isHidden' C=False flags=176
+--       do local I="isHidden";local F=false;R[0][I]=F end
+--   [0003] OP 159  A=0 B=1 C=0 flags=0
+--       R[0]=UP[1]
+--       R[0]=R[0]["resTimer"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(53, 0, 0, 'resTimer', 224)]）
+--   [0005] OP  16  A=0 B=0 C=0 flags=128
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0006] OP 140  A=0 B=13 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=13
+--   [0007] OP 335  A=0 B='SL' C=None flags=146
+--       R[0]=ENV["SL"]
+--       local I=R[0];R[0+1]=I;R[0]=I["UnSchedule"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(121, 0, 0, 'UnSchedule', 32)]）
+--   [0009] OP 130  A=2 B=1 C=0 flags=64
+--       R[2]=UP[1]
+--   [0010] OP 363  A=2 B=2 C='resTimer' flags=32
+--       R[2]=R[2]["resTimer"]
+--   [0011] OP 358  A=0 B=2 C=0 flags=0
+--       R[0](U(T,0+1,2))
+--   [0012] OP 130  A=0 B=1 C=0 flags=64
+--       R[0]=UP[1]
+--   [0013] OP 146  A=0 B='resTimer' C=None flags=176
+--       do local I="resTimer";local F=nil;R[0][I]=F end
+--   [0014] OP 315  A=0 B=0 C=0 flags=64
+--       R[0]=UP[0]
+--       do local I="resWin";local F=nil;R[0][I]=F end
+--       R[0]=ENV["GUI"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(146, 0, 'resWin', None, 176), (335, 0, 'GUI', None, 82)]）
+--   [0017] OP  33  A=0 B=0 C='Win_CloseAll' flags=160
+--       local I=R[0];R[0+1]=I;R[0]=I["Win_CloseAll"]
+--   [0018] OP 358  A=0 B=1 C=0 flags=0
+--       R[0](U(T,0+1,1))
+--   [0019] OP  95  A=0 B='pairs' C=None flags=82
+--       R[0]=ENV["pairs"]
+--       R[1]=UP[2]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(130, 1, 2, 0, 64)]）
+--   [0021] OP 359  A=0 B=1 C=2 flags=128
+--       do local I={ R[0](U(T,0+1,1)) };local F=0;for U=0,2 do F=F+1;R[U]=I[F] end end
+--   [0022] OP 140  A=0 B=28 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=28
+--   [0023] OP 137  A=5 B='GUI' C=None flags=18
+--       R[5]=ENV["GUI"]
+--   [0024] OP 121  A=5 B=5 C='setVisible' flags=96
+--       local I=R[5];R[5+1]=I;R[5]=I["setVisible"]
+--   [0025] OP  28  A=7 B=2 C=0 flags=128
+--       R[7]=UP[2]
+--       R[7]=R[7][R[3]]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(304, 7, 7, 3, 128)]）
+--   [0027] OP 338  A=8 B=0 C=0 flags=128
+--       R[8]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0028] OP 187  A=5 B=8 C=0 flags=192
+--       R[5](U(T,5+1,8))
+--   [0029] OP 386  A=0 B=2 C=0 flags=128
+--       do local I,F=E(R[0](R[0+1],R[0+2]));for U=1,2 do R[0+2+U]=I[U] end;if R[0+3]==nil then PC=PC+1 else R[0+2]=R[0+3] end end
+--   [0030] OP 215  A=0 B=22 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=22
+--   [0031] OP  55  A=0 B=0 C=0 flags=128
+--       return
+
+-- ============================================================================
+-- PROTO_048 GetOwnerID | path=root.38 | parent=PROTO_000 / child[38]
+-- 参数=2 | 常量=7 | 指令=31 | 子原型=0
+-- 字符串线索：tostring | GetOwnerID | type |  | string
+-- 常量池：
+--   K[0] = -1.0
+--   K[1] = 'tostring'
+--   K[2] = 'GetOwnerID'
+--   K[3] = 'type'
+--   K[4] = None
+--   K[5] = ''
+--   K[6] = 'string'
+-- 指令：
+--   [0001] OP 121  A=2 B=0 C='GetOwnerID' flags=160
+--       local I=R[0];R[2+1]=I;R[2]=I["GetOwnerID"]
+--   [0002] OP  98  A=2 B=3 C=0 flags=0
+--       R[2]=R[2](U(T,2+1,3))
+--   [0003] OP 271  A=1 B=2 C=None flags=160
+--       if (R[2]==nil)~=(1~=0) then PC=PC+1 end
+--   [0004] OP 215  A=0 B=8 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=8
+--   [0005] OP 279  A=1 B=2 C='' flags=96
+--       if (R[2]=="")~=(1~=0) then PC=PC+1 end
+--   [0006] OP 255  A=0 B=8 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=8
+--   [0007] OP 271  A=0 B=2 C=-1.0 flags=160
+--       if (R[2]==-1.0)~=(0~=0) then PC=PC+1 end
+--   [0008] OP 255  A=0 B=11 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=11
+--   [0009] OP 338  A=3 B=0 C=0 flags=0
+--       R[3]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0010] OP 220  A=3 B=3 C=0 flags=128
+--       return U(T,3,3)
+--   [0011] OP 140  A=0 B=30 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=30
+--   [0012] OP  71  A=3 B='type' C=None flags=210
+--       R[3]=ENV["type"]
+--       R[4]=R[2]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 4, 2, 0, 128)]）
+--   [0014] OP  98  A=3 B=4 C=0 flags=192
+--       R[3]=R[3](U(T,3+1,4))
+--   [0015] OP 271  A=0 B=3 C='string' flags=224
+--       if (R[3]=="string")~=(0~=0) then PC=PC+1 end
+--   [0016] OP 255  A=0 B=25 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=25
+--   [0017] OP  71  A=3 B='tostring' C=None flags=82
+--       R[3]=ENV["tostring"]
+--       R[4]=R[1]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 4, 1, 0, 0)]）
+--   [0019] OP  68  A=3 B=4 C=0 flags=0
+--       R[3]=R[3](U(T,3+1,4))
+--   [0020] OP  99  A=0 B=2 C=3 flags=192
+--       if (R[2]==R[3])~=(0~=0) then PC=PC+1 end
+--   [0021] OP 215  A=0 B=22 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=22
+--   [0022] OP  82  A=3 B=0 C=1 flags=128
+--       R[3]=0~=0;if 1~=0 then PC=PC+1 end
+--   [0023] OP 401  A=3 B=1 C=0 flags=128
+--       R[3]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0024] OP 220  A=3 B=3 C=0 flags=64
+--       return U(T,3,3)
+--   [0025] OP 215  A=0 B=30 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=30
+--   [0026] OP 294  A=0 B=2 C=1 flags=192
+--       if (R[2]==R[1])~=(0~=0) then PC=PC+1 end
+--   [0027] OP 215  A=0 B=28 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=28
+--   [0028] OP  82  A=3 B=0 C=1 flags=192
+--       R[3]=0~=0;if 1~=0 then PC=PC+1 end
+--   [0029] OP 401  A=3 B=1 C=0 flags=64
+--       R[3]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0030] OP 220  A=3 B=3 C=0 flags=128
+--       return U(T,3,3)
+--   [0031] OP   1  A=0 B=0 C=0 flags=128
+--       return
+
+-- ============================================================================
+-- PROTO_049 GetMainPlayerID | path=root.39 | parent=PROTO_000 / child[39]
+-- 参数=0 | 常量=3 | 指令=6 | 子原型=0
+-- 字符串线索：gamePlayerController | GetMainPlayerID | global
+-- 常量池：
+--   K[0] = 'gamePlayerController'
+--   K[1] = 'GetMainPlayerID'
+--   K[2] = 'global'
+-- 指令：
+--   [0001] OP 309  A=0 B='global' C=None flags=82
+--       R[0]=ENV["global"]
+--       R[0]=R[0]["gamePlayerController"]
+--       local I=R[0];R[0+1]=I;R[0]=I["GetMainPlayerID"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(270, 0, 0, 'gamePlayerController', 224), (33, 0, 0, 'GetMainPlayerID', 32)]）
+--   [0004] OP  98  A=0 B=1 C=0 flags=128
+--       R[0]=R[0](U(T,0+1,1))
+--   [0005] OP 220  A=0 B=0 C=0 flags=192
+--       return U(T,0,0)
+--   [0006] OP 100  A=0 B=0 C=0 flags=128
+--       return
+
+-- ============================================================================
+-- PROTO_050 ShowHideAllButtons | path=root.40 | parent=PROTO_000 / child[40]
+-- 参数=0 | 常量=9 | 指令=47 | 子原型=0
+-- 字符串线索：GUI | pairs | setVisible | SL | hidebut | UnSchedule | rewardTimer | cruiseTimer
+-- 常量池：
+--   K[0] = 'GUI'
+--   K[1] = 'pairs'
+--   K[2] = 'setVisible'
+--   K[3] = 'SL'
+--   K[4] = 'hidebut'
+--   K[5] = 'UnSchedule'
+--   K[6] = None
+--   K[7] = 'rewardTimer'
+--   K[8] = 'cruiseTimer'
+-- 指令：
+--   [0001] OP 159  A=0 B=0 C=0 flags=64
+--       R[0]=UP[0]
+--       R[0]=R[0]["rewardTimer"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(363, 0, 0, 'rewardTimer', 32)]）
+--   [0003] OP  16  A=0 B=0 C=0 flags=128
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0004] OP 140  A=0 B=11 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=11
+--   [0005] OP 335  A=0 B='SL' C=None flags=210
+--       R[0]=ENV["SL"]
+--       local I=R[0];R[0+1]=I;R[0]=I["UnSchedule"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(33, 0, 0, 'UnSchedule', 160)]）
+--   [0007] OP 159  A=2 B=0 C=0 flags=192
+--       R[2]=UP[0]
+--       R[2]=R[2]["rewardTimer"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(53, 2, 2, 'rewardTimer', 96)]）
+--   [0009] OP 358  A=0 B=2 C=0 flags=64
+--       R[0](U(T,0+1,2))
+--   [0010] OP 130  A=0 B=0 C=0 flags=128
+--       R[0]=UP[0]
+--   [0011] OP 146  A=0 B='rewardTimer' C=None flags=176
+--       do local I="rewardTimer";local F=nil;R[0][I]=F end
+--   [0012] OP 159  A=0 B=0 C=0 flags=128
+--       R[0]=UP[0]
+--       R[0]=R[0]["cruiseTimer"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(53, 0, 0, 'cruiseTimer', 32)]）
+--   [0014] OP  16  A=0 B=0 C=0 flags=0
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0015] OP 255  A=0 B=22 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=22
+--   [0016] OP 335  A=0 B='SL' C=None flags=146
+--       R[0]=ENV["SL"]
+--       local I=R[0];R[0+1]=I;R[0]=I["UnSchedule"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(238, 0, 0, 'UnSchedule', 160)]）
+--   [0018] OP 159  A=2 B=0 C=0 flags=64
+--       R[2]=UP[0]
+--       R[2]=R[2]["cruiseTimer"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(363, 2, 2, 'cruiseTimer', 224)]）
+--   [0020] OP 187  A=0 B=2 C=0 flags=192
+--       R[0](U(T,0+1,2))
+--   [0021] OP 315  A=0 B=0 C=0 flags=192
+--       R[0]=UP[0]
+--       do local I="cruiseTimer";local F=nil;R[0][I]=F end
+--       R[0]=ENV["pairs"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(301, 0, 'cruiseTimer', None, 48), (95, 0, 'pairs', None, 146)]）
+--   [0024] OP 130  A=1 B=1 C=0 flags=128
+--       R[1]=UP[1]
+--   [0025] OP 233  A=0 B=1 C=2 flags=128
+--       do local I={ R[0](U(T,0+1,1)) };local F=0;for U=0,2 do F=F+1;R[U]=I[F] end end
+--   [0026] OP 215  A=0 B=32 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=32
+--   [0027] OP 335  A=5 B='GUI' C=None flags=18
+--       R[5]=ENV["GUI"]
+--       local I=R[5];R[5+1]=I;R[5]=I["setVisible"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(121, 5, 5, 'setVisible', 224)]）
+--   [0029] OP  28  A=7 B=1 C=0 flags=0
+--       R[7]=UP[1]
+--       R[7]=R[7][R[3]]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(231, 7, 7, 3, 64)]）
+--   [0031] OP 401  A=8 B=0 C=0 flags=0
+--       R[8]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0032] OP 187  A=5 B=8 C=0 flags=192
+--       R[5](U(T,5+1,8))
+--   [0033] OP 117  A=0 B=2 C=0 flags=192
+--       do local I,F=E(R[0](R[0+1],R[0+2]));for U=1,2 do R[0+2+U]=I[U] end;if R[0+3]==nil then PC=PC+1 else R[0+2]=R[0+3] end end
+--   [0034] OP 215  A=0 B=26 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=26
+--   [0035] OP 159  A=0 B=2 C=0 flags=128
+--       R[0]=UP[2]
+--       R[0]=R[0]["hidebut"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(363, 0, 0, 'hidebut', 96)]）
+--   [0037] OP  16  A=0 B=0 C=0 flags=64
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0038] OP 140  A=0 B=46 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=46
+--   [0039] OP 137  A=0 B='GUI' C=None flags=210
+--       R[0]=ENV["GUI"]
+--   [0040] OP 121  A=0 B=0 C='setVisible' flags=32
+--       local I=R[0];R[0+1]=I;R[0]=I["setVisible"]
+--   [0041] OP 159  A=2 B=2 C=0 flags=128
+--       R[2]=UP[2]
+--       R[2]=R[2]["hidebut"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(363, 2, 2, 'hidebut', 96)]）
+--   [0043] OP 401  A=3 B=0 C=0 flags=192
+--       R[3]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0044] OP 187  A=0 B=3 C=0 flags=64
+--       R[0](U(T,0+1,3))
+--   [0045] OP  89  A=0 B=2 C=0 flags=64
+--       R[0]=UP[2]
+--       do local I="hidebut";local F=nil;R[0][I]=F end
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(146, 0, 'hidebut', None, 112)]）
+--   [0047] OP  55  A=0 B=0 C=0 flags=128
+--       return
+
+-- ============================================================================
+-- PROTO_051 MoveItemToQuickUse | path=root.41 | parent=PROTO_000 / child[41]
+-- 参数=2 | 常量=26 | 指令=133 | 子原型=0
+-- 字符串线索：快捷栏移动: %d → %d | next | QuickUseProxy | SetQuickUsePosData | GetQuickUseData | GetQuickUseSize | DelItemData | 参数无效 | 物品已在目标位置 | addItemData | Bag | 物品不存在 | Index | ProxyTable | retrieveProxy | Facade | 目标位置超出范围 | string | 已从背包移动到快捷栏位置%d | format | GetItemDataByItemIndex | pairs
+-- 常量池：
+--   K[0] = '快捷栏移动: %d → %d'
+--   K[1] = 'next'
+--   K[2] = 'QuickUseProxy'
+--   K[3] = 'SetQuickUsePosData'
+--   K[4] = 'GetQuickUseData'
+--   K[5] = 'GetQuickUseSize'
+--   K[6] = 'DelItemData'
+--   K[7] = '参数无效'
+--   K[8] = '物品已在目标位置'
+--   K[9] = 'addItemData'
+--   K[10] = 'Bag'
+--   K[11] = '物品不存在'
+--   K[12] = 'Index'
+--   K[13] = 'ProxyTable'
+--   K[14] = 'retrieveProxy'
+--   K[15] = 'Facade'
+--   K[16] = '目标位置超出范围'
+--   K[17] = 'string'
+--   K[18] = '已从背包移动到快捷栏位置%d'
+--   K[19] = 'format'
+--   K[20] = 'GetItemDataByItemIndex'
+--   K[21] = 'pairs'
+--   K[22] = 'global'
+--   K[23] = 'GetQucikUseDataByPos'
+--   K[24] = '快捷栏交换: %d ↔ %d'
+--   K[25] = 1.0
+-- 指令：
+--   [0001] OP 179  A=2 B='global' C=None flags=18
+--       R[2]=ENV["global"]
+--       R[2]=R[2]["Facade"]
+--       local I=R[2];R[2+1]=I;R[2]=I["retrieveProxy"]
+--       R[4]=ENV["global"]
+--       R[4]=R[4]["ProxyTable"]
+--       R[4]=R[4]["QuickUseProxy"]
+--       （该融合指令内部消费后续 5 条记录；原始记录=[(260, 2, 2, 'Facade', 96), (121, 2, 2, 'retrieveProxy', 224), (198, 4, 'global', None, 210), (375, 4, 4, 'ProxyTable', 160), (53, 4, 4, 'QuickUseProxy', 32)]）
+--   [0007] OP  98  A=2 B=4 C=0 flags=64
+--       R[2]=R[2](U(T,2+1,4))
+--   [0008] OP 179  A=3 B='global' C=None flags=18
+--       R[3]=ENV["global"]
+--       R[3]=R[3]["Facade"]
+--       local I=R[3];R[3+1]=I;R[3]=I["retrieveProxy"]
+--       R[5]=ENV["global"]
+--       R[5]=R[5]["ProxyTable"]
+--       R[5]=R[5]["Bag"]
+--       （该融合指令内部消费后续 5 条记录；原始记录=[(32, 3, 3, 'Facade', 96), (121, 3, 3, 'retrieveProxy', 224), (198, 5, 'global', None, 82), (49, 5, 5, 'ProxyTable', 96), (53, 5, 5, 'Bag', 224)]）
+--   [0014] OP  68  A=3 B=5 C=0 flags=192
+--       R[3]=R[3](U(T,3+1,5))
+--   [0015] OP  16  A=0 B=0 C=0 flags=64
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0016] OP 255  A=0 B=18 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=18
+--   [0017] OP 342  A=1 B=0 C=1 flags=0
+--       if (not not R[1])~=(1~=0) then PC=PC+1 end
+--   [0018] OP 255  A=0 B=21 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=21
+--   [0019] OP 401  A=4 B=0 C=0 flags=192
+--       R[4]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0020] OP 371  A=5 B='参数无效' C=None flags=82
+--       R[5]="参数无效"
+--   [0021] OP 220  A=4 B=5 C=0 flags=192
+--       return U(T,4,5)
+--   [0022] OP  33  A=4 B=2 C='GetQuickUseSize' flags=160
+--       local I=R[2];R[4+1]=I;R[4]=I["GetQuickUseSize"]
+--   [0023] OP  98  A=4 B=5 C=0 flags=192
+--       R[4]=R[4](U(T,4+1,5))
+--   [0024] OP  43  A=1 B=1 C=1.0 flags=32
+--       if (R[1]<1.0)~=(1~=0) then PC=PC+1 end
+--   [0025] OP 140  A=0 B=27 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=27
+--   [0026] OP   2  A=0 B=4 C=1 flags=0
+--       if (R[4]<R[1])~=(0~=0) then PC=PC+1 end
+--   [0027] OP 215  A=0 B=30 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=30
+--   [0028] OP 401  A=5 B=0 C=0 flags=64
+--       R[5]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0029] OP 346  A=6 B='目标位置超出范围' C=None flags=210
+--       R[6]="目标位置超出范围"
+--   [0030] OP 220  A=5 B=6 C=0 flags=192
+--       return U(T,5,6)
+--   [0031] OP 121  A=5 B=2 C='GetQuickUseData' flags=224
+--       local I=R[2];R[5+1]=I;R[5]=I["GetQuickUseData"]
+--   [0032] OP  68  A=5 B=6 C=0 flags=64
+--       R[5]=R[5](U(T,5+1,6))
+--   [0033] OP  71  A=6 B='pairs' C=None flags=146
+--       R[6]=ENV["pairs"]
+--       R[7]=R[5]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 7, 5, 0, 128)]）
+--   [0035] OP 359  A=6 B=7 C=8 flags=0
+--       do local I={ R[6](U(T,6+1,7)) };local F=0;for U=6,8 do F=F+1;R[U]=I[F] end end
+--   [0036] OP 140  A=0 B=88 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=88
+--   [0037] OP  16  A=10 B=0 C=0 flags=64
+--       if (not not R[10])~=(0~=0) then PC=PC+1 end
+--   [0038] OP 140  A=0 B=88 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=88
+--   [0039] OP  32  A=11 B=10 C='Index' flags=32
+--       R[11]=R[10]["Index"]
+--   [0040] OP 294  A=0 B=11 C=0 flags=64
+--       if (R[11]==R[0])~=(0~=0) then PC=PC+1 end
+--   [0041] OP 255  A=0 B=88 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=88
+--   [0042] OP  99  A=0 B=9 C=1 flags=64
+--       if (R[9]==R[1])~=(0~=0) then PC=PC+1 end
+--   [0043] OP 140  A=0 B=46 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=46
+--   [0044] OP 338  A=11 B=1 C=0 flags=128
+--       R[11]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0045] OP 371  A=12 B='物品已在目标位置' C=None flags=82
+--       R[12]="物品已在目标位置"
+--   [0046] OP 220  A=11 B=12 C=0 flags=192
+--       return U(T,11,12)
+--   [0047] OP 142  A=11 B=2 C='GetQucikUseDataByPos' flags=224
+--       local I=R[2];R[11+1]=I;R[11]=I["GetQucikUseDataByPos"]
+--       R[13]=R[1]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 13, 1, 0, 64)]）
+--   [0049] OP  68  A=11 B=13 C=0 flags=192
+--       R[11]=R[11](U(T,11+1,13))
+--   [0050] OP 121  A=12 B=2 C='SetQuickUsePosData' flags=224
+--       local I=R[2];R[12+1]=I;R[12]=I["SetQuickUsePosData"]
+--   [0051] OP  78  A=14 B=9 C=0 flags=192
+--       R[14]=R[9]
+--       R[15]=R[10]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 15, 10, 0, 128)]）
+--   [0053] OP  11  A=16 B=1 C=0 flags=0
+--       R[16]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0054] OP 358  A=12 B=16 C=0 flags=128
+--       R[12](U(T,12+1,16))
+--   [0055] OP  16  A=11 B=0 C=0 flags=192
+--       if (not not R[11])~=(0~=0) then PC=PC+1 end
+--   [0056] OP 255  A=0 B=75 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=75
+--   [0057] OP 136  A=12 B=2 C='SetQuickUsePosData' flags=160
+--       local I=R[2];R[12+1]=I;R[12]=I["SetQuickUsePosData"]
+--       R[14]=R[1]
+--       R[15]=R[10]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(78, 14, 1, 0, 0), (308, 15, 10, 0, 192)]）
+--   [0060] OP  11  A=16 B=0 C=0 flags=64
+--       R[16]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0061] OP 358  A=12 B=16 C=0 flags=0
+--       R[12](U(T,12+1,16))
+--   [0062] OP 136  A=12 B=2 C='SetQuickUsePosData' flags=32
+--       local I=R[2];R[12+1]=I;R[12]=I["SetQuickUsePosData"]
+--       R[14]=R[9]
+--       R[15]=R[11]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(78, 14, 9, 0, 128), (308, 15, 11, 0, 128)]）
+--   [0065] OP  11  A=16 B=0 C=0 flags=64
+--       R[16]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0066] OP 358  A=12 B=16 C=0 flags=128
+--       R[12](U(T,12+1,16))
+--   [0067] OP 401  A=12 B=1 C=0 flags=0
+--       R[12]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0068] OP 110  A=13 B='string' C=None flags=82
+--       R[13]=ENV["string"]
+--       R[13]=R[13]["format"]
+--       R[14]="快捷栏交换: %d ↔ %d"
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(363, 13, 13, 'format', 32), (59, 14, '快捷栏交换: %d ↔ %d', None, 18)]）
+--   [0071] OP 184  A=15 B=9 C=0 flags=192
+--       R[15]=R[9]
+--   [0072] OP 184  A=16 B=1 C=0 flags=64
+--       R[16]=R[1]
+--   [0073] OP 252  A=13 B=16 C=0 flags=0
+--       do local I,F=E(R[13](U(T,13+1,16)));B=F+13-1;local U=0;for L=13,B do U=U+1;R[L]=I[U] end end
+--   [0074] OP 143  A=12 B=0 C=0 flags=128
+--       return U(T,12,B)
+--   [0075] OP 140  A=0 B=88 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=88
+--   [0076] OP 136  A=12 B=2 C='SetQuickUsePosData' flags=160
+--       local I=R[2];R[12+1]=I;R[12]=I["SetQuickUsePosData"]
+--       R[14]=R[1]
+--       R[15]=R[10]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(78, 14, 1, 0, 0), (308, 15, 10, 0, 0)]）
+--   [0079] OP 338  A=16 B=0 C=0 flags=128
+--       R[16]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0080] OP 358  A=12 B=16 C=0 flags=128
+--       R[12](U(T,12+1,16))
+--   [0081] OP  11  A=12 B=1 C=0 flags=64
+--       R[12]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0082] OP 137  A=13 B='string' C=None flags=146
+--       R[13]=ENV["string"]
+--   [0083] OP  53  A=13 B=13 C='format' flags=32
+--       R[13]=R[13]["format"]
+--   [0084] OP 346  A=14 B='快捷栏移动: %d → %d' C=None flags=18
+--       R[14]="快捷栏移动: %d → %d"
+--   [0085] OP  78  A=15 B=9 C=0 flags=0
+--       R[15]=R[9]
+--       R[16]=R[1]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 16, 1, 0, 192)]）
+--   [0087] OP 392  A=13 B=16 C=0 flags=192
+--       do local I,F=E(R[13](U(T,13+1,16)));B=F+13-1;local U=0;for L=13,B do U=U+1;R[L]=I[U] end end
+--   [0088] OP 143  A=12 B=0 C=0 flags=192
+--       return U(T,12,B)
+--   [0089] OP 117  A=6 B=2 C=0 flags=128
+--       do local I,F=E(R[6](R[6+1],R[6+2]));for U=1,2 do R[6+2+U]=I[U] end;if R[6+3]==nil then PC=PC+1 else R[6+2]=R[6+3] end end
+--   [0090] OP 140  A=0 B=36 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=36
+--   [0091] OP 142  A=6 B=3 C='GetItemDataByItemIndex' flags=32
+--       local I=R[3];R[6+1]=I;R[6]=I["GetItemDataByItemIndex"]
+--       R[8]=R[0]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 8, 0, 0, 0)]）
+--   [0093] OP  68  A=6 B=8 C=0 flags=128
+--       R[6]=R[6](U(T,6+1,8))
+--   [0094] OP  16  A=6 B=0 C=0 flags=0
+--       if (not not R[6])~=(0~=0) then PC=PC+1 end
+--   [0095] OP 215  A=0 B=100 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=100
+--   [0096] OP  71  A=7 B='next' C=None flags=18
+--       R[7]=ENV["next"]
+--       R[8]=R[6]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 8, 6, 0, 64)]）
+--   [0098] OP  98  A=7 B=8 C=0 flags=128
+--       R[7]=R[7](U(T,7+1,8))
+--   [0099] OP 342  A=7 B=0 C=1 flags=192
+--       if (not not R[7])~=(1~=0) then PC=PC+1 end
+--   [0100] OP 140  A=0 B=103 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=103
+--   [0101] OP  11  A=7 B=0 C=0 flags=128
+--       R[7]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0102] OP 371  A=8 B='物品不存在' C=None flags=82
+--       R[8]="物品不存在"
+--   [0103] OP 220  A=7 B=8 C=0 flags=128
+--       return U(T,7,8)
+--   [0104] OP 142  A=7 B=2 C='GetQucikUseDataByPos' flags=160
+--       local I=R[2];R[7+1]=I;R[7]=I["GetQucikUseDataByPos"]
+--       R[9]=R[1]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 9, 1, 0, 192)]）
+--   [0106] OP  98  A=7 B=9 C=0 flags=192
+--       R[7]=R[7](U(T,7+1,9))
+--   [0107] OP  16  A=7 B=0 C=0 flags=128
+--       if (not not R[7])~=(0~=0) then PC=PC+1 end
+--   [0108] OP 255  A=0 B=116 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=116
+--   [0109] OP 142  A=8 B=2 C='SetQuickUsePosData' flags=160
+--       local I=R[2];R[8+1]=I;R[8]=I["SetQuickUsePosData"]
+--       R[10]=R[1]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 10, 1, 0, 64)]）
+--   [0111] OP 184  A=11 B=7 C=0 flags=192
+--       R[11]=R[7]
+--   [0112] OP 338  A=12 B=1 C=0 flags=192
+--       R[12]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0113] OP 187  A=8 B=12 C=0 flags=0
+--       R[8](U(T,8+1,12))
+--   [0114] OP  33  A=8 B=3 C='addItemData' flags=96
+--       local I=R[3];R[8+1]=I;R[8]=I["addItemData"]
+--   [0115] OP 308  A=10 B=7 C=0 flags=0
+--       R[10]=R[7]
+--   [0116] OP 187  A=8 B=10 C=0 flags=192
+--       R[8](U(T,8+1,10))
+--   [0117] OP 270  A=8 B=6 C=1.0 flags=32
+--       R[8]=R[6][1.0]
+--       local I=R[3];R[9+1]=I;R[9]=I["DelItemData"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(238, 9, 3, 'DelItemData', 224)]）
+--   [0119] OP 308  A=11 B=8 C=0 flags=192
+--       R[11]=R[8]
+--   [0120] OP 358  A=9 B=11 C=0 flags=192
+--       R[9](U(T,9+1,11))
+--   [0121] OP 136  A=9 B=2 C='SetQuickUsePosData' flags=32
+--       local I=R[2];R[9+1]=I;R[9]=I["SetQuickUsePosData"]
+--       R[11]=R[1]
+--       R[12]=R[8]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(78, 11, 1, 0, 192), (308, 12, 8, 0, 0)]）
+--   [0124] OP 401  A=13 B=0 C=0 flags=128
+--       R[13]=0~=0;if 0~=0 then PC=PC+1 end
+--   [0125] OP 187  A=9 B=13 C=0 flags=128
+--       R[9](U(T,9+1,13))
+--   [0126] OP 338  A=9 B=1 C=0 flags=192
+--       R[9]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0127] OP 110  A=10 B='string' C=None flags=82
+--       R[10]=ENV["string"]
+--       R[10]=R[10]["format"]
+--       R[11]="已从背包移动到快捷栏位置%d"
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(363, 10, 10, 'format', 224), (286, 11, '已从背包移动到快捷栏位置%d', None, 18)]）
+--   [0130] OP 308  A=12 B=1 C=0 flags=128
+--       R[12]=R[1]
+--   [0131] OP 392  A=10 B=12 C=0 flags=128
+--       do local I,F=E(R[10](U(T,10+1,12)));B=F+10-1;local U=0;for L=10,B do U=U+1;R[L]=I[U] end end
+--   [0132] OP 143  A=9 B=0 C=0 flags=64
+--       return U(T,9,B)
+--   [0133] OP 100  A=0 B=0 C=0 flags=64
+--       return
+
+-- ============================================================================
+-- PROTO_052 doInit_UI | path=root.42 | parent=PROTO_000 / child[42]
+-- 参数=0 | 常量=105 | 指令=419 | 子原型=23
+-- 字符串线索：addOnClickEvent | pcall | Button_setTitleFontSize | RequestStorageData | ScheduleOnce | takebut | res/public/kaiti2.ttf | 声望卷 | SL | %Y-%m-%d %H:%M:%S | Builtsetting | slot | 开拉怪 | retrieveProxy | cruiseTimer | toggle | 恶魔令牌 | 灵符 | MainProperty | 转生水晶 | 绑定灵符 | Button_Create
+-- 常量池：
+--   K[0] = 'addOnClickEvent'
+--   K[1] = 'pcall'
+--   K[2] = 'Button_setTitleFontSize'
+--   K[3] = 'RequestStorageData'
+--   K[4] = 'ScheduleOnce'
+--   K[5] = 'takebut'
+--   K[6] = 'res/public/kaiti2.ttf'
+--   K[7] = '声望卷'
+--   K[8] = 'SL'
+--   K[9] = '%Y-%m-%d %H:%M:%S'
+--   K[10] = 'Builtsetting'
+--   K[11] = 'slot'
+--   K[12] = '开拉怪'
+--   K[13] = 18.0
+--   K[14] = 'retrieveProxy'
+--   K[15] = 'cruiseTimer'
+--   K[16] = None
+--   K[17] = 0.1
+--   K[18] = 'toggle'
+--   K[19] = '恶魔令牌'
+--   K[20] = '灵符'
+--   K[21] = 'MainProperty'
+--   K[22] = '转生水晶'
+--   K[23] = '绑定灵符'
+--   K[24] = 'Button_Create'
+--   K[25] = 'res/public/fuzhu_btn.png'
+--   K[26] = 'MoneyProxy'
+--   K[27] = 80.0
+--   K[28] = 'Button_setTitleFontName'
+--   K[29] = '绑定元宝'
+--   K[30] = '快速小退'
+--   K[31] = '随机传送石'
+--   K[32] = '永久随机石'
+--   K[33] = '免战回城石'
+--   K[34] = 'GetMoneyCountById'
+--   K[35] = '大陆传送石'
+--   K[36] = 'rewardbut'
+--   K[37] = '关黑名单'
+--   K[38] = 'shiqubut'
+--   K[39] = '关拉怪'
+--   K[40] = 'clearblacklistbut'
+--   K[41] = 'NPCStorageProxy'
+--   K[42] = '插件初始化完成'
+--   K[43] = 'getWorldPosition'
+--   K[44] = 4.0
+--   K[45] = 'time'
+--   K[46] = 'width'
+--   K[47] = '清距离值'
+--   K[48] = '开拾取'
+--   K[49] = '关丢物品'
+--   K[50] = 1.0
+--   K[51] = 'getContentSize'
+--   K[52] = 'Button_setTitleText'
+--   K[53] = 'storagebut'
+--   K[54] = '血龙宝珠'
+--   K[55] = 10.0
+--   K[56] = 'UnSchedule'
+--   K[57] = '资源统计'
+--   K[58] = 'Panel_mini_chat'
+--   K[59] = '盟重传送石'
+--   K[60] = 'date'
+--   K[61] = '_ui'
+--   K[62] = 'GetMoneyIdByName'
+--   K[63] = 2.0
+--   K[64] = 'hidebut'
+--   K[65] = 'xiaotuibut'
+--   K[66] = 'os'
+--   K[67] = '洗髓丹'
+--   K[68] = '--'
+--   K[69] = 'ProxyTable'
+--   K[70] = 'Facade'
+--   K[71] = 'initTimeStr'
+--   K[72] = '隐 藏'
+--   K[73] = 40.0
+--   K[74] = 'cleardistancebut'
+--   K[75] = '开黑名单'
+--   K[76] = 'key'
+--   K[77] = 'ipairs'
+--   K[78] = 'blacklistbut'
+--   K[79] = '关奖励'
+--   K[80] = 'GUI'
+--   K[81] = 'moneybut'
+--   K[82] = 'diuqibut'
+--   K[83] = 'clearmonsterbut'
+--   K[84] = 'initTime'
+--   K[85] = 'initSnapshot'
+--   K[86] = 'Schedule'
+--   K[87] = 'yinguaibut'
+--   K[88] = 'name'
+--   K[89] = '盟重回城石'
+--   K[90] = 3.0
+--   K[91] = '关拾取'
+--   K[92] = 'names'
+--   K[93] = 'x'
+--   K[94] = 'Attach_UITop'
+--   K[95] = '清黑名单'
+--   K[96] = '元宝'
+--   K[97] = '开奖励'
+--   K[98] = '清怪物值'
+--   K[99] = 'y'
+--   K[100] = '永久回城石'
+--   K[101] = 'global'
+--   K[102] = '悟道茶'
+--   K[103] = 0
+--   K[104] = '开丢物品'
+-- 指令：
+--   [0001] OP 134  A=0 B=0 C=0 flags=64
+--       R[0]=UP[0]
+--       R[1]="插件初始化完成"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 1, '插件初始化完成', None, 82)]）
+--   [0003] OP 187  A=0 B=1 C=0 flags=0
+--       R[0](U(T,0+1,1))
+--   [0004] OP  90  A=0 B=4 C=0 flags=128
+--       R[0]={}
+--       R[1]="元宝"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(226, 1, '元宝', None, 82)]）
+--   [0006] OP  61  A=2 B='绑定元宝' C=None flags=18
+--       R[2]="绑定元宝"
+--       R[3]="灵符"
+--       R[4]="绑定灵符"
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(282, 3, '灵符', None, 82), (371, 4, '绑定灵符', None, 146)]）
+--   [0009] OP 237  A=0 B=4 C=1 flags=0
+--       do local I=4;if I==0 then I=math.max(0,B-0) end;local F=R[0];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[0+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[0]=O else for O=1,I do F[L+O]=R[0+O] end end;end
+--   [0010] OP  90  A=1 B=6 C=0 flags=128
+--       R[1]={}
+--       R[2]="声望卷"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 2, '声望卷', None, 82)]）
+--   [0012] OP 346  A=3 B='悟道茶' C=None flags=146
+--       R[3]="悟道茶"
+--   [0013] OP 346  A=4 B='洗髓丹' C=None flags=82
+--       R[4]="洗髓丹"
+--   [0014] OP  61  A=5 B='转生水晶' C=None flags=82
+--       R[5]="转生水晶"
+--       R[6]="恶魔令牌"
+--       R[7]="血龙宝珠"
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(371, 6, '恶魔令牌', None, 146), (346, 7, '血龙宝珠', None, 18)]）
+--   [0017] OP 402  A=1 B=6 C=1 flags=0
+--       do local I=6;if I==0 then I=math.max(0,B-1) end;local F=R[1];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[1+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[1]=O else for O=1,I do F[L+O]=R[1+O] end end;end
+--   [0018] OP  27  A=2 B=0 C=0 flags=192 ; 创建子原型 child[0]，捕获 0 个 upvalue
+--       R[2] = makeClosure(PROTO[0], captures={})
+--   [0019] OP 130  A=3 B=1 C=0 flags=64
+--       R[3]=UP[1]
+--   [0020] OP 146  A=3 B='initTime' C=0 flags=176
+--       do local I="initTime";local F=0;R[3][I]=F end
+--   [0021] OP 130  A=3 B=1 C=0 flags=0
+--       R[3]=UP[1]
+--   [0022] OP 301  A=3 B='initTimeStr' C='--' flags=48
+--       do local I="initTimeStr";local F="--";R[3][I]=F end
+--       R[3]=ENV["os"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(137, 3, 'os', None, 146)]）
+--   [0024] OP  16  A=3 B=0 C=0 flags=64
+--       if (not not R[3])~=(0~=0) then PC=PC+1 end
+--   [0025] OP 255  A=0 B=55 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=55
+--   [0026] OP 397  A=3 B='os' C=None flags=146
+--       R[3]=ENV["os"]
+--       R[3]=R[3]["time"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(53, 3, 3, 'time', 224)]）
+--   [0028] OP  16  A=3 B=0 C=0 flags=128
+--       if (not not R[3])~=(0~=0) then PC=PC+1 end
+--   [0029] OP 255  A=0 B=55 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=55
+--   [0030] OP 397  A=3 B='os' C=None flags=18
+--       R[3]=ENV["os"]
+--       R[3]=R[3]["date"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(363, 3, 3, 'date', 96)]）
+--   [0032] OP  16  A=3 B=0 C=0 flags=128
+--       if (not not R[3])~=(0~=0) then PC=PC+1 end
+--   [0033] OP 140  A=0 B=55 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=55
+--   [0034] OP 137  A=3 B='pcall' C=None flags=146
+--       R[3]=ENV["pcall"]
+--   [0035] OP 397  A=4 B='os' C=None flags=210
+--       R[4]=ENV["os"]
+--       R[4]=R[4]["time"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(375, 4, 4, 'time', 160)]）
+--   [0037] OP 183  A=3 B=4 C=4 flags=192
+--       do local I={ R[3](U(T,3+1,4)) };local F=0;for U=3,4 do F=F+1;R[U]=I[F] end end
+--   [0038] OP  16  A=3 B=0 C=0 flags=0
+--       if (not not R[3])~=(0~=0) then PC=PC+1 end
+--   [0039] OP 255  A=0 B=55 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=55
+--   [0040] OP  16  A=4 B=0 C=0 flags=0
+--       if (not not R[4])~=(0~=0) then PC=PC+1 end
+--   [0041] OP 255  A=0 B=55 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=55
+--   [0042] OP 130  A=5 B=1 C=0 flags=192
+--       R[5]=UP[1]
+--   [0043] OP 268  A=5 B='initTime' C=4 flags=80
+--       do local I="initTime";local F=R[4];R[5][I]=F end
+--   [0044] OP 137  A=5 B='pcall' C=None flags=82
+--       R[5]=ENV["pcall"]
+--   [0045] OP 110  A=6 B='os' C=None flags=210
+--       R[6]=ENV["os"]
+--       R[6]=R[6]["date"]
+--       R[7]="%Y-%m-%d %H:%M:%S"
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(363, 6, 6, 'date', 32), (286, 7, '%Y-%m-%d %H:%M:%S', None, 210)]）
+--   [0048] OP 184  A=8 B=4 C=0 flags=192
+--       R[8]=R[4]
+--   [0049] OP 359  A=5 B=8 C=6 flags=0
+--       do local I={ R[5](U(T,5+1,8)) };local F=0;for U=5,6 do F=F+1;R[U]=I[F] end end
+--   [0050] OP  16  A=5 B=0 C=0 flags=64
+--       if (not not R[5])~=(0~=0) then PC=PC+1 end
+--   [0051] OP 215  A=0 B=55 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=55
+--   [0052] OP  16  A=6 B=0 C=0 flags=128
+--       if (not not R[6])~=(0~=0) then PC=PC+1 end
+--   [0053] OP 215  A=0 B=55 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=55
+--   [0054] OP 130  A=7 B=1 C=0 flags=128
+--       R[7]=UP[1]
+--   [0055] OP 268  A=7 B='initTimeStr' C=6 flags=208
+--       do local I="initTimeStr";local F=R[6];R[7][I]=F end
+--   [0056] OP 130  A=3 B=1 C=0 flags=128
+--       R[3]=UP[1]
+--   [0057] OP 105  A=4 B=0 C=0 flags=64
+--       R[4]={}
+--   [0058] OP 355  A=3 B='initSnapshot' C=4 flags=144
+--       do local I="initSnapshot";local F=R[4];R[3][I]=F end
+--   [0059] OP 179  A=3 B='global' C=None flags=82
+--       R[3]=ENV["global"]
+--       R[3]=R[3]["Facade"]
+--       local I=R[3];R[3+1]=I;R[3]=I["retrieveProxy"]
+--       R[5]=ENV["global"]
+--       R[5]=R[5]["ProxyTable"]
+--       R[5]=R[5]["MoneyProxy"]
+--       （该融合指令内部消费后续 5 条记录；原始记录=[(260, 3, 3, 'Facade', 224), (201, 3, 3, 'retrieveProxy', 32), (198, 5, 'global', None, 210), (49, 5, 5, 'ProxyTable', 160), (53, 5, 5, 'MoneyProxy', 96)]）
+--   [0065] OP  68  A=3 B=5 C=0 flags=0
+--       R[3]=R[3](U(T,3+1,5))
+--   [0066] OP  16  A=3 B=0 C=0 flags=64
+--       if (not not R[3])~=(0~=0) then PC=PC+1 end
+--   [0067] OP 215  A=0 B=87 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=87
+--   [0068] OP  71  A=4 B='ipairs' C=None flags=18
+--       R[4]=ENV["ipairs"]
+--       R[5]=R[0]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 5, 0, 0, 192)]）
+--   [0070] OP 359  A=4 B=5 C=6 flags=64
+--       do local I={ R[4](U(T,4+1,5)) };local F=0;for U=4,6 do F=F+1;R[U]=I[F] end end
+--   [0071] OP 215  A=0 B=85 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=85
+--   [0072] OP 142  A=9 B=3 C='GetMoneyIdByName' flags=224
+--       local I=R[3];R[9+1]=I;R[9]=I["GetMoneyIdByName"]
+--       R[11]=R[8]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 11, 8, 0, 64)]）
+--   [0074] OP  98  A=9 B=11 C=0 flags=128
+--       R[9]=R[9](U(T,9+1,11))
+--   [0075] OP  16  A=9 B=0 C=0 flags=128
+--       if (not not R[9])~=(0~=0) then PC=PC+1 end
+--   [0076] OP 255  A=0 B=85 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=85
+--   [0077] OP 159  A=10 B=1 C=0 flags=128
+--       R[10]=UP[1]
+--       R[10]=R[10]["initSnapshot"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(270, 10, 10, 'initSnapshot', 96)]）
+--   [0079] OP 238  A=11 B=3 C='GetMoneyCountById' flags=160
+--       local I=R[3];R[11+1]=I;R[11]=I["GetMoneyCountById"]
+--   [0080] OP 308  A=13 B=9 C=0 flags=192
+--       R[13]=R[9]
+--   [0081] OP  98  A=11 B=13 C=0 flags=64
+--       R[11]=R[11](U(T,11+1,13))
+--   [0082] OP 342  A=11 B=0 C=1 flags=192
+--       if (not not R[11])~=(1~=0) then PC=PC+1 end
+--   [0083] OP 140  A=0 B=84 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=84
+--   [0084] OP 346  A=11 B=0 C=None flags=82
+--       R[11]=0
+--   [0085] OP 327  A=10 B=8 C=11 flags=64
+--       do local I=R[8];local F=R[11];R[10][I]=F end
+--   [0086] OP 117  A=4 B=2 C=0 flags=0
+--       do local I,F=E(R[4](R[4+1],R[4+2]));for U=1,2 do R[4+2+U]=I[U] end;if R[4+3]==nil then PC=PC+1 else R[4+2]=R[4+3] end end
+--   [0087] OP 255  A=0 B=71 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=71
+--   [0088] OP  71  A=4 B='ipairs' C=None flags=82
+--       R[4]=ENV["ipairs"]
+--       R[5]=R[1]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 5, 1, 0, 192)]）
+--   [0090] OP 359  A=4 B=5 C=6 flags=0
+--       do local I={ R[4](U(T,4+1,5)) };local F=0;for U=4,6 do F=F+1;R[U]=I[F] end end
+--   [0091] OP 140  A=0 B=97 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=97
+--   [0092] OP 159  A=9 B=1 C=0 flags=0
+--       R[9]=UP[1]
+--       R[9]=R[9]["initSnapshot"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(32, 9, 9, 'initSnapshot', 160)]）
+--   [0094] OP  78  A=10 B=2 C=0 flags=128
+--       R[10]=R[2]
+--       R[11]=R[8]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 11, 8, 0, 0)]）
+--   [0096] OP  98  A=10 B=11 C=0 flags=64
+--       R[10]=R[10](U(T,10+1,11))
+--   [0097] OP 327  A=9 B=8 C=10 flags=192
+--       do local I=R[8];local F=R[10];R[9][I]=F end
+--   [0098] OP 386  A=4 B=2 C=0 flags=192
+--       do local I,F=E(R[4](R[4+1],R[4+2]));for U=1,2 do R[4+2+U]=I[U] end;if R[4+3]==nil then PC=PC+1 else R[4+2]=R[4+3] end end
+--   [0099] OP 255  A=0 B=91 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=91
+--   [0100] OP 137  A=4 B='Builtsetting' C=None flags=146
+--       R[4]=ENV["Builtsetting"]
+--   [0101] OP 187  A=4 B=4 C=0 flags=192
+--       R[4](U(T,4+1,4))
+--   [0102] OP  19  A=4 B=4 C=0 flags=0
+--       R[4]={}
+--       R[5]={}
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(105, 5, 0, 2, 128)]）
+--   [0104] OP 146  A=5 B='slot' C=1.0 flags=112
+--       do local I="slot";local F=1.0;R[5][I]=F end
+--   [0105] OP  90  A=6 B=3 C=0 flags=128
+--       R[6]={}
+--       R[7]="永久回城石"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(61, 7, '永久回城石', None, 146)]）
+--   [0107] OP 282  A=8 B='盟重回城石' C=None flags=210
+--       R[8]="盟重回城石"
+--       R[9]="盟重传送石"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(346, 9, '盟重传送石', None, 18)]）
+--   [0109] OP 237  A=6 B=3 C=1 flags=64
+--       do local I=3;if I==0 then I=math.max(0,B-6) end;local F=R[6];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[6+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[6]=O else for O=1,I do F[L+O]=R[6+O] end end;end
+--   [0110] OP 355  A=5 B='names' C=6 flags=16
+--       do local I="names";local F=R[6];R[5][I]=F end
+--   [0111] OP 410  A=6 B=0 C=2 flags=128
+--       R[6]={}
+--   [0112] OP 146  A=6 B='slot' C=2.0 flags=112
+--       do local I="slot";local F=2.0;R[6][I]=F end
+--   [0113] OP 120  A=7 B=2 C=0 flags=0
+--       R[7]={}
+--   [0114] OP 282  A=8 B='永久随机石' C=None flags=146
+--       R[8]="永久随机石"
+--       R[9]="随机传送石"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 9, '随机传送石', None, 210)]）
+--   [0116] OP 402  A=7 B=2 C=1 flags=192
+--       do local I=2;if I==0 then I=math.max(0,B-7) end;local F=R[7];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[7+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[7]=O else for O=1,I do F[L+O]=R[7+O] end end;end
+--   [0117] OP 355  A=6 B='names' C=7 flags=16
+--       do local I="names";local F=R[7];R[6][I]=F end
+--   [0118] OP 410  A=7 B=0 C=2 flags=192
+--       R[7]={}
+--   [0119] OP 156  A=7 B='slot' C=3.0 flags=48
+--       do local I="slot";local F=3.0;R[7][I]=F end
+--   [0120] OP 410  A=8 B=1 C=0 flags=64
+--       R[8]={}
+--   [0121] OP 346  A=9 B='大陆传送石' C=None flags=146
+--       R[9]="大陆传送石"
+--   [0122] OP 153  A=8 B=1 C=1 flags=64
+--       do local I=1;if I==0 then I=math.max(0,B-8) end;local F=R[8];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[8+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[8]=O else for O=1,I do F[L+O]=R[8+O] end end;end
+--   [0123] OP 268  A=7 B='names' C=8 flags=16
+--       do local I="names";local F=R[8];R[7][I]=F end
+--   [0124] OP 120  A=8 B=0 C=2 flags=64
+--       R[8]={}
+--   [0125] OP 156  A=8 B='slot' C=4.0 flags=176
+--       do local I="slot";local F=4.0;R[8][I]=F end
+--   [0126] OP 120  A=9 B=1 C=0 flags=64
+--       R[9]={}
+--   [0127] OP 371  A=10 B='免战回城石' C=None flags=146
+--       R[10]="免战回城石"
+--   [0128] OP  88  A=9 B=1 C=1 flags=128
+--       do local I=1;if I==0 then I=math.max(0,B-9) end;local F=R[9];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[9+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[9]=O else for O=1,I do F[L+O]=R[9+O] end end;end
+--   [0129] OP 355  A=8 B='names' C=9 flags=80
+--       do local I="names";local F=R[9];R[8][I]=F end
+--   [0130] OP  88  A=4 B=4 C=1 flags=64
+--       do local I=4;if I==0 then I=math.max(0,B-4) end;local F=R[4];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[4+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[4]=O else for O=1,I do F[L+O]=R[4+O] end end;end
+--   [0131] OP  71  A=5 B='ipairs' C=None flags=210
+--       R[5]=ENV["ipairs"]
+--       R[6]=R[4]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 6, 4, 0, 0)]）
+--   [0133] OP 233  A=5 B=6 C=7 flags=192
+--       do local I={ R[5](U(T,5+1,6)) };local F=0;for U=5,7 do F=F+1;R[U]=I[F] end end
+--   [0134] OP 140  A=0 B=142 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=142
+--   [0135] OP 335  A=10 B='SL' C=None flags=146
+--       R[10]=ENV["SL"]
+--       local I=R[10];R[10+1]=I;R[10]=I["ScheduleOnce"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(121, 10, 10, 'ScheduleOnce', 160)]）
+--   [0137] OP 154  A=12 B=16 C=2 flags=64 ; 创建子原型 child[16]，捕获 2 个 upvalue
+--       R[12] = makeClosure(PROTO[16], captures={capture#0: R[9] (local register); capture#1: UP[0] (outer upvalue)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 9, 0, 192), (325, 0, 0, 0, 0)]）
+--   [0140] OP  24  A=13 B=8 C=0.1 flags=224
+--       R[13]=R[8]*0.1
+--   [0141] OP 187  A=10 B=13 C=0 flags=0
+--       R[10](U(T,10+1,13))
+--   [0142] OP 262  A=8 B=0 C=0 flags=128
+--       do local I=8;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end
+--   [0143] OP 339  A=5 B=2 C=0 flags=64
+--       do local I,F=E(R[5](R[5+1],R[5+2]));for U=1,2 do R[5+2+U]=I[U] end;if R[5+3]==nil then PC=PC+1 else R[5+2]=R[5+3] end end
+--   [0144] OP 140  A=0 B=134 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=134
+--   [0145] OP 234  A=5 B=5 C=0 flags=192
+--       for I=5,5 do R[I]=nil end
+--   [0146] OP 159  A=6 B=2 C=0 flags=192
+--       R[6]=UP[2]
+--       R[6]=R[6]["cruiseTimer"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(363, 6, 6, 'cruiseTimer', 224)]）
+--   [0148] OP  16  A=6 B=0 C=0 flags=64
+--       if (not not R[6])~=(0~=0) then PC=PC+1 end
+--   [0149] OP 140  A=0 B=156 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=156
+--   [0150] OP 335  A=6 B='SL' C=None flags=82
+--       R[6]=ENV["SL"]
+--       local I=R[6];R[6+1]=I;R[6]=I["UnSchedule"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(238, 6, 6, 'UnSchedule', 160)]）
+--   [0152] OP 130  A=8 B=2 C=0 flags=0
+--       R[8]=UP[2]
+--   [0153] OP 363  A=8 B=8 C='cruiseTimer' flags=224
+--       R[8]=R[8]["cruiseTimer"]
+--   [0154] OP 358  A=6 B=8 C=0 flags=128
+--       R[6](U(T,6+1,8))
+--   [0155] OP  89  A=6 B=2 C=0 flags=128
+--       R[6]=UP[2]
+--       do local I="cruiseTimer";local F=nil;R[6][I]=F end
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(146, 6, 'cruiseTimer', None, 176)]）
+--   [0157] OP 130  A=6 B=2 C=0 flags=128
+--       R[6]=UP[2]
+--   [0158] OP 335  A=7 B='SL' C=None flags=18
+--       R[7]=ENV["SL"]
+--       local I=R[7];R[7+1]=I;R[7]=I["Schedule"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(121, 7, 7, 'Schedule', 32)]）
+--   [0160] OP  27  A=9 B=12 C=3 flags=64 ; 创建子原型 child[12]，捕获 3 个 upvalue
+--       R[9] = makeClosure(PROTO[12], captures={capture#0: R[5] (local register); capture#1: UP[3] (outer upvalue); capture#2: UP[0] (outer upvalue)})
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(387, 0, 5, 0, 192), (325, 0, 3, 0, 0), (325, 0, 0, 0, 128)]）
+--   [0164] OP 346  A=10 B=1.0 C=None flags=18
+--       R[10]=1.0
+--   [0165] OP  98  A=7 B=10 C=0 flags=128
+--       R[7]=R[7](U(T,7+1,10))
+--   [0166] OP 268  A=6 B='cruiseTimer' C=7 flags=80
+--       do local I="cruiseTimer";local F=R[7];R[6][I]=F end
+--   [0167] OP 309  A=6 B='global' C=None flags=82
+--       R[6]=ENV["global"]
+--       R[6]=R[6]["Facade"]
+--       local I=R[6];R[6+1]=I;R[6]=I["retrieveProxy"]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(260, 6, 6, 'Facade', 32), (201, 6, 6, 'retrieveProxy', 32)]）
+--   [0170] OP 137  A=8 B='global' C=None flags=82
+--       R[8]=ENV["global"]
+--   [0171] OP  49  A=8 B=8 C='ProxyTable' flags=96
+--       R[8]=R[8]["ProxyTable"]
+--       R[8]=R[8]["NPCStorageProxy"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(53, 8, 8, 'NPCStorageProxy', 160)]）
+--   [0173] OP  98  A=6 B=8 C=0 flags=192
+--       R[6]=R[6](U(T,6+1,8))
+--   [0174] OP 182  A=6 B='NPCStorageProxy' C=None flags=18
+--       ENV["NPCStorageProxy"]=R[6]
+--   [0175] OP 137  A=6 B='NPCStorageProxy' C=None flags=18
+--       R[6]=ENV["NPCStorageProxy"]
+--   [0176] OP  16  A=6 B=0 C=0 flags=128
+--       if (not not R[6])~=(0~=0) then PC=PC+1 end
+--   [0177] OP 255  A=0 B=180 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=180
+--   [0178] OP 335  A=6 B='NPCStorageProxy' C=None flags=18
+--       R[6]=ENV["NPCStorageProxy"]
+--       local I=R[6];R[6+1]=I;R[6]=I["RequestStorageData"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(33, 6, 6, 'RequestStorageData', 224)]）
+--   [0180] OP 358  A=6 B=7 C=0 flags=192
+--       R[6](U(T,6+1,7))
+--   [0181] OP 335  A=6 B='GUI' C=None flags=18
+--       R[6]=ENV["GUI"]
+--       local I=R[6];R[6+1]=I;R[6]=I["Attach_UITop"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(33, 6, 6, 'Attach_UITop', 224)]）
+--   [0183] OP  68  A=6 B=7 C=0 flags=0
+--       R[6]=R[6](U(T,6+1,7))
+--   [0184] OP 137  A=7 B='MainProperty' C=None flags=18
+--       R[7]=ENV["MainProperty"]
+--   [0185] OP  49  A=7 B=7 C='_ui' flags=32
+--       R[7]=R[7]["_ui"]
+--       R[7]=R[7]["Panel_mini_chat"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(270, 7, 7, 'Panel_mini_chat', 32)]）
+--   [0187] OP 121  A=8 B=7 C='getWorldPosition' flags=96
+--       local I=R[7];R[8+1]=I;R[8]=I["getWorldPosition"]
+--   [0188] OP  98  A=8 B=9 C=0 flags=128
+--       R[8]=R[8](U(T,8+1,9))
+--   [0189] OP 238  A=9 B=7 C='getContentSize' flags=224
+--       local I=R[7];R[9+1]=I;R[9]=I["getContentSize"]
+--   [0190] OP  98  A=9 B=10 C=0 flags=0
+--       R[9]=R[9](U(T,9+1,10))
+--   [0191] OP  49  A=10 B=8 C='x' flags=32
+--       R[10]=R[8]["x"]
+--       R[11]=R[9]["width"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(375, 11, 9, 'width', 160)]）
+--   [0193] OP 189  A=10 B=10 C=11 flags=0
+--       R[10]=R[10]+R[11]
+--   [0194] OP 363  A=11 B=8 C='y' flags=224
+--       R[11]=R[8]["y"]
+--   [0195] OP  19  A=12 B=4 C=0 flags=64
+--       R[12]={}
+--       R[13]={}
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(410, 13, 0, 3, 192)]）
+--   [0197] OP 156  A=13 B='key' C='yinguaibut' flags=176
+--       do local I="key";local F="yinguaibut";R[13][I]=F end
+--   [0198] OP 146  A=13 B='name' C='开拉怪' flags=176
+--       do local I="name";local F="开拉怪";R[13][I]=F end
+--   [0199] OP 146  A=13 B='toggle' C='关拉怪' flags=240
+--       do local I="toggle";local F="关拉怪";R[13][I]=F end
+--   [0200] OP 120  A=14 B=0 C=3 flags=192
+--       R[14]={}
+--   [0201] OP 156  A=14 B='key' C='blacklistbut' flags=240
+--       do local I="key";local F="blacklistbut";R[14][I]=F end
+--   [0202] OP 156  A=14 B='name' C='开黑名单' flags=48
+--       do local I="name";local F="开黑名单";R[14][I]=F end
+--   [0203] OP 146  A=14 B='toggle' C='关黑名单' flags=240
+--       do local I="toggle";local F="关黑名单";R[14][I]=F end
+--   [0204] OP 410  A=15 B=0 C=2 flags=128
+--       R[15]={}
+--   [0205] OP 156  A=15 B='key' C='clearblacklistbut' flags=112
+--       do local I="key";local F="clearblacklistbut";R[15][I]=F end
+--   [0206] OP 146  A=15 B='name' C='清黑名单' flags=240
+--       do local I="name";local F="清黑名单";R[15][I]=F end
+--   [0207] OP 105  A=16 B=0 C=2 flags=64
+--       R[16]={}
+--   [0208] OP 146  A=16 B='key' C='moneybut' flags=112
+--       do local I="key";local F="moneybut";R[16][I]=F end
+--   [0209] OP 146  A=16 B='name' C='资源统计' flags=240
+--       do local I="name";local F="资源统计";R[16][I]=F end
+--   [0210] OP 153  A=12 B=4 C=1 flags=128
+--       do local I=4;if I==0 then I=math.max(0,B-12) end;local F=R[12];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[12+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[12]=O else for O=1,I do F[L+O]=R[12+O] end end;end
+--   [0211] OP 105  A=13 B=3 C=0 flags=64
+--       R[13]={}
+--   [0212] OP 120  A=14 B=0 C=3 flags=0
+--       R[14]={}
+--   [0213] OP 156  A=14 B='key' C='shiqubut' flags=48
+--       do local I="key";local F="shiqubut";R[14][I]=F end
+--   [0214] OP 146  A=14 B='name' C='开拾取' flags=112
+--       do local I="name";local F="开拾取";R[14][I]=F end
+--   [0215] OP 146  A=14 B='toggle' C='关拾取' flags=240
+--       do local I="toggle";local F="关拾取";R[14][I]=F end
+--   [0216] OP 105  A=15 B=0 C=3 flags=0
+--       R[15]={}
+--   [0217] OP 156  A=15 B='key' C='diuqibut' flags=48
+--       do local I="key";local F="diuqibut";R[15][I]=F end
+--   [0218] OP 156  A=15 B='name' C='开丢物品' flags=112
+--       do local I="name";local F="开丢物品";R[15][I]=F end
+--   [0219] OP 146  A=15 B='toggle' C='关丢物品' flags=48
+--       do local I="toggle";local F="关丢物品";R[15][I]=F end
+--   [0220] OP 410  A=16 B=0 C=2 flags=0
+--       R[16]={}
+--   [0221] OP 156  A=16 B='key' C='xiaotuibut' flags=48
+--       do local I="key";local F="xiaotuibut";R[16][I]=F end
+--   [0222] OP 156  A=16 B='name' C='快速小退' flags=48
+--       do local I="name";local F="快速小退";R[16][I]=F end
+--   [0223] OP  88  A=13 B=3 C=1 flags=64
+--       do local I=3;if I==0 then I=math.max(0,B-13) end;local F=R[13];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[13+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[13]=O else for O=1,I do F[L+O]=R[13+O] end end;end
+--   [0224] OP 410  A=14 B=3 C=0 flags=64
+--       R[14]={}
+--   [0225] OP 105  A=15 B=0 C=2 flags=192
+--       R[15]={}
+--   [0226] OP 146  A=15 B='key' C='clearmonsterbut' flags=112
+--       do local I="key";local F="clearmonsterbut";R[15][I]=F end
+--   [0227] OP 156  A=15 B='name' C='清怪物值' flags=112
+--       do local I="name";local F="清怪物值";R[15][I]=F end
+--   [0228] OP 105  A=16 B=0 C=2 flags=128
+--       R[16]={}
+--   [0229] OP 146  A=16 B='key' C='cleardistancebut' flags=112
+--       do local I="key";local F="cleardistancebut";R[16][I]=F end
+--   [0230] OP 156  A=16 B='name' C='清距离值' flags=48
+--       do local I="name";local F="清距离值";R[16][I]=F end
+--   [0231] OP 105  A=17 B=0 C=3 flags=64
+--       R[17]={}
+--   [0232] OP 146  A=17 B='key' C='rewardbut' flags=176
+--       do local I="key";local F="rewardbut";R[17][I]=F end
+--   [0233] OP 146  A=17 B='name' C='开奖励' flags=48
+--       do local I="name";local F="开奖励";R[17][I]=F end
+--   [0234] OP 156  A=17 B='toggle' C='关奖励' flags=48
+--       do local I="toggle";local F="关奖励";R[17][I]=F end
+--   [0235] OP  88  A=14 B=3 C=1 flags=64
+--       do local I=3;if I==0 then I=math.max(0,B-14) end;local F=R[14];local L=(1-1)*50;if L==0 then local N={};for O=1,I do N[O]=R[14+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[14]=O else for O=1,I do F[L+O]=R[14+O] end end;end
+--   [0236] OP  27  A=15 B=5 C=2 flags=0 ; 创建子原型 child[5]，捕获 2 个 upvalue
+--       R[15] = makeClosure(PROTO[5], captures={capture#0: R[12] (local register); capture#1: UP[4] (outer upvalue)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(387, 0, 12, 0, 128), (325, 0, 4, 0, 192)]）
+--   [0239] OP 154  A=16 B=17 C=5 flags=192 ; 创建子原型 child[17]，捕获 5 个 upvalue
+--       R[16] = makeClosure(PROTO[17], captures={capture#0: UP[5] (outer upvalue); capture#1: UP[6] (outer upvalue); capture#2: UP[2] (outer upvalue); capture#3: UP[7] (outer upvalue); capture#4: UP[0] (outer upvalue)})
+--       （该融合指令内部消费后续 5 条记录；原始记录=[(325, 0, 5, 0, 192), (325, 0, 6, 0, 0), (325, 0, 2, 0, 128), (325, 0, 7, 0, 128), (325, 0, 0, 0, 64)]）
+--   [0245] OP 154  A=17 B=7 C=2 flags=128 ; 创建子原型 child[7]，捕获 2 个 upvalue
+--       R[17] = makeClosure(PROTO[7], captures={capture#0: UP[8] (outer upvalue); capture#1: UP[9] (outer upvalue)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(325, 0, 8, 0, 0), (325, 0, 9, 0, 64)]）
+--   [0248] OP 154  A=18 B=22 C=1 flags=128 ; 创建子原型 child[22]，捕获 1 个 upvalue
+--       R[18] = makeClosure(PROTO[22], captures={capture#0: UP[0] (outer upvalue)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(325, 0, 0, 0, 64)]）
+--   [0250] OP  27  A=19 B=11 C=8 flags=192 ; 创建子原型 child[11]，捕获 8 个 upvalue
+--       R[19] = makeClosure(PROTO[11], captures={capture#0: R[18] (local register); capture#1: UP[10] (outer upvalue); capture#2: UP[11] (outer upvalue); capture#3: UP[0] (outer upvalue); capture#4: UP[12] (outer upvalue); capture#5: UP[13] (outer upvalue); capture#6: R[16] (local register); capture#7: R[15] (local register)})
+--       （该融合指令内部消费后续 8 条记录；原始记录=[(387, 0, 18, 0, 192), (325, 0, 10, 0, 192), (325, 0, 11, 0, 128), (325, 0, 0, 0, 0), (325, 0, 12, 0, 192), (325, 0, 13, 0, 64), (387, 0, 16, 0, 128), (387, 0, 15, 0, 128)]）
+--   [0259] OP  27  A=20 B=14 C=8 flags=192 ; 创建子原型 child[14]，捕获 8 个 upvalue
+--       R[20] = makeClosure(PROTO[14], captures={capture#0: R[18] (local register); capture#1: UP[14] (outer upvalue); capture#2: UP[11] (outer upvalue); capture#3: UP[0] (outer upvalue); capture#4: UP[12] (outer upvalue); capture#5: UP[15] (outer upvalue); capture#6: R[17] (local register); capture#7: R[15] (local register)})
+--       （该融合指令内部消费后续 8 条记录；原始记录=[(387, 0, 18, 0, 0), (325, 0, 14, 0, 0), (325, 0, 11, 0, 128), (325, 0, 0, 0, 128), (325, 0, 12, 0, 128), (325, 0, 15, 0, 128), (387, 0, 17, 0, 192), (387, 0, 15, 0, 0)]）
+--   [0268] OP 120  A=21 B=0 C=12 flags=128
+--       R[21]={}
+--   [0269] OP 154  A=22 B=6 C=6 flags=0 ; 创建子原型 child[6]，捕获 6 个 upvalue
+--       R[22] = makeClosure(PROTO[6], captures={capture#0: UP[2] (outer upvalue); capture#1: UP[11] (outer upvalue); capture#2: UP[9] (outer upvalue); capture#3: UP[0] (outer upvalue); capture#4: R[20] (local register); capture#5: R[17] (local register)})
+--       （该融合指令内部消费后续 6 条记录；原始记录=[(325, 0, 2, 0, 128), (325, 0, 11, 0, 64), (325, 0, 9, 0, 128), (325, 0, 0, 0, 192), (387, 0, 20, 0, 64), (387, 0, 17, 0, 64)]）
+--   [0276] OP 268  A=21 B='yinguaibut' C=22 flags=144
+--       do local I="yinguaibut";local F=R[22];R[21][I]=F end
+--   [0277] OP 154  A=22 B=2 C=4 flags=64 ; 创建子原型 child[2]，捕获 4 个 upvalue
+--       R[22] = makeClosure(PROTO[2], captures={capture#0: UP[16] (outer upvalue); capture#1: UP[15] (outer upvalue); capture#2: UP[11] (outer upvalue); capture#3: UP[0] (outer upvalue)})
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(325, 0, 16, 0, 64), (325, 0, 15, 0, 64), (325, 0, 11, 0, 192), (325, 0, 0, 0, 128)]）
+--   [0282] OP 268  A=21 B='clearmonsterbut' C=22 flags=80
+--       do local I="clearmonsterbut";local F=R[22];R[21][I]=F end
+--   [0283] OP  27  A=22 B=20 C=4 flags=192 ; 创建子原型 child[20]，捕获 4 个 upvalue
+--       R[22] = makeClosure(PROTO[20], captures={capture#0: UP[16] (outer upvalue); capture#1: UP[13] (outer upvalue); capture#2: UP[11] (outer upvalue); capture#3: UP[0] (outer upvalue)})
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(325, 0, 16, 0, 64), (325, 0, 13, 0, 64), (325, 0, 11, 0, 128), (325, 0, 0, 0, 192)]）
+--   [0288] OP 268  A=21 B='cleardistancebut' C=22 flags=16
+--       do local I="cleardistancebut";local F=R[22];R[21][I]=F end
+--   [0289] OP  27  A=22 B=1 C=5 flags=0 ; 创建子原型 child[1]，捕获 5 个 upvalue
+--       R[22] = makeClosure(PROTO[1], captures={capture#0: UP[2] (outer upvalue); capture#1: UP[0] (outer upvalue); capture#2: UP[17] (outer upvalue); capture#3: UP[18] (outer upvalue); capture#4: UP[19] (outer upvalue)})
+--       （该融合指令内部消费后续 5 条记录；原始记录=[(325, 0, 2, 0, 64), (325, 0, 0, 0, 64), (325, 0, 17, 0, 128), (325, 0, 18, 0, 64), (325, 0, 19, 0, 64)]）
+--   [0295] OP 355  A=21 B='rewardbut' C=22 flags=16
+--       do local I="rewardbut";local F=R[22];R[21][I]=F end
+--   [0296] OP  27  A=22 B=13 C=1 flags=0 ; 创建子原型 child[13]，捕获 1 个 upvalue
+--       R[22] = makeClosure(PROTO[13], captures={capture#0: UP[0] (outer upvalue)})
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(325, 0, 0, 0, 0)]）
+--   [0298] OP 268  A=21 B='clearblacklistbut' C=22 flags=208
+--       do local I="clearblacklistbut";local F=R[22];R[21][I]=F end
+--   [0299] OP  27  A=22 B=18 C=6 flags=128 ; 创建子原型 child[18]，捕获 6 个 upvalue
+--       R[22] = makeClosure(PROTO[18], captures={capture#0: UP[2] (outer upvalue); capture#1: UP[0] (outer upvalue); capture#2: UP[1] (outer upvalue); capture#3: UP[6] (outer upvalue); capture#4: R[19] (local register); capture#5: R[16] (local register)})
+--       （该融合指令内部消费后续 6 条记录；原始记录=[(325, 0, 2, 0, 64), (325, 0, 0, 0, 128), (325, 0, 1, 0, 128), (325, 0, 6, 0, 64), (387, 0, 19, 0, 192), (387, 0, 16, 0, 64)]）
+--   [0306] OP 268  A=21 B='blacklistbut' C=22 flags=208
+--       do local I="blacklistbut";local F=R[22];R[21][I]=F end
+--   [0307] OP  27  A=22 B=8 C=4 flags=0 ; 创建子原型 child[8]，捕获 4 个 upvalue
+--       R[22] = makeClosure(PROTO[8], captures={capture#0: UP[2] (outer upvalue); capture#1: UP[0] (outer upvalue); capture#2: UP[1] (outer upvalue); capture#3: UP[7] (outer upvalue)})
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(325, 0, 2, 0, 128), (325, 0, 0, 0, 0), (325, 0, 1, 0, 128), (325, 0, 7, 0, 64)]）
+--   [0312] OP 355  A=21 B='storagebut' C=22 flags=80
+--       do local I="storagebut";local F=R[22];R[21][I]=F end
+--   [0313] OP  27  A=22 B=19 C=4 flags=192 ; 创建子原型 child[19]，捕获 4 个 upvalue
+--       R[22] = makeClosure(PROTO[19], captures={capture#0: UP[2] (outer upvalue); capture#1: UP[0] (outer upvalue); capture#2: UP[1] (outer upvalue); capture#3: UP[7] (outer upvalue)})
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(325, 0, 2, 0, 64), (325, 0, 0, 0, 64), (325, 0, 1, 0, 64), (325, 0, 7, 0, 128)]）
+--   [0318] OP 268  A=21 B='takebut' C=22 flags=208
+--       do local I="takebut";local F=R[22];R[21][I]=F end
+--   [0319] OP 154  A=22 B=10 C=3 flags=192 ; 创建子原型 child[10]，捕获 3 个 upvalue
+--       R[22] = makeClosure(PROTO[10], captures={capture#0: UP[2] (outer upvalue); capture#1: UP[0] (outer upvalue); capture#2: UP[7] (outer upvalue)})
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(325, 0, 2, 0, 0), (325, 0, 0, 0, 128), (325, 0, 7, 0, 128)]）
+--   [0323] OP 268  A=21 B='shiqubut' C=22 flags=80
+--       do local I="shiqubut";local F=R[22];R[21][I]=F end
+--   [0324] OP  27  A=22 B=21 C=4 flags=192 ; 创建子原型 child[21]，捕获 4 个 upvalue
+--       R[22] = makeClosure(PROTO[21], captures={capture#0: UP[2] (outer upvalue); capture#1: UP[0] (outer upvalue); capture#2: UP[1] (outer upvalue); capture#3: UP[7] (outer upvalue)})
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(325, 0, 2, 0, 192), (325, 0, 0, 0, 0), (325, 0, 1, 0, 192), (325, 0, 7, 0, 64)]）
+--   [0329] OP 355  A=21 B='diuqibut' C=22 flags=208
+--       do local I="diuqibut";local F=R[22];R[21][I]=F end
+--   [0330] OP 154  A=22 B=3 C=4 flags=192 ; 创建子原型 child[3]，捕获 4 个 upvalue
+--       R[22] = makeClosure(PROTO[3], captures={capture#0: UP[3] (outer upvalue); capture#1: UP[0] (outer upvalue); capture#2: UP[2] (outer upvalue); capture#3: UP[1] (outer upvalue)})
+--       （该融合指令内部消费后续 4 条记录；原始记录=[(325, 0, 3, 0, 192), (325, 0, 0, 0, 192), (325, 0, 2, 0, 64), (325, 0, 1, 0, 192)]）
+--   [0335] OP 355  A=21 B='moneybut' C=22 flags=208
+--       do local I="moneybut";local F=R[22];R[21][I]=F end
+--   [0336] OP 154  A=22 B=4 C=0 flags=128 ; 创建子原型 child[4]，捕获 0 个 upvalue
+--       R[22] = makeClosure(PROTO[4], captures={})
+--   [0337] OP 268  A=21 B='xiaotuibut' C=22 flags=144
+--       do local I="xiaotuibut";local F=R[22];R[21][I]=F end
+--   [0338] OP 347  A=22 B=10 C=10.0 flags=160
+--       R[22]=R[10]-10.0
+--   [0339] OP 124  A=23 B=11 C=1.0 flags=224
+--       R[23]=R[11]+1.0
+--   [0340] OP  27  A=24 B=9 C=5 flags=128 ; 创建子原型 child[9]，捕获 5 个 upvalue
+--       R[24] = makeClosure(PROTO[9], captures={capture#0: R[6] (local register); capture#1: R[22] (local register); capture#2: R[23] (local register); capture#3: UP[4] (outer upvalue); capture#4: R[21] (local register)})
+--       （该融合指令内部消费后续 5 条记录；原始记录=[(387, 0, 6, 0, 0), (387, 0, 22, 0, 0), (387, 0, 23, 0, 0), (325, 0, 4, 0, 192), (387, 0, 21, 0, 128)]）
+--   [0346] OP  71  A=25 B='ipairs' C=None flags=210
+--       R[25]=ENV["ipairs"]
+--       R[26]=R[12]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 26, 12, 0, 64)]）
+--   [0348] OP 183  A=25 B=26 C=27 flags=64
+--       do local I={ R[25](U(T,25+1,26)) };local F=0;for U=25,27 do F=F+1;R[U]=I[F] end end
+--   [0349] OP 215  A=0 B=354 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=354
+--   [0350] OP 385  A=30 B=24 C=0 flags=64
+--       R[30]=R[24]
+--       R[31]=R[29]
+--       R[32]=R[28]
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(78, 31, 29, 0, 64), (288, 32, 28, 0, 192)]）
+--   [0353] OP 346  A=33 B=40.0 C=None flags=18
+--       R[33]=40.0
+--   [0354] OP 187  A=30 B=33 C=0 flags=0
+--       R[30](U(T,30+1,33))
+--   [0355] OP 339  A=25 B=2 C=0 flags=128
+--       do local I,F=E(R[25](R[25+1],R[25+2]));for U=1,2 do R[25+2+U]=I[U] end;if R[25+3]==nil then PC=PC+1 else R[25+2]=R[25+3] end end
+--   [0356] OP 255  A=0 B=349 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=349
+--   [0357] OP  71  A=25 B='ipairs' C=None flags=18
+--       R[25]=ENV["ipairs"]
+--       R[26]=R[13]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(184, 26, 13, 0, 192)]）
+--   [0359] OP 183  A=25 B=26 C=27 flags=192
+--       do local I={ R[25](U(T,25+1,26)) };local F=0;for U=25,27 do F=F+1;R[U]=I[F] end end
+--   [0360] OP 215  A=0 B=365 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=365
+--   [0361] OP 308  A=30 B=24 C=0 flags=192
+--       R[30]=R[24]
+--   [0362] OP  78  A=31 B=29 C=0 flags=0
+--       R[31]=R[29]
+--       R[32]=R[28]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 32, 28, 0, 128)]）
+--   [0364] OP 371  A=33 B=0 C=None flags=146
+--       R[33]=0
+--   [0365] OP 358  A=30 B=33 C=0 flags=64
+--       R[30](U(T,30+1,33))
+--   [0366] OP 117  A=25 B=2 C=0 flags=64
+--       do local I,F=E(R[25](R[25+1],R[25+2]));for U=1,2 do R[25+2+U]=I[U] end;if R[25+3]==nil then PC=PC+1 else R[25+2]=R[25+3] end end
+--   [0367] OP 255  A=0 B=360 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=360
+--   [0368] OP  71  A=25 B='ipairs' C=None flags=82
+--       R[25]=ENV["ipairs"]
+--       R[26]=R[14]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(308, 26, 14, 0, 0)]）
+--   [0370] OP 359  A=25 B=26 C=27 flags=0
+--       do local I={ R[25](U(T,25+1,26)) };local F=0;for U=25,27 do F=F+1;R[U]=I[F] end end
+--   [0371] OP 140  A=0 B=376 C=None flags=2
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=376
+--   [0372] OP 184  A=30 B=24 C=0 flags=128
+--       R[30]=R[24]
+--   [0373] OP  78  A=31 B=29 C=0 flags=192
+--       R[31]=R[29]
+--       R[32]=R[28]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(288, 32, 28, 0, 192)]）
+--   [0375] OP 371  A=33 B=80.0 C=None flags=82
+--       R[33]=80.0
+--   [0376] OP 187  A=30 B=33 C=0 flags=128
+--       R[30](U(T,30+1,33))
+--   [0377] OP 386  A=25 B=2 C=0 flags=192
+--       do local I,F=E(R[25](R[25+1],R[25+2]));for U=1,2 do R[25+2+U]=I[U] end;if R[25+3]==nil then PC=PC+1 else R[25+2]=R[25+3] end end
+--   [0378] OP 140  A=0 B=371 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=371
+--   [0379] OP 130  A=25 B=3 C=0 flags=0
+--       R[25]=UP[3]
+--   [0380] OP 287  A=26 B='GUI' C=None flags=18
+--       R[26]=ENV["GUI"]
+--       local I=R[26];R[26+1]=I;R[26]=I["Button_Create"]
+--       R[28]=R[6]
+--       R[29]="hidebut"
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(238, 26, 26, 'Button_Create', 32), (323, 28, 6, 0, 192), (226, 29, 'hidebut', None, 210)]）
+--   [0384] OP  61  A=30 B=0 C=None flags=82
+--       R[30]=0
+--       R[31]=0
+--       R[32]="res/public/fuzhu_btn.png"
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(282, 31, 0, None, 210), (371, 32, 'res/public/fuzhu_btn.png', None, 18)]）
+--   [0387] OP  68  A=26 B=32 C=0 flags=64
+--       R[26]=R[26](U(T,26+1,32))
+--   [0388] OP 268  A=25 B='hidebut' C=26 flags=80
+--       do local I="hidebut";local F=R[26];R[25][I]=F end
+--   [0389] OP 159  A=25 B=3 C=0 flags=128
+--       R[25]=UP[3]
+--       R[25]=R[25]["hidebut"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(375, 25, 25, 'hidebut', 32)]）
+--   [0391] OP  16  A=25 B=0 C=0 flags=0
+--       if (not not R[25])~=(0~=0) then PC=PC+1 end
+--   [0392] OP 215  A=0 B=410 C=None flags=194
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=410
+--   [0393] OP 335  A=25 B='GUI' C=None flags=210
+--       R[25]=ENV["GUI"]
+--       local I=R[25];R[25+1]=I;R[25]=I["Button_setTitleText"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(33, 25, 25, 'Button_setTitleText', 96)]）
+--   [0395] OP 159  A=27 B=3 C=0 flags=64
+--       R[27]=UP[3]
+--       R[27]=R[27]["hidebut"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(363, 27, 27, 'hidebut', 32)]）
+--   [0397] OP 346  A=28 B='隐 藏' C=None flags=146
+--       R[28]="隐 藏"
+--   [0398] OP 187  A=25 B=28 C=0 flags=128
+--       R[25](U(T,25+1,28))
+--   [0399] OP 335  A=25 B='GUI' C=None flags=210
+--       R[25]=ENV["GUI"]
+--       local I=R[25];R[25+1]=I;R[25]=I["Button_setTitleFontSize"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(33, 25, 25, 'Button_setTitleFontSize', 96)]）
+--   [0401] OP 159  A=27 B=3 C=0 flags=128
+--       R[27]=UP[3]
+--       R[27]=R[27]["hidebut"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(32, 27, 27, 'hidebut', 224)]）
+--   [0403] OP 371  A=28 B=18.0 C=None flags=210
+--       R[28]=18.0
+--   [0404] OP 358  A=25 B=28 C=0 flags=192
+--       R[25](U(T,25+1,28))
+--   [0405] OP 137  A=25 B='GUI' C=None flags=146
+--       R[25]=ENV["GUI"]
+--   [0406] OP  33  A=25 B=25 C='Button_setTitleFontName' flags=32
+--       local I=R[25];R[25+1]=I;R[25]=I["Button_setTitleFontName"]
+--   [0407] OP 130  A=27 B=3 C=0 flags=0
+--       R[27]=UP[3]
+--   [0408] OP 363  A=27 B=27 C='hidebut' flags=32
+--       R[27]=R[27]["hidebut"]
+--   [0409] OP 346  A=28 B='res/public/kaiti2.ttf' C=None flags=210
+--       R[28]="res/public/kaiti2.ttf"
+--   [0410] OP 358  A=25 B=28 C=0 flags=192
+--       R[25](U(T,25+1,28))
+--   [0411] OP 335  A=25 B='GUI' C=None flags=210
+--       R[25]=ENV["GUI"]
+--       local I=R[25];R[25+1]=I;R[25]=I["addOnClickEvent"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(238, 25, 25, 'addOnClickEvent', 160)]）
+--   [0413] OP 130  A=27 B=3 C=0 flags=0
+--       R[27]=UP[3]
+--   [0414] OP  32  A=27 B=27 C='hidebut' flags=96
+--       R[27]=R[27]["hidebut"]
+--   [0415] OP 154  A=28 B=15 C=2 flags=64 ; 创建子原型 child[15]，捕获 2 个 upvalue
+--       R[28] = makeClosure(PROTO[15], captures={capture#0: UP[3] (outer upvalue); capture#1: UP[0] (outer upvalue)})
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(325, 0, 3, 0, 0), (325, 0, 0, 0, 0)]）
+--   [0418] OP 187  A=25 B=28 C=0 flags=128
+--       R[25](U(T,25+1,28))
+--   [0419] OP 250  A=0 B=0 C=0 flags=192
+--       return
+
+-- ============================================================================
+-- PROTO_053 Nested_find | path=root.42.0 | parent=PROTO_052 / child[0]
+-- 参数=1 | 常量=12 | 指令=46 | 子原型=0
+-- 字符串线索：find | Name | GetMetaValue | BAG_DATA | string | MakeIndex | ITEM_IS_BIND | SL | pairs | OverLap
+-- 常量池：
+--   K[0] = 'find'
+--   K[1] = 'Name'
+--   K[2] = 'GetMetaValue'
+--   K[3] = 1.0
+--   K[4] = 'BAG_DATA'
+--   K[5] = 'string'
+--   K[6] = 'MakeIndex'
+--   K[7] = 'ITEM_IS_BIND'
+--   K[8] = 'SL'
+--   K[9] = 'pairs'
+--   K[10] = 'OverLap'
+--   K[11] = 0
+-- 指令：
+--   [0001] OP 380  A=1 B='SL' C=None flags=146
+--       R[1]=ENV["SL"]
+--       local I=R[1];R[1+1]=I;R[1]=I["GetMetaValue"]
+--       R[3]="BAG_DATA"
+--       （该融合指令内部消费后续 2 条记录；原始记录=[(238, 1, 1, 'GetMetaValue', 32), (371, 3, 'BAG_DATA', None, 146)]）
+--   [0004] OP  98  A=1 B=3 C=0 flags=128
+--       R[1]=R[1](U(T,1+1,3))
+--   [0005] OP 342  A=1 B=0 C=1 flags=192
+--       if (not not R[1])~=(1~=0) then PC=PC+1 end
+--   [0006] OP 255  A=0 B=8 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=8
+--   [0007] OP 346  A=2 B=0 C=None flags=210
+--       R[2]=0
+--   [0008] OP 220  A=2 B=2 C=0 flags=0
+--       return U(T,2,2)
+--   [0009] OP 346  A=2 B=0 C=None flags=18
+--       R[2]=0
+--   [0010] OP 137  A=3 B='pairs' C=None flags=210
+--       R[3]=ENV["pairs"]
+--   [0011] OP 184  A=4 B=1 C=0 flags=128
+--       R[4]=R[1]
+--   [0012] OP 233  A=3 B=4 C=5 flags=128
+--       do local I={ R[3](U(T,3+1,4)) };local F=0;for U=3,5 do F=F+1;R[U]=I[F] end end
+--   [0013] OP 215  A=0 B=42 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=42
+--   [0014] OP  16  A=7 B=0 C=0 flags=192
+--       if (not not R[7])~=(0~=0) then PC=PC+1 end
+--   [0015] OP 255  A=0 B=42 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=42
+--   [0016] OP 363  A=8 B=7 C='Name' flags=224
+--       R[8]=R[7]["Name"]
+--   [0017] OP  16  A=8 B=0 C=0 flags=128
+--       if (not not R[8])~=(0~=0) then PC=PC+1 end
+--   [0018] OP 140  A=0 B=42 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=42
+--   [0019] OP  53  A=8 B=7 C='MakeIndex' flags=32
+--       R[8]=R[7]["MakeIndex"]
+--   [0020] OP  16  A=8 B=0 C=0 flags=0
+--       if (not not R[8])~=(0~=0) then PC=PC+1 end
+--   [0021] OP 140  A=0 B=42 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=42
+--   [0022] OP 296  A=8 B='string' C=None flags=18
+--       R[8]=ENV["string"]
+--       R[8]=R[8]["find"]
+--       R[9]=R[7]["Name"]
+--       R[10]=R[0]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(389, 8, 8, 'find', 96), (176, 9, 7, 'Name', 32), (288, 10, 0, 0, 64)]）
+--   [0026] OP 371  A=11 B=1.0 C=None flags=82
+--       R[11]=1.0
+--   [0027] OP 401  A=12 B=1 C=0 flags=192
+--       R[12]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0028] OP  98  A=8 B=12 C=0 flags=0
+--       R[8]=R[8](U(T,8+1,12))
+--   [0029] OP  16  A=8 B=0 C=0 flags=192
+--       if (not not R[8])~=(0~=0) then PC=PC+1 end
+--   [0030] OP 140  A=0 B=42 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=42
+--   [0031] OP 191  A=8 B='SL' C=None flags=210
+--       R[8]=ENV["SL"]
+--       local I=R[8];R[8+1]=I;R[8]=I["GetMetaValue"]
+--       R[10]="ITEM_IS_BIND"
+--       R[11]=R[7]
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(186, 8, 8, 'GetMetaValue', 32), (286, 10, 'ITEM_IS_BIND', None, 210), (184, 11, 7, 0, 192)]）
+--   [0035] OP  98  A=8 B=11 C=0 flags=64
+--       R[8]=R[8](U(T,8+1,11))
+--   [0036] OP 342  A=8 B=0 C=1 flags=128
+--       if (not not R[8])~=(1~=0) then PC=PC+1 end
+--   [0037] OP 140  A=0 B=42 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=42
+--   [0038] OP 363  A=9 B=7 C='OverLap' flags=32
+--       R[9]=R[7]["OverLap"]
+--   [0039] OP 342  A=9 B=0 C=1 flags=64
+--       if (not not R[9])~=(1~=0) then PC=PC+1 end
+--   [0040] OP 140  A=0 B=41 C=None flags=130
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=41
+--   [0041] OP 346  A=9 B=1.0 C=None flags=210
+--       R[9]=1.0
+--   [0042] OP 189  A=2 B=2 C=9 flags=128
+--       R[2]=R[2]+R[9]
+--   [0043] OP 386  A=3 B=2 C=0 flags=192
+--       do local I,F=E(R[3](R[3+1],R[3+2]));for U=1,2 do R[3+2+U]=I[U] end;if R[3+3]==nil then PC=PC+1 else R[3+2]=R[3+3] end end
+--   [0044] OP 255  A=0 B=13 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=13
+--   [0045] OP 220  A=2 B=2 C=0 flags=64
+--       return U(T,2,2)
+--   [0046] OP 250  A=0 B=0 C=0 flags=0
+--       return
+
+-- ============================================================================
+-- PROTO_054 Nested_SL_2 | path=root.42.1 | parent=PROTO_052 / child[1]
+-- 参数=0 | 常量=8 | 指令=33 | 子原型=1
+-- 字符串线索：SL | 开启奖励功能 | UnSchedule | rewardTimer | Schedule | 关闭奖励功能
+-- 常量池：
+--   K[0] = 'SL'
+--   K[1] = None
+--   K[2] = '开启奖励功能'
+--   K[3] = 'UnSchedule'
+--   K[4] = 'rewardTimer'
+--   K[5] = 'Schedule'
+--   K[6] = 0
+--   K[7] = '关闭奖励功能'
+-- 指令：
+--   [0001] OP 159  A=0 B=0 C=0 flags=0
+--       R[0]=UP[0]
+--       R[0]=R[0]["rewardTimer"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(375, 0, 0, 'rewardTimer', 32)]）
+--   [0003] OP  16  A=0 B=0 C=0 flags=128
+--       if (not not R[0])~=(0~=0) then PC=PC+1 end
+--   [0004] OP 215  A=0 B=16 C=None flags=66
+--       if 0>0 then do local I=0-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;PC=16
+--   [0005] OP 134  A=0 B=1 C=0 flags=128
+--       R[0]=UP[1]
+--       R[1]="关闭奖励功能"
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(371, 1, '关闭奖励功能', None, 18)]）
+--   [0007] OP 187  A=0 B=1 C=0 flags=128
+--       R[0](U(T,0+1,1))
+--   [0008] OP 137  A=0 B='SL' C=None flags=82
+--       R[0]=ENV["SL"]
+--   [0009] OP 238  A=0 B=0 C='UnSchedule' flags=224
+--       local I=R[0];R[0+1]=I;R[0]=I["UnSchedule"]
+--   [0010] OP 130  A=2 B=0 C=0 flags=64
+--       R[2]=UP[0]
+--   [0011] OP 363  A=2 B=2 C='rewardTimer' flags=160
+--       R[2]=R[2]["rewardTimer"]
+--   [0012] OP 358  A=0 B=2 C=0 flags=64
+--       R[0](U(T,0+1,2))
+--   [0013] OP  89  A=0 B=0 C=0 flags=192
+--       R[0]=UP[0]
+--       do local I="rewardTimer";local F=nil;R[0][I]=F end
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(146, 0, 'rewardTimer', None, 176)]）
+--   [0015] OP 338  A=0 B=1 C=0 flags=64
+--       R[0]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0016] OP 220  A=0 B=0 C=0 flags=192
+--       return U(T,0,0)
+--   [0017] OP 130  A=0 B=1 C=0 flags=0
+--       R[0]=UP[1]
+--   [0018] OP 346  A=1 B='开启奖励功能' C=None flags=82
+--       R[1]="开启奖励功能"
+--   [0019] OP 358  A=0 B=1 C=0 flags=192
+--       R[0](U(T,0+1,1))
+--   [0020] OP 346  A=0 B=0 C=None flags=82
+--       R[0]=0
+--   [0021] OP 130  A=1 B=0 C=0 flags=128
+--       R[1]=UP[0]
+--   [0022] OP 335  A=2 B='SL' C=None flags=18
+--       R[2]=ENV["SL"]
+--       local I=R[2];R[2+1]=I;R[2]=I["Schedule"]
+--       （该融合指令内部消费后续 1 条记录；原始记录=[(33, 2, 2, 'Schedule', 160)]）
+--   [0024] OP  27  A=4 B=0 C=3 flags=192 ; 创建子原型 child[0]，捕获 3 个 upvalue
+--       R[4] = makeClosure(PROTO[0], captures={capture#0: R[0] (local register); capture#1: UP[2] (outer upvalue); capture#2: UP[3] (outer upvalue)})
+--       （该融合指令内部消费后续 3 条记录；原始记录=[(387, 0, 0, 0, 64), (325, 0, 2, 0, 192), (325, 0, 3, 0, 128)]）
+--   [0028] OP 130  A=5 B=4 C=0 flags=128
+--       R[5]=UP[4]
+--   [0029] OP  98  A=2 B=5 C=0 flags=64
+--       R[2]=R[2](U(T,2+1,5))
+--   [0030] OP 355  A=1 B='rewardTimer' C=2 flags=16
+--       do local I="rewardTimer";local F=R[2];R[1][I]=F end
+--   [0031] OP 401  A=1 B=1 C=0 flags=64
+--       R[1]=1~=0;if 0~=0 then PC=PC+1 end
+--   [0032] OP 220  A=1 B=1 C=0 flags=128
+--       return U(T,1,1)
+--   [0033] OP   1  A=0 B=0 C=0 flags=128
+--       return
+
+-- ============================================================================
+-- PROTO_055 Nested_LuaSendMsg | path=root.42.1.0 | parent=PROTO_054 / child[0]
+-- 参数=0 | 常量=5 | 指令=22 | 子原型=0
+-- 字符串线索：LuaSendMsg
+-- 常量池：
+--   K[0] = 2.0
+--   K[1] = 1.0
+--   K[2] = 9002.0
+--   K[3] = 3.0
+--   K[4] = 'LuaSendMsg'
+-- 指令：
+--   [0001] OP 130  A=0 B=0 C=0 flags=128
+--       R[0]=UP[0]
+--   [0002] OP 124  A=0 B=0 C=1.0 flags=160
+--       R[0]=R[0]+1.0
+--   [0003] OP 114  A=0 B=0 C=0 flags=192
+--       UP[0]=R[0]
+--   [0004] OP 130  A=0 B=0 C=0 flags=192
+--       R[0]=UP[0]
+--   [0005] OP 347  A=0 B=0 C=1.0 flags=160
+--       R[0]=R[0]-1.0
+--   [0006] OP 130  A=1 B=1 C=0 flags=128
+--       R[1]=UP[1]
