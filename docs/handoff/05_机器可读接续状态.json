@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续批量恢复短小代理、pcall 包装、转发闭包；优先检查 root.children[18] 及其子原型（文件写入 pcall wrapper）和 GetPlayerPosition/PlayerPos 的真实原型身份，避免按旧函数名错位。随后复核 ShowLocalNoticeByType 的父级捕获对象。",
+  "next_action": "优先复核 PlayerPos 的 OP_252 多返回值窗口和 GetPlayerPosition 的 PC7、PC14-17 默认值/表构造；然后恢复 ScheduleOnce、JsonDecode 包装等短函数。继续按先出代码草稿、疑点注释、批量校正的策略。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -35,9 +35,11 @@
   "static_lua_candidates": [
     "root.children[46]",
     "root.children[32]",
-    "root.children[33]"
+    "root.children[33]",
+    "root.children[18]",
+    "root.children[57]"
   ],
-  "static_candidate_count": 3,
+  "static_candidate_count": 5,
   "repository": {
     "full_name": "panchengdong88888/wjjm",
     "url": "https://github.com/panchengdong88888/wjjm",
@@ -256,20 +258,20 @@
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "PCallHelper_2 wrapper around FriendProxy lookup",
-    "status": "complete_static_reconstruction",
-    "source_file": "04_源码候选/代理与回调短函数_第四批.lua",
+    "target": "PlayerPos and GetPlayerPosition first-pass Lua drafts",
+    "status": "two_position_helper_drafts_pending_review",
+    "source_file": "04_源码候选/位置读取函数_第五批草稿.lua",
     "verified": [
-      "pcall child closure linkage exact",
-      "pcall failure returns nil",
-      "successful child result copied only when truthy, so false/nil normalize to nil",
-      "returns normalized result"
+      "PlayerPos reads SL metadata X and Y, with Y call using variable result window",
+      "GetPlayerPosition reads X/Y, both have zero-default branches, then constructs x/y result table"
     ],
     "unresolved": [
+      "PlayerPos OP_252 multi-return semantics and exact return arity",
+      "GetPlayerPosition PC14 fused table/default construction details",
       "Runtime validation"
     ],
     "runtime_verified": false,
-    "checkpoint_report": "docs/audit/检查点19_PCallHelper_2恢复.md"
+    "checkpoint_report": "docs/audit/检查点20_位置读取函数第五批草稿.md"
   },
   "corrections": [
     {
