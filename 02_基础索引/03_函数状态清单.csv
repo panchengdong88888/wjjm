@@ -24,7 +24,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 20,root/16,root.children[16],root/17,PrintLog,38,13,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 21,root/17,root.children[17],root/18,PCallHelper,14,2,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 22,root/17/0,root.children[17].children[0],root/18/1,Nested_tostring,14,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-23,root/18,root.children[18],root/19,GetPlayerPosition,19,7,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+23,root/18,root.children[18],root/19,GetPlayerPosition,19,7,0,首版普通 Lua 草稿（待复核/未运行时验证）,04_源码候选/位置读取函数_第五批草稿.lua；依次读取 X/Y，缺失值默认 0，返回 {x=x,y=y}；PC14 融合表构造待复核。
 24,root/19,root.children[19],root/20,InitGatherMonsters,36,11,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 25,root/19/0,root.children[19].children[0],root/20/1,Nested_MainLoop,3,1,0,完整静态恢复（未运行时验证）,04_源码候选/短闭包辅助函数_第三批草稿.lua；无参数调用全局 MainLoop()。
 26,root/20,root.children[20],root/21,ShowLocalNoticeByType,15,14,0,首版普通 Lua 草稿（待复核/未运行时验证）,04_源码候选/其他短辅助函数_第二批草稿.lua；通知记录 Type=10、Msg=message、FColor=249、BColor=0、X=5、Y=UP[0].screenH-50；调用 SL.ShowLocalNoticeByType(notice)；UP[0]对象身份待核。
@@ -110,4 +110,4 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 106,root/55/0,root.children[55].children[0],root/56/1,Nested_Panel_mini_chat,24,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 107,root/55/1,root.children[55].children[1],root/56/2,Nested_ID,27,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 108,root/56,root.children[56],root/57,ClearTargetID_2,22,9,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-109,root/57,root.children[57],root/58,PlayerPos,10,4,0,部分核验,"读取 SL:GetMetaValue(""X"") 与 ""Y""；多返回值组织尚未完全解释。"
+109,root/57,root.children[57],root/58,PlayerPos,10,4,0,首版普通 Lua 草稿（待复核/未运行时验证）,04_源码候选/位置读取函数_第五批草稿.lua；读取 SL:GetMetaValue(""X"") 与 Y 并返回；PC8 OP_252 多返回值窗口待独立复核。
