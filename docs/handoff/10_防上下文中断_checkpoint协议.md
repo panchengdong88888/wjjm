@@ -403,3 +403,13 @@
 - 父级 `root/43` PC313 的四个捕获来源已逐一映射：parent UP2、UP0、UP1、UP7；用途分别为定时器状态表、提示回调、取物状态表、调度函数。
 - 函数状态 CSV、机器状态 JSON 已同步；源码、审计、CSV、机器状态和本协议需复读验证。
 - 普通 Lua 草稿累计 28；完整静态恢复仍 27/110（24.5%）；运行时验证 0；检查点 #44。
+
+
+## 检查点 #45（2026-11-09）：Nested_blacklistTimer 普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第二十四批.lua`。
+- 新增审计：`docs/audit/检查点45_短函数草稿批次.md`。
+- 新增 `Nested_blacklistTimer`：规范路径 `root.children[42].children[17]`，legacy `root/43/18`，28 条物理指令、无子原型、vararg_flag=1。
+- 已恢复 truthy 显式距离参数优先、否则调用捕获 getter；写入 distance；无有效距离返回 false；调用 `BlacklistItems()`；捕获调度函数以 `BlacklistItems, 0.1` 调度并保存 `blacklistTimer` 句柄。
+- 父级 `root/43` PC239 创建闭包，捕获来源依次为 parent UP5、UP6、UP2、UP7、UP0；子函数 UP[4] 的通知/格式化融合载荷仍待复核，源码以注释保留，不猜测调用。
+- 函数状态 CSV、机器状态 JSON 与本协议已同步；写入后需复读验证。
+- 普通 Lua 草稿累计 29；完整静态恢复仍 27/110（24.5%）；运行时验证 0；检查点 #45。
