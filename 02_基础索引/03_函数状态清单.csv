@@ -78,7 +78,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 75,root/42/14,root.children[42].children[14],root/43/15,Nested_Helper_7,12,1,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 76,root/42/14/0,root.children[42].children[14].children[0],root/43/15/1,Nested_Helper_8,34,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 77,root/42/15,root.children[42].children[15],root/43/16,Nested_Helper_9,30,10,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-78,root/42/16,root.children[42].children[16],root/43/17,Nested_ITEM_INDEX_BY_NAME,26,7,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+78,root/42/16,root.children[42].children[16],root/43/17,Nested_ITEM_INDEX_BY_NAME,26,7,0,未开始/未核验,首版普通 Lua 草稿（未运行时验证）,已恢复 ipairs(names) 逐项查询 ITEM_INDEX_BY_NAME；命中后调用 MoveItemToQuickUse(config.slot,itemIndex)，随后调用第二捕获回调(itemIndex)；移动函数返回 truthy 时结束，false/nil 时继续；父级 PC125–129 确认 config={slot=4,names={"免战回城石"}}；第二捕获业务身份待确认；检查点46。
 79,root/42/17,root.children[42].children[17],root/43/18,Nested_blacklistTimer,28,5,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第二十四批.lua；distance 参数优先使用 truthy vararg，否则调用捕获 getter；无距离返回 false；执行 BlacklistItems 并按0.1调度，句柄写入 blacklistTimer；通知格式化融合载荷待复核；检查点45。
 80,root/42/18,root.children[42].children[18],root/43/19,Nested_Helper_10,39,9,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 81,root/42/19,root.children[42].children[19],root/43/20,Nested_TakeItems,29,10,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第二十三批.lua；takeTimer 存在则提示关闭、UnSchedule并清除 isTaking；否则提示开启、立即 TakeItems() 并按1.0间隔调度；父级PC313捕获来源已映射；检查点44。
