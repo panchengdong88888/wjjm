@@ -12,10 +12,10 @@
   "static_candidates": [],
   "major_targets": {
     "root.children[45]": "417-instruction MainLoop gather/attack state machine; legacy root/46; structural/CFG and captures mapped, high-level Lua still pending",
-    "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
+    "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续解析 DiuItems 的融合执行语义：重点逐项拆开 raw index 35 的 OP_299 六个融合载荷，确认 R4 在 OP_092 前的实际最终值与 PC91–98 可达性；再拆 raw index 142 的 OP_349 十一个融合载荷，追踪 R14、T[15..]、string.len(name) 与 raw index155 OP_013 的开放参数区，确定 LuaSendMsg 精确实参表。之后再闭合 PC128–160 循环。优先从已迁移 opcode reference、反汇编、VM dump、解释器/融合载荷资料交叉核对；不得将未证实的参数或分支写入最终源码。",
+  "next_action": "继续批量生成短函数普通 Lua 草稿：优先 SetButtonVisibilityState（root.children[10]）、ResetGatherMonsterData（root.children[26]）、StopGatherMonsters（root.children[27]）；FindMonsterInCurrViewField（root.children[14]）先单独核对捕获谓词和 SL 方法参数。草稿完成后集中静态复审；不要重复底层 VM 提取/反汇编/opcode/闭包映射工作。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -89,7 +89,7 @@
     "enabled": true,
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
-    "last_checkpoint_date": "2026-11-08"
+    "last_checkpoint_date": "2026-11-09"
   },
   "static_recovered_functions": [
     {
@@ -460,26 +460,24 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 32,
-    "target": "DiuItems raw tuple and branch review",
-    "status": "analysis_checkpoint_only_not_complete_source",
-    "source_prototype": "root.children[46]",
-    "audit_file": "docs/audit/检查点32_DiuItems原始元组与分支复核.md",
+    "checkpoint": 33,
+    "target": "DiuItems independent review and three short-function draft recoveries",
+    "status": "drafts_saved_and_verified; no increase to complete_static_reconstruction or runtime_verified",
+    "source_prototype": "root.children[46] plus root.children[11], root.children[31], root.children[35]",
+    "source_file": "04_源码候选/短函数草稿_第十二批.lua",
+    "audit_file": "docs/audit/检查点33_DiuItems复审与短函数草稿.md",
     "verified": [
-      "raw DiuItems prototype has 169 records, 64 constants, one child",
-      "capture descriptors: UP0 captures parent root T2; UP1 captures parent root T5",
-      "child closure captures DiuItems T5 and performs ipairs/string.find(name,keyword,1,true)",
-      "raw tuple at index 88 is OP_092 [224,92,1,4,1], condition (R4==1) ~= true",
-      "R4 has explicit earlier writes; OP_299 at raw index35 is fused and its complete execution must be decoded",
-      "LuaSendMsg load begins at raw index142 OP_349 with 11 fusion payloads; OP_013 at raw index155 invokes R14 with open T args"
+      "DiuItems draft independently reviewed against corrected 169-record disassembly and capture map",
+      "DistanceCalculation draft: missing input sentinel 99999; Chebyshev distance",
+      "IsInWhitelistMap draft: IN_SAFE_AREA short-circuit and explicit 土城 whitelist",
+      "SetTargetID draft: PlayerInputProxy SetTargetID with SELETE_TARGET_TYPE_FIND",
+      "new source and audit files re-fetched from GitHub"
     ],
     "unresolved": [
-      "OP_299 fused payload register/write semantics and actual R4 at PC89",
-      "PC91-98 reachability and candidate insertion branch",
-      "OP_349 fused payload/T argument construction and exact LuaSendMsg argument order",
-      "PC128-160 iterator and 35-item loop boundary"
-    ],
-    "runtime_verified": false
+      "three new short-function drafts still need static review",
+      "no runtime validation has been performed",
+      "DiuItems is still a draft and is not added to complete static reconstruction count"
+    ]
   },
   "corrections": [
     {
@@ -538,5 +536,40 @@
     "unresolved": [],
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
-  }
+  },
+  "draft_recovered_count": 4,
+  "draft_recovered_functions": [
+    {
+      "path": "root.children[46]",
+      "legacy_path": "root/47",
+      "name": "DiuItems",
+      "source_file": "04_源码候选/root46_DiuItems.lua",
+      "audit_file": "docs/audit/检查点33_DiuItems复审与短函数草稿.md",
+      "status": "first_pass_draft_independently_reviewed_not_runtime_verified"
+    },
+    {
+      "path": "root.children[11]",
+      "legacy_path": "root/12",
+      "name": "DistanceCalculation",
+      "source_file": "04_源码候选/短函数草稿_第十二批.lua",
+      "audit_file": "docs/audit/检查点33_DiuItems复审与短函数草稿.md",
+      "status": "first_pass_draft_pending_static_review_not_runtime_verified"
+    },
+    {
+      "path": "root.children[31]",
+      "legacy_path": "root/32",
+      "name": "IsInWhitelistMap",
+      "source_file": "04_源码候选/短函数草稿_第十二批.lua",
+      "audit_file": "docs/audit/检查点33_DiuItems复审与短函数草稿.md",
+      "status": "first_pass_draft_pending_static_review_not_runtime_verified"
+    },
+    {
+      "path": "root.children[35]",
+      "legacy_path": "root/36",
+      "name": "SetTargetID",
+      "source_file": "04_源码候选/短函数草稿_第十二批.lua",
+      "audit_file": "docs/audit/检查点33_DiuItems复审与短函数草稿.md",
+      "status": "first_pass_draft_pending_static_review_not_runtime_verified"
+    }
+  ]
 }
