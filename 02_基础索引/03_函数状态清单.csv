@@ -43,9 +43,9 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 39,root/29,root.children[29],root/30,IsDie,7,1,0,完整静态恢复（未运行时验证）,04_源码候选/小型辅助函数_首批草稿.lua；完整还原 actor and not actor:IsDie()，保留短路返回语义。
 40,root/30,root.children[30],root/31,GetMapName,9,4,0,完整静态恢复（未运行时验证）,04_源码候选/小型辅助函数_首批草稿.lua；完整还原 SL:GetMetaValue(""MAP_NAME"") or ""。
 41,root/31,root.children[31],root/32,IsInWhitelistMap,28,6,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-42,root/32,root.children[32],root/33,AnonymousHelper_32,6,0,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+42,root/33,root.children[32],root/33,AnonymousHelper_32,6,0,0,完整静态恢复（未运行时验证）,04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua；捕获 root T[46] 与 T[42]；返回 upvalue0(upvalue1, 第一个参数)。PC5 vararg return 位于无条件返回后，不可达。 审计见docs/audit/检查点30_PlayerPos与匿名转发闭包.md。
 43,root/32,root.children[32],root/33,AnonymousHelper_33,6,0,2,首版普通 Lua 草稿（待父级捕获复核/未运行时验证）,04_源码候选/代理与回调短函数_第四批.lua；UP[0]作为调用目标、UP[1]作为首个实参，原始 varargs 追加转发：return callback(wrappedFunction, ...)。
-44,root/33,root.children[33],root/34,AnonymousHelper_34,5,0,2,首版普通 Lua 草稿（待父级捕获复核/未运行时验证）,04_源码候选/代理与回调短函数_第四批.lua；UP[0]作为调用目标、UP[1]作为唯一实参：return callback(argument)。
+43,root/34,root.children[33],root/34,AnonymousHelper_33,5,0,0,完整静态恢复（未运行时验证）,04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua；捕获 root T[45] 与 T[43]；返回 upvalue0(upvalue1)。PC4 的空 vararg return 位于无条件返回后，不可达。 审计见docs/audit/检查点30_PlayerPos与匿名转发闭包.md。
 45,root/35,root.children[35],root/36,SetTargetID,26,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 46,root/36,root.children[36],root/37,GetAvailableStoragePage,51,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 47,root/37,root.children[37],root/38,DestroyUI,31,11,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
@@ -110,4 +110,4 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 106,root/55/0,root.children[55].children[0],root/56/1,Nested_Panel_mini_chat,24,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 107,root/55/1,root.children[55].children[1],root/56/2,Nested_ID,27,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 108,root/56,root.children[56],root/57,ClearTargetID_2,22,9,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-109,root/57,root.children[57],root/58,PlayerPos,10,4,0,首版普通 Lua 草稿（待复核/未运行时验证）,04_源码候选/位置读取函数_第五批草稿.lua；读取 SL:GetMetaValue(""X"") 与 Y 并返回；PC8 OP_252 多返回值窗口待独立复核。
+109,root/58,root.children[57],root/58,PlayerPos,10,4,0,完整静态恢复（未运行时验证）,04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua；依次调用 SL:GetMetaValue('X') 与 SL:GetMetaValue('Y')，返回两个值；不同于 GetPlayerPosition 的坐标表返回契约。 审计见docs/audit/检查点30_PlayerPos与匿名转发闭包.md。
