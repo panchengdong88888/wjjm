@@ -25,6 +25,10 @@
 - 765KB 指令级去虚拟化清单不是作者原始 Lua，也不可直接运行。
 - 最终目标是可读、可维护的作者级普通 Lua；不得把猜测当作已验证变量名或源码。
 
+## 资料完整性说明
+- corrected opcode reference 的完整 413 项文件和全量 closure map 仍在 Library 的 V4 phase3 ZIP 中，仓库已提供早期 opcode reference、OP_412 语义补充和关键闭包捕获子集。
+- stage3.bin 与交接 ZIP 是二进制归档，尚未上传；详见 `docs/handoff/09_GitHub迁移清单.md`。不要将未迁移文件视为已在仓库。
+
 ## 仓库使用
 - 仓库： https://github.com/panchengdong88888/wjjm
 - 默认分支：`main`
