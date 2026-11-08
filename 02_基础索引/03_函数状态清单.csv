@@ -1,0 +1,113 @@
+<PARSED TEXT FOR SHEET: 1 / 1 TABS
+TAB NAME: 03_函数状态清单.csv>
+index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,物理指令数,常量数,子原型数,状态,已核实内容/待办
+0,root,root,root,MainLeftBottom_Module,412,109,58,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+1,root/0,root.children[0],root/1,FileExistCheck_pcall_wrapper,32,5,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+2,root/0/0,root.children[0].children[0],root/1/1,Nested_removeFile,5,1,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+3,root/1,root.children[1],root/2,GetStorageItemData,77,16,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+4,root/2,root.children[2],root/3,GetWritablePath,10,4,0,部分核验,cc.FileUtils/getInstance/getWritablePath 路径明确；vararg/拼接融合指令未完全还原。
+5,root/3,root.children[3],root/4,MoveTo,51,20,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+6,root/4,root.children[4],root/5,GetDroppedItems,8,3,0,部分核验,global.dropItemManager:FindDropItemInCurrViewFieldAll 调用目标明确；返回值/调用边界待核。
+7,root/5,root.children[5],root/6,TakeItems,99,23,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+8,root/6,root.children[6],root/7,InstallDamageHook,40,9,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+9,root/6/0,root.children[6].children[0],root/7/1,Nested_onDamageMsg,18,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+10,root/7,root.children[7],root/8,GetOwnerIDText,31,7,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+11,root/8,root.children[8],root/9,FormatStateChange,10,3,0,部分核验,string.format 与“状态切换: %s -> %s”明确；vararg 参数映射待核。
+12,root/9,root.children[9],root/10,ReadNumericConfig,45,13,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+13,root/10,root.children[10],root/11,SetButtonVisibilityState,15,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+14,root/11,root.children[11],root/12,DistanceCalculation,25,6,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+15,root/12,root.children[12],root/13,LuaSendMsg,92,34,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+16,root/13,root.children[13],root/14,GetMapId,9,4,0,静态源码候选,"可重建为 SL:GetMetaValue(""MAP_ID"") or 0.0；无目标运行时验证。"
+17,root/14,root.children[14],root/15,FindMonsterInCurrViewField,27,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+18,root/15,root.children[15],root/16,ClearBlacklistItems,63,17,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+19,root/15/0,root.children[15].children[0],root/16/1,Nested_SL,13,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+20,root/16,root.children[16],root/17,PrintLog,38,13,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+21,root/17,root.children[17],root/18,PCallHelper,14,2,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+22,root/17/0,root.children[17].children[0],root/18/1,Nested_tostring,14,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+23,root/18,root.children[18],root/19,GetPlayerPosition,19,7,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+24,root/19,root.children[19],root/20,InitGatherMonsters,36,11,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+25,root/19/0,root.children[19].children[0],root/20/1,Nested_MainLoop,3,1,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+26,root/20,root.children[20],root/21,ShowLocalNoticeByType,15,14,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+27,root/21,root.children[21],root/22,PickUpItems,172,34,2,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+28,root/21/0,root.children[21].children[0],root/22/1,Nested_dist,19,2,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+29,root/21/1,root.children[21].children[1],root/22/2,Nested_dist_2,8,1,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+30,root/22,root.children[22],root/23,GetMapData2DPtr,144,15,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+31,root/23,root.children[23],root/24,Builtsetting,55,15,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+32,root/24,root.children[24],root/25,UseItemByIndex,33,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+33,root/25,root.children[25],root/26,DeathAutoBlacklist,47,15,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+34,root/25/0,root.children[25].children[0],root/26/1,Nested_RequestAddBlacklistByName,6,3,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+35,root/26,root.children[26],root/27,ResetGatherMonsterData,20,3,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+36,root/27,root.children[27],root/28,StopGatherMonsters,25,6,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+37,root/28,root.children[28],root/29,FindMonsterCandidates,102,19,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+38,root/28/0,root.children[28].children[0],root/29/1,Nested_distance,8,1,0,静态源码候选,距离比较器：a._distance < b._distance；旧报告标签 root/29/1；需与父函数调用点复核。
+39,root/29,root.children[29],root/30,IsDie,7,1,0,静态源码候选,按 OP_247/OP_255/OP_121/OP_068/OP_172/OP_220 可重建为 actor and not actor:IsDie()；签名/调用点待核。
+40,root/30,root.children[30],root/31,GetMapName,9,4,0,静态源码候选,"可重建为 SL:GetMetaValue(""MAP_NAME"") or """"；无目标运行时验证。"
+41,root/31,root.children[31],root/32,IsInWhitelistMap,28,6,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+42,root/32,root.children[32],root/33,AnonymousHelper_32,6,0,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+43,root/33,root.children[33],root/34,AnonymousHelper_33,5,0,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+44,root/34,root.children[34],root/35,Schedule,7,2,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+45,root/35,root.children[35],root/36,SetTargetID,26,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+46,root/36,root.children[36],root/37,GetAvailableStoragePage,51,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+47,root/37,root.children[37],root/38,DestroyUI,31,11,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+48,root/38,root.children[38],root/39,GetOwnerID,31,7,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+49,root/39,root.children[39],root/40,GetMainPlayerID,6,3,0,静态源码候选,可重建为 global.gamePlayerController:GetMainPlayerID()；无目标运行时验证。
+50,root/40,root.children[40],root/41,ShowHideAllButtons,47,9,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+51,root/41,root.children[41],root/42,MoveItemToQuickUse,133,26,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+52,root/42,root.children[42],root/43,doInit_UI,419,105,23,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+53,root/42/0,root.children[42].children[0],root/43/1,Nested_find,46,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+54,root/42/1,root.children[42].children[1],root/43/2,Nested_SL_2,33,8,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+55,root/42/1/0,root.children[42].children[1].children[0],root/43/2/1,Nested_LuaSendMsg,22,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+56,root/42/2,root.children[42].children[2],root/43/3,Nested_Helper,21,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+57,root/42/3,root.children[42].children[3],root/43/4,Nested_FFFF00,320,72,5,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+58,root/42/3/0,root.children[42].children[3].children[0],root/43/4/1,Nested_Helper_2,35,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+59,root/42/3/1,root.children[42].children[3].children[1],root/43/4/2,Nested_string,46,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+60,root/42/3/2,root.children[42].children[3].children[2],root/43/4/3,Nested_FFFFFF,65,17,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+61,root/42/3/3,root.children[42].children[3].children[3],root/43/4/4,Nested_Helper_3,168,31,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+62,root/42/3/4,root.children[42].children[3].children[4],root/43/4/5,Nested_UnSchedule,20,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+63,root/42/4,root.children[42].children[4],root/43/5,Nested_OnGameLeaveWorld,5,3,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+64,root/42/5,root.children[42].children[5],root/43/6,Nested_ffffff,41,10,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+65,root/42/6,root.children[42].children[6],root/43/7,Nested_StopGatherMonsters,31,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+66,root/42/7,root.children[42].children[7],root/43/8,Nested_InitGatherMonsters,17,2,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+67,root/42/8,root.children[42].children[8],root/43/9,Nested_SL_3,29,10,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+68,root/42/9,root.children[42].children[9],root/43/10,Nested_Button_setTitleFontSize,50,17,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+69,root/42/9/0,root.children[42].children[9].children[0],root/43/10/1,Nested_Button_setTitleText,48,10,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+70,root/42/10,root.children[42].children[10],root/43/11,Nested_shiquTimer,25,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+71,root/42/11,root.children[42].children[11],root/43/12,Nested_Helper_4,12,1,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+72,root/42/11/0,root.children[42].children[11].children[0],root/43/12/1,Nested_Helper_5,35,6,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+73,root/42/12,root.children[42].children[12],root/43/13,Nested_04d_02d_02d,43,25,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+74,root/42/13,root.children[42].children[13],root/43/14,Nested_Helper_6,6,2,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+75,root/42/14,root.children[42].children[14],root/43/15,Nested_Helper_7,12,1,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+76,root/42/14/0,root.children[42].children[14].children[0],root/43/15/1,Nested_Helper_8,34,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+77,root/42/15,root.children[42].children[15],root/43/16,Nested_Helper_9,30,10,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+78,root/42/16,root.children[42].children[16],root/43/17,Nested_ITEM_INDEX_BY_NAME,26,7,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+79,root/42/17,root.children[42].children[17],root/43/18,Nested_blacklistTimer,28,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+80,root/42/18,root.children[42].children[18],root/43/19,Nested_Helper_10,39,9,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+81,root/42/19,root.children[42].children[19],root/43/20,Nested_TakeItems,29,10,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+82,root/42/20,root.children[42].children[20],root/43/21,Nested_s,21,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+83,root/42/21,root.children[42].children[21],root/43/22,Nested_dropTimer,29,10,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+84,root/42/22,root.children[42].children[22],root/43/23,Nested_Anonymous,8,0,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+85,root/42/22/0,root.children[42].children[22].children[0],root/43/23/1,Nested_str,27,13,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+86,root/42/22/0/0,root.children[42].children[22].children[0].children[0],root/43/23/1/1,Nested_match,50,14,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+87,root/42/22/0/0/0,root.children[42].children[22].children[0].children[0].children[0],root/43/23/1/1/1,Nested_Helper_11,4,1,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+88,root/43,root.children[43],root/44,GetOwnerDescription,20,7,0,部分核验,调用 GetOwnerID 并按 unknown/空串/-1/主玩家 ID 分类；精确 sentinel/参数映射待核。
+89,root/44,root.children[44],root/45,GetPlayerMapPosition,17,5,0,部分核验,涉及 mCurrMapX/mCurrMapY 与 x/y；返回表/边界条件尚未完整还原。
+90,root/45,root.children[45],root/46,MainLoop,417,41,0,结构已核验，源码未恢复,417 条指令引怪状态机；22 个 upvalue 捕获寄存器映射已从创建点复核；完整 CFG/source 未完成。
+91,root/46,root.children[46],root/47,DiuItems,169,64,1,结构已核验，源码未恢复,169 条指令自动丢弃物品逻辑；root PC63 创建并捕获 R2/R5；完整源码未恢复。
+92,root/46/0,root.children[46].children[0],root/47/1,Nested_string_2,20,4,0,静态源码候选,20 条指令，纯文本关键词匹配，捕获 root/46 R5 的关键词表；无运行时验证。
+93,root/47,root.children[47],root/48,BlacklistPlayerDetection,216,35,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+94,root/48,root.children[48],root/49,PCallHelper_2,10,1,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+95,root/48/0,root.children[48].children[0],root/49/1,Nested_FriendProxy,9,5,0,部分核验,访问 global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)；融合调用/返回需复核。
+96,root/49,root.children[49],root/50,AnonymousHelper_49,5,0,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+97,root/50,root.children[50],root/51,StorageItems,224,57,2,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+98,root/50/0,root.children[50].children[0],root/51/1,Nested_isOutputted,52,15,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+99,root/50/1,root.children[50].children[1],root/51/2,Nested_Anonymous_2,27,1,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+100,root/51,root.children[51],root/52,FindBlacklistPlayer,35,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+101,root/52,root.children[52],root/53,onDamageMsg,72,19,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+102,root/52/0,root.children[52].children[0],root/53/1,Nested_JsonDecode,6,2,0,部分核验,调用 SL.JsonDecode，参数来自 upvalue[0]；参数语义由父级传入，待追踪。
+103,root/53,root.children[53],root/54,ScheduleOnce,7,2,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+104,root/54,root.children[54],root/55,AnonymousHelper_54,6,0,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+105,root/55,root.children[55],root/56,AccountIDValidation,64,21,2,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+106,root/55/0,root.children[55].children[0],root/56/1,Nested_Panel_mini_chat,24,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+107,root/55/1,root.children[55].children[1],root/56/2,Nested_ID,27,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+108,root/56,root.children[56],root/57,ClearTargetID_2,22,9,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+109,root/57,root.children[57],root/58,PlayerPos,10,4,0,部分核验,"读取 SL:GetMetaValue(""X"") 与 ""Y""；多返回值组织尚未完全解释。"
