@@ -25,3 +25,14 @@ local function make_AnonymousHelper_34(callback, argument)
         return callback(argument)
     end
 end
+
+-- root.children[48] / legacy root/49 / PCallHelper_2 (10 instructions)
+-- Executes the zero-argument FriendProxy lookup under pcall. On error it returns
+-- nil; on success it returns the child result (false/nil also normalize to nil).
+local function PCallHelper_2()
+    local ok, result = pcall(Nested_FriendProxy)
+    if not ok then
+        return nil
+    end
+    return result or nil
+end
