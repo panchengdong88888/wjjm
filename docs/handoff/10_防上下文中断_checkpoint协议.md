@@ -268,3 +268,10 @@
 - 新增 `04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua`：父 wrapper 的布尔返回契约已闭合；child 的 FileUtils 写入调用和 tostring 已形成草稿，融合调用参数仍待复核。
 - GetPlayerPosition 保持首版草稿，PC14 table 构造融合载荷未闭合。
 - 详细报告：`docs/audit/检查点20_PCallHelper与位置函数恢复.md`。
+
+
+## 检查点 #21（2026-11-08）：PrintLog 静态恢复
+- 新增 `04_源码候选/PrintLog_日志辅助函数_第七批.lua`，完整恢复 table dump 分支、tostring、可选 string.format/pcall 分支及 SL.Print 存在性检查。
+- 注意 PC31–37 没有调用 SL.Print 的指令，源码候选保留空检查，不按函数名推测补调用。
+- PrintLog 加入完整静态恢复清单；总数由 15 增至 16，运行时验证仍为 0。
+- 详细报告：`docs/audit/检查点21_PrintLog恢复.md`。
