@@ -261,3 +261,10 @@
 - 新增 `04_源码候选/位置读取函数_第五批草稿.lua`。
 - PlayerPos（root.children[57]）和 GetPlayerPosition（root.children[18]）已形成普通 Lua 首版草稿；前者 OP_252 多返回值窗口、后者 PC14 融合表构造仍待复核，均未计入完整静态恢复。
 - CSV 与机器状态 JSON 已同步；详细报告 `docs/audit/检查点20_位置读取函数第五批草稿.md`。
+
+
+## 检查点 #20（2026-11-08）：PCallHelper 与位置函数
+- 更正原型路径：`root.children[17]` / root/18 = PCallHelper，子原型 `root.children[17].children[0]` / root/18/1 = Nested_tostring；`root.children[18]` / root/19 = GetPlayerPosition。
+- 新增 `04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua`：父 wrapper 的布尔返回契约已闭合；child 的 FileUtils 写入调用和 tostring 已形成草稿，融合调用参数仍待复核。
+- GetPlayerPosition 保持首版草稿，PC14 table 构造融合载荷未闭合。
+- 详细报告：`docs/audit/检查点20_PCallHelper与位置函数恢复.md`。
