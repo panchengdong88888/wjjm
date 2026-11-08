@@ -56,3 +56,14 @@
 - 5 个捕获槽位的业务名称和忽略列表匹配细节仍待确认，因此本批不计为完整恢复，也没有写入猜测性源码。
 - 分析报告：`docs/audit/root28_FindMonsterCandidates_阶段分析.md`。
 - 下一步：核验捕获值、配置结构和完整数据流，再形成普通 Lua 候选。
+
+
+## 检查点 #3（2026-11-08）：FindMonsterCandidates 闭包捕获映射确认
+- root.children[28] 的 5 个 upvalue 已按父函数 PC 194 创建闭包后的捕获描述顺序确认：
+  0. `GetPlayerPosition`（父 PC 187 的 root.children[18]）
+  1. `IsDie`（父 PC 190 的 root.children[29]）
+  2. `GetPlayerMapPosition`（父 PC 188 的 root.children[44]）
+  3. `DistanceCalculation`（父 PC 189 的 root.children[11]）
+  4. 父函数 R8 配置表（GATHER_THRESHOLD、CHECK_INTERVAL、ATTACK_WAIT_TIME）
+- 捕获顺序由 PC 195–199 的 T[27]、T[30]、T[28]、T[29]、T[8] 与 PC 187–193 的闭包创建顺序交叉确认。
+- 分析报告已补充映射；函数仍处于阶段分析，忽略列表数据结构和完整筛选逻辑尚未全部核清。
