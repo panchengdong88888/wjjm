@@ -319,3 +319,11 @@
 - GetAvailableStoragePage 已形成可读近似草稿，但 PC22–50 复杂条件分支仍未完全闭合；容量计算和返回值只作为临时模型，不声称源码等价。
 - CSV/机器状态/协议已同步；普通 Lua 草稿累计 11 个；完整静态恢复 27/110（24.5%）；运行时验证 0。
 - 下一步：继续批量短函数草稿，后续集中复审第十二至十四批，优先解决 GetAvailableStoragePage PC22–50。
+
+## 检查点 #36（2026-11-09）：四个短闭包普通 Lua 草稿
+- 新增 `04_源码候选/短函数草稿_第十五批.lua`：Nested_removeFile、Nested_SL、Nested_UnSchedule、Nested_Helper_11，共 4 个。
+- 对照 corrected phase3 反汇编逐条恢复调用与条件路径；捕获业务名称仍用 UPVALUE 槽位占位，不臆造。
+- 新增审计 `docs/audit/检查点36_短函数草稿批次.md`。
+- 函数状态 CSV、机器状态 JSON 与本检查点同步。
+- 普通 Lua 草稿累计 15 个；完整静态恢复仍为 27/110（24.5%）；运行时验证 0。
+- 下一步：继续批量恢复短函数；后续集中复审第十二至十五批，优先解决 GetAvailableStoragePage PC22–50，并补齐捕获闭包父级创建点证据。
