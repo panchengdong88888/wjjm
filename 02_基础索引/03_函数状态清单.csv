@@ -20,7 +20,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 16,root/13,root.children[13],root/14,GetMapId,9,4,0,完整静态恢复（未运行时验证）,04_源码候选/小型辅助函数_首批草稿.lua；PC1-9 完整还原为 SL:GetMetaValue(""MAP_ID"") or 0。
 17,root/14,root.children[14],root/15,FindMonsterInCurrViewField,27,4,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十三批.lua；调用 SL:FindMonsterInCurrViewField(true,true)，使用捕获的 IsDie 过滤存活 actor，再按 actor:GetID() 构造映射表；检查点34。
 18,root/15,root.children[15],root/16,ClearBlacklistItems,63,17,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-19,root/15/0,root.children[15].children[0],root/16/1,Nested_SL,13,4,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候稿/短函数草稿_第十五批.lua；调用 SL:RequestOutBlacklist(UP[0])，若 UP[1]._blacklistData 存在则删除对应键；捕获业务名待确认；检查点36。
+19,root/15/0,root.children[15].children[0],root/16/1,Nested_SL,13,4,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十五批.lua；调用 SL:RequestOutBlacklist(UP[0])，若 UP[1]._blacklistData 存在则删除对应键；捕获业务名待确认；检查点36。
 20,root/16,root.children[16],root/17,PrintLog,38,13,0,完整静态恢复（未运行时验证）,04_源码候选/PrintLog_日志辅助函数_第七批.lua；table 输入调用 SL.dump(value,"【超本】")；非 table 输入 tostring，存在额外参数时 pcall(string.format,message,...)；PC31-37 只检查 SL.Print 存在而无调用。
 21,root/17,root.children[17],root/18,PCallHelper,14,2,1,完整静态恢复（未运行时验证）,04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua；pcall失败或子闭包结果严格为false时返回false，否则true；子闭包调用 capturedOuter(arg0)，并将其全部返回值转发给 FileUtils:writeStringToFile。审计见docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md。
 22,root/17/0,root.children[17].children[0],root/18/1,Nested_tostring,14,5,0,完整静态恢复（未运行时验证）,04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua；cc.FileUtils:getInstance()，tostring(UP[0])，调用UP[1](UP[2])并将多返回值转发给writeStringToFile。审计见docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md。
