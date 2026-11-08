@@ -1,0 +1,98 @@
+MainLeftBottom.lua — root/46 第二批核验记录
+============================================
+
+本批处理对象：root/46（父原型 root 在 PC=214 创建）
+本批目的：核实闭包捕获来源、父级状态变量初始化上下文、状态机循环边界，并将 3.40.x 框架文档作为 API 语义参考。
+
+一、闭包捕获映射（已由父原型真实指令确认）
+root/46 的 22 个 upvalue 槽位，按槽位 0..21 对应父原型 root 在创建闭包时捕获的局部寄存器：
+
+slot 0  <- root.R18
+slot 1  <- root.R14
+slot 2  <- root.R13
+slot 3  <- root.R4
+slot 4  <- root.R23
+slot 5  <- root.R35
+slot 6  <- root.R26
+slot 7  <- root.R34
+slot 8  <- root.R15
+slot 9  <- root.R32
+slot 10 <- root.R17
+slot 11 <- root.R16
+slot 12 <- root.R19
+slot 13 <- root.R20
+slot 14 <- root.R22
+slot 15 <- root.R36
+slot 16 <- root.R21
+slot 17 <- root.R31
+slot 18 <- root.R30
+slot 19 <- root.R33
+slot 20 <- root.R24
+slot 21 <- root.R8
+
+证据：root PC=214 的 OP_027，A=37，B=45，C=22；紧随其后的 22 条 OP_387 记录，其第三操作数依次为 18,14,13,4,23,35,26,34,15,32,17,16,19,20,22,36,21,31,30,33,24,8。该映射是闭包捕获关系，不等同于这些槽位的业务变量名称。
+
+二、状态机结构（常量池与指令交叉核验）
+root/46 常量池中的状态值为 IDLE、GATHERING、ATTACKING；日志常量明确区分扫描、归属等待、获取归属、攻击和目标失效路径。
+
+可确认的顶层行为：
+1. 入口检查捕获状态/运行条件；调用 IsInWhitelistMap。
+2. 白名单地图路径输出“在白名单地图, 停止引怪”，将捕获状态设置为 IDLE 并返回。
+3. IDLE 路径进入扫描阶段，调用捕获的扫描/日志辅助函数，准备怪物列表。
+4. GATHERING 路径逐项处理候选怪物，检查是否仍在视野、是否死亡、归属是否属于自己/其他玩家；符合条件时尝试锁定，并按 ATTACK_WAIT_TIME 记录归属等待时间。
+5. 所有目标归属获取成功后切换 ATTACKING；若未全部获取则回到重新扫描路径。
+6. ATTACKING 路径逐项检查目标是否死亡或离开视野；有效目标调用捕获的攻击辅助函数；所有目标失效后切换 IDLE。
+
+注意：以上是对状态路径和常量的语义归纳，不是逐条指令已完全提升为 Lua 的证明，不能计入完整明文函数数量。
+
+三、数值循环核验
+root/46 中出现两处 OP_412：
+- PC=313：OP_412 A=3, B=166
+- PC=405：OP_412 A=3, B=359
+阶段三 opcode reference 对 OP_412 的解释器语义为：以寄存器 A 为循环变量，步长取 T[A+2]，上限取 T[A+1]；递增后判断正/负步长边界，满足条件时把当前值写到 T[A+3] 并跳转到 B。
+
+因此，PC=313 与 PC=405 是数值 for-loop 的回边检查点，而不是普通比较语句。恢复循环时必须同时保留循环变量、上限、步长和 body 临时变量寄存器，不能简单改写成 ipairs 循环。
+
+四、3.40.x 框架文档对照（已定位原文）
+文档路径：framework_docs/#U65b0#U6846#U67b6(3_40_xx)/#U5143#U53d8#U91cf.md
+- FIND_IN_VIEW_MONSTER_LIST：获取视野内怪物列表；参数分别控制是否排除主玩家怪物、是否排除有主人的怪物（含主玩家的怪）。
+- ACTOR_IS_DIE：判断 actor 是否死亡。
+- ACTOR_OWNER_ID：获取 actor 归属 ID。
+- TARGET_ATTACK_ENABLE：检查目标是否可攻击；文档注明支持 3.40.3 以上。
+- ACTOR_MAP_X / ACTOR_MAP_Y：获取 actor 地图坐标；文档注明支持 3.40.2 以上。
+- BATTLE_AFK_BEGIN / BATTLE_PICK_BEGIN：分别开始自动挂机和自动捡物。
+
+重要限制：root/46 本身通过 22 个 upvalue 调用父级捕获的辅助函数；它没有直接出现上述元变量字符串。因此文档可以解释辅助函数内部可能调用的框架 API，但不能据此断言 root/46 直接调用了这些 API。后续需要继续追踪捕获来源和对应辅助函数原型，确认调用链后才可绑定具体 API。
+
+五、本批统计
+- root/46 指令总数：417（未改变）
+- 本批新增已完整恢复 Lua 函数：0
+- 本批新增已核验捕获关系：22/22
+- 本批新增已核验数值循环检查点：2
+- root/46 仍处于“业务语义和结构已定位，完整 Lua 还原未完成”状态。
+
+下一步：沿 root.R18/R14/R13 等捕获来源向父原型回溯，识别 22 个闭包 upvalue 的业务变量/辅助函数身份；优先找到怪物扫描、锁定、归属检查和攻击辅助函数的原型，再回填 root/46 的调用表达式。
+
+六、捕获辅助函数身份的进一步确认（父级闭包链）
+root/46 捕获的以下槽位已经沿 root 的 OP_027/OP_154 闭包创建记录确认：
+- upvalue[3] <- root/17：通用日志/异常保护输出辅助函数（常量包含 SL.Print、pcall、string.format、SL.dump）。
+- upvalue[4] <- root/9：状态切换日志，格式为“状态切换: %s -> %s”。
+- upvalue[5] <- root/27：重置数据并输出“数据已重置”的辅助函数。
+- upvalue[6] <- root/40：获取主玩家 ID，调用 global.gamePlayerController:GetMainPlayerID()。
+- upvalue[7] <- root/29：视野怪物筛选/排序辅助函数（仍未完整恢复）。
+- upvalue[9] <- root/39：归属 ID 检查辅助函数（仍需确认所有返回分支）。
+- upvalue[15] <- root/15：获取视野怪物并按 GetID 建立辅助映射（仍需完整恢复）。
+- upvalue[17] <- root/8：归属 ID 检查辅助函数（仍需确认所有返回分支）。
+- upvalue[18] <- root/30：IsActorAlive，调用 actor:IsDie() 并取反。
+- upvalue[19] <- root/44：获取“无归属/自己/其他玩家”分类，同时返回原始 ownerID。
+- upvalue[20] <- root/36：通过 Facade.retrieveProxy(PlayerInputProxy) 获取代理并设置选中目标。
+- upvalue[21] <- root.R8 配置表：包含 GATHER_THRESHOLD、CHECK_INTERVAL、ATTACK_WAIT_TIME。
+
+root/29 自身的父级捕获来源（root PC=194，随后 5 个 OP_387 描述符）：
+- root/29 upvalue[0] <- root.R27（root/19）
+- root/29 upvalue[1] <- root.R30（root/30）
+- root/29 upvalue[2] <- root.R28（root/45）
+- root/29 upvalue[3] <- root.R29（root/12）
+- root/29 upvalue[4] <- root.R8（配置表）
+
+以上身份映射来自父级闭包创建关系，不是根据常量名称猜测。root/8 与 root/39 的归属检查函数还未列入完整恢复数。
