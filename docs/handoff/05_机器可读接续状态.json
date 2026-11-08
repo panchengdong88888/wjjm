@@ -21,7 +21,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "Read corrected phase3 artifacts and 765KB full instruction listing first. Do not redo payload decode, opcode inventory, prototype inventory, or full physical-PC disassembly. Verify six static candidates and call sites, then reconstruct long functions.",
+  "next_action": "从 GitHub 读取 08_本轮校验补充.txt 与静态反汇编文件，核查辅助函数定义/调用点，优先解决 root.children[43] 特殊常量，再恢复 root.children[28]、root.children[45] MainLoop、root.children[46] DiuItems、root.children[42] UI 初始化。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -46,5 +46,39 @@
     "root.children[28].children[0]",
     "root.children[46].children[0]"
   ],
-  "static_candidate_count": 6
+  "static_candidate_count": 6,
+  "repository": {
+    "full_name": "panchengdong88888/wjjm",
+    "url": "https://github.com/panchengdong88888/wjjm",
+    "default_branch": "main",
+    "visibility": "public",
+    "canonical_workspace": true,
+    "policy": "后续读取、源码恢复、状态更新和交接均以 GitHub 为主；Library 仅作历史来源/备用副本。"
+  },
+  "github_migration": {
+    "completed": true,
+    "verified_files": [
+      "01_原始资料/MainLeftBottom(2).lua",
+      "02_基础索引/02_原型总索引.json",
+      "02_基础索引/03_函数状态清单.csv",
+      "02_基础索引/MainLeftBottom_vm_dump.json",
+      "02_基础索引/MainLeftBottom_opcode_reference_早期版.txt",
+      "03_静态反汇编/MainLeftBottom_vm_disassembly_corrected_phase3.txt",
+      "03_静态反汇编/阶段三控制流与字段校正报告.txt",
+      "03_静态反汇编/指令级去虚拟化清单_非作者源码.lua",
+      "04_源码候选/静态恢复候选.lua",
+      "docs/handoff/00_新对话先读.txt",
+      "docs/handoff/01_原始资料校验与总账.md",
+      "docs/handoff/04_闭包捕获映射.json",
+      "docs/handoff/06_原始资料SHA256.txt",
+      "docs/handoff/07_新对话接续提示词.txt",
+      "docs/handoff/08_本轮校验补充.txt"
+    ],
+    "not_migrated_binary": [
+      "MainLeftBottom_stage3.bin",
+      "MainLeftBottom_V4_反虚拟化交接工程包.zip",
+      "MainLeftBottom_decompile_package_v4_phase3.zip"
+    ],
+    "note": "上述二进制归档目前仍留在 Library，当前 GitHub 连接工具没有直接上传任意本地二进制文件的上传接口；可用 create_blob(base64) 或 Git 数据接口分块补迁，但尚未完成。"
+  }
 }
