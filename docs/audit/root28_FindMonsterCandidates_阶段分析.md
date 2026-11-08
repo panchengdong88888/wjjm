@@ -35,12 +35,18 @@
 因此 upvalue[0..4] 的身份已由捕获顺序和父函数创建点交叉确认，不再列为未解决项。函数内部 PC 13–15 使用 upvalue[0]，PC 51–57 使用 upvalue[1]，PC 64–70 使用 upvalue[2]/[3]，PC 84–86 使用 upvalue[4]，与这些用途相符。
 
 ## 尚未解决、不可猜测的部分
-- PC 25–46 的忽略怪物配置表结构和匹配语义仍需完整确认。
-- PC 25–46 的忽略怪物配置表结构和匹配语义仍需完整确认。
-- PC 47–78 的迭代、过滤与距离计算顺序仍需用寄存器定义-使用链复核。
+- 已确认忽略设置的结构：读取 `GET_SETTING(SETTING_IDX_IGNORE_MONSTER)` 的返回值第 1 项；仅当该项为 table 时遍历 `pairs`，仅保留 value 严格等于 `true` 的 key，构造 `ignoredNames[key] = true` 集合。
+- 已确认候选遍历：`ipairs(monsters)`；调用捕获的 `IsDie(actor)`，只有返回 truthy 的对象进入后续（该辅助函数的实际语义是 actor 存在且 `not actor:IsDie()`，即存活判断）。
+- 名称由 `actor:GetName()` 获取；若为 nil/false 则回退到 `"未知怪物"`；命中 `ignoredNames[name]` 则跳过。
+- 未忽略的存活对象调用 `GetPlayerMapPosition(actor)`，再调用 `DistanceCalculation(playerPosition, actorPosition)`，结果写入 `actor._distance` 并插入候选表。
+- 候选表按 `_distance` 升序排序；最终按 `GATHER_THRESHOLD` 取排序后的前 N 项（循环索引超过阈值时退出）。
 - 目前没有运行时验证。
 
-## 下一步
-1. 逐槽位核验 5 个捕获值的创建点和实际值。
-2. 将 PC 1–101 按基本块建立寄存器定义-使用链，重点确认忽略列表和未知怪物过滤。
-3. 完成后才写作者级 Lua 候选，并更新函数状态 CSV。
+## 作者级 Lua 候选
+源码候选：`04_源码候选/root28_FindMonsterCandidates.lua`。该候选将已核实控制流转写为普通 Lua；尚未做游戏运行时验证。特别注意：捕获辅助函数 `IsDie` 的函数名与实际逻辑容易误导，它的返回 truthy 表示对象存活（`actor and not actor:IsDie()`）。
+
+## 尚存验收事项
+- `GATHER_THRESHOLD` 是否可能为 nil、非整数或负数，需结合配置初始化及调用方默认值确认。
+- `GET_SETTING` 返回值第 1 项的真实数据来源/配置样例未做运行时核验；当前结构由本函数索引和迭代方式静态恢复。
+- 对象 `_distance` 是否允许被覆盖及距离函数的单位/坐标类型，需结合辅助函数实现和调用场景复核。
+- 未进行运行时验证。
