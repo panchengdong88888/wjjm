@@ -1,51 +1,39 @@
--- PCallHelper file-write wrapper: first-pass readable reconstruction.
+-- PCallHelper and its nested file-write closure.
 -- Source prototypes:
---   root.children[17] / legacy root/18 / PCallHelper (14 instructions, vararg)
---   root.children[17].children[0] / legacy root/18/1 / Nested_tostring (14 instructions)
--- Static only; not runtime-validated. Capture and call argument identifiers are
--- explanatory names. The method-call argument ordering below is a draft pending
--- a second-pass check of fused operand payloads.
+--   root.children[17] / legacy root/18 / PCallHelper (14 physical instructions)
+--   root.children[17].children[0] / legacy root/18/1 / Nested_tostring (14)
+-- Complete static reconstruction; not runtime-validated.
 
 local function make_PCallHelper(capturedOuter)
     return function(arg1, arg0, ...)
-        -- Child closure captures, in order:
-        --   UP[0] <- parent T[1] (arg1)
-        --   UP[1] <- parent UP[0] (capturedOuter)
-        --   UP[2] <- parent T[0] (arg0)
+        -- Child upvalues:
+        --   UP[0] <- parent arg1
+        --   UP[1] <- parent capturedOuter
+        --   UP[2] <- parent arg0
         local function Nested_tostring()
             local fileUtils = cc.FileUtils:getInstance()
-            local writeStringToFile = fileUtils.writeStringToFile
             local payload = tostring(arg1)
 
-            -- PC1-11 resolve cc.FileUtils:getInstance(), look up
-            -- writeStringToFile, convert the first captured value with tostring,
-            -- then forward the remaining two captured values. The exact argument
-            -- ordering/call receiver is kept provisional until fused operands
-            -- are independently expanded.
-            return writeStringToFile(
-                fileUtils,
+            -- OP_252 invokes capturedOuter(arg0), collects all returned values,
+            -- and forwards that result window as the final argument list to
+            -- writeStringToFile. The method receiver is fileUtils.
+            return fileUtils:writeStringToFile(
                 payload,
-                capturedOuter,
-                arg0
+                capturedOuter(arg0)
             )
         end
 
-        -- PC1-6: pcall the nested writer closure.
+        -- pcall receives Nested_tostring followed by the original varargs.
+        -- Nested_tostring is non-vararg, so extra arguments are ignored.
         local ok, result = pcall(Nested_tostring, ...)
 
-        -- PC7-13: false when pcall failed or the writer returned exactly false;
-        -- nil and other non-false successful return values normalize to true.
-        if not ok then
+        -- Exact wrapper contract:
+        --   pcall error             -> false
+        --   successful result false -> false
+        --   any other successful result (including nil) -> true
+        if not ok or result == false then
             return false
         end
-        return result ~= false
+        return true
     end
 end
-
--- Confirmed wrapper contract from the active branch:
---   pcall failure -> false
---   successful child result == false -> false
---   successful child result ~= false (including nil) -> true
--- The child’s Cocos FileUtils call target and positional arguments remain a
--- first-pass reconstruction because its OP_004/OP_252 fused operands are not
--- fully expanded in the current readable listing.
