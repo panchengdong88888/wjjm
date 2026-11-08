@@ -362,3 +362,14 @@
 - 函数状态 CSV 与机器状态 JSON 同步更新并复读验证。
 - 普通 Lua 草稿累计 23 个；完整静态恢复仍为 27/110（24.5%）；运行时验证 0。
 - 下一步：继续核对 Nested_InitGatherMonsters、Nested_onDamageMsg、Nested_LuaSendMsg 的参数与分支，不根据融合载荷盲猜调用参数。
+
+
+## 检查点 #41（2026-11-09）：Nested_dropTimer 普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第二十批.lua`。
+- 新增审计：`docs/audit/检查点41_短函数草稿批次.md`。
+- 函数：`Nested_dropTimer`，规范路径 `root.children[42].children[21]`，legacy `root/43/22`，29 条物理指令，无子原型。
+- 已恢复关闭分支：通知、`SL:UnSchedule(dropTimer)`、写入 `{"unknown",2}` 状态标记、清除 `isDiuing`。
+- 已恢复开启分支：通知、立即调用 `DiuItems()`，再调用捕获调度函数并传入 `DiuItems, 1.0`，保存返回句柄。
+- 捕获槽位父级 T 寄存器映射和调度 API 真实名称待闭包创建点复核；没有把通用调度函数猜写为具体 API。
+- 函数状态 CSV、机器状态 JSON 已同步；源码、审计、CSV、机器状态和本协议需复读验证。
+- 普通 Lua 草稿累计 24；完整静态恢复仍 27/110（24.5%）；运行时验证 0；检查点 #41。
