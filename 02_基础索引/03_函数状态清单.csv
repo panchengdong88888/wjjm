@@ -96,7 +96,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 93,root/47,root.children[47],root/48,BlacklistPlayerDetection,216,35,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 94,root/48,root.children[48],root/49,PCallHelper_2,10,1,1,完整静态恢复（未运行时验证）,04_源码候选/代理与回调短函数_第四批.lua；pcall 执行无参子闭包 Nested_FriendProxy；失败或结果 false/nil 时返回 nil，否则返回代理对象。
 95,root/48/0,root.children[48].children[0],root/49/1,Nested_FriendProxy,9,5,0,完整静态恢复（未运行时验证）,04_源码候选/代理与回调短函数_第四批.lua；无参数/无捕获，返回 global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)。
-96,root/49,root.children[49],root/50,AnonymousHelper_49,5,0,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+96,root/49,root.children[49],root/50,AnonymousHelper_49,5,0,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十六批.lua；调用UP[0](UP[1])并原样返回结果；后续return不可达；捕获槽位名待确认；检查点37。
 97,root/50,root.children[50],root/51,StorageItems,224,57,2,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 98,root/50/0,root.children[50].children[0],root/51/1,Nested_isOutputted,52,15,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 99,root/50/1,root.children[50].children[1],root/51/2,Nested_Anonymous_2,27,1,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
@@ -104,9 +104,9 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 101,root/52,root.children[52],root/53,onDamageMsg,72,19,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 102,root/52/0,root.children[52].children[0],root/53/1,Nested_JsonDecode,6,2,0,部分核验,调用 SL.JsonDecode，参数来自 upvalue[0]；参数语义由父级传入，待追踪。
 103,root/53,root.children[53],root/54,ScheduleOnce,7,2,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-104,root/54,root.children[54],root/55,AnonymousHelper_54,6,0,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+104,root/54,root.children[54],root/55,AnonymousHelper_54,6,0,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十六批.lua；将UP[0]与首个显式参数转交UP[1]并原样返回；后续return不可达；检查点37。
 105,root/55,root.children[55],root/56,AccountIDValidation,64,21,2,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 106,root/55/0,root.children[55].children[0],root/56/1,Nested_Panel_mini_chat,24,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 107,root/55/1,root.children[55].children[1],root/56/2,Nested_ID,27,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-108,root/56,root.children[56],root/57,ClearTargetID_2,22,9,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+108,root/56,root.children[56],root/57,ClearTargetID_2,22,9,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十六批.lua；检查Facade并retrieveProxy(PlayerInputProxy)，代理存在时SetTargetID(0, SELETE_TARGET_TYPE_FIND)；检查点37。
 109,root/58,root.children[57],root/58,PlayerPos,10,4,0,完整静态恢复（未运行时验证）,04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua；依次调用 SL:GetMetaValue('X') 与 SL:GetMetaValue('Y')，返回两个值；不同于 GetPlayerPosition 的坐标表返回契约。 审计见docs/audit/检查点30_PlayerPos与匿名转发闭包.md。
