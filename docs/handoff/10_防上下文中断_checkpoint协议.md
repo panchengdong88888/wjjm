@@ -82,3 +82,12 @@
 - 本批尚未运行时验证；阈值边界和设置数据样例仍列为后续验收事项。
 - GitHub 提交：源码 `18a47d6a`；审计 `7630e410`；CSV `7234ad4e`；机器状态 `b8a5f3ae`。
 - 下一批：核查 `root.children[7]`（GetOwnerIDText）与 `root.children[38]`（GetOwnerID），随后 DiuItems。
+
+
+## 检查点 #5（2026-11-08）：owner ID 辅助函数组阶段核验
+- 当前核查 root.children[7]（旧 root/8，GetOwnerIDText）与 root.children[38]（旧 root/39，GetOwnerID），各 31 条指令、无子原型。
+- 两者均调用第一个参数对象的 GetOwnerID()，并对 nil 标记、空字符串、-1 进行分支处理；随后涉及 type、tostring 和相等比较。
+- 两者指令结构相似但分支极性与常量排列有差异，不能仅靠相似性复制实现。
+- 尚未确定各自精确返回契约和调用方用途；未写源码、未标记完成。
+- 阶段报告：docs/audit/owner_id_helpers_阶段核验.md。
+- 下一步：精确模拟 PC 1–31 跳转与寄存器，再回溯根函数调用点。
