@@ -95,5 +95,11 @@
       "MainLeftBottom_closure_map_phase3.txt (full closure map)"
     ],
     "notes": "Core textual source, VM dump, prototype/function indexes, corrected disassembly, instruction-level listing, helper candidates/reports, historical drafts and handoff docs are in GitHub. Binary archives and the two full phase3 text files that exist only inside the archive remain in Library; see docs/handoff/09_GitHub迁移清单.md."
+  },
+  "checkpoint_policy": {
+    "enabled": true,
+    "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
+    "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
+    "last_checkpoint_date": "2026-11-08"
   }
 }
