@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续批量恢复未开始的短函数普通Lua草稿；优先选择无子闭包且调用/返回契约明确的函数。随后集中复审第十二至十六批草稿，优先闭合 GetAvailableStoragePage PC22–50，并补齐捕获闭包的父级创建点证据。",
+  "next_action": "继续批量恢复未开始的短函数普通Lua草稿；优先选无子闭包、调用参数和返回契约可直接从反汇编确认的函数。随后集中复审第十二至十七批，尤其核对 Nested_Helper/Nested_s 的通知格式回调及父级捕获来源，并闭合 GetAvailableStoragePage PC22–50。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "37"
+    "last_checkpoint": "38"
   },
   "static_recovered_functions": [
     {
@@ -573,38 +573,38 @@
       "status": "first_pass_draft_pending_static_review_not_runtime_verified"
     }
   ],
-  "draft_function_count": 18,
-  "ordinary_lua_draft_functions": 18,
-  "last_checkpoint": "37",
+  "draft_function_count": 21,
+  "ordinary_lua_draft_functions": 21,
+  "last_checkpoint": "38",
   "checkpoint": "35",
   "drafts": 11,
   "next": "继续批量恢复剩余短函数普通 Lua 草稿；优先选择无子闭包、指令数较少且常量语义明确的函数。随后集中静态复审第十二至十四批，重点闭合 GetAvailableStoragePage 的 PC22–50 分支。",
   "recent_checkpoint": {
-    "id": 37,
+    "id": 38,
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第十六批.lua",
-    "audit_file": "docs/audit/检查点37_短函数草稿批次.md",
+    "source_file": "04_源码候选/短函数草稿_第十七批.lua",
+    "audit_file": "docs/audit/检查点38_短函数草稿批次.md",
     "added_drafts": [
       {
-        "path": "root.children[49]",
-        "legacy": "root/50",
-        "name": "AnonymousHelper_49",
-        "instructions": 5
+        "path": "root.children[53]",
+        "legacy": "root/54",
+        "name": "ScheduleOnce",
+        "instructions": 7
       },
       {
-        "path": "root.children[54]",
-        "legacy": "root/55",
-        "name": "AnonymousHelper_54",
-        "instructions": 6
+        "path": "root.children[42].children[2]",
+        "legacy": "root/43/3",
+        "name": "Nested_Helper",
+        "instructions": 21
       },
       {
-        "path": "root.children[56]",
-        "legacy": "root/57",
-        "name": "ClearTargetID_2",
-        "instructions": 22
+        "path": "root.children[42].children[20]",
+        "legacy": "root/43/21",
+        "name": "Nested_s",
+        "instructions": 21
       }
     ],
-    "draft_count_total": 18,
+    "draft_count_total": 21,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0
   }
