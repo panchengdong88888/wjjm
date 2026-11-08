@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续批量恢复未开始的短函数普通Lua草稿；优先选择控制流清楚且外部调用契约明确的闭包。下一候选检查 Nested_InitGatherMonsters、Nested_onDamageMsg、Nested_LuaSendMsg；先核对融合载荷分支与父级闭包创建点。随后集中复审第十二至十八批，并闭合 GetAvailableStoragePage PC22–50。",
+  "next_action": "继续批量恢复未开始的短函数普通Lua草稿。优先复核 Nested_InitGatherMonsters、Nested_onDamageMsg、Nested_LuaSendMsg 的参数与控制流；不要根据线性融合描述直接猜测调用参数。随后复审第十二至十九批，并闭合 GetAvailableStoragePage PC22–50。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "39"
+    "last_checkpoint": "40"
   },
   "static_recovered_functions": [
     {
@@ -573,26 +573,26 @@
       "status": "first_pass_draft_pending_static_review_not_runtime_verified"
     }
   ],
-  "draft_function_count": 22,
-  "ordinary_lua_draft_functions": 22,
-  "last_checkpoint": "39",
+  "draft_function_count": 23,
+  "ordinary_lua_draft_functions": 23,
+  "last_checkpoint": "40",
   "checkpoint": "35",
-  "drafts": 22,
+  "drafts": 23,
   "next": "继续批量恢复剩余短函数普通 Lua 草稿；优先选择无子闭包、指令数较少且常量语义明确的函数。随后集中静态复审第十二至十四批，重点闭合 GetAvailableStoragePage 的 PC22–50 分支。",
   "recent_checkpoint": {
-    "id": 39,
+    "id": 40,
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第十八批.lua",
-    "audit_file": "docs/audit/检查点39_短函数草稿批次.md",
+    "source_file": "04_源码候选/短函数草稿_第十九批.lua",
+    "audit_file": "docs/audit/检查点40_短函数草稿批次.md",
     "added_drafts": [
       {
-        "path": "root.children[55].children[0]",
-        "legacy": "root/56/1",
-        "name": "Nested_Panel_mini_chat",
-        "instructions": 24
+        "path": "root.children[42].children[10]",
+        "legacy": "root/43/11",
+        "name": "Nested_shiquTimer",
+        "instructions": 25
       }
     ],
-    "draft_count_total": 22,
+    "draft_count_total": 23,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0
   }
