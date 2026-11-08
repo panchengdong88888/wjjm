@@ -36,3 +36,33 @@
 
 ### 指令级返回路径观察（待按 VM 跳转语义最终确认）
 两函数前 11 条指令都先调用 actor:GetOwnerID()，再对 nil 标记、空串、-1 作分支；其后对非特殊值调用 type，字符串类型路径还涉及 tostring 和相等比较。反汇编器将若干 opcode 解释为跳转/融合载荷的地方存在需要回查原始解释器语义的疑点，因此本报告暂不将某个布尔返回值或字符串返回值定为最终结论。
+
+
+## DiuItems 实际捕获槽位与调用点（2026-11-08）
+
+### 捕获映射纠正
+根原型在 PC 214 创建 `root.children[45]`（旧标签 `root/46`，DiuItems），捕获数为 22。按紧随其后的 22 条捕获描述顺序（根寄存器依次为 R18、R14、R13、R4、R23、R35、R26、R34、R15、R32、R17、R16、R19、R20、R22、R36、R21、R31、R30、R33、R24、R8）可确认：
+- DiuItems upvalue[9] = 根 R32 = `GetOwnerID`（root.children[38]）。
+- DiuItems upvalue[17] = 根 R31 = `GetOwnerIDText`（root.children[7]）。
+- 先前检查点把两个 helper 与 MainLoop 的关系写得过宽；实际直接捕获它们的是 DiuItems（root.children[45]），不是 root.children[19] MainLoop。后续应以本节映射为准。
+
+### DiuItems 中的实际调用
+- PC 49–52：从 upvalue[9] 取出 `GetOwnerID`，调用时传入两个参数：当前 R6、R0。返回值在 R7，PC 53 检查其 truthiness；truthy 路径跳过 PC 55–60 的 table.insert 分支，false 路径执行该插入分支。插入分支具体数据业务意义仍需追踪。
+- PC 124–127：从 upvalue[17] 取出 `GetOwnerIDText`，调用时传入 R3、R4。返回值在 R5，PC 128–129 控制两个明确的日志路径：truthy 路径执行“怪物 %s 归属已变更为自己”日志；false 路径跳转至“怪物 %s 归属未变更或已离开视野”日志。因此该调用点确实把 GetOwnerIDText 的真值当作“归属已变更为自己”的判定。
+
+### 两函数的分支真值表（按 VM 比较与跳转指令静态推导）
+两者都先取第一个参数对象的 `GetOwnerID()` 返回值；特殊值（VM nil 标记、空字符串、-1）均返回 false。
+
+| 输入 ownerID 情况 | GetOwnerIDText（root.children[7]） | GetOwnerID（root.children[38]） |
+|---|---:|---:|
+| nil / 空字符串 / -1 | false | false |
+| Lua string | 与 `tostring(ownerID)` 相等，正常字符串路径为 true | 与 `tostring(ownerID)` 不相等，正常字符串路径为 false |
+| 非 string | `ownerID == 第二参数` | `ownerID ~= 第二参数` |
+
+说明：上表是按 PC 3–30 的比较极性和跳转目标逐条推导；没有运行时样本。对于 string 分支，第二参数没有参与最终比较。不能把两个 helper 简化成同一函数的正反版本而忽略特殊值与类型分支。
+
+### 仍需核验
+- DiuItems PC 49–60 的插入分支实际维护什么集合，以及 GetOwnerID 返回 true/false 分别对应哪种归属状态。
+- PC 124–147 的两个参数 R3/R4 的来源与具体内容，确认 string ownerID 路径为何不比较第二参数。
+- 获取原始游戏运行时样本，验证 ownerID 的实际类型分布。
+- 未运行时验证，暂不将两个函数标记为作者级源码完成。
