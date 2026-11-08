@@ -299,3 +299,13 @@
 - 函数状态 CSV 和机器状态 JSON 已同步；新源码和审计均已从 GitHub 复读验证。
 - 统计：完整静态恢复 27/110（24.5%）；普通 Lua 草稿 4 个；运行时验证 0。
 - 下一批：继续生成短函数草稿，优先 SetButtonVisibilityState、ResetGatherMonsterData、StopGatherMonsters；FindMonsterInCurrViewField 需先核对捕获谓词和 SL 调用契约。
+
+
+## 检查点 #34（2026-11-09）：短函数普通 Lua 草稿批次
+- 新增源码：`04_源码候选/短函数草稿_第十三批.lua`。
+- 本批草稿：SetButtonVisibilityState（root.children[10]，15 指令）、ResetGatherMonsterData（root.children[26]，20 指令）、StopGatherMonsters（root.children[27]，25 指令）、FindMonsterInCurrViewField（root.children[14]，27 指令）。
+- 已读取 corrected disassembly、VM dump、闭包创建点。捕获映射：SetButton UP[0..1]=root T[0,1]；Reset UP[0..8]=root T[15,16,17,25,19,20,21,22,4]；Stop UP[0..6]=root T[18,3,25,23,13,35,4]；FindMonster UP[0]=root T[30]，对应 IsDie。
+- FindMonster 草稿调用 `SL:FindMonsterInCurrViewField(true,true)`，按 IsDie truthy 和 GetID truthy 构造 ID->actor 表。Reset/Stop 的未知捕获业务名保留占位名称，不臆造。
+- 函数状态 CSV 与机器状态 JSON 同步；本批源码及审计已创建。后续复读验证完成后方可继续。
+- 普通 Lua 草稿累计 8 个；完整静态恢复仍为 27/110（24.5%）；运行时验证 0。
+- 下一步：GetAvailableStoragePage（root.children[36]）、DestroyUI（root.children[37]）、ShowHideAllButtons（root.children[40]）。
