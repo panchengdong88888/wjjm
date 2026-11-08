@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续批量恢复。先沿 root/20 初始化点向前追踪父级 T[23]、T[13]、T[35] 的赋值来源，确认 InitGatherMonsters 的 UP[2..4] 真实角色；同时单独解析 root/18/1 中 PC9-13 的融合调用和返回分支，厘清 UP[1](UP[2]) 与 writeStringToFile 的关系。随后挑选 PickUpItems 的短子闭包或其他简单包装函数。",
+  "next_action": "继续批量恢复。追踪 root T[23]、T[13]、T[35] 在根初始化函数中的赋值来源；独立解析 root.children[17].children[0] PC9-13 的 OP_004/OP_252 融合调用及返回分支；然后处理 PickUpItems 的短子闭包或其他简单包装函数。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -335,5 +335,52 @@
       ],
       "status": "corrected; previous attribution superseded"
     }
-  ]
+  ],
+  "init_gather_capture_review": {
+    "prototype": "root.children[19]",
+    "closure_creation": "root PC238",
+    "capture_count": 7,
+    "captures": [
+      {
+        "upvalue": 0,
+        "parent_source": "root T[3]",
+        "role": "table containing gatherTimer"
+      },
+      {
+        "upvalue": 1,
+        "parent_source": "root T[18]",
+        "role": "set to true"
+      },
+      {
+        "upvalue": 2,
+        "parent_source": "root T[23]",
+        "role": "callable invoked with UP[3].IDLE"
+      },
+      {
+        "upvalue": 3,
+        "parent_source": "root T[13]",
+        "role": "table/value source for IDLE member"
+      },
+      {
+        "upvalue": 4,
+        "parent_source": "root T[35]",
+        "role": "zero-argument callable"
+      },
+      {
+        "upvalue": 5,
+        "parent_source": "root T[8]",
+        "role": "configuration containing CHECK_INTERVAL and GATHER_THRESHOLD"
+      },
+      {
+        "upvalue": 6,
+        "parent_source": "root T[4]",
+        "role": "notification callback"
+      }
+    ],
+    "unresolved": [
+      "Domain identities of root T[23], T[13], T[35] not yet proven; do not promote semantic placeholder names to original identifiers."
+    ],
+    "audit_file": "docs/audit/检查点25_InitGatherMonsters捕获来源复核.md",
+    "runtime_verified": false
+  }
 }
