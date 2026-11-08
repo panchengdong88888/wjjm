@@ -282,3 +282,9 @@
 - 通知表字段和 `SL.ShowLocalNoticeByType(notice)` 调用完整，已提升为完整静态恢复（未运行时验证）。
 - 总静态恢复数由 16 增至 17；运行时验证仍为 0。
 - 详细报告：`docs/audit/检查点22_ShowLocalNoticeByType捕获闭合.md`。
+
+
+## 检查点 #23（2026-11-08）：InitGatherMonsters 主体草稿
+- 新增 `04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua`，恢复旧 timer 取消、running 标志、IDLE 状态切换、reset helper、Schedule(MainLoop,CHECK_INTERVAL)、阈值启动提示。
+- UP[2..4] 领域身份仍未知，使用角色型临时名称，保持草稿状态。
+- 详细报告：`docs/audit/检查点23_InitGatherMonsters主体草稿.md`。
