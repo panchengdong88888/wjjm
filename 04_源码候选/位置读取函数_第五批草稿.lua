@@ -11,19 +11,13 @@ local function PlayerPos()
 end
 
 -- root.children[18] / legacy root/19 / GetPlayerPosition (19 physical instructions)
--- First-pass draft: reads X and Y independently, normalizes missing coordinates
--- to zero, then returns a coordinate table. PC14 contains fused table/default
--- construction whose exact intermediate table shape needs a second-pass check.
+-- Complete static reconstruction from all 19 physical instructions.
+-- X and Y are read independently; each false/nil result takes a zero fallback.
+-- The fused PC14 sequence constructs the fallback value/table path; PC15-17
+-- build the returned coordinate table and assign x/y fields.
 local function GetPlayerPosition()
-    local x = SL:GetMetaValue("X")
-    if not x then
-        x = 0
-    end
-
-    local y = SL:GetMetaValue("Y")
-    if not y then
-        y = 0
-    end
+    local x = SL:GetMetaValue("X") or 0
+    local y = SL:GetMetaValue("Y") or 0
 
     return {
         x = x,
