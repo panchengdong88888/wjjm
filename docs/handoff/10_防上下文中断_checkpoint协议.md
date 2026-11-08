@@ -327,3 +327,11 @@
 - 函数状态 CSV、机器状态 JSON 与本检查点同步。
 - 普通 Lua 草稿累计 15 个；完整静态恢复仍为 27/110（24.5%）；运行时验证 0。
 - 下一步：继续批量恢复短函数；后续集中复审第十二至十五批，优先解决 GetAvailableStoragePage PC22–50，并补齐捕获闭包父级创建点证据。
+
+## 检查点 #37（2026-11-09）：三个短包装/转发函数草稿
+- 新增 `04_源码候选/短函数草稿_第十六批.lua`：AnonymousHelper_49、AnonymousHelper_54、ClearTargetID_2，共 3 个。
+- 两个匿名包装函数按捕获槽位与显式参数转发，保留多返回值语义；不可达尾部 return 未补入活动路径。
+- ClearTargetID_2 恢复 Facade:retrieveProxy(PlayerInputProxy) 与 SetTargetID(0, SELETE_TARGET_TYPE_FIND) 调用链。
+- 新增审计 `docs/audit/检查点37_短函数草稿批次.md`；函数状态 CSV、机器状态 JSON 同步更新。
+- 普通 Lua 草稿累计 18 个；完整静态恢复仍为 27/110（24.5%）；运行时验证 0。
+- 下一步：继续批量短函数草稿，并集中复审第十二至十六批，重点闭合 GetAvailableStoragePage PC22–50。
