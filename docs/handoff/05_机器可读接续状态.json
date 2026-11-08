@@ -21,7 +21,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续精确模拟 root.children[7] 与 root.children[38] 的 PC 1–31 跳转和寄存器数据流，再从根函数闭包创建/调用点确认各自返回契约；暂不生成猜测源码。",
+  "next_action": "核对 root.children[7]/[38] 的原始解释器跳转语义（尤其 PC 3–11、15–30 的比较与跳转组合），并沿 root.children[31]/MainLoop 的捕获链定位实际调用消费点；不要根据函数名或反汇编器伪代码猜返回值。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -150,13 +150,17 @@
       "both prototypes call argument 1 GetOwnerID()",
       "both test nil sentinel, empty string, and -1",
       "both contain type/tostring conversion and equality branches",
-      "31 instructions each, no child prototypes"
+      "31 instructions each, no child prototypes",
+      "root PC 191/192 create GetOwnerIDText and GetOwnerID closures into R31/R32",
+      "root PC 212 creates root.children[31]; R32 and R31 are subsequently fed into closure setup at PC 224/232",
+      "root.children[32] wrapper has two upvalues; forwards varargs to upvalue[0] and returns its result; upvalue[1] is not read in its six instructions"
     ],
     "unresolved": [
       "exact branch return values and polarity",
       "GetOwnerIDText return contract",
       "GetOwnerID return contract",
-      "caller argument and return-value usage"
+      "caller argument and return-value usage",
+      "exact owner helper return semantics still require opcode jump/fusion verification and caller dataflow"
     ],
     "runtime_verified": false,
     "report_file": "docs/audit/owner_id_helpers_阶段核验.md"
