@@ -21,7 +21,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "对 DiuItems root.children[46] 完成 PC1–169 的作者级普通 Lua 静态整理：按已核实 CFG 写出可读候选，保留 PC91–95 死分支的证据注释；再逐寄存器复核 pairs/ipairs 两段泛型迭代器、通知 helper 的单参数调用和候选空表分支。完成后做独立静态审阅，确认所有显式 return/状态复位；不要标记运行时验证。",
+  "next_action": "开始 DiuItems 作者级普通 Lua 静态候选整理：根据已闭合 CFG 还原防重入、GetDroppedItems 两返回值、BAG_DATA pairs 筛选、死分支、候选记录、ipairs 丢弃与消息汇总；对每段代码逐项映射原始 PC，保留“死分支为何存在”及外部API语义未知的标注。完成独立静态审阅后再决定是否可列为完整静态恢复；运行时验证仍为 false。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -144,28 +144,29 @@
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "DiuItems entry/early exits and GetDroppedItems return contract",
-    "status": "entry_and_loop_control_flow_static_audit_extended",
+    "target": "DiuItems generic-for control flow and ground-cap notice exact text",
+    "status": "iterator_cfg_verified_and_notice_text_corrected",
     "verified": [
-      "root.children[4] GetDroppedItems obtains global.dropItemManager:FindDropItemInCurrViewFieldAll(), captures both returned values, and returns them unchanged",
-      "DiuItems uses the second return value as ground-item count; if false/nil it normalizes it to 0",
-      "DiuItems entry lock: if UP[0].isDiuing is truthy it returns immediately; otherwise it sets isDiuing=true",
-      "If ground item count exceeds 35, it sends the formatted over-limit notice, clears isDiuing, and returns",
-      "If SL:GetMetaValue('BAG_DATA') is false/nil, it clears isDiuing and returns",
-      "Normal completion, empty candidate early exit, and ground-cap stop path are statically distinguishable; all explicit normal/early return paths after lock acquisition clear isDiuing",
-      "Already-running early return intentionally does not clear the flag because it did not acquire the lock",
-      "There is no visible protected-call/finally cleanup; exceptions during helper/API calls may leave isDiuing true",
-      "ShowLocalNoticeByType upvalue is invoked with a single message string at the DiuItems call sites",
-      "pairs(BAG_DATA) and ipairs(candidates) iterator call/loop control records are mapped; nil first iterator result terminates the generic-for loop via OP_117"
+      "pairs(BAG_DATA) setup: pairs returns iterator/state/control; OP_117 calls iterator and uses first result nil to terminate, while second result is current item; nil/false item skips body and advances",
+      "Name and MakeIndex each have truthiness guards that skip the current item when false/nil",
+      "ITEM_IS_BIND truthy skips current item; false/nil proceeds",
+      "R4 remains constant 1, so PC91–95 matcher call remains unreachable; PC96–112 inserts candidate",
+      "candidate record is {makeIndex=item.MakeIndex, count=item.OverLap or 1, name=item.Name}; OverLap false/nil also defaults to 1 due to truthiness test",
+      "ipairs(candidates) iterator uses OP_339; first return nil terminates the loop",
+      "PC124 initializes R8=0; PC157 increments R8 once per message send; R8 is the summary count",
+      "At cap, PC131–136 constructs exact notice '地面物品已满35件，停止丢弃' using R0=35, not current ground count R2",
+      "PC129 compares R0<=R2; if true, sends cap notice and breaks to summary; if false, sends current candidate",
+      "PC143–156 message packet argument order remains statically resolved"
     ],
     "unresolved": [
-      "why the keyword matcher table/child closure and unreachable matcher call path remain in the compiled function",
-      "whether LuaSendMsg and external helpers can fail or have side effects not represented in this function body",
-      "author-level formatting/reconstruction review and runtime validation"
+      "why keyword matcher table/child closure and unreachable call path remain",
+      "external LuaSendMsg and UI helper runtime failure/side-effect semantics",
+      "author-level ordinary Lua candidate and independent static review",
+      "runtime validation"
     ],
     "runtime_verified": false,
     "report_file": "docs/audit/root46_DiuItems_阶段分析.md",
-    "checkpoint_report": "docs/audit/root46_DiuItems_检查点12_入口返回值与清理路径.md"
+    "checkpoint_report": "docs/audit/root46_DiuItems_检查点13_迭代器与上限提示校正.md"
   },
   "corrections": [
     {
