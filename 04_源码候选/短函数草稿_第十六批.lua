@@ -19,8 +19,8 @@ local function AnonymousHelper_54(firstArg)
     return UPVALUE_1(UPVALUE_0, firstArg)
 end
 
--- 原型：root.children[57]
--- legacy：root/58；物理指令：10
+-- 原型：root.children[56]
+-- legacy：root/57；物理指令：22
 -- 先检查 Facade，再取 PlayerInputProxy；代理存在时设置查找类型的目标 ID 为 0。
 local function ClearTargetID_2()
     local facade = global.Facade
