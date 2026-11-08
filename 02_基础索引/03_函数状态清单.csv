@@ -11,7 +11,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 7,root/5,root.children[5],root/6,TakeItems,99,23,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 8,root/6,root.children[6],root/7,InstallDamageHook,40,9,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 9,root/6/0,root.children[6].children[0],root/7/1,Nested_onDamageMsg,18,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-10,root/7,root.children[7],root/8,GetOwnerIDText,31,7,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+10,root/7,root.children[7],root/8,GetOwnerIDText,31,7,0,部分静态核验（未运行时验证）,已核对 MainLoop root.children[45] 的 upvalue[17] 调用点（PC124-127）及真假分支日志；返回契约仍需结合本体指令和调用参数复核。
 11,root/8,root.children[8],root/9,FormatStateChange,10,3,0,部分核验,string.format 与“状态切换: %s -> %s”明确；vararg 参数映射待核。
 12,root/9,root.children[9],root/10,ReadNumericConfig,45,13,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 13,root/10,root.children[10],root/11,SetButtonVisibilityState,15,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
@@ -49,7 +49,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 45,root/35,root.children[35],root/36,SetTargetID,26,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 46,root/36,root.children[36],root/37,GetAvailableStoragePage,51,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 47,root/37,root.children[37],root/38,DestroyUI,31,11,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-48,root/38,root.children[38],root/39,GetOwnerID,31,7,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+48,root/38,root.children[38],root/39,GetOwnerID,31,7,0,部分静态核验（未运行时验证）,已核对 MainLoop root.children[45] 的 upvalue[9] 调用点（PC49-52）及插入/跳过分支；参数与插入集合业务含义仍待确认。
 49,root/39,root.children[39],root/40,GetMainPlayerID,6,3,0,静态源码候选,可重建为 global.gamePlayerController:GetMainPlayerID()；无目标运行时验证。
 50,root/40,root.children[40],root/41,ShowHideAllButtons,47,9,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 51,root/41,root.children[41],root/42,MoveItemToQuickUse,133,26,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
@@ -91,7 +91,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 87,root/42/22/0/0/0,root.children[42].children[22].children[0].children[0].children[0],root/43/23/1/1/1,Nested_Helper_11,4,1,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 88,root/43,root.children[43],root/44,GetOwnerDescription,20,7,0,完整静态恢复（未运行时验证）,调用 actor:GetOwnerID；VM 的 ["unknown",2] 是 nil 序列化标记；按 nil/空串/-1/主玩家 ID 分类；参数 actor、mainPlayerID 及返回顺序 ownerID、description 已由 MainLoop 调用点核验。
 89,root/44,root.children[44],root/45,GetPlayerMapPosition,17,5,0,部分核验,涉及 mCurrMapX/mCurrMapY 与 x/y；返回表/边界条件尚未完整还原。
-90,root/45,root.children[45],root/46,MainLoop,417,41,0,结构已核验，源码未恢复,417 条指令引怪状态机；22 个 upvalue 捕获寄存器映射已从创建点复核；完整 CFG/source 未完成。
+90,root/45,root.children[45],root/46,MainLoop,417,41,0,结构与部分调用点已核验，源码未恢复,417 条指令引怪状态机；22 个 upvalue 映射已复核；upvalue[9]/[17] 分别为 GetOwnerID/GetOwnerIDText，PC49-60 与 PC124-147 为对应调用及分支；完整 CFG/source 未完成。
 91,root/46,root.children[46],root/47,DiuItems,169,64,1,结构已核验，源码未恢复,169 条指令自动丢弃物品逻辑；root PC63 创建并捕获 R2/R5；完整源码未恢复。
 92,root/46/0,root.children[46].children[0],root/47/1,Nested_string_2,20,4,0,静态源码候选,20 条指令，纯文本关键词匹配，捕获 root/46 R5 的关键词表；无运行时验证。
 93,root/47,root.children[47],root/48,BlacklistPlayerDetection,216,35,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
