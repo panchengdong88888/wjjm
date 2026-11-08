@@ -21,7 +21,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续 root.children[46] DiuItems：确认 PC91–98 是被常量条件永久绕过的死分支，评估其子闭包与关键词表是否仅为无效/诱饵逻辑；随后从完整 CFG 复核 PC1–35 的 GetDroppedItems 返回值与所有清理路径，完成 DiuItems 作者级静态重建。运行时验证仍需单独处理。",
+  "next_action": "对 DiuItems root.children[46] 完成 PC1–169 的作者级普通 Lua 静态整理：按已核实 CFG 写出可读候选，保留 PC91–95 死分支的证据注释；再逐寄存器复核 pairs/ipairs 两段泛型迭代器、通知 helper 的单参数调用和候选空表分支。完成后做独立静态审阅，确认所有显式 return/状态复位；不要标记运行时验证。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -144,29 +144,28 @@
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "DiuItems bind filter, ground-item cap and discard packet arguments",
-    "status": "static_semantics_resolved_except_dead_branch_provenance_and_runtime",
+    "target": "DiuItems entry/early exits and GetDroppedItems return contract",
+    "status": "entry_and_loop_control_flow_static_audit_extended",
     "verified": [
-      "PC82–86 resolves SL:GetMetaValue('ITEM_IS_BIND', item): SL is passed as receiver, metadata key is ITEM_IS_BIND, and current BAG_DATA item is the second explicit argument",
-      "PC87 tests returned ITEM_IS_BIND value; truthy result falls through to PC88 unconditional jump to PC113, rejecting the current item; false/nil result skips that jump and continues candidate processing",
-      "PC89 compares R4 with numeric 1; R4 is initialized to 1 at PC36 and no intervening instruction in the active path writes R4, so the comparison is statically always true",
-      "Because PC89 is always true, PC90 unconditionally jumps to PC96; PC91–95 (the apparent name matcher invocation) are unreachable in this function's active control flow",
-      "PC96 sets R14=true; PC97 sees truthy and skips PC98 jump, then PC99–112 inserts the candidate; therefore the keyword child closure is created and the keyword table assembled but the matcher call site is dead under the current bytecode",
-      "PC1 initializes R0=35; GetDroppedItems returns its ground-item count in R2 (PC10); PC129 tests 35 <= R2, and PC158 increments R2 after each successful discard send; thus the cap is checked before each send and the local count is advanced after send",
-      "PC143–156 prepares LuaSendMsg arguments in order: global.MsgType.MSG_CS_MAP_ITEM_DISCARD, candidate.makeIndex, candidate.count, 0, 0, candidate.name, string.len(candidate.name)",
-      "PC157 increments R8 once per send, and PC161–166 reports '共丢弃 N 件物品' using R8; this counts successful send attempts/messages, not stack quantity",
-      "PC131–136 reports '地面物品已满' and appends the current ground count plus '件，停止丢弃' when the count has reached 35",
-      "PC167–169 clears isDiuing and returns after normal completion"
+      "root.children[4] GetDroppedItems obtains global.dropItemManager:FindDropItemInCurrViewFieldAll(), captures both returned values, and returns them unchanged",
+      "DiuItems uses the second return value as ground-item count; if false/nil it normalizes it to 0",
+      "DiuItems entry lock: if UP[0].isDiuing is truthy it returns immediately; otherwise it sets isDiuing=true",
+      "If ground item count exceeds 35, it sends the formatted over-limit notice, clears isDiuing, and returns",
+      "If SL:GetMetaValue('BAG_DATA') is false/nil, it clears isDiuing and returns",
+      "Normal completion, empty candidate early exit, and ground-cap stop path are statically distinguishable; all explicit normal/early return paths after lock acquisition clear isDiuing",
+      "Already-running early return intentionally does not clear the flag because it did not acquire the lock",
+      "There is no visible protected-call/finally cleanup; exceptions during helper/API calls may leave isDiuing true",
+      "ShowLocalNoticeByType upvalue is invoked with a single message string at the DiuItems call sites",
+      "pairs(BAG_DATA) and ipairs(candidates) iterator call/loop control records are mapped; nil first iterator result terminates the generic-for loop via OP_117"
     ],
     "unresolved": [
-      "why keyword table and matcher child closure are constructed although the only matcher call site is unreachable (obfuscation/dead code versus intentionally disabled filter)",
-      "whether LuaSendMsg has external side effects/returns or failure handling outside the visible function",
-      "exception behavior: bytecode has explicit normal/early-return cleanup, but no evidence yet of protected-call cleanup on runtime exceptions",
-      "complete end-to-end ordinary Lua formatting and runtime verification"
+      "why the keyword matcher table/child closure and unreachable matcher call path remain in the compiled function",
+      "whether LuaSendMsg and external helpers can fail or have side effects not represented in this function body",
+      "author-level formatting/reconstruction review and runtime validation"
     ],
     "runtime_verified": false,
     "report_file": "docs/audit/root46_DiuItems_阶段分析.md",
-    "checkpoint_report": "docs/audit/root46_DiuItems_检查点11_绑定上限与消息参数.md"
+    "checkpoint_report": "docs/audit/root46_DiuItems_检查点12_入口返回值与清理路径.md"
   },
   "corrections": [
     {
