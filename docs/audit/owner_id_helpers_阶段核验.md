@@ -38,12 +38,12 @@
 两函数前 11 条指令都先调用 actor:GetOwnerID()，再对 nil 标记、空串、-1 作分支；其后对非特殊值调用 type，字符串类型路径还涉及 tostring 和相等比较。反汇编器将若干 opcode 解释为跳转/融合载荷的地方存在需要回查原始解释器语义的疑点，因此本报告暂不将某个布尔返回值或字符串返回值定为最终结论。
 
 
-## DiuItems 实际捕获槽位与调用点（2026-11-08）
+## MainLoop 实际捕获槽位与调用点（2026-11-08；已纠正路径归属）
 
 ### 捕获映射纠正
-根原型在 PC 214 创建 `root.children[45]`（旧标签 `root/46`，DiuItems），捕获数为 22。按紧随其后的 22 条捕获描述顺序（根寄存器依次为 R18、R14、R13、R4、R23、R35、R26、R34、R15、R32、R17、R16、R19、R20、R22、R36、R21、R31、R30、R33、R24、R8）可确认：
-- DiuItems upvalue[9] = 根 R32 = `GetOwnerID`（root.children[38]）。
-- DiuItems upvalue[17] = 根 R31 = `GetOwnerIDText`（root.children[7]）。
+根原型在 PC 214 创建 `root.children[45]`（旧标签 `root/46`，MainLoop），捕获数为 22。按紧随其后的 22 条捕获描述顺序（根寄存器依次为 R18、R14、R13、R4、R23、R35、R26、R34、R15、R32、R17、R16、R19、R20、R22、R36、R21、R31、R30、R33、R24、R8）可确认：
+- MainLoop upvalue[9] = 根 R32 = `GetOwnerID`（root.children[38]）。
+- MainLoop upvalue[17] = 根 R31 = `GetOwnerIDText`（root.children[7]）。
 - 先前检查点把两个 helper 与 MainLoop 的关系写得过宽；实际直接捕获它们的是 DiuItems（root.children[45]），不是 root.children[19] MainLoop。后续应以本节映射为准。
 
 ### DiuItems 中的实际调用
@@ -62,7 +62,19 @@
 说明：上表是按 PC 3–30 的比较极性和跳转目标逐条推导；没有运行时样本。对于 string 分支，第二参数没有参与最终比较。不能把两个 helper 简化成同一函数的正反版本而忽略特殊值与类型分支。
 
 ### 仍需核验
-- DiuItems PC 49–60 的插入分支实际维护什么集合，以及 GetOwnerID 返回 true/false 分别对应哪种归属状态。
+- MainLoop PC 49–60 的插入分支实际维护什么集合，以及 GetOwnerID 返回 true/false 分别对应哪种归属状态。
 - PC 124–147 的两个参数 R3/R4 的来源与具体内容，确认 string ownerID 路径为何不比较第二参数。
 - 获取原始游戏运行时样本，验证 ownerID 的实际类型分布。
 - 未运行时验证，暂不将两个函数标记为作者级源码完成。
+
+
+## 路径归属更正（2026-11-08，优先级高于上方旧版措辞）
+
+此前检查点 #7 的标题和部分描述误把 MainLoop 的调用点写成 DiuItems。现按仓库权威原型索引、闭包映射和 corrected phase3 反汇编更正：
+
+- `root.children[45]` / 旧标签 `root/46` = **MainLoop**，417 条指令，22 个 upvalue。根 PC 214 创建，捕获父 root T[18,14,13,4,23,35,26,34,15,32,17,16,19,20,22,36,21,31,30,33,24,8]。
+- `root.children[46]` / 旧标签 `root/47` = **DiuItems**，169 条指令，只有 2 个 upvalue，捕获父 root T[2] 与 T[5]。
+- MainLoop upvalue[9] 对应根 R32 / `GetOwnerID`（`root.children[38]`）；upvalue[17] 对应根 R31 / `GetOwnerIDText`（`root.children[7]`）。
+- 两处调用确实存在于 **MainLoop**：PC49–52 调用 upvalue[9]，PC124–127 调用 upvalue[17]。相同 PC 区间在 DiuItems 中是完全不同的物品筛选/遍历指令。
+- 因此，本报告上节真值表与调用分支证据的归属应读作 MainLoop，而不是 DiuItems。真值表仍属于静态推导，未做运行时验证。
+- 本次路径纠正报告：`docs/audit/路径校正_检查点7_MainLoop与DiuItems.md`。
