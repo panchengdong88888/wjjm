@@ -11,7 +11,7 @@ end
 -- The single upvalue is represented as screenState; its exact original local
 -- identifier is not recovered. The helper builds a notice record and forwards
 -- that one record to SL.ShowLocalNoticeByType.
-local function make_ShowLocalNoticeByType(screenState)
+local function make_ShowLocalNoticeByType(capturedScreenObject)
     return function ShowLocalNoticeByType(message)
         local notice = {
             Type = 10,
@@ -19,9 +19,14 @@ local function make_ShowLocalNoticeByType(screenState)
             FColor = 249,
             BColor = 0,
             X = 5,
-            Y = screenState.screenH - 50,
+            Y = capturedScreenObject.screenH - 50,
         }
 
         SL.ShowLocalNoticeByType(notice)
     end
 end
+
+-- Capture proof: root initializer creates root.children[20] at root PC46;
+-- the immediately following OP_387 capture descriptor selects parent T[0].
+-- The object identity is therefore represented as capturedScreenObject; its
+-- screenH field and use in Y=screenH-50 are directly observed in the child.
