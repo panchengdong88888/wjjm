@@ -24,9 +24,18 @@
 - PC 79–83：取得 `table.sort`，使用唯一子闭包作为比较器。
 - 子闭包 PC 1–8 的核心比较为 `a._distance < b._distance`，返回比较结果。
 
+## 闭包捕获映射（已核对）
+父函数在 PC 194 创建本闭包，随后 PC 195–199 按顺序写入 5 个捕获描述：T[27]、T[30]、T[28]、T[29]、T[8]。结合紧邻创建点之前的 PC 187–193：
+- upvalue[0] = `GetPlayerPosition`（root.children[18]，PC 187 写入 R27）
+- upvalue[1] = `IsDie`（root.children[29]，PC 190 写入 R30）
+- upvalue[2] = `GetPlayerMapPosition`（root.children[44]，PC 188 写入 R28）
+- upvalue[3] = `DistanceCalculation`（root.children[11]，PC 189 写入 R29）
+- upvalue[4] = 父函数先前创建的配置表（R8；PC 86 初始化，PC 87–89 写入 GATHER_THRESHOLD、CHECK_INTERVAL、ATTACK_WAIT_TIME）
+
+因此 upvalue[0..4] 的身份已由捕获顺序和父函数创建点交叉确认，不再列为未解决项。函数内部 PC 13–15 使用 upvalue[0]，PC 51–57 使用 upvalue[1]，PC 64–70 使用 upvalue[2]/[3]，PC 84–86 使用 upvalue[4]，与这些用途相符。
+
 ## 尚未解决、不可猜测的部分
-- 父函数创建闭包时捕获 5 个 T 寄存器：27、30、28、29、8；需要继续核对这 5 个值在创建时的实际含义。
-- 父函数使用的 upvalue 槽位 0–4 必须与捕获描述逐项对应，不能仅凭寄存器号命名。
+- PC 25–46 的忽略怪物配置表结构和匹配语义仍需完整确认。
 - PC 25–46 的忽略怪物配置表结构和匹配语义仍需完整确认。
 - PC 47–78 的迭代、过滤与距离计算顺序仍需用寄存器定义-使用链复核。
 - 目前没有运行时验证。
