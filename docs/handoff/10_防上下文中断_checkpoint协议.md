@@ -346,3 +346,11 @@
 - 普通 Lua 草稿累计 21 个；完整静态恢复仍为 27/110（24.5%）；运行时验证 0。
 - Nested_Helper / Nested_s 的格式回调和父级捕获变量身份列入静态复核，不以当前可读草稿冒充最终源码。
 - 下一步：继续短函数批量恢复；集中复核第十二至十七批，并闭合 GetAvailableStoragePage PC22–50。
+
+## 检查点 #39（2026-11-09）：Nested_Panel_mini_chat
+- 新增 `04_源码候选/短函数草稿_第十八批.lua` 与 `docs/audit/检查点39_短函数草稿批次.md`。
+- 恢复主界面属性栏/聊天面板的三层存在性检查；条件满足时取消捕获定时器并调用 MainLeftBottom.doInit；所有路径最后调用等待提示回调。
+- UPVALUE 用途按使用方式暂定，父级创建点映射仍待确认。
+- 函数状态 CSV 与机器状态 JSON 同步更新并复读验证。
+- 普通 Lua 草稿累计 22 个；完整静态恢复仍为 27/110（24.5%）；运行时验证 0。
+- 下一步：继续恢复短函数；候选优先 Nested_InitGatherMonsters、Nested_onDamageMsg、Nested_LuaSendMsg，但先核对分支和融合载荷。
