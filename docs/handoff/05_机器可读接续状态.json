@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续批量生成短函数普通 Lua 草稿：优先 GetAvailableStoragePage（root.children[36]）、DestroyUI（root.children[37]）、ShowHideAllButtons（root.children[40]）；再集中复审第十二、十三批草稿。不要重复底层 VM 提取、反汇编、opcode 或闭包映射工作。",
+  "next_action": "继续批量恢复剩余短函数普通 Lua 草稿；优先选择无子闭包、指令数较少且常量语义明确的函数。随后集中静态复审第十二至十四批，重点闭合 GetAvailableStoragePage 的 PC22–50 分支。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -573,72 +573,10 @@
       "status": "first_pass_draft_pending_static_review_not_runtime_verified"
     }
   ],
-  "draft_function_count": 8,
-  "ordinary_lua_draft_functions": [
-    {
-      "path": "root.children[46]",
-      "legacy_path": "root/47",
-      "name": "DiuItems",
-      "source_file": "04_源码候选/root46_DiuItems.lua",
-      "status": "first_pass_draft_independently_reviewed",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[11]",
-      "legacy_path": "root/12",
-      "name": "DistanceCalculation",
-      "source_file": "04_源码候选/短函数草稿_第十二批.lua",
-      "status": "first_pass_draft",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[31]",
-      "legacy_path": "root/32",
-      "name": "IsInWhitelistMap",
-      "source_file": "04_源码候选/短函数草稿_第十二批.lua",
-      "status": "first_pass_draft",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[35]",
-      "legacy_path": "root/36",
-      "name": "SetTargetID",
-      "source_file": "04_源码候选/短函数草稿_第十二批.lua",
-      "status": "first_pass_draft",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[10]",
-      "legacy_path": "root/11",
-      "name": "SetButtonVisibilityState",
-      "source_file": "04_源码候选/短函数草稿_第十三批.lua",
-      "status": "first_pass_draft",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[26]",
-      "legacy_path": "root/27",
-      "name": "ResetGatherMonsterData",
-      "source_file": "04_源码候选/短函数草稿_第十三批.lua",
-      "status": "first_pass_draft",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[27]",
-      "legacy_path": "root/28",
-      "name": "StopGatherMonsters",
-      "source_file": "04_源码候选/短函数草稿_第十三批.lua",
-      "status": "first_pass_draft",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[14]",
-      "legacy_path": "root/15",
-      "name": "FindMonsterInCurrViewField",
-      "source_file": "04_源码候选/短函数草稿_第十三批.lua",
-      "status": "first_pass_draft",
-      "runtime_verified": false
-    }
-  ],
-  "last_checkpoint": "34"
+  "draft_function_count": 11,
+  "ordinary_lua_draft_functions": 11,
+  "last_checkpoint": "35",
+  "checkpoint": "35",
+  "drafts": 11,
+  "next": "继续批量恢复剩余短函数普通 Lua 草稿；优先选择无子闭包、指令数较少且常量语义明确的函数。随后集中静态复审第十二至十四批，重点闭合 GetAvailableStoragePage 的 PC22–50 分支。"
 }
