@@ -21,7 +21,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 17,root/14,root.children[14],root/15,FindMonsterInCurrViewField,27,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 18,root/15,root.children[15],root/16,ClearBlacklistItems,63,17,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 19,root/15/0,root.children[15].children[0],root/16/1,Nested_SL,13,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-20,root/16,root.children[16],root/17,PrintLog,38,13,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+20,root/16,root.children[16],root/17,PrintLog,38,13,0,完整静态恢复（未运行时验证）,04_源码候选/PrintLog_日志辅助函数_第七批.lua；table 输入调用 SL.dump(value,"【超本】")；非 table 输入 tostring，存在额外参数时 pcall(string.format,message,...)；PC31-37 只检查 SL.Print 存在而无调用。
 21,root/17,root.children[17],root/18,PCallHelper,14,2,1,首版普通 Lua 草稿（待复核/未运行时验证）,04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua；pcall 失败或子函数严格返回 false 时返回 false，否则返回 true；child 文件写入调用参数仍待展开。
 22,root/17/0,root.children[17].children[0],root/18/1,Nested_tostring,14,5,0,首版普通 Lua 草稿（待复核/未运行时验证）,04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua；解析 cc.FileUtils:getInstance():writeStringToFile 并 tostring(UP[0])；三个捕获值来源已定位，融合调用参数顺序待复核。
 23,root/18,root.children[18],root/19,GetPlayerPosition,19,7,0,首版普通 Lua 草稿（待复核/未运行时验证）,04_源码候选/位置读取函数_第五批草稿.lua；读取 SL X/Y，false/nil 分支默认路径；PC14 含融合 table create/field assignment，当前 y=0 仅为临时表达。
