@@ -309,3 +309,13 @@
 - 函数状态 CSV 与机器状态 JSON 同步；本批源码及审计已创建。后续复读验证完成后方可继续。
 - 普通 Lua 草稿累计 8 个；完整静态恢复仍为 27/110（24.5%）；运行时验证 0。
 - 下一步：GetAvailableStoragePage（root.children[36]）、DestroyUI（root.children[37]）、ShowHideAllButtons（root.children[40]）。
+
+
+## 检查点 #35（2026-11-09）：短函数普通 Lua 草稿批次
+- 新增源码：`04_源码候选/短函数草稿_第十四批.lua`。
+- 本批草稿：GetAvailableStoragePage（root.children[36]，51 指令）、DestroyUI（root.children[37]，31 指令）、ShowHideAllButtons（root.children[40]，47 指令）。
+- DestroyUI 指令流程：isHidden=false；存在 resTimer 时 SL:UnSchedule 并清空；resWin=nil；GUI:Win_CloseAll；遍历捕获表并 GUI:setVisible(控件,true)。
+- ShowHideAllButtons：分别取消 rewardTimer/cruiseTimer；恢复 UP[1] 映射表控件可见；hidebut truthy 时隐藏 UP[2] 控件并清空 hidebut。
+- GetAvailableStoragePage 已形成可读近似草稿，但 PC22–50 复杂条件分支仍未完全闭合；容量计算和返回值只作为临时模型，不声称源码等价。
+- CSV/机器状态/协议已同步；普通 Lua 草稿累计 11 个；完整静态恢复 27/110（24.5%）；运行时验证 0。
+- 下一步：继续批量短函数草稿，后续集中复审第十二至十四批，优先解决 GetAvailableStoragePage PC22–50。
