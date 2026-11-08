@@ -1,0 +1,7000 @@
+-- MainLeftBottom.lua 全量 Lua 源码草稿（批量第一遍）
+-- 目标：先覆盖全部原型函数，暂不做正确性核验。
+-- 重要说明：此稿是从 VM 指令语义机械转写的“寄存器级 Lua 伪源码”，不是最终可执行明文。
+-- 每个函数保留原型路径、函数候选名、常量池及逐条指令语义；未知/复杂指令以注释保留，避免丢失信息。
+-- 后续阶段再把寄存器操作提升为局部变量、if/for/while、调用和返回语句，并核实调用关系。
+-- 原始文件 SHA256: 458b2f98d635307cc566e38222cf7c59bea3d0eeee545b55dbdf79c665a96bfe
+-- 原型数: 110 | 物理指令数: 5580
+
+-- VM 原型索引（路径 -> 草稿函数名）
+-- root         MainLeftBottom_Module | records=412 | candidate_reachable=True
+-- root/0       FileExistCheck_pcall_wrapper | records=32 | candidate_reachable=True
+-- root/0/0     Nested_removeFile | records=5 | candidate_reachable=False
+-- root/1       GetStorageItemData | records=77 | candidate_reachable=True
+-- root/2       GetWritablePath | records=10 | candidate_reachable=True
+-- root/3       MoveTo | records=51 | candidate_reachable=True
+-- root/4       GetDroppedItems | records=8 | candidate_reachable=True
+-- root/5       TakeItems | records=99 | candidate_reachable=True
+-- root/6       InstallDamageHook | records=40 | candidate_reachable=True
+-- root/6/0     Nested_onDamageMsg | records=18 | candidate_reachable=True
+-- root/7       GetOwnerIDText | records=31 | candidate_reachable=True
+-- root/8       FormatStateChange | records=10 | candidate_reachable=True
+-- root/9       ReadNumericConfig | records=45 | candidate_reachable=True
+-- root/10      SetButtonVisibilityState | records=15 | candidate_reachable=True
+-- root/11      DistanceCalculation | records=25 | candidate_reachable=True
+-- root/12      LuaSendMsg | records=92 | candidate_reachable=True
+-- root/13      GetMapId | records=9 | candidate_reachable=True
+-- root/14      FindMonsterInCurrViewField | records=27 | candidate_reachable=True
+-- root/15      ClearBlacklistItems | records=63 | candidate_reachable=True
+-- root/15/0    Nested_SL | records=13 | candidate_reachable=True
+-- root/16      PrintLog | records=38 | candidate_reachable=True
+-- root/17      PCallHelper | records=14 | candidate_reachable=True
+-- root/17/0    Nested_tostring | records=14 | candidate_reachable=True
+-- root/18      GetPlayerPosition | records=19 | candidate_reachable=True
+-- root/19      InitGatherMonsters | records=36 | candidate_reachable=True
+-- root/19/0    Nested_MainLoop | records=3 | candidate_reachable=True
+-- root/20      ShowLocalNoticeByType | records=15 | candidate_reachable=True
+-- root/21      PickUpItems | records=172 | candidate_reachable=True
+-- root/21/0    Nested_dist | records=19 | candidate_reachable=True
+-- root/21/1    Nested_dist_2 | records=8 | candidate_reachable=True
+-- root/22      GetMapData2DPtr | records=144 | candidate_reachable=True
+-- root/23      Builtsetting | records=55 | candidate_reachable=True
+-- root/24      UseItemByIndex | records=33 | candidate_reachable=True
+-- root/25      DeathAutoBlacklist | records=47 | candidate_reachable=True
+-- root/25/0    Nested_RequestAddBlacklistByName | records=6 | candidate_reachable=True
+-- root/26      ResetGatherMonsterData | records=20 | candidate_reachable=True
+-- root/27      StopGatherMonsters | records=25 | candidate_reachable=True
+-- root/28      FindMonsterCandidates | records=102 | candidate_reachable=True
+-- root/28/0    Nested_distance | records=8 | candidate_reachable=True
+-- root/29      IsDie | records=7 | candidate_reachable=True
+-- root/30      GetMapName | records=9 | candidate_reachable=True
+-- root/31      IsInWhitelistMap | records=28 | candidate_reachable=True
+-- root/32      AnonymousHelper_32 | records=6 | candidate_reachable=True
+-- root/33      AnonymousHelper_33 | records=5 | candidate_reachable=True
+-- root/34      Schedule | records=7 | candidate_reachable=True
+-- root/35      SetTargetID | records=26 | candidate_reachable=True
+-- root/36      GetAvailableStoragePage | records=51 | candidate_reachable=True
+-- root/37      DestroyUI | records=31 | candidate_reachable=True
+-- root/38      GetOwnerID | records=31 | candidate_reachable=True
+-- root/39      GetMainPlayerID | records=6 | candidate_reachable=True
+-- root/40      ShowHideAllButtons | records=47 | candidate_reachable=True
+-- root/41      MoveItemToQuickUse | records=133 | candidate_reachable=True
+-- root/42      doInit_UI | records=419 | candidate_reachable=True
+-- root/42/0    Nested_find | records=46 | candidate_reachable=True
+-- root/42/1    Nested_SL_2 | records=33 | candidate_reachable=True
+-- root/42/1/0  Nested_LuaSendMsg | records=22 | candidate_reachable=False
+-- root/42/2    Nested_Helper | records=21 | candidate_reachable=True
+-- root/42/3    Nested_FFFF00 | records=320 | candidate_reachable=True
+-- root/42/3/0  Nested_Helper_2 | records=35 | candidate_reachable=False
+-- root/42/3/1  Nested_string | records=46 | candidate_reachable=False
+-- root/42/3/2  Nested_FFFFFF | records=65 | candidate_reachable=False
+-- root/42/3/3  Nested_Helper_3 | records=168 | candidate_reachable=False
+-- root/42/3/4  Nested_UnSchedule | records=20 | candidate_reachable=False
+-- root/42/4    Nested_OnGameLeaveWorld | records=5 | candidate_reachable=True
+-- root/42/5    Nested_ffffff | records=41 | candidate_reachable=True
+-- root/42/6    Nested_StopGatherMonsters | records=31 | candidate_reachable=True
+-- root/42/7    Nested_InitGatherMonsters | records=17 | candidate_reachable=True
+-- root/42/8    Nested_SL_3 | records=29 | candidate_reachable=True
+-- root/42/9    Nested_Button_setTitleFontSize | records=50 | candidate_reachable=True
+-- root/42/9/0  Nested_Button_setTitleText | records=48 | candidate_reachable=False
+-- root/42/10   Nested_shiquTimer | records=25 | candidate_reachable=True
+-- root/42/11   Nested_Helper_4 | records=12 | candidate_reachable=True
+-- root/42/11/0 Nested_Helper_5 | records=35 | candidate_reachable=False
+-- root/42/12   Nested_04d_02d_02d | records=43 | candidate_reachable=True
+-- root/42/13   Nested_Helper_6 | records=6 | candidate_reachable=True
+-- root/42/14   Nested_Helper_7 | records=12 | candidate_reachable=True
+-- root/42/14/0 Nested_Helper_8 | records=34 | candidate_reachable=False
+-- root/42/15   Nested_Helper_9 | records=30 | candidate_reachable=True
+-- root/42/16   Nested_ITEM_INDEX_BY_NAME | records=26 | candidate_reachable=True
+-- root/42/17   Nested_blacklistTimer | records=28 | candidate_reachable=True
+-- root/42/18   Nested_Helper_10 | records=39 | candidate_reachable=True
+-- root/42/19   Nested_TakeItems | records=29 | candidate_reachable=True
+-- root/42/20   Nested_s | records=21 | candidate_reachable=True
+-- root/42/21   Nested_dropTimer | records=29 | candidate_reachable=True
+-- root/42/22   Nested_Anonymous | records=8 | candidate_reachable=True
+-- root/42/22/0 Nested_str | records=27 | candidate_reachable=False
+-- root/42/22/0/0 Nested_match | records=50 | candidate_reachable=False
+-- root/42/22/0/0/0 Nested_Helper_11 | records=4 | candidate_reachable=False
+-- root/43      GetOwnerDescription | records=20 | candidate_reachable=True
+-- root/44      GetPlayerMapPosition | records=17 | candidate_reachable=True
+-- root/45      MainLoop | records=417 | candidate_reachable=True
+-- root/46      DiuItems | records=169 | candidate_reachable=True
+-- root/46/0    Nested_string_2 | records=20 | candidate_reachable=True
+-- root/47      BlacklistPlayerDetection | records=216 | candidate_reachable=True
+-- root/48      PCallHelper_2 | records=10 | candidate_reachable=True
+-- root/48/0    Nested_FriendProxy | records=9 | candidate_reachable=True
+-- root/49      AnonymousHelper_49 | records=5 | candidate_reachable=True
+-- root/50      StorageItems | records=224 | candidate_reachable=True
+-- root/50/0    Nested_isOutputted | records=52 | candidate_reachable=True
+-- root/50/1    Nested_Anonymous_2 | records=27 | candidate_reachable=True
+-- root/51      FindBlacklistPlayer | records=35 | candidate_reachable=True
+-- root/52      onDamageMsg | records=72 | candidate_reachable=True
+-- root/52/0    Nested_JsonDecode | records=6 | candidate_reachable=True
+-- root/53      ScheduleOnce | records=7 | candidate_reachable=True
+-- root/54      AnonymousHelper_54 | records=6 | candidate_reachable=True
+-- root/55      AccountIDValidation | records=64 | candidate_reachable=True
+-- root/55/0    Nested_Panel_mini_chat | records=24 | candidate_reachable=True
+-- root/55/1    Nested_ID | records=27 | candidate_reachable=True
+-- root/56      ClearTargetID_2 | records=22 | candidate_reachable=True
+-- root/57      PlayerPos | records=10 | candidate_reachable=True
+
+-- 以下为所有原型的第一遍函数草稿
+
+--==============================================================================
+-- 原型路径: root | 候选函数名: MainLeftBottom_Module | 指令数: 412 | 子原型: 58 | vararg: 0 | bytes: 0:71216
+function MainLeftBottom_Module(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = '10000'
+    -- K[1] = 10.0
+    -- K[2] = 'isHidden'
+    -- K[3] = 'TakeItems'
+    -- K[4] = 21.0
+    -- K[5] = 3600.0
+    -- K[6] = 'StopGatherMonsters'
+    -- K[7] = 'onDamageMsg'
+    -- K[8] = 'LuaSendMsg'
+    -- K[9] = 0.01
+    -- K[10] = 30.0
+    -- K[11] = 'hidebut'
+    -- K[12] = 'floor'
+    -- K[13] = 'Builtsetting'
+    -- K[14] = 'distance'
+    -- K[15] = 'isTaking'
+    -- K[16] = '累计登录 2 天'
+    -- K[17] = 'log'
+    -- K[18] = 'isOutputted'
+    -- K[19] = False
+    -- K[20] = 'InitGatherMonsters'
+    -- K[21] = 'destroy'
+    -- K[22] = 'isDiuing'
+    -- K[23] = '在线时长90分钟'
+    -- K[24] = 18.0
+    -- K[25] = 'BlacklistItems'
+    -- K[26] = 'screenH'
+    -- K[27] = '在线时长5分钟'
+    -- K[28] = 20.0
+    -- K[29] = 'MoveTo'
+    -- K[30] = 19.0
+    -- K[31] = 0.0
+    -- K[32] = 'GetAvailableStoragePage'
+    -- K[33] = 'screenW'
+    -- K[34] = 'alertAt'
+    -- K[35] = 'StorageItems'
+    -- K[36] = '空闲状态'
+    -- K[37] = -1.0
+    -- K[38] = 'hide'
+    -- K[39] = 'SendHookList'
+    -- K[40] = '累计登录 4 天'
+    -- K[41] = 'RecvHookList'
+    -- K[42] = 'GATHER_THRESHOLD'
+    -- K[43] = 9.0
+    -- K[44] = 'ATTACKING'
+    -- K[45] = '累计登录 7 天'
+    -- K[46] = 'noStoneWarned'
+    -- K[47] = 'isStoring'
+    -- K[48] = 'SCREEN_WIDTH'
+    -- K[49] = 'doInit'
+    -- K[50] = 'GetMapName'
+    -- K[51] = '在线时长30分钟'
+    -- K[52] = 'nextTryAt'
+    -- K[53] = 'deathHandled'
+    -- K[54] = 'SL'
+    -- K[55] = '在线时长10分钟'
+    -- K[56] = '累计登录 1 天'
+    -- K[57] = 'blacklist_distance.txt'
+    -- K[58] = 'math'
+    -- K[59] = 56011.0
+    -- K[60] = '在线时长60分钟'
+    -- K[61] = 'main'
+    -- K[62] = '在线时长120分钟'
+    -- K[63] = ['unknown', 2]
+    -- K[64] = '引怪中'
+    -- K[65] = '攻击中'
+    -- K[66] = 'GATHERING'
+    -- K[67] = 'z'
+    -- K[68] = '累计登录 3 天'
+    -- K[69] = 'IsInWhitelistMap'
+    -- K[70] = 'isRunning'
+    -- K[71] = '累计登录 6 天'
+    -- K[72] = 0.5
+    -- K[73] = 'show'
+    -- K[74] = 'version'
+    -- K[75] = 'PlayerPos'
+    -- K[76] = 'a'
+    -- K[77] = 'DiuItems'
+    -- K[78] = 56061.0
+    -- K[79] = 'isPaused'
+    -- K[80] = 'GetStorageItemData'
+    -- K[81] = 'MainLeftBottom'
+    -- K[82] = 'MoveItemToQuickUse'
+    -- K[83] = 'ATTACK_WAIT_TIME'
+    -- K[84] = 'PickUpItems'
+    -- K[85] = 'gather_monster_count.txt'
+    -- K[86] = 'GetMapId'
+    -- K[87] = 'b'
+    -- K[88] = '累计登录 5 天'
+    -- K[89] = 'Blocklist'
+    -- K[90] = '_G'
+    -- K[91] = 'ClearBlacklistItems'
+    -- K[92] = 'lastAttacker'
+    -- K[93] = 2.0
+    -- K[94] = 'GetMetaValue'
+    -- K[95] = 'IDLE'
+    -- K[96] = 0.2
+    -- K[97] = ''
+    -- K[98] = '在线时长20分钟'
+    -- K[99] = 1.0
+    -- K[100] = '随机传送石'
+    -- K[101] = 60000.0
+    -- K[102] = 'lastHp'
+    -- K[103] = 'CHECK_INTERVAL'
+    -- K[104] = True
+    -- K[105] = 'MainLoop'
+    -- K[106] = 'GetDroppedItems'
+    -- K[107] = 'blacklist'
+    -- K[108] = 'SCREEN_HEIGHT'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xC0 OP_410 A=0 B=0 C=0
+    --     R[A]={}
+    -- PC 0002 FLAG=0x92 OP_141 A=0 B='MainLeftBottom' C=None
+    --     ENV[B]=R[A]
+    -- PC 0003 FLAG=0x80 OP_009 A=0 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=ENV[B]
+    -- PC 0004 FLAG=0xD2 OP_137 A=1 B='MainLeftBottom' C=None
+    --     R[A]=ENV[B]
+    -- PC 0005 FLAG=0x90 OP_355 A=1 B='a' C=0
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0006 FLAG=0x70 OP_146 A=0 B='version' C='10000'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0007 FLAG=0xD2 OP_137 A=1 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0008 FLAG=0x20 OP_297 A=1 B=1 C='GetMetaValue' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0009 FLAG=0x92 OP_346 A=3 B='SCREEN_WIDTH' C=None
+    --     R[A]=B
+    -- PC 0010 FLAG=0x80 OP_098 A=1 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0011 FLAG=0x10 OP_355 A=0 B='screenW' C=1
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0012 FLAG=0x52 OP_137 A=1 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0013 FLAG=0xA0 OP_297 A=1 B=1 C='GetMetaValue' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0014 FLAG=0x52 OP_346 A=3 B='SCREEN_HEIGHT' C=None
+    --     R[A]=B
+    -- PC 0015 FLAG=0x80 OP_068 A=1 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0016 FLAG=0x90 OP_268 A=0 B='screenH' C=1
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0017 FLAG=0xC0 OP_090 A=1 B=4 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0018 FLAG=0x12 OP_371 A=2 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0019 FLAG=0x92 OP_371 A=3 B=9.0 C=None
+    --     R[A]=B
+    -- PC 0020 FLAG=0xD2 OP_282 A=4 B=10.0 C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0021 FLAG=0x12 OP_346 A=5 B=60000.0 C=None
+    --     R[A]=B
+    -- PC 0022 FLAG=0xC0 OP_402 A=1 B=4 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0023 FLAG=0x90 OP_268 A=0 B='Blocklist' C=1
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0024 FLAG=0x00 OP_105 A=1 B=0 C=0
+    --     R[A]={}
+    -- PC 0025 FLAG=0x10 OP_355 A=0 B='SendHookList' C=1
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0026 FLAG=0x40 OP_410 A=1 B=0 C=0
+    --     R[A]={}
+    -- PC 0027 FLAG=0x50 OP_408 A=0 B='RecvHookList' C=1 [linear-fusion-payloads=1]
+    --     do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end
+    -- PC 0028 FLAG=0xB0 OP_146 A=0 B='isHidden' C=True
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0029 FLAG=0xF0 OP_146 A=0 B='hidebut' C=['unknown', 2]
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0030 FLAG=0x40 OP_120 A=1 B=0 C=0
+    --     R[A]={}
+    -- PC 0031 FLAG=0x52 OP_137 A=2 B='MainLeftBottom' C=None
+    --     R[A]=ENV[B]
+    -- PC 0032 FLAG=0x90 OP_268 A=2 B='b' C=1
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0033 FLAG=0x40 OP_009 A=2 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=ENV[B]
+    -- PC 0034 FLAG=0x12 OP_137 A=3 B='MainLeftBottom' C=None
+    --     R[A]=ENV[B]
+    -- PC 0035 FLAG=0x50 OP_408 A=3 B='z' C=2 [linear-fusion-payloads=1]
+    --     do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end
+    -- PC 0036 FLAG=0x70 OP_146 A=2 B='isPaused' C=False
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0037 FLAG=0xB0 OP_156 A=2 B='isRunning' C=False
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0038 FLAG=0xB0 OP_156 A=2 B='isStoring' C=False
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0039 FLAG=0x30 OP_146 A=2 B='isTaking' C=False
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0040 FLAG=0x30 OP_146 A=2 B='isDiuing' C=False
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0041 FLAG=0x30 OP_156 A=2 B='isOutputted' C=False
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0042 FLAG=0x40 OP_120 A=3 B=0 C=0
+    --     R[A]={}
+    -- PC 0043 FLAG=0x00 OP_027 A=4 B=16 C=0 [closure-child-index=16; captures=0; child-path=root/17]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0044 FLAG=0x12 OP_137 A=5 B='_G' C=None
+    --     R[A]=ENV[B]
+    -- PC 0045 FLAG=0xD0 OP_355 A=5 B='log' C=4
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0046 FLAG=0xC0 OP_027 A=5 B=20 C=1 [linear-fusion-payloads=1, closure-child-index=20; captures=1; child-path=root/21]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0047 FLAG=0x80 OP_387 A=0 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0048 FLAG=0x00 OP_154 A=6 B=12 C=2 [linear-fusion-payloads=2, closure-child-index=12; captures=2; child-path=root/13]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0049 FLAG=0xC0 OP_387 A=0 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0050 FLAG=0x80 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0051 FLAG=0x50 OP_355 A=0 B='LuaSendMsg' C=6
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0052 FLAG=0x00 OP_027 A=6 B=53 C=0 [closure-child-index=53; captures=0; child-path=root/54]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0053 FLAG=0xC0 OP_154 A=7 B=34 C=0 [closure-child-index=34; captures=0; child-path=root/35]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0054 FLAG=0xC0 OP_154 A=8 B=13 C=0 [closure-child-index=13; captures=0; child-path=root/14]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0055 FLAG=0xD2 OP_141 A=8 B='GetMapId' C=None
+    --     ENV[B]=R[A]
+    -- PC 0056 FLAG=0xC0 OP_027 A=8 B=30 C=0 [closure-child-index=30; captures=0; child-path=root/31]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0057 FLAG=0x92 OP_141 A=8 B='GetMapName' C=None
+    --     ENV[B]=R[A]
+    -- PC 0058 FLAG=0xC0 OP_027 A=8 B=57 C=0 [closure-child-index=57; captures=0; child-path=root/58]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0059 FLAG=0x52 OP_182 A=8 B='PlayerPos' C=None
+    --     ENV[B]=R[A]
+    -- PC 0060 FLAG=0xC0 OP_027 A=8 B=4 C=0 [closure-child-index=4; captures=0; child-path=root/5]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0061 FLAG=0x52 OP_141 A=8 B='GetDroppedItems' C=None
+    --     ENV[B]=R[A]
+    -- PC 0062 FLAG=0xC0 OP_027 A=8 B=3 C=0 [closure-child-index=3; captures=0; child-path=root/4]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0063 FLAG=0x52 OP_182 A=8 B='MoveTo' C=None
+    --     ENV[B]=R[A]
+    -- PC 0064 FLAG=0x00 OP_027 A=8 B=46 C=2 [linear-fusion-payloads=2, closure-child-index=46; captures=2; child-path=root/47]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0065 FLAG=0xC0 OP_387 A=0 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0066 FLAG=0x80 OP_387 A=0 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0067 FLAG=0x12 OP_182 A=8 B='DiuItems' C=None
+    --     ENV[B]=R[A]
+    -- PC 0068 FLAG=0x00 OP_027 A=8 B=36 C=1 [linear-fusion-payloads=1, closure-child-index=36; captures=1; child-path=root/37]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0069 FLAG=0x80 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0070 FLAG=0x12 OP_141 A=8 B='GetAvailableStoragePage' C=None
+    --     ENV[B]=R[A]
+    -- PC 0071 FLAG=0x80 OP_154 A=8 B=1 C=1 [linear-fusion-payloads=1, closure-child-index=1; captures=1; child-path=root/2]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0072 FLAG=0x00 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0073 FLAG=0x52 OP_182 A=8 B='GetStorageItemData' C=None
+    --     ENV[B]=R[A]
+    -- PC 0074 FLAG=0x80 OP_027 A=8 B=50 C=3 [linear-fusion-payloads=3, closure-child-index=50; captures=3; child-path=root/51]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0075 FLAG=0x40 OP_387 A=0 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0076 FLAG=0xC0 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0077 FLAG=0xC0 OP_387 A=0 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0078 FLAG=0xD2 OP_141 A=8 B='StorageItems' C=None
+    --     ENV[B]=R[A]
+    -- PC 0079 FLAG=0x80 OP_154 A=8 B=5 C=2 [linear-fusion-payloads=2, closure-child-index=5; captures=2; child-path=root/6]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0080 FLAG=0xC0 OP_387 A=0 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0081 FLAG=0xC0 OP_387 A=0 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0082 FLAG=0xD2 OP_182 A=8 B='TakeItems' C=None
+    --     ENV[B]=R[A]
+    -- PC 0083 FLAG=0xC0 OP_154 A=8 B=21 C=1 [linear-fusion-payloads=1, closure-child-index=21; captures=1; child-path=root/22]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0084 FLAG=0x40 OP_387 A=0 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0085 FLAG=0x92 OP_182 A=8 B='PickUpItems' C=None
+    --     ENV[B]=R[A]
+    -- PC 0086 FLAG=0xC0 OP_105 A=8 B=0 C=3
+    --     R[A]={}
+    -- PC 0087 FLAG=0x70 OP_156 A=8 B='GATHER_THRESHOLD' C=10.0
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0088 FLAG=0xF0 OP_156 A=8 B='CHECK_INTERVAL' C=0.5
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0089 FLAG=0x70 OP_146 A=8 B='ATTACK_WAIT_TIME' C=1.0
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0090 FLAG=0xD2 OP_346 A=9 B=0.2 C=None
+    --     R[A]=B
+    -- PC 0091 FLAG=0x52 OP_217 A=10 B=3600.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0092 FLAG=0x92 OP_397 A=11 B='math' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0093 FLAG=0x60 OP_363 A=11 B=11 C='floor'
+    --     R[A]=R[B][C]
+    -- PC 0094 FLAG=0x40 OP_062 A=12 B=10 C=9
+    --     R[A]=R[B]/R[C]
+    -- PC 0095 FLAG=0x00 OP_098 A=11 B=12 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0096 FLAG=0x00 OP_019 A=12 B=14 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]={}
+    -- PC 0097 FLAG=0x80 OP_090 A=13 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0098 FLAG=0xD2 OP_282 A=14 B=56061.0 C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0099 FLAG=0x52 OP_282 A=15 B='累计登录 1 天' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0100 FLAG=0x52 OP_371 A=16 B=18.0 C=None
+    --     R[A]=B
+    -- PC 0101 FLAG=0x40 OP_402 A=13 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0102 FLAG=0x80 OP_120 A=14 B=3 C=0
+    --     R[A]={}
+    -- PC 0103 FLAG=0x52 OP_346 A=15 B=56061.0 C=None
+    --     R[A]=B
+    -- PC 0104 FLAG=0x12 OP_282 A=16 B='累计登录 2 天' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0105 FLAG=0x92 OP_346 A=17 B=18.0 C=None
+    --     R[A]=B
+    -- PC 0106 FLAG=0x80 OP_088 A=14 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0107 FLAG=0xC0 OP_090 A=15 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0108 FLAG=0x92 OP_061 A=16 B=56061.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0109 FLAG=0x92 OP_282 A=17 B='累计登录 3 天' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0110 FLAG=0x92 OP_371 A=18 B=18.0 C=None
+    --     R[A]=B
+    -- PC 0111 FLAG=0x80 OP_402 A=15 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0112 FLAG=0xC0 OP_090 A=16 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0113 FLAG=0x12 OP_371 A=17 B=56061.0 C=None
+    --     R[A]=B
+    -- PC 0114 FLAG=0x92 OP_282 A=18 B='累计登录 4 天' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0115 FLAG=0x92 OP_346 A=19 B=18.0 C=None
+    --     R[A]=B
+    -- PC 0116 FLAG=0x40 OP_153 A=16 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0117 FLAG=0xC0 OP_090 A=17 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0118 FLAG=0x12 OP_346 A=18 B=56061.0 C=None
+    --     R[A]=B
+    -- PC 0119 FLAG=0x12 OP_282 A=19 B='累计登录 5 天' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0120 FLAG=0x52 OP_346 A=20 B=18.0 C=None
+    --     R[A]=B
+    -- PC 0121 FLAG=0x40 OP_088 A=17 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0122 FLAG=0x40 OP_120 A=18 B=3 C=0
+    --     R[A]={}
+    -- PC 0123 FLAG=0x92 OP_371 A=19 B=56061.0 C=None
+    --     R[A]=B
+    -- PC 0124 FLAG=0x92 OP_371 A=20 B='累计登录 6 天' C=None
+    --     R[A]=B
+    -- PC 0125 FLAG=0x52 OP_371 A=21 B=18.0 C=None
+    --     R[A]=B
+    -- PC 0126 FLAG=0xC0 OP_112 A=18 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0127 FLAG=0x40 OP_090 A=19 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0128 FLAG=0x12 OP_371 A=20 B=56061.0 C=None
+    --     R[A]=B
+    -- PC 0129 FLAG=0x12 OP_282 A=21 B='累计登录 7 天' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0130 FLAG=0x12 OP_346 A=22 B=18.0 C=None
+    --     R[A]=B
+    -- PC 0131 FLAG=0x40 OP_088 A=19 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0132 FLAG=0x80 OP_090 A=20 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0133 FLAG=0xD2 OP_061 A=21 B=56011.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0134 FLAG=0x52 OP_282 A=22 B='在线时长5分钟' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0135 FLAG=0x12 OP_371 A=23 B=19.0 C=None
+    --     R[A]=B
+    -- PC 0136 FLAG=0x40 OP_237 A=20 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0137 FLAG=0x40 OP_120 A=21 B=3 C=0
+    --     R[A]={}
+    -- PC 0138 FLAG=0x52 OP_371 A=22 B=56011.0 C=None
+    --     R[A]=B
+    -- PC 0139 FLAG=0x12 OP_282 A=23 B='在线时长10分钟' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0140 FLAG=0x12 OP_371 A=24 B=20.0 C=None
+    --     R[A]=B
+    -- PC 0141 FLAG=0x80 OP_112 A=21 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0142 FLAG=0x80 OP_090 A=22 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0143 FLAG=0x12 OP_061 A=23 B=56011.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0144 FLAG=0x12 OP_282 A=24 B='在线时长20分钟' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0145 FLAG=0x52 OP_371 A=25 B=20.0 C=None
+    --     R[A]=B
+    -- PC 0146 FLAG=0x80 OP_112 A=22 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0147 FLAG=0x80 OP_090 A=23 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0148 FLAG=0xD2 OP_061 A=24 B=56011.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0149 FLAG=0x52 OP_282 A=25 B='在线时长30分钟' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0150 FLAG=0x12 OP_346 A=26 B=20.0 C=None
+    --     R[A]=B
+    -- PC 0151 FLAG=0x00 OP_112 A=23 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0152 FLAG=0xC0 OP_410 A=24 B=3 C=0
+    --     R[A]={}
+    -- PC 0153 FLAG=0x92 OP_061 A=25 B=56011.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0154 FLAG=0x12 OP_282 A=26 B='在线时长60分钟' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0155 FLAG=0x12 OP_346 A=27 B=20.0 C=None
+    --     R[A]=B
+    -- PC 0156 FLAG=0x00 OP_112 A=24 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0157 FLAG=0x00 OP_120 A=25 B=3 C=0
+    --     R[A]={}
+    -- PC 0158 FLAG=0xD2 OP_061 A=26 B=56011.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0159 FLAG=0xD2 OP_282 A=27 B='在线时长90分钟' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0160 FLAG=0x52 OP_346 A=28 B=20.0 C=None
+    --     R[A]=B
+    -- PC 0161 FLAG=0x00 OP_237 A=25 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0162 FLAG=0x00 OP_090 A=26 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0163 FLAG=0x92 OP_061 A=27 B=56011.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0164 FLAG=0x92 OP_282 A=28 B='在线时长120分钟' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0165 FLAG=0xD2 OP_371 A=29 B=21.0 C=None
+    --     R[A]=B
+    -- PC 0166 FLAG=0x00 OP_237 A=26 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0167 FLAG=0xC0 OP_402 A=12 B=14 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0168 FLAG=0x00 OP_105 A=13 B=0 C=3
+    --     R[A]={}
+    -- PC 0169 FLAG=0x70 OP_156 A=13 B='IDLE' C='空闲状态'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0170 FLAG=0x70 OP_146 A=13 B='GATHERING' C='引怪中'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0171 FLAG=0xB0 OP_156 A=13 B='ATTACKING' C='攻击中'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0172 FLAG=0xA0 OP_053 A=14 B=13 C='IDLE'
+    --     R[A]=R[B][C]
+    -- PC 0173 FLAG=0xC0 OP_090 A=15 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0174 FLAG=0xD2 OP_371 A=16 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0175 FLAG=0x92 OP_346 A=17 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0176 FLAG=0x80 OP_401 A=18 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0177 FLAG=0x40 OP_338 A=19 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0178 FLAG=0xD2 OP_346 A=20 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0179 FLAG=0x80 OP_125 A=21 B=21 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0180 FLAG=0x52 OP_346 A=22 B='' C=None
+    --     R[A]=B
+    -- PC 0181 FLAG=0x00 OP_154 A=23 B=8 C=2 [linear-fusion-payloads=2, closure-child-index=8; captures=2; child-path=root/9]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0182 FLAG=0xC0 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0183 FLAG=0x40 OP_387 A=0 B=14 C=0
+    --     R[A]=R[B]
+    -- PC 0184 FLAG=0x40 OP_154 A=24 B=35 C=0 [closure-child-index=35; captures=0; child-path=root/36]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0185 FLAG=0xC0 OP_154 A=25 B=56 C=0 [closure-child-index=56; captures=0; child-path=root/57]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0186 FLAG=0x00 OP_154 A=26 B=39 C=0 [closure-child-index=39; captures=0; child-path=root/40]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0187 FLAG=0x00 OP_154 A=27 B=18 C=0 [closure-child-index=18; captures=0; child-path=root/19]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0188 FLAG=0x00 OP_027 A=28 B=44 C=0 [closure-child-index=44; captures=0; child-path=root/45]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0189 FLAG=0xC0 OP_154 A=29 B=11 C=0 [closure-child-index=11; captures=0; child-path=root/12]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0190 FLAG=0x80 OP_027 A=30 B=29 C=0 [closure-child-index=29; captures=0; child-path=root/30]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0191 FLAG=0x00 OP_027 A=31 B=7 C=0 [closure-child-index=7; captures=0; child-path=root/8]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0192 FLAG=0x00 OP_154 A=32 B=38 C=0 [closure-child-index=38; captures=0; child-path=root/39]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0193 FLAG=0x00 OP_027 A=33 B=43 C=0 [closure-child-index=43; captures=0; child-path=root/44]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0194 FLAG=0x40 OP_027 A=34 B=28 C=5 [linear-fusion-payloads=5, closure-child-index=28; captures=5; child-path=root/29]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0195 FLAG=0x40 OP_387 A=0 B=27 C=0
+    --     R[A]=R[B]
+    -- PC 0196 FLAG=0x40 OP_387 A=0 B=30 C=0
+    --     R[A]=R[B]
+    -- PC 0197 FLAG=0x80 OP_387 A=0 B=28 C=0
+    --     R[A]=R[B]
+    -- PC 0198 FLAG=0xC0 OP_387 A=0 B=29 C=0
+    --     R[A]=R[B]
+    -- PC 0199 FLAG=0xC0 OP_387 A=0 B=8 C=0
+    --     R[A]=R[B]
+    -- PC 0200 FLAG=0x40 OP_154 A=35 B=26 C=9 [linear-fusion-payloads=9, closure-child-index=26; captures=9; child-path=root/27]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0201 FLAG=0x80 OP_387 A=0 B=15 C=0
+    --     R[A]=R[B]
+    -- PC 0202 FLAG=0x00 OP_387 A=0 B=16 C=0
+    --     R[A]=R[B]
+    -- PC 0203 FLAG=0x40 OP_387 A=0 B=17 C=0
+    --     R[A]=R[B]
+    -- PC 0204 FLAG=0x40 OP_387 A=0 B=25 C=0
+    --     R[A]=R[B]
+    -- PC 0205 FLAG=0xC0 OP_387 A=0 B=19 C=0
+    --     R[A]=R[B]
+    -- PC 0206 FLAG=0x40 OP_387 A=0 B=20 C=0
+    --     R[A]=R[B]
+    -- PC 0207 FLAG=0x00 OP_387 A=0 B=21 C=0
+    --     R[A]=R[B]
+    -- PC 0208 FLAG=0x00 OP_387 A=0 B=22 C=0
+    --     R[A]=R[B]
+    -- PC 0209 FLAG=0x80 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0210 FLAG=0x40 OP_154 A=36 B=14 C=1 [linear-fusion-payloads=1, closure-child-index=14; captures=1; child-path=root/15]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0211 FLAG=0x40 OP_387 A=0 B=30 C=0
+    --     R[A]=R[B]
+    -- PC 0212 FLAG=0xC0 OP_154 A=37 B=31 C=0 [closure-child-index=31; captures=0; child-path=root/32]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0213 FLAG=0x52 OP_182 A=37 B='IsInWhitelistMap' C=None
+    --     ENV[B]=R[A]
+    -- PC 0214 FLAG=0x80 OP_027 A=37 B=45 C=22 [linear-fusion-payloads=22, closure-child-index=45; captures=22; child-path=root/46]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0215 FLAG=0x40 OP_387 A=0 B=18 C=0
+    --     R[A]=R[B]
+    -- PC 0216 FLAG=0xC0 OP_387 A=0 B=14 C=0
+    --     R[A]=R[B]
+    -- PC 0217 FLAG=0xC0 OP_387 A=0 B=13 C=0
+    --     R[A]=R[B]
+    -- PC 0218 FLAG=0x80 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0219 FLAG=0xC0 OP_387 A=0 B=23 C=0
+    --     R[A]=R[B]
+    -- PC 0220 FLAG=0x00 OP_387 A=0 B=35 C=0
+    --     R[A]=R[B]
+    -- PC 0221 FLAG=0x40 OP_387 A=0 B=26 C=0
+    --     R[A]=R[B]
+    -- PC 0222 FLAG=0x80 OP_387 A=0 B=34 C=0
+    --     R[A]=R[B]
+    -- PC 0223 FLAG=0xC0 OP_387 A=0 B=15 C=0
+    --     R[A]=R[B]
+    -- PC 0224 FLAG=0x40 OP_387 A=0 B=32 C=0
+    --     R[A]=R[B]
+    -- PC 0225 FLAG=0x00 OP_387 A=0 B=17 C=0
+    --     R[A]=R[B]
+    -- PC 0226 FLAG=0xC0 OP_387 A=0 B=16 C=0
+    --     R[A]=R[B]
+    -- PC 0227 FLAG=0x40 OP_387 A=0 B=19 C=0
+    --     R[A]=R[B]
+    -- PC 0228 FLAG=0xC0 OP_387 A=0 B=20 C=0
+    --     R[A]=R[B]
+    -- PC 0229 FLAG=0x80 OP_387 A=0 B=22 C=0
+    --     R[A]=R[B]
+    -- PC 0230 FLAG=0xC0 OP_387 A=0 B=36 C=0
+    --     R[A]=R[B]
+    -- PC 0231 FLAG=0xC0 OP_387 A=0 B=21 C=0
+    --     R[A]=R[B]
+    -- PC 0232 FLAG=0xC0 OP_387 A=0 B=31 C=0
+    --     R[A]=R[B]
+    -- PC 0233 FLAG=0x80 OP_387 A=0 B=30 C=0
+    --     R[A]=R[B]
+    -- PC 0234 FLAG=0x80 OP_387 A=0 B=33 C=0
+    --     R[A]=R[B]
+    -- PC 0235 FLAG=0x80 OP_387 A=0 B=24 C=0
+    --     R[A]=R[B]
+    -- PC 0236 FLAG=0x80 OP_387 A=0 B=8 C=0
+    --     R[A]=R[B]
+    -- PC 0237 FLAG=0x12 OP_141 A=37 B='MainLoop' C=None
+    --     ENV[B]=R[A]
+    -- PC 0238 FLAG=0x00 OP_027 A=37 B=19 C=7 [linear-fusion-payloads=7, closure-child-index=19; captures=7; child-path=root/20]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0239 FLAG=0xC0 OP_387 A=0 B=3 C=0
+    --     R[A]=R[B]
+    -- PC 0240 FLAG=0x80 OP_387 A=0 B=18 C=0
+    --     R[A]=R[B]
+    -- PC 0241 FLAG=0x80 OP_387 A=0 B=23 C=0
+    --     R[A]=R[B]
+    -- PC 0242 FLAG=0x00 OP_387 A=0 B=13 C=0
+    --     R[A]=R[B]
+    -- PC 0243 FLAG=0x00 OP_387 A=0 B=35 C=0
+    --     R[A]=R[B]
+    -- PC 0244 FLAG=0x40 OP_387 A=0 B=8 C=0
+    --     R[A]=R[B]
+    -- PC 0245 FLAG=0x80 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0246 FLAG=0x92 OP_141 A=37 B='InitGatherMonsters' C=None
+    --     ENV[B]=R[A]
+    -- PC 0247 FLAG=0xC0 OP_027 A=37 B=27 C=7 [linear-fusion-payloads=7, closure-child-index=27; captures=7; child-path=root/28]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0248 FLAG=0xC0 OP_387 A=0 B=18 C=0
+    --     R[A]=R[B]
+    -- PC 0249 FLAG=0xC0 OP_387 A=0 B=3 C=0
+    --     R[A]=R[B]
+    -- PC 0250 FLAG=0x80 OP_387 A=0 B=25 C=0
+    --     R[A]=R[B]
+    -- PC 0251 FLAG=0xC0 OP_387 A=0 B=23 C=0
+    --     R[A]=R[B]
+    -- PC 0252 FLAG=0x40 OP_387 A=0 B=13 C=0
+    --     R[A]=R[B]
+    -- PC 0253 FLAG=0xC0 OP_387 A=0 B=35 C=0
+    --     R[A]=R[B]
+    -- PC 0254 FLAG=0x40 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0255 FLAG=0xD2 OP_182 A=37 B='StopGatherMonsters' C=None
+    --     ENV[B]=R[A]
+    -- PC 0256 FLAG=0x40 OP_154 A=37 B=23 C=1 [linear-fusion-payloads=1, closure-child-index=23; captures=1; child-path=root/24]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0257 FLAG=0x00 OP_387 A=0 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0258 FLAG=0x92 OP_141 A=37 B='Builtsetting' C=None
+    --     ENV[B]=R[A]
+    -- PC 0259 FLAG=0x40 OP_154 A=37 B=41 C=0 [closure-child-index=41; captures=0; child-path=root/42]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0260 FLAG=0xD2 OP_182 A=37 B='MoveItemToQuickUse' C=None
+    --     ENV[B]=R[A]
+    -- PC 0261 FLAG=0x40 OP_154 A=37 B=37 C=3 [linear-fusion-payloads=3, closure-child-index=37; captures=3; child-path=root/38]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0262 FLAG=0x00 OP_387 A=0 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0263 FLAG=0xC0 OP_387 A=0 B=3 C=0
+    --     R[A]=R[B]
+    -- PC 0264 FLAG=0xC0 OP_387 A=0 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0265 FLAG=0x90 OP_355 A=0 B='hide' C=37
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0266 FLAG=0x40 OP_027 A=37 B=10 C=2 [linear-fusion-payloads=2, closure-child-index=10; captures=2; child-path=root/11]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0267 FLAG=0x40 OP_387 A=0 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0268 FLAG=0x80 OP_387 A=0 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0269 FLAG=0x90 OP_268 A=0 B='show' C=37
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0270 FLAG=0x80 OP_154 A=37 B=40 C=3 [linear-fusion-payloads=3, closure-child-index=40; captures=3; child-path=root/41]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0271 FLAG=0x00 OP_387 A=0 B=3 C=0
+    --     R[A]=R[B]
+    -- PC 0272 FLAG=0x00 OP_387 A=0 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0273 FLAG=0x00 OP_387 A=0 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0274 FLAG=0x10 OP_355 A=0 B='destroy' C=37
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0275 FLAG=0x92 OP_137 A=37 B='MainLeftBottom' C=None
+    --     R[A]=ENV[B]
+    -- PC 0276 FLAG=0x00 OP_027 A=38 B=55 C=2 [linear-fusion-payloads=2, closure-child-index=55; captures=2; child-path=root/56]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0277 FLAG=0x00 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0278 FLAG=0x00 OP_387 A=0 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0279 FLAG=0xD0 OP_268 A=37 B='main' C=38
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0280 FLAG=0x00 OP_090 A=37 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0281 FLAG=0x52 OP_371 A=38 B='随机传送石' C=None
+    --     R[A]=B
+    -- PC 0282 FLAG=0x80 OP_153 A=37 B=1 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0283 FLAG=0x92 OP_346 A=38 B=2.0 C=None
+    --     R[A]=B
+    -- PC 0284 FLAG=0x12 OP_282 A=39 B=0.01 C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0285 FLAG=0xD2 OP_346 A=40 B=30.0 C=None
+    --     R[A]=B
+    -- PC 0286 FLAG=0x80 OP_120 A=41 B=0 C=7
+    --     R[A]={}
+    -- PC 0287 FLAG=0xB0 OP_146 A=41 B='lastAttacker' C=['unknown', 2]
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0288 FLAG=0x70 OP_146 A=41 B='lastHp' C=['unknown', 2]
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0289 FLAG=0x70 OP_146 A=41 B='deathHandled' C=False
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0290 FLAG=0x70 OP_146 A=41 B='alertAt' C=0.0
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0291 FLAG=0x70 OP_156 A=41 B='nextTryAt' C=0.0
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0292 FLAG=0xF0 OP_156 A=41 B='noStoneWarned' C=False
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0293 FLAG=0x30 OP_156 A=41 B='distance' C=['unknown', 2]
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0294 FLAG=0x50 OP_268 A=0 B='blacklist' C=41
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0295 FLAG=0x12 OP_282 A=42 B='blacklist_distance.txt' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0296 FLAG=0x92 OP_371 A=43 B='gather_monster_count.txt' C=None
+    --     R[A]=B
+    -- PC 0297 FLAG=0xC0 OP_154 A=44 B=2 C=0 [closure-child-index=2; captures=0; child-path=root/3]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0298 FLAG=0x00 OP_027 A=45 B=9 C=1 [linear-fusion-payloads=1, closure-child-index=9; captures=1; child-path=root/10]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0299 FLAG=0xC0 OP_387 A=0 B=44 C=0
+    --     R[A]=R[B]
+    -- PC 0300 FLAG=0x40 OP_027 A=46 B=17 C=1 [linear-fusion-payloads=1, closure-child-index=17; captures=1; child-path=root/18]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0301 FLAG=0xC0 OP_387 A=0 B=44 C=0
+    --     R[A]=R[B]
+    -- PC 0302 FLAG=0x40 OP_154 A=47 B=0 C=1 [linear-fusion-payloads=1, closure-child-index=0; captures=1; child-path=root/1]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0303 FLAG=0x80 OP_387 A=0 B=44 C=0
+    --     R[A]=R[B]
+    -- PC 0304 FLAG=0x80 OP_154 A=48 B=49 C=2 [linear-fusion-payloads=2, closure-child-index=49; captures=2; child-path=root/50]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0305 FLAG=0x00 OP_387 A=0 B=45 C=0
+    --     R[A]=R[B]
+    -- PC 0306 FLAG=0x00 OP_387 A=0 B=42 C=0
+    --     R[A]=R[B]
+    -- PC 0307 FLAG=0x00 OP_027 A=49 B=32 C=2 [linear-fusion-payloads=2, closure-child-index=32; captures=2; child-path=root/33]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0308 FLAG=0x80 OP_387 A=0 B=46 C=0
+    --     R[A]=R[B]
+    -- PC 0309 FLAG=0x00 OP_387 A=0 B=42 C=0
+    --     R[A]=R[B]
+    -- PC 0310 FLAG=0x40 OP_154 A=50 B=33 C=2 [linear-fusion-payloads=2, closure-child-index=33; captures=2; child-path=root/34]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0311 FLAG=0x40 OP_387 A=0 B=45 C=0
+    --     R[A]=R[B]
+    -- PC 0312 FLAG=0x00 OP_387 A=0 B=43 C=0
+    --     R[A]=R[B]
+    -- PC 0313 FLAG=0x80 OP_027 A=51 B=54 C=2 [linear-fusion-payloads=2, closure-child-index=54; captures=2; child-path=root/55]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0314 FLAG=0x80 OP_387 A=0 B=46 C=0
+    --     R[A]=R[B]
+    -- PC 0315 FLAG=0xC0 OP_387 A=0 B=43 C=0
+    --     R[A]=R[B]
+    -- PC 0316 FLAG=0x80 OP_019 A=52 B=8 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]={}
+    -- PC 0317 FLAG=0x00 OP_090 A=53 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0318 FLAG=0xD2 OP_282 A=54 B=1.0 C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0319 FLAG=0x92 OP_346 A=55 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0320 FLAG=0x80 OP_153 A=53 B=2 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0321 FLAG=0x00 OP_105 A=54 B=2 C=0
+    --     R[A]={}
+    -- PC 0322 FLAG=0x52 OP_371 A=55 B=-1.0 C=None
+    --     R[A]=B
+    -- PC 0323 FLAG=0x12 OP_346 A=56 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0324 FLAG=0xC0 OP_088 A=54 B=2 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0325 FLAG=0x80 OP_090 A=55 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0326 FLAG=0x92 OP_282 A=56 B=0.0 C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0327 FLAG=0x92 OP_371 A=57 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0328 FLAG=0xC0 OP_112 A=55 B=2 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0329 FLAG=0x00 OP_090 A=56 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0330 FLAG=0x52 OP_282 A=57 B=0.0 C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0331 FLAG=0xD2 OP_346 A=58 B=-1.0 C=None
+    --     R[A]=B
+    -- PC 0332 FLAG=0x40 OP_153 A=56 B=2 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0333 FLAG=0x80 OP_090 A=57 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0334 FLAG=0x52 OP_282 A=58 B=1.0 C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0335 FLAG=0x92 OP_346 A=59 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0336 FLAG=0xC0 OP_402 A=57 B=2 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0337 FLAG=0x40 OP_090 A=58 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0338 FLAG=0x12 OP_282 A=59 B=1.0 C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0339 FLAG=0xD2 OP_371 A=60 B=-1.0 C=None
+    --     R[A]=B
+    -- PC 0340 FLAG=0x40 OP_237 A=58 B=2 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0341 FLAG=0xC0 OP_090 A=59 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0342 FLAG=0x52 OP_282 A=60 B=-1.0 C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0343 FLAG=0x12 OP_346 A=61 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0344 FLAG=0xC0 OP_153 A=59 B=2 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0345 FLAG=0x00 OP_090 A=60 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0346 FLAG=0x12 OP_282 A=61 B=-1.0 C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0347 FLAG=0xD2 OP_346 A=62 B=-1.0 C=None
+    --     R[A]=B
+    -- PC 0348 FLAG=0x40 OP_088 A=60 B=2 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0349 FLAG=0x80 OP_112 A=52 B=8 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0350 FLAG=0x00 OP_154 A=53 B=22 C=1 [linear-fusion-payloads=1, closure-child-index=22; captures=1; child-path=root/23]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0351 FLAG=0x80 OP_387 A=0 B=52 C=0
+    --     R[A]=R[B]
+    -- PC 0352 FLAG=0x00 OP_154 A=54 B=48 C=0 [closure-child-index=48; captures=0; child-path=root/49]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0353 FLAG=0x00 OP_154 A=55 B=51 C=1 [linear-fusion-payloads=1, closure-child-index=51; captures=1; child-path=root/52]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0354 FLAG=0xC0 OP_387 A=0 B=54 C=0
+    --     R[A]=R[B]
+    -- PC 0355 FLAG=0x00 OP_154 A=56 B=24 C=1 [linear-fusion-payloads=1, closure-child-index=24; captures=1; child-path=root/25]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0356 FLAG=0x80 OP_387 A=0 B=37 C=0
+    --     R[A]=R[B]
+    -- PC 0357 FLAG=0x40 OP_027 A=57 B=52 C=1 [linear-fusion-payloads=1, closure-child-index=52; captures=1; child-path=root/53]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0358 FLAG=0x00 OP_387 A=0 B=41 C=0
+    --     R[A]=R[B]
+    -- PC 0359 FLAG=0xD0 OP_355 A=0 B='onDamageMsg' C=57
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0360 FLAG=0x00 OP_027 A=57 B=6 C=2 [linear-fusion-payloads=2, closure-child-index=6; captures=2; child-path=root/7]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0361 FLAG=0xC0 OP_387 A=0 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0362 FLAG=0x40 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0363 FLAG=0xC0 OP_027 A=58 B=25 C=4 [linear-fusion-payloads=4, closure-child-index=25; captures=4; child-path=root/26]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0364 FLAG=0x80 OP_387 A=0 B=41 C=0
+    --     R[A]=R[B]
+    -- PC 0365 FLAG=0x00 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0366 FLAG=0x00 OP_387 A=0 B=55 C=0
+    --     R[A]=R[B]
+    -- PC 0367 FLAG=0x00 OP_387 A=0 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0368 FLAG=0x00 OP_154 A=59 B=47 C=13 [linear-fusion-payloads=13, closure-child-index=47; captures=13; child-path=root/48]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0369 FLAG=0xC0 OP_387 A=0 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0370 FLAG=0xC0 OP_387 A=0 B=57 C=0
+    --     R[A]=R[B]
+    -- PC 0371 FLAG=0x80 OP_387 A=0 B=41 C=0
+    --     R[A]=R[B]
+    -- PC 0372 FLAG=0x00 OP_387 A=0 B=58 C=0
+    --     R[A]=R[B]
+    -- PC 0373 FLAG=0x00 OP_387 A=0 B=55 C=0
+    --     R[A]=R[B]
+    -- PC 0374 FLAG=0x40 OP_387 A=0 B=53 C=0
+    --     R[A]=R[B]
+    -- PC 0375 FLAG=0xC0 OP_387 A=0 B=38 C=0
+    --     R[A]=R[B]
+    -- PC 0376 FLAG=0xC0 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0377 FLAG=0x40 OP_387 A=0 B=56 C=0
+    --     R[A]=R[B]
+    -- PC 0378 FLAG=0x40 OP_387 A=0 B=39 C=0
+    --     R[A]=R[B]
+    -- PC 0379 FLAG=0x00 OP_387 A=0 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0380 FLAG=0x40 OP_387 A=0 B=40 C=0
+    --     R[A]=R[B]
+    -- PC 0381 FLAG=0x80 OP_387 A=0 B=37 C=0
+    --     R[A]=R[B]
+    -- PC 0382 FLAG=0x92 OP_182 A=59 B='BlacklistItems' C=None
+    --     ENV[B]=R[A]
+    -- PC 0383 FLAG=0xC0 OP_027 A=59 B=15 C=4 [linear-fusion-payloads=4, closure-child-index=15; captures=4; child-path=root/16]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0384 FLAG=0x80 OP_387 A=0 B=54 C=0
+    --     R[A]=R[B]
+    -- PC 0385 FLAG=0x80 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0386 FLAG=0x80 OP_387 A=0 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0387 FLAG=0x40 OP_387 A=0 B=41 C=0
+    --     R[A]=R[B]
+    -- PC 0388 FLAG=0x92 OP_141 A=59 B='ClearBlacklistItems' C=None
+    --     ENV[B]=R[A]
+    -- PC 0389 FLAG=0x52 OP_137 A=59 B='MainLeftBottom' C=None
+    --     R[A]=ENV[B]
+    -- PC 0390 FLAG=0x00 OP_027 A=60 B=42 C=20 [linear-fusion-payloads=20, closure-child-index=42; captures=20; child-path=root/43]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0391 FLAG=0x80 OP_387 A=0 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0392 FLAG=0xC0 OP_387 A=0 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0393 FLAG=0x00 OP_387 A=0 B=3 C=0
+    --     R[A]=R[B]
+    -- PC 0394 FLAG=0x00 OP_387 A=0 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0395 FLAG=0x40 OP_387 A=0 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0396 FLAG=0x00 OP_387 A=0 B=41 C=0
+    --     R[A]=R[B]
+    -- PC 0397 FLAG=0x40 OP_387 A=0 B=48 C=0
+    --     R[A]=R[B]
+    -- PC 0398 FLAG=0x00 OP_387 A=0 B=7 C=0
+    --     R[A]=R[B]
+    -- PC 0399 FLAG=0xC0 OP_387 A=0 B=8 C=0
+    --     R[A]=R[B]
+    -- PC 0400 FLAG=0x40 OP_387 A=0 B=50 C=0
+    --     R[A]=R[B]
+    -- PC 0401 FLAG=0x00 OP_387 A=0 B=49 C=0
+    --     R[A]=R[B]
+    -- PC 0402 FLAG=0x00 OP_387 A=0 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0403 FLAG=0x00 OP_387 A=0 B=44 C=0
+    --     R[A]=R[B]
+    -- PC 0404 FLAG=0x80 OP_387 A=0 B=42 C=0
+    --     R[A]=R[B]
+    -- PC 0405 FLAG=0xC0 OP_387 A=0 B=51 C=0
+    --     R[A]=R[B]
+    -- PC 0406 FLAG=0x40 OP_387 A=0 B=43 C=0
+    --     R[A]=R[B]
+    -- PC 0407 FLAG=0xC0 OP_387 A=0 B=47 C=0
+    --     R[A]=R[B]
+    -- PC 0408 FLAG=0x40 OP_387 A=0 B=11 C=0
+    --     R[A]=R[B]
+    -- PC 0409 FLAG=0xC0 OP_387 A=0 B=12 C=0
+    --     R[A]=R[B]
+    -- PC 0410 FLAG=0x00 OP_387 A=0 B=9 C=0
+    --     R[A]=R[B]
+    -- PC 0411 FLAG=0x90 OP_268 A=59 B='doInit' C=60
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0412 FLAG=0xC0 OP_001 A=0 B=0 C=0
+    --     return
+    --     CHILD PROTOTYPES:
+    --     child-index 0 => root/1 (records=32, constants=5)
+    --     child-index 1 => root/2 (records=77, constants=16)
+    --     child-index 2 => root/3 (records=10, constants=4)
+    --     child-index 3 => root/4 (records=51, constants=20)
+    --     child-index 4 => root/5 (records=8, constants=3)
+    --     child-index 5 => root/6 (records=99, constants=23)
+    --     child-index 6 => root/7 (records=40, constants=9)
+    --     child-index 7 => root/8 (records=31, constants=7)
+    --     child-index 8 => root/9 (records=10, constants=3)
+    --     child-index 9 => root/10 (records=45, constants=13)
+    --     child-index 10 => root/11 (records=15, constants=5)
+    --     child-index 11 => root/12 (records=25, constants=6)
+    --     child-index 12 => root/13 (records=92, constants=34)
+    --     child-index 13 => root/14 (records=9, constants=4)
+    --     child-index 14 => root/15 (records=27, constants=4)
+    --     child-index 15 => root/16 (records=63, constants=17)
+    --     child-index 16 => root/17 (records=38, constants=13)
+    --     child-index 17 => root/18 (records=14, constants=2)
+    --     child-index 18 => root/19 (records=19, constants=7)
+    --     child-index 19 => root/20 (records=36, constants=11)
+    --     child-index 20 => root/21 (records=15, constants=14)
+    --     child-index 21 => root/22 (records=172, constants=34)
+    --     child-index 22 => root/23 (records=144, constants=15)
+    --     child-index 23 => root/24 (records=55, constants=15)
+    --     child-index 24 => root/25 (records=33, constants=8)
+    --     child-index 25 => root/26 (records=47, constants=15)
+    --     child-index 26 => root/27 (records=20, constants=3)
+    --     child-index 27 => root/28 (records=25, constants=6)
+    --     child-index 28 => root/29 (records=102, constants=19)
+    --     child-index 29 => root/30 (records=7, constants=1)
+    --     child-index 30 => root/31 (records=9, constants=4)
+    --     child-index 31 => root/32 (records=28, constants=6)
+    --     child-index 32 => root/33 (records=6, constants=0)
+    --     child-index 33 => root/34 (records=5, constants=0)
+    --     child-index 34 => root/35 (records=7, constants=2)
+    --     child-index 35 => root/36 (records=26, constants=8)
+    --     child-index 36 => root/37 (records=51, constants=12)
+    --     child-index 37 => root/38 (records=31, constants=11)
+    --     child-index 38 => root/39 (records=31, constants=7)
+    --     child-index 39 => root/40 (records=6, constants=3)
+    --     child-index 40 => root/41 (records=47, constants=9)
+    --     child-index 41 => root/42 (records=133, constants=26)
+    --     child-index 42 => root/43 (records=419, constants=105)
+    --     child-index 43 => root/44 (records=20, constants=7)
+    --     child-index 44 => root/45 (records=17, constants=5)
+    --     child-index 45 => root/46 (records=417, constants=41)
+    --     child-index 46 => root/47 (records=169, constants=64)
+    --     child-index 47 => root/48 (records=216, constants=35)
+    --     child-index 48 => root/49 (records=10, constants=1)
+    --     child-index 49 => root/50 (records=5, constants=0)
+    --     child-index 50 => root/51 (records=224, constants=57)
+    --     child-index 51 => root/52 (records=35, constants=5)
+    --     child-index 52 => root/53 (records=72, constants=19)
+    --     child-index 53 => root/54 (records=7, constants=2)
+    --     child-index 54 => root/55 (records=6, constants=0)
+    --     child-index 55 => root/56 (records=64, constants=21)
+    --     child-index 56 => root/57 (records=22, constants=9)
+    --     child-index 57 => root/58 (records=10, constants=4)
+    --     ##############################################################################
+    -- 子闭包原型: root/0, root/1, root/2, root/3, root/4, root/5, root/6, root/7, root/8, root/9, root/10, root/11, root/12, root/13, root/14, root/15, root/16, root/17, root/18, root/19, root/20, root/21, root/22, root/23, root/24, root/25, root/26, root/27, root/28, root/29, root/30, root/31, root/32, root/33, root/34, root/35, root/36, root/37, root/38, root/39, root/40, root/41, root/42, root/43, root/44, root/45, root/46, root/47, root/48, root/49, root/50, root/51, root/52, root/53, root/54, root/55, root/56, root/57
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/1 | 候选函数名: GetStorageItemData | 指令数: 32 | 子原型: 1 | vararg: 1 | bytes: 5323:5760
+function GetStorageItemData(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'pcall'
+    -- K[1] = 'isFileExist'
+    -- K[2] = 'cc'
+    -- K[3] = 'getInstance'
+    -- K[4] = 'FileUtils'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xD2 OP_309 A=1 B='cc' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0002 FLAG=0xA0 OP_270 A=1 B=1 C='FileUtils' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0003 FLAG=0xE0 OP_238 A=1 B=1 C='getInstance'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0004 FLAG=0x40 OP_068 A=1 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0x00 OP_130 A=2 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0006 FLAG=0xC0 OP_308 A=3 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0007 FLAG=0xC0 OP_098 A=2 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0008 FLAG=0xA0 OP_142 A=3 B=1 C='isFileExist' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0009 FLAG=0x00 OP_184 A=5 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0010 FLAG=0x80 OP_098 A=3 B=5 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0011 FLAG=0x40 OP_342 A=3 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0012 FLAG=0xC2 OP_215 A=0 B=15 C=None [jump-target=16]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0013 FLAG=0x40 OP_011 A=3 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0014 FLAG=0x40 OP_184 A=4 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0015 FLAG=0x40 OP_220 A=3 B=4 C=0
+    --     return U(T,A,B)
+    -- PC 0016 FLAG=0x52 OP_137 A=3 B='pcall' C=None
+    --     R[A]=ENV[B]
+    -- PC 0017 FLAG=0xC0 OP_027 A=4 B=0 C=2 [linear-fusion-payloads=2, closure-child-index=0; captures=2; child-path=root/1/1]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0018 FLAG=0x40 OP_387 A=0 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0019 FLAG=0x80 OP_387 A=0 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0020 FLAG=0xC0 OP_068 A=3 B=4 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0021 FLAG=0x40 OP_342 A=3 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0022 FLAG=0xC2 OP_215 A=0 B=25 C=None [jump-target=26]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0023 FLAG=0x00 OP_011 A=4 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0024 FLAG=0x00 OP_308 A=5 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0025 FLAG=0x00 OP_220 A=4 B=5 C=0
+    --     return U(T,A,B)
+    -- PC 0026 FLAG=0x60 OP_142 A=4 B=1 C='isFileExist' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0027 FLAG=0x00 OP_184 A=6 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0028 FLAG=0xC0 OP_068 A=4 B=6 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0029 FLAG=0x40 OP_172 A=4 B=4 C=0
+    --     R[A]=not R[B]
+    -- PC 0030 FLAG=0xC0 OP_184 A=5 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0031 FLAG=0x00 OP_220 A=4 B=5 C=0
+    --     return U(T,A,B)
+    -- PC 0032 FLAG=0xC0 OP_250 A=0 B=0 C=0
+    --     return
+    --     CHILD PROTOTYPES:
+    --     child-index 0 => root/1/1 (records=5, constants=1)
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/1/1 | 候选函数名: Anonymous_root_1_1 | 指令数: 5 | 子原型: 0 | vararg: 0 | bytes: 5686:5759
+function Anonymous_root_1_1(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'removeFile'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x40 OP_130 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0002 FLAG=0xA0 OP_238 A=0 B=0 C='removeFile'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0003 FLAG=0x80 OP_130 A=2 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0004 FLAG=0x80 OP_187 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0xC0 OP_250 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/2 | 候选函数名: GetWritablePath | 指令数: 77 | 子原型: 0 | vararg: 0 | bytes: 5760:6712
+function GetWritablePath(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = '仓库总可用格子: '
+    -- K[1] = 'GUIDefine'
+    -- K[2] = 'type'
+    -- K[3] = 'GetOpenSize'
+    -- K[4] = 'table'
+    -- K[5] = 'insert'
+    -- K[6] = 0.0
+    -- K[7] = 'global'
+    -- K[8] = 'ipairs'
+    -- K[9] = 'NPC_STORAGE_MAX_PAGE'
+    -- K[10] = 'NPCStorageProxy'
+    -- K[11] = 'MMO'
+    -- K[12] = 1.0
+    -- K[13] = 'STORAGE_PER_PAGE_MAX'
+    -- K[14] = 'GetMaxPage'
+    -- K[15] = 'GetStorageDataByPage'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x80 OP_009 A=0 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=ENV[B]
+    -- PC 0002 FLAG=0x52 OP_137 A=1 B='NPCStorageProxy' C=None
+    --     R[A]=ENV[B]
+    -- PC 0003 FLAG=0xC0 OP_342 A=1 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0x02 OP_140 A=0 B=6 C=None [jump-target=7]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0x40 OP_234 A=1 B=1 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0006 FLAG=0x80 OP_220 A=1 B=1 C=0
+    --     return U(T,A,B)
+    -- PC 0007 FLAG=0xD2 OP_137 A=1 B='NPCStorageProxy' C=None
+    --     R[A]=ENV[B]
+    -- PC 0008 FLAG=0x80 OP_016 A=1 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0009 FLAG=0xC2 OP_215 A=0 B=75 C=None [jump-target=76]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0010 FLAG=0x52 OP_335 A=1 B='NPCStorageProxy' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0011 FLAG=0xE0 OP_033 A=1 B=1 C='GetMaxPage'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0012 FLAG=0x00 OP_098 A=1 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0013 FLAG=0xD2 OP_314 A=2 B=0.0 C=None [linear-fusion-payloads=3]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0014 FLAG=0x12 OP_101 A=3 B=1.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0015 FLAG=0x80 OP_288 A=4 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0016 FLAG=0x52 OP_346 A=5 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0017 FLAG=0x82 OP_023 A=3 B=67 C=None [jump-target=68]
+    --     R[A]=R[A]-R[A+2];Q=B
+    -- PC 0018 FLAG=0x92 OP_300 A=7 B='NPCStorageProxy' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0019 FLAG=0xE0 OP_142 A=7 B=7 C='GetStorageDataByPage' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0020 FLAG=0x80 OP_308 A=9 B=6 C=0
+    --     R[A]=R[B]
+    -- PC 0021 FLAG=0xC0 OP_098 A=7 B=9 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0022 FLAG=0x40 OP_016 A=7 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0023 FLAG=0x82 OP_215 A=0 B=41 C=None [jump-target=42]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0024 FLAG=0xD2 OP_071 A=8 B='type' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0025 FLAG=0x40 OP_308 A=9 B=7 C=0
+    --     R[A]=R[B]
+    -- PC 0026 FLAG=0xC0 OP_098 A=8 B=9 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0027 FLAG=0xA0 OP_271 A=0 B=8 C='table'
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0028 FLAG=0xC2 OP_215 A=0 B=41 C=None [jump-target=42]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0029 FLAG=0xD2 OP_071 A=8 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0030 FLAG=0x00 OP_184 A=9 B=7 C=0
+    --     R[A]=R[B]
+    -- PC 0031 FLAG=0x40 OP_359 A=8 B=9 C=10
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0032 FLAG=0x42 OP_255 A=0 B=39 C=None [jump-target=40]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0033 FLAG=0x80 OP_016 A=12 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0034 FLAG=0x42 OP_255 A=0 B=39 C=None [jump-target=40]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0035 FLAG=0xD2 OP_010 A=13 B='table' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0036 FLAG=0xA0 OP_363 A=13 B=13 C='insert'
+    --     R[A]=R[B][C]
+    -- PC 0037 FLAG=0xC0 OP_078 A=14 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0038 FLAG=0x80 OP_308 A=15 B=12 C=0
+    --     R[A]=R[B]
+    -- PC 0039 FLAG=0x00 OP_187 A=13 B=15 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0040 FLAG=0x00 OP_339 A=8 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0041 FLAG=0xC2 OP_255 A=0 B=32 C=None [jump-target=33]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0042 FLAG=0x40 OP_016 A=7 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0043 FLAG=0x42 OP_140 A=0 B=46 C=None [jump-target=47]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0044 FLAG=0x80 OP_115 A=8 B=7 C=0
+    --     R[A]=#R[B]
+    -- PC 0045 FLAG=0xC0 OP_342 A=8 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0046 FLAG=0x82 OP_255 A=0 B=47 C=None [jump-target=48]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0047 FLAG=0x92 OP_217 A=8 B=0.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0048 FLAG=0x92 OP_137 A=9 B='GUIDefine' C=None
+    --     R[A]=ENV[B]
+    -- PC 0049 FLAG=0xE0 OP_363 A=9 B=9 C='STORAGE_PER_PAGE_MAX'
+    --     R[A]=R[B][C]
+    -- PC 0050 FLAG=0xC0 OP_342 A=9 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0051 FLAG=0x42 OP_140 A=0 B=54 C=None [jump-target=55]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0052 FLAG=0xD2 OP_070 A=9 B='global' C=None [linear-fusion-payloads=4]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0053 FLAG=0x60 OP_049 A=9 B=9 C='MMO' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0054 FLAG=0x20 OP_032 A=9 B=9 C='NPC_STORAGE_MAX_PAGE'
+    --     R[A]=R[B][C]
+    -- PC 0055 FLAG=0x12 OP_335 A=10 B='NPCStorageProxy' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0056 FLAG=0x20 OP_033 A=10 B=10 C='GetOpenSize'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0057 FLAG=0x80 OP_068 A=10 B=11 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0058 FLAG=0x60 OP_073 A=11 B=6 C=1.0 [linear-fusion-payloads=2]
+    --     R[A]=R[B]-C;; -- fused: read next VM instruction;R[A]=R[B]*R[C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0059 FLAG=0x40 OP_316 A=11 B=11 C=9
+    --     R[A]=R[B]*R[C]
+    -- PC 0060 FLAG=0x40 OP_340 A=10 B=10 C=11
+    --     R[A]=R[B]-R[C]
+    -- PC 0061 FLAG=0xC0 OP_253 A=0 B=9 C=10
+    --     if (R[B]<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0062 FLAG=0x42 OP_215 A=0 B=63 C=None [jump-target=64]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0063 FLAG=0x80 OP_308 A=10 B=9 C=0
+    --     R[A]=R[B]
+    -- PC 0064 FLAG=0x50 OP_364 A=0 B=0.0 C=10
+    --     if (B<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0065 FLAG=0x82 OP_255 A=0 B=67 C=None [jump-target=68]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0066 FLAG=0xC0 OP_340 A=11 B=10 C=8
+    --     R[A]=R[B]-R[C]
+    -- PC 0067 FLAG=0x00 OP_029 A=2 B=2 C=11
+    --     R[A]=R[B]+R[C]
+    -- PC 0068 FLAG=0x82 OP_412 A=3 B=17 C=None [loop-target=18]
+    --     do local I=A;local F=T[I+2];local U=T[I]+F;T[I]=U;local L=T[I+1];if (F>0 and U<=L) or (F<=0 and U>=L) then T[I+3]=U;Q=B end end
+    -- PC 0069 FLAG=0x10 OP_364 A=0 B=0.0 C=2
+    --     if (B<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0070 FLAG=0xC2 OP_215 A=0 B=75 C=None [jump-target=76]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0071 FLAG=0xC0 OP_145 A=3 B=0 C=0 [linear-fusion-payloads=3]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0072 FLAG=0x12 OP_320 A=4 B='仓库总可用格子: ' C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0073 FLAG=0x40 OP_345 A=5 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0074 FLAG=0xC0 OP_210 A=4 B=4 C=5
+    --     do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0075 FLAG=0x00 OP_358 A=3 B=4 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0076 FLAG=0x00 OP_220 A=0 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0077 FLAG=0x40 OP_055 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/3 | 候选函数名: MoveTo | 指令数: 10 | 子原型: 0 | vararg: 1 | bytes: 6712:6872
+function MoveTo(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'FileUtils'
+    -- K[1] = 'getInstance'
+    -- K[2] = 'getWritablePath'
+    -- K[3] = 'cc'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xD2 OP_137 A=1 B='cc' C=None
+    --     R[A]=ENV[B]
+    -- PC 0002 FLAG=0xE0 OP_270 A=1 B=1 C='FileUtils' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0003 FLAG=0x20 OP_033 A=1 B=1 C='getInstance'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0004 FLAG=0x00 OP_098 A=1 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0x60 OP_121 A=1 B=1 C='getWritablePath'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0006 FLAG=0x40 OP_098 A=1 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0007 FLAG=0x80 OP_184 A=2 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0008 FLAG=0xC0 OP_210 A=1 B=1 C=2
+    --     do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0009 FLAG=0xC0 OP_220 A=1 B=1 C=0
+    --     return U(T,A,B)
+    -- PC 0010 FLAG=0x00 OP_100 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/4 | 候选函数名: GetDroppedItems | 指令数: 51 | 子原型: 0 | vararg: 3 | bytes: 6872:7583
+function GetDroppedItems(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'sendNotification'
+    -- K[1] = 'global'
+    -- K[2] = 'range'
+    -- K[3] = 'Facade'
+    -- K[4] = 'x'
+    -- K[5] = 'PlayerPos'
+    -- K[6] = 'InputMove'
+    -- K[7] = 'NoticeTable'
+    -- K[8] = 'GetMetaValue'
+    -- K[9] = 'mapID'
+    -- K[10] = 'INPUT_MOVE_TYPE_AUTOMOVE'
+    -- K[11] = 'SL'
+    -- K[12] = 'abs'
+    -- K[13] = 'y'
+    -- K[14] = 'math'
+    -- K[15] = 'MMO'
+    -- K[16] = 'tonumber'
+    -- K[17] = 0.0
+    -- K[18] = 'type'
+    -- K[19] = 'MAP_ID'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x80 OP_225 A=3 B=0 C=5 [linear-fusion-payloads=3]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0002 FLAG=0x12 OP_137 A=4 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0003 FLAG=0xA0 OP_238 A=4 B=4 C='GetMetaValue'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0004 FLAG=0xD2 OP_346 A=6 B='MAP_ID' C=None
+    --     R[A]=B
+    -- PC 0005 FLAG=0x80 OP_098 A=4 B=6 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0006 FLAG=0x10 OP_268 A=3 B='mapID' C=4
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0007 FLAG=0x52 OP_137 A=4 B='tonumber' C=None
+    --     R[A]=ENV[B]
+    -- PC 0008 FLAG=0x40 OP_184 A=5 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0009 FLAG=0x40 OP_068 A=4 B=5 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0010 FLAG=0x90 OP_353 A=3 B='x' C=4 [linear-fusion-payloads=2]
+    --     do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0011 FLAG=0x92 OP_137 A=4 B='tonumber' C=None
+    --     R[A]=ENV[B]
+    -- PC 0012 FLAG=0x80 OP_184 A=5 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0013 FLAG=0x80 OP_068 A=4 B=5 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0014 FLAG=0x10 OP_355 A=3 B='y' C=4
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0015 FLAG=0x12 OP_137 A=4 B='global' C=None
+    --     R[A]=ENV[B]
+    -- PC 0016 FLAG=0xE0 OP_032 A=4 B=4 C='MMO'
+    --     R[A]=R[B][C]
+    -- PC 0017 FLAG=0xE0 OP_404 A=4 B=4 C='INPUT_MOVE_TYPE_AUTOMOVE' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0018 FLAG=0x50 OP_268 A=3 B='type' C=4
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0019 FLAG=0xC0 OP_362 A=4 B=2 C=1
+    --     local I=R[B];if (not not I)==(C~=0) then R[A]=I else Q=Q+1 end
+    -- PC 0020 FLAG=0xC2 OP_255 A=0 B=21 C=None [jump-target=22]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0021 FLAG=0xD2 OP_222 A=4 B=0.0 C=None [linear-fusion-payloads=6]
+    --     R[A]=B;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0022 FLAG=0x90 OP_355 A=3 B='range' C=4
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0023 FLAG=0xD2 OP_394 A=4 B='global' C=None [linear-fusion-payloads=6]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0024 FLAG=0xA0 OP_260 A=4 B=4 C='Facade' [linear-fusion-payloads=4]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0025 FLAG=0xA0 OP_205 A=4 B=4 C='sendNotification' [linear-fusion-payloads=4]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0026 FLAG=0x92 OP_296 A=6 B='global' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0027 FLAG=0xA0 OP_389 A=6 B=6 C='NoticeTable' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0028 FLAG=0x60 OP_398 A=6 B=6 C='InputMove' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0029 FLAG=0x00 OP_184 A=7 B=3 C=0
+    --     R[A]=R[B]
+    -- PC 0030 FLAG=0x00 OP_187 A=4 B=7 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0031 FLAG=0x12 OP_137 A=4 B='PlayerPos' C=None
+    --     R[A]=ENV[B]
+    -- PC 0032 FLAG=0x00 OP_359 A=4 B=4 C=5
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0033 FLAG=0x92 OP_137 A=6 B='math' C=None
+    --     R[A]=ENV[B]
+    -- PC 0034 FLAG=0xA0 OP_228 A=6 B=6 C='abs' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0035 FLAG=0x20 OP_384 A=7 B=3 C='x' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0036 FLAG=0x40 OP_340 A=7 B=7 C=4
+    --     R[A]=R[B]-R[C]
+    -- PC 0037 FLAG=0x00 OP_098 A=6 B=7 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0038 FLAG=0x00 OP_236 A=0 B=6 C=2
+    --     if (R[B]<=R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0039 FLAG=0x42 OP_255 A=0 B=48 C=None [jump-target=49]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0040 FLAG=0x12 OP_203 A=6 B='math' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0041 FLAG=0x20 OP_032 A=6 B=6 C='abs'
+    --     R[A]=R[B][C]
+    -- PC 0042 FLAG=0xE0 OP_384 A=7 B=3 C='y' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0043 FLAG=0xC0 OP_340 A=7 B=7 C=5
+    --     R[A]=R[B]-R[C]
+    -- PC 0044 FLAG=0x40 OP_068 A=6 B=7 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0045 FLAG=0x40 OP_258 A=0 B=6 C=2
+    --     if (R[B]<=R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0046 FLAG=0x42 OP_215 A=0 B=48 C=None [jump-target=49]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0047 FLAG=0x40 OP_011 A=6 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0048 FLAG=0xC0 OP_220 A=6 B=6 C=0
+    --     return U(T,A,B)
+    -- PC 0049 FLAG=0x40 OP_011 A=6 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0050 FLAG=0x40 OP_220 A=6 B=6 C=0
+    --     return U(T,A,B)
+    -- PC 0051 FLAG=0x40 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/5 | 候选函数名: TakeItems | 指令数: 8 | 子原型: 0 | vararg: 0 | bytes: 7583:7734
+function TakeItems(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'FindDropItemInCurrViewFieldAll'
+    -- K[1] = 'global'
+    -- K[2] = 'dropItemManager'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x12 OP_309 A=0 B='global' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0002 FLAG=0xA0 OP_270 A=0 B=0 C='dropItemManager' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0003 FLAG=0x60 OP_121 A=1 B=0 C='FindDropItemInCurrViewFieldAll'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0004 FLAG=0x80 OP_233 A=1 B=2 C=2
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0005 FLAG=0x80 OP_308 A=3 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0006 FLAG=0xC0 OP_184 A=4 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0007 FLAG=0x40 OP_220 A=3 B=4 C=0
+    --     return U(T,A,B)
+    -- PC 0008 FLAG=0xC0 OP_055 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/6 | 候选函数名: InstallDamageHook | 指令数: 99 | 子原型: 0 | vararg: 0 | bytes: 7734:8941
+function InstallDamageHook(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = '取: '
+    -- K[1] = 'string'
+    -- K[2] = 'isTaking'
+    -- K[3] = 'MakeIndex'
+    -- K[4] = 999999999.0
+    -- K[5] = 0.0
+    -- K[6] = False
+    -- K[7] = 'LuaSendMsg'
+    -- K[8] = 'global'
+    -- K[9] = '待定'
+    -- K[10] = 'len'
+    -- K[11] = 'GetStorageItemData'
+    -- K[12] = 'MSG_CS_STORAGE_PICK_OUT_REQUEST'
+    -- K[13] = 'find'
+    -- K[14] = 'MsgType'
+    -- K[15] = 'ipairs'
+    -- K[16] = '取出物品完成, 共取出 '
+    -- K[17] = 1.0
+    -- K[18] = 'trim'
+    -- K[19] = ' 件'
+    -- K[20] = True
+    -- K[21] = 'Name'
+    -- K[22] = '仓库无可取物品'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xC0 OP_130 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0002 FLAG=0xE0 OP_375 A=0 B=0 C='isTaking'
+    --     R[A]=R[B][C]
+    -- PC 0003 FLAG=0x80 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0xC2 OP_140 A=0 B=5 C=None [jump-target=6]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0x00 OP_055 A=0 B=0 C=0
+    --     return
+    -- PC 0006 FLAG=0x80 OP_008 A=0 B=0 C=0 [linear-fusion-payloads=4]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0007 FLAG=0xB0 OP_156 A=0 B='isTaking' C=True
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0008 FLAG=0x92 OP_040 A=0 B=1.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0009 FLAG=0xC0 OP_090 A=1 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0010 FLAG=0x92 OP_346 A=2 B='待定' C=None
+    --     R[A]=B
+    -- PC 0011 FLAG=0x40 OP_402 A=1 B=1 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0012 FLAG=0x12 OP_137 A=2 B='GetStorageItemData' C=None
+    --     R[A]=ENV[B]
+    -- PC 0013 FLAG=0xC0 OP_068 A=2 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0014 FLAG=0x80 OP_016 A=2 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0015 FLAG=0x82 OP_215 A=0 B=18 C=None [jump-target=19]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0016 FLAG=0x00 OP_115 A=3 B=2 C=0
+    --     R[A]=#R[B]
+    -- PC 0017 FLAG=0x20 OP_045 A=0 B=3 C=0.0
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0018 FLAG=0x82 OP_140 A=0 B=24 C=None [jump-target=25]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0019 FLAG=0x40 OP_130 A=3 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0020 FLAG=0x52 OP_371 A=4 B='仓库无可取物品' C=None
+    --     R[A]=B
+    -- PC 0021 FLAG=0x00 OP_358 A=3 B=4 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0022 FLAG=0x80 OP_089 A=3 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end
+    -- PC 0023 FLAG=0xB0 OP_146 A=3 B='isTaking' C=False
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0024 FLAG=0x80 OP_250 A=0 B=0 C=0
+    --     return
+    -- PC 0025 FLAG=0x12 OP_173 A=3 B=0.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0026 FLAG=0xD2 OP_137 A=4 B='ipairs' C=None
+    --     R[A]=ENV[B]
+    -- PC 0027 FLAG=0x80 OP_184 A=5 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0028 FLAG=0x40 OP_359 A=4 B=5 C=6
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0029 FLAG=0x82 OP_140 A=0 B=86 C=None [jump-target=87]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0030 FLAG=0x00 OP_016 A=8 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0031 FLAG=0xC2 OP_255 A=0 B=86 C=None [jump-target=87]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0032 FLAG=0xA0 OP_363 A=9 B=8 C='Name'
+    --     R[A]=R[B][C]
+    -- PC 0033 FLAG=0x40 OP_016 A=9 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0034 FLAG=0x02 OP_255 A=0 B=86 C=None [jump-target=87]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0035 FLAG=0xE0 OP_032 A=9 B=8 C='MakeIndex'
+    --     R[A]=R[B][C]
+    -- PC 0036 FLAG=0xC0 OP_016 A=9 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0037 FLAG=0x82 OP_140 A=0 B=86 C=None [jump-target=87]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0038 FLAG=0xD2 OP_198 A=9 B='string' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0039 FLAG=0x20 OP_375 A=9 B=9 C='trim'
+    --     R[A]=R[B][C]
+    -- PC 0040 FLAG=0xE0 OP_375 A=10 B=8 C='Name'
+    --     R[A]=R[B][C]
+    -- PC 0041 FLAG=0x40 OP_098 A=9 B=10 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0042 FLAG=0x20 OP_092 A=1 B=0 C=1.0
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0043 FLAG=0x42 OP_140 A=0 B=44 C=None [jump-target=45]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0044 FLAG=0x80 OP_082 A=10 B=0 C=1
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0045 FLAG=0xC0 OP_338 A=10 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0046 FLAG=0xE0 OP_271 A=0 B=0 C=0.0
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0047 FLAG=0x82 OP_140 A=0 B=64 C=None [jump-target=65]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0048 FLAG=0x12 OP_071 A=11 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0049 FLAG=0xC0 OP_184 A=12 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0050 FLAG=0x40 OP_233 A=11 B=12 C=13
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0051 FLAG=0x82 OP_215 A=0 B=62 C=None [jump-target=63]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0052 FLAG=0xD2 OP_397 A=16 B='string' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0053 FLAG=0x60 OP_375 A=16 B=16 C='find'
+    --     R[A]=R[B][C]
+    -- PC 0054 FLAG=0xC0 OP_184 A=17 B=9 C=0
+    --     R[A]=R[B]
+    -- PC 0055 FLAG=0x00 OP_184 A=18 B=15 C=0
+    --     R[A]=R[B]
+    -- PC 0056 FLAG=0x92 OP_346 A=19 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0057 FLAG=0xC0 OP_401 A=20 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0058 FLAG=0x00 OP_068 A=16 B=20 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0059 FLAG=0xC0 OP_016 A=16 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0060 FLAG=0x02 OP_215 A=0 B=62 C=None [jump-target=63]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0061 FLAG=0x80 OP_338 A=10 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0062 FLAG=0x82 OP_140 A=0 B=64 C=None [jump-target=65]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0063 FLAG=0xC0 OP_386 A=11 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0064 FLAG=0x82 OP_255 A=0 B=51 C=None [jump-target=52]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0065 FLAG=0x80 OP_016 A=10 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0066 FLAG=0x82 OP_255 A=0 B=86 C=None [jump-target=87]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0067 FLAG=0x00 OP_145 A=11 B=1 C=0 [linear-fusion-payloads=3]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0068 FLAG=0x92 OP_320 A=12 B='取: ' C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0069 FLAG=0xC0 OP_345 A=13 B=9 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0070 FLAG=0x40 OP_210 A=12 B=12 C=13
+    --     do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0071 FLAG=0x80 OP_358 A=11 B=12 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0072 FLAG=0x12 OP_276 A=11 B='LuaSendMsg' C=None [linear-fusion-payloads=5]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0073 FLAG=0x12 OP_397 A=12 B='global' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0074 FLAG=0x20 OP_375 A=12 B=12 C='MsgType'
+    --     R[A]=R[B][C]
+    -- PC 0075 FLAG=0x20 OP_046 A=12 B=12 C='MSG_CS_STORAGE_PICK_OUT_REQUEST' [linear-fusion-payloads=8]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0076 FLAG=0x52 OP_295 A=13 B=999999999.0 C=None [linear-fusion-payloads=7]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0077 FLAG=0xE0 OP_025 A=14 B=8 C='MakeIndex' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0078 FLAG=0x12 OP_050 A=15 B=0.0 C=None [linear-fusion-payloads=5]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0079 FLAG=0x12 OP_232 A=16 B=0.0 C=None [linear-fusion-payloads=4]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0080 FLAG=0x40 OP_113 A=17 B=9 C=0 [linear-fusion-payloads=3]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0081 FLAG=0x52 OP_307 A=18 B='string' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0082 FLAG=0xA0 OP_398 A=18 B=18 C='len' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0083 FLAG=0xC0 OP_308 A=19 B=9 C=0
+    --     R[A]=R[B]
+    -- PC 0084 FLAG=0x40 OP_392 A=18 B=19 C=0
+    --     do local I,F=E(R[A](U(T,A+1,B)));B=F+A-1;local U=0;for L=A,B do U=U+1;T[L]=I[U] end end
+    -- PC 0085 FLAG=0x80 OP_370 A=11 B=0 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0086 FLAG=0x20 OP_124 A=3 B=3 C=1.0
+    --     R[A]=R[B]+C
+    -- PC 0087 FLAG=0xC0 OP_386 A=4 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0088 FLAG=0xC2 OP_255 A=0 B=29 C=None [jump-target=30]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0089 FLAG=0x80 OP_089 A=4 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end
+    -- PC 0090 FLAG=0x70 OP_146 A=4 B='isTaking' C=False
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0091 FLAG=0xD0 OP_352 A=0 B=0.0 C=3
+    --     if (B<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0092 FLAG=0x42 OP_255 A=0 B=98 C=None [jump-target=99]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0093 FLAG=0x00 OP_266 A=4 B=1 C=0 [linear-fusion-payloads=4]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0094 FLAG=0xD2 OP_101 A=5 B='取出物品完成, 共取出 ' C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0095 FLAG=0x80 OP_293 A=6 B=3 C=0 [linear-fusion-payloads=2]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0096 FLAG=0x92 OP_371 A=7 B=' 件' C=None
+    --     R[A]=B
+    -- PC 0097 FLAG=0x80 OP_210 A=5 B=5 C=7
+    --     do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0098 FLAG=0x00 OP_358 A=4 B=5 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0099 FLAG=0x80 OP_100 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: root/6/0
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/7 | 候选函数名: GetOwnerIDText | 指令数: 40 | 子原型: 1 | vararg: 0 | bytes: 8941:9715
+function GetOwnerIDText(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'gameMapController'
+    -- K[1] = '__ylwHookedOrigin'
+    -- K[2] = '已挂接伤害消息钩子（击杀拉黑用）'
+    -- K[3] = 'MSG_SC_DAMAGE_HP'
+    -- K[4] = 'mNetMsgHandle'
+    -- K[5] = 'type'
+    -- K[6] = 'global'
+    -- K[7] = 'MsgType'
+    -- K[8] = 'table'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x12 OP_397 A=0 B='global' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0002 FLAG=0xA0 OP_363 A=0 B=0 C='gameMapController'
+    --     R[A]=R[B][C]
+    -- PC 0003 FLAG=0x00 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0x02 OP_255 A=0 B=9 C=None [jump-target=10]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0x12 OP_137 A=1 B='type' C=None
+    --     R[A]=ENV[B]
+    -- PC 0006 FLAG=0xA0 OP_363 A=2 B=0 C='mNetMsgHandle'
+    --     R[A]=R[B][C]
+    -- PC 0007 FLAG=0xC0 OP_068 A=1 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0008 FLAG=0x60 OP_045 A=1 B=1 C='table'
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0009 FLAG=0x42 OP_140 A=0 B=10 C=None [jump-target=11]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0010 FLAG=0x40 OP_001 A=0 B=0 C=0
+    --     return
+    -- PC 0011 FLAG=0x52 OP_397 A=1 B='global' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0012 FLAG=0xA0 OP_375 A=1 B=1 C='MsgType'
+    --     R[A]=R[B][C]
+    -- PC 0013 FLAG=0xC0 OP_016 A=1 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0014 FLAG=0x42 OP_255 A=0 B=17 C=None [jump-target=18]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0015 FLAG=0x12 OP_198 A=1 B='global' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0016 FLAG=0x60 OP_363 A=1 B=1 C='MsgType'
+    --     R[A]=R[B][C]
+    -- PC 0017 FLAG=0xA0 OP_053 A=1 B=1 C='MSG_SC_DAMAGE_HP'
+    --     R[A]=R[B][C]
+    -- PC 0018 FLAG=0xC0 OP_342 A=1 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0019 FLAG=0x42 OP_140 A=0 B=20 C=None [jump-target=21]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0020 FLAG=0xC0 OP_001 A=0 B=0 C=0
+    --     return
+    -- PC 0021 FLAG=0xA0 OP_366 A=2 B=0 C='mNetMsgHandle' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][R[C]]
+    -- PC 0022 FLAG=0xC0 OP_231 A=2 B=2 C=1
+    --     R[A]=R[B][R[C]]
+    -- PC 0023 FLAG=0x40 OP_016 A=2 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0024 FLAG=0x82 OP_140 A=0 B=27 C=None [jump-target=28]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0025 FLAG=0x20 OP_375 A=3 B=0 C='__ylwHookedOrigin'
+    --     R[A]=R[B][C]
+    -- PC 0026 FLAG=0x00 OP_099 A=0 B=3 C=2
+    --     if (R[B]==R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0027 FLAG=0x02 OP_255 A=0 B=28 C=None [jump-target=29]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0028 FLAG=0x00 OP_001 A=0 B=0 C=0
+    --     return
+    -- PC 0029 FLAG=0x60 OP_032 A=3 B=0 C='mNetMsgHandle'
+    --     R[A]=R[B][C]
+    -- PC 0030 FLAG=0x40 OP_027 A=4 B=0 C=2 [linear-fusion-payloads=2, closure-child-index=0; captures=2; child-path=root/7/1]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0031 FLAG=0x80 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0032 FLAG=0x80 OP_387 A=0 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0033 FLAG=0x80 OP_174 A=3 B=1 C=4
+    --     do local I=R[B];local F=R[C];R[A][I]=F end
+    -- PC 0034 FLAG=0x20 OP_053 A=3 B=0 C='mNetMsgHandle'
+    --     R[A]=R[B][C]
+    -- PC 0035 FLAG=0x40 OP_304 A=3 B=3 C=1
+    --     R[A]=R[B][R[C]]
+    -- PC 0036 FLAG=0x10 OP_268 A=0 B='__ylwHookedOrigin' C=3
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0037 FLAG=0x80 OP_134 A=3 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0038 FLAG=0x52 OP_371 A=4 B='已挂接伤害消息钩子（击杀拉黑用）' C=None
+    --     R[A]=B
+    -- PC 0039 FLAG=0xC0 OP_187 A=3 B=4 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0040 FLAG=0xC0 OP_001 A=0 B=0 C=0
+    --     return
+    --     CHILD PROTOTYPES:
+    --     child-index 0 => root/7/1 (records=18, constants=4)
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/7/1 | 候选函数名: Anonymous_root_7_1 | 指令数: 18 | 子原型: 0 | vararg: 2 | bytes: 9491:9714
+function Anonymous_root_7_1(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'onDamageMsg'
+    -- K[1] = 'pcall'
+    -- K[2] = 'type'
+    -- K[3] = 'function'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xD2 OP_095 A=2 B='type' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0002 FLAG=0x80 OP_159 A=3 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0003 FLAG=0x20 OP_032 A=3 B=3 C='onDamageMsg'
+    --     R[A]=R[B][C]
+    -- PC 0004 FLAG=0x00 OP_098 A=2 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0xA0 OP_271 A=0 B=2 C='function'
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0006 FLAG=0xC2 OP_255 A=0 B=12 C=None [jump-target=13]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0007 FLAG=0x52 OP_137 A=2 B='pcall' C=None
+    --     R[A]=ENV[B]
+    -- PC 0008 FLAG=0x40 OP_159 A=3 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0009 FLAG=0x20 OP_032 A=3 B=3 C='onDamageMsg'
+    --     R[A]=R[B][C]
+    -- PC 0010 FLAG=0xC0 OP_078 A=4 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0011 FLAG=0xC0 OP_308 A=5 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0012 FLAG=0x00 OP_358 A=2 B=5 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0013 FLAG=0x00 OP_348 A=2 B=1 C=0 [linear-fusion-payloads=2]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0014 FLAG=0x80 OP_078 A=3 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0015 FLAG=0x00 OP_184 A=4 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0016 FLAG=0x40 OP_164 A=2 B=4 C=0
+    --     return R[A](U(T,A+1,B))
+    -- PC 0017 FLAG=0xC0 OP_143 A=2 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0018 FLAG=0x80 OP_250 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/8 | 候选函数名: FormatStateChange | 指令数: 31 | 子原型: 0 | vararg: 2 | bytes: 9715:10070
+function FormatStateChange(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = -1.0
+    -- K[1] = 'type'
+    -- K[2] = 'string'
+    -- K[3] = ''
+    -- K[4] = 'GetOwnerID'
+    -- K[5] = 'tostring'
+    -- K[6] = ['unknown', 2]
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xE0 OP_033 A=2 B=0 C='GetOwnerID'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0002 FLAG=0x00 OP_098 A=2 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0003 FLAG=0x20 OP_279 A=1 B=2 C=['unknown', 2]
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0x42 OP_140 A=0 B=8 C=None [jump-target=9]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0xA0 OP_271 A=1 B=2 C=''
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0006 FLAG=0x02 OP_215 A=0 B=8 C=None [jump-target=9]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0007 FLAG=0xA0 OP_279 A=0 B=2 C=-1.0
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0008 FLAG=0x02 OP_215 A=0 B=11 C=None [jump-target=12]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0009 FLAG=0x00 OP_401 A=3 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0010 FLAG=0xC0 OP_220 A=3 B=3 C=0
+    --     return U(T,A,B)
+    -- PC 0011 FLAG=0x82 OP_255 A=0 B=30 C=None [jump-target=31]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0012 FLAG=0xD2 OP_071 A=3 B='type' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0013 FLAG=0xC0 OP_184 A=4 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0014 FLAG=0xC0 OP_068 A=3 B=4 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0015 FLAG=0xA0 OP_045 A=0 B=3 C='string'
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0016 FLAG=0x82 OP_255 A=0 B=25 C=None [jump-target=26]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0017 FLAG=0x92 OP_071 A=3 B='tostring' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0018 FLAG=0xC0 OP_184 A=4 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0019 FLAG=0x80 OP_068 A=3 B=4 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0020 FLAG=0x40 OP_294 A=1 B=2 C=3
+    --     if (R[B]==R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0021 FLAG=0x02 OP_255 A=0 B=22 C=None [jump-target=23]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0022 FLAG=0x40 OP_082 A=3 B=0 C=1
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0023 FLAG=0x00 OP_011 A=3 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0024 FLAG=0x40 OP_220 A=3 B=3 C=0
+    --     return U(T,A,B)
+    -- PC 0025 FLAG=0xC2 OP_140 A=0 B=30 C=None [jump-target=31]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0026 FLAG=0x00 OP_381 A=1 B=2 C=1
+    --     if (R[B]==R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0027 FLAG=0x42 OP_255 A=0 B=28 C=None [jump-target=29]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0028 FLAG=0xC0 OP_082 A=3 B=0 C=1
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0029 FLAG=0x00 OP_338 A=3 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0030 FLAG=0x00 OP_220 A=3 B=3 C=0
+    --     return U(T,A,B)
+    -- PC 0031 FLAG=0xC0 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/9 | 候选函数名: ReadNumericConfig | 指令数: 10 | 子原型: 0 | vararg: 1 | bytes: 10070:10222
+function ReadNumericConfig(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'format'
+    -- K[1] = '状态切换: %s -> %s'
+    -- K[2] = 'string'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xC0 OP_052 A=1 B=0 C=0 [linear-fusion-payloads=5]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0002 FLAG=0x12 OP_132 A=2 B='string' C=None [linear-fusion-payloads=4]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0003 FLAG=0xE0 OP_363 A=2 B=2 C='format'
+    --     R[A]=R[B][C]
+    -- PC 0004 FLAG=0x92 OP_080 A=3 B='状态切换: %s -> %s' C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0005 FLAG=0xC0 OP_131 A=4 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0006 FLAG=0x40 OP_308 A=5 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0007 FLAG=0x00 OP_252 A=2 B=5 C=0
+    --     do local I,F=E(R[A](U(T,A+1,B)));B=F+A-1;local U=0;for L=A,B do U=U+1;T[L]=I[U] end end
+    -- PC 0008 FLAG=0x80 OP_093 A=1 B=0 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0009 FLAG=0xC0 OP_114 A=0 B=1 C=0
+    --     UP[B]=R[A]
+    -- PC 0010 FLAG=0xC0 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/10 | 候选函数名: SetButtonVisibilityState | 指令数: 45 | 子原型: 0 | vararg: 1 | bytes: 10222:10789
+function SetButtonVisibilityState(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = '%s'
+    -- K[1] = 'string'
+    -- K[2] = 'gsub'
+    -- K[3] = 'tonumber'
+    -- K[4] = ''
+    -- K[5] = 'getStringFromFile'
+    -- K[6] = 'match'
+    -- K[7] = '^%d+$'
+    -- K[8] = 'getInstance'
+    -- K[9] = 'isFileExist'
+    -- K[10] = 'type'
+    -- K[11] = 'cc'
+    -- K[12] = 'FileUtils'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x52 OP_309 A=1 B='cc' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0002 FLAG=0x60 OP_375 A=1 B=1 C='FileUtils'
+    --     R[A]=R[B][C]
+    -- PC 0003 FLAG=0x20 OP_033 A=1 B=1 C='getInstance'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0004 FLAG=0xC0 OP_098 A=1 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0x80 OP_131 A=2 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0006 FLAG=0x00 OP_184 A=3 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0007 FLAG=0x40 OP_068 A=2 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0008 FLAG=0x60 OP_142 A=3 B=1 C='isFileExist' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0009 FLAG=0xC0 OP_308 A=5 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0010 FLAG=0x40 OP_068 A=3 B=5 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0011 FLAG=0x00 OP_342 A=3 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0012 FLAG=0xC2 OP_215 A=0 B=14 C=None [jump-target=15]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0013 FLAG=0xC0 OP_248 A=3 B=3 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0014 FLAG=0x00 OP_220 A=3 B=3 C=0
+    --     return U(T,A,B)
+    -- PC 0015 FLAG=0x20 OP_142 A=3 B=1 C='getStringFromFile' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0016 FLAG=0x00 OP_184 A=5 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0017 FLAG=0x40 OP_068 A=3 B=5 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0018 FLAG=0xD2 OP_071 A=4 B='type' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0019 FLAG=0x80 OP_308 A=5 B=3 C=0
+    --     R[A]=R[B]
+    -- PC 0020 FLAG=0x80 OP_098 A=4 B=5 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0021 FLAG=0xA0 OP_279 A=1 B=4 C='string'
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0022 FLAG=0x42 OP_140 A=0 B=24 C=None [jump-target=25]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0023 FLAG=0x00 OP_248 A=4 B=4 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0024 FLAG=0x80 OP_220 A=4 B=4 C=0
+    --     return U(T,A,B)
+    -- PC 0025 FLAG=0x92 OP_307 A=4 B='string' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0026 FLAG=0xE0 OP_383 A=4 B=4 C='gsub' [linear-fusion-payloads=3]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0027 FLAG=0x80 OP_308 A=5 B=3 C=0
+    --     R[A]=R[B]
+    -- PC 0028 FLAG=0x12 OP_371 A=6 B='%s' C=None
+    --     R[A]=B
+    -- PC 0029 FLAG=0x92 OP_371 A=7 B='' C=None
+    --     R[A]=B
+    -- PC 0030 FLAG=0x40 OP_098 A=4 B=7 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0031 FLAG=0xC0 OP_113 A=3 B=4 C=0 [linear-fusion-payloads=3]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0032 FLAG=0x52 OP_307 A=4 B='string' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0033 FLAG=0xE0 OP_176 A=4 B=4 C='match' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0034 FLAG=0xC0 OP_288 A=5 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0035 FLAG=0x92 OP_371 A=6 B='^%d+$' C=None
+    --     R[A]=B
+    -- PC 0036 FLAG=0x40 OP_068 A=4 B=6 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0037 FLAG=0x80 OP_342 A=4 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0038 FLAG=0x42 OP_140 A=0 B=40 C=None [jump-target=41]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0039 FLAG=0xC0 OP_125 A=4 B=4 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0040 FLAG=0x80 OP_220 A=4 B=4 C=0
+    --     return U(T,A,B)
+    -- PC 0041 FLAG=0x92 OP_071 A=4 B='tonumber' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0042 FLAG=0x40 OP_308 A=5 B=3 C=0
+    --     R[A]=R[B]
+    -- PC 0043 FLAG=0x00 OP_149 A=4 B=5 C=0
+    --     return R[A](U(T,A+1,B))
+    -- PC 0044 FLAG=0x80 OP_143 A=4 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0045 FLAG=0x40 OP_250 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/11 | 候选函数名: DistanceCalculation | 指令数: 15 | 子原型: 0 | vararg: 0 | bytes: 10789:10985
+function DistanceCalculation(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'isHidden'
+    -- K[1] = 'setVisible'
+    -- K[2] = 'pairs'
+    -- K[3] = 'GUI'
+    -- K[4] = True
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x40 OP_315 A=0 B=0 C=0 [linear-fusion-payloads=2]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B]
+    -- PC 0002 FLAG=0x30 OP_146 A=0 B='isHidden' C=True
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0003 FLAG=0x92 OP_095 A=0 B='pairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0004 FLAG=0x00 OP_130 A=1 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0005 FLAG=0xC0 OP_183 A=0 B=1 C=2
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0006 FLAG=0xC2 OP_255 A=0 B=12 C=None [jump-target=13]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0007 FLAG=0xD2 OP_335 A=5 B='GUI' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0008 FLAG=0xA0 OP_033 A=5 B=5 C='setVisible'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0009 FLAG=0xC0 OP_028 A=7 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][R[C]]
+    -- PC 0010 FLAG=0x00 OP_231 A=7 B=7 C=3
+    --     R[A]=R[B][R[C]]
+    -- PC 0011 FLAG=0x00 OP_401 A=8 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0012 FLAG=0x40 OP_187 A=5 B=8 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0013 FLAG=0x40 OP_117 A=0 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0014 FLAG=0x82 OP_215 A=0 B=6 C=None [jump-target=7]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0015 FLAG=0xC0 OP_250 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/12 | 候选函数名: LuaSendMsg | 指令数: 25 | 子原型: 0 | vararg: 2 | bytes: 10985:11269
+function LuaSendMsg(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'x'
+    -- K[1] = 'abs'
+    -- K[2] = 'y'
+    -- K[3] = 'max'
+    -- K[4] = 'math'
+    -- K[5] = 99999.0
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xC0 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0002 FLAG=0x02 OP_140 A=0 B=4 C=None [jump-target=5]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0003 FLAG=0x40 OP_342 A=1 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0x42 OP_140 A=0 B=6 C=None [jump-target=7]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0xD2 OP_371 A=2 B=99999.0 C=None
+    --     R[A]=B
+    -- PC 0006 FLAG=0x80 OP_220 A=2 B=2 C=0
+    --     return U(T,A,B)
+    -- PC 0007 FLAG=0x92 OP_251 A=2 B='math' C=None [linear-fusion-payloads=4]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0008 FLAG=0x60 OP_063 A=2 B=2 C='abs' [linear-fusion-payloads=3]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0009 FLAG=0xE0 OP_053 A=3 B=0 C='x'
+    --     R[A]=R[B][C]
+    -- PC 0010 FLAG=0xE0 OP_384 A=4 B=1 C='x' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0011 FLAG=0x40 OP_340 A=3 B=3 C=4
+    --     R[A]=R[B]-R[C]
+    -- PC 0012 FLAG=0x00 OP_098 A=2 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0013 FLAG=0x12 OP_251 A=3 B='math' C=None [linear-fusion-payloads=4]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0014 FLAG=0xE0 OP_049 A=3 B=3 C='abs' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0015 FLAG=0xA0 OP_228 A=4 B=0 C='y' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0016 FLAG=0xE0 OP_384 A=5 B=1 C='y' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0017 FLAG=0x00 OP_340 A=4 B=4 C=5
+    --     R[A]=R[B]-R[C]
+    -- PC 0018 FLAG=0xC0 OP_098 A=3 B=4 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0019 FLAG=0x52 OP_137 A=4 B='math' C=None
+    --     R[A]=ENV[B]
+    -- PC 0020 FLAG=0x60 OP_269 A=4 B=4 C='max' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0021 FLAG=0xC0 OP_184 A=5 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0022 FLAG=0x80 OP_184 A=6 B=3 C=0
+    --     R[A]=R[B]
+    -- PC 0023 FLAG=0x80 OP_405 A=4 B=6 C=0
+    --     return R[A](U(T,A+1,B))
+    -- PC 0024 FLAG=0x40 OP_143 A=4 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0025 FLAG=0x40 OP_055 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/13 | 候选函数名: GetMapId | 指令数: 92 | 子原型: 0 | vararg: 0 | bytes: 11269:12464
+function GetMapId(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 2.0
+    -- K[1] = ')'
+    -- K[2] = 'string'
+    -- K[3] = ', '
+    -- K[4] = 'param4'
+    -- K[5] = 'networkCtl'
+    -- K[6] = 'tonumber'
+    -- K[7] = 'recog'
+    -- K[8] = 'Blocklist'
+    -- K[9] = 'ipairs'
+    -- K[10] = 'table'
+    -- K[11] = 'concat'
+    -- K[12] = 0.0
+    -- K[13] = True
+    -- K[14] = 'SendHookList'
+    -- K[15] = 'type'
+    -- K[16] = 'param1'
+    -- K[17] = 5.0
+    -- K[18] = 'tostring'
+    -- K[19] = 'global'
+    -- K[20] = 'find'
+    -- K[21] = 3.0
+    -- K[22] = 'SendMsg'
+    -- K[23] = 'LuaSendMsg('
+    -- K[24] = 6.0
+    -- K[25] = 1.0
+    -- K[26] = 'param3'
+    -- K[27] = 'insert'
+    -- K[28] = 'msgId'
+    -- K[29] = 'function'
+    -- K[30] = 'pcall'
+    -- K[31] = 4.0
+    -- K[32] = "'"
+    -- K[33] = 'param2'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x00 OP_410 A=1 B=0 C=0
+    --     R[A]={}
+    -- PC 0002 FLAG=0x00 OP_006 A=2 B=0 C=0
+    --     B=A+A-1;for I=A,B do T[I]=X[I-A] end
+    -- PC 0003 FLAG=0x40 OP_402 A=1 B=0 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0004 FLAG=0xA0 OP_363 A=2 B=1 C=6.0
+    --     R[A]=R[B][C]
+    -- PC 0005 FLAG=0x60 OP_375 A=3 B=1 C=1.0
+    --     R[A]=R[B][C]
+    -- PC 0006 FLAG=0x40 OP_105 A=4 B=0 C=6
+    --     R[A]={}
+    -- PC 0007 FLAG=0xF0 OP_229 A=4 B='recog' C=0.0 [linear-fusion-payloads=3]
+    --     do local I=B;local F=C;R[A][I]=F end;; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0008 FLAG=0xA0 OP_302 A=5 B=1 C=1.0 [linear-fusion-payloads=5]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0009 FLAG=0x10 OP_268 A=4 B='msgId' C=5
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0010 FLAG=0x20 OP_377 A=5 B=1 C=2.0 [linear-fusion-payloads=8]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B]
+    -- PC 0011 FLAG=0x50 OP_326 A=4 B='param1' C=5 [linear-fusion-payloads=2]
+    --     do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0012 FLAG=0xA0 OP_053 A=5 B=1 C=3.0
+    --     R[A]=R[B][C]
+    -- PC 0013 FLAG=0x10 OP_268 A=4 B='param2' C=5
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0014 FLAG=0x60 OP_036 A=5 B=1 C=4.0 [linear-fusion-payloads=4]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B]
+    -- PC 0015 FLAG=0x90 OP_355 A=4 B='param3' C=5
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0016 FLAG=0x60 OP_161 A=5 B=1 C=5.0 [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B]
+    -- PC 0017 FLAG=0xD0 OP_291 A=4 B='param4' C=5 [linear-fusion-payloads=3]
+    --     do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0018 FLAG=0x12 OP_284 A=5 B='table' C=None [linear-fusion-payloads=5]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0019 FLAG=0x20 OP_227 A=5 B=5 C='find' [linear-fusion-payloads=4]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0020 FLAG=0x40 OP_209 A=6 B=0 C=0 [linear-fusion-payloads=2]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=ENV[B]
+    -- PC 0021 FLAG=0x20 OP_181 A=6 B=6 C='Blocklist' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0022 FLAG=0xD2 OP_071 A=7 B='tonumber' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0023 FLAG=0x00 OP_308 A=8 B=3 C=0
+    --     R[A]=R[B]
+    -- PC 0024 FLAG=0xC0 OP_392 A=7 B=8 C=0
+    --     do local I,F=E(R[A](U(T,A+1,B)));B=F+A-1;local U=0;for L=A,B do U=U+1;T[L]=I[U] end end
+    -- PC 0025 FLAG=0x80 OP_242 A=5 B=0 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0026 FLAG=0x40 OP_342 A=5 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0027 FLAG=0xC2 OP_255 A=0 B=62 C=None [jump-target=63]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0028 FLAG=0x80 OP_230 A=5 B=0 C=0 [linear-fusion-payloads=2]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0029 FLAG=0x12 OP_071 A=6 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0030 FLAG=0x00 OP_308 A=7 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0031 FLAG=0xC0 OP_233 A=6 B=7 C=8
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0032 FLAG=0x42 OP_255 A=0 B=50 C=None [jump-target=51]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0033 FLAG=0x52 OP_137 A=11 B='table' C=None
+    --     R[A]=ENV[B]
+    -- PC 0034 FLAG=0xA0 OP_200 A=11 B=11 C='insert' [linear-fusion-payloads=3]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0035 FLAG=0x40 OP_044 A=12 B=5 C=0 [linear-fusion-payloads=2]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0036 FLAG=0xD2 OP_071 A=13 B='type' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0037 FLAG=0xC0 OP_308 A=14 B=10 C=0
+    --     R[A]=R[B]
+    -- PC 0038 FLAG=0xC0 OP_098 A=13 B=14 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0039 FLAG=0x60 OP_045 A=0 B=13 C='string'
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0040 FLAG=0xC2 OP_140 A=0 B=46 C=None [jump-target=47]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0041 FLAG=0x52 OP_317 A=13 B="'" C=None [linear-fusion-payloads=3]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0042 FLAG=0xC0 OP_293 A=14 B=10 C=0 [linear-fusion-payloads=2]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0043 FLAG=0x12 OP_346 A=15 B="'" C=None
+    --     R[A]=B
+    -- PC 0044 FLAG=0x80 OP_210 A=13 B=13 C=15
+    --     do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0045 FLAG=0x00 OP_342 A=13 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0046 FLAG=0xC2 OP_255 A=0 B=49 C=None [jump-target=50]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0047 FLAG=0x12 OP_071 A=13 B='tostring' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0048 FLAG=0x40 OP_308 A=14 B=10 C=0
+    --     R[A]=R[B]
+    -- PC 0049 FLAG=0xC0 OP_068 A=13 B=14 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0050 FLAG=0x80 OP_187 A=11 B=13 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0051 FLAG=0xC0 OP_386 A=6 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0052 FLAG=0x02 OP_255 A=0 B=32 C=None [jump-target=33]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0053 FLAG=0x00 OP_134 A=6 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0054 FLAG=0x12 OP_102 A=7 B='LuaSendMsg(' C=None [linear-fusion-payloads=4]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0055 FLAG=0x12 OP_137 A=8 B='table' C=None
+    --     R[A]=ENV[B]
+    -- PC 0056 FLAG=0x20 OP_176 A=8 B=8 C='concat' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0057 FLAG=0xC0 OP_288 A=9 B=5 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0058 FLAG=0x52 OP_371 A=10 B=', ' C=None
+    --     R[A]=B
+    -- PC 0059 FLAG=0x40 OP_098 A=8 B=10 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0060 FLAG=0x92 OP_047 A=9 B=')' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0061 FLAG=0x00 OP_210 A=7 B=7 C=9
+    --     do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0062 FLAG=0x40 OP_187 A=6 B=7 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0063 FLAG=0x40 OP_130 A=5 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0064 FLAG=0xA0 OP_366 A=5 B=5 C='SendHookList' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][R[C]]
+    -- PC 0065 FLAG=0xC0 OP_231 A=5 B=5 C=3
+    --     R[A]=R[B][R[C]]
+    -- PC 0066 FLAG=0xC0 OP_016 A=5 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0067 FLAG=0x42 OP_255 A=0 B=86 C=None [jump-target=87]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0068 FLAG=0x40 OP_158 A=5 B=0 C=0 [linear-fusion-payloads=4]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][R[C]];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0069 FLAG=0xA0 OP_020 A=5 B=5 C='SendHookList' [linear-fusion-payloads=3]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][R[C]];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0070 FLAG=0xC0 OP_007 A=5 B=5 C=3 [linear-fusion-payloads=2]
+    --     R[A]=R[B][R[C]];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0071 FLAG=0x12 OP_137 A=6 B='type' C=None
+    --     R[A]=ENV[B]
+    -- PC 0072 FLAG=0x00 OP_308 A=7 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0073 FLAG=0x80 OP_098 A=6 B=7 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0074 FLAG=0xA0 OP_092 A=0 B=6 C='function'
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0075 FLAG=0xC2 OP_215 A=0 B=86 C=None [jump-target=87]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0076 FLAG=0x12 OP_303 A=6 B='pcall' C=None [linear-fusion-payloads=4]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0077 FLAG=0x40 OP_372 A=7 B=5 C=0 [linear-fusion-payloads=3]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0078 FLAG=0x00 OP_385 A=8 B=3 C=0 [linear-fusion-payloads=2]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0079 FLAG=0x00 OP_078 A=9 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0080 FLAG=0x80 OP_184 A=10 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0081 FLAG=0x80 OP_233 A=6 B=10 C=7
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0082 FLAG=0x00 OP_342 A=6 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0083 FLAG=0xC2 OP_140 A=0 B=83 C=None [jump-target=84]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0084 FLAG=0x20 OP_045 A=0 B=7 C=True
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0085 FLAG=0x42 OP_140 A=0 B=86 C=None [jump-target=87]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0086 FLAG=0x80 OP_055 A=0 B=0 C=0
+    --     return
+    -- PC 0087 FLAG=0x12 OP_137 A=5 B='global' C=None
+    --     R[A]=ENV[B]
+    -- PC 0088 FLAG=0x20 OP_270 A=5 B=5 C='networkCtl' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0089 FLAG=0x20 OP_238 A=5 B=5 C='SendMsg'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0090 FLAG=0x80 OP_012 A=7 B=0 C=0
+    --     B=A+A-1;for I=A,B do T[I]=X[I-A] end
+    -- PC 0091 FLAG=0x80 OP_370 A=5 B=0 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0092 FLAG=0x80 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/14 | 候选函数名: FindMonsterInCurrViewField | 指令数: 9 | 子原型: 0 | vararg: 0 | bytes: 12464:12602
+function FindMonsterInCurrViewField(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'SL'
+    -- K[1] = 'MAP_ID'
+    -- K[2] = 0.0
+    -- K[3] = 'GetMetaValue'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xD2 OP_137 A=0 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0002 FLAG=0x20 OP_121 A=0 B=0 C='GetMetaValue'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0003 FLAG=0x12 OP_371 A=2 B='MAP_ID' C=None
+    --     R[A]=B
+    -- PC 0004 FLAG=0x80 OP_068 A=0 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0xC0 OP_342 A=0 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0006 FLAG=0xC2 OP_255 A=0 B=7 C=None [jump-target=8]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0007 FLAG=0x92 OP_371 A=0 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0008 FLAG=0x40 OP_220 A=0 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0009 FLAG=0x80 OP_100 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/15 | 候选函数名: ClearBlacklistItems | 指令数: 27 | 子原型: 0 | vararg: 0 | bytes: 12602:12917
+function ClearBlacklistItems(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'FindMonsterInCurrViewField'
+    -- K[1] = 'ipairs'
+    -- K[2] = 'SL'
+    -- K[3] = 'GetID'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x12 OP_137 A=0 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0002 FLAG=0xE0 OP_121 A=0 B=0 C='FindMonsterInCurrViewField'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0003 FLAG=0xC0 OP_011 A=2 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0004 FLAG=0x80 OP_011 A=3 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0005 FLAG=0x40 OP_098 A=0 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0006 FLAG=0x80 OP_342 A=0 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0007 FLAG=0x42 OP_140 A=0 B=8 C=None [jump-target=9]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0008 FLAG=0x80 OP_410 A=0 B=0 C=0
+    --     R[A]={}
+    -- PC 0009 FLAG=0x00 OP_410 A=1 B=0 C=0
+    --     R[A]={}
+    -- PC 0010 FLAG=0x12 OP_071 A=2 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0011 FLAG=0x00 OP_184 A=3 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0012 FLAG=0xC0 OP_233 A=2 B=3 C=4
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0013 FLAG=0x42 OP_215 A=0 B=23 C=None [jump-target=24]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0014 FLAG=0x80 OP_131 A=7 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0015 FLAG=0x40 OP_184 A=8 B=6 C=0
+    --     R[A]=R[B]
+    -- PC 0016 FLAG=0x40 OP_068 A=7 B=8 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0017 FLAG=0x00 OP_016 A=7 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0018 FLAG=0xC2 OP_255 A=0 B=23 C=None [jump-target=24]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0019 FLAG=0x20 OP_238 A=7 B=6 C='GetID'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0020 FLAG=0x00 OP_068 A=7 B=8 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0021 FLAG=0x40 OP_016 A=7 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0022 FLAG=0xC2 OP_140 A=0 B=23 C=None [jump-target=24]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0023 FLAG=0x80 OP_327 A=1 B=7 C=6
+    --     do local I=R[B];local F=R[C];R[A][I]=F end
+    -- PC 0024 FLAG=0x00 OP_117 A=2 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0025 FLAG=0xC2 OP_255 A=0 B=13 C=None [jump-target=14]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0026 FLAG=0x00 OP_220 A=1 B=1 C=0
+    --     return U(T,A,B)
+    -- PC 0027 FLAG=0x00 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: root/15/0
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/16 | 候选函数名: PrintLog | 指令数: 63 | 子原型: 1 | vararg: 0 | bytes: 12917:13975
+function PrintLog(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = '_blacklistData'
+    -- K[1] = 'SL'
+    -- K[2] = 'pairs'
+    -- K[3] = 'ScheduleOnce'
+    -- K[4] = '清空黑名单失败'
+    -- K[5] = '黑名单本来就是空的'
+    -- K[6] = ['unknown', 2]
+    -- K[7] = 0.01
+    -- K[8] = 1.0
+    -- K[9] = 'ipairs'
+    -- K[10] = 0.0
+    -- K[11] = '黑名单为空'
+    -- K[12] = '开始清空黑名单，共 %d 人'
+    -- K[13] = '清空黑名单 '
+    -- K[14] = ' 人'
+    -- K[15] = 'lastAttacker'
+    -- K[16] = '取不到好友代理，清空失败'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xC0 OP_130 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0002 FLAG=0xC0 OP_068 A=0 B=0 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0003 FLAG=0x00 OP_247 A=1 B=0 C=0
+    --     local I=R[B];if (not not I)==(C~=0) then R[A]=I else Q=Q+1 end
+    -- PC 0004 FLAG=0x42 OP_255 A=0 B=5 C=None [jump-target=6]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0x60 OP_032 A=1 B=0 C='_blacklistData'
+    --     R[A]=R[B][C]
+    -- PC 0006 FLAG=0x80 OP_342 A=1 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0007 FLAG=0x42 OP_215 A=0 B=14 C=None [jump-target=15]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0008 FLAG=0xC0 OP_134 A=2 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0009 FLAG=0x12 OP_371 A=3 B='取不到好友代理，清空失败' C=None
+    --     R[A]=B
+    -- PC 0010 FLAG=0x00 OP_187 A=2 B=3 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0011 FLAG=0x00 OP_134 A=2 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0012 FLAG=0x52 OP_346 A=3 B='清空黑名单失败' C=None
+    --     R[A]=B
+    -- PC 0013 FLAG=0x00 OP_187 A=2 B=3 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0014 FLAG=0x40 OP_250 A=0 B=0 C=0
+    --     return
+    -- PC 0015 FLAG=0x00 OP_410 A=2 B=0 C=0
+    --     R[A]={}
+    -- PC 0016 FLAG=0x12 OP_071 A=3 B='pairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0017 FLAG=0xC0 OP_308 A=4 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0018 FLAG=0x40 OP_359 A=3 B=4 C=5
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0019 FLAG=0x42 OP_215 A=0 B=22 C=None [jump-target=23]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0020 FLAG=0x40 OP_115 A=7 B=2 C=0
+    --     R[A]=#R[B]
+    -- PC 0021 FLAG=0xE0 OP_124 A=7 B=7 C=1.0
+    --     R[A]=R[B]+C
+    -- PC 0022 FLAG=0x40 OP_368 A=2 B=7 C=6
+    --     do local I=R[B];local F=R[C];R[A][I]=F end
+    -- PC 0023 FLAG=0x40 OP_386 A=3 B=1 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0024 FLAG=0xC2 OP_255 A=0 B=19 C=None [jump-target=20]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0025 FLAG=0x00 OP_115 A=3 B=2 C=0
+    --     R[A]=#R[B]
+    -- PC 0026 FLAG=0x60 OP_045 A=0 B=3 C=0.0
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0027 FLAG=0x42 OP_255 A=0 B=34 C=None [jump-target=35]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0028 FLAG=0x40 OP_134 A=3 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0029 FLAG=0x12 OP_346 A=4 B='黑名单本来就是空的' C=None
+    --     R[A]=B
+    -- PC 0030 FLAG=0x00 OP_358 A=3 B=4 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0031 FLAG=0x00 OP_134 A=3 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0032 FLAG=0xD2 OP_371 A=4 B='黑名单为空' C=None
+    --     R[A]=B
+    -- PC 0033 FLAG=0x40 OP_358 A=3 B=4 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0034 FLAG=0x40 OP_055 A=0 B=0 C=0
+    --     return
+    -- PC 0035 FLAG=0x40 OP_134 A=3 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0036 FLAG=0x92 OP_371 A=4 B='开始清空黑名单，共 %d 人' C=None
+    --     R[A]=B
+    -- PC 0037 FLAG=0xC0 OP_115 A=5 B=2 C=0
+    --     R[A]=#R[B]
+    -- PC 0038 FLAG=0x80 OP_358 A=3 B=5 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0039 FLAG=0x40 OP_134 A=3 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0040 FLAG=0x92 OP_346 A=4 B='清空黑名单 ' C=None
+    --     R[A]=B
+    -- PC 0041 FLAG=0x40 OP_115 A=5 B=2 C=0
+    --     R[A]=#R[B]
+    -- PC 0042 FLAG=0x12 OP_047 A=6 B=' 人' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0043 FLAG=0x80 OP_210 A=4 B=4 C=6
+    --     do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0044 FLAG=0x00 OP_187 A=3 B=4 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0045 FLAG=0x12 OP_071 A=3 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0046 FLAG=0x00 OP_308 A=4 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0047 FLAG=0x40 OP_183 A=3 B=4 C=5
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0048 FLAG=0x02 OP_215 A=0 B=58 C=None [jump-target=59]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0049 FLAG=0x00 OP_184 A=8 B=7 C=0
+    --     R[A]=R[B]
+    -- PC 0050 FLAG=0xD2 OP_137 A=9 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0051 FLAG=0xA0 OP_033 A=9 B=9 C='ScheduleOnce'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0052 FLAG=0xC0 OP_154 A=11 B=0 C=2 [linear-fusion-payloads=2, closure-child-index=0; captures=2; child-path=root/16/1]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0053 FLAG=0x00 OP_387 A=0 B=8 C=0
+    --     R[A]=R[B]
+    -- PC 0054 FLAG=0x80 OP_387 A=0 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0055 FLAG=0xA0 OP_347 A=12 B=6 C=1.0
+    --     R[A]=R[B]-C
+    -- PC 0056 FLAG=0xD0 OP_160 A=12 B=0.01 C=12
+    --     R[A]=B*R[C]
+    -- PC 0057 FLAG=0xC0 OP_358 A=9 B=12 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0058 FLAG=0xC0 OP_262 A=8 B=0 C=0
+    --     do local I=A;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end
+    -- PC 0059 FLAG=0x00 OP_386 A=3 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0060 FLAG=0x02 OP_215 A=0 B=48 C=None [jump-target=49]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0061 FLAG=0x40 OP_130 A=3 B=3 C=0
+    --     R[A]=UP[B]
+    -- PC 0062 FLAG=0xB0 OP_146 A=3 B='lastAttacker' C=['unknown', 2]
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0063 FLAG=0x40 OP_001 A=0 B=0 C=0
+    --     return
+    --     CHILD PROTOTYPES:
+    --     child-index 0 => root/16/1 (records=13, constants=4)
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/16/1 | 候选函数名: Anonymous_root_16_1 | 指令数: 13 | 子原型: 0 | vararg: 0 | bytes: 13793:13974
+function Anonymous_root_16_1(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'SL'
+    -- K[1] = 'RequestOutBlacklist'
+    -- K[2] = ['unknown', 2]
+    -- K[3] = '_blacklistData'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x92 OP_137 A=0 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0002 FLAG=0xE0 OP_121 A=0 B=0 C='RequestOutBlacklist'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0003 FLAG=0x40 OP_130 A=2 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0004 FLAG=0x00 OP_187 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0xC0 OP_159 A=0 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0006 FLAG=0xA0 OP_053 A=0 B=0 C='_blacklistData'
+    --     R[A]=R[B][C]
+    -- PC 0007 FLAG=0x00 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0008 FLAG=0x82 OP_140 A=0 B=12 C=None [jump-target=13]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0009 FLAG=0x40 OP_159 A=0 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0010 FLAG=0x60 OP_032 A=0 B=0 C='_blacklistData'
+    --     R[A]=R[B][C]
+    -- PC 0011 FLAG=0xC0 OP_130 A=1 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0012 FLAG=0xA0 OP_069 A=0 B=1 C=['unknown', 2]
+    --     do local I=R[B];local F=C;R[A][I]=F end
+    -- PC 0013 FLAG=0x40 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/17 | 候选函数名: PCallHelper | 指令数: 38 | 子原型: 0 | vararg: 1 | bytes: 13975:14463
+function PCallHelper(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'format'
+    -- K[1] = '#'
+    -- K[2] = 'Print'
+    -- K[3] = 'type'
+    -- K[4] = 'pcall'
+    -- K[5] = 'tostring'
+    -- K[6] = 'string'
+    -- K[7] = 'table'
+    -- K[8] = 'dump'
+    -- K[9] = 'SL'
+    -- K[10] = 'select'
+    -- K[11] = '【超本】'
+    -- K[12] = 0.0
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x92 OP_071 A=2 B='type' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0002 FLAG=0x40 OP_184 A=3 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0003 FLAG=0x00 OP_068 A=2 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0004 FLAG=0xE0 OP_092 A=0 B=2 C='table'
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0005 FLAG=0x42 OP_255 A=0 B=11 C=None [jump-target=12]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0006 FLAG=0xD2 OP_287 A=2 B='SL' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0007 FLAG=0x20 OP_033 A=2 B=2 C='dump'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0008 FLAG=0xC0 OP_184 A=4 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0009 FLAG=0x12 OP_346 A=5 B='【超本】' C=None
+    --     R[A]=B
+    -- PC 0010 FLAG=0xC0 OP_187 A=2 B=5 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0011 FLAG=0x40 OP_250 A=0 B=0 C=0
+    --     return
+    -- PC 0012 FLAG=0x52 OP_071 A=2 B='tostring' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0013 FLAG=0x80 OP_308 A=3 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0014 FLAG=0x00 OP_068 A=2 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0015 FLAG=0xD2 OP_168 A=3 B='select' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0016 FLAG=0x52 OP_346 A=4 B='#' C=None
+    --     R[A]=B
+    -- PC 0017 FLAG=0xC0 OP_006 A=5 B=0 C=0
+    --     B=A+A-1;for I=A,B do T[I]=X[I-A] end
+    -- PC 0018 FLAG=0x80 OP_223 A=3 B=0 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0019 FLAG=0x50 OP_352 A=0 B=0.0 C=3
+    --     if (B<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0020 FLAG=0x82 OP_215 A=0 B=30 C=None [jump-target=31]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0021 FLAG=0x12 OP_137 A=3 B='pcall' C=None
+    --     R[A]=ENV[B]
+    -- PC 0022 FLAG=0x52 OP_307 A=4 B='string' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0023 FLAG=0x20 OP_398 A=4 B=4 C='format' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0024 FLAG=0x00 OP_308 A=5 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0025 FLAG=0x80 OP_006 A=6 B=0 C=0
+    --     B=A+A-1;for I=A,B do T[I]=X[I-A] end
+    -- PC 0026 FLAG=0x00 OP_014 A=3 B=0 C=4
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0027 FLAG=0x40 OP_016 A=3 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0028 FLAG=0x82 OP_255 A=0 B=30 C=None [jump-target=31]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0029 FLAG=0xC0 OP_035 A=2 B=4 C=1
+    --     local I=R[B];if (not not I)==(C~=0) then R[A]=I else Q=Q+1 end
+    -- PC 0030 FLAG=0xC2 OP_140 A=0 B=30 C=None [jump-target=31]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0031 FLAG=0x92 OP_137 A=3 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0032 FLAG=0x40 OP_016 A=3 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0033 FLAG=0x02 OP_215 A=0 B=37 C=None [jump-target=38]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0034 FLAG=0x52 OP_397 A=3 B='SL' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0035 FLAG=0x60 OP_363 A=3 B=3 C='Print'
+    --     R[A]=R[B][C]
+    -- PC 0036 FLAG=0x80 OP_016 A=3 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0037 FLAG=0x42 OP_140 A=0 B=37 C=None [jump-target=38]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0038 FLAG=0xC0 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: root/17/0
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/18 | 候选函数名: GetPlayerPosition | 指令数: 14 | 子原型: 1 | vararg: 2 | bytes: 14463:14825
+function GetPlayerPosition(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = False
+    -- K[1] = 'pcall'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x92 OP_137 A=2 B='pcall' C=None
+    --     R[A]=ENV[B]
+    -- PC 0002 FLAG=0x00 OP_154 A=3 B=0 C=3 [linear-fusion-payloads=3, closure-child-index=0; captures=3; child-path=root/18/1]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0003 FLAG=0x40 OP_387 A=0 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0004 FLAG=0x00 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0005 FLAG=0x80 OP_387 A=0 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0006 FLAG=0x40 OP_233 A=2 B=3 C=3
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0007 FLAG=0x00 OP_247 A=4 B=2 C=0
+    --     local I=R[B];if (not not I)==(C~=0) then R[A]=I else Q=Q+1 end
+    -- PC 0008 FLAG=0x42 OP_215 A=0 B=12 C=None [jump-target=13]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0009 FLAG=0xA0 OP_092 A=0 B=3 C=False
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0010 FLAG=0x42 OP_140 A=0 B=11 C=None [jump-target=12]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0011 FLAG=0x80 OP_082 A=4 B=0 C=1
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0012 FLAG=0x80 OP_011 A=4 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0013 FLAG=0x80 OP_220 A=4 B=4 C=0
+    --     return U(T,A,B)
+    -- PC 0014 FLAG=0xC0 OP_001 A=0 B=0 C=0
+    --     return
+    --     CHILD PROTOTYPES:
+    --     child-index 0 => root/18/1 (records=14, constants=5)
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/18/1 | 候选函数名: Anonymous_root_18_1 | 指令数: 14 | 子原型: 0 | vararg: 0 | bytes: 14613:14824
+function Anonymous_root_18_1(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'tostring'
+    -- K[1] = 'cc'
+    -- K[2] = 'getInstance'
+    -- K[3] = 'FileUtils'
+    -- K[4] = 'writeStringToFile'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xD2 OP_309 A=0 B='cc' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0002 FLAG=0x60 OP_270 A=0 B=0 C='FileUtils' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0003 FLAG=0xE0 OP_121 A=0 B=0 C='getInstance'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0004 FLAG=0x80 OP_098 A=0 B=1 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0xE0 OP_121 A=0 B=0 C='writeStringToFile'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0006 FLAG=0xD2 OP_095 A=2 B='tostring' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0007 FLAG=0xC0 OP_130 A=3 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0008 FLAG=0xC0 OP_098 A=2 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0009 FLAG=0x80 OP_004 A=3 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0010 FLAG=0xC0 OP_130 A=4 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0011 FLAG=0xC0 OP_252 A=3 B=4 C=0
+    --     do local I,F=E(R[A](U(T,A+1,B)));B=F+A-1;local U=0;for L=A,B do U=U+1;T[L]=I[U] end end
+    -- PC 0012 FLAG=0x40 OP_133 A=0 B=0 C=0
+    --     return R[A](U(T,A+1,B))
+    -- PC 0013 FLAG=0x40 OP_175 A=0 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0014 FLAG=0xC0 OP_100 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/19 | 候选函数名: InitGatherMonsters | 指令数: 19 | 子原型: 0 | vararg: 0 | bytes: 14825:15066
+function InitGatherMonsters(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'X'
+    -- K[1] = 'y'
+    -- K[2] = 'GetMetaValue'
+    -- K[3] = 'x'
+    -- K[4] = 'Y'
+    -- K[5] = 0.0
+    -- K[6] = 'SL'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x52 OP_137 A=0 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0002 FLAG=0x20 OP_297 A=0 B=0 C='GetMetaValue' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0003 FLAG=0xD2 OP_371 A=2 B='X' C=None
+    --     R[A]=B
+    -- PC 0004 FLAG=0x80 OP_098 A=0 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0x00 OP_342 A=0 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0006 FLAG=0x42 OP_255 A=0 B=7 C=None [jump-target=8]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0007 FLAG=0x12 OP_328 A=0 B=0.0 C=None [linear-fusion-payloads=3]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0008 FLAG=0x12 OP_137 A=1 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0009 FLAG=0x60 OP_238 A=1 B=1 C='GetMetaValue'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0010 FLAG=0x12 OP_346 A=3 B='Y' C=None
+    --     R[A]=B
+    -- PC 0011 FLAG=0x00 OP_068 A=1 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0012 FLAG=0x00 OP_342 A=1 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0013 FLAG=0x02 OP_215 A=0 B=14 C=None [jump-target=15]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0014 FLAG=0x92 OP_107 A=1 B=0.0 C=None [linear-fusion-payloads=3]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]={};; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0015 FLAG=0x00 OP_410 A=2 B=0 C=2
+    --     R[A]={}
+    -- PC 0016 FLAG=0x50 OP_285 A=2 B='x' C=0 [linear-fusion-payloads=1]
+    --     do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0017 FLAG=0x50 OP_268 A=2 B='y' C=1
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0018 FLAG=0x40 OP_220 A=2 B=2 C=0
+    --     return U(T,A,B)
+    -- PC 0019 FLAG=0xC0 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: root/19/0
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/20 | 候选函数名: ShowLocalNoticeByType | 指令数: 36 | 子原型: 1 | vararg: 0 | bytes: 15066:15618
+function ShowLocalNoticeByType(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'gatherTimer'
+    -- K[1] = 'CHECK_INTERVAL'
+    -- K[2] = 'format'
+    -- K[3] = 'IDLE'
+    -- K[4] = 'Schedule'
+    -- K[5] = 'GATHER_THRESHOLD'
+    -- K[6] = '引怪功能已启动 (阈值: %d)'
+    -- K[7] = 'SL'
+    -- K[8] = 'string'
+    -- K[9] = ['unknown', 2]
+    -- K[10] = 'UnSchedule'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x40 OP_130 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0002 FLAG=0x20 OP_053 A=0 B=0 C='gatherTimer'
+    --     R[A]=R[B][C]
+    -- PC 0003 FLAG=0x40 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0x82 OP_215 A=0 B=11 C=None [jump-target=12]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0x52 OP_335 A=0 B='SL' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0006 FLAG=0xE0 OP_238 A=0 B=0 C='UnSchedule'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0007 FLAG=0x00 OP_130 A=2 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0008 FLAG=0x20 OP_375 A=2 B=2 C='gatherTimer'
+    --     R[A]=R[B][C]
+    -- PC 0009 FLAG=0xC0 OP_358 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0010 FLAG=0xC0 OP_130 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0011 FLAG=0xB0 OP_156 A=0 B='gatherTimer' C=['unknown', 2]
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0012 FLAG=0x00 OP_338 A=0 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0013 FLAG=0x40 OP_106 A=0 B=1 C=0
+    --     UP[B]=R[A]
+    -- PC 0014 FLAG=0x00 OP_087 A=0 B=2 C=0 [linear-fusion-payloads=2]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0015 FLAG=0xC0 OP_159 A=1 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0016 FLAG=0xE0 OP_375 A=1 B=1 C='IDLE'
+    --     R[A]=R[B][C]
+    -- PC 0017 FLAG=0x40 OP_358 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0018 FLAG=0xC0 OP_130 A=0 B=4 C=0
+    --     R[A]=UP[B]
+    -- PC 0019 FLAG=0x80 OP_358 A=0 B=0 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0020 FLAG=0xC0 OP_130 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0021 FLAG=0x52 OP_335 A=1 B='SL' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0022 FLAG=0x20 OP_121 A=1 B=1 C='Schedule'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0023 FLAG=0x80 OP_027 A=3 B=0 C=0 [closure-child-index=0; captures=0; child-path=root/20/1]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0024 FLAG=0x40 OP_159 A=4 B=5 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0025 FLAG=0x20 OP_375 A=4 B=4 C='CHECK_INTERVAL'
+    --     R[A]=R[B][C]
+    -- PC 0026 FLAG=0xC0 OP_098 A=1 B=4 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0027 FLAG=0x50 OP_355 A=0 B='gatherTimer' C=1
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0028 FLAG=0xC0 OP_344 A=0 B=6 C=0 [linear-fusion-payloads=3]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0029 FLAG=0x52 OP_194 A=1 B='string' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0030 FLAG=0xE0 OP_375 A=1 B=1 C='format'
+    --     R[A]=R[B][C]
+    -- PC 0031 FLAG=0x12 OP_391 A=2 B='引怪功能已启动 (阈值: %d)' C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0032 FLAG=0xC0 OP_159 A=3 B=5 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0033 FLAG=0xE0 OP_032 A=3 B=3 C='GATHER_THRESHOLD'
+    --     R[A]=R[B][C]
+    -- PC 0034 FLAG=0xC0 OP_392 A=1 B=3 C=0
+    --     do local I,F=E(R[A](U(T,A+1,B)));B=F+A-1;local U=0;for L=A,B do U=U+1;T[L]=I[U] end end
+    -- PC 0035 FLAG=0x40 OP_093 A=0 B=0 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0036 FLAG=0x00 OP_250 A=0 B=0 C=0
+    --     return
+    --     CHILD PROTOTYPES:
+    --     child-index 0 => root/20/1 (records=3, constants=1)
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/20/1 | 候选函数名: Anonymous_root_20_1 | 指令数: 3 | 子原型: 0 | vararg: 0 | bytes: 15564:15617
+function Anonymous_root_20_1(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'MainLoop'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x52 OP_137 A=0 B='MainLoop' C=None
+    --     R[A]=ENV[B]
+    -- PC 0002 FLAG=0x80 OP_187 A=0 B=0 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0003 FLAG=0x00 OP_250 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/21 | 候选函数名: PickUpItems | 指令数: 15 | 子原型: 0 | vararg: 1 | bytes: 15618:15907
+function PickUpItems(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 5.0
+    -- K[1] = 'screenH'
+    -- K[2] = 'Y'
+    -- K[3] = 'SL'
+    -- K[4] = 0.0
+    -- K[5] = 'Type'
+    -- K[6] = 'Msg'
+    -- K[7] = 'ShowLocalNoticeByType'
+    -- K[8] = 249.0
+    -- K[9] = 'BColor'
+    -- K[10] = 'FColor'
+    -- K[11] = 'X'
+    -- K[12] = 50.0
+    -- K[13] = 10.0
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x00 OP_083 A=1 B=0 C=6 [linear-fusion-payloads=3]
+    --     R[A]={};; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end
+    -- PC 0002 FLAG=0xF0 OP_146 A=1 B='Type' C=10.0
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0003 FLAG=0x50 OP_408 A=1 B='Msg' C=0 [linear-fusion-payloads=1]
+    --     do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end
+    -- PC 0004 FLAG=0xF0 OP_305 A=1 B='FColor' C=249.0 [linear-fusion-payloads=8]
+    --     do local I=B;local F=C;R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end;; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-C;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0005 FLAG=0xF0 OP_146 A=1 B='BColor' C=0.0
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0006 FLAG=0xB0 OP_144 A=1 B='X' C=5.0 [linear-fusion-payloads=3]
+    --     do local I=B;local F=C;R[A][I]=F end;; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-C
+    -- PC 0007 FLAG=0x80 OP_130 A=2 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0008 FLAG=0x60 OP_363 A=2 B=2 C='screenH'
+    --     R[A]=R[B][C]
+    -- PC 0009 FLAG=0x20 OP_034 A=2 B=2 C=50.0 [linear-fusion-payloads=4]
+    --     R[A]=R[B]-C;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0010 FLAG=0x10 OP_193 A=1 B='Y' C=2 [linear-fusion-payloads=3]
+    --     do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0011 FLAG=0x92 OP_300 A=2 B='SL' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0012 FLAG=0x60 OP_142 A=2 B=2 C='ShowLocalNoticeByType' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0013 FLAG=0xC0 OP_308 A=4 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0014 FLAG=0x40 OP_187 A=2 B=4 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0015 FLAG=0xC0 OP_055 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: root/21/0, root/21/1
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/22 | 候选函数名: GetMapData2DPtr | 指令数: 172 | 子原型: 2 | vararg: 0 | bytes: 15907:18157
+function GetMapData2DPtr(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = '地面无可拾取物品'
+    -- K[1] = 'abs'
+    -- K[2] = 'MoveTo'
+    -- K[3] = 'PlayerPos'
+    -- K[4] = 'mapY'
+    -- K[5] = 'global'
+    -- K[6] = 'sort'
+    -- K[7] = 'ipairs'
+    -- K[8] = 'dist'
+    -- K[9] = 'find'
+    -- K[10] = 'MapY'
+    -- K[11] = 'math'
+    -- K[12] = 'mCurrMapX'
+    -- K[13] = 'mapX'
+    -- K[14] = 'MapX'
+    -- K[15] = 0.0
+    -- K[16] = ''
+    -- K[17] = 'mName'
+    -- K[18] = 'string'
+    -- K[19] = 1.0
+    -- K[20] = 'mCurrMapY'
+    -- K[21] = 'item'
+    -- K[22] = 'mONameStr'
+    -- K[23] = 'table'
+    -- K[24] = 'GetDroppedItems'
+    -- K[25] = 'name'
+    -- K[26] = 'x'
+    -- K[27] = 'kIdx'
+    -- K[28] = 'PickMainPlayerPosItem'
+    -- K[29] = 'insert'
+    -- K[30] = 'dropItemController'
+    -- K[31] = 'y'
+    -- K[32] = 'Name'
+    -- K[33] = '拾取: '
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x40 OP_009 A=0 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=ENV[B]
+    -- PC 0002 FLAG=0x52 OP_137 A=1 B='GetDroppedItems' C=None
+    --     R[A]=ENV[B]
+    -- PC 0003 FLAG=0x40 OP_233 A=1 B=1 C=2
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0004 FLAG=0xE0 OP_045 A=0 B=2 C=0.0
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0005 FLAG=0x82 OP_255 A=0 B=9 C=None [jump-target=10]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0006 FLAG=0x00 OP_134 A=3 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0007 FLAG=0x92 OP_371 A=4 B='地面无可拾取物品' C=None
+    --     R[A]=B
+    -- PC 0008 FLAG=0x00 OP_187 A=3 B=4 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0009 FLAG=0x40 OP_100 A=0 B=0 C=0
+    --     return
+    -- PC 0010 FLAG=0xD2 OP_137 A=3 B='PlayerPos' C=None
+    --     R[A]=ENV[B]
+    -- PC 0011 FLAG=0x80 OP_183 A=3 B=3 C=4
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0012 FLAG=0xC0 OP_264 A=5 B=0 C=0 [linear-fusion-payloads=3]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]={};; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0013 FLAG=0xC0 OP_230 A=6 B=0 C=0 [linear-fusion-payloads=2]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0014 FLAG=0x52 OP_071 A=7 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0015 FLAG=0x80 OP_308 A=8 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0016 FLAG=0xC0 OP_233 A=7 B=8 C=9
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0017 FLAG=0xC2 OP_140 A=0 B=101 C=None [jump-target=102]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0018 FLAG=0x60 OP_053 A=12 B=11 C='mName'
+    --     R[A]=R[B][C]
+    -- PC 0019 FLAG=0xC0 OP_342 A=12 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0020 FLAG=0x42 OP_255 A=0 B=30 C=None [jump-target=31]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0021 FLAG=0xA0 OP_053 A=12 B=11 C='mONameStr'
+    --     R[A]=R[B][C]
+    -- PC 0022 FLAG=0xC0 OP_342 A=12 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0023 FLAG=0x02 OP_140 A=0 B=30 C=None [jump-target=31]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0024 FLAG=0xE0 OP_375 A=12 B=11 C='Name'
+    --     R[A]=R[B][C]
+    -- PC 0025 FLAG=0x80 OP_342 A=12 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0026 FLAG=0x42 OP_255 A=0 B=30 C=None [jump-target=31]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0027 FLAG=0xA0 OP_032 A=12 B=11 C='name'
+    --     R[A]=R[B][C]
+    -- PC 0028 FLAG=0x40 OP_342 A=12 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0029 FLAG=0x42 OP_140 A=0 B=30 C=None [jump-target=31]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0030 FLAG=0x12 OP_165 A=12 B='' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0031 FLAG=0x60 OP_032 A=13 B=11 C='mCurrMapX'
+    --     R[A]=R[B][C]
+    -- PC 0032 FLAG=0x40 OP_342 A=13 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0033 FLAG=0xC2 OP_140 A=0 B=40 C=None [jump-target=41]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0034 FLAG=0xE0 OP_363 A=13 B=11 C='MapX'
+    --     R[A]=R[B][C]
+    -- PC 0035 FLAG=0xC0 OP_342 A=13 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0036 FLAG=0x82 OP_215 A=0 B=40 C=None [jump-target=41]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0037 FLAG=0x20 OP_375 A=13 B=11 C='mapX'
+    --     R[A]=R[B][C]
+    -- PC 0038 FLAG=0xC0 OP_342 A=13 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0039 FLAG=0x82 OP_215 A=0 B=40 C=None [jump-target=41]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0040 FLAG=0xA0 OP_049 A=13 B=11 C='x' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0041 FLAG=0xA0 OP_032 A=14 B=11 C='mCurrMapY'
+    --     R[A]=R[B][C]
+    -- PC 0042 FLAG=0x40 OP_342 A=14 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0043 FLAG=0x02 OP_215 A=0 B=50 C=None [jump-target=51]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0044 FLAG=0xA0 OP_375 A=14 B=11 C='MapY'
+    --     R[A]=R[B][C]
+    -- PC 0045 FLAG=0x40 OP_342 A=14 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0046 FLAG=0x42 OP_215 A=0 B=50 C=None [jump-target=51]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0047 FLAG=0xA0 OP_363 A=14 B=11 C='mapY'
+    --     R[A]=R[B][C]
+    -- PC 0048 FLAG=0x80 OP_342 A=14 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0049 FLAG=0x42 OP_255 A=0 B=50 C=None [jump-target=51]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0050 FLAG=0x60 OP_032 A=14 B=11 C='y'
+    --     R[A]=R[B][C]
+    -- PC 0051 FLAG=0x80 OP_016 A=13 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0052 FLAG=0x42 OP_255 A=0 B=101 C=None [jump-target=102]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0053 FLAG=0x40 OP_016 A=14 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0054 FLAG=0x82 OP_255 A=0 B=101 C=None [jump-target=102]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0055 FLAG=0x92 OP_397 A=15 B='math' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0056 FLAG=0x60 OP_384 A=15 B=15 C='abs' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0057 FLAG=0x00 OP_340 A=16 B=3 C=13
+    --     R[A]=R[B]-R[C]
+    -- PC 0058 FLAG=0xC0 OP_068 A=15 B=16 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0059 FLAG=0x92 OP_021 A=16 B='math' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0060 FLAG=0x60 OP_384 A=16 B=16 C='abs' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0061 FLAG=0x40 OP_340 A=17 B=4 C=14
+    --     R[A]=R[B]-R[C]
+    -- PC 0062 FLAG=0x00 OP_098 A=16 B=17 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0063 FLAG=0x00 OP_273 A=15 B=15 C=16 [linear-fusion-payloads=3]
+    --     R[A]=R[B]+R[C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0064 FLAG=0xD2 OP_173 A=16 B=0.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0065 FLAG=0x12 OP_137 A=17 B='ipairs' C=None
+    --     R[A]=ENV[B]
+    -- PC 0066 FLAG=0x40 OP_308 A=18 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0067 FLAG=0xC0 OP_359 A=17 B=18 C=19
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0068 FLAG=0x02 OP_140 A=0 B=77 C=None [jump-target=78]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0069 FLAG=0x52 OP_010 A=22 B='string' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0070 FLAG=0x60 OP_269 A=22 B=22 C='find' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0071 FLAG=0x00 OP_078 A=23 B=12 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0072 FLAG=0xC0 OP_184 A=24 B=21 C=0
+    --     R[A]=R[B]
+    -- PC 0073 FLAG=0x00 OP_068 A=22 B=24 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0074 FLAG=0x40 OP_016 A=22 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0075 FLAG=0x02 OP_215 A=0 B=77 C=None [jump-target=78]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0076 FLAG=0xC0 OP_308 A=16 B=20 C=0
+    --     R[A]=R[B]
+    -- PC 0077 FLAG=0x42 OP_215 A=0 B=79 C=None [jump-target=80]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0078 FLAG=0x40 OP_386 A=17 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0079 FLAG=0x02 OP_255 A=0 B=68 C=None [jump-target=69]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0080 FLAG=0x10 OP_352 A=0 B=0.0 C=16
+    --     if (B<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0081 FLAG=0x42 OP_140 A=0 B=92 C=None [jump-target=93]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0082 FLAG=0xD2 OP_137 A=17 B='table' C=None
+    --     R[A]=ENV[B]
+    -- PC 0083 FLAG=0x20 OP_051 A=17 B=17 C='insert' [linear-fusion-payloads=4]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]={};; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0084 FLAG=0xC0 OP_249 A=18 B=5 C=0 [linear-fusion-payloads=6]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]={};; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0085 FLAG=0xC0 OP_148 A=19 B=0 C=5 [linear-fusion-payloads=5]
+    --     R[A]={};; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0086 FLAG=0xD0 OP_268 A=19 B='item' C=11
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0087 FLAG=0x50 OP_076 A=19 B='dist' C=15 [linear-fusion-payloads=3]
+    --     do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0088 FLAG=0x50 OP_119 A=19 B='kIdx' C=16 [linear-fusion-payloads=2]
+    --     do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0089 FLAG=0x50 OP_268 A=19 B='x' C=13
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0090 FLAG=0x50 OP_268 A=19 B='y' C=14
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0091 FLAG=0x40 OP_187 A=17 B=19 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0092 FLAG=0x82 OP_140 A=0 B=101 C=None [jump-target=102]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0093 FLAG=0x92 OP_350 A=17 B='table' C=None [linear-fusion-payloads=7]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]={};; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0094 FLAG=0xE0 OP_360 A=17 B=17 C='insert' [linear-fusion-payloads=6]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]={};; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0095 FLAG=0xC0 OP_399 A=18 B=6 C=0 [linear-fusion-payloads=5]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]={};; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0096 FLAG=0x80 OP_041 A=19 B=0 C=4 [linear-fusion-payloads=4]
+    --     R[A]={};; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0097 FLAG=0xD0 OP_076 A=19 B='item' C=11 [linear-fusion-payloads=3]
+    --     do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0098 FLAG=0x10 OP_119 A=19 B='dist' C=15 [linear-fusion-payloads=2]
+    --     do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0099 FLAG=0x50 OP_285 A=19 B='x' C=13 [linear-fusion-payloads=1]
+    --     do local I=B;local F=R[C];R[A][I]=F end;; -- fused: read next VM instruction;do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0100 FLAG=0x50 OP_268 A=19 B='y' C=14
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0101 FLAG=0x40 OP_358 A=17 B=19 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0102 FLAG=0x40 OP_386 A=7 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0103 FLAG=0x02 OP_255 A=0 B=17 C=None [jump-target=18]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0104 FLAG=0xC0 OP_027 A=7 B=0 C=0 [closure-child-index=0; captures=0; child-path=root/22/1]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0105 FLAG=0xD2 OP_307 A=8 B='table' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0106 FLAG=0xA0 OP_363 A=8 B=8 C='sort'
+    --     R[A]=R[B][C]
+    -- PC 0107 FLAG=0x80 OP_078 A=9 B=5 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0108 FLAG=0x40 OP_308 A=10 B=7 C=0
+    --     R[A]=R[B]
+    -- PC 0109 FLAG=0x00 OP_187 A=8 B=10 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0110 FLAG=0x92 OP_307 A=8 B='table' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0111 FLAG=0x60 OP_398 A=8 B=8 C='sort' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0112 FLAG=0x00 OP_184 A=9 B=6 C=0
+    --     R[A]=R[B]
+    -- PC 0113 FLAG=0xC0 OP_027 A=10 B=1 C=0 [closure-child-index=1; captures=0; child-path=root/22/2]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0114 FLAG=0x00 OP_187 A=8 B=10 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0115 FLAG=0x80 OP_120 A=8 B=0 C=0
+    --     R[A]={}
+    -- PC 0116 FLAG=0x12 OP_071 A=9 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0117 FLAG=0x80 OP_308 A=10 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0118 FLAG=0xC0 OP_183 A=9 B=10 C=11
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0119 FLAG=0x42 OP_140 A=0 B=124 C=None [jump-target=125]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0120 FLAG=0xD2 OP_010 A=14 B='table' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0121 FLAG=0xA0 OP_269 A=14 B=14 C='insert' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0122 FLAG=0x00 OP_308 A=15 B=8 C=0
+    --     R[A]=R[B]
+    -- PC 0123 FLAG=0x40 OP_308 A=16 B=13 C=0
+    --     R[A]=R[B]
+    -- PC 0124 FLAG=0x00 OP_358 A=14 B=16 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0125 FLAG=0xC0 OP_117 A=9 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0126 FLAG=0x42 OP_255 A=0 B=119 C=None [jump-target=120]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0127 FLAG=0xD2 OP_137 A=9 B='ipairs' C=None
+    --     R[A]=ENV[B]
+    -- PC 0128 FLAG=0x00 OP_184 A=10 B=6 C=0
+    --     R[A]=R[B]
+    -- PC 0129 FLAG=0xC0 OP_183 A=9 B=10 C=11
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0130 FLAG=0x02 OP_255 A=0 B=135 C=None [jump-target=136]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0131 FLAG=0x52 OP_397 A=14 B='table' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0132 FLAG=0xE0 OP_269 A=14 B=14 C='insert' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0133 FLAG=0x40 OP_078 A=15 B=8 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0134 FLAG=0xC0 OP_184 A=16 B=13 C=0
+    --     R[A]=R[B]
+    -- PC 0135 FLAG=0xC0 OP_187 A=14 B=16 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0136 FLAG=0x80 OP_117 A=9 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0137 FLAG=0x82 OP_215 A=0 B=130 C=None [jump-target=131]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0138 FLAG=0x40 OP_115 A=9 B=8 C=0
+    --     R[A]=#R[B]
+    -- PC 0139 FLAG=0x60 OP_092 A=0 B=9 C=0.0
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0140 FLAG=0x82 OP_140 A=0 B=141 C=None [jump-target=142]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0141 FLAG=0x80 OP_250 A=0 B=0 C=0
+    --     return
+    -- PC 0142 FLAG=0xA0 OP_042 A=9 B=8 C=1.0 [linear-fusion-payloads=4]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0143 FLAG=0x92 OP_137 A=10 B='MoveTo' C=None
+    --     R[A]=ENV[B]
+    -- PC 0144 FLAG=0xE0 OP_312 A=11 B=9 C='x' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0145 FLAG=0xE0 OP_363 A=12 B=9 C='y'
+    --     R[A]=R[B][C]
+    -- PC 0146 FLAG=0x92 OP_371 A=13 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0147 FLAG=0xC0 OP_358 A=10 B=13 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0148 FLAG=0x52 OP_137 A=10 B='math' C=None
+    --     R[A]=ENV[B]
+    -- PC 0149 FLAG=0xE0 OP_228 A=10 B=10 C='abs' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0150 FLAG=0xE0 OP_032 A=11 B=9 C='x'
+    --     R[A]=R[B][C]
+    -- PC 0151 FLAG=0xC0 OP_340 A=11 B=3 C=11
+    --     R[A]=R[B]-R[C]
+    -- PC 0152 FLAG=0xC0 OP_068 A=10 B=11 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0153 FLAG=0xA0 OP_216 A=0 B=10 C=1.0
+    --     if (R[B]<=C)~=(A~=0) then Q=Q+1 end
+    -- PC 0154 FLAG=0xC2 OP_255 A=0 B=165 C=None [jump-target=166]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0155 FLAG=0x52 OP_137 A=10 B='math' C=None
+    --     R[A]=ENV[B]
+    -- PC 0156 FLAG=0xE0 OP_375 A=10 B=10 C='abs'
+    --     R[A]=R[B][C]
+    -- PC 0157 FLAG=0xE0 OP_384 A=11 B=9 C='y' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0158 FLAG=0x80 OP_340 A=11 B=4 C=11
+    --     R[A]=R[B]-R[C]
+    -- PC 0159 FLAG=0x80 OP_098 A=10 B=11 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0160 FLAG=0x20 OP_216 A=0 B=10 C=1.0
+    --     if (R[B]<=C)~=(A~=0) then Q=Q+1 end
+    -- PC 0161 FLAG=0x42 OP_140 A=0 B=165 C=None [jump-target=166]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0162 FLAG=0x12 OP_137 A=10 B='global' C=None
+    --     R[A]=ENV[B]
+    -- PC 0163 FLAG=0x60 OP_053 A=10 B=10 C='dropItemController'
+    --     R[A]=R[B][C]
+    -- PC 0164 FLAG=0xA0 OP_121 A=10 B=10 C='PickMainPlayerPosItem'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0165 FLAG=0x00 OP_187 A=10 B=11 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0166 FLAG=0x40 OP_130 A=10 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0167 FLAG=0x12 OP_165 A=11 B='拾取: ' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0168 FLAG=0xE0 OP_281 A=12 B=9 C='item' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0169 FLAG=0x60 OP_097 A=12 B=12 C='mName' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0170 FLAG=0x40 OP_210 A=11 B=11 C=12
+    --     do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0171 FLAG=0x40 OP_187 A=10 B=11 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0172 FLAG=0xC0 OP_055 A=0 B=0 C=0
+    --     return
+    --     CHILD PROTOTYPES:
+    --     child-index 0 => root/22/1 (records=19, constants=2)
+    --     child-index 1 => root/22/2 (records=8, constants=1)
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/22/1 | 候选函数名: Anonymous_root_22_1 | 指令数: 19 | 子原型: 0 | vararg: 2 | bytes: 17860:18062
+function Anonymous_root_22_1(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'dist'
+    -- K[1] = 'kIdx'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xE0 OP_049 A=2 B=0 C='kIdx' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0002 FLAG=0xE0 OP_032 A=3 B=1 C='kIdx'
+    --     R[A]=R[B][C]
+    -- PC 0003 FLAG=0x80 OP_381 A=1 B=2 C=3
+    --     if (R[B]==R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0x42 OP_215 A=0 B=11 C=None [jump-target=12]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0x20 OP_049 A=2 B=0 C='kIdx' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0006 FLAG=0xA0 OP_032 A=3 B=1 C='kIdx'
+    --     R[A]=R[B][C]
+    -- PC 0007 FLAG=0x00 OP_180 A=1 B=2 C=3
+    --     if (R[B]<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0008 FLAG=0x82 OP_140 A=0 B=9 C=None [jump-target=10]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0009 FLAG=0xC0 OP_082 A=2 B=0 C=1
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0010 FLAG=0x80 OP_011 A=2 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0011 FLAG=0x00 OP_220 A=2 B=2 C=0
+    --     return U(T,A,B)
+    -- PC 0012 FLAG=0xA0 OP_049 A=2 B=0 C='dist' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0013 FLAG=0x20 OP_363 A=3 B=1 C='dist'
+    --     R[A]=R[B][C]
+    -- PC 0014 FLAG=0xC0 OP_002 A=1 B=2 C=3
+    --     if (R[B]<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0015 FLAG=0xC2 OP_215 A=0 B=16 C=None [jump-target=17]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0016 FLAG=0x80 OP_082 A=2 B=0 C=1
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0017 FLAG=0xC0 OP_401 A=2 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0018 FLAG=0x80 OP_220 A=2 B=2 C=0
+    --     return U(T,A,B)
+    -- PC 0019 FLAG=0xC0 OP_250 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/22/2 | 候选函数名: Anonymous_root_22_2 | 指令数: 8 | 子原型: 0 | vararg: 2 | bytes: 18062:18156
+function Anonymous_root_22_2(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'dist'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x60 OP_049 A=2 B=0 C='dist' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0002 FLAG=0xE0 OP_375 A=3 B=1 C='dist'
+    --     R[A]=R[B][C]
+    -- PC 0003 FLAG=0xC0 OP_219 A=1 B=2 C=3
+    --     if (R[B]<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0x02 OP_255 A=0 B=5 C=None [jump-target=6]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0x80 OP_082 A=2 B=0 C=1
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0006 FLAG=0xC0 OP_338 A=2 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0007 FLAG=0x00 OP_220 A=2 B=2 C=0
+    --     return U(T,A,B)
+    -- PC 0008 FLAG=0x00 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/23 | 候选函数名: Builtsetting | 指令数: 144 | 子原型: 0 | vararg: 5 | bytes: 18157:19639
+function Builtsetting(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'GetMapData2DPtr'
+    -- K[1] = 'abs'
+    -- K[2] = 'isObstacle'
+    -- K[3] = ['unknown', 2]
+    -- K[4] = 10000.0
+    -- K[5] = 'getMapDataCols'
+    -- K[6] = 0.0
+    -- K[7] = 'global'
+    -- K[8] = 'floor'
+    -- K[9] = 'math'
+    -- K[10] = 1.0
+    -- K[11] = 2.0
+    -- K[12] = 'getMapDataRows'
+    -- K[13] = 'max'
+    -- K[14] = 'sceneManager'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x00 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0002 FLAG=0x02 OP_215 A=0 B=10 C=None [jump-target=11]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0003 FLAG=0x80 OP_016 A=1 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0x42 OP_140 A=0 B=10 C=None [jump-target=11]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0x00 OP_016 A=2 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0006 FLAG=0x02 OP_215 A=0 B=10 C=None [jump-target=11]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0007 FLAG=0x80 OP_016 A=3 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0008 FLAG=0x02 OP_140 A=0 B=10 C=None [jump-target=11]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0009 FLAG=0x40 OP_342 A=4 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0010 FLAG=0x42 OP_255 A=0 B=12 C=None [jump-target=13]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0011 FLAG=0xC0 OP_248 A=5 B=5 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0012 FLAG=0x80 OP_220 A=5 B=5 C=0
+    --     return U(T,A,B)
+    -- PC 0013 FLAG=0xC0 OP_099 A=0 B=0 C=2
+    --     if (R[B]==R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0014 FLAG=0x02 OP_215 A=0 B=18 C=None [jump-target=19]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0015 FLAG=0x00 OP_099 A=0 B=1 C=3
+    --     if (R[B]==R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0016 FLAG=0xC2 OP_140 A=0 B=18 C=None [jump-target=19]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0017 FLAG=0x52 OP_371 A=5 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0018 FLAG=0x40 OP_220 A=5 B=5 C=0
+    --     return U(T,A,B)
+    -- PC 0019 FLAG=0x20 OP_216 A=0 B=4 C=0.0
+    --     if (R[B]<=C)~=(A~=0) then Q=Q+1 end
+    -- PC 0020 FLAG=0x42 OP_255 A=0 B=22 C=None [jump-target=23]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0021 FLAG=0x40 OP_125 A=5 B=5 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0022 FLAG=0x80 OP_220 A=5 B=5 C=0
+    --     return U(T,A,B)
+    -- PC 0023 FLAG=0x12 OP_397 A=5 B='math' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0024 FLAG=0xA0 OP_375 A=5 B=5 C='max'
+    --     R[A]=R[B][C]
+    -- PC 0025 FLAG=0x52 OP_021 A=6 B='math' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0026 FLAG=0x60 OP_384 A=6 B=6 C='abs' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0027 FLAG=0x40 OP_340 A=7 B=2 C=0
+    --     R[A]=R[B]-R[C]
+    -- PC 0028 FLAG=0x40 OP_098 A=6 B=7 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0029 FLAG=0x12 OP_021 A=7 B='math' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0030 FLAG=0xA0 OP_384 A=7 B=7 C='abs' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0031 FLAG=0x40 OP_340 A=8 B=3 C=1
+    --     R[A]=R[B]-R[C]
+    -- PC 0032 FLAG=0x40 OP_252 A=7 B=8 C=0
+    --     do local I,F=E(R[A](U(T,A+1,B)));B=F+A-1;local U=0;for L=A,B do U=U+1;T[L]=I[U] end end
+    -- PC 0033 FLAG=0x40 OP_242 A=5 B=0 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0034 FLAG=0xC0 OP_219 A=0 B=4 C=5
+    --     if (R[B]<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0035 FLAG=0x42 OP_215 A=0 B=37 C=None [jump-target=38]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0036 FLAG=0xC0 OP_125 A=5 B=5 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0037 FLAG=0xC0 OP_220 A=5 B=5 C=0
+    --     return U(T,A,B)
+    -- PC 0038 FLAG=0x52 OP_137 A=5 B='global' C=None
+    --     R[A]=ENV[B]
+    -- PC 0039 FLAG=0xE0 OP_375 A=5 B=5 C='sceneManager'
+    --     R[A]=R[B][C]
+    -- PC 0040 FLAG=0x80 OP_016 A=5 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0041 FLAG=0xC2 OP_215 A=0 B=45 C=None [jump-target=46]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0042 FLAG=0x52 OP_309 A=5 B='global' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0043 FLAG=0xA0 OP_270 A=5 B=5 C='sceneManager' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0044 FLAG=0xA0 OP_121 A=5 B=5 C='GetMapData2DPtr'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0045 FLAG=0xC0 OP_068 A=5 B=6 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0046 FLAG=0xC0 OP_342 A=5 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0047 FLAG=0x02 OP_140 A=0 B=49 C=None [jump-target=50]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0048 FLAG=0x40 OP_125 A=6 B=6 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0049 FLAG=0x00 OP_220 A=6 B=6 C=0
+    --     return U(T,A,B)
+    -- PC 0050 FLAG=0xA0 OP_121 A=6 B=5 C='getMapDataRows'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0051 FLAG=0x80 OP_068 A=6 B=7 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0052 FLAG=0xE0 OP_238 A=7 B=5 C='getMapDataCols'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0053 FLAG=0x40 OP_068 A=7 B=8 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0054 FLAG=0x20 OP_043 A=1 B=2 C=0.0
+    --     if (R[B]<C)~=(A~=0) then Q=Q+1 end
+    -- PC 0055 FLAG=0x02 OP_140 A=0 B=61 C=None [jump-target=62]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0056 FLAG=0x60 OP_043 A=1 B=3 C=0.0
+    --     if (R[B]<C)~=(A~=0) then Q=Q+1 end
+    -- PC 0057 FLAG=0x82 OP_215 A=0 B=61 C=None [jump-target=62]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0058 FLAG=0x80 OP_236 A=1 B=7 C=2
+    --     if (R[B]<=R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0059 FLAG=0x42 OP_255 A=0 B=61 C=None [jump-target=62]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0060 FLAG=0xC0 OP_236 A=0 B=6 C=3
+    --     if (R[B]<=R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0061 FLAG=0x42 OP_215 A=0 B=63 C=None [jump-target=64]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0062 FLAG=0x00 OP_248 A=8 B=8 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0063 FLAG=0x80 OP_220 A=8 B=8 C=0
+    --     return U(T,A,B)
+    -- PC 0064 FLAG=0x20 OP_136 A=8 B=5 C='isObstacle' [linear-fusion-payloads=2]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0065 FLAG=0xC0 OP_078 A=10 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0066 FLAG=0xC0 OP_308 A=11 B=3 C=0
+    --     R[A]=R[B]
+    -- PC 0067 FLAG=0x40 OP_098 A=8 B=11 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0068 FLAG=0xA0 OP_045 A=1 B=8 C=0.0
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0069 FLAG=0x02 OP_140 A=0 B=71 C=None [jump-target=72]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0070 FLAG=0xC0 OP_234 A=8 B=8 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0071 FLAG=0xC0 OP_220 A=8 B=8 C=0
+    --     return U(T,A,B)
+    -- PC 0072 FLAG=0x00 OP_120 A=8 B=0 C=1
+    --     R[A]={}
+    -- PC 0073 FLAG=0xC0 OP_316 A=9 B=0 C=6
+    --     R[A]=R[B]*R[C]
+    -- PC 0074 FLAG=0x00 OP_029 A=9 B=9 C=1
+    --     R[A]=R[B]+R[C]
+    -- PC 0075 FLAG=0xA0 OP_283 A=8 B=9 C=0.0
+    --     do local I=R[B];local F=C;R[A][I]=F end
+    -- PC 0076 FLAG=0xC0 OP_410 A=9 B=1 C=0
+    --     R[A]={}
+    -- PC 0077 FLAG=0x00 OP_316 A=10 B=0 C=6
+    --     R[A]=R[B]*R[C]
+    -- PC 0078 FLAG=0x00 OP_155 A=10 B=10 C=1
+    --     R[A]=R[B]+R[C]
+    -- PC 0079 FLAG=0xC0 OP_112 A=9 B=1 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0080 FLAG=0x52 OP_371 A=10 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0081 FLAG=0xC0 OP_115 A=11 B=9 C=0
+    --     R[A]=#R[B]
+    -- PC 0082 FLAG=0x40 OP_236 A=0 B=10 C=11
+    --     if (R[B]<=R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0083 FLAG=0x42 OP_255 A=0 B=141 C=None [jump-target=142]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0084 FLAG=0x50 OP_364 A=0 B=10000.0 C=10
+    --     if (B<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0085 FLAG=0x02 OP_255 A=0 B=87 C=None [jump-target=88]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0086 FLAG=0x40 OP_234 A=11 B=11 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0087 FLAG=0xC0 OP_220 A=11 B=11 C=0
+    --     return U(T,A,B)
+    -- PC 0088 FLAG=0x80 OP_304 A=11 B=9 C=10
+    --     R[A]=R[B][R[C]]
+    -- PC 0089 FLAG=0x20 OP_124 A=10 B=10 C=1.0
+    --     R[A]=R[B]+C
+    -- PC 0090 FLAG=0x40 OP_231 A=12 B=8 C=11
+    --     R[A]=R[B][R[C]]
+    -- PC 0091 FLAG=0x00 OP_002 A=0 B=12 C=4
+    --     if (R[B]<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0092 FLAG=0x42 OP_215 A=0 B=80 C=None [jump-target=81]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0093 FLAG=0xD2 OP_137 A=13 B='math' C=None
+    --     R[A]=ENV[B]
+    -- PC 0094 FLAG=0xA0 OP_032 A=13 B=13 C='floor'
+    --     R[A]=R[B][C]
+    -- PC 0095 FLAG=0xC0 OP_240 A=14 B=11 C=6
+    --     R[A]=R[B]/R[C]
+    -- PC 0096 FLAG=0x40 OP_098 A=13 B=14 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0097 FLAG=0x40 OP_280 A=14 B=11 C=6
+    --     R[A]=R[B]%R[C]
+    -- PC 0098 FLAG=0x52 OP_346 A=15 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0099 FLAG=0x80 OP_324 A=16 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=#R[B]
+    -- PC 0100 FLAG=0x00 OP_115 A=16 B=16 C=0
+    --     R[A]=#R[B]
+    -- PC 0101 FLAG=0x92 OP_371 A=17 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0102 FLAG=0x02 OP_023 A=15 B=139 C=None [jump-target=140]
+    --     R[A]=R[A]-R[A+2];Q=B
+    -- PC 0103 FLAG=0x40 OP_028 A=19 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][R[C]]
+    -- PC 0104 FLAG=0x40 OP_304 A=19 B=19 C=18
+    --     R[A]=R[B][R[C]]
+    -- PC 0105 FLAG=0x20 OP_363 A=19 B=19 C=1.0
+    --     R[A]=R[B][C]
+    -- PC 0106 FLAG=0xC0 OP_155 A=19 B=13 C=19
+    --     R[A]=R[B]+R[C]
+    -- PC 0107 FLAG=0xC0 OP_028 A=20 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][R[C]]
+    -- PC 0108 FLAG=0x00 OP_231 A=20 B=20 C=18
+    --     R[A]=R[B][R[C]]
+    -- PC 0109 FLAG=0x60 OP_032 A=20 B=20 C=2.0
+    --     R[A]=R[B][C]
+    -- PC 0110 FLAG=0x00 OP_029 A=20 B=14 C=20
+    --     R[A]=R[B]+R[C]
+    -- PC 0111 FLAG=0x50 OP_048 A=0 B=0.0 C=19
+    --     if (B<=R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0112 FLAG=0x42 OP_215 A=0 B=139 C=None [jump-target=140]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0113 FLAG=0x90 OP_150 A=0 B=0.0 C=20
+    --     if (B<=R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0114 FLAG=0x82 OP_255 A=0 B=139 C=None [jump-target=140]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0115 FLAG=0xC0 OP_002 A=0 B=19 C=7
+    --     if (R[B]<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0116 FLAG=0x82 OP_140 A=0 B=139 C=None [jump-target=140]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0117 FLAG=0x40 OP_180 A=0 B=20 C=6
+    --     if (R[B]<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0118 FLAG=0x02 OP_140 A=0 B=139 C=None [jump-target=140]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0119 FLAG=0x60 OP_136 A=21 B=5 C='isObstacle' [linear-fusion-payloads=2]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0120 FLAG=0x00 OP_078 A=23 B=19 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0121 FLAG=0x40 OP_184 A=24 B=20 C=0
+    --     R[A]=R[B]
+    -- PC 0122 FLAG=0x40 OP_068 A=21 B=24 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0123 FLAG=0x20 OP_045 A=0 B=21 C=0.0
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0124 FLAG=0x42 OP_215 A=0 B=139 C=None [jump-target=140]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0125 FLAG=0x40 OP_316 A=21 B=19 C=6
+    --     R[A]=R[B]*R[C]
+    -- PC 0126 FLAG=0xC0 OP_155 A=21 B=21 C=20
+    --     R[A]=R[B]+R[C]
+    -- PC 0127 FLAG=0xC0 OP_231 A=22 B=8 C=21
+    --     R[A]=R[B][R[C]]
+    -- PC 0128 FLAG=0x60 OP_279 A=0 B=22 C=['unknown', 2]
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0129 FLAG=0xC2 OP_215 A=0 B=139 C=None [jump-target=140]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0130 FLAG=0xA0 OP_124 A=22 B=12 C=1.0
+    --     R[A]=R[B]+C
+    -- PC 0131 FLAG=0xC0 OP_294 A=0 B=19 C=2
+    --     if (R[B]==R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0132 FLAG=0x02 OP_215 A=0 B=135 C=None [jump-target=136]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0133 FLAG=0x00 OP_294 A=0 B=20 C=3
+    --     if (R[B]==R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0134 FLAG=0x02 OP_215 A=0 B=135 C=None [jump-target=136]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0135 FLAG=0x80 OP_220 A=22 B=22 C=0
+    --     return U(T,A,B)
+    -- PC 0136 FLAG=0x80 OP_174 A=8 B=21 C=22
+    --     do local I=R[B];local F=R[C];R[A][I]=F end
+    -- PC 0137 FLAG=0x40 OP_115 A=23 B=9 C=0
+    --     R[A]=#R[B]
+    -- PC 0138 FLAG=0x20 OP_124 A=23 B=23 C=1.0
+    --     R[A]=R[B]+C
+    -- PC 0139 FLAG=0x40 OP_368 A=9 B=23 C=21
+    --     do local I=R[B];local F=R[C];R[A][I]=F end
+    -- PC 0140 FLAG=0x02 OP_126 A=15 B=102 C=None [loop-target=103]
+    --     do local I=A;local F=T[I+2];local U=T[I]+F;T[I]=U;local L=T[I+1];if (F>0 and U<=L) or (F<=0 and U>=L) then T[I+3]=U;Q=B end end
+    -- PC 0141 FLAG=0x82 OP_140 A=0 B=80 C=None [jump-target=81]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0142 FLAG=0x00 OP_125 A=11 B=11 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0143 FLAG=0xC0 OP_220 A=11 B=11 C=0
+    --     return U(T,A,B)
+    -- PC 0144 FLAG=0x40 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/24 | 候选函数名: UseItemByIndex | 指令数: 55 | 子原型: 0 | vararg: 0 | bytes: 19639:20373
+function UseItemByIndex(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 58.0
+    -- K[1] = 'CHANGE_SETTING'
+    -- K[2] = 2005.0
+    -- K[3] = 57.0
+    -- K[4] = '关闭屏蔽怪物'
+    -- K[5] = '关闭游戏音乐'
+    -- K[6] = 0.0
+    -- K[7] = '开启人物简装'
+    -- K[8] = 1002.0
+    -- K[9] = '开启怪物简装'
+    -- K[10] = '关闭高帧率'
+    -- K[11] = 27.0
+    -- K[12] = 1.0
+    -- K[13] = 52.0
+    -- K[14] = '关闭背景音乐'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xD2 OP_168 A=0 B='CHANGE_SETTING' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0002 FLAG=0xD2 OP_371 A=1 B=27.0 C=None
+    --     R[A]=B
+    -- PC 0003 FLAG=0x40 OP_090 A=2 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0004 FLAG=0xD2 OP_346 A=3 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0005 FLAG=0x40 OP_153 A=2 B=1 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0006 FLAG=0x80 OP_358 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0007 FLAG=0x80 OP_134 A=0 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0008 FLAG=0x92 OP_371 A=1 B='关闭背景音乐' C=None
+    --     R[A]=B
+    -- PC 0009 FLAG=0xC0 OP_187 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0010 FLAG=0x92 OP_168 A=0 B='CHANGE_SETTING' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0011 FLAG=0xD2 OP_346 A=1 B=52.0 C=None
+    --     R[A]=B
+    -- PC 0012 FLAG=0xC0 OP_410 A=2 B=1 C=0
+    --     R[A]={}
+    -- PC 0013 FLAG=0x52 OP_346 A=3 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0014 FLAG=0x00 OP_402 A=2 B=1 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0015 FLAG=0x00 OP_358 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0016 FLAG=0x00 OP_130 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0017 FLAG=0xD2 OP_371 A=1 B='关闭游戏音乐' C=None
+    --     R[A]=B
+    -- PC 0018 FLAG=0xC0 OP_358 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0019 FLAG=0x92 OP_168 A=0 B='CHANGE_SETTING' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0020 FLAG=0xD2 OP_371 A=1 B=1002.0 C=None
+    --     R[A]=B
+    -- PC 0021 FLAG=0x00 OP_120 A=2 B=1 C=0
+    --     R[A]={}
+    -- PC 0022 FLAG=0x52 OP_346 A=3 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0023 FLAG=0x80 OP_237 A=2 B=1 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0024 FLAG=0xC0 OP_187 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0025 FLAG=0x00 OP_130 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0026 FLAG=0x52 OP_371 A=1 B='关闭高帧率' C=None
+    --     R[A]=B
+    -- PC 0027 FLAG=0xC0 OP_358 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0028 FLAG=0x52 OP_137 A=0 B='CHANGE_SETTING' C=None
+    --     R[A]=ENV[B]
+    -- PC 0029 FLAG=0x92 OP_040 A=1 B=57.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0030 FLAG=0x00 OP_090 A=2 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0031 FLAG=0xD2 OP_346 A=3 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0032 FLAG=0x80 OP_112 A=2 B=1 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0033 FLAG=0x80 OP_358 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0034 FLAG=0xC0 OP_134 A=0 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0035 FLAG=0x52 OP_346 A=1 B='开启人物简装' C=None
+    --     R[A]=B
+    -- PC 0036 FLAG=0x00 OP_187 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0037 FLAG=0x52 OP_137 A=0 B='CHANGE_SETTING' C=None
+    --     R[A]=ENV[B]
+    -- PC 0038 FLAG=0x92 OP_040 A=1 B=58.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0039 FLAG=0x40 OP_090 A=2 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0040 FLAG=0x92 OP_346 A=3 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0041 FLAG=0x80 OP_088 A=2 B=1 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0042 FLAG=0x00 OP_358 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0043 FLAG=0x80 OP_130 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0044 FLAG=0xD2 OP_371 A=1 B='开启怪物简装' C=None
+    --     R[A]=B
+    -- PC 0045 FLAG=0x00 OP_358 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0046 FLAG=0x52 OP_137 A=0 B='CHANGE_SETTING' C=None
+    --     R[A]=ENV[B]
+    -- PC 0047 FLAG=0xD2 OP_346 A=1 B=2005.0 C=None
+    --     R[A]=B
+    -- PC 0048 FLAG=0x80 OP_105 A=2 B=1 C=0
+    --     R[A]={}
+    -- PC 0049 FLAG=0x12 OP_371 A=3 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0050 FLAG=0x40 OP_112 A=2 B=1 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0051 FLAG=0xC0 OP_187 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0052 FLAG=0x40 OP_130 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0053 FLAG=0x12 OP_371 A=1 B='关闭屏蔽怪物' C=None
+    --     R[A]=B
+    -- PC 0054 FLAG=0xC0 OP_187 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0055 FLAG=0x40 OP_100 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/25 | 候选函数名: DeathAutoBlacklist | 指令数: 33 | 子原型: 0 | vararg: 0 | bytes: 20373:20797
+function DeathAutoBlacklist(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'GetMetaValue'
+    -- K[1] = 'ITEM_COUNT'
+    -- K[2] = 'ipairs'
+    -- K[3] = 'tonumber'
+    -- K[4] = 'ITEM_INDEX_BY_NAME'
+    -- K[5] = 'SL'
+    -- K[6] = 'UseItemByIndex'
+    -- K[7] = 0.0
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x92 OP_095 A=0 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0002 FLAG=0xC0 OP_130 A=1 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0003 FLAG=0x40 OP_233 A=0 B=1 C=2
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0004 FLAG=0x42 OP_255 A=0 B=28 C=None [jump-target=29]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0x92 OP_191 A=5 B='SL' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0006 FLAG=0x20 OP_186 A=5 B=5 C='GetMetaValue' [linear-fusion-payloads=2]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0007 FLAG=0xD2 OP_346 A=7 B='ITEM_INDEX_BY_NAME' C=None
+    --     R[A]=B
+    -- PC 0008 FLAG=0xC0 OP_308 A=8 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0009 FLAG=0xC0 OP_068 A=5 B=8 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0010 FLAG=0x92 OP_137 A=6 B='tonumber' C=None
+    --     R[A]=ENV[B]
+    -- PC 0011 FLAG=0x52 OP_191 A=7 B='SL' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0012 FLAG=0xA0 OP_186 A=7 B=7 C='GetMetaValue' [linear-fusion-payloads=2]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0013 FLAG=0xD2 OP_286 A=9 B='ITEM_COUNT' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0014 FLAG=0x00 OP_308 A=10 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0015 FLAG=0x40 OP_252 A=7 B=10 C=0
+    --     do local I,F=E(R[A](U(T,A+1,B)));B=F+A-1;local U=0;for L=A,B do U=U+1;T[L]=I[U] end end
+    -- PC 0016 FLAG=0x80 OP_223 A=6 B=0 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0017 FLAG=0x00 OP_342 A=6 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0018 FLAG=0x42 OP_140 A=0 B=19 C=None [jump-target=20]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0019 FLAG=0x92 OP_371 A=6 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0020 FLAG=0x40 OP_016 A=5 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0021 FLAG=0x42 OP_140 A=0 B=28 C=None [jump-target=29]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0022 FLAG=0x50 OP_364 A=0 B=0.0 C=6
+    --     if (B<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0023 FLAG=0xC2 OP_140 A=0 B=28 C=None [jump-target=29]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0024 FLAG=0x12 OP_300 A=7 B='SL' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0025 FLAG=0xE0 OP_142 A=7 B=7 C='UseItemByIndex' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0026 FLAG=0x80 OP_184 A=9 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0027 FLAG=0x40 OP_358 A=7 B=9 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0028 FLAG=0xC0 OP_220 A=4 B=4 C=0
+    --     return U(T,A,B)
+    -- PC 0029 FLAG=0x40 OP_339 A=0 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0030 FLAG=0xC2 OP_140 A=0 B=4 C=None [jump-target=5]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0031 FLAG=0xC0 OP_234 A=0 B=0 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0032 FLAG=0xC0 OP_220 A=0 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0033 FLAG=0x80 OP_250 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: root/25/0
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/26 | 候选函数名: ResetGatherMonsterData | 指令数: 47 | 子原型: 1 | vararg: 0 | bytes: 20797:21597
+function ResetGatherMonsterData(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 5.0
+    -- K[1] = '被 %s 击杀，自动加入黑名单'
+    -- K[2] = 'ScheduleOnce'
+    -- K[3] = '本次死亡没记录到凶手，跳过自动拉黑'
+    -- K[4] = 'lastAttacker'
+    -- K[5] = ['unknown', 2]
+    -- K[6] = ''
+    -- K[7] = 1.0
+    -- K[8] = 0.0
+    -- K[9] = '自动拉黑：'
+    -- K[10] = '凶手已在黑名单中：%s'
+    -- K[11] = 'id'
+    -- K[12] = 0.5
+    -- K[13] = 'SL'
+    -- K[14] = 'name'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x80 OP_159 A=0 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0002 FLAG=0x20 OP_375 A=0 B=0 C='lastAttacker'
+    --     R[A]=R[B][C]
+    -- PC 0003 FLAG=0x00 OP_089 A=1 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end
+    -- PC 0004 FLAG=0x70 OP_156 A=1 B='lastAttacker' C=['unknown', 2]
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0005 FLAG=0xC0 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0006 FLAG=0x42 OP_255 A=0 B=12 C=None [jump-target=13]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0007 FLAG=0xE0 OP_032 A=1 B=0 C='name'
+    --     R[A]=R[B][C]
+    -- PC 0008 FLAG=0xC0 OP_016 A=1 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0009 FLAG=0x02 OP_140 A=0 B=12 C=None [jump-target=13]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0010 FLAG=0xE0 OP_032 A=1 B=0 C='name'
+    --     R[A]=R[B][C]
+    -- PC 0011 FLAG=0xE0 OP_045 A=0 B=1 C=''
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0012 FLAG=0x82 OP_255 A=0 B=16 C=None [jump-target=17]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0013 FLAG=0x80 OP_134 A=1 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0014 FLAG=0x12 OP_371 A=2 B='本次死亡没记录到凶手，跳过自动拉黑' C=None
+    --     R[A]=B
+    -- PC 0015 FLAG=0x40 OP_358 A=1 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0016 FLAG=0x40 OP_100 A=0 B=0 C=0
+    --     return
+    -- PC 0017 FLAG=0xC0 OP_130 A=1 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0018 FLAG=0x60 OP_053 A=2 B=0 C='id'
+    --     R[A]=R[B][C]
+    -- PC 0019 FLAG=0x80 OP_068 A=1 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0020 FLAG=0x00 OP_016 A=1 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0021 FLAG=0x02 OP_140 A=0 B=26 C=None [jump-target=27]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0022 FLAG=0x00 OP_134 A=1 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0023 FLAG=0x12 OP_165 A=2 B='凶手已在黑名单中：%s' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0024 FLAG=0xA0 OP_375 A=3 B=0 C='name'
+    --     R[A]=R[B][C]
+    -- PC 0025 FLAG=0x00 OP_358 A=1 B=3 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0026 FLAG=0x80 OP_001 A=0 B=0 C=0
+    --     return
+    -- PC 0027 FLAG=0x80 OP_134 A=1 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0028 FLAG=0x52 OP_165 A=2 B='被 %s 击杀，自动加入黑名单' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0029 FLAG=0x20 OP_053 A=3 B=0 C='name'
+    --     R[A]=R[B][C]
+    -- PC 0030 FLAG=0x80 OP_187 A=1 B=3 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0031 FLAG=0xC0 OP_130 A=1 B=3 C=0
+    --     R[A]=UP[B]
+    -- PC 0032 FLAG=0x12 OP_091 A=2 B='自动拉黑：' C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0033 FLAG=0x20 OP_097 A=3 B=0 C='name' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0034 FLAG=0xC0 OP_210 A=2 B=2 C=3
+    --     do local I=R[C];for F=C-1,B,-1 do I=T[F]..I end;R[A]=I end
+    -- PC 0035 FLAG=0x80 OP_187 A=1 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0036 FLAG=0x92 OP_061 A=1 B=0.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0037 FLAG=0x12 OP_282 A=2 B=5.0 C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0038 FLAG=0xD2 OP_346 A=3 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0039 FLAG=0x02 OP_292 A=1 B=45 C=None [jump-target=46]
+    --     R[A]=R[A]-R[A+2];Q=B
+    -- PC 0040 FLAG=0x52 OP_335 A=5 B='SL' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0041 FLAG=0xE0 OP_121 A=5 B=5 C='ScheduleOnce'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0042 FLAG=0x00 OP_027 A=7 B=0 C=1 [linear-fusion-payloads=1, closure-child-index=0; captures=1; child-path=root/26/1]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0043 FLAG=0x00 OP_387 A=0 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0044 FLAG=0x50 OP_005 A=8 B=0.5 C=4
+    --     R[A]=B*R[C]
+    -- PC 0045 FLAG=0x80 OP_358 A=5 B=8 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0046 FLAG=0x82 OP_126 A=1 B=39 C=None [loop-target=40]
+    --     do local I=A;local F=T[I+2];local U=T[I]+F;T[I]=U;local L=T[I+1];if (F>0 and U<=L) or (F<=0 and U>=L) then T[I+3]=U;Q=B end end
+    -- PC 0047 FLAG=0xC0 OP_055 A=0 B=0 C=0
+    --     return
+    --     CHILD PROTOTYPES:
+    --     child-index 0 => root/26/1 (records=6, constants=3)
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/26/1 | 候选函数名: Anonymous_root_26_1 | 指令数: 6 | 子原型: 0 | vararg: 0 | bytes: 21483:21596
+function Anonymous_root_26_1(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'RequestAddBlacklistByName'
+    -- K[1] = 'name'
+    -- K[2] = 'SL'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xD2 OP_137 A=0 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0002 FLAG=0xA0 OP_121 A=0 B=0 C='RequestAddBlacklistByName'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0003 FLAG=0x40 OP_159 A=2 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0004 FLAG=0x60 OP_375 A=2 B=2 C='name'
+    --     R[A]=R[B][C]
+    -- PC 0005 FLAG=0x80 OP_358 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0006 FLAG=0x80 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/27 | 候选函数名: StopGatherMonsters | 指令数: 20 | 子原型: 0 | vararg: 0 | bytes: 21597:21824
+function StopGatherMonsters(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = '数据已重置'
+    -- K[1] = 0.0
+    -- K[2] = ''
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x40 OP_120 A=0 B=0 C=0
+    --     R[A]={}
+    -- PC 0002 FLAG=0x40 OP_114 A=0 B=0 C=0
+    --     UP[B]=R[A]
+    -- PC 0003 FLAG=0x52 OP_371 A=0 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0004 FLAG=0x80 OP_213 A=0 B=1 C=0 [linear-fusion-payloads=3]
+    --     UP[B]=R[A];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;UP[B]=R[A];; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0005 FLAG=0x92 OP_003 A=0 B=0.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;UP[B]=R[A];; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0006 FLAG=0xC0 OP_332 A=0 B=2 C=0 [linear-fusion-payloads=1]
+    --     UP[B]=R[A];; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0007 FLAG=0x00 OP_130 A=0 B=3 C=0
+    --     R[A]=UP[B]
+    -- PC 0008 FLAG=0xC0 OP_187 A=0 B=0 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0009 FLAG=0xC0 OP_338 A=0 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0010 FLAG=0x40 OP_254 A=0 B=4 C=0 [linear-fusion-payloads=4]
+    --     UP[B]=R[A];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;UP[B]=R[A];; -- fused: read next VM instruction;for I=A,B do T[I]=nil end;; -- fused: read next VM instruction;UP[B]=R[A]
+    -- PC 0011 FLAG=0x92 OP_015 A=0 B=0.0 C=None [linear-fusion-payloads=5]
+    --     R[A]=B;; -- fused: read next VM instruction;UP[B]=R[A];; -- fused: read next VM instruction;for I=A,B do T[I]=nil end;; -- fused: read next VM instruction;UP[B]=R[A];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;UP[B]=R[A]
+    -- PC 0012 FLAG=0x00 OP_067 A=0 B=5 C=0 [linear-fusion-payloads=6]
+    --     UP[B]=R[A];; -- fused: read next VM instruction;for I=A,B do T[I]=nil end;; -- fused: read next VM instruction;UP[B]=R[A];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;UP[B]=R[A];; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0013 FLAG=0xC0 OP_125 A=0 B=0 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0014 FLAG=0x00 OP_265 A=0 B=6 C=0 [linear-fusion-payloads=4]
+    --     UP[B]=R[A];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;UP[B]=R[A];; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0015 FLAG=0x92 OP_289 A=0 B='' C=None [linear-fusion-payloads=3]
+    --     R[A]=B;; -- fused: read next VM instruction;UP[B]=R[A];; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0016 FLAG=0x40 OP_409 A=0 B=7 C=0 [linear-fusion-payloads=2]
+    --     UP[B]=R[A];; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0017 FLAG=0xC0 OP_134 A=0 B=8 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0018 FLAG=0x52 OP_371 A=1 B='数据已重置' C=None
+    --     R[A]=B
+    -- PC 0019 FLAG=0x00 OP_187 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0020 FLAG=0xC0 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/28 | 候选函数名: FindMonsterCandidates | 指令数: 25 | 子原型: 0 | vararg: 0 | bytes: 21824:22136
+function FindMonsterCandidates(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = '引怪功能已停止'
+    -- K[1] = 'UnSchedule'
+    -- K[2] = ['unknown', 2]
+    -- K[3] = 'IDLE'
+    -- K[4] = 'gatherTimer'
+    -- K[5] = 'SL'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x00 OP_338 A=0 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0002 FLAG=0x80 OP_332 A=0 B=0 C=0 [linear-fusion-payloads=1]
+    --     UP[B]=R[A];; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0003 FLAG=0x00 OP_159 A=0 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0004 FLAG=0x20 OP_363 A=0 B=0 C='gatherTimer'
+    --     R[A]=R[B][C]
+    -- PC 0005 FLAG=0xC0 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0006 FLAG=0xC2 OP_215 A=0 B=13 C=None [jump-target=14]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0007 FLAG=0x92 OP_335 A=0 B='SL' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0008 FLAG=0xE0 OP_121 A=0 B=0 C='UnSchedule'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0009 FLAG=0x00 OP_159 A=2 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0010 FLAG=0xE0 OP_053 A=2 B=2 C='gatherTimer'
+    --     R[A]=R[B][C]
+    -- PC 0011 FLAG=0xC0 OP_187 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0012 FLAG=0xC0 OP_089 A=0 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end
+    -- PC 0013 FLAG=0x30 OP_146 A=0 B='gatherTimer' C=['unknown', 2]
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0014 FLAG=0x00 OP_130 A=0 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0015 FLAG=0x40 OP_187 A=0 B=0 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0016 FLAG=0xC0 OP_130 A=0 B=3 C=0
+    --     R[A]=UP[B]
+    -- PC 0017 FLAG=0x40 OP_159 A=1 B=4 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0018 FLAG=0xE0 OP_032 A=1 B=1 C='IDLE'
+    --     R[A]=R[B][C]
+    -- PC 0019 FLAG=0x40 OP_358 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0020 FLAG=0xC0 OP_130 A=0 B=5 C=0
+    --     R[A]=UP[B]
+    -- PC 0021 FLAG=0x80 OP_358 A=0 B=0 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0022 FLAG=0x40 OP_134 A=0 B=6 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0023 FLAG=0x92 OP_346 A=1 B='引怪功能已停止' C=None
+    --     R[A]=B
+    -- PC 0024 FLAG=0x80 OP_187 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0025 FLAG=0x40 OP_250 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: root/28/0
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/29 | 候选函数名: IsDie | 指令数: 102 | 子原型: 1 | vararg: 0 | bytes: 22136:23414
+function IsDie(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'global'
+    -- K[1] = 0.0
+    -- K[2] = 'ipairs'
+    -- K[3] = 'FindMonsterInCurrViewField'
+    -- K[4] = 1.0
+    -- K[5] = '未知怪物'
+    -- K[6] = 'type'
+    -- K[7] = 'SETTING_IDX_IGNORE_MONSTER'
+    -- K[8] = 'SL'
+    -- K[9] = 'insert'
+    -- K[10] = 'GetName'
+    -- K[11] = 'GET_SETTING'
+    -- K[12] = 'table'
+    -- K[13] = 'MMO'
+    -- K[14] = 'sort'
+    -- K[15] = '_distance'
+    -- K[16] = 'GATHER_THRESHOLD'
+    -- K[17] = 'pairs'
+    -- K[18] = True
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x52 OP_335 A=0 B='SL' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0002 FLAG=0xA0 OP_121 A=0 B=0 C='FindMonsterInCurrViewField'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0003 FLAG=0x00 OP_338 A=2 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0004 FLAG=0x00 OP_401 A=3 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0005 FLAG=0x40 OP_068 A=0 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0006 FLAG=0xC0 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0007 FLAG=0x42 OP_140 A=0 B=10 C=None [jump-target=11]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0008 FLAG=0xC0 OP_115 A=1 B=0 C=0
+    --     R[A]=#R[B]
+    -- PC 0009 FLAG=0x60 OP_279 A=0 B=1 C=0.0
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0010 FLAG=0x42 OP_255 A=0 B=12 C=None [jump-target=13]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0011 FLAG=0x80 OP_105 A=1 B=0 C=0
+    --     R[A]={}
+    -- PC 0012 FLAG=0x00 OP_220 A=1 B=1 C=0
+    --     return U(T,A,B)
+    -- PC 0013 FLAG=0xC0 OP_077 A=1 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0014 FLAG=0xC0 OP_130 A=2 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0015 FLAG=0x00 OP_098 A=2 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0016 FLAG=0x12 OP_376 A=3 B='GET_SETTING' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0017 FLAG=0xD2 OP_137 A=4 B='global' C=None
+    --     R[A]=ENV[B]
+    -- PC 0018 FLAG=0x20 OP_375 A=4 B=4 C='MMO'
+    --     R[A]=R[B][C]
+    -- PC 0019 FLAG=0x60 OP_053 A=4 B=4 C='SETTING_IDX_IGNORE_MONSTER'
+    --     R[A]=R[B][C]
+    -- PC 0020 FLAG=0xC0 OP_098 A=3 B=4 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0021 FLAG=0xC0 OP_019 A=4 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]={}
+    -- PC 0022 FLAG=0x40 OP_410 A=5 B=0 C=0
+    --     R[A]={}
+    -- PC 0023 FLAG=0x00 OP_016 A=3 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0024 FLAG=0x82 OP_215 A=0 B=46 C=None [jump-target=47]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0025 FLAG=0xE0 OP_032 A=6 B=3 C=1.0
+    --     R[A]=R[B][C]
+    -- PC 0026 FLAG=0x40 OP_016 A=6 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0027 FLAG=0x82 OP_140 A=0 B=46 C=None [jump-target=47]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0028 FLAG=0x92 OP_397 A=6 B='type' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0029 FLAG=0xE0 OP_032 A=7 B=3 C=1.0
+    --     R[A]=R[B][C]
+    -- PC 0030 FLAG=0x00 OP_068 A=6 B=7 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0031 FLAG=0xE0 OP_045 A=0 B=6 C='table'
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0032 FLAG=0x82 OP_255 A=0 B=46 C=None [jump-target=47]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0033 FLAG=0x92 OP_397 A=6 B='pairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0034 FLAG=0x60 OP_032 A=7 B=3 C=1.0
+    --     R[A]=R[B][C]
+    -- PC 0035 FLAG=0xC0 OP_183 A=6 B=7 C=8
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0036 FLAG=0x42 OP_255 A=0 B=44 C=None [jump-target=45]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0037 FLAG=0xE0 OP_045 A=0 B=10 C=1.0
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0038 FLAG=0x82 OP_215 A=0 B=44 C=None [jump-target=45]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0039 FLAG=0xE0 OP_109 A=4 B=9 C=True [linear-fusion-payloads=4]
+    --     do local I=R[B];local F=C;R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0040 FLAG=0x12 OP_010 A=11 B='table' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0041 FLAG=0xE0 OP_363 A=11 B=11 C='insert'
+    --     R[A]=R[B][C]
+    -- PC 0042 FLAG=0x00 OP_078 A=12 B=5 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0043 FLAG=0x80 OP_308 A=13 B=9 C=0
+    --     R[A]=R[B]
+    -- PC 0044 FLAG=0x80 OP_358 A=11 B=13 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0045 FLAG=0x00 OP_386 A=6 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0046 FLAG=0x02 OP_255 A=0 B=36 C=None [jump-target=37]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0047 FLAG=0x12 OP_071 A=6 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0048 FLAG=0x00 OP_308 A=7 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0049 FLAG=0xC0 OP_183 A=6 B=7 C=8
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0050 FLAG=0xC2 OP_140 A=0 B=76 C=None [jump-target=77]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0051 FLAG=0xC0 OP_130 A=11 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0052 FLAG=0x40 OP_184 A=12 B=10 C=0
+    --     R[A]=R[B]
+    -- PC 0053 FLAG=0xC0 OP_098 A=11 B=12 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0054 FLAG=0x00 OP_016 A=11 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0055 FLAG=0x42 OP_215 A=0 B=76 C=None [jump-target=77]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0056 FLAG=0x60 OP_033 A=11 B=10 C='GetName'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0057 FLAG=0x40 OP_098 A=11 B=12 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0058 FLAG=0xC0 OP_342 A=11 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0059 FLAG=0x82 OP_140 A=0 B=60 C=None [jump-target=61]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0060 FLAG=0x92 OP_278 A=11 B='未知怪物' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B][R[C]]
+    -- PC 0061 FLAG=0x00 OP_231 A=12 B=4 C=11
+    --     R[A]=R[B][R[C]]
+    -- PC 0062 FLAG=0xC0 OP_342 A=12 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0063 FLAG=0x82 OP_255 A=0 B=76 C=None [jump-target=77]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0064 FLAG=0x00 OP_130 A=12 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0065 FLAG=0x40 OP_308 A=13 B=10 C=0
+    --     R[A]=R[B]
+    -- PC 0066 FLAG=0x00 OP_098 A=12 B=13 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0067 FLAG=0x80 OP_348 A=13 B=3 C=0 [linear-fusion-payloads=2]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0068 FLAG=0x80 OP_078 A=14 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0069 FLAG=0x00 OP_184 A=15 B=12 C=0
+    --     R[A]=R[B]
+    -- PC 0070 FLAG=0xC0 OP_098 A=13 B=15 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0071 FLAG=0x10 OP_268 A=10 B='_distance' C=13
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0072 FLAG=0x92 OP_137 A=14 B='table' C=None
+    --     R[A]=ENV[B]
+    -- PC 0073 FLAG=0x60 OP_363 A=14 B=14 C='insert'
+    --     R[A]=R[B][C]
+    -- PC 0074 FLAG=0x00 OP_078 A=15 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0075 FLAG=0xC0 OP_184 A=16 B=10 C=0
+    --     R[A]=R[B]
+    -- PC 0076 FLAG=0xC0 OP_187 A=14 B=16 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0077 FLAG=0x40 OP_117 A=6 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0078 FLAG=0x82 OP_215 A=0 B=50 C=None [jump-target=51]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0079 FLAG=0x52 OP_307 A=6 B='table' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0080 FLAG=0x60 OP_398 A=6 B=6 C='sort' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0081 FLAG=0xC0 OP_184 A=7 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0082 FLAG=0x80 OP_027 A=8 B=0 C=0 [closure-child-index=0; captures=0; child-path=root/29/1]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0083 FLAG=0x80 OP_358 A=6 B=8 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0084 FLAG=0x40 OP_127 A=6 B=0 C=0 [linear-fusion-payloads=4]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0085 FLAG=0x00 OP_130 A=7 B=4 C=0
+    --     R[A]=UP[B]
+    -- PC 0086 FLAG=0xE0 OP_181 A=7 B=7 C='GATHER_THRESHOLD' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0087 FLAG=0xD2 OP_071 A=8 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0088 FLAG=0xC0 OP_308 A=9 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0089 FLAG=0x80 OP_233 A=8 B=9 C=10
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0090 FLAG=0x02 OP_215 A=0 B=98 C=None [jump-target=99]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0091 FLAG=0x00 OP_180 A=0 B=7 C=11
+    --     if (R[B]<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0092 FLAG=0x82 OP_255 A=0 B=93 C=None [jump-target=94]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0093 FLAG=0x82 OP_140 A=0 B=100 C=None [jump-target=101]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0094 FLAG=0x92 OP_010 A=13 B='table' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0095 FLAG=0x60 OP_269 A=13 B=13 C='insert' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0096 FLAG=0x00 OP_078 A=14 B=6 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0097 FLAG=0xC0 OP_184 A=15 B=12 C=0
+    --     R[A]=R[B]
+    -- PC 0098 FLAG=0x40 OP_187 A=13 B=15 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0099 FLAG=0x40 OP_339 A=8 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0100 FLAG=0x02 OP_255 A=0 B=90 C=None [jump-target=91]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0101 FLAG=0x00 OP_220 A=6 B=6 C=0
+    --     return U(T,A,B)
+    -- PC 0102 FLAG=0x80 OP_055 A=0 B=0 C=0
+    --     return
+    --     CHILD PROTOTYPES:
+    --     child-index 0 => root/29/1 (records=8, constants=1)
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/29/1 | 候选函数名: Anonymous_root_29_1 | 指令数: 8 | 子原型: 0 | vararg: 2 | bytes: 23314:23413
+function Anonymous_root_29_1(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = '_distance'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x60 OP_363 A=2 B=0 C='_distance'
+    --     R[A]=R[B][C]
+    -- PC 0002 FLAG=0xA0 OP_032 A=3 B=1 C='_distance'
+    --     R[A]=R[B][C]
+    -- PC 0003 FLAG=0x80 OP_180 A=1 B=2 C=3
+    --     if (R[B]<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0x82 OP_255 A=0 B=5 C=None [jump-target=6]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0xC0 OP_082 A=2 B=0 C=1
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0006 FLAG=0x40 OP_338 A=2 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0007 FLAG=0xC0 OP_220 A=2 B=2 C=0
+    --     return U(T,A,B)
+    -- PC 0008 FLAG=0xC0 OP_055 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/30 | 候选函数名: GetMapName | 指令数: 7 | 子原型: 0 | vararg: 1 | bytes: 23414:23500
+function GetMapName(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'IsDie'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xC0 OP_247 A=1 B=0 C=0
+    --     local I=R[B];if (not not I)==(C~=0) then R[A]=I else Q=Q+1 end
+    -- PC 0002 FLAG=0x02 OP_255 A=0 B=5 C=None [jump-target=6]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0003 FLAG=0xE0 OP_121 A=1 B=0 C='IsDie'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0004 FLAG=0x00 OP_068 A=1 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0x40 OP_172 A=1 B=1 C=0
+    --     R[A]=not R[B]
+    -- PC 0006 FLAG=0x80 OP_220 A=1 B=1 C=0
+    --     return U(T,A,B)
+    -- PC 0007 FLAG=0xC0 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/31 | 候选函数名: IsInWhitelistMap | 指令数: 9 | 子原型: 0 | vararg: 0 | bytes: 23500:23636
+function IsInWhitelistMap(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'GetMetaValue'
+    -- K[1] = 'MAP_NAME'
+    -- K[2] = ''
+    -- K[3] = 'SL'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x92 OP_137 A=0 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0002 FLAG=0xE0 OP_297 A=0 B=0 C='GetMetaValue' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0003 FLAG=0x92 OP_371 A=2 B='MAP_NAME' C=None
+    --     R[A]=B
+    -- PC 0004 FLAG=0xC0 OP_098 A=0 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0x40 OP_342 A=0 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0006 FLAG=0x02 OP_215 A=0 B=7 C=None [jump-target=8]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0007 FLAG=0x12 OP_371 A=0 B='' C=None
+    --     R[A]=B
+    -- PC 0008 FLAG=0x00 OP_220 A=0 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0009 FLAG=0xC0 OP_100 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/32 | 候选函数名: AnonymousHelper_32 | 指令数: 28 | 子原型: 0 | vararg: 0 | bytes: 23636:23977
+function AnonymousHelper_32(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'MAP_NAME'
+    -- K[1] = 'GetMetaValue'
+    -- K[2] = '土城'
+    -- K[3] = 'IN_SAFE_AREA'
+    -- K[4] = 'ipairs'
+    -- K[5] = 'SL'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x12 OP_137 A=0 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0002 FLAG=0xA0 OP_033 A=0 B=0 C='GetMetaValue'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0003 FLAG=0x52 OP_346 A=2 B='IN_SAFE_AREA' C=None
+    --     R[A]=B
+    -- PC 0004 FLAG=0x80 OP_098 A=0 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0x80 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0006 FLAG=0x82 OP_140 A=0 B=8 C=None [jump-target=9]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0007 FLAG=0x80 OP_011 A=1 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0008 FLAG=0x40 OP_220 A=1 B=1 C=0
+    --     return U(T,A,B)
+    -- PC 0009 FLAG=0x92 OP_380 A=1 B='SL' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0010 FLAG=0xA0 OP_297 A=1 B=1 C='GetMetaValue' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0011 FLAG=0x92 OP_371 A=3 B='MAP_NAME' C=None
+    --     R[A]=B
+    -- PC 0012 FLAG=0x80 OP_098 A=1 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0013 FLAG=0xC0 OP_090 A=2 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0014 FLAG=0x52 OP_346 A=3 B='土城' C=None
+    --     R[A]=B
+    -- PC 0015 FLAG=0x00 OP_112 A=2 B=1 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0016 FLAG=0x92 OP_071 A=3 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0017 FLAG=0x80 OP_184 A=4 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0018 FLAG=0x80 OP_183 A=3 B=4 C=5
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0019 FLAG=0x02 OP_255 A=0 B=23 C=None [jump-target=24]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0020 FLAG=0x00 OP_099 A=0 B=1 C=7
+    --     if (R[B]==R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0021 FLAG=0x82 OP_140 A=0 B=23 C=None [jump-target=24]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0022 FLAG=0x40 OP_401 A=8 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0023 FLAG=0x00 OP_220 A=8 B=8 C=0
+    --     return U(T,A,B)
+    -- PC 0024 FLAG=0x40 OP_386 A=3 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0025 FLAG=0x82 OP_255 A=0 B=19 C=None [jump-target=20]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0026 FLAG=0x80 OP_011 A=3 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0027 FLAG=0xC0 OP_220 A=3 B=3 C=0
+    --     return U(T,A,B)
+    -- PC 0028 FLAG=0xC0 OP_250 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/33 | 候选函数名: AnonymousHelper_33 | 指令数: 6 | 子原型: 0 | vararg: 1 | bytes: 23977:24044
+function AnonymousHelper_33(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x40 OP_130 A=1 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0002 FLAG=0x40 OP_130 A=2 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0003 FLAG=0x40 OP_184 A=3 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0004 FLAG=0x00 OP_405 A=1 B=3 C=0
+    --     return R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0x40 OP_143 A=1 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0006 FLAG=0x40 OP_250 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/34 | 候选函数名: Schedule | 指令数: 5 | 子原型: 0 | vararg: 0 | bytes: 24044:24102
+function Schedule(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x00 OP_004 A=0 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0002 FLAG=0x80 OP_130 A=1 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0003 FLAG=0x00 OP_405 A=0 B=1 C=0
+    --     return R[A](U(T,A+1,B))
+    -- PC 0004 FLAG=0x00 OP_143 A=0 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0005 FLAG=0xC0 OP_055 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/35 | 候选函数名: SetTargetID | 指令数: 7 | 子原型: 0 | vararg: 2 | bytes: 24102:24198
+function SetTargetID(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'SL'
+    -- K[1] = 'Schedule'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x12 OP_058 A=2 B='SL' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0002 FLAG=0xA0 OP_136 A=2 B=2 C='Schedule' [linear-fusion-payloads=2]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0003 FLAG=0x00 OP_308 A=4 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0004 FLAG=0x40 OP_184 A=5 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0005 FLAG=0xC0 OP_149 A=2 B=5 C=0
+    --     return R[A](U(T,A+1,B))
+    -- PC 0006 FLAG=0x00 OP_143 A=2 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0007 FLAG=0xC0 OP_055 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/36 | 候选函数名: GetAvailableStoragePage | 指令数: 26 | 子原型: 0 | vararg: 1 | bytes: 24198:24573
+function GetAvailableStoragePage(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'retrieveProxy'
+    -- K[1] = 'Facade'
+    -- K[2] = 'ProxyTable'
+    -- K[3] = 'SELETE_TARGET_TYPE_FIND'
+    -- K[4] = 'MMO'
+    -- K[5] = 'PlayerInputProxy'
+    -- K[6] = 'SetTargetID'
+    -- K[7] = 'global'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x92 OP_397 A=1 B='global' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0002 FLAG=0x60 OP_053 A=1 B=1 C='Facade'
+    --     R[A]=R[B][C]
+    -- PC 0003 FLAG=0xC0 OP_342 A=1 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0xC2 OP_215 A=0 B=6 C=None [jump-target=7]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0x00 OP_011 A=1 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0006 FLAG=0xC0 OP_220 A=1 B=1 C=0
+    --     return U(T,A,B)
+    -- PC 0007 FLAG=0x52 OP_397 A=1 B='global' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0008 FLAG=0xA0 OP_260 A=1 B=1 C='Facade' [linear-fusion-payloads=4]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0009 FLAG=0xA0 OP_121 A=1 B=1 C='retrieveProxy'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0010 FLAG=0x92 OP_137 A=3 B='global' C=None
+    --     R[A]=ENV[B]
+    -- PC 0011 FLAG=0xA0 OP_049 A=3 B=3 C='ProxyTable' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0012 FLAG=0x60 OP_053 A=3 B=3 C='PlayerInputProxy'
+    --     R[A]=R[B][C]
+    -- PC 0013 FLAG=0x40 OP_098 A=1 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0014 FLAG=0xC0 OP_342 A=1 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0015 FLAG=0x82 OP_140 A=0 B=17 C=None [jump-target=18]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0016 FLAG=0x80 OP_401 A=2 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0017 FLAG=0x80 OP_220 A=2 B=2 C=0
+    --     return U(T,A,B)
+    -- PC 0018 FLAG=0xA0 OP_329 A=2 B=1 C='SetTargetID' [linear-fusion-payloads=4]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0019 FLAG=0x40 OP_406 A=4 B=0 C=0 [linear-fusion-payloads=3]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0020 FLAG=0x12 OP_198 A=5 B='global' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0021 FLAG=0x60 OP_049 A=5 B=5 C='MMO' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0022 FLAG=0xE0 OP_375 A=5 B=5 C='SELETE_TARGET_TYPE_FIND'
+    --     R[A]=R[B][C]
+    -- PC 0023 FLAG=0x00 OP_187 A=2 B=5 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0024 FLAG=0x00 OP_338 A=2 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0025 FLAG=0x40 OP_220 A=2 B=2 C=0
+    --     return U(T,A,B)
+    -- PC 0026 FLAG=0x40 OP_055 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/37 | 候选函数名: DestroyUI | 指令数: 51 | 子原型: 0 | vararg: 0 | bytes: 24573:25251
+function DestroyUI(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'STORAGE_PER_PAGE_MAX'
+    -- K[1] = 'GetOpenSize'
+    -- K[2] = 'NPC_STORAGE_MAX_PAGE'
+    -- K[3] = '仓库代理未初始化'
+    -- K[4] = 'GetMaxPage'
+    -- K[5] = 0.0
+    -- K[6] = 'GUIDefine'
+    -- K[7] = 'NPCStorageProxy'
+    -- K[8] = 1.0
+    -- K[9] = 'global'
+    -- K[10] = 'GetStorageDataByPage'
+    -- K[11] = 'MMO'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xD2 OP_137 A=0 B='NPCStorageProxy' C=None
+    --     R[A]=ENV[B]
+    -- PC 0002 FLAG=0x80 OP_342 A=0 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0003 FLAG=0x42 OP_140 A=0 B=8 C=None [jump-target=9]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0004 FLAG=0xC0 OP_130 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0005 FLAG=0x12 OP_346 A=1 B='仓库代理未初始化' C=None
+    --     R[A]=B
+    -- PC 0006 FLAG=0x80 OP_187 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0007 FLAG=0x40 OP_125 A=0 B=0 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0008 FLAG=0xC0 OP_220 A=0 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0009 FLAG=0x92 OP_335 A=0 B='NPCStorageProxy' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0010 FLAG=0x20 OP_121 A=0 B=0 C='GetMaxPage'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0011 FLAG=0xC0 OP_068 A=0 B=1 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0012 FLAG=0x12 OP_101 A=1 B=1.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0013 FLAG=0x40 OP_288 A=2 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0014 FLAG=0x12 OP_371 A=3 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0015 FLAG=0x42 OP_292 A=1 B=47 C=None [jump-target=48]
+    --     R[A]=R[A]-R[A+2];Q=B
+    -- PC 0016 FLAG=0xD2 OP_300 A=5 B='NPCStorageProxy' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0017 FLAG=0x20 OP_121 A=5 B=5 C='GetStorageDataByPage'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0018 FLAG=0x40 OP_184 A=7 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0019 FLAG=0x40 OP_098 A=5 B=7 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0020 FLAG=0x80 OP_016 A=5 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0021 FLAG=0x82 OP_215 A=0 B=24 C=None [jump-target=25]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0022 FLAG=0x00 OP_115 A=6 B=5 C=0
+    --     R[A]=#R[B]
+    -- PC 0023 FLAG=0x00 OP_342 A=6 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0024 FLAG=0xC2 OP_140 A=0 B=25 C=None [jump-target=26]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0025 FLAG=0x12 OP_217 A=6 B=0.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0026 FLAG=0x52 OP_397 A=7 B='GUIDefine' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0027 FLAG=0xA0 OP_053 A=7 B=7 C='STORAGE_PER_PAGE_MAX'
+    --     R[A]=R[B][C]
+    -- PC 0028 FLAG=0xC0 OP_342 A=7 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0029 FLAG=0xC2 OP_255 A=0 B=32 C=None [jump-target=33]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0030 FLAG=0x52 OP_070 A=7 B='global' C=None [linear-fusion-payloads=4]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0031 FLAG=0xE0 OP_053 A=7 B=7 C='MMO'
+    --     R[A]=R[B][C]
+    -- PC 0032 FLAG=0x60 OP_064 A=7 B=7 C='NPC_STORAGE_MAX_PAGE' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0033 FLAG=0x12 OP_137 A=8 B='NPCStorageProxy' C=None
+    --     R[A]=ENV[B]
+    -- PC 0034 FLAG=0xE0 OP_121 A=8 B=8 C='GetOpenSize'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0035 FLAG=0x00 OP_098 A=8 B=9 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0036 FLAG=0x60 OP_347 A=9 B=4 C=1.0
+    --     R[A]=R[B]-C
+    -- PC 0037 FLAG=0x40 OP_263 A=9 B=9 C=7 [linear-fusion-payloads=1]
+    --     R[A]=R[B]*R[C];; -- fused: read next VM instruction;R[A]=R[B]-R[C]
+    -- PC 0038 FLAG=0x40 OP_340 A=8 B=8 C=9
+    --     R[A]=R[B]-R[C]
+    -- PC 0039 FLAG=0x00 OP_253 A=0 B=7 C=8
+    --     if (R[B]<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0040 FLAG=0xC2 OP_215 A=0 B=41 C=None [jump-target=42]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0041 FLAG=0xC0 OP_308 A=8 B=7 C=0
+    --     R[A]=R[B]
+    -- PC 0042 FLAG=0xD0 OP_364 A=0 B=0.0 C=8
+    --     if (B<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0043 FLAG=0xC2 OP_140 A=0 B=47 C=None [jump-target=48]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0044 FLAG=0x00 OP_340 A=9 B=8 C=6
+    --     R[A]=R[B]-R[C]
+    -- PC 0045 FLAG=0x10 OP_352 A=0 B=0.0 C=9
+    --     if (B<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0046 FLAG=0x02 OP_215 A=0 B=47 C=None [jump-target=48]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0047 FLAG=0x40 OP_220 A=4 B=4 C=0
+    --     return U(T,A,B)
+    -- PC 0048 FLAG=0x02 OP_412 A=1 B=15 C=None [loop-target=16]
+    --     do local I=A;local F=T[I+2];local U=T[I]+F;T[I]=U;local L=T[I+1];if (F>0 and U<=L) or (F<=0 and U>=L) then T[I+3]=U;Q=B end end
+    -- PC 0049 FLAG=0x40 OP_248 A=1 B=1 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0050 FLAG=0x00 OP_220 A=1 B=1 C=0
+    --     return U(T,A,B)
+    -- PC 0051 FLAG=0x80 OP_100 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/38 | 候选函数名: GetOwnerID | 指令数: 31 | 子原型: 0 | vararg: 0 | bytes: 25251:25655
+function GetOwnerID(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = ['unknown', 2]
+    -- K[1] = 'UnSchedule'
+    -- K[2] = 'isHidden'
+    -- K[3] = 'GUI'
+    -- K[4] = 'setVisible'
+    -- K[5] = 'SL'
+    -- K[6] = 'resWin'
+    -- K[7] = 'resTimer'
+    -- K[8] = 'Win_CloseAll'
+    -- K[9] = False
+    -- K[10] = 'pairs'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x00 OP_130 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0002 FLAG=0xB0 OP_156 A=0 B='isHidden' C=False
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0003 FLAG=0x00 OP_159 A=0 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0004 FLAG=0xE0 OP_053 A=0 B=0 C='resTimer'
+    --     R[A]=R[B][C]
+    -- PC 0005 FLAG=0x80 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0006 FLAG=0x42 OP_140 A=0 B=13 C=None [jump-target=14]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0007 FLAG=0x92 OP_335 A=0 B='SL' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0008 FLAG=0x20 OP_121 A=0 B=0 C='UnSchedule'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0009 FLAG=0x40 OP_130 A=2 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0010 FLAG=0x20 OP_363 A=2 B=2 C='resTimer'
+    --     R[A]=R[B][C]
+    -- PC 0011 FLAG=0x00 OP_358 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0012 FLAG=0x40 OP_130 A=0 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0013 FLAG=0xB0 OP_146 A=0 B='resTimer' C=['unknown', 2]
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0014 FLAG=0x40 OP_315 A=0 B=0 C=0 [linear-fusion-payloads=2]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B]
+    -- PC 0015 FLAG=0xB0 OP_146 A=0 B='resWin' C=['unknown', 2]
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0016 FLAG=0x52 OP_335 A=0 B='GUI' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0017 FLAG=0xA0 OP_033 A=0 B=0 C='Win_CloseAll'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0018 FLAG=0x00 OP_358 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0019 FLAG=0x52 OP_095 A=0 B='pairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0020 FLAG=0x40 OP_130 A=1 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0021 FLAG=0x80 OP_359 A=0 B=1 C=2
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0022 FLAG=0xC2 OP_140 A=0 B=28 C=None [jump-target=29]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0023 FLAG=0x12 OP_137 A=5 B='GUI' C=None
+    --     R[A]=ENV[B]
+    -- PC 0024 FLAG=0x60 OP_121 A=5 B=5 C='setVisible'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0025 FLAG=0x80 OP_028 A=7 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][R[C]]
+    -- PC 0026 FLAG=0x80 OP_304 A=7 B=7 C=3
+    --     R[A]=R[B][R[C]]
+    -- PC 0027 FLAG=0x80 OP_338 A=8 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0028 FLAG=0xC0 OP_187 A=5 B=8 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0029 FLAG=0x80 OP_386 A=0 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0030 FLAG=0x02 OP_215 A=0 B=22 C=None [jump-target=23]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0031 FLAG=0x80 OP_055 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/39 | 候选函数名: GetMainPlayerID | 指令数: 31 | 子原型: 0 | vararg: 2 | bytes: 25655:26010
+function GetMainPlayerID(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = -1.0
+    -- K[1] = 'tostring'
+    -- K[2] = 'GetOwnerID'
+    -- K[3] = 'type'
+    -- K[4] = ['unknown', 2]
+    -- K[5] = ''
+    -- K[6] = 'string'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0xA0 OP_121 A=2 B=0 C='GetOwnerID'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0002 FLAG=0x00 OP_098 A=2 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0003 FLAG=0xA0 OP_271 A=1 B=2 C=['unknown', 2]
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0x82 OP_215 A=0 B=8 C=None [jump-target=9]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0x60 OP_279 A=1 B=2 C=''
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0006 FLAG=0x82 OP_255 A=0 B=8 C=None [jump-target=9]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0007 FLAG=0xA0 OP_271 A=0 B=2 C=-1.0
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0008 FLAG=0x82 OP_255 A=0 B=11 C=None [jump-target=12]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0009 FLAG=0x00 OP_338 A=3 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0010 FLAG=0x80 OP_220 A=3 B=3 C=0
+    --     return U(T,A,B)
+    -- PC 0011 FLAG=0x42 OP_140 A=0 B=30 C=None [jump-target=31]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0012 FLAG=0xD2 OP_071 A=3 B='type' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0013 FLAG=0x80 OP_184 A=4 B=2 C=0
+    --     R[A]=R[B]
+    -- PC 0014 FLAG=0xC0 OP_098 A=3 B=4 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0015 FLAG=0xE0 OP_271 A=0 B=3 C='string'
+    --     if (R[B]==C)~=(A~=0) then Q=Q+1 end
+    -- PC 0016 FLAG=0x02 OP_255 A=0 B=25 C=None [jump-target=26]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0017 FLAG=0x52 OP_071 A=3 B='tostring' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0018 FLAG=0x00 OP_184 A=4 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0019 FLAG=0x00 OP_068 A=3 B=4 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0020 FLAG=0xC0 OP_099 A=0 B=2 C=3
+    --     if (R[B]==R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0021 FLAG=0x42 OP_215 A=0 B=22 C=None [jump-target=23]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0022 FLAG=0x80 OP_082 A=3 B=0 C=1
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0023 FLAG=0x80 OP_401 A=3 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0024 FLAG=0x40 OP_220 A=3 B=3 C=0
+    --     return U(T,A,B)
+    -- PC 0025 FLAG=0x82 OP_215 A=0 B=30 C=None [jump-target=31]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0026 FLAG=0xC0 OP_294 A=0 B=2 C=1
+    --     if (R[B]==R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0027 FLAG=0x82 OP_215 A=0 B=28 C=None [jump-target=29]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0028 FLAG=0xC0 OP_082 A=3 B=0 C=1
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0029 FLAG=0x40 OP_401 A=3 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0030 FLAG=0x80 OP_220 A=3 B=3 C=0
+    --     return U(T,A,B)
+    -- PC 0031 FLAG=0x80 OP_001 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/40 | 候选函数名: ShowHideAllButtons | 指令数: 6 | 子原型: 0 | vararg: 0 | bytes: 26010:26133
+function ShowHideAllButtons(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'gamePlayerController'
+    -- K[1] = 'GetMainPlayerID'
+    -- K[2] = 'global'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x52 OP_309 A=0 B='global' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0002 FLAG=0xE0 OP_270 A=0 B=0 C='gamePlayerController' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0003 FLAG=0x20 OP_033 A=0 B=0 C='GetMainPlayerID'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0004 FLAG=0x80 OP_098 A=0 B=1 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0xC0 OP_220 A=0 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0006 FLAG=0x80 OP_100 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/41 | 候选函数名: MoveItemToQuickUse | 指令数: 47 | 子原型: 0 | vararg: 0 | bytes: 26133:26669
+function MoveItemToQuickUse(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'GUI'
+    -- K[1] = 'pairs'
+    -- K[2] = 'setVisible'
+    -- K[3] = 'SL'
+    -- K[4] = 'hidebut'
+    -- K[5] = 'UnSchedule'
+    -- K[6] = ['unknown', 2]
+    -- K[7] = 'rewardTimer'
+    -- K[8] = 'cruiseTimer'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x40 OP_159 A=0 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0002 FLAG=0x20 OP_363 A=0 B=0 C='rewardTimer'
+    --     R[A]=R[B][C]
+    -- PC 0003 FLAG=0x80 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0xC2 OP_140 A=0 B=11 C=None [jump-target=12]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0xD2 OP_335 A=0 B='SL' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0006 FLAG=0xA0 OP_033 A=0 B=0 C='UnSchedule'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0007 FLAG=0xC0 OP_159 A=2 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0008 FLAG=0x60 OP_053 A=2 B=2 C='rewardTimer'
+    --     R[A]=R[B][C]
+    -- PC 0009 FLAG=0x40 OP_358 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0010 FLAG=0x80 OP_130 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0011 FLAG=0xB0 OP_146 A=0 B='rewardTimer' C=['unknown', 2]
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0012 FLAG=0x80 OP_159 A=0 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0013 FLAG=0x20 OP_053 A=0 B=0 C='cruiseTimer'
+    --     R[A]=R[B][C]
+    -- PC 0014 FLAG=0x00 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0015 FLAG=0x02 OP_255 A=0 B=22 C=None [jump-target=23]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0016 FLAG=0x92 OP_335 A=0 B='SL' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0017 FLAG=0xA0 OP_238 A=0 B=0 C='UnSchedule'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0018 FLAG=0x40 OP_159 A=2 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0019 FLAG=0xE0 OP_363 A=2 B=2 C='cruiseTimer'
+    --     R[A]=R[B][C]
+    -- PC 0020 FLAG=0xC0 OP_187 A=0 B=2 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0021 FLAG=0xC0 OP_315 A=0 B=0 C=0 [linear-fusion-payloads=2]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B]
+    -- PC 0022 FLAG=0x30 OP_301 A=0 B='cruiseTimer' C=['unknown', 2] [linear-fusion-payloads=1]
+    --     do local I=B;local F=C;R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B]
+    -- PC 0023 FLAG=0x92 OP_095 A=0 B='pairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=UP[B]
+    -- PC 0024 FLAG=0x80 OP_130 A=1 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0025 FLAG=0x80 OP_233 A=0 B=1 C=2
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0026 FLAG=0xC2 OP_215 A=0 B=32 C=None [jump-target=33]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0027 FLAG=0x12 OP_335 A=5 B='GUI' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0028 FLAG=0xE0 OP_121 A=5 B=5 C='setVisible'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0029 FLAG=0x00 OP_028 A=7 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][R[C]]
+    -- PC 0030 FLAG=0x40 OP_231 A=7 B=7 C=3
+    --     R[A]=R[B][R[C]]
+    -- PC 0031 FLAG=0x00 OP_401 A=8 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0032 FLAG=0xC0 OP_187 A=5 B=8 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0033 FLAG=0xC0 OP_117 A=0 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0034 FLAG=0x82 OP_215 A=0 B=26 C=None [jump-target=27]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0035 FLAG=0x80 OP_159 A=0 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0036 FLAG=0x60 OP_363 A=0 B=0 C='hidebut'
+    --     R[A]=R[B][C]
+    -- PC 0037 FLAG=0x40 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0038 FLAG=0x82 OP_140 A=0 B=46 C=None [jump-target=47]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0039 FLAG=0xD2 OP_137 A=0 B='GUI' C=None
+    --     R[A]=ENV[B]
+    -- PC 0040 FLAG=0x20 OP_121 A=0 B=0 C='setVisible'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0041 FLAG=0x80 OP_159 A=2 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0042 FLAG=0x60 OP_363 A=2 B=2 C='hidebut'
+    --     R[A]=R[B][C]
+    -- PC 0043 FLAG=0xC0 OP_401 A=3 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0044 FLAG=0x40 OP_187 A=0 B=3 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0045 FLAG=0x40 OP_089 A=0 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end
+    -- PC 0046 FLAG=0x70 OP_146 A=0 B='hidebut' C=['unknown', 2]
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0047 FLAG=0x80 OP_055 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/42 | 候选函数名: doInit_UI | 指令数: 133 | 子原型: 0 | vararg: 2 | bytes: 26669:28367
+function doInit_UI(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = '快捷栏移动: %d → %d'
+    -- K[1] = 'next'
+    -- K[2] = 'QuickUseProxy'
+    -- K[3] = 'SetQuickUsePosData'
+    -- K[4] = 'GetQuickUseData'
+    -- K[5] = 'GetQuickUseSize'
+    -- K[6] = 'DelItemData'
+    -- K[7] = '参数无效'
+    -- K[8] = '物品已在目标位置'
+    -- K[9] = 'addItemData'
+    -- K[10] = 'Bag'
+    -- K[11] = '物品不存在'
+    -- K[12] = 'Index'
+    -- K[13] = 'ProxyTable'
+    -- K[14] = 'retrieveProxy'
+    -- K[15] = 'Facade'
+    -- K[16] = '目标位置超出范围'
+    -- K[17] = 'string'
+    -- K[18] = '已从背包移动到快捷栏位置%d'
+    -- K[19] = 'format'
+    -- K[20] = 'GetItemDataByItemIndex'
+    -- K[21] = 'pairs'
+    -- K[22] = 'global'
+    -- K[23] = 'GetQucikUseDataByPos'
+    -- K[24] = '快捷栏交换: %d ↔ %d'
+    -- K[25] = 1.0
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x12 OP_179 A=2 B='global' C=None [linear-fusion-payloads=5]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0002 FLAG=0x60 OP_260 A=2 B=2 C='Facade' [linear-fusion-payloads=4]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0003 FLAG=0xE0 OP_121 A=2 B=2 C='retrieveProxy'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0004 FLAG=0xD2 OP_198 A=4 B='global' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0005 FLAG=0xA0 OP_375 A=4 B=4 C='ProxyTable'
+    --     R[A]=R[B][C]
+    -- PC 0006 FLAG=0x20 OP_053 A=4 B=4 C='QuickUseProxy'
+    --     R[A]=R[B][C]
+    -- PC 0007 FLAG=0x40 OP_098 A=2 B=4 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0008 FLAG=0x12 OP_179 A=3 B='global' C=None [linear-fusion-payloads=5]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0009 FLAG=0x60 OP_032 A=3 B=3 C='Facade'
+    --     R[A]=R[B][C]
+    -- PC 0010 FLAG=0xE0 OP_121 A=3 B=3 C='retrieveProxy'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0011 FLAG=0x52 OP_198 A=5 B='global' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0012 FLAG=0x60 OP_049 A=5 B=5 C='ProxyTable' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0013 FLAG=0xE0 OP_053 A=5 B=5 C='Bag'
+    --     R[A]=R[B][C]
+    -- PC 0014 FLAG=0xC0 OP_068 A=3 B=5 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0015 FLAG=0x40 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0016 FLAG=0x42 OP_255 A=0 B=18 C=None [jump-target=19]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0017 FLAG=0x00 OP_342 A=1 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0018 FLAG=0x82 OP_255 A=0 B=21 C=None [jump-target=22]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0019 FLAG=0xC0 OP_401 A=4 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0020 FLAG=0x52 OP_371 A=5 B='参数无效' C=None
+    --     R[A]=B
+    -- PC 0021 FLAG=0xC0 OP_220 A=4 B=5 C=0
+    --     return U(T,A,B)
+    -- PC 0022 FLAG=0xA0 OP_033 A=4 B=2 C='GetQuickUseSize'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0023 FLAG=0xC0 OP_098 A=4 B=5 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0024 FLAG=0x20 OP_043 A=1 B=1 C=1.0
+    --     if (R[B]<C)~=(A~=0) then Q=Q+1 end
+    -- PC 0025 FLAG=0x82 OP_140 A=0 B=27 C=None [jump-target=28]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0026 FLAG=0x00 OP_002 A=0 B=4 C=1
+    --     if (R[B]<R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0027 FLAG=0xC2 OP_215 A=0 B=30 C=None [jump-target=31]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0028 FLAG=0x40 OP_401 A=5 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0029 FLAG=0xD2 OP_346 A=6 B='目标位置超出范围' C=None
+    --     R[A]=B
+    -- PC 0030 FLAG=0xC0 OP_220 A=5 B=6 C=0
+    --     return U(T,A,B)
+    -- PC 0031 FLAG=0xE0 OP_121 A=5 B=2 C='GetQuickUseData'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0032 FLAG=0x40 OP_068 A=5 B=6 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0033 FLAG=0x92 OP_071 A=6 B='pairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0034 FLAG=0x80 OP_184 A=7 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0035 FLAG=0x00 OP_359 A=6 B=7 C=8
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0036 FLAG=0x42 OP_140 A=0 B=88 C=None [jump-target=89]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0037 FLAG=0x40 OP_016 A=10 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0038 FLAG=0xC2 OP_140 A=0 B=88 C=None [jump-target=89]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0039 FLAG=0x20 OP_032 A=11 B=10 C='Index'
+    --     R[A]=R[B][C]
+    -- PC 0040 FLAG=0x40 OP_294 A=0 B=11 C=0
+    --     if (R[B]==R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0041 FLAG=0xC2 OP_255 A=0 B=88 C=None [jump-target=89]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0042 FLAG=0x40 OP_099 A=0 B=9 C=1
+    --     if (R[B]==R[C])~=(A~=0) then Q=Q+1 end
+    -- PC 0043 FLAG=0x42 OP_140 A=0 B=46 C=None [jump-target=47]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0044 FLAG=0x80 OP_338 A=11 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0045 FLAG=0x52 OP_371 A=12 B='物品已在目标位置' C=None
+    --     R[A]=B
+    -- PC 0046 FLAG=0xC0 OP_220 A=11 B=12 C=0
+    --     return U(T,A,B)
+    -- PC 0047 FLAG=0xE0 OP_142 A=11 B=2 C='GetQucikUseDataByPos' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0048 FLAG=0x40 OP_184 A=13 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0049 FLAG=0xC0 OP_068 A=11 B=13 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0050 FLAG=0xE0 OP_121 A=12 B=2 C='SetQuickUsePosData'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0051 FLAG=0xC0 OP_078 A=14 B=9 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0052 FLAG=0x80 OP_308 A=15 B=10 C=0
+    --     R[A]=R[B]
+    -- PC 0053 FLAG=0x00 OP_011 A=16 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0054 FLAG=0x80 OP_358 A=12 B=16 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0055 FLAG=0xC0 OP_016 A=11 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0056 FLAG=0x82 OP_255 A=0 B=75 C=None [jump-target=76]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0057 FLAG=0xA0 OP_136 A=12 B=2 C='SetQuickUsePosData' [linear-fusion-payloads=2]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0058 FLAG=0x00 OP_078 A=14 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0059 FLAG=0xC0 OP_308 A=15 B=10 C=0
+    --     R[A]=R[B]
+    -- PC 0060 FLAG=0x40 OP_011 A=16 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0061 FLAG=0x00 OP_358 A=12 B=16 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0062 FLAG=0x20 OP_136 A=12 B=2 C='SetQuickUsePosData' [linear-fusion-payloads=2]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0063 FLAG=0x80 OP_078 A=14 B=9 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0064 FLAG=0x80 OP_308 A=15 B=11 C=0
+    --     R[A]=R[B]
+    -- PC 0065 FLAG=0x40 OP_011 A=16 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0066 FLAG=0x80 OP_358 A=12 B=16 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0067 FLAG=0x00 OP_401 A=12 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0068 FLAG=0x52 OP_110 A=13 B='string' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0069 FLAG=0x20 OP_363 A=13 B=13 C='format'
+    --     R[A]=R[B][C]
+    -- PC 0070 FLAG=0x12 OP_059 A=14 B='快捷栏交换: %d ↔ %d' C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0071 FLAG=0xC0 OP_184 A=15 B=9 C=0
+    --     R[A]=R[B]
+    -- PC 0072 FLAG=0x40 OP_184 A=16 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0073 FLAG=0x00 OP_252 A=13 B=16 C=0
+    --     do local I,F=E(R[A](U(T,A+1,B)));B=F+A-1;local U=0;for L=A,B do U=U+1;T[L]=I[U] end end
+    -- PC 0074 FLAG=0x80 OP_143 A=12 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0075 FLAG=0x02 OP_140 A=0 B=88 C=None [jump-target=89]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0076 FLAG=0xA0 OP_136 A=12 B=2 C='SetQuickUsePosData' [linear-fusion-payloads=2]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0077 FLAG=0x00 OP_078 A=14 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0078 FLAG=0x00 OP_308 A=15 B=10 C=0
+    --     R[A]=R[B]
+    -- PC 0079 FLAG=0x80 OP_338 A=16 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0080 FLAG=0x80 OP_358 A=12 B=16 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0081 FLAG=0x40 OP_011 A=12 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0082 FLAG=0x92 OP_137 A=13 B='string' C=None
+    --     R[A]=ENV[B]
+    -- PC 0083 FLAG=0x20 OP_053 A=13 B=13 C='format'
+    --     R[A]=R[B][C]
+    -- PC 0084 FLAG=0x12 OP_346 A=14 B='快捷栏移动: %d → %d' C=None
+    --     R[A]=B
+    -- PC 0085 FLAG=0x00 OP_078 A=15 B=9 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0086 FLAG=0xC0 OP_308 A=16 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0087 FLAG=0xC0 OP_392 A=13 B=16 C=0
+    --     do local I,F=E(R[A](U(T,A+1,B)));B=F+A-1;local U=0;for L=A,B do U=U+1;T[L]=I[U] end end
+    -- PC 0088 FLAG=0xC0 OP_143 A=12 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0089 FLAG=0x80 OP_117 A=6 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0090 FLAG=0xC2 OP_140 A=0 B=36 C=None [jump-target=37]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0091 FLAG=0x20 OP_142 A=6 B=3 C='GetItemDataByItemIndex' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0092 FLAG=0x00 OP_184 A=8 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0093 FLAG=0x80 OP_068 A=6 B=8 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0094 FLAG=0x00 OP_016 A=6 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0095 FLAG=0xC2 OP_215 A=0 B=100 C=None [jump-target=101]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0096 FLAG=0x12 OP_071 A=7 B='next' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0097 FLAG=0x40 OP_184 A=8 B=6 C=0
+    --     R[A]=R[B]
+    -- PC 0098 FLAG=0x80 OP_098 A=7 B=8 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0099 FLAG=0xC0 OP_342 A=7 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0100 FLAG=0x42 OP_140 A=0 B=103 C=None [jump-target=104]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0101 FLAG=0x80 OP_011 A=7 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0102 FLAG=0x52 OP_371 A=8 B='物品不存在' C=None
+    --     R[A]=B
+    -- PC 0103 FLAG=0x80 OP_220 A=7 B=8 C=0
+    --     return U(T,A,B)
+    -- PC 0104 FLAG=0xA0 OP_142 A=7 B=2 C='GetQucikUseDataByPos' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0105 FLAG=0xC0 OP_184 A=9 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0106 FLAG=0xC0 OP_098 A=7 B=9 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0107 FLAG=0x80 OP_016 A=7 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0108 FLAG=0x82 OP_255 A=0 B=116 C=None [jump-target=117]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0109 FLAG=0xA0 OP_142 A=8 B=2 C='SetQuickUsePosData' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0110 FLAG=0x40 OP_184 A=10 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0111 FLAG=0xC0 OP_184 A=11 B=7 C=0
+    --     R[A]=R[B]
+    -- PC 0112 FLAG=0xC0 OP_338 A=12 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0113 FLAG=0x00 OP_187 A=8 B=12 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0114 FLAG=0x60 OP_033 A=8 B=3 C='addItemData'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0115 FLAG=0x00 OP_308 A=10 B=7 C=0
+    --     R[A]=R[B]
+    -- PC 0116 FLAG=0xC0 OP_187 A=8 B=10 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0117 FLAG=0x20 OP_270 A=8 B=6 C=1.0 [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0118 FLAG=0xE0 OP_238 A=9 B=3 C='DelItemData'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0119 FLAG=0xC0 OP_308 A=11 B=8 C=0
+    --     R[A]=R[B]
+    -- PC 0120 FLAG=0xC0 OP_358 A=9 B=11 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0121 FLAG=0x20 OP_136 A=9 B=2 C='SetQuickUsePosData' [linear-fusion-payloads=2]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0122 FLAG=0xC0 OP_078 A=11 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0123 FLAG=0x00 OP_308 A=12 B=8 C=0
+    --     R[A]=R[B]
+    -- PC 0124 FLAG=0x80 OP_401 A=13 B=0 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0125 FLAG=0x80 OP_187 A=9 B=13 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0126 FLAG=0xC0 OP_338 A=9 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0127 FLAG=0x52 OP_110 A=10 B='string' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0128 FLAG=0xE0 OP_363 A=10 B=10 C='format'
+    --     R[A]=R[B][C]
+    -- PC 0129 FLAG=0x12 OP_286 A=11 B='已从背包移动到快捷栏位置%d' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0130 FLAG=0x80 OP_308 A=12 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0131 FLAG=0x80 OP_392 A=10 B=12 C=0
+    --     do local I,F=E(R[A](U(T,A+1,B)));B=F+A-1;local U=0;for L=A,B do U=U+1;T[L]=I[U] end end
+    -- PC 0132 FLAG=0x40 OP_143 A=9 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0133 FLAG=0x40 OP_100 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: root/42/0, root/42/1, root/42/2, root/42/3, root/42/4, root/42/5, root/42/6, root/42/7, root/42/8, root/42/9, root/42/10, root/42/11, root/42/12, root/42/13, root/42/14, root/42/15, root/42/16, root/42/17, root/42/18, root/42/19, root/42/20, root/42/21, root/42/22
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/43 | 候选函数名: GetOwnerDescription | 指令数: 419 | 子原型: 23 | vararg: 0 | bytes: 28367:52718
+function GetOwnerDescription(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'addOnClickEvent'
+    -- K[1] = 'pcall'
+    -- K[2] = 'Button_setTitleFontSize'
+    -- K[3] = 'RequestStorageData'
+    -- K[4] = 'ScheduleOnce'
+    -- K[5] = 'takebut'
+    -- K[6] = 'res/public/kaiti2.ttf'
+    -- K[7] = '声望卷'
+    -- K[8] = 'SL'
+    -- K[9] = '%Y-%m-%d %H:%M:%S'
+    -- K[10] = 'Builtsetting'
+    -- K[11] = 'slot'
+    -- K[12] = '开拉怪'
+    -- K[13] = 18.0
+    -- K[14] = 'retrieveProxy'
+    -- K[15] = 'cruiseTimer'
+    -- K[16] = ['unknown', 2]
+    -- K[17] = 0.1
+    -- K[18] = 'toggle'
+    -- K[19] = '恶魔令牌'
+    -- K[20] = '灵符'
+    -- K[21] = 'MainProperty'
+    -- K[22] = '转生水晶'
+    -- K[23] = '绑定灵符'
+    -- K[24] = 'Button_Create'
+    -- K[25] = 'res/public/fuzhu_btn.png'
+    -- K[26] = 'MoneyProxy'
+    -- K[27] = 80.0
+    -- K[28] = 'Button_setTitleFontName'
+    -- K[29] = '绑定元宝'
+    -- K[30] = '快速小退'
+    -- K[31] = '随机传送石'
+    -- K[32] = '永久随机石'
+    -- K[33] = '免战回城石'
+    -- K[34] = 'GetMoneyCountById'
+    -- K[35] = '大陆传送石'
+    -- K[36] = 'rewardbut'
+    -- K[37] = '关黑名单'
+    -- K[38] = 'shiqubut'
+    -- K[39] = '关拉怪'
+    -- K[40] = 'clearblacklistbut'
+    -- K[41] = 'NPCStorageProxy'
+    -- K[42] = '插件初始化完成'
+    -- K[43] = 'getWorldPosition'
+    -- K[44] = 4.0
+    -- K[45] = 'time'
+    -- K[46] = 'width'
+    -- K[47] = '清距离值'
+    -- K[48] = '开拾取'
+    -- K[49] = '关丢物品'
+    -- K[50] = 1.0
+    -- K[51] = 'getContentSize'
+    -- K[52] = 'Button_setTitleText'
+    -- K[53] = 'storagebut'
+    -- K[54] = '血龙宝珠'
+    -- K[55] = 10.0
+    -- K[56] = 'UnSchedule'
+    -- K[57] = '资源统计'
+    -- K[58] = 'Panel_mini_chat'
+    -- K[59] = '盟重传送石'
+    -- K[60] = 'date'
+    -- K[61] = '_ui'
+    -- K[62] = 'GetMoneyIdByName'
+    -- K[63] = 2.0
+    -- K[64] = 'hidebut'
+    -- K[65] = 'xiaotuibut'
+    -- K[66] = 'os'
+    -- K[67] = '洗髓丹'
+    -- K[68] = '--'
+    -- K[69] = 'ProxyTable'
+    -- K[70] = 'Facade'
+    -- K[71] = 'initTimeStr'
+    -- K[72] = '隐 藏'
+    -- K[73] = 40.0
+    -- K[74] = 'cleardistancebut'
+    -- K[75] = '开黑名单'
+    -- K[76] = 'key'
+    -- K[77] = 'ipairs'
+    -- K[78] = 'blacklistbut'
+    -- K[79] = '关奖励'
+    -- K[80] = 'GUI'
+    -- K[81] = 'moneybut'
+    -- K[82] = 'diuqibut'
+    -- K[83] = 'clearmonsterbut'
+    -- K[84] = 'initTime'
+    -- K[85] = 'initSnapshot'
+    -- K[86] = 'Schedule'
+    -- K[87] = 'yinguaibut'
+    -- K[88] = 'name'
+    -- K[89] = '盟重回城石'
+    -- K[90] = 3.0
+    -- K[91] = '关拾取'
+    -- K[92] = 'names'
+    -- K[93] = 'x'
+    -- K[94] = 'Attach_UITop'
+    -- K[95] = '清黑名单'
+    -- K[96] = '元宝'
+    -- K[97] = '开奖励'
+    -- K[98] = '清怪物值'
+    -- K[99] = 'y'
+    -- K[100] = '永久回城石'
+    -- K[101] = 'global'
+    -- K[102] = '悟道茶'
+    -- K[103] = 0.0
+    -- K[104] = '开丢物品'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x40 OP_134 A=0 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0002 FLAG=0x52 OP_371 A=1 B='插件初始化完成' C=None
+    --     R[A]=B
+    -- PC 0003 FLAG=0x00 OP_187 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0004 FLAG=0x80 OP_090 A=0 B=4 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0005 FLAG=0x52 OP_226 A=1 B='元宝' C=None [linear-fusion-payloads=3]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0006 FLAG=0x12 OP_061 A=2 B='绑定元宝' C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0007 FLAG=0x52 OP_282 A=3 B='灵符' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0008 FLAG=0x92 OP_371 A=4 B='绑定灵符' C=None
+    --     R[A]=B
+    -- PC 0009 FLAG=0x00 OP_237 A=0 B=4 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0010 FLAG=0x80 OP_090 A=1 B=6 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0011 FLAG=0x52 OP_371 A=2 B='声望卷' C=None
+    --     R[A]=B
+    -- PC 0012 FLAG=0x92 OP_346 A=3 B='悟道茶' C=None
+    --     R[A]=B
+    -- PC 0013 FLAG=0x52 OP_346 A=4 B='洗髓丹' C=None
+    --     R[A]=B
+    -- PC 0014 FLAG=0x52 OP_061 A=5 B='转生水晶' C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0015 FLAG=0x92 OP_371 A=6 B='恶魔令牌' C=None
+    --     R[A]=B
+    -- PC 0016 FLAG=0x12 OP_346 A=7 B='血龙宝珠' C=None
+    --     R[A]=B
+    -- PC 0017 FLAG=0x00 OP_402 A=1 B=6 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0018 FLAG=0xC0 OP_027 A=2 B=0 C=0 [closure-child-index=0; captures=0; child-path=root/43/1]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0019 FLAG=0x40 OP_130 A=3 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0020 FLAG=0xB0 OP_146 A=3 B='initTime' C=0.0
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0021 FLAG=0x00 OP_130 A=3 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0022 FLAG=0x30 OP_301 A=3 B='initTimeStr' C='--' [linear-fusion-payloads=1]
+    --     do local I=B;local F=C;R[A][I]=F end;; -- fused: read next VM instruction;R[A]=ENV[B]
+    -- PC 0023 FLAG=0x92 OP_137 A=3 B='os' C=None
+    --     R[A]=ENV[B]
+    -- PC 0024 FLAG=0x40 OP_016 A=3 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0025 FLAG=0x82 OP_255 A=0 B=55 C=None [jump-target=56]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0026 FLAG=0x92 OP_397 A=3 B='os' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0027 FLAG=0xE0 OP_053 A=3 B=3 C='time'
+    --     R[A]=R[B][C]
+    -- PC 0028 FLAG=0x80 OP_016 A=3 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0029 FLAG=0x42 OP_255 A=0 B=55 C=None [jump-target=56]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0030 FLAG=0x12 OP_397 A=3 B='os' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0031 FLAG=0x60 OP_363 A=3 B=3 C='date'
+    --     R[A]=R[B][C]
+    -- PC 0032 FLAG=0x80 OP_016 A=3 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0033 FLAG=0x02 OP_140 A=0 B=55 C=None [jump-target=56]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0034 FLAG=0x92 OP_137 A=3 B='pcall' C=None
+    --     R[A]=ENV[B]
+    -- PC 0035 FLAG=0xD2 OP_397 A=4 B='os' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0036 FLAG=0xA0 OP_375 A=4 B=4 C='time'
+    --     R[A]=R[B][C]
+    -- PC 0037 FLAG=0xC0 OP_183 A=3 B=4 C=4
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0038 FLAG=0x00 OP_016 A=3 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0039 FLAG=0x02 OP_255 A=0 B=55 C=None [jump-target=56]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0040 FLAG=0x00 OP_016 A=4 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0041 FLAG=0x02 OP_255 A=0 B=55 C=None [jump-target=56]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0042 FLAG=0xC0 OP_130 A=5 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0043 FLAG=0x50 OP_268 A=5 B='initTime' C=4
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0044 FLAG=0x52 OP_137 A=5 B='pcall' C=None
+    --     R[A]=ENV[B]
+    -- PC 0045 FLAG=0xD2 OP_110 A=6 B='os' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0046 FLAG=0x20 OP_363 A=6 B=6 C='date'
+    --     R[A]=R[B][C]
+    -- PC 0047 FLAG=0xD2 OP_286 A=7 B='%Y-%m-%d %H:%M:%S' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0048 FLAG=0xC0 OP_184 A=8 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0049 FLAG=0x00 OP_359 A=5 B=8 C=6
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0050 FLAG=0x40 OP_016 A=5 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0051 FLAG=0x42 OP_215 A=0 B=55 C=None [jump-target=56]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0052 FLAG=0x80 OP_016 A=6 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0053 FLAG=0x42 OP_215 A=0 B=55 C=None [jump-target=56]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0054 FLAG=0x80 OP_130 A=7 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0055 FLAG=0xD0 OP_268 A=7 B='initTimeStr' C=6
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0056 FLAG=0x80 OP_130 A=3 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0057 FLAG=0x40 OP_105 A=4 B=0 C=0
+    --     R[A]={}
+    -- PC 0058 FLAG=0x90 OP_355 A=3 B='initSnapshot' C=4
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0059 FLAG=0x52 OP_179 A=3 B='global' C=None [linear-fusion-payloads=5]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0060 FLAG=0xE0 OP_260 A=3 B=3 C='Facade' [linear-fusion-payloads=4]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0061 FLAG=0x20 OP_201 A=3 B=3 C='retrieveProxy' [linear-fusion-payloads=3]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0062 FLAG=0xD2 OP_198 A=5 B='global' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0063 FLAG=0xA0 OP_049 A=5 B=5 C='ProxyTable' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0064 FLAG=0x60 OP_053 A=5 B=5 C='MoneyProxy'
+    --     R[A]=R[B][C]
+    -- PC 0065 FLAG=0x00 OP_068 A=3 B=5 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0066 FLAG=0x40 OP_016 A=3 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0067 FLAG=0x82 OP_215 A=0 B=87 C=None [jump-target=88]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0068 FLAG=0x12 OP_071 A=4 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0069 FLAG=0xC0 OP_184 A=5 B=0 C=0
+    --     R[A]=R[B]
+    -- PC 0070 FLAG=0x40 OP_359 A=4 B=5 C=6
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0071 FLAG=0xC2 OP_215 A=0 B=85 C=None [jump-target=86]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0072 FLAG=0xE0 OP_142 A=9 B=3 C='GetMoneyIdByName' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0073 FLAG=0x40 OP_308 A=11 B=8 C=0
+    --     R[A]=R[B]
+    -- PC 0074 FLAG=0x80 OP_098 A=9 B=11 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0075 FLAG=0x80 OP_016 A=9 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0076 FLAG=0x82 OP_255 A=0 B=85 C=None [jump-target=86]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0077 FLAG=0x80 OP_159 A=10 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0078 FLAG=0x60 OP_270 A=10 B=10 C='initSnapshot' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0079 FLAG=0xA0 OP_238 A=11 B=3 C='GetMoneyCountById'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0080 FLAG=0xC0 OP_308 A=13 B=9 C=0
+    --     R[A]=R[B]
+    -- PC 0081 FLAG=0x40 OP_098 A=11 B=13 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0082 FLAG=0xC0 OP_342 A=11 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0083 FLAG=0x82 OP_140 A=0 B=84 C=None [jump-target=85]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0084 FLAG=0x52 OP_346 A=11 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0085 FLAG=0x40 OP_327 A=10 B=8 C=11
+    --     do local I=R[B];local F=R[C];R[A][I]=F end
+    -- PC 0086 FLAG=0x00 OP_117 A=4 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0087 FLAG=0x02 OP_255 A=0 B=71 C=None [jump-target=72]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0088 FLAG=0x52 OP_071 A=4 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0089 FLAG=0xC0 OP_184 A=5 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0090 FLAG=0x00 OP_359 A=4 B=5 C=6
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0091 FLAG=0x42 OP_140 A=0 B=97 C=None [jump-target=98]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0092 FLAG=0x00 OP_159 A=9 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0093 FLAG=0xA0 OP_032 A=9 B=9 C='initSnapshot'
+    --     R[A]=R[B][C]
+    -- PC 0094 FLAG=0x80 OP_078 A=10 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0095 FLAG=0x00 OP_184 A=11 B=8 C=0
+    --     R[A]=R[B]
+    -- PC 0096 FLAG=0x40 OP_098 A=10 B=11 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0097 FLAG=0xC0 OP_327 A=9 B=8 C=10
+    --     do local I=R[B];local F=R[C];R[A][I]=F end
+    -- PC 0098 FLAG=0xC0 OP_386 A=4 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0099 FLAG=0x82 OP_255 A=0 B=91 C=None [jump-target=92]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0100 FLAG=0x92 OP_137 A=4 B='Builtsetting' C=None
+    --     R[A]=ENV[B]
+    -- PC 0101 FLAG=0xC0 OP_187 A=4 B=4 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0102 FLAG=0x00 OP_019 A=4 B=4 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]={}
+    -- PC 0103 FLAG=0x80 OP_105 A=5 B=0 C=2
+    --     R[A]={}
+    -- PC 0104 FLAG=0x70 OP_146 A=5 B='slot' C=1.0
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0105 FLAG=0x80 OP_090 A=6 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]=B
+    -- PC 0106 FLAG=0x92 OP_061 A=7 B='永久回城石' C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0107 FLAG=0xD2 OP_282 A=8 B='盟重回城石' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0108 FLAG=0x12 OP_346 A=9 B='盟重传送石' C=None
+    --     R[A]=B
+    -- PC 0109 FLAG=0x40 OP_237 A=6 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0110 FLAG=0x10 OP_355 A=5 B='names' C=6
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0111 FLAG=0x80 OP_410 A=6 B=0 C=2
+    --     R[A]={}
+    -- PC 0112 FLAG=0x70 OP_146 A=6 B='slot' C=2.0
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0113 FLAG=0x00 OP_120 A=7 B=2 C=0
+    --     R[A]={}
+    -- PC 0114 FLAG=0x92 OP_282 A=8 B='永久随机石' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0115 FLAG=0xD2 OP_371 A=9 B='随机传送石' C=None
+    --     R[A]=B
+    -- PC 0116 FLAG=0xC0 OP_402 A=7 B=2 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0117 FLAG=0x10 OP_355 A=6 B='names' C=7
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0118 FLAG=0xC0 OP_410 A=7 B=0 C=2
+    --     R[A]={}
+    -- PC 0119 FLAG=0x30 OP_156 A=7 B='slot' C=3.0
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0120 FLAG=0x40 OP_410 A=8 B=1 C=0
+    --     R[A]={}
+    -- PC 0121 FLAG=0x92 OP_346 A=9 B='大陆传送石' C=None
+    --     R[A]=B
+    -- PC 0122 FLAG=0x40 OP_153 A=8 B=1 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0123 FLAG=0x10 OP_268 A=7 B='names' C=8
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0124 FLAG=0x40 OP_120 A=8 B=0 C=2
+    --     R[A]={}
+    -- PC 0125 FLAG=0xB0 OP_156 A=8 B='slot' C=4.0
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0126 FLAG=0x40 OP_120 A=9 B=1 C=0
+    --     R[A]={}
+    -- PC 0127 FLAG=0x92 OP_371 A=10 B='免战回城石' C=None
+    --     R[A]=B
+    -- PC 0128 FLAG=0x80 OP_088 A=9 B=1 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0129 FLAG=0x50 OP_355 A=8 B='names' C=9
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0130 FLAG=0x40 OP_088 A=4 B=4 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0131 FLAG=0xD2 OP_071 A=5 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0132 FLAG=0x00 OP_184 A=6 B=4 C=0
+    --     R[A]=R[B]
+    -- PC 0133 FLAG=0xC0 OP_233 A=5 B=6 C=7
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0134 FLAG=0x02 OP_140 A=0 B=142 C=None [jump-target=143]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0135 FLAG=0x92 OP_335 A=10 B='SL' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0136 FLAG=0xA0 OP_121 A=10 B=10 C='ScheduleOnce'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0137 FLAG=0x40 OP_154 A=12 B=16 C=2 [linear-fusion-payloads=2, closure-child-index=16; captures=2; child-path=root/43/17]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0138 FLAG=0xC0 OP_387 A=0 B=9 C=0
+    --     R[A]=R[B]
+    -- PC 0139 FLAG=0x00 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0140 FLAG=0xE0 OP_024 A=13 B=8 C=0.1
+    --     R[A]=R[B]*C
+    -- PC 0141 FLAG=0x00 OP_187 A=10 B=13 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0142 FLAG=0x80 OP_262 A=8 B=0 C=0
+    --     do local I=A;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end
+    -- PC 0143 FLAG=0x40 OP_339 A=5 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0144 FLAG=0x82 OP_140 A=0 B=134 C=None [jump-target=135]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0145 FLAG=0xC0 OP_234 A=5 B=5 C=0
+    --     for I=A,B do T[I]=nil end
+    -- PC 0146 FLAG=0xC0 OP_159 A=6 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0147 FLAG=0xE0 OP_363 A=6 B=6 C='cruiseTimer'
+    --     R[A]=R[B][C]
+    -- PC 0148 FLAG=0x40 OP_016 A=6 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0149 FLAG=0x02 OP_140 A=0 B=156 C=None [jump-target=157]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0150 FLAG=0x52 OP_335 A=6 B='SL' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0151 FLAG=0xA0 OP_238 A=6 B=6 C='UnSchedule'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0152 FLAG=0x00 OP_130 A=8 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0153 FLAG=0xE0 OP_363 A=8 B=8 C='cruiseTimer'
+    --     R[A]=R[B][C]
+    -- PC 0154 FLAG=0x80 OP_358 A=6 B=8 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0155 FLAG=0x80 OP_089 A=6 B=2 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;do local I=B;local F=C;R[A][I]=F end
+    -- PC 0156 FLAG=0xB0 OP_146 A=6 B='cruiseTimer' C=['unknown', 2]
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0157 FLAG=0x80 OP_130 A=6 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0158 FLAG=0x12 OP_335 A=7 B='SL' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0159 FLAG=0x20 OP_121 A=7 B=7 C='Schedule'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0160 FLAG=0x40 OP_027 A=9 B=12 C=3 [linear-fusion-payloads=3, closure-child-index=12; captures=3; child-path=root/43/13]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0161 FLAG=0xC0 OP_387 A=0 B=5 C=0
+    --     R[A]=R[B]
+    -- PC 0162 FLAG=0x00 OP_325 A=0 B=3 C=0
+    --     R[A]=UP[B]
+    -- PC 0163 FLAG=0x80 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0164 FLAG=0x12 OP_346 A=10 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0165 FLAG=0x80 OP_098 A=7 B=10 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0166 FLAG=0x50 OP_268 A=6 B='cruiseTimer' C=7
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0167 FLAG=0x52 OP_309 A=6 B='global' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0168 FLAG=0x20 OP_260 A=6 B=6 C='Facade' [linear-fusion-payloads=4]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0169 FLAG=0x20 OP_201 A=6 B=6 C='retrieveProxy' [linear-fusion-payloads=3]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0170 FLAG=0x52 OP_137 A=8 B='global' C=None
+    --     R[A]=ENV[B]
+    -- PC 0171 FLAG=0x60 OP_049 A=8 B=8 C='ProxyTable' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0172 FLAG=0xA0 OP_053 A=8 B=8 C='NPCStorageProxy'
+    --     R[A]=R[B][C]
+    -- PC 0173 FLAG=0xC0 OP_098 A=6 B=8 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0174 FLAG=0x12 OP_182 A=6 B='NPCStorageProxy' C=None
+    --     ENV[B]=R[A]
+    -- PC 0175 FLAG=0x12 OP_137 A=6 B='NPCStorageProxy' C=None
+    --     R[A]=ENV[B]
+    -- PC 0176 FLAG=0x80 OP_016 A=6 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0177 FLAG=0x02 OP_255 A=0 B=180 C=None [jump-target=181]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0178 FLAG=0x12 OP_335 A=6 B='NPCStorageProxy' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0179 FLAG=0xE0 OP_033 A=6 B=6 C='RequestStorageData'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0180 FLAG=0xC0 OP_358 A=6 B=7 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0181 FLAG=0x12 OP_335 A=6 B='GUI' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0182 FLAG=0xE0 OP_033 A=6 B=6 C='Attach_UITop'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0183 FLAG=0x00 OP_068 A=6 B=7 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0184 FLAG=0x12 OP_137 A=7 B='MainProperty' C=None
+    --     R[A]=ENV[B]
+    -- PC 0185 FLAG=0x20 OP_049 A=7 B=7 C='_ui' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0186 FLAG=0x20 OP_270 A=7 B=7 C='Panel_mini_chat' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0187 FLAG=0x60 OP_121 A=8 B=7 C='getWorldPosition'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0188 FLAG=0x80 OP_098 A=8 B=9 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0189 FLAG=0xE0 OP_238 A=9 B=7 C='getContentSize'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0190 FLAG=0x00 OP_098 A=9 B=10 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0191 FLAG=0x20 OP_049 A=10 B=8 C='x' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0192 FLAG=0xA0 OP_375 A=11 B=9 C='width'
+    --     R[A]=R[B][C]
+    -- PC 0193 FLAG=0x00 OP_189 A=10 B=10 C=11
+    --     R[A]=R[B]+R[C]
+    -- PC 0194 FLAG=0xE0 OP_363 A=11 B=8 C='y'
+    --     R[A]=R[B][C]
+    -- PC 0195 FLAG=0x40 OP_019 A=12 B=4 C=0 [linear-fusion-payloads=1]
+    --     R[A]={};; -- fused: read next VM instruction;R[A]={}
+    -- PC 0196 FLAG=0xC0 OP_410 A=13 B=0 C=3
+    --     R[A]={}
+    -- PC 0197 FLAG=0xB0 OP_156 A=13 B='key' C='yinguaibut'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0198 FLAG=0xB0 OP_146 A=13 B='name' C='开拉怪'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0199 FLAG=0xF0 OP_146 A=13 B='toggle' C='关拉怪'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0200 FLAG=0xC0 OP_120 A=14 B=0 C=3
+    --     R[A]={}
+    -- PC 0201 FLAG=0xF0 OP_156 A=14 B='key' C='blacklistbut'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0202 FLAG=0x30 OP_156 A=14 B='name' C='开黑名单'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0203 FLAG=0xF0 OP_146 A=14 B='toggle' C='关黑名单'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0204 FLAG=0x80 OP_410 A=15 B=0 C=2
+    --     R[A]={}
+    -- PC 0205 FLAG=0x70 OP_156 A=15 B='key' C='clearblacklistbut'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0206 FLAG=0xF0 OP_146 A=15 B='name' C='清黑名单'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0207 FLAG=0x40 OP_105 A=16 B=0 C=2
+    --     R[A]={}
+    -- PC 0208 FLAG=0x70 OP_146 A=16 B='key' C='moneybut'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0209 FLAG=0xF0 OP_146 A=16 B='name' C='资源统计'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0210 FLAG=0x80 OP_153 A=12 B=4 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0211 FLAG=0x40 OP_105 A=13 B=3 C=0
+    --     R[A]={}
+    -- PC 0212 FLAG=0x00 OP_120 A=14 B=0 C=3
+    --     R[A]={}
+    -- PC 0213 FLAG=0x30 OP_156 A=14 B='key' C='shiqubut'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0214 FLAG=0x70 OP_146 A=14 B='name' C='开拾取'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0215 FLAG=0xF0 OP_146 A=14 B='toggle' C='关拾取'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0216 FLAG=0x00 OP_105 A=15 B=0 C=3
+    --     R[A]={}
+    -- PC 0217 FLAG=0x30 OP_156 A=15 B='key' C='diuqibut'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0218 FLAG=0x70 OP_156 A=15 B='name' C='开丢物品'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0219 FLAG=0x30 OP_146 A=15 B='toggle' C='关丢物品'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0220 FLAG=0x00 OP_410 A=16 B=0 C=2
+    --     R[A]={}
+    -- PC 0221 FLAG=0x30 OP_156 A=16 B='key' C='xiaotuibut'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0222 FLAG=0x30 OP_156 A=16 B='name' C='快速小退'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0223 FLAG=0x40 OP_088 A=13 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0224 FLAG=0x40 OP_410 A=14 B=3 C=0
+    --     R[A]={}
+    -- PC 0225 FLAG=0xC0 OP_105 A=15 B=0 C=2
+    --     R[A]={}
+    -- PC 0226 FLAG=0x70 OP_146 A=15 B='key' C='clearmonsterbut'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0227 FLAG=0x70 OP_156 A=15 B='name' C='清怪物值'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0228 FLAG=0x80 OP_105 A=16 B=0 C=2
+    --     R[A]={}
+    -- PC 0229 FLAG=0x70 OP_146 A=16 B='key' C='cleardistancebut'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0230 FLAG=0x30 OP_156 A=16 B='name' C='清距离值'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0231 FLAG=0x40 OP_105 A=17 B=0 C=3
+    --     R[A]={}
+    -- PC 0232 FLAG=0xB0 OP_146 A=17 B='key' C='rewardbut'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0233 FLAG=0x30 OP_146 A=17 B='name' C='开奖励'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0234 FLAG=0x30 OP_156 A=17 B='toggle' C='关奖励'
+    --     do local I=B;local F=C;R[A][I]=F end
+    -- PC 0235 FLAG=0x40 OP_088 A=14 B=3 C=1
+    --     do local I=B;if I==0 then I=math.max(0,B-A) end;local F=R[A];local L=(C-1)*50;if L==0 then local N={};for O=1,I do N[O]=T[A+O] end;local O={U(N,1,I)};for K,Z in pairs(F) do if type(K)~="number" or K<1 or K%1~=0 or K>I then O[K]=Z end end;R[A]=O else for O=1,I do F[L+O]=T[A+O] end end;end
+    -- PC 0236 FLAG=0x00 OP_027 A=15 B=5 C=2 [linear-fusion-payloads=2, closure-child-index=5; captures=2; child-path=root/43/6]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0237 FLAG=0x80 OP_387 A=0 B=12 C=0
+    --     R[A]=R[B]
+    -- PC 0238 FLAG=0xC0 OP_325 A=0 B=4 C=0
+    --     R[A]=UP[B]
+    -- PC 0239 FLAG=0xC0 OP_154 A=16 B=17 C=5 [linear-fusion-payloads=5, closure-child-index=17; captures=5; child-path=root/43/18]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0240 FLAG=0xC0 OP_325 A=0 B=5 C=0
+    --     R[A]=UP[B]
+    -- PC 0241 FLAG=0x00 OP_325 A=0 B=6 C=0
+    --     R[A]=UP[B]
+    -- PC 0242 FLAG=0x80 OP_325 A=0 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0243 FLAG=0x80 OP_325 A=0 B=7 C=0
+    --     R[A]=UP[B]
+    -- PC 0244 FLAG=0x40 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0245 FLAG=0x80 OP_154 A=17 B=7 C=2 [linear-fusion-payloads=2, closure-child-index=7; captures=2; child-path=root/43/8]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0246 FLAG=0x00 OP_325 A=0 B=8 C=0
+    --     R[A]=UP[B]
+    -- PC 0247 FLAG=0x40 OP_325 A=0 B=9 C=0
+    --     R[A]=UP[B]
+    -- PC 0248 FLAG=0x80 OP_154 A=18 B=22 C=1 [linear-fusion-payloads=1, closure-child-index=22; captures=1; child-path=root/43/23]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0249 FLAG=0x40 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0250 FLAG=0xC0 OP_027 A=19 B=11 C=8 [linear-fusion-payloads=8, closure-child-index=11; captures=8; child-path=root/43/12]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0251 FLAG=0xC0 OP_387 A=0 B=18 C=0
+    --     R[A]=R[B]
+    -- PC 0252 FLAG=0xC0 OP_325 A=0 B=10 C=0
+    --     R[A]=UP[B]
+    -- PC 0253 FLAG=0x80 OP_325 A=0 B=11 C=0
+    --     R[A]=UP[B]
+    -- PC 0254 FLAG=0x00 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0255 FLAG=0xC0 OP_325 A=0 B=12 C=0
+    --     R[A]=UP[B]
+    -- PC 0256 FLAG=0x40 OP_325 A=0 B=13 C=0
+    --     R[A]=UP[B]
+    -- PC 0257 FLAG=0x80 OP_387 A=0 B=16 C=0
+    --     R[A]=R[B]
+    -- PC 0258 FLAG=0x80 OP_387 A=0 B=15 C=0
+    --     R[A]=R[B]
+    -- PC 0259 FLAG=0xC0 OP_027 A=20 B=14 C=8 [linear-fusion-payloads=8, closure-child-index=14; captures=8; child-path=root/43/15]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0260 FLAG=0x00 OP_387 A=0 B=18 C=0
+    --     R[A]=R[B]
+    -- PC 0261 FLAG=0x00 OP_325 A=0 B=14 C=0
+    --     R[A]=UP[B]
+    -- PC 0262 FLAG=0x80 OP_325 A=0 B=11 C=0
+    --     R[A]=UP[B]
+    -- PC 0263 FLAG=0x80 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0264 FLAG=0x80 OP_325 A=0 B=12 C=0
+    --     R[A]=UP[B]
+    -- PC 0265 FLAG=0x80 OP_325 A=0 B=15 C=0
+    --     R[A]=UP[B]
+    -- PC 0266 FLAG=0xC0 OP_387 A=0 B=17 C=0
+    --     R[A]=R[B]
+    -- PC 0267 FLAG=0x00 OP_387 A=0 B=15 C=0
+    --     R[A]=R[B]
+    -- PC 0268 FLAG=0x80 OP_120 A=21 B=0 C=12
+    --     R[A]={}
+    -- PC 0269 FLAG=0x00 OP_154 A=22 B=6 C=6 [linear-fusion-payloads=6, closure-child-index=6; captures=6; child-path=root/43/7]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0270 FLAG=0x80 OP_325 A=0 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0271 FLAG=0x40 OP_325 A=0 B=11 C=0
+    --     R[A]=UP[B]
+    -- PC 0272 FLAG=0x80 OP_325 A=0 B=9 C=0
+    --     R[A]=UP[B]
+    -- PC 0273 FLAG=0xC0 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0274 FLAG=0x40 OP_387 A=0 B=20 C=0
+    --     R[A]=R[B]
+    -- PC 0275 FLAG=0x40 OP_387 A=0 B=17 C=0
+    --     R[A]=R[B]
+    -- PC 0276 FLAG=0x90 OP_268 A=21 B='yinguaibut' C=22
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0277 FLAG=0x40 OP_154 A=22 B=2 C=4 [linear-fusion-payloads=4, closure-child-index=2; captures=4; child-path=root/43/3]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0278 FLAG=0x40 OP_325 A=0 B=16 C=0
+    --     R[A]=UP[B]
+    -- PC 0279 FLAG=0x40 OP_325 A=0 B=15 C=0
+    --     R[A]=UP[B]
+    -- PC 0280 FLAG=0xC0 OP_325 A=0 B=11 C=0
+    --     R[A]=UP[B]
+    -- PC 0281 FLAG=0x80 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0282 FLAG=0x50 OP_268 A=21 B='clearmonsterbut' C=22
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0283 FLAG=0xC0 OP_027 A=22 B=20 C=4 [linear-fusion-payloads=4, closure-child-index=20; captures=4; child-path=root/43/21]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0284 FLAG=0x40 OP_325 A=0 B=16 C=0
+    --     R[A]=UP[B]
+    -- PC 0285 FLAG=0x40 OP_325 A=0 B=13 C=0
+    --     R[A]=UP[B]
+    -- PC 0286 FLAG=0x80 OP_325 A=0 B=11 C=0
+    --     R[A]=UP[B]
+    -- PC 0287 FLAG=0xC0 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0288 FLAG=0x10 OP_268 A=21 B='cleardistancebut' C=22
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0289 FLAG=0x00 OP_027 A=22 B=1 C=5 [linear-fusion-payloads=5, closure-child-index=1; captures=5; child-path=root/43/2]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0290 FLAG=0x40 OP_325 A=0 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0291 FLAG=0x40 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0292 FLAG=0x80 OP_325 A=0 B=17 C=0
+    --     R[A]=UP[B]
+    -- PC 0293 FLAG=0x40 OP_325 A=0 B=18 C=0
+    --     R[A]=UP[B]
+    -- PC 0294 FLAG=0x40 OP_325 A=0 B=19 C=0
+    --     R[A]=UP[B]
+    -- PC 0295 FLAG=0x10 OP_355 A=21 B='rewardbut' C=22
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0296 FLAG=0x00 OP_027 A=22 B=13 C=1 [linear-fusion-payloads=1, closure-child-index=13; captures=1; child-path=root/43/14]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0297 FLAG=0x00 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0298 FLAG=0xD0 OP_268 A=21 B='clearblacklistbut' C=22
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0299 FLAG=0x80 OP_027 A=22 B=18 C=6 [linear-fusion-payloads=6, closure-child-index=18; captures=6; child-path=root/43/19]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0300 FLAG=0x40 OP_325 A=0 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0301 FLAG=0x80 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0302 FLAG=0x80 OP_325 A=0 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0303 FLAG=0x40 OP_325 A=0 B=6 C=0
+    --     R[A]=UP[B]
+    -- PC 0304 FLAG=0xC0 OP_387 A=0 B=19 C=0
+    --     R[A]=R[B]
+    -- PC 0305 FLAG=0x40 OP_387 A=0 B=16 C=0
+    --     R[A]=R[B]
+    -- PC 0306 FLAG=0xD0 OP_268 A=21 B='blacklistbut' C=22
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0307 FLAG=0x00 OP_027 A=22 B=8 C=4 [linear-fusion-payloads=4, closure-child-index=8; captures=4; child-path=root/43/9]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0308 FLAG=0x80 OP_325 A=0 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0309 FLAG=0x00 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0310 FLAG=0x80 OP_325 A=0 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0311 FLAG=0x40 OP_325 A=0 B=7 C=0
+    --     R[A]=UP[B]
+    -- PC 0312 FLAG=0x50 OP_355 A=21 B='storagebut' C=22
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0313 FLAG=0xC0 OP_027 A=22 B=19 C=4 [linear-fusion-payloads=4, closure-child-index=19; captures=4; child-path=root/43/20]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0314 FLAG=0x40 OP_325 A=0 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0315 FLAG=0x40 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0316 FLAG=0x40 OP_325 A=0 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0317 FLAG=0x80 OP_325 A=0 B=7 C=0
+    --     R[A]=UP[B]
+    -- PC 0318 FLAG=0xD0 OP_268 A=21 B='takebut' C=22
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0319 FLAG=0xC0 OP_154 A=22 B=10 C=3 [linear-fusion-payloads=3, closure-child-index=10; captures=3; child-path=root/43/11]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0320 FLAG=0x00 OP_325 A=0 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0321 FLAG=0x80 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0322 FLAG=0x80 OP_325 A=0 B=7 C=0
+    --     R[A]=UP[B]
+    -- PC 0323 FLAG=0x50 OP_268 A=21 B='shiqubut' C=22
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0324 FLAG=0xC0 OP_027 A=22 B=21 C=4 [linear-fusion-payloads=4, closure-child-index=21; captures=4; child-path=root/43/22]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0325 FLAG=0xC0 OP_325 A=0 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0326 FLAG=0x00 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0327 FLAG=0xC0 OP_325 A=0 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0328 FLAG=0x40 OP_325 A=0 B=7 C=0
+    --     R[A]=UP[B]
+    -- PC 0329 FLAG=0xD0 OP_355 A=21 B='diuqibut' C=22
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0330 FLAG=0xC0 OP_154 A=22 B=3 C=4 [linear-fusion-payloads=4, closure-child-index=3; captures=4; child-path=root/43/4]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0331 FLAG=0xC0 OP_325 A=0 B=3 C=0
+    --     R[A]=UP[B]
+    -- PC 0332 FLAG=0xC0 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0333 FLAG=0x40 OP_325 A=0 B=2 C=0
+    --     R[A]=UP[B]
+    -- PC 0334 FLAG=0xC0 OP_325 A=0 B=1 C=0
+    --     R[A]=UP[B]
+    -- PC 0335 FLAG=0xD0 OP_355 A=21 B='moneybut' C=22
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0336 FLAG=0x80 OP_154 A=22 B=4 C=0 [closure-child-index=4; captures=0; child-path=root/43/5]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0337 FLAG=0x90 OP_268 A=21 B='xiaotuibut' C=22
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0338 FLAG=0xA0 OP_347 A=22 B=10 C=10.0
+    --     R[A]=R[B]-C
+    -- PC 0339 FLAG=0xE0 OP_124 A=23 B=11 C=1.0
+    --     R[A]=R[B]+C
+    -- PC 0340 FLAG=0x80 OP_027 A=24 B=9 C=5 [linear-fusion-payloads=5, closure-child-index=9; captures=5; child-path=root/43/10]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0341 FLAG=0x00 OP_387 A=0 B=6 C=0
+    --     R[A]=R[B]
+    -- PC 0342 FLAG=0x00 OP_387 A=0 B=22 C=0
+    --     R[A]=R[B]
+    -- PC 0343 FLAG=0x00 OP_387 A=0 B=23 C=0
+    --     R[A]=R[B]
+    -- PC 0344 FLAG=0xC0 OP_325 A=0 B=4 C=0
+    --     R[A]=UP[B]
+    -- PC 0345 FLAG=0x80 OP_387 A=0 B=21 C=0
+    --     R[A]=R[B]
+    -- PC 0346 FLAG=0xD2 OP_071 A=25 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0347 FLAG=0x40 OP_184 A=26 B=12 C=0
+    --     R[A]=R[B]
+    -- PC 0348 FLAG=0x40 OP_183 A=25 B=26 C=27
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0349 FLAG=0x02 OP_215 A=0 B=354 C=None [jump-target=355]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0350 FLAG=0x40 OP_385 A=30 B=24 C=0 [linear-fusion-payloads=2]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0351 FLAG=0x40 OP_078 A=31 B=29 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0352 FLAG=0xC0 OP_288 A=32 B=28 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0353 FLAG=0x12 OP_346 A=33 B=40.0 C=None
+    --     R[A]=B
+    -- PC 0354 FLAG=0x00 OP_187 A=30 B=33 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0355 FLAG=0x80 OP_339 A=25 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0356 FLAG=0x42 OP_255 A=0 B=349 C=None [jump-target=350]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0357 FLAG=0x12 OP_071 A=25 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0358 FLAG=0xC0 OP_184 A=26 B=13 C=0
+    --     R[A]=R[B]
+    -- PC 0359 FLAG=0xC0 OP_183 A=25 B=26 C=27
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0360 FLAG=0xC2 OP_215 A=0 B=365 C=None [jump-target=366]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0361 FLAG=0xC0 OP_308 A=30 B=24 C=0
+    --     R[A]=R[B]
+    -- PC 0362 FLAG=0x00 OP_078 A=31 B=29 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0363 FLAG=0x80 OP_308 A=32 B=28 C=0
+    --     R[A]=R[B]
+    -- PC 0364 FLAG=0x92 OP_371 A=33 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0365 FLAG=0x40 OP_358 A=30 B=33 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0366 FLAG=0x40 OP_117 A=25 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0367 FLAG=0x02 OP_255 A=0 B=360 C=None [jump-target=361]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0368 FLAG=0x52 OP_071 A=25 B='ipairs' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0369 FLAG=0x00 OP_308 A=26 B=14 C=0
+    --     R[A]=R[B]
+    -- PC 0370 FLAG=0x00 OP_359 A=25 B=26 C=27
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0371 FLAG=0x02 OP_140 A=0 B=376 C=None [jump-target=377]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0372 FLAG=0x80 OP_184 A=30 B=24 C=0
+    --     R[A]=R[B]
+    -- PC 0373 FLAG=0xC0 OP_078 A=31 B=29 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0374 FLAG=0xC0 OP_288 A=32 B=28 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0375 FLAG=0x52 OP_371 A=33 B=80.0 C=None
+    --     R[A]=B
+    -- PC 0376 FLAG=0x80 OP_187 A=30 B=33 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0377 FLAG=0xC0 OP_386 A=25 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0378 FLAG=0xC2 OP_140 A=0 B=371 C=None [jump-target=372]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0379 FLAG=0x00 OP_130 A=25 B=3 C=0
+    --     R[A]=UP[B]
+    -- PC 0380 FLAG=0x12 OP_287 A=26 B='GUI' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0381 FLAG=0x20 OP_238 A=26 B=26 C='Button_Create'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0382 FLAG=0xC0 OP_323 A=28 B=6 C=0 [linear-fusion-payloads=2]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0383 FLAG=0xD2 OP_226 A=29 B='hidebut' C=None [linear-fusion-payloads=3]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0384 FLAG=0x52 OP_061 A=30 B=0.0 C=None [linear-fusion-payloads=2]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0385 FLAG=0xD2 OP_282 A=31 B=0.0 C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=B
+    -- PC 0386 FLAG=0x12 OP_371 A=32 B='res/public/fuzhu_btn.png' C=None
+    --     R[A]=B
+    -- PC 0387 FLAG=0x40 OP_068 A=26 B=32 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0388 FLAG=0x50 OP_268 A=25 B='hidebut' C=26
+    --     do local I=B;local F=R[C];R[A][I]=F end
+    -- PC 0389 FLAG=0x80 OP_159 A=25 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0390 FLAG=0x20 OP_375 A=25 B=25 C='hidebut'
+    --     R[A]=R[B][C]
+    -- PC 0391 FLAG=0x00 OP_016 A=25 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0392 FLAG=0xC2 OP_215 A=0 B=410 C=None [jump-target=411]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0393 FLAG=0xD2 OP_335 A=25 B='GUI' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0394 FLAG=0x60 OP_033 A=25 B=25 C='Button_setTitleText'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0395 FLAG=0x40 OP_159 A=27 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0396 FLAG=0x20 OP_363 A=27 B=27 C='hidebut'
+    --     R[A]=R[B][C]
+    -- PC 0397 FLAG=0x92 OP_346 A=28 B='隐 藏' C=None
+    --     R[A]=B
+    -- PC 0398 FLAG=0x80 OP_187 A=25 B=28 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0399 FLAG=0xD2 OP_335 A=25 B='GUI' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0400 FLAG=0x60 OP_033 A=25 B=25 C='Button_setTitleFontSize'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0401 FLAG=0x80 OP_159 A=27 B=3 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0402 FLAG=0xE0 OP_032 A=27 B=27 C='hidebut'
+    --     R[A]=R[B][C]
+    -- PC 0403 FLAG=0xD2 OP_371 A=28 B=18.0 C=None
+    --     R[A]=B
+    -- PC 0404 FLAG=0xC0 OP_358 A=25 B=28 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0405 FLAG=0x92 OP_137 A=25 B='GUI' C=None
+    --     R[A]=ENV[B]
+    -- PC 0406 FLAG=0x20 OP_033 A=25 B=25 C='Button_setTitleFontName'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0407 FLAG=0x00 OP_130 A=27 B=3 C=0
+    --     R[A]=UP[B]
+    -- PC 0408 FLAG=0x20 OP_363 A=27 B=27 C='hidebut'
+    --     R[A]=R[B][C]
+    -- PC 0409 FLAG=0xD2 OP_346 A=28 B='res/public/kaiti2.ttf' C=None
+    --     R[A]=B
+    -- PC 0410 FLAG=0xC0 OP_358 A=25 B=28 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0411 FLAG=0xD2 OP_335 A=25 B='GUI' C=None [linear-fusion-payloads=1]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0412 FLAG=0xA0 OP_238 A=25 B=25 C='addOnClickEvent'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0413 FLAG=0x00 OP_130 A=27 B=3 C=0
+    --     R[A]=UP[B]
+    -- PC 0414 FLAG=0x60 OP_032 A=27 B=27 C='hidebut'
+    --     R[A]=R[B][C]
+    -- PC 0415 FLAG=0x40 OP_154 A=28 B=15 C=2 [linear-fusion-payloads=2, closure-child-index=15; captures=2; child-path=root/43/16]
+    --     do local I=O[B];local F={};F[-1]=C;local U=K({}, {__index=function(_,L)local N=F[L];return N[1][N[2]] end,__newindex=function(_,L,N)local I=F[L];I[1][I[2]]=N end});for L=0,C-1 do Q=Q+1;local N=Y[Q];if N[1]==387 then F[L]={T,N[3]} else F[L]={D,N[3]} end;H[#H+1]=F end;R[A]=M(I,U,S) end
+    -- PC 0416 FLAG=0x00 OP_325 A=0 B=3 C=0
+    --     R[A]=UP[B]
+    -- PC 0417 FLAG=0x00 OP_325 A=0 B=0 C=0
+    --     R[A]=UP[B]
+    -- PC 0418 FLAG=0x80 OP_187 A=25 B=28 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0419 FLAG=0xC0 OP_250 A=0 B=0 C=0
+    --     return
+    --     CHILD PROTOTYPES:
+    --     child-index 0 => root/43/1 (records=46, constants=12)
+    --     child-index 1 => root/43/2 (records=33, constants=8)
+    --     child-index 2 => root/43/3 (records=21, constants=4)
+    --     child-index 3 => root/43/4 (records=320, constants=72)
+    --     child-index 4 => root/43/5 (records=5, constants=3)
+    --     child-index 5 => root/43/6 (records=41, constants=10)
+    --     child-index 6 => root/43/7 (records=31, constants=5)
+    --     child-index 7 => root/43/8 (records=17, constants=2)
+    --     child-index 8 => root/43/9 (records=29, constants=10)
+    --     child-index 9 => root/43/10 (records=50, constants=17)
+    --     child-index 10 => root/43/11 (records=25, constants=8)
+    --     child-index 11 => root/43/12 (records=12, constants=1)
+    --     child-index 12 => root/43/13 (records=43, constants=25)
+    --     child-index 13 => root/43/14 (records=6, constants=2)
+    --     child-index 14 => root/43/15 (records=12, constants=1)
+    --     child-index 15 => root/43/16 (records=30, constants=10)
+    --     child-index 16 => root/43/17 (records=26, constants=7)
+    --     child-index 17 => root/43/18 (records=28, constants=5)
+    --     child-index 18 => root/43/19 (records=39, constants=9)
+    --     child-index 19 => root/43/20 (records=29, constants=10)
+    --     child-index 20 => root/43/21 (records=21, constants=4)
+    --     child-index 21 => root/43/22 (records=29, constants=10)
+    --     child-index 22 => root/43/23 (records=8, constants=0)
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/43/1 | 候选函数名: Anonymous_root_43_1 | 指令数: 46 | 子原型: 0 | vararg: 1 | bytes: 33721:34285
+function Anonymous_root_43_1(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'find'
+    -- K[1] = 'Name'
+    -- K[2] = 'GetMetaValue'
+    -- K[3] = 1.0
+    -- K[4] = 'BAG_DATA'
+    -- K[5] = 'string'
+    -- K[6] = 'MakeIndex'
+    -- K[7] = 'ITEM_IS_BIND'
+    -- K[8] = 'SL'
+    -- K[9] = 'pairs'
+    -- K[10] = 'OverLap'
+    -- K[11] = 0.0
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x92 OP_380 A=1 B='SL' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0002 FLAG=0x20 OP_238 A=1 B=1 C='GetMetaValue'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0003 FLAG=0x92 OP_371 A=3 B='BAG_DATA' C=None
+    --     R[A]=B
+    -- PC 0004 FLAG=0x80 OP_098 A=1 B=3 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0xC0 OP_342 A=1 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0006 FLAG=0x82 OP_255 A=0 B=8 C=None [jump-target=9]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0007 FLAG=0xD2 OP_346 A=2 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0008 FLAG=0x00 OP_220 A=2 B=2 C=0
+    --     return U(T,A,B)
+    -- PC 0009 FLAG=0x12 OP_346 A=2 B=0.0 C=None
+    --     R[A]=B
+    -- PC 0010 FLAG=0xD2 OP_137 A=3 B='pairs' C=None
+    --     R[A]=ENV[B]
+    -- PC 0011 FLAG=0x80 OP_184 A=4 B=1 C=0
+    --     R[A]=R[B]
+    -- PC 0012 FLAG=0x80 OP_233 A=3 B=4 C=5
+    --     do local I={ R[A](U(T,A+1,B)) };local F=0;for U=A,C do F=F+1;T[U]=I[F] end end
+    -- PC 0013 FLAG=0x42 OP_215 A=0 B=42 C=None [jump-target=43]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0014 FLAG=0xC0 OP_016 A=7 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0015 FLAG=0x42 OP_255 A=0 B=42 C=None [jump-target=43]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0016 FLAG=0xE0 OP_363 A=8 B=7 C='Name'
+    --     R[A]=R[B][C]
+    -- PC 0017 FLAG=0x80 OP_016 A=8 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0018 FLAG=0x42 OP_140 A=0 B=42 C=None [jump-target=43]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0019 FLAG=0x20 OP_053 A=8 B=7 C='MakeIndex'
+    --     R[A]=R[B][C]
+    -- PC 0020 FLAG=0x00 OP_016 A=8 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0021 FLAG=0x42 OP_140 A=0 B=42 C=None [jump-target=43]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0022 FLAG=0x12 OP_296 A=8 B='string' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0023 FLAG=0x60 OP_389 A=8 B=8 C='find' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0024 FLAG=0x20 OP_176 A=9 B=7 C='Name' [linear-fusion-payloads=2]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0025 FLAG=0x40 OP_288 A=10 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=R[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0026 FLAG=0x52 OP_371 A=11 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0027 FLAG=0xC0 OP_401 A=12 B=1 C=0
+    --     R[A]=B~=0;if C~=0 then Q=Q+1 end
+    -- PC 0028 FLAG=0x00 OP_098 A=8 B=12 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0029 FLAG=0xC0 OP_016 A=8 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0030 FLAG=0x42 OP_140 A=0 B=42 C=None [jump-target=43]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0031 FLAG=0xD2 OP_191 A=8 B='SL' C=None [linear-fusion-payloads=3]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0032 FLAG=0x20 OP_186 A=8 B=8 C='GetMetaValue' [linear-fusion-payloads=2]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0033 FLAG=0xD2 OP_286 A=10 B='ITEM_IS_BIND' C=None [linear-fusion-payloads=1]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=R[B]
+    -- PC 0034 FLAG=0xC0 OP_184 A=11 B=7 C=0
+    --     R[A]=R[B]
+    -- PC 0035 FLAG=0x40 OP_098 A=8 B=11 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0036 FLAG=0x80 OP_342 A=8 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0037 FLAG=0x42 OP_140 A=0 B=42 C=None [jump-target=43]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0038 FLAG=0x20 OP_363 A=9 B=7 C='OverLap'
+    --     R[A]=R[B][C]
+    -- PC 0039 FLAG=0x40 OP_342 A=9 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0040 FLAG=0x82 OP_140 A=0 B=41 C=None [jump-target=42]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0041 FLAG=0xD2 OP_346 A=9 B=1.0 C=None
+    --     R[A]=B
+    -- PC 0042 FLAG=0x80 OP_189 A=2 B=2 C=9
+    --     R[A]=R[B]+R[C]
+    -- PC 0043 FLAG=0xC0 OP_386 A=3 B=2 C=0
+    --     do local I,F=E(R[A](R[A+1],R[A+2]));for U=1,B do T[A+2+U]=I[U] end;if R[A+3]==nil then Q=Q+1 else R[A+2]=R[A+3] end end
+    -- PC 0044 FLAG=0x42 OP_255 A=0 B=13 C=None [jump-target=14]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0045 FLAG=0x40 OP_220 A=2 B=2 C=0
+    --     return U(T,A,B)
+    -- PC 0046 FLAG=0x00 OP_250 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/43/2 | 候选函数名: Anonymous_root_43_2 | 指令数: 33 | 子原型: 1 | vararg: 0 | bytes: 34285:34964
+function Anonymous_root_43_2(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'SL'
+    -- K[1] = ['unknown', 2]
+    -- K[2] = '开启奖励功能'
+    -- K[3] = 'UnSchedule'
+    -- K[4] = 'rewardTimer'
+    -- K[5] = 'Schedule'
+    -- K[6] = 0.0
+    -- K[7] = '关闭奖励功能'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x00 OP_159 A=0 B=0 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0002 FLAG=0x20 OP_375 A=0 B=0 C='rewardTimer'
+    --     R[A]=R[B][C]
+    -- PC 0003 FLAG=0x80 OP_016 A=0 B=0 C=0
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0004 FLAG=0x42 OP_215 A=0 B=16 C=None [jump-target=17]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0005 FLAG=0x80 OP_134 A=0 B=1 C=0 [linear-fusion-payloads=1]
+    --     R[A]=UP[B];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0006 FLAG=0x12 OP_371 A=1 B='关闭奖励功能' C=None
+    --     R[A]=B
+    -- PC 0007 FLAG=0x80 OP_187 A=0 B=1 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0008 FLAG=0x52 OP_137 A=0 B='SL' C=None
+    --     R[A]=ENV[B]
+    -- PC 0009 FLAG=0xE0 OP_238 A=0 B=0 C='UnSchedule'
+    --     local I=R[B];R[A+1]=I;R[A]=I[C]
+    -- PC 0010 FLAG=0x40 OP_130 A=2 B=0 C=0
