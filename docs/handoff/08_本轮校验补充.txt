@@ -21,7 +21,7 @@ MainLeftBottom(2).lua 本轮校验补充（2026-11-08）
 
 ## 辅助函数和待解决点
 - `verified_helpers_batches_1_3.lua` 曾统计为 28 个 local function 定义，但存在跨批次重复、闭包转发器、候选及部分核验函数；不能直接算作 28 个已验收完整函数。
-- root.children[43]（旧一基 root/44）含特殊常量数组 ["unknown", 2]。OP_271 只说明与该常量对象比较相等，不能直接当成普通字符串 "unknown"。其业务分类结构可辨，但特殊常量语义仍待核。
+- root.children[43]（旧一基 root/44，GetOwnerDescription）已完成 20 条指令的完整静态恢复。特殊常量 ["unknown", 2] 经跨 20 个原型的 23 处用法交叉判定为 VM dump 的 nil 序列化标记，不是字符串 "unknown"。MainLoop 调用点确认参数 actor/mainPlayerID，返回顺序 ownerID/description。未做运行时验证；详情见 docs/audit/root43_GetOwnerDescription_静态恢复核验.md。
 - root.children[28]（旧一基 root/29，FindMonsterCandidates）本体仍未恢复；其子闭包比较器单独有静态候选。
 
 ## 下一步工作顺序
