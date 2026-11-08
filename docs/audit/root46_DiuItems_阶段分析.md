@@ -1,64 +1,86 @@
-# root.children[46] DiuItems 阶段分析
+# root.children[46] DiuItems：背包筛选与丢弃消息数据流核验
 
 日期：2026-11-08
-状态：部分静态核验；未生成完整普通 Lua；未运行时验证。
+原型：root.children[46]（旧反汇编标签 root/47）
+状态：部分静态核验；未完成作者级普通 Lua；未运行时验证。
 
-## 原型身份与闭包创建
+## 一、背包遍历与候选筛选（PC69–114）
 
-- 规范路径：root.children[46]
-- 旧反汇编标签：root/47
-- 指令数：169
-- 常量数：64
-- 子原型数：1
-- 根原型 PC64 创建 DiuItems，child index=46，捕获数=2；紧随的两个捕获描述对应父 root T[2]、T[5]。
+- PC69 创建候选结果表。
+- PC70–73 取得 pairs 函数并对 BAG_DATA 建立迭代器。循环体从 PC74 开始，PC113–114 推进迭代器。
+- PC76–81 依次读取当前条目的 Name、MakeIndex；Name 或 MakeIndex 为假/空时，控制流跳过当前条目，转到下一轮。
+- PC82–88 通过 SL.GetMetaValue 读取 ITEM_IS_BIND 相关元数据，并对返回寄存器执行真假分支。调用序列涉及当前条目寄存器，但调用约定与参数数量尚未从完整 opcode 语义表中完全闭合；不能先写成某个确定的 Lua API 签名，也不能断言绑定物品被保留还是排除。
+- PC89 对一个寄存器与数值 1.0 做相等比较。该寄存器在当前局部反汇编片段中的来源尚未闭合，因此不能将此比较直接解释为“绑定状态等于 1”。
+- PC91–98 取当前条目的 Name 并调用唯一子闭包；结果为假时跳过候选插入。
+- 子闭包 root.children[46].children[0] 的 20 条指令可还原为：遍历捕获的关键词数组；对传入文本和每个关键词调用 string.find(text, keyword, 1, true)；找到第一个匹配即返回 true，全部未匹配则返回 false。第四个参数 true 表示纯文本查找，不使用 Lua pattern。
+- PC99–112 调用 table.insert，将记录加入候选表。记录有三个字段：
+  - makeIndex：当前物品 MakeIndex；
+  - count：当前物品 OverLap；若 OverLap 为 nil，则设为 1.0；
+  - name：当前物品 Name。
 
-### 两个 upvalue
+## 二、空候选处理（PC113–123）
 
-1. DiuItems upvalue[0] = 父 root T[2]。
-   - 根 PC30 创建表，PC31–35 将其挂到 MainLeftBottom 模块对象的 b 字段。
-   - 根 PC36–41 向该表写入 isPaused、isRunning、isStoring、isTaking、isDiuing、isOutputted 等运行状态字段。
-   - DiuItems PC2 读取 upvalue[0].isDiuing；PC8 将其置为 true；PC25、PC34、PC122、PC168 等路径负责清理/复位。
-   - 因此可以确认它是模块运行状态表；具体源代码字段名 b 是否应作为作者级局部变量名，仍不应强行恢复。
+- PC115 取得候选表长度。
+- 空表分支调用 upvalue[1]（ShowLocalNoticeByType），显示“背包无可丢弃物品”。
+- 随后将 upvalue[0].isDiuing 置为 false 并返回。
+- 此处可以确认提示文本与清理动作；通知函数的具体参数类型/等级仍需与函数本体结合核验。
 
-2. DiuItems upvalue[1] = 父 root T[5]。
-   - 根 PC44 将 _G 放入 R5；PC45 将 root.children[16] 日志闭包写入 _G.log；PC46 创建 root.children[20]（ShowLocalNoticeByType），捕获模块表 R0，结果放入 R5。
-   - DiuItems 创建前 PC64 的第二个捕获描述读取 root T[5]，故 DiuItems upvalue[1] 是 ShowLocalNoticeByType。
-   - DiuItems PC16–23、PC131–136、PC138–142 等路径使用该通知函数输出丢弃提示。
-   - 该映射由根函数创建顺序和捕获描述确认，不是根据变量名猜测。
+## 三、丢弃遍历与地面物品上限（PC124–160）
 
-## 子闭包与关键词表
+- PC124–127 使用 ipairs 遍历候选记录。
+- PC129 对两个寄存器做小于等于比较；PC131–136 是“地面物品已满”提示路径，拼接“地面物品(…件，停止丢弃”后调用通知函数。
+- 原型常量池中存在数值 35.0，但仅凭常量存在和 PC129 的比较，尚不足以把比较两侧的寄存器全部绑定到“35”和当前地面物品数。上限判断的精确数据流仍待核验。
+- 非满路径 PC138–142 拼接“丢: ”与候选记录 name，并调用通知函数。
+- PC143–156 准备并调用 LuaSendMsg。可明确识别的消息类型为 global.MsgType.MSG_CS_MAP_ITEM_DISCARD；后续参数构造涉及候选记录 makeIndex、count、name，以及 string.len(name) 的结果。多个零值/环境字段与精确参数顺序尚未完全还原，不能据此编造最终调用签名。
+- PC157 对寄存器 R8 加 1；PC158 对循环索引寄存器 R2 加 1；PC159–160 推进 ipairs 迭代器。
+- PC161–166 拼接并输出“共丢弃 N 件物品”。
+- PC167–169 将 upvalue[0].isDiuing 置为 false 并返回。
 
-- DiuItems PC36–66 构造一个包含物品名称关键词的表，来源于常量池。
-- PC66 的 OP_402 将此前加载的名称值组织为表。
-- PC67 创建唯一子原型 root.children[46].children[0]，捕获 DiuItems T[5]。
-- 该子原型的静态候选行为是遍历捕获关键词表，并用 string.find(text, keyword, 1, true) 做纯文本子串匹配；这是名称过滤的匹配器，不是正则表达式。
-- 关键词表中的名称包括：时装晶魄、龙傲、敖顺、神凤、上古、悟道茶、残、熬光、经验卷、冰雪、敖闰、技能残页、麻痹、主印、血龙宝珠、转生水晶、复活、副印、晶石、之力、起源、点点、护身、称号卷、恶魔令牌、洗髓丹、声望卷、鸿蒙。
+## 四、目前可用的作者级逻辑骨架（仅用于定位，不是可交付源码）
 
-## 控制流骨架（尚未提升为最终源码）
+```lua
+-- 结构骨架，筛选谓词与消息参数尚未闭合，不可作为最终恢复源码。
+if state.isDiuing then
+    return
+end
+state.isDiuing = true
 
-| PC 范围 | 当前确认的工作 |
-|---|---|
-| 1–8 | 检查 isDiuing 防重入；已在运行则提前返回，否则设置运行标记 |
-| 9–10 | 调用 GetDroppedItems，接收多返回值 |
-| 27–30 | 调用 SL:GetMetaValue("BAG_DATA") 取得背包数据 |
-| 36–66 | 加载丢弃名称关键词并组织为表 |
-| 67 | 创建关键词匹配子闭包 |
-| 69–112 | 遍历 BAG_DATA；检查 Name、MakeIndex、ITEM_IS_BIND，并组装候选记录；记录字段可见 makeIndex、count、name |
-| 113–123 | 结束候选筛选；无可丢弃项时走提示并复位运行标记 |
-| 124–160 | 遍历候选项；检查地面物品数量上限 35；调用通知函数或 LuaSendMsg 发送 MSG_CS_MAP_ITEM_DISCARD |
-| 161–169 | 汇总处理数量、输出通知、复位 isDiuing 并返回 |
+local droppedItems = GetDroppedItems()
+local bagData = SL:GetMetaValue("BAG_DATA")
+if not bagData then
+    state.isDiuing = false
+    return
+end
 
-## 仍待逐条核验
+local keywords = { -- 完整常量表见本函数反汇编
+    -- ...
+}
+local function containsDiscardKeyword(name)
+    for _, keyword in ipairs(keywords) do
+        if string.find(name, keyword, 1, true) then
+            return true
+        end
+    end
+    return false
+end
 
-- PC84–98 的 ITEM_IS_BIND、关键词匹配、Name 有效性分支极性。
-- PC103–112 对 MakeIndex、OverLap、Name 的字段读取，以及 OverLap 缺省为 1 的确切条件。
-- PC131–160 的地面物品数量读取、达到 35 件时的停止路径、LuaSendMsg 参数顺序。
-- PC157–160 的计数增量与循环回跳条件。
-- 需要结合完整 opcode 语义和寄存器数据流完成普通 Lua 结构；目前不得将本报告当成最终源码。
+local candidates = {}
+for _, item in pairs(bagData) do
+    -- Name / MakeIndex / ITEM_IS_BIND 的精确过滤谓词仍待核验
+    -- 通过名称关键词筛选后，记录：
+    -- { makeIndex = item.MakeIndex,
+    --   count = item.OverLap or 1,
+    --   name = item.Name }
+end
+-- 后续 ipairs 丢弃循环、35 件地面上限和 LuaSendMsg 参数仍待核验。
+```
 
-## 状态
+注意：以上骨架只展示已经有静态证据支持的结构。筛选条件、通知函数参数、消息参数及异常路径没有闭合，不代表完整源码，不得标记为函数恢复完成。
 
-- 静态反汇编：已完成（底层阶段成果）。
-- upvalue/子闭包映射：本批已确认。
-- 函数级普通 Lua：未完成。
-- 运行时验证：未完成。
+## 五、下一步
+
+1. 追溯 PC82–98 所有相关寄存器的定义点，确认 ITEM_IS_BIND 的调用签名和分支极性。
+2. 追溯 PC129 比较两侧寄存器的定义点，确认 35.0 上限和地面物品计数来源。
+3. 按 fused payload 的真实执行顺序拆解 PC143–156，恢复 LuaSendMsg 的完整参数顺序。
+4. 检查异常/提前返回路径是否都会清理 isDiuing。
+5. 所有条件闭合后再将函数升级为完整静态恢复；运行时验证单独标记。
