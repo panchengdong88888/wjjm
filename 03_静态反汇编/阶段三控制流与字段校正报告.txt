@@ -1,0 +1,422 @@
+MainLeftBottom.lua 逆向分析阶段三：字段校正、控制流与闭包关系
+==============================================================================
+范围：只做静态分析；没有执行目标脚本、没有连接游戏客户端。
+
+一、关键纠错与验证
+- 原始解析器 F() 的指令结构为 W={S(),S(),nil,nil}，随后按 descriptor 的位域补齐 W[3]/W[4]。
+- 现有 JSON 每条指令记录是五列：[FLAG, OPCODE, A, B, C]。
+- FLAG 为描述字节；真正操作码是第二列。旧版反汇编把 FLAG 当作 OP，导致错误。
+- 已直接用 MainLeftBottom_stage3.bin 按加载器读取规则重新解析，根原型常量池与旧 dump 的 109 项完全吻合，且文件指针恰好到达 71216 字节末尾；这验证了二进制解析边界。
+
+二、重新统计
+- 原型总数（含嵌套）：110
+- 物理指令记录总数：5580
+- 实际出现的不同操作码：356 种，编号范围 1..412
+- 操作码 412 出现：4 次；旧 opcode reference 缺少 OP_412，已依据解释器分支补齐。
+- 按顺序执行时，固定融合读取与闭包捕获共消耗 1533 条后续记录，线性分组得到 4047 个起始记录。
+- 注意：线性分组不是完整控制流。某些跳转目标会进入其他指令顺序执行时的融合载荷位置；因此 CFG 必须以原始物理 PC 为节点。
+
+三、操作码频次（出现最多的前 60 种）
+  OP_130: 208
+  OP_371: 196
+  OP_255: 189
+  OP_387: 183
+  OP_140: 183
+  OP_016: 170
+  OP_346: 168
+  OP_215: 162
+  OP_137: 151
+  OP_184: 134
+  OP_187: 128
+  OP_308: 125
+  OP_098: 120
+  OP_358: 117
+  OP_068: 115
+  OP_325: 102
+  OP_342: 99
+  OP_220: 91
+  OP_159: 86
+  OP_032: 76
+  OP_363: 74
+  OP_053: 73
+  OP_134: 66
+  OP_375: 62
+  OP_027: 56
+  OP_121: 54
+  OP_154: 53
+  OP_156: 52
+  OP_335: 49
+  OP_146: 47
+  OP_282: 47
+  OP_071: 45
+  OP_268: 44
+  OP_142: 44
+  OP_055: 43
+  OP_011: 41
+  OP_250: 41
+  OP_100: 39
+  OP_397: 37
+  OP_001: 37
+  OP_033: 36
+  OP_355: 35
+  OP_078: 35
+  OP_338: 34
+  OP_210: 34
+  OP_090: 33
+  OP_401: 32
+  OP_288: 32
+  OP_061: 31
+  OP_238: 27
+  OP_286: 27
+  OP_089: 26
+  OP_049: 23
+  OP_120: 22
+  OP_115: 22
+  OP_340: 22
+  OP_233: 22
+  OP_410: 19
+  OP_392: 19
+  OP_124: 19
+
+四、控制流模型
+- 普通指令：下一 PC = 当前 PC + 固定融合读取数 + 1。
+- 条件跳过类（例如 OP_016/OP_342）：保留正常后继与跳过一条记录后的后继。
+- 立即数跳过类（OP_011/082/338/401）：依据 C 是否为零确定是否跳过。
+- 跳转类（OP_023/140/215/255/292/395）：解释器先令 Q=B，主循环末尾再 Q=Q+1，因此目标 PC=B+1。
+- 数值 for-loop（OP_126/412）：条件成立时跳到 B+1，否则顺序退出。
+- 多返回值调用（OP_117/339/386）：按 R[A+3] 是否为 nil 产生两种后继。
+- 闭包创建（OP_027/154）：B 是父原型 children 的零基索引，C 是捕获描述数量，后面 C 条记录是捕获描述。
+
+五、闭包关系恢复
+- 共找到 109 条闭包创建记录；所有闭包的 B 均落在父原型 children 的合法索引范围内。
+- 根原型闭包绑定（PC / 操作码 / 目标 child）：
+  PC 043: OP_027 R[4] <- root/17 (child-index=16, captures=0)
+  PC 046: OP_027 R[5] <- root/21 (child-index=20, captures=1)
+  PC 048: OP_154 R[6] <- root/13 (child-index=12, captures=2)
+  PC 052: OP_027 R[6] <- root/54 (child-index=53, captures=0)
+  PC 053: OP_154 R[7] <- root/35 (child-index=34, captures=0)
+  PC 054: OP_154 R[8] <- root/14 (child-index=13, captures=0)
+  PC 056: OP_027 R[8] <- root/31 (child-index=30, captures=0)
+  PC 058: OP_027 R[8] <- root/58 (child-index=57, captures=0)
+  PC 060: OP_027 R[8] <- root/5 (child-index=4, captures=0)
+  PC 062: OP_027 R[8] <- root/4 (child-index=3, captures=0)
+  PC 064: OP_027 R[8] <- root/47 (child-index=46, captures=2)
+  PC 068: OP_027 R[8] <- root/37 (child-index=36, captures=1)
+  PC 071: OP_154 R[8] <- root/2 (child-index=1, captures=1)
+  PC 074: OP_027 R[8] <- root/51 (child-index=50, captures=3)
+  PC 079: OP_154 R[8] <- root/6 (child-index=5, captures=2)
+  PC 083: OP_154 R[8] <- root/22 (child-index=21, captures=1)
+  PC 181: OP_154 R[23] <- root/9 (child-index=8, captures=2)
+  PC 184: OP_154 R[24] <- root/36 (child-index=35, captures=0)
+  PC 185: OP_154 R[25] <- root/57 (child-index=56, captures=0)
+  PC 186: OP_154 R[26] <- root/40 (child-index=39, captures=0)
+  PC 187: OP_154 R[27] <- root/19 (child-index=18, captures=0)
+  PC 188: OP_027 R[28] <- root/45 (child-index=44, captures=0)
+  PC 189: OP_154 R[29] <- root/12 (child-index=11, captures=0)
+  PC 190: OP_027 R[30] <- root/30 (child-index=29, captures=0)
+  PC 191: OP_027 R[31] <- root/8 (child-index=7, captures=0)
+  PC 192: OP_154 R[32] <- root/39 (child-index=38, captures=0)
+  PC 193: OP_027 R[33] <- root/44 (child-index=43, captures=0)
+  PC 194: OP_027 R[34] <- root/29 (child-index=28, captures=5)
+  PC 200: OP_154 R[35] <- root/27 (child-index=26, captures=9)
+  PC 210: OP_154 R[36] <- root/15 (child-index=14, captures=1)
+  PC 212: OP_154 R[37] <- root/32 (child-index=31, captures=0)
+  PC 214: OP_027 R[37] <- root/46 (child-index=45, captures=22)
+  PC 238: OP_027 R[37] <- root/20 (child-index=19, captures=7)
+  PC 247: OP_027 R[37] <- root/28 (child-index=27, captures=7)
+  PC 256: OP_154 R[37] <- root/24 (child-index=23, captures=1)
+  PC 259: OP_154 R[37] <- root/42 (child-index=41, captures=0)
+  PC 261: OP_154 R[37] <- root/38 (child-index=37, captures=3)
+  PC 266: OP_027 R[37] <- root/11 (child-index=10, captures=2)
+  PC 270: OP_154 R[37] <- root/41 (child-index=40, captures=3)
+  PC 276: OP_027 R[38] <- root/56 (child-index=55, captures=2)
+  PC 297: OP_154 R[44] <- root/3 (child-index=2, captures=0)
+  PC 298: OP_027 R[45] <- root/10 (child-index=9, captures=1)
+  PC 300: OP_027 R[46] <- root/18 (child-index=17, captures=1)
+  PC 302: OP_154 R[47] <- root/1 (child-index=0, captures=1)
+  PC 304: OP_154 R[48] <- root/50 (child-index=49, captures=2)
+  PC 307: OP_027 R[49] <- root/33 (child-index=32, captures=2)
+  PC 310: OP_154 R[50] <- root/34 (child-index=33, captures=2)
+  PC 313: OP_027 R[51] <- root/55 (child-index=54, captures=2)
+  PC 350: OP_154 R[53] <- root/23 (child-index=22, captures=1)
+  PC 352: OP_154 R[54] <- root/49 (child-index=48, captures=0)
+  PC 353: OP_154 R[55] <- root/52 (child-index=51, captures=1)
+  PC 355: OP_154 R[56] <- root/25 (child-index=24, captures=1)
+  PC 357: OP_027 R[57] <- root/53 (child-index=52, captures=1)
+  PC 360: OP_027 R[57] <- root/7 (child-index=6, captures=2)
+  PC 363: OP_027 R[58] <- root/26 (child-index=25, captures=4)
+  PC 368: OP_154 R[59] <- root/48 (child-index=47, captures=13)
+  PC 383: OP_027 R[59] <- root/16 (child-index=15, captures=4)
+  PC 390: OP_027 R[60] <- root/43 (child-index=42, captures=20)
+
+六、重点功能函数的控制流结果
+child[21] 自动拾取（root/22）：物理记录 172，从入口可达节点 126，静态不可达节点 46。
+  分支/跳转节点：
+    PC 004 OP_045 A=0 B=2 C=0.0 -> [5, 6] (conditional skip: 5 / 6)
+    PC 005 OP_255 A=0 B=9 C=None -> [10] (jump -> 10)
+    PC 017 OP_140 A=0 B=101 C=None -> [102] (jump -> 102)
+    PC 019 OP_342 A=12 B=0 C=1 -> [20, 21] (conditional skip: 20 / 21)
+    PC 020 OP_255 A=0 B=30 C=None -> [31] (jump -> 31)
+    PC 022 OP_342 A=12 B=0 C=1 -> [23, 24] (conditional skip: 23 / 24)
+    PC 023 OP_140 A=0 B=30 C=None -> [31] (jump -> 31)
+    PC 025 OP_342 A=12 B=0 C=1 -> [26, 27] (conditional skip: 26 / 27)
+    PC 026 OP_255 A=0 B=30 C=None -> [31] (jump -> 31)
+    PC 028 OP_342 A=12 B=0 C=1 -> [29, 30] (conditional skip: 29 / 30)
+    PC 029 OP_140 A=0 B=30 C=None -> [31] (jump -> 31)
+    PC 032 OP_342 A=13 B=0 C=1 -> [33, 34] (conditional skip: 33 / 34)
+    PC 033 OP_140 A=0 B=40 C=None -> [41] (jump -> 41)
+    PC 035 OP_342 A=13 B=0 C=1 -> [36, 37] (conditional skip: 36 / 37)
+    PC 036 OP_215 A=0 B=40 C=None -> [41] (jump -> 41)
+    PC 038 OP_342 A=13 B=0 C=1 -> [39, 40] (conditional skip: 39 / 40)
+    PC 039 OP_215 A=0 B=40 C=None -> [41] (jump -> 41)
+    PC 042 OP_342 A=14 B=0 C=1 -> [43, 44] (conditional skip: 43 / 44)
+    PC 043 OP_215 A=0 B=50 C=None -> [51] (jump -> 51)
+    PC 045 OP_342 A=14 B=0 C=1 -> [46, 47] (conditional skip: 46 / 47)
+    PC 046 OP_215 A=0 B=50 C=None -> [51] (jump -> 51)
+    PC 048 OP_342 A=14 B=0 C=1 -> [49, 50] (conditional skip: 49 / 50)
+    PC 049 OP_255 A=0 B=50 C=None -> [51] (jump -> 51)
+    PC 051 OP_016 A=13 B=0 C=0 -> [52, 53] (conditional skip: 52 / 53)
+    PC 052 OP_255 A=0 B=101 C=None -> [102] (jump -> 102)
+    PC 053 OP_016 A=14 B=0 C=0 -> [54, 55] (conditional skip: 54 / 55)
+    PC 054 OP_255 A=0 B=101 C=None -> [102] (jump -> 102)
+    PC 068 OP_140 A=0 B=77 C=None -> [78] (jump -> 78)
+    PC 074 OP_016 A=22 B=0 C=0 -> [75, 76] (conditional skip: 75 / 76)
+    PC 075 OP_215 A=0 B=77 C=None -> [78] (jump -> 78)
+    PC 077 OP_215 A=0 B=79 C=None -> [80] (jump -> 80)
+    PC 078 OP_386 A=17 B=2 C=0 -> [79, 80] (call-result branch: 79 / 80)
+    PC 079 OP_255 A=0 B=68 C=None -> [69] (jump -> 69)
+    PC 080 OP_352 A=0 B=0.0 C=16 -> [81, 82] (conditional skip: 81 / 82)
+    PC 081 OP_140 A=0 B=92 C=None -> [93] (jump -> 93)
+    PC 092 OP_140 A=0 B=101 C=None -> [102] (jump -> 102)
+    PC 102 OP_386 A=7 B=2 C=0 -> [103, 104] (call-result branch: 103 / 104)
+    PC 103 OP_255 A=0 B=17 C=None -> [18] (jump -> 18)
+    PC 119 OP_140 A=0 B=124 C=None -> [125] (jump -> 125)
+    PC 125 OP_117 A=9 B=2 C=0 -> [126, 127] (call-result branch: 126 / 127)
+    PC 126 OP_255 A=0 B=119 C=None -> [120] (jump -> 120)
+    PC 130 OP_255 A=0 B=135 C=None -> [136] (jump -> 136)
+    PC 136 OP_117 A=9 B=2 C=0 -> [137, 138] (call-result branch: 137 / 138)
+    PC 137 OP_215 A=0 B=130 C=None -> [131] (jump -> 131)
+    PC 139 OP_092 A=0 B=9 C=0.0 -> [140, 141] (conditional skip: 140 / 141)
+    PC 140 OP_140 A=0 B=141 C=None -> [142] (jump -> 142)
+    PC 153 OP_216 A=0 B=10 C=1.0 -> [154, 155] (conditional skip: 154 / 155)
+    PC 154 OP_255 A=0 B=165 C=None -> [166] (jump -> 166)
+    PC 160 OP_216 A=0 B=10 C=1.0 -> [161, 162] (conditional skip: 161 / 162)
+    PC 161 OP_140 A=0 B=165 C=None -> [166] (jump -> 166)
+
+child[45] 引怪/攻击状态机（root/46）：物理记录 417，从入口可达节点 314，静态不可达节点 103。
+  分支/跳转节点：
+    PC 002 OP_342 A=0 B=0 C=1 -> [3, 4] (conditional skip: 3 / 4)
+    PC 003 OP_215 A=0 B=4 C=None -> [5] (jump -> 5)
+    PC 007 OP_016 A=0 B=0 C=0 -> [8, 9] (conditional skip: 8 / 9)
+    PC 008 OP_215 A=0 B=23 C=None -> [24] (jump -> 24)
+    PC 012 OP_099 A=1 B=0 C=1 -> [13, 14] (conditional skip: 13 / 14)
+    PC 013 OP_140 A=0 B=22 C=None -> [23] (jump -> 23)
+    PC 029 OP_381 A=0 B=1 C=2 -> [30, 31] (conditional skip: 30 / 31)
+    PC 030 OP_140 A=0 B=87 C=None -> [88] (jump -> 88)
+    PC 037 OP_045 A=0 B=2 C=0.0 -> [38, 39] (conditional skip: 38 / 39)
+    PC 038 OP_215 A=0 B=42 C=None -> [43] (jump -> 43)
+    PC 048 OP_140 A=0 B=60 C=None -> [61] (jump -> 61)
+    PC 053 OP_342 A=7 B=0 C=1 -> [54, 55] (conditional skip: 54 / 55)
+    PC 054 OP_215 A=0 B=60 C=None -> [61] (jump -> 61)
+    PC 061 OP_386 A=2 B=2 C=0 -> [62, 63] (call-result branch: 62 / 63)
+    PC 062 OP_255 A=0 B=48 C=None -> [49] (jump -> 49)
+    PC 065 OP_271 A=0 B=2 C=0.0 -> [66, 67] (conditional skip: 66 / 67)
+    PC 066 OP_255 A=0 B=70 C=None -> [71] (jump -> 71)
+    PC 087 OP_215 A=0 B=416 C=None -> [417] (jump -> 417)
+    PC 091 OP_381 A=0 B=1 C=2 -> [92, 93] (conditional skip: 92 / 93)
+    PC 092 OP_140 A=0 B=343 C=None -> [344] (jump -> 344)
+    PC 097 OP_016 A=1 B=0 C=0 -> [98, 99] (conditional skip: 98 / 99)
+    PC 098 OP_215 A=0 B=158 C=None -> [159] (jump -> 159)
+    PC 103 OP_180 A=0 B=1 C=2 -> [104, 105] (conditional skip: 104 / 105)
+    PC 104 OP_255 A=0 B=115 C=None -> [116] (jump -> 116)
+    PC 115 OP_215 A=0 B=158 C=None -> [159] (jump -> 159)
+    PC 122 OP_016 A=3 B=0 C=0 -> [123, 124] (conditional skip: 123 / 124)
+    PC 123 OP_255 A=0 B=140 C=None -> [141] (jump -> 141)
+    PC 128 OP_016 A=5 B=0 C=0 -> [129, 130] (conditional skip: 129 / 130)
+    PC 129 OP_215 A=0 B=140 C=None -> [141] (jump -> 141)
+    PC 140 OP_255 A=0 B=147 C=None -> [148] (jump -> 148)
+    PC 148 OP_338 A=5 B=0 C=0 -> [149] (no skip -> 149)
+    PC 161 OP_338 A=2 B=1 C=0 -> [162] (no skip -> 162)
+    PC 166 OP_023 A=3 B=312 C=None -> [313] (jump -> 313)
+    PC 170 OP_342 A=8 B=0 C=1 -> [171, 172] (conditional skip: 171 / 172)
+    PC 171 OP_255 A=0 B=184 C=None -> [185] (jump -> 185)
+    PC 184 OP_255 A=0 B=312 C=None -> [313] (jump -> 313)
+    PC 188 OP_342 A=9 B=0 C=1 -> [189, 190] (conditional skip: 189 / 190)
+    PC 189 OP_215 A=0 B=202 C=None -> [203] (jump -> 203)
+    PC 202 OP_255 A=0 B=312 C=None -> [313] (jump -> 313)
+    PC 205 OP_342 A=9 B=0 C=1 -> [206, 207] (conditional skip: 206 / 207)
+    PC 206 OP_215 A=0 B=207 C=None -> [208] (jump -> 208)
+    PC 216 OP_016 A=12 B=0 C=0 -> [217, 218] (conditional skip: 217 / 218)
+    PC 217 OP_215 A=0 B=235 C=None -> [236] (jump -> 236)
+    PC 235 OP_140 A=0 B=312 C=None -> [313] (jump -> 313)
+    PC 240 OP_016 A=12 B=0 C=0 -> [241, 242] (conditional skip: 241 / 242)
+    PC 241 OP_215 A=0 B=262 C=None -> [263] (jump -> 263)
+    PC 262 OP_140 A=0 B=312 C=None -> [313] (jump -> 313)
+    PC 263 OP_401 A=2 B=0 C=0 -> [264] (no skip -> 264)
+    PC 280 OP_016 A=12 B=0 C=0 -> [281, 282] (conditional skip: 281 / 282)
+    PC 281 OP_255 A=0 B=302 C=None -> [303] (jump -> 303)
+    PC 282 OP_011 A=12 B=1 C=0 -> [283] (no skip -> 283)
+    PC 302 OP_215 A=0 B=311 C=None -> [312] (jump -> 312)
+    PC 313 OP_412 A=3 B=166 C=None -> [314, 167] (loop: exit -> 314; repeat -> 167)
+    PC 314 OP_016 A=2 B=0 C=0 -> [315, 316] (conditional skip: 315 / 316)
+    PC 315 OP_255 A=0 B=330 C=None -> [331] (jump -> 331)
+    PC 319 OP_258 A=0 B=4 C=3 -> [320, 321] (conditional skip: 320 / 321)
+    PC 320 OP_140 A=0 B=330 C=None -> [331] (jump -> 331)
+    PC 330 OP_255 A=0 B=416 C=None -> [417] (jump -> 417)
+    PC 334 OP_253 A=0 B=4 C=3 -> [335, 336] (conditional skip: 335 / 336)
+    PC 335 OP_140 A=0 B=416 C=None -> [417] (jump -> 417)
+    PC 343 OP_140 A=0 B=416 C=None -> [417] (jump -> 417)
+    PC 347 OP_381 A=0 B=1 C=2 -> [348, 349] (conditional skip: 348 / 349)
+    PC 348 OP_140 A=0 B=416 C=None -> [417] (jump -> 417)
+    PC 354 OP_011 A=2 B=1 C=0 -> [355] (no skip -> 355)
+    PC 359 OP_395 A=3 B=404 C=None -> [405] (jump -> 405)
+    PC 363 OP_016 A=8 B=0 C=0 -> [364, 365] (conditional skip: 364 / 365)
+    PC 364 OP_215 A=0 B=392 C=None -> [393] (jump -> 393)
+    PC 368 OP_016 A=9 B=0 C=0 -> [369, 370] (conditional skip: 369 / 370)
+    PC 369 OP_215 A=0 B=392 C=None -> [393] (jump -> 393)
+    PC 370 OP_011 A=2 B=0 C=0 -> [371] (no skip -> 371)
+    PC 374 OP_342 A=9 B=0 C=1 -> [375, 376] (conditional skip: 375 / 376)
+    PC 375 OP_255 A=0 B=376 C=None -> [377] (jump -> 377)
+    PC 392 OP_255 A=0 B=404 C=None -> [405] (jump -> 405)
+    PC 405 OP_412 A=3 B=359 C=None -> [406, 360] (loop: exit -> 406; repeat -> 360)
+    PC 406 OP_016 A=2 B=0 C=0 -> [407, 408] (conditional skip: 407 / 408)
+    PC 407 OP_255 A=0 B=416 C=None -> [417] (jump -> 417)
+
+child[47] 黑名单检测与随机传送（root/48）：物理记录 216，从入口可达节点 173，静态不可达节点 43。
+  分支/跳转节点：
+    PC 009 OP_342 A=0 B=0 C=1 -> [10, 11] (conditional skip: 10 / 11)
+    PC 010 OP_215 A=0 B=11 C=None -> [12] (jump -> 12)
+    PC 018 OP_342 A=1 B=0 C=1 -> [19, 20] (conditional skip: 19 / 20)
+    PC 019 OP_255 A=0 B=20 C=None -> [21] (jump -> 21)
+    PC 023 OP_271 A=0 B=2 C=['unknown', 2] -> [24, 25] (conditional skip: 24 / 25)
+    PC 024 OP_215 A=0 B=33 C=None -> [34] (jump -> 34)
+    PC 028 OP_216 A=1 B=1 C=0.0 -> [29, 30] (conditional skip: 29 / 30)
+    PC 029 OP_140 A=0 B=30 C=None -> [31] (jump -> 31)
+    PC 030 OP_082 A=3 B=0 C=1 -> [32] (immediate skip -> 32)
+    PC 031 OP_338 A=3 B=1 C=0 -> [32] (no skip -> 32)
+    PC 033 OP_140 A=0 B=54 C=None -> [55] (jump -> 55)
+    PC 034 OP_352 A=0 B=0.0 C=1 -> [35, 36] (conditional skip: 35 / 36)
+    PC 035 OP_140 A=0 B=40 C=None -> [41] (jump -> 41)
+    PC 040 OP_140 A=0 B=54 C=None -> [55] (jump -> 55)
+    PC 043 OP_364 A=0 B=0.0 C=2 -> [44, 45] (conditional skip: 44 / 45)
+    PC 044 OP_255 A=0 B=54 C=None -> [55] (jump -> 55)
+    PC 047 OP_342 A=2 B=0 C=1 -> [48, 49] (conditional skip: 48 / 49)
+    PC 048 OP_255 A=0 B=54 C=None -> [55] (jump -> 55)
+    PC 055 OP_257 A=0 B=1 C=0.0 -> [56, 57] (conditional skip: 56 / 57)
+    PC 056 OP_140 A=0 B=57 C=None -> [58] (jump -> 58)
+    PC 060 OP_016 A=2 B=0 C=0 -> [61, 62] (conditional skip: 61 / 62)
+    PC 061 OP_255 A=0 B=62 C=None -> [63] (jump -> 63)
+    PC 067 OP_016 A=2 B=0 C=0 -> [68, 69] (conditional skip: 68 / 69)
+    PC 068 OP_255 A=0 B=72 C=None -> [73] (jump -> 73)
+    PC 069 OP_016 A=3 B=0 C=0 -> [70, 71] (conditional skip: 70 / 71)
+    PC 070 OP_215 A=0 B=72 C=None -> [73] (jump -> 73)
+    PC 071 OP_257 A=0 B=3 C=0.0 -> [72, 73] (conditional skip: 72 / 73)
+    PC 072 OP_140 A=0 B=73 C=None -> [74] (jump -> 74)
+    PC 077 OP_292 A=4 B=214 C=None -> [215] (jump -> 215)
+    PC 079 OP_338 A=9 B=0 C=0 -> [80] (no skip -> 80)
+    PC 081 OP_016 A=8 B=0 C=0 -> [82, 83] (conditional skip: 82 / 83)
+    PC 082 OP_255 A=0 B=89 C=None -> [90] (jump -> 90)
+    PC 083 OP_294 A=1 B=8 C=0 -> [84, 85] (conditional skip: 84 / 85)
+    PC 084 OP_215 A=0 B=89 C=None -> [90] (jump -> 90)
+    PC 090 OP_016 A=9 B=0 C=0 -> [91, 92] (conditional skip: 91 / 92)
+    PC 091 OP_140 A=0 B=214 C=None -> [215] (jump -> 215)
+    PC 092 OP_330 A=11 B=10 C=1 -> [93, 94] (conditional skip: 93 / 94)
+    PC 093 OP_215 A=0 B=101 C=None -> [102] (jump -> 102)
+    PC 099 OP_342 A=11 B=0 C=1 -> [100, 101] (conditional skip: 100 / 101)
+    PC 100 OP_140 A=0 B=101 C=None -> [102] (jump -> 102)
+    PC 104 OP_011 A=13 B=1 C=0 -> [105] (no skip -> 105)
+    PC 106 OP_016 A=12 B=0 C=0 -> [107, 108] (conditional skip: 107 / 108)
+    PC 107 OP_255 A=0 B=139 C=None -> [140] (jump -> 140)
+    PC 136 OP_092 A=0 B=14 C=['unknown', 2] -> [137, 138] (conditional skip: 137 / 138)
+    PC 137 OP_140 A=0 B=138 C=None -> [139] (jump -> 139)
+    PC 138 OP_082 A=13 B=0 C=1 -> [140] (immediate skip -> 140)
+    PC 139 OP_011 A=13 B=1 C=0 -> [140] (no skip -> 140)
+    PC 140 OP_016 A=13 B=0 C=0 -> [141, 142] (conditional skip: 141 / 142)
+    PC 141 OP_215 A=0 B=214 C=None -> [215] (jump -> 215)
+    PC 149 OP_258 A=0 B=17 C=16 -> [150, 151] (conditional skip: 150 / 151)
+    PC 150 OP_215 A=0 B=159 C=None -> [160] (jump -> 160)
+    PC 156 OP_330 A=19 B=14 C=1 -> [157, 158] (conditional skip: 157 / 158)
+    PC 157 OP_140 A=0 B=158 C=None -> [159] (jump -> 159)
+    PC 162 OP_236 A=0 B=16 C=15 -> [163, 164] (conditional skip: 163 / 164)
+    PC 163 OP_140 A=0 B=215 C=None -> [216] (jump -> 216)
+    PC 166 OP_016 A=16 B=0 C=0 -> [167, 168] (conditional skip: 167 / 168)
+    PC 167 OP_140 A=0 B=192 C=None -> [193] (jump -> 193)
+    PC 179 OP_330 A=21 B=14 C=1 -> [180, 181] (conditional skip: 180 / 181)
+    PC 180 OP_255 A=0 B=181 C=None -> [182] (jump -> 182)
+    PC 187 OP_035 A=20 B=14 C=1 -> [188, 189] (conditional skip: 188 / 189)
+    PC 188 OP_215 A=0 B=189 C=None -> [190] (jump -> 190)
+    PC 192 OP_255 A=0 B=215 C=None -> [216] (jump -> 216)
+    PC 199 OP_342 A=17 B=0 C=1 -> [200, 201] (conditional skip: 200 / 201)
+    PC 200 OP_255 A=0 B=215 C=None -> [216] (jump -> 216)
+    PC 214 OP_215 A=0 B=215 C=None -> [216] (jump -> 216)
+    PC 215 OP_126 A=4 B=77 C=None -> [216, 78] (loop: exit -> 216; repeat -> 78)
+
+child[42] 主界面构建与事件绑定（root/43）：物理记录 419，从入口可达节点 276，静态不可达节点 143。
+  分支/跳转节点：
+    PC 024 OP_016 A=3 B=0 C=0 -> [25, 26] (conditional skip: 25 / 26)
+    PC 025 OP_255 A=0 B=55 C=None -> [56] (jump -> 56)
+    PC 028 OP_016 A=3 B=0 C=0 -> [29, 30] (conditional skip: 29 / 30)
+    PC 029 OP_255 A=0 B=55 C=None -> [56] (jump -> 56)
+    PC 032 OP_016 A=3 B=0 C=0 -> [33, 34] (conditional skip: 33 / 34)
+    PC 033 OP_140 A=0 B=55 C=None -> [56] (jump -> 56)
+    PC 038 OP_016 A=3 B=0 C=0 -> [39, 40] (conditional skip: 39 / 40)
+    PC 039 OP_255 A=0 B=55 C=None -> [56] (jump -> 56)
+    PC 040 OP_016 A=4 B=0 C=0 -> [41, 42] (conditional skip: 41 / 42)
+    PC 041 OP_255 A=0 B=55 C=None -> [56] (jump -> 56)
+    PC 050 OP_016 A=5 B=0 C=0 -> [51, 52] (conditional skip: 51 / 52)
+    PC 051 OP_215 A=0 B=55 C=None -> [56] (jump -> 56)
+    PC 052 OP_016 A=6 B=0 C=0 -> [53, 54] (conditional skip: 53 / 54)
+    PC 053 OP_215 A=0 B=55 C=None -> [56] (jump -> 56)
+    PC 066 OP_016 A=3 B=0 C=0 -> [67, 68] (conditional skip: 67 / 68)
+    PC 067 OP_215 A=0 B=87 C=None -> [88] (jump -> 88)
+    PC 071 OP_215 A=0 B=85 C=None -> [86] (jump -> 86)
+    PC 075 OP_016 A=9 B=0 C=0 -> [76, 77] (conditional skip: 76 / 77)
+    PC 076 OP_255 A=0 B=85 C=None -> [86] (jump -> 86)
+    PC 082 OP_342 A=11 B=0 C=1 -> [83, 84] (conditional skip: 83 / 84)
+    PC 083 OP_140 A=0 B=84 C=None -> [85] (jump -> 85)
+    PC 086 OP_117 A=4 B=2 C=0 -> [87, 88] (call-result branch: 87 / 88)
+    PC 087 OP_255 A=0 B=71 C=None -> [72] (jump -> 72)
+    PC 091 OP_140 A=0 B=97 C=None -> [98] (jump -> 98)
+    PC 098 OP_386 A=4 B=2 C=0 -> [99, 100] (call-result branch: 99 / 100)
+    PC 099 OP_255 A=0 B=91 C=None -> [92] (jump -> 92)
+    PC 134 OP_140 A=0 B=142 C=None -> [143] (jump -> 143)
+    PC 143 OP_339 A=5 B=2 C=0 -> [144, 145] (call-result branch: 144 / 145)
+    PC 144 OP_140 A=0 B=134 C=None -> [135] (jump -> 135)
+    PC 148 OP_016 A=6 B=0 C=0 -> [149, 150] (conditional skip: 149 / 150)
+    PC 149 OP_140 A=0 B=156 C=None -> [157] (jump -> 157)
+    PC 176 OP_016 A=6 B=0 C=0 -> [177, 178] (conditional skip: 177 / 178)
+    PC 177 OP_255 A=0 B=180 C=None -> [181] (jump -> 181)
+    PC 349 OP_215 A=0 B=354 C=None -> [355] (jump -> 355)
+    PC 355 OP_339 A=25 B=2 C=0 -> [356, 357] (call-result branch: 356 / 357)
+    PC 356 OP_255 A=0 B=349 C=None -> [350] (jump -> 350)
+    PC 360 OP_215 A=0 B=365 C=None -> [366] (jump -> 366)
+    PC 366 OP_117 A=25 B=2 C=0 -> [367, 368] (call-result branch: 367 / 368)
+    PC 367 OP_255 A=0 B=360 C=None -> [361] (jump -> 361)
+    PC 371 OP_140 A=0 B=376 C=None -> [377] (jump -> 377)
+    PC 377 OP_386 A=25 B=2 C=0 -> [378, 379] (call-result branch: 378 / 379)
+    PC 378 OP_140 A=0 B=371 C=None -> [372] (jump -> 372)
+    PC 391 OP_016 A=25 B=0 C=0 -> [392, 393] (conditional skip: 392 / 393)
+    PC 392 OP_215 A=0 B=410 C=None -> [411] (jump -> 411)
+
+七、自动拾取 child[21] 的进一步证据
+- 常量池直接包含 GetDroppedItems、PlayerPos、MoveTo、PickMainPlayerPosItem、dropItemController、mName、mONameStr、Name、name、x、y、mapX、MapX、mapY、MapY、dist、sort、ipairs、find。
+- 从控制流节点可见：多次条件判断后进入地图坐标/物品字段读取；存在 math.abs、string.find、table.insert、table.sort、MoveTo 与 PickMainPlayerPosItem 相关调用。
+- 这支持“读取掉落物→按名称/地图坐标筛选→计算距离/排序→移动/拾取”的流程判断。具体过滤优先级、拾取成功条件仍需结合寄存器数据流逐段还原。
+
+八、引怪 child[45] 的循环证据
+- PC 166: OP_023 A=3 B=312 C=None，循环/回跳目标 PC 313
+- PC 313: OP_412 A=3 B=166 C=None，循环/回跳目标 PC 167
+- PC 359: OP_395 A=3 B=404 C=None，循环/回跳目标 PC 405
+- PC 405: OP_412 A=3 B=359 C=None，循环/回跳目标 PC 360
+- child[45] 的常量池与消息文本包括扫描怪物、视野内无可攻击怪物、开始引怪、怪物归属变化、怪物不在视野内等；结合 for-loop 与条件跳转，支持其为反复扫描/筛选/攻击状态机。
+
+九、黑名单 child[47] 的循环证据
+- PC 077: OP_292 A=4 B=214 C=None，循环/回跳目标 PC 215
+- PC 215: OP_126 A=4 B=77 C=None，循环/回跳目标 PC 78
+- 该函数的常量池含黑名单玩家、ACTOR_MAP_X/Y、GetMetaValue、nextTryAt、随机传送提示等；控制流中存在 for-loop 回边和多段跳转。
+
+十、仍需完成
+- 将寄存器 A/B/C 的定义-使用链还原为有意义的局部变量和表达式。
+- 将跳转图结构化为 if/elseif/else、while、for，并解析闭包捕获变量。
+- 将主界面 child[42] 中控件事件回调映射到自动拾取、引怪、仓库、快捷栏等函数。
+- 目前可以确认模块及控制流骨架，但尚未完成完整可读 Lua 伪源码。
