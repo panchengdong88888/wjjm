@@ -1,0 +1,1000 @@
+{
+  "source_dump": "原始资料/MainLeftBottom_vm_dump.json",
+  "path_indexing": "children 使用 0-based 索引；root 本身记作 root",
+  "prototype_count": 110,
+  "total_physical_instructions": 5580,
+  "prototypes": [
+    {
+      "path": "root",
+      "parent_path": null,
+      "instruction_count": 412,
+      "constant_count": 109,
+      "child_count": 58,
+      "vararg_flag": 0,
+      "start_offset": 0,
+      "end_offset": 71216,
+      "constants": [
+        "10000",
+        10.0,
+        "isHidden",
+        "TakeItems",
+        21.0,
+        3600.0,
+        "StopGatherMonsters",
+        "onDamageMsg",
+        "LuaSendMsg",
+        0.01,
+        30.0,
+        "hidebut",
+        "floor",
+        "Builtsetting",
+        "distance",
+        "isTaking",
+        "累计登录 2 天",
+        "log",
+        "isOutputted",
+        false,
+        "InitGatherMonsters",
+        "destroy",
+        "isDiuing",
+        "在线时长90分钟",
+        18.0,
+        "BlacklistItems",
+        "screenH",
+        "在线时长5分钟",
+        20.0,
+        "MoveTo",
+        19.0,
+        0.0,
+        "GetAvailableStoragePage",
+        "screenW",
+        "alertAt",
+        "StorageItems",
+        "空闲状态",
+        -1.0,
+        "hide",
+        "SendHookList",
+        "累计登录 4 天",
+        "RecvHookList",
+        "GATHER_THRESHOLD",
+        9.0,
+        "ATTACKING",
+        "累计登录 7 天",
+        "noStoneWarned",
+        "isStoring",
+        "SCREEN_WIDTH",
+        "doInit",
+        "GetMapName",
+        "在线时长30分钟",
+        "nextTryAt",
+        "deathHandled",
+        "SL",
+        "在线时长10分钟",
+        "累计登录 1 天",
+        "blacklist_distance.txt",
+        "math",
+        56011.0,
+        "在线时长60分钟",
+        "main",
+        "在线时长120分钟",
+        [
+          "unknown",
+          2
+        ],
+        "引怪中",
+        "攻击中",
+        "GATHERING",
+        "z",
+        "累计登录 3 天",
+        "IsInWhitelistMap",
+        "isRunning",
+        "累计登录 6 天",
+        0.5,
+        "show",
+        "version",
+        "PlayerPos",
+        "a",
+        "DiuItems",
+        56061.0,
+        "isPaused",
+        "GetStorageItemData",
+        "MainLeftBottom",
+        "MoveItemToQuickUse",
+        "ATTACK_WAIT_TIME",
+        "PickUpItems",
+        "gather_monster_count.txt",
+        "GetMapId",
+        "b",
+        "累计登录 5 天",
+        "Blocklist",
+        "_G",
+        "ClearBlacklistItems",
+        "lastAttacker",
+        2.0,
+        "GetMetaValue",
+        "IDLE",
+        0.2,
+        "",
+        "在线时长20分钟",
+        1.0,
+        "随机传送石",
+        60000.0,
+        "lastHp",
+        "CHECK_INTERVAL",
+        true,
+        "MainLoop",
+        "GetDroppedItems",
+        "blacklist",
+        "SCREEN_HEIGHT"
+      ],
+      "closure_creation_sites": [],
+      "canonical_json_path": "root",
+      "legacy_one_based_label": "root",
+      "reconstruction_proto_id": 0,
+      "reconstruction_name": "MainLeftBottom_Module",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/0",
+      "parent_path": "root",
+      "instruction_count": 32,
+      "constant_count": 5,
+      "child_count": 1,
+      "vararg_flag": 1,
+      "start_offset": 5323,
+      "end_offset": 5760,
+      "constants": [
+        "pcall",
+        "isFileExist",
+        "cc",
+        "getInstance",
+        "FileUtils"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 301,
+          "instruction": [
+            64,
+            154,
+            47,
+            0,
+            1
+          ],
+          "opcode": 154,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[0]",
+      "legacy_one_based_label": "root/1",
+      "reconstruction_proto_id": 1,
+      "reconstruction_name": "FileExistCheck_pcall_wrapper",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/0/0",
+      "parent_path": "root/0",
+      "instruction_count": 5,
+      "constant_count": 1,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 5686,
+      "end_offset": 5759,
+      "constants": [
+        "removeFile"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/0",
+          "pc": 16,
+          "instruction": [
+            192,
+            27,
+            4,
+            0,
+            2
+          ],
+          "opcode": 27,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[0].children[0]",
+      "legacy_one_based_label": "root/1/1",
+      "reconstruction_proto_id": 2,
+      "reconstruction_name": "Nested_removeFile",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/1",
+      "parent_path": "root",
+      "instruction_count": 77,
+      "constant_count": 16,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 5760,
+      "end_offset": 6712,
+      "constants": [
+        "仓库总可用格子: ",
+        "GUIDefine",
+        "type",
+        "GetOpenSize",
+        "table",
+        "insert",
+        0.0,
+        "global",
+        "ipairs",
+        "NPC_STORAGE_MAX_PAGE",
+        "NPCStorageProxy",
+        "MMO",
+        1.0,
+        "STORAGE_PER_PAGE_MAX",
+        "GetMaxPage",
+        "GetStorageDataByPage"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 70,
+          "instruction": [
+            128,
+            154,
+            8,
+            1,
+            1
+          ],
+          "opcode": 154,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[1]",
+      "legacy_one_based_label": "root/2",
+      "reconstruction_proto_id": 3,
+      "reconstruction_name": "GetStorageItemData",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/2",
+      "parent_path": "root",
+      "instruction_count": 10,
+      "constant_count": 4,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 6712,
+      "end_offset": 6872,
+      "constants": [
+        "FileUtils",
+        "getInstance",
+        "getWritablePath",
+        "cc"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 296,
+          "instruction": [
+            192,
+            154,
+            44,
+            2,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[2]",
+      "legacy_one_based_label": "root/3",
+      "reconstruction_proto_id": 4,
+      "reconstruction_name": "GetWritablePath",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/3",
+      "parent_path": "root",
+      "instruction_count": 51,
+      "constant_count": 20,
+      "child_count": 0,
+      "vararg_flag": 3,
+      "start_offset": 6872,
+      "end_offset": 7583,
+      "constants": [
+        "sendNotification",
+        "global",
+        "range",
+        "Facade",
+        "x",
+        "PlayerPos",
+        "InputMove",
+        "NoticeTable",
+        "GetMetaValue",
+        "mapID",
+        "INPUT_MOVE_TYPE_AUTOMOVE",
+        "SL",
+        "abs",
+        "y",
+        "math",
+        "MMO",
+        "tonumber",
+        0.0,
+        "type",
+        "MAP_ID"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 61,
+          "instruction": [
+            192,
+            27,
+            8,
+            3,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[3]",
+      "legacy_one_based_label": "root/4",
+      "reconstruction_proto_id": 5,
+      "reconstruction_name": "MoveTo",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/4",
+      "parent_path": "root",
+      "instruction_count": 8,
+      "constant_count": 3,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 7583,
+      "end_offset": 7734,
+      "constants": [
+        "FindDropItemInCurrViewFieldAll",
+        "global",
+        "dropItemManager"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 59,
+          "instruction": [
+            192,
+            27,
+            8,
+            4,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[4]",
+      "legacy_one_based_label": "root/5",
+      "reconstruction_proto_id": 6,
+      "reconstruction_name": "GetDroppedItems",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/5",
+      "parent_path": "root",
+      "instruction_count": 99,
+      "constant_count": 23,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 7734,
+      "end_offset": 8941,
+      "constants": [
+        "取: ",
+        "string",
+        "isTaking",
+        "MakeIndex",
+        999999999.0,
+        0.0,
+        false,
+        "LuaSendMsg",
+        "global",
+        "待定",
+        "len",
+        "GetStorageItemData",
+        "MSG_CS_STORAGE_PICK_OUT_REQUEST",
+        "find",
+        "MsgType",
+        "ipairs",
+        "取出物品完成, 共取出 ",
+        1.0,
+        "trim",
+        " 件",
+        true,
+        "Name",
+        "仓库无可取物品"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 78,
+          "instruction": [
+            128,
+            154,
+            8,
+            5,
+            2
+          ],
+          "opcode": 154,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[5]",
+      "legacy_one_based_label": "root/6",
+      "reconstruction_proto_id": 7,
+      "reconstruction_name": "TakeItems",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/6",
+      "parent_path": "root",
+      "instruction_count": 40,
+      "constant_count": 9,
+      "child_count": 1,
+      "vararg_flag": 0,
+      "start_offset": 8941,
+      "end_offset": 9715,
+      "constants": [
+        "gameMapController",
+        "__ylwHookedOrigin",
+        "已挂接伤害消息钩子（击杀拉黑用）",
+        "MSG_SC_DAMAGE_HP",
+        "mNetMsgHandle",
+        "type",
+        "global",
+        "MsgType",
+        "table"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 359,
+          "instruction": [
+            0,
+            27,
+            57,
+            6,
+            2
+          ],
+          "opcode": 27,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[6]",
+      "legacy_one_based_label": "root/7",
+      "reconstruction_proto_id": 8,
+      "reconstruction_name": "InstallDamageHook",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/6/0",
+      "parent_path": "root/6",
+      "instruction_count": 18,
+      "constant_count": 4,
+      "child_count": 0,
+      "vararg_flag": 2,
+      "start_offset": 9491,
+      "end_offset": 9714,
+      "constants": [
+        "onDamageMsg",
+        "pcall",
+        "type",
+        "function"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/6",
+          "pc": 29,
+          "instruction": [
+            64,
+            27,
+            4,
+            0,
+            2
+          ],
+          "opcode": 27,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[6].children[0]",
+      "legacy_one_based_label": "root/7/1",
+      "reconstruction_proto_id": 9,
+      "reconstruction_name": "Nested_onDamageMsg",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/7",
+      "parent_path": "root",
+      "instruction_count": 31,
+      "constant_count": 7,
+      "child_count": 0,
+      "vararg_flag": 2,
+      "start_offset": 9715,
+      "end_offset": 10070,
+      "constants": [
+        -1.0,
+        "type",
+        "string",
+        "",
+        "GetOwnerID",
+        "tostring",
+        [
+          "unknown",
+          2
+        ]
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 190,
+          "instruction": [
+            0,
+            27,
+            31,
+            7,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[7]",
+      "legacy_one_based_label": "root/8",
+      "reconstruction_proto_id": 10,
+      "reconstruction_name": "GetOwnerIDText",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/8",
+      "parent_path": "root",
+      "instruction_count": 10,
+      "constant_count": 3,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 10070,
+      "end_offset": 10222,
+      "constants": [
+        "format",
+        "状态切换: %s -> %s",
+        "string"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 180,
+          "instruction": [
+            0,
+            154,
+            23,
+            8,
+            2
+          ],
+          "opcode": 154,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[8]",
+      "legacy_one_based_label": "root/9",
+      "reconstruction_proto_id": 11,
+      "reconstruction_name": "FormatStateChange",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/9",
+      "parent_path": "root",
+      "instruction_count": 45,
+      "constant_count": 13,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 10222,
+      "end_offset": 10789,
+      "constants": [
+        "%s",
+        "string",
+        "gsub",
+        "tonumber",
+        "",
+        "getStringFromFile",
+        "match",
+        "^%d+$",
+        "getInstance",
+        "isFileExist",
+        "type",
+        "cc",
+        "FileUtils"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 297,
+          "instruction": [
+            0,
+            27,
+            45,
+            9,
+            1
+          ],
+          "opcode": 27,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[9]",
+      "legacy_one_based_label": "root/10",
+      "reconstruction_proto_id": 12,
+      "reconstruction_name": "ReadNumericConfig",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/10",
+      "parent_path": "root",
+      "instruction_count": 15,
+      "constant_count": 5,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 10789,
+      "end_offset": 10985,
+      "constants": [
+        "isHidden",
+        "setVisible",
+        "pairs",
+        "GUI",
+        true
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 265,
+          "instruction": [
+            64,
+            27,
+            37,
+            10,
+            2
+          ],
+          "opcode": 27,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[10]",
+      "legacy_one_based_label": "root/11",
+      "reconstruction_proto_id": 13,
+      "reconstruction_name": "SetButtonVisibilityState",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/11",
+      "parent_path": "root",
+      "instruction_count": 25,
+      "constant_count": 6,
+      "child_count": 0,
+      "vararg_flag": 2,
+      "start_offset": 10985,
+      "end_offset": 11269,
+      "constants": [
+        "x",
+        "abs",
+        "y",
+        "max",
+        "math",
+        99999.0
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 188,
+          "instruction": [
+            192,
+            154,
+            29,
+            11,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[11]",
+      "legacy_one_based_label": "root/12",
+      "reconstruction_proto_id": 14,
+      "reconstruction_name": "DistanceCalculation",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/12",
+      "parent_path": "root",
+      "instruction_count": 92,
+      "constant_count": 34,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 11269,
+      "end_offset": 12464,
+      "constants": [
+        2.0,
+        ")",
+        "string",
+        ", ",
+        "param4",
+        "networkCtl",
+        "tonumber",
+        "recog",
+        "Blocklist",
+        "ipairs",
+        "table",
+        "concat",
+        0.0,
+        true,
+        "SendHookList",
+        "type",
+        "param1",
+        5.0,
+        "tostring",
+        "global",
+        "find",
+        3.0,
+        "SendMsg",
+        "LuaSendMsg(",
+        6.0,
+        1.0,
+        "param3",
+        "insert",
+        "msgId",
+        "function",
+        "pcall",
+        4.0,
+        "'",
+        "param2"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 47,
+          "instruction": [
+            0,
+            154,
+            6,
+            12,
+            2
+          ],
+          "opcode": 154,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[12]",
+      "legacy_one_based_label": "root/13",
+      "reconstruction_proto_id": 15,
+      "reconstruction_name": "LuaSendMsg",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/13",
+      "parent_path": "root",
+      "instruction_count": 9,
+      "constant_count": 4,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 12464,
+      "end_offset": 12602,
+      "constants": [
+        "SL",
+        "MAP_ID",
+        0.0,
+        "GetMetaValue"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 53,
+          "instruction": [
+            192,
+            154,
+            8,
+            13,
+            0
+          ],
+          "opcode": 154,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[13]",
+      "legacy_one_based_label": "root/14",
+      "reconstruction_proto_id": 16,
+      "reconstruction_name": "GetMapId",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/14",
+      "parent_path": "root",
+      "instruction_count": 27,
+      "constant_count": 4,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 12602,
+      "end_offset": 12917,
+      "constants": [
+        "FindMonsterInCurrViewField",
+        "ipairs",
+        "SL",
+        "GetID"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 209,
+          "instruction": [
+            64,
+            154,
+            36,
+            14,
+            1
+          ],
+          "opcode": 154,
+          "capture_count": 1
+        }
+      ],
+      "canonical_json_path": "root.children[14]",
+      "legacy_one_based_label": "root/15",
+      "reconstruction_proto_id": 17,
+      "reconstruction_name": "FindMonsterInCurrViewField",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/15",
+      "parent_path": "root",
+      "instruction_count": 63,
+      "constant_count": 17,
+      "child_count": 1,
+      "vararg_flag": 0,
+      "start_offset": 12917,
+      "end_offset": 13975,
+      "constants": [
+        "_blacklistData",
+        "SL",
+        "pairs",
+        "ScheduleOnce",
+        "清空黑名单失败",
+        "黑名单本来就是空的",
+        [
+          "unknown",
+          2
+        ],
+        0.01,
+        1.0,
+        "ipairs",
+        0.0,
+        "黑名单为空",
+        "开始清空黑名单，共 %d 人",
+        "清空黑名单 ",
+        " 人",
+        "lastAttacker",
+        "取不到好友代理，清空失败"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 382,
+          "instruction": [
+            192,
+            27,
+            59,
+            15,
+            4
+          ],
+          "opcode": 27,
+          "capture_count": 4
+        }
+      ],
+      "canonical_json_path": "root.children[15]",
+      "legacy_one_based_label": "root/16",
+      "reconstruction_proto_id": 18,
+      "reconstruction_name": "ClearBlacklistItems",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/15/0",
+      "parent_path": "root/15",
+      "instruction_count": 13,
+      "constant_count": 4,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "start_offset": 13793,
+      "end_offset": 13974,
+      "constants": [
+        "SL",
+        "RequestOutBlacklist",
+        [
+          "unknown",
+          2
+        ],
+        "_blacklistData"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root/15",
+          "pc": 51,
+          "instruction": [
+            192,
+            154,
+            11,
+            0,
+            2
+          ],
+          "opcode": 154,
+          "capture_count": 2
+        }
+      ],
+      "canonical_json_path": "root.children[15].children[0]",
+      "legacy_one_based_label": "root/16/1",
+      "reconstruction_proto_id": 19,
+      "reconstruction_name": "Nested_SL",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/16",
+      "parent_path": "root",
+      "instruction_count": 38,
+      "constant_count": 13,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "start_offset": 13975,
+      "end_offset": 14463,
+      "constants": [
+        "format",
+        "#",
+        "Print",
+        "type",
+        "pcall",
+        "tostring",
+        "string",
+        "table",
+        "dump",
+        "SL",
+        "select",
+        "【超本】",
+        0.0
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 42,
+          "instruction": [
+            0,
+            27,
+            4,
+            16,
+            0
+          ],
+          "opcode": 27,
+          "capture_count": 0
+        }
+      ],
+      "canonical_json_path": "root.children[16]",
+      "legacy_one_based_label": "root/17",
+      "reconstruction_proto_id": 20,
+      "reconstruction_name": "PrintLog",
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+    },
+    {
+      "path": "root/17",
+      "parent_path": "root",
+      "instruction_count": 14,
+      "constant_count": 2,
+      "child_count": 1,
+      "vararg_flag": 2,
+      "start_offset": 14463,
+      "end_offset": 14825,
+      "constants": [
+        false,
+        "pcall"
+      ],
+      "closure_creation_sites": [
+        {
+          "parent": "root",
+          "pc": 299,
+          "instruction": [
+            64,
+            27,
