@@ -5,10 +5,11 @@
 -- Not original source text; not runtime-validated. Names such as state/candidates are
 -- readable reconstruction names, not recovered original local-variable identifiers.
 
-local function DiuItems()
+local function make_DiuItems(state, ShowLocalNoticeByType)
+    -- Factory parameters model the two captured upvalues, not original Lua arguments.
+    -- state is UP[0] (module state table); ShowLocalNoticeByType is UP[1].
+    return function DiuItems()
     local MAX_GROUND_ITEMS = 35
-    local state = UPVALUE_MODULE_STATE -- UP[0]; contains isDiuing
-    local ShowLocalNoticeByType = UPVALUE_SHOW_NOTICE -- UP[1]
 
     -- PC 2-8: re-entry guard. A caller that did not acquire the flag must not clear it.
     if state.isDiuing then
@@ -94,6 +95,7 @@ local function DiuItems()
     -- PC 161-169: report message-send count, clear the re-entry flag, return.
     ShowLocalNoticeByType("共丢弃 " .. sentCount .. " 件物品")
     state.isDiuing = false
+    end
 end
 
 -- Static reconstruction notes:
