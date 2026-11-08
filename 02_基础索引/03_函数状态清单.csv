@@ -38,7 +38,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 34,root/25/0,root.children[25].children[0],root/26/1,Nested_RequestAddBlacklistByName,6,3,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 35,root/26,root.children[26],root/27,ResetGatherMonsterData,20,3,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 36,root/27,root.children[27],root/28,StopGatherMonsters,25,6,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-37,root/28,root.children[28],root/29,FindMonsterCandidates,102,19,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+37,root/28,root.children[28],root/29,FindMonsterCandidates,102,19,1,完整静态恢复（未运行时验证）,视野怪物候选→读取忽略设置第1项的true键→排除死亡/忽略怪物→计算_distance→升序排序→按GATHER_THRESHOLD截取；源码候选04_源码候选/root28_FindMonsterCandidates.lua，审计docs/audit/root28_FindMonsterCandidates_阶段分析.md。
 38,root/28/0,root.children[28].children[0],root/29/1,Nested_distance,8,1,0,静态源码候选,距离比较器：a._distance < b._distance；旧报告标签 root/29/1；需与父函数调用点复核。
 39,root/29,root.children[29],root/30,IsDie,7,1,0,静态源码候选,按 OP_247/OP_255/OP_121/OP_068/OP_172/OP_220 可重建为 actor and not actor:IsDie()；签名/调用点待核。
 40,root/30,root.children[30],root/31,GetMapName,9,4,0,静态源码候选,"可重建为 SL:GetMetaValue(""MAP_NAME"") or """"；无目标运行时验证。"
