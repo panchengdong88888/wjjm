@@ -77,7 +77,16 @@
     "not_migrated_binary": [
       "MainLeftBottom_stage3.bin",
       "MainLeftBottom_V4_反虚拟化交接工程包.zip",
-      "MainLeftBottom_decompile_package_v4_phase3.zip"
+      "MainLeftBottom_decompile_package.zip",
+      "MainLeftBottom_decompile_package_v2.zip",
+      "MainLeftBottom_decompile_package_v3_phase2.zip",
+      "MainLeftBottom_decompile_package_v4_phase3.zip",
+      "MainLeftBottom_明文恢复_接续工程包.zip",
+      "MainLeftBottom_明文恢复_跨对话接续包_2026-11-08.zip",
+      "MainLeftBottom_全量草稿第一阶段资料包.zip",
+      "MainLeftBottom_全量Lua源码草稿_第一遍资料包.zip",
+      "MainLeftBottom_全量Lua源码草稿_第二遍资料包.zip",
+      "MainLeftBottom_第三遍调用关系与关键函数校正资料包.zip"
     ],
     "note": "上述二进制归档目前仍留在 Library，当前 GitHub 连接工具没有直接上传任意本地二进制文件的上传接口；可用 create_blob(base64) 或 Git 数据接口分块补迁，但尚未完成。",
     "completed_core_textual": true,
