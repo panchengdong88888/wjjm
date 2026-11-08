@@ -44,7 +44,6 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 40,root/30,root.children[30],root/31,GetMapName,9,4,0,完整静态恢复（未运行时验证）,04_源码候选/小型辅助函数_首批草稿.lua；完整还原 SL:GetMetaValue(""MAP_NAME"") or ""。
 41,root/31,root.children[31],root/32,IsInWhitelistMap,28,6,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 42,root/33,root.children[32],root/33,AnonymousHelper_32,6,0,0,完整静态恢复（未运行时验证）,04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua；捕获 root T[46] 与 T[42]；返回 upvalue0(upvalue1, 第一个参数)。PC5 vararg return 位于无条件返回后，不可达。 审计见docs/audit/检查点30_PlayerPos与匿名转发闭包.md。
-43,root/32,root.children[32],root/33,AnonymousHelper_33,6,0,2,首版普通 Lua 草稿（待父级捕获复核/未运行时验证）,04_源码候选/代理与回调短函数_第四批.lua；UP[0]作为调用目标、UP[1]作为首个实参，原始 varargs 追加转发：return callback(wrappedFunction, ...)。
 43,root/34,root.children[33],root/34,AnonymousHelper_33,5,0,0,完整静态恢复（未运行时验证）,04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua；捕获 root T[45] 与 T[43]；返回 upvalue0(upvalue1)。PC4 的空 vararg return 位于无条件返回后，不可达。 审计见docs/audit/检查点30_PlayerPos与匿名转发闭包.md。
 45,root/35,root.children[35],root/36,SetTargetID,26,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 46,root/36,root.children[36],root/37,GetAvailableStoragePage,51,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
