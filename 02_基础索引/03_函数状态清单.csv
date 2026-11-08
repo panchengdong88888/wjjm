@@ -56,7 +56,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 53,root/42/0,root.children[42].children[0],root/43/1,Nested_find,46,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 54,root/42/1,root.children[42].children[1],root/43/2,Nested_SL_2,33,8,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 55,root/42/1/0,root.children[42].children[1].children[0],root/43/2/1,Nested_LuaSendMsg,22,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-56,root/42/2,root.children[42].children[2],root/43/3,Nested_Helper,21,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+56,root/42/2,root.children[42].children[2],root/43/3,Nested_Helper,21,4,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十七批.lua；调用UP[0](UP[1])取成功标志/详情；按成功或失败调用UP[2]/UP[3]各两次通知怪物阈值清理结果；格式回调与捕获名称待复核；检查点38。
 57,root/42/3,root.children[42].children[3],root/43/4,Nested_FFFF00,320,72,5,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 58,root/42/3/0,root.children[42].children[3].children[0],root/43/4/1,Nested_Helper_2,35,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 59,root/42/3/1,root.children[42].children[3].children[1],root/43/4/2,Nested_string,46,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
@@ -82,7 +82,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 79,root/42/17,root.children[42].children[17],root/43/18,Nested_blacklistTimer,28,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 80,root/42/18,root.children[42].children[18],root/43/19,Nested_Helper_10,39,9,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 81,root/42/19,root.children[42].children[19],root/43/20,Nested_TakeItems,29,10,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-82,root/42/20,root.children[42].children[20],root/43/21,Nested_s,21,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+82,root/42/20,root.children[42].children[20],root/43/21,Nested_s,21,4,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十七批.lua；调用UP[0](UP[1])取成功标志/详情；按成功或失败调用UP[2]/UP[3]各两次通知黑名单距离清理结果；格式回调与捕获名称待复核；检查点38。
 83,root/42/21,root.children[42].children[21],root/43/22,Nested_dropTimer,29,10,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 84,root/42/22,root.children[42].children[22],root/43/23,Nested_Anonymous,8,0,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 85,root/42/22/0,root.children[42].children[22].children[0],root/43/23/1,Nested_str,27,13,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
@@ -103,7 +103,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 100,root/51,root.children[51],root/52,FindBlacklistPlayer,35,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 101,root/52,root.children[52],root/53,onDamageMsg,72,19,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 102,root/52/0,root.children[52].children[0],root/53/1,Nested_JsonDecode,6,2,0,部分核验,调用 SL.JsonDecode，参数来自 upvalue[0]；参数语义由父级传入，待追踪。
-103,root/53,root.children[53],root/54,ScheduleOnce,7,2,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+103,root/53,root.children[53],root/54,ScheduleOnce,7,2,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十七批.lua；取SL.ScheduleOnce并转发vararg参数；PC6-7位于return之后不可达；检查点38。
 104,root/54,root.children[54],root/55,AnonymousHelper_54,6,0,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十六批.lua；将UP[0]与首个显式参数转交UP[1]并原样返回；后续return不可达；检查点37。
 105,root/55,root.children[55],root/56,AccountIDValidation,64,21,2,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 106,root/55/0,root.children[55].children[0],root/56/1,Nested_Panel_mini_chat,24,8,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
