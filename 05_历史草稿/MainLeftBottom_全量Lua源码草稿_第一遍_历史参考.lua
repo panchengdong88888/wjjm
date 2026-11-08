@@ -13998,3 +13998,75 @@ function PlayerPos(...)
     -- PC 0006 FLAG=0x12 OP_179 A=0 B='global' C=None [linear-fusion-payloads=5]
     --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
     -- PC 0007 FLAG=0x60 OP_053 A=0 B=0 C='Facade'
+    --     R[A]=R[B][C]
+    -- PC 0008 FLAG=0xE0 OP_201 A=0 B=0 C='retrieveProxy' [linear-fusion-payloads=3]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0009 FLAG=0x12 OP_137 A=2 B='global' C=None
+    --     R[A]=ENV[B]
+    -- PC 0010 FLAG=0x20 OP_049 A=2 B=2 C='ProxyTable' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0011 FLAG=0xE0 OP_363 A=2 B=2 C='PlayerInputProxy'
+    --     R[A]=R[B][C]
+    -- PC 0012 FLAG=0x00 OP_068 A=0 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0013 FLAG=0x40 OP_342 A=0 B=0 C=1
+    --     if (not not R[A])~=(C~=0) then Q=Q+1 end
+    -- PC 0014 FLAG=0x42 OP_255 A=0 B=15 C=None [jump-target=16]
+    --     if A>0 then do local I=A-1;local F={};for U=1,#H do local L=H[U];local N=L[-1] or 0;for O=0,N-1 do local K=L[O];if K then local Z=K[1];local C=K[2];if Z==T and I<=C then F[C]=Z[C];K[1]=F end end end end end end;Q=B
+    -- PC 0015 FLAG=0xC0 OP_055 A=0 B=0 C=0
+    --     return
+    -- PC 0016 FLAG=0xA0 OP_169 A=1 B=0 C='SetTargetID' [linear-fusion-payloads=4]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0017 FLAG=0x92 OP_319 A=3 B=0.0 C=None [linear-fusion-payloads=3]
+    --     R[A]=B;; -- fused: read next VM instruction;R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0018 FLAG=0x92 OP_198 A=4 B='global' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0019 FLAG=0x60 OP_049 A=4 B=4 C='MMO' [linear-fusion-payloads=1]
+    --     R[A]=R[B][C];; -- fused: read next VM instruction;R[A]=R[B][C]
+    -- PC 0020 FLAG=0x20 OP_032 A=4 B=4 C='SELETE_TARGET_TYPE_FIND'
+    --     R[A]=R[B][C]
+    -- PC 0021 FLAG=0xC0 OP_187 A=1 B=4 C=0
+    --     R[A](U(T,A+1,B))
+    -- PC 0022 FLAG=0x80 OP_250 A=0 B=0 C=0
+    --     return
+    --     ##############################################################################
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+--==============================================================================
+-- 原型路径: root/58 | 候选函数名: Anonymous_root_58 | 指令数: 10 | 子原型: 0 | vararg: 0 | bytes: 71076:71215
+function Anonymous_root_58(...)
+    -- [草稿] 原始 VM 运行时使用寄存器/闭包环境；这里先保留逐条语义，不推断高级控制结构。
+    local R, UP, ENV, K = {}, {}, _G, {}
+    -- 常量池
+    -- K[0] = 'GetMetaValue'
+    -- K[1] = 'X'
+    -- K[2] = 'Y'
+    -- K[3] = 'SL'
+    -- 指令级伪源码（PC顺序；跳转/融合载荷尚未提升为高级控制流）
+    -- PC 0001 FLAG=0x92 OP_380 A=0 B='SL' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0002 FLAG=0x20 OP_297 A=0 B=0 C='GetMetaValue' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0003 FLAG=0x52 OP_346 A=2 B='X' C=None
+    --     R[A]=B
+    -- PC 0004 FLAG=0xC0 OP_068 A=0 B=2 C=0
+    --     R[A]=R[A](U(T,A+1,B))
+    -- PC 0005 FLAG=0x12 OP_380 A=1 B='SL' C=None [linear-fusion-payloads=2]
+    --     R[A]=ENV[B];; -- fused: read next VM instruction;local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0006 FLAG=0x60 OP_297 A=1 B=1 C='GetMetaValue' [linear-fusion-payloads=1]
+    --     local I=R[B];R[A+1]=I;R[A]=I[C];; -- fused: read next VM instruction;R[A]=B
+    -- PC 0007 FLAG=0xD2 OP_346 A=3 B='Y' C=None
+    --     R[A]=B
+    -- PC 0008 FLAG=0x00 OP_252 A=1 B=3 C=0
+    --     do local I,F=E(R[A](U(T,A+1,B)));B=F+A-1;local U=0;for L=A,B do U=U+1;T[L]=I[U] end end
+    -- PC 0009 FLAG=0x80 OP_175 A=0 B=0 C=0
+    --     return U(T,A,B)
+    -- PC 0010 FLAG=0x40 OP_055 A=0 B=0 C=0
+    --     return
+    -- 子闭包原型: 无
+    return nil -- [待由后续控制流提升恢复真实返回值]
+end
+
+-- EOF: 全部 110 个原型均已覆盖。当前版本是批量草稿，不可作为最终运行脚本。
