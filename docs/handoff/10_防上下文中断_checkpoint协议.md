@@ -180,3 +180,20 @@
 - PC157 的 R8 每次发送加一；汇总提示报告的是发送次数，不是堆叠物品数量。
 - 报告：`docs/audit/root46_DiuItems_检查点11_绑定上限与消息参数.md`。
 - 未运行时验证；仍需分析死分支原因、异常清理和完成整函数普通 Lua 重建。
+
+
+## 检查点 #12（2026-11-08）：入口、GetDroppedItems 返回值与状态清理路径
+- root.children[4]（GetDroppedItems）调用 `global.dropItemManager:FindDropItemInCurrViewFieldAll()`，取得并原样返回两个返回值；DiuItems 的 PC9–10 将它们接收到 R1、R2，实际使用第二返回值 R2 作为当前地面物品数量。第一返回值在 DiuItems 中没有后续使用。
+- PC11–13：第二返回值为 false/nil 时归一化为 0；否则保留原数量。
+- PC1–6：初始化上限 35；读取 UP[0].isDiuing；若已为真，直接返回，不改变标记。
+- PC7–8：未处于执行状态时设置 UP[0].isDiuing=true。
+- PC14–26：当地面数量大于 35 时调用通知 helper 输出“地面物品(当前数量)超过上限(35)”，随后将 isDiuing 复位为 false 并返回。
+- PC27–35：调用 `SL:GetMetaValue("BAG_DATA")`；返回值 false/nil 时清除 isDiuing 并返回。
+- PC115–123：候选数组长度为 0 时调用通知 helper 输出“背包无可丢弃物品”，清除 isDiuing 并返回；非空则跳至 PC124 的丢弃循环。
+- PC167–169：正常循环完成后输出发送次数汇总，清除 isDiuing 并返回。
+- PC131–137：地面物品达到 35 件时显示“地面物品已满…件，停止丢弃”，随后跳出丢弃循环，继续汇总并清除 isDiuing。
+- DiuItems 调用 ShowLocalNoticeByType upvalue 的各处均传入单个消息字符串；其 helper 内部负责包装 UI 通知参数。
+- 显式状态清理路径已覆盖：超限、BAG_DATA 缺失、候选为空、正常完成；已在执行中的防重入返回不清标记，因为该调用没有获得执行权。函数体未见 pcall/xpcall/finally 式保护，API/helper 抛错时标记可能遗留为 true。
+- pairs/ipairs 泛型迭代器调用及跳转关系已结合 OP_117 核对；OP_117 检查第一个迭代返回值，nil 时跳过回跳指令并终止循环。
+- 报告：`docs/audit/root46_DiuItems_检查点12_入口返回值与清理路径.md`。
+- 当前仍未运行时验证；下一步进入作者级普通 Lua 候选整理与静态复审。
