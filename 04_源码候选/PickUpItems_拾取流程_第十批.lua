@@ -10,6 +10,12 @@
 -- prototype. The matching loop is retained because it is present in the VM
 -- control flow; consequently preferredItems remains empty in this function.
 
+-- Child comparator root.children[21].children[1]:
+--   dist ascending.
+local function Nested_dist_2(a, b)
+    return a.dist < b.dist
+end
+
 local function make_PickUpItems(notify)
     return function PickUpItems()
         local nameRules = {}
@@ -111,8 +117,3 @@ local function Nested_dist(a, b)
     return a.dist < b.dist
 end
 
--- Child comparator root.children[21].children[1]:
---   dist ascending.
-local function Nested_dist_2(a, b)
-    return a.dist < b.dist
-end
