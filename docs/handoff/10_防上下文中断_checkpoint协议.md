@@ -46,4 +46,4 @@
 - 函数状态 CSV 第 88 行已更新为“完整静态恢复（未运行时验证）”。
 - 旧辅助函数源码和 batch3 报告中误写的字符串判断、返回值顺序均已修正。
 - 本批 20/20 条指令已映射；运行时验证仍为 0，不将其计为运行时完成。
-- 下一批：root.children[28] FindMonsterCandidates；之后核查 root.children[7]、root.children[38] 两个 owner 判断函数。
+- 下一批：root.children[28]（旧 root/29，102 条指令、1 个子原型）FindMonsterCandidates；之后核查 root.children[7]、root.children[38] 两个 owner 判断函数。注意 root.children[27]（旧 root/28）才是 25 条指令的 StopGatherMonsters。
