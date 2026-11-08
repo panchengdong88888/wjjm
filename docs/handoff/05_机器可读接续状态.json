@@ -21,7 +21,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "按新策略转入批量草稿恢复：先对 DiuItems 首版源码 04_源码候选/root46_DiuItems.lua 做独立静态复审（重点核 PC158 地面数量递增、闭包 upvalue、通知与发送调用参数）；复审通过后再标记完整静态恢复。随后优先批量恢复短小辅助函数/简单原型，直接生成普通 Lua 草稿，疑点注释保留，不再等待全量逐指令证明。每批保存源码、CSV、机器状态和检查点。",
+  "next_action": "独立复审 DiuItems 与首批 6 个短函数草稿，重点确认 IsDie 短路返回值、GetMapId/GetMapName false/nil 回退、关键词 matcher 的 plain=true 参数及闭包捕获。复审后批量继续其他短小辅助函数，不做逐函数冗长汇报；每批同步源码、CSV、JSON和检查点。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -145,20 +145,19 @@
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "DiuItems first-pass readable Lua draft",
-    "status": "first_pass_lua_draft_created_pending_independent_review",
-    "source_file": "04_源码候选/root46_DiuItems.lua",
-    "checkpoint_report": "docs/audit/root46_DiuItems_检查点14_首版Lua草稿.md",
+    "target": "First batch of six small helper Lua drafts",
+    "status": "six_small_helper_drafts_created_pending_review",
+    "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
     "verified": [
-      "Created readable closure-factory draft modelling UP[0] state and UP[1] notice helper",
-      "Draft includes re-entry guard, GetDroppedItems second return, 35-item cap, BAG_DATA filtering, candidate records, ipairs send loop, LuaSendMsg argument order, sent-count and ground-count increments, summary and cleanup",
-      "Unreachable keyword matcher construction is explicitly documented as omitted from active-path draft",
-      "DiuItems CSV status updated to first-pass draft only; not counted as complete static reconstruction"
+      "GetMapId: SL:GetMetaValue('MAP_ID') or 0",
+      "IsDie: actor and not actor:IsDie(), preserving short-circuit false/nil return",
+      "GetMapName: SL:GetMetaValue('MAP_NAME') or empty string",
+      "GetMainPlayerID: global.gamePlayerController:GetMainPlayerID()",
+      "FindMonsterCandidates comparator: a._distance < b._distance",
+      "DiuItems nested keyword matcher: ipairs and plain string.find(text, keyword, 1, true)"
     ],
     "unresolved": [
-      "Independent source-to-PC review, especially PC157-PC158 counter increments",
-      "Parent closure creation/capture confirmation for factory representation",
-      "External helper/API runtime behavior",
+      "Independent source-to-PC review for this helper batch",
       "Runtime validation"
     ],
     "runtime_verified": false
