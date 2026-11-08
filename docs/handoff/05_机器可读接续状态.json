@@ -21,7 +21,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续 FindMonsterCandidates（root.children[28]）阶段分析：先逐槽位核验 5 个闭包捕获值（父 T 寄存器 27、30、28、29、8），再完成忽略怪物配置结构与候选筛选/距离计算的数据流；未确认前不写作者级最终源码。",
+  "next_action": "继续核对 FindMonsterCandidates 的忽略怪物配置表与候选筛选数据流（PC 25–78），特别是 SETTING_IDX_IGNORE_MONSTER 的返回结构、GetName/未知怪物处理及距离字段赋值；完成后再形成作者级 Lua。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -133,10 +133,10 @@
       "读取 MMO.SETTING_IDX_IGNORE_MONSTER 设置",
       "未知怪物名称过滤路径",
       "距离字段 _distance 赋值与 table.sort 比较器调用",
-      "子闭包比较 a._distance < b._distance"
+      "子闭包比较 a._distance < b._distance",
+      "5个捕获槽位映射已由父函数 PC 187–199 确认：GetPlayerPosition、IsDie、GetPlayerMapPosition、DistanceCalculation、配置表"
     ],
     "unresolved": [
-      "5个捕获值的准确业务含义",
       "忽略怪物配置表的数据结构及匹配语义",
       "完整候选筛选与距离计算顺序"
     ],
