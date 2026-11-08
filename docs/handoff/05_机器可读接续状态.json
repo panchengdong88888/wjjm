@@ -79,6 +79,12 @@
       "MainLeftBottom_V4_反虚拟化交接工程包.zip",
       "MainLeftBottom_decompile_package_v4_phase3.zip"
     ],
-    "note": "上述二进制归档目前仍留在 Library，当前 GitHub 连接工具没有直接上传任意本地二进制文件的上传接口；可用 create_blob(base64) 或 Git 数据接口分块补迁，但尚未完成。"
+    "note": "上述二进制归档目前仍留在 Library，当前 GitHub 连接工具没有直接上传任意本地二进制文件的上传接口；可用 create_blob(base64) 或 Git 数据接口分块补迁，但尚未完成。",
+    "completed_core_textual": true,
+    "not_migrated_text_inside_archives": [
+      "MainLeftBottom_opcode_reference_corrected_phase3.txt (full 413-entry reference)",
+      "MainLeftBottom_closure_map_phase3.txt (full closure map)"
+    ],
+    "notes": "Core textual source, VM dump, prototype/function indexes, corrected disassembly, instruction-level listing, helper candidates/reports, historical drafts and handoff docs are in GitHub. Binary archives and the two full phase3 text files that exist only inside the archive remain in Library; see docs/handoff/09_GitHub迁移清单.md."
   }
 }
