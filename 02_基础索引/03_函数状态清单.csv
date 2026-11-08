@@ -89,7 +89,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 85,root/42/22/0,root.children[42].children[22].children[0],root/43/23/1,Nested_str,27,13,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 86,root/42/22/0/0,root.children[42].children[22].children[0].children[0],root/43/23/1/1,Nested_match,50,14,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 87,root/42/22/0/0/0,root.children[42].children[22].children[0].children[0].children[0],root/43/23/1/1/1,Nested_Helper_11,4,1,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-88,root/43,root.children[43],root/44,GetOwnerDescription,20,7,0,部分核验,调用 GetOwnerID 并按 unknown/空串/-1/主玩家 ID 分类；精确 sentinel/参数映射待核。
+88,root/43,root.children[43],root/44,GetOwnerDescription,20,7,0,完整静态恢复（未运行时验证）,调用 actor:GetOwnerID；VM 的 ["unknown",2] 是 nil 序列化标记；按 nil/空串/-1/主玩家 ID 分类；参数 actor、mainPlayerID 及返回顺序 ownerID、description 已由 MainLoop 调用点核验。
 89,root/44,root.children[44],root/45,GetPlayerMapPosition,17,5,0,部分核验,涉及 mCurrMapX/mCurrMapY 与 x/y；返回表/边界条件尚未完整还原。
 90,root/45,root.children[45],root/46,MainLoop,417,41,0,结构已核验，源码未恢复,417 条指令引怪状态机；22 个 upvalue 捕获寄存器映射已从创建点复核；完整 CFG/source 未完成。
 91,root/46,root.children[46],root/47,DiuItems,169,64,1,结构已核验，源码未恢复,169 条指令自动丢弃物品逻辑；root PC63 创建并捕获 R2/R5；完整源码未恢复。
