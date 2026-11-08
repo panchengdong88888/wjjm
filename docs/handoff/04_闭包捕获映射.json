@@ -1,0 +1,269 @@
+{
+  "indexing": "children 为 0-based；槽位从 0 开始。OP_027/OP_154 的捕获描述紧跟闭包创建指令。OP_387 描述表示捕获当前 T 寄存器。",
+  "root45": {
+    "path": "root/45",
+    "parent_create_pc": 213,
+    "create_instruction": [
+      128,
+      27,
+      37,
+      45,
+      22
+    ],
+    "capture_descriptors": [
+      [
+        64,
+        387,
+        0,
+        18,
+        0
+      ],
+      [
+        192,
+        387,
+        0,
+        14,
+        0
+      ],
+      [
+        192,
+        387,
+        0,
+        13,
+        0
+      ],
+      [
+        128,
+        387,
+        0,
+        4,
+        0
+      ],
+      [
+        192,
+        387,
+        0,
+        23,
+        0
+      ],
+      [
+        0,
+        387,
+        0,
+        35,
+        0
+      ],
+      [
+        64,
+        387,
+        0,
+        26,
+        0
+      ],
+      [
+        128,
+        387,
+        0,
+        34,
+        0
+      ],
+      [
+        192,
+        387,
+        0,
+        15,
+        0
+      ],
+      [
+        64,
+        387,
+        0,
+        32,
+        0
+      ],
+      [
+        0,
+        387,
+        0,
+        17,
+        0
+      ],
+      [
+        192,
+        387,
+        0,
+        16,
+        0
+      ],
+      [
+        64,
+        387,
+        0,
+        19,
+        0
+      ],
+      [
+        192,
+        387,
+        0,
+        20,
+        0
+      ],
+      [
+        128,
+        387,
+        0,
+        22,
+        0
+      ],
+      [
+        192,
+        387,
+        0,
+        36,
+        0
+      ],
+      [
+        192,
+        387,
+        0,
+        21,
+        0
+      ],
+      [
+        192,
+        387,
+        0,
+        31,
+        0
+      ],
+      [
+        128,
+        387,
+        0,
+        30,
+        0
+      ],
+      [
+        128,
+        387,
+        0,
+        33,
+        0
+      ],
+      [
+        128,
+        387,
+        0,
+        24,
+        0
+      ],
+      [
+        128,
+        387,
+        0,
+        8,
+        0
+      ]
+    ],
+    "captured_parent_T_registers": [
+      18,
+      14,
+      13,
+      4,
+      23,
+      35,
+      26,
+      34,
+      15,
+      32,
+      17,
+      16,
+      19,
+      20,
+      22,
+      36,
+      21,
+      31,
+      30,
+      33,
+      24,
+      8
+    ],
+    "interpretation": "22 个 upvalue 槽位依次捕获父 root 的 T 寄存器 18,14,13,4,23,35,26,34,15,32,17,16,19,20,22,36,21,31,30,33,24,8。此处只证明寄存器捕获，不证明业务变量名称。",
+    "canonical_json_path": "root.children[45]",
+    "legacy_one_based_label": "root/46",
+    "legacy_pc_one_based": 214
+  },
+  "root46": {
+    "path": "root/46",
+    "parent_create_pc": 63,
+    "create_instruction": [
+      0,
+      27,
+      8,
+      46,
+      2
+    ],
+    "capture_descriptors": [
+      [
+        192,
+        387,
+        0,
+        2,
+        0
+      ],
+      [
+        128,
+        387,
+        0,
+        5,
+        0
+      ]
+    ],
+    "captured_parent_T_registers": [
+      2,
+      5
+    ],
+    "interpretation": "root/46 两个 upvalue 槽位分别捕获父 root 的 T[2] 与 T[5]。不要与 root/45 的 22 槽位状态机映射混用。",
+    "canonical_json_path": "root.children[46]",
+    "legacy_one_based_label": "root/47",
+    "legacy_pc_one_based": 64
+  },
+  "root46_0": {
+    "path": "root/46/0",
+    "parent_create_pc": 66,
+    "create_instruction": [
+      64,
+      154,
+      6,
+      0,
+      1
+    ],
+    "capture_descriptors": [
+      [
+        0,
+        387,
+        0,
+        5,
+        0
+      ]
+    ],
+    "captured_parent_T_registers": [
+      5
+    ],
+    "interpretation": "root/46/0 的 upvalue[0] 捕获 root/46 的 T[5]；该寄存器在创建闭包前由 OP_402 构造关键词表。",
+    "canonical_json_path": "root.children[46].children[0]",
+    "legacy_one_based_label": "root/47/1",
+    "legacy_pc_one_based": 67
+  },
+  "path_convention": {
+    "canonical_json": "root.children[n]，n 从 0 开始。",
+    "legacy_reports": "旧 closure_map_phase3 与 reverse_engineering_phase3 使用 root/(n+1) 的一基子原型标签。",
+    "examples": {
+      "legacy root/46": "canonical root.children[45]（417 条指令引怪状态机）",
+      "legacy root/47": "canonical root.children[46]（169 条指令 DiuItems）",
+      "legacy root/47/1": "canonical root.children[46].children[0]（20 条指令关键词闭包）"
+    }
+  }
+}
