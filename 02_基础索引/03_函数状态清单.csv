@@ -46,11 +46,11 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 42,root/33,root.children[32],root/33,AnonymousHelper_32,6,0,0,完整静态恢复（未运行时验证）,04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua；捕获 root T[46] 与 T[42]；返回 upvalue0(upvalue1, 第一个参数)。PC5 vararg return 位于无条件返回后，不可达。 审计见docs/audit/检查点30_PlayerPos与匿名转发闭包.md。
 43,root/34,root.children[33],root/34,AnonymousHelper_33,5,0,0,完整静态恢复（未运行时验证）,04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua；捕获 root T[45] 与 T[43]；返回 upvalue0(upvalue1)。PC4 的空 vararg return 位于无条件返回后，不可达。 审计见docs/audit/检查点30_PlayerPos与匿名转发闭包.md。
 45,root/35,root.children[35],root/36,SetTargetID,26,8,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十二批.lua；取得PlayerInputProxy后调用SetTargetID(targetID, global.MMO.SELETE_TARGET_TYPE_FIND)，按代理存在性返回布尔值；检查点33。
-46,root/36,root.children[36],root/37,GetAvailableStoragePage,51,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-47,root/37,root.children[37],root/38,DestroyUI,31,11,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+46,root/36,root.children[36],root/37,GetAvailableStoragePage,51,12,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十四批.lua；读取NPCStorageProxy最大页/分页数据，检查GUIDefine每页容量、MMO最大页和GetOpenSize；PC22–50分支尚未闭合，算法为临时近似；检查点35。
+47,root/37,root.children[37],root/38,DestroyUI,31,11,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十四批.lua；清除isHidden；取消resTimer并置空；清空resWin；GUI:Win_CloseAll；遍历捕获按钮表逐个设为可见；检查点35。
 48,root/38,root.children[38],root/39,GetOwnerID,31,7,0,部分静态核验（未运行时验证）,已核对 MainLoop root.children[45] 的 upvalue[9] 调用点（PC49-52）及插入/跳过分支；参数与插入集合业务含义仍待确认。
 49,root/39,root.children[39],root/40,GetMainPlayerID,6,3,0,完整静态恢复（未运行时验证）,04_源码候选/小型辅助函数_首批草稿.lua；完整还原 global.gamePlayerController:GetMainPlayerID()。
-50,root/40,root.children[40],root/41,ShowHideAllButtons,47,9,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+50,root/40,root.children[40],root/41,ShowHideAllButtons,47,9,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十四批.lua；依次取消rewardTimer/cruiseTimer；恢复第一按钮表可见；若hidebut真则隐藏第二按钮表并清空hidebut；检查点35。
 51,root/41,root.children[41],root/42,MoveItemToQuickUse,133,26,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 52,root/42,root.children[42],root/43,doInit_UI,419,105,23,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 53,root/42/0,root.children[42].children[0],root/43/1,Nested_find,46,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
