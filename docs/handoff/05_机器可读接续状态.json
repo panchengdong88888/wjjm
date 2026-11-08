@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "优先复核 PlayerPos 的 OP_252 多返回值窗口和 GetPlayerPosition 的 PC7、PC14-17 默认值/表构造；然后恢复 ScheduleOnce、JsonDecode 包装等短函数。继续按先出代码草稿、疑点注释、批量校正的策略。",
+  "next_action": "继续按草稿优先批量推进。先展开 PCallHelper child 的 OP_004/OP_252 融合调用参数，并复核 ShowLocalNoticeByType 的 UP[0] 捕获对象；随后恢复 PrintLog（root.children[16]）与 InitGatherMonsters（root.children[19]）可直接表达的主体。注意：root.children[17] 才是 PCallHelper，root.children[18] 是 GetPlayerPosition，禁止沿用旧的错位路径。每批保存源码、CSV、机器状态与检查点。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -37,9 +37,11 @@
     "root.children[32]",
     "root.children[33]",
     "root.children[18]",
-    "root.children[57]"
+    "root.children[57]",
+    "root.children[17]",
+    "root.children[17].children[0]"
   ],
-  "static_candidate_count": 5,
+  "static_candidate_count": 7,
   "repository": {
     "full_name": "panchengdong88888/wjjm",
     "url": "https://github.com/panchengdong88888/wjjm",
@@ -258,20 +260,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "PlayerPos and GetPlayerPosition first-pass Lua drafts",
-    "status": "two_position_helper_drafts_pending_review",
-    "source_file": "04_源码候选/位置读取函数_第五批草稿.lua",
+    "target": "PCallHelper/Nested_tostring and GetPlayerPosition path correction",
+    "status": "two_wrapper_drafts_created_position_draft_reviewed",
+    "source_file": "04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua",
     "verified": [
-      "PlayerPos reads SL metadata X and Y, with Y call using variable result window",
-      "GetPlayerPosition reads X/Y, both have zero-default branches, then constructs x/y result table"
+      "Correct identity: root.children[17] is PCallHelper; child root.children[17].children[0] is Nested_tostring; root.children[18] is GetPlayerPosition",
+      "PCallHelper boolean contract: false on pcall error or exact false result; true otherwise, including nil result",
+      "Nested child resolves cc.FileUtils:getInstance().writeStringToFile and tostring(UP[0]); three capture sources located",
+      "GetPlayerPosition reads X then Y and returns a coordinate table; PC14 fused fallback table construction remains unresolved"
     ],
     "unresolved": [
-      "PlayerPos OP_252 multi-return semantics and exact return arity",
-      "GetPlayerPosition PC14 fused table/default construction details",
+      "PCallHelper child OP_004/OP_252 fused receiver and argument ordering",
+      "GetPlayerPosition PC14 fused table fields",
+      "ShowLocalNoticeByType parent UP[0] object identity",
       "Runtime validation"
     ],
     "runtime_verified": false,
-    "checkpoint_report": "docs/audit/检查点20_位置读取函数第五批草稿.md"
+    "checkpoint_report": "docs/audit/检查点20_PCallHelper与位置函数恢复.md"
   },
   "corrections": [
     {
