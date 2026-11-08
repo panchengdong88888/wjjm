@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续从CSV筛选未开始、无子原型的短函数；优先核查 Nested_blacklistTimer、Nested_TakeItems、Nested_ITEM_INDEX_BY_NAME。每个候选先核实父级闭包捕获及完整PC分支，再写普通Lua草稿。之后集中静态复审第十二至二十二批，重点闭合 GetAvailableStoragePage PC22–50，并复核 Nested_dropTimer/Nested_shiquTimer 捕获来源。",
+  "next_action": "继续筛选剩余短函数；优先复核 Nested_ITEM_INDEX_BY_NAME（26条，含 ipairs/通用迭代器循环）和 Nested_blacklistTimer（28条，需先确认距离字段与调度分支）；然后处理 Nested_TakeItems 以外的复杂短函数。随后集中静态复审第十二至二十三批，重点闭合 GetAvailableStoragePage PC22–50，并复核 Nested_dropTimer/Nested_shiquTimer 的父级捕获。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "43"
+    "last_checkpoint": "44"
   },
   "static_recovered_functions": [
     {
@@ -461,18 +461,17 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 43,
-    "target": "Nested_LuaSendMsg first-pass ordinary Lua draft",
+    "checkpoint": 44,
+    "target": "Nested_TakeItems first-pass ordinary Lua draft",
     "status": "draft_saved_and_verified; complete_static_reconstruction and runtime_verified unchanged",
-    "source_file": "04_源码候选/短函数草稿_第二十二批.lua",
-    "audit_file": "docs/audit/检查点43_短函数草稿批次.md",
+    "source_file": "04_源码候选/短函数草稿_第二十三批.lua",
+    "audit_file": "docs/audit/检查点44_短函数草稿批次.md",
     "verified": [
-      "22 physical instructions reconstructed into counter-based modulo selection",
-      "parent root/43/2 PC24 closure creation confirms three captures and initial counter 0",
-      "LuaSendMsg call target and seven argument order mapped"
+      "29 physical instructions reconstructed into timer toggle logic",
+      "parent root/43 PC313 closure creation confirms all four capture sources",
+      "takeTimer, isTaking, notify callback, and scheduler uses mapped"
     ],
     "unresolved": [
-      "modulus and message-entry capture business names remain temporary",
       "runtime validation not performed"
     ]
   },
@@ -569,26 +568,26 @@
       "status": "first_pass_draft_pending_static_review_not_runtime_verified"
     }
   ],
-  "draft_function_count": 27,
-  "ordinary_lua_draft_functions": 27,
-  "last_checkpoint": "43",
+  "draft_function_count": 28,
+  "ordinary_lua_draft_functions": 28,
+  "last_checkpoint": "44",
   "checkpoint": "35",
-  "drafts": 27,
-  "next": "继续从CSV筛选未开始、无子原型的短函数；优先核查 Nested_blacklistTimer、Nested_TakeItems、Nested_ITEM_INDEX_BY_NAME。每个候选先核实父级闭包捕获及完整PC分支，再写普通Lua草稿。之后集中静态复审第十二至二十二批，重点闭合 GetAvailableStoragePage PC22–50，并复核 Nested_dropTimer/Nested_shiquTimer 捕获来源。",
+  "drafts": 28,
+  "next": "继续筛选剩余短函数；优先复核 Nested_ITEM_INDEX_BY_NAME（26条，含 ipairs/通用迭代器循环）和 Nested_blacklistTimer（28条，需先确认距离字段与调度分支）；然后处理 Nested_TakeItems 以外的复杂短函数。随后集中静态复审第十二至二十三批，重点闭合 GetAvailableStoragePage PC22–50，并复核 Nested_dropTimer/Nested_shiquTimer 的父级捕获。",
   "recent_checkpoint": {
-    "id": 43,
+    "id": 44,
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第二十二批.lua",
-    "audit_file": "docs/audit/检查点43_短函数草稿批次.md",
+    "source_file": "04_源码候选/短函数草稿_第二十三批.lua",
+    "audit_file": "docs/audit/检查点44_短函数草稿批次.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[1].children[0]",
-        "legacy": "root/43/2/1",
-        "name": "Nested_LuaSendMsg",
-        "instructions": 22
+        "path": "root.children[42].children[19]",
+        "legacy": "root/43/20",
+        "name": "Nested_TakeItems",
+        "instructions": 29
       }
     ],
-    "draft_count_total": 27,
+    "draft_count_total": 28,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0
   }
