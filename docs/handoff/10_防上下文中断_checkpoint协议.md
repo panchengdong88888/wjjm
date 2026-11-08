@@ -354,3 +354,11 @@
 - 函数状态 CSV 与机器状态 JSON 同步更新并复读验证。
 - 普通 Lua 草稿累计 22 个；完整静态恢复仍为 27/110（24.5%）；运行时验证 0。
 - 下一步：继续恢复短函数；候选优先 Nested_InitGatherMonsters、Nested_onDamageMsg、Nested_LuaSendMsg，但先核对分支和融合载荷。
+
+## 检查点 #40（2026-11-09）：Nested_shiquTimer
+- 新增 `04_源码候选/短函数草稿_第十九批.lua` 与 `docs/audit/检查点40_短函数草稿批次.md`。
+- 恢复拾取开关两条路径：已有定时器则提示关闭、取消定时器并写入常量状态标记；无定时器则提示开启、调用 PickUpItems(0.01) 并保存返回值。
+- 常量状态标记保留为 {"unknown", 2}，未擅自改成 nil。
+- 函数状态 CSV 与机器状态 JSON 同步更新并复读验证。
+- 普通 Lua 草稿累计 23 个；完整静态恢复仍为 27/110（24.5%）；运行时验证 0。
+- 下一步：继续核对 Nested_InitGatherMonsters、Nested_onDamageMsg、Nested_LuaSendMsg 的参数与分支，不根据融合载荷盲猜调用参数。
