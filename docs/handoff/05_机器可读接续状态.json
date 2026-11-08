@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续批量恢复 PickUpItems 父函数（root.children[21]）中尚未还原的控制流，优先拆解 172 条指令里的短路径和两个已完成比较闭包的调用位置；若出现长函数复杂分支，则转向其他独立短辅助函数。",
+  "next_action": "继续解析 PickUpItems PC65-101：逐条对照 raw instruction records、opcode 语义、融合载荷与 CFG 跳转边，证明 R0 是否始终为空及 R16/R17/R18 的寄存器身份；确认两组列表分流条件后，再恢复完整 PickUpItems 普通 Lua。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -388,18 +388,28 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "target": "InitGatherMonsters exact capture identity and full static recovery",
-    "status": "complete_static_reconstruction",
-    "source_file": "04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua",
+    "target": "PickUpItems root/22 first-pass control-flow and data-flow audit",
+    "status": "analysis_checkpoint_only_not_complete_source",
+    "source_prototype": "root.children[21]",
+    "audit_file": "docs/audit/检查点28_PickUpItems主函数第一轮数据流.md",
     "verified": [
-      "All seven capture identities traced to root initialization definitions",
-      "FormatStateChange and ResetGatherMonsterData names confirmed by canonical prototype index",
-      "State constants table fields confirmed",
-      "UnSchedule and Schedule method receiver/self semantics confirmed",
-      "All 36 physical instructions accounted for"
+      "GetDroppedItems() two-return entry and empty-ground-items early notice/return",
+      "PlayerPos() two-coordinate read",
+      "name fallback priority mName -> mONameStr -> Name -> name -> empty string",
+      "coordinate fallback priority mCurrMapX -> MapX -> mapX -> x and mCurrMapY -> MapY -> mapY -> y",
+      "missing/false coordinate skips current item",
+      "Manhattan distance abs(playerX-itemX)+abs(playerY-itemY)",
+      "two lists sorted with Nested_dist and Nested_dist_2, then merged",
+      "nearest merged item passed to MoveTo(x,y,0)",
+      "per-axis absolute delta <= 1 gate before PickMainPlayerPosItem",
+      "pickup notice callback receives '拾取: ' .. item.mName"
+    ],
+    "unresolved": [
+      "PC65-101 inner loop, list classification and R0/R16/R17/R18 roles",
+      "Need validate fused call argument windows and all CFG edges before simplifying the apparently empty R0 ipairs loop"
     ],
     "runtime_verified": false,
-    "checkpoint_report": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md"
+    "static_recovered_count_unchanged": true
   },
   "corrections": [
     {
