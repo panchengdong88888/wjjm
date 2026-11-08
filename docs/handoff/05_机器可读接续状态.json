@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续批量恢复其他短小辅助函数/简单原型：从尚未恢复的短函数开始，优先用反汇编直接产出普通 Lua；疑点用注释保留。对有充分证据的短函数完成独立静态复核后直接标记完整静态恢复。随后处理较复杂函数主体。每批提交源码、CSV、JSON、检查点并从 GitHub 复读验证。",
+  "next_action": "继续恢复剩余短小原型；优先处理返回值和参数窗口清楚的辅助函数。对通知 helper 复核 UP[0] 捕获对象后再决定是否完整静态验收。每批更新源码、CSV、机器状态和检查点。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -183,22 +183,36 @@
       "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
       "status": "complete_static_reconstruction",
       "runtime_verified": false
+    },
+    {
+      "path": "root.children[4]",
+      "legacy_path": "root/5",
+      "name": "GetDroppedItems",
+      "physical_instructions": 8,
+      "source_file": "04_源码候选/其他短辅助函数_第二批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "returns": [
+        "drop items",
+        "ground item count"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "DiuItems source-to-PC review and six small helper prototypes",
-    "status": "six_helpers_complete_static_diuitems_draft_reviewed",
+    "target": "GetDroppedItems and ShowLocalNoticeByType helper batch",
+    "status": "one_complete_static_one_draft",
+    "source_file": "04_源码候选/其他短辅助函数_第二批草稿.lua",
     "verified": [
-      "DiuItems active-path draft checked against PC2-169 including PC157/158 increments; kept as draft because dead keyword construction is omitted and runtime unknown",
-      "Six short helper prototypes independently matched to corrected disassembly and accepted as complete static reconstructions: GetMapId, IsDie, GetMapName, GetMainPlayerID, Nested_distance, Nested_string_2"
+      "GetDroppedItems 8-instruction method call and two-value return fully reconstructed",
+      "ShowLocalNoticeByType 15-instruction notice record fields and forwarding call drafted"
     ],
     "unresolved": [
-      "DiuItems dead keyword construction remains intentionally omitted from readable active-path draft",
-      "No runtime validation has been performed"
+      "ShowLocalNoticeByType UP[0] capture object identity and parent closure creation point",
+      "Runtime validation"
     ],
     "runtime_verified": false,
-    "checkpoint_report": "docs/audit/检查点15_DiuItems复核与短函数首批验收.md"
+    "checkpoint_report": "docs/audit/检查点16_第二批短辅助函数恢复.md"
   },
   "corrections": [
     {
