@@ -21,7 +21,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "核对 root.children[7]/[38] 的原始解释器跳转语义（尤其 PC 3–11、15–30 的比较与跳转组合），并沿 root.children[31]/MainLoop 的捕获链定位实际调用消费点；不要根据函数名或反汇编器伪代码猜返回值。",
+  "next_action": "继续 DiuItems root.children[45]：追踪 PC 49–60 的 R6/R0 参数来源和 table.insert 目标表，确认 GetOwnerID 的真假与“其他玩家/自己/未归属”日志分支对应关系；再追踪 PC 124–147 的 R3/R4 参数来源。两个 owner helper 暂不标记完成。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -153,14 +153,17 @@
       "31 instructions each, no child prototypes",
       "root PC 191/192 create GetOwnerIDText and GetOwnerID closures into R31/R32",
       "root PC 212 creates root.children[31]; R32 and R31 are subsequently fed into closure setup at PC 224/232",
-      "root.children[32] wrapper has two upvalues; forwards varargs to upvalue[0] and returns its result; upvalue[1] is not read in its six instructions"
+      "root.children[32] wrapper has two upvalues; forwards varargs to upvalue[0] and returns its result; upvalue[1] is not read in its six instructions",
+      "root.children[45] DiuItems captures 22 values; upvalue[9] maps to GetOwnerID and upvalue[17] maps to GetOwnerIDText",
+      "DiuItems PC 49-52 calls GetOwnerID with two arguments; truthy result skips the PC 55-60 table.insert branch",
+      "DiuItems PC 124-127 calls GetOwnerIDText with two arguments; truthy result selects log '归属已变更为自己', false selects '归属未变更或已离开视野'",
+      "static branch truth tables derived for both helpers across special values, string and non-string values"
     ],
     "unresolved": [
-      "exact branch return values and polarity",
-      "GetOwnerIDText return contract",
-      "GetOwnerID return contract",
-      "caller argument and return-value usage",
-      "exact owner helper return semantics still require opcode jump/fusion verification and caller dataflow"
+      "GetOwnerID call's insertion/skip branch business meaning",
+      "GetOwnerIDText call arguments R3/R4 source and string branch semantics",
+      "runtime ownerID type samples",
+      "runtime verification"
     ],
     "runtime_verified": false,
     "report_file": "docs/audit/owner_id_helpers_阶段核验.md"
