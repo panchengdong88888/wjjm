@@ -1,0 +1,431 @@
+MainLeftBottom.lua 内层静态解码报告
+====================================
+VM payload bytes: 71216
+Root: 109 constants, 412 instructions, 58 nested functions
+
+顶层字符串常量:
+  K001: 10000
+  K003: isHidden
+  K004: TakeItems
+  K007: StopGatherMonsters
+  K008: onDamageMsg
+  K009: LuaSendMsg
+  K012: hidebut
+  K013: floor
+  K014: Builtsetting
+  K015: distance
+  K016: isTaking
+  K017: 累计登录 2 天
+  K018: log
+  K019: isOutputted
+  K021: InitGatherMonsters
+  K022: destroy
+  K023: isDiuing
+  K024: 在线时长90分钟
+  K026: BlacklistItems
+  K027: screenH
+  K028: 在线时长5分钟
+  K030: MoveTo
+  K033: GetAvailableStoragePage
+  K034: screenW
+  K035: alertAt
+  K036: StorageItems
+  K037: 空闲状态
+  K039: hide
+  K040: SendHookList
+  K041: 累计登录 4 天
+  K042: RecvHookList
+  K043: GATHER_THRESHOLD
+  K045: ATTACKING
+  K046: 累计登录 7 天
+  K047: noStoneWarned
+  K048: isStoring
+  K049: SCREEN_WIDTH
+  K050: doInit
+  K051: GetMapName
+  K052: 在线时长30分钟
+  K053: nextTryAt
+  K054: deathHandled
+  K055: SL
+  K056: 在线时长10分钟
+  K057: 累计登录 1 天
+  K058: blacklist_distance.txt
+  K059: math
+  K061: 在线时长60分钟
+  K062: main
+  K063: 在线时长120分钟
+  K065: 引怪中
+  K066: 攻击中
+  K067: GATHERING
+  K068: z
+  K069: 累计登录 3 天
+  K070: IsInWhitelistMap
+  K071: isRunning
+  K072: 累计登录 6 天
+  K074: show
+  K075: version
+  K076: PlayerPos
+  K077: a
+  K078: DiuItems
+  K080: isPaused
+  K081: GetStorageItemData
+  K082: MainLeftBottom
+  K083: MoveItemToQuickUse
+  K084: ATTACK_WAIT_TIME
+  K085: PickUpItems
+  K086: gather_monster_count.txt
+  K087: GetMapId
+  K088: b
+  K089: 累计登录 5 天
+  K090: Blocklist
+  K091: _G
+  K092: ClearBlacklistItems
+  K093: lastAttacker
+  K095: GetMetaValue
+  K096: IDLE
+  K098: 
+  K099: 在线时长20分钟
+  K101: 随机传送石
+  K103: lastHp
+  K104: CHECK_INTERVAL
+  K106: MainLoop
+  K107: GetDroppedItems
+  K108: blacklist
+  K109: SCREEN_HEIGHT
+
+嵌套函数结构与字符串:
+
+root/1: constants=5 instructions=32 children=1 vararg=1
+  strings: pcall | isFileExist | cc | getInstance | FileUtils
+
+root/1/1: constants=1 instructions=5 children=0 vararg=0
+  strings: removeFile
+
+root/2: constants=16 instructions=77 children=0 vararg=0
+  strings: 仓库总可用格子:  | GUIDefine | type | GetOpenSize | table | insert | global | ipairs | NPC_STORAGE_MAX_PAGE | NPCStorageProxy | MMO | STORAGE_PER_PAGE_MAX | GetMaxPage | GetStorageDataByPage
+
+root/3: constants=4 instructions=10 children=0 vararg=1
+  strings: FileUtils | getInstance | getWritablePath | cc
+
+root/4: constants=20 instructions=51 children=0 vararg=3
+  strings: sendNotification | global | range | Facade | x | PlayerPos | InputMove | NoticeTable | GetMetaValue | mapID | INPUT_MOVE_TYPE_AUTOMOVE | SL | abs | y | math | MMO | tonumber | type | MAP_ID
+
+root/5: constants=3 instructions=8 children=0 vararg=0
+  strings: FindDropItemInCurrViewFieldAll | global | dropItemManager
+
+root/6: constants=23 instructions=99 children=0 vararg=0
+  strings: 取:  | string | isTaking | MakeIndex | LuaSendMsg | global | 待定 | len | GetStorageItemData | MSG_CS_STORAGE_PICK_OUT_REQUEST | find | MsgType | ipairs | 取出物品完成, 共取出  | trim |  件 | Name | 仓库无可取物品
+
+root/7: constants=9 instructions=40 children=1 vararg=0
+  strings: gameMapController | __ylwHookedOrigin | 已挂接伤害消息钩子（击杀拉黑用） | MSG_SC_DAMAGE_HP | mNetMsgHandle | type | global | MsgType | table
+
+root/7/1: constants=4 instructions=18 children=0 vararg=2
+  strings: onDamageMsg | pcall | type | function
+
+root/8: constants=7 instructions=31 children=0 vararg=2
+  strings: type | string |  | GetOwnerID | tostring
+
+root/9: constants=3 instructions=10 children=0 vararg=1
+  strings: format | 状态切换: %s -> %s | string
+
+root/10: constants=13 instructions=45 children=0 vararg=1
+  strings: %s | string | gsub | tonumber |  | getStringFromFile | match | ^%d+$ | getInstance | isFileExist | type | cc | FileUtils
+
+root/11: constants=5 instructions=15 children=0 vararg=0
+  strings: isHidden | setVisible | pairs | GUI
+
+root/12: constants=6 instructions=25 children=0 vararg=2
+  strings: x | abs | y | max | math
+
+root/13: constants=34 instructions=92 children=0 vararg=0
+  strings: ) | string | ,  | param4 | networkCtl | tonumber | recog | Blocklist | ipairs | table | concat | SendHookList | type | param1 | tostring | global | find | SendMsg | LuaSendMsg( | param3 | insert | msgId | function | pcall | ' | param2
+
+root/14: constants=4 instructions=9 children=0 vararg=0
+  strings: SL | MAP_ID | GetMetaValue
+
+root/15: constants=4 instructions=27 children=0 vararg=0
+  strings: FindMonsterInCurrViewField | ipairs | SL | GetID
+
+root/16: constants=17 instructions=63 children=1 vararg=0
+  strings: _blacklistData | SL | pairs | ScheduleOnce | 清空黑名单失败 | 黑名单本来就是空的 | ipairs | 黑名单为空 | 开始清空黑名单，共 %d 人 | 清空黑名单  |  人 | lastAttacker | 取不到好友代理，清空失败
+
+root/16/1: constants=4 instructions=13 children=0 vararg=0
+  strings: SL | RequestOutBlacklist | _blacklistData
+
+root/17: constants=13 instructions=38 children=0 vararg=1
+  strings: format | # | Print | type | pcall | tostring | string | table | dump | SL | select | 【超本】
+
+root/18: constants=2 instructions=14 children=1 vararg=2
+  strings: pcall
+
+root/18/1: constants=5 instructions=14 children=0 vararg=0
+  strings: tostring | cc | getInstance | FileUtils | writeStringToFile
+
+root/19: constants=7 instructions=19 children=0 vararg=0
+  strings: X | y | GetMetaValue | x | Y | SL
+
+root/20: constants=11 instructions=36 children=1 vararg=0
+  strings: gatherTimer | CHECK_INTERVAL | format | IDLE | Schedule | GATHER_THRESHOLD | 引怪功能已启动 (阈值: %d) | SL | string | UnSchedule
+
+root/20/1: constants=1 instructions=3 children=0 vararg=0
+  strings: MainLoop
+
+root/21: constants=14 instructions=15 children=0 vararg=1
+  strings: screenH | Y | SL | Type | Msg | ShowLocalNoticeByType | BColor | FColor | X
+
+root/22: constants=34 instructions=172 children=2 vararg=0
+  strings: 地面无可拾取物品 | abs | MoveTo | PlayerPos | mapY | global | sort | ipairs | dist | find | MapY | math | mCurrMapX | mapX | MapX |  | mName | string | mCurrMapY | item | mONameStr | table | GetDroppedItems | name | x | kIdx | PickMainPlayerPosItem | insert | dropItemController | y | Name | 拾取: 
+
+root/22/1: constants=2 instructions=19 children=0 vararg=2
+  strings: dist | kIdx
+
+root/22/2: constants=1 instructions=8 children=0 vararg=2
+  strings: dist
+
+root/23: constants=15 instructions=144 children=0 vararg=5
+  strings: GetMapData2DPtr | abs | isObstacle | getMapDataCols | global | floor | math | getMapDataRows | max | sceneManager
+
+root/24: constants=15 instructions=55 children=0 vararg=0
+  strings: CHANGE_SETTING | 关闭屏蔽怪物 | 关闭游戏音乐 | 开启人物简装 | 开启怪物简装 | 关闭高帧率 | 关闭背景音乐
+
+root/25: constants=8 instructions=33 children=0 vararg=0
+  strings: GetMetaValue | ITEM_COUNT | ipairs | tonumber | ITEM_INDEX_BY_NAME | SL | UseItemByIndex
+
+root/26: constants=15 instructions=47 children=1 vararg=0
+  strings: 被 %s 击杀，自动加入黑名单 | ScheduleOnce | 本次死亡没记录到凶手，跳过自动拉黑 | lastAttacker |  | 自动拉黑： | 凶手已在黑名单中：%s | id | SL | name
+
+root/26/1: constants=3 instructions=6 children=0 vararg=0
+  strings: RequestAddBlacklistByName | name | SL
+
+root/27: constants=3 instructions=20 children=0 vararg=0
+  strings: 数据已重置 | 
+
+root/28: constants=6 instructions=25 children=0 vararg=0
+  strings: 引怪功能已停止 | UnSchedule | IDLE | gatherTimer | SL
+
+root/29: constants=19 instructions=102 children=1 vararg=0
+  strings: global | ipairs | FindMonsterInCurrViewField | 未知怪物 | type | SETTING_IDX_IGNORE_MONSTER | SL | insert | GetName | GET_SETTING | table | MMO | sort | _distance | GATHER_THRESHOLD | pairs
+
+root/29/1: constants=1 instructions=8 children=0 vararg=2
+  strings: _distance
+
+root/30: constants=1 instructions=7 children=0 vararg=1
+  strings: IsDie
+
+root/31: constants=4 instructions=9 children=0 vararg=0
+  strings: GetMetaValue | MAP_NAME |  | SL
+
+root/32: constants=6 instructions=28 children=0 vararg=0
+  strings: MAP_NAME | GetMetaValue | 土城 | IN_SAFE_AREA | ipairs | SL
+
+root/33: constants=0 instructions=6 children=0 vararg=1
+
+root/34: constants=0 instructions=5 children=0 vararg=0
+
+root/35: constants=2 instructions=7 children=0 vararg=2
+  strings: SL | Schedule
+
+root/36: constants=8 instructions=26 children=0 vararg=1
+  strings: retrieveProxy | Facade | ProxyTable | SELETE_TARGET_TYPE_FIND | MMO | PlayerInputProxy | SetTargetID | global
+
+root/37: constants=12 instructions=51 children=0 vararg=0
+  strings: STORAGE_PER_PAGE_MAX | GetOpenSize | NPC_STORAGE_MAX_PAGE | 仓库代理未初始化 | GetMaxPage | GUIDefine | NPCStorageProxy | global | GetStorageDataByPage | MMO
+
+root/38: constants=11 instructions=31 children=0 vararg=0
+  strings: UnSchedule | isHidden | GUI | setVisible | SL | resWin | resTimer | Win_CloseAll | pairs
+
+root/39: constants=7 instructions=31 children=0 vararg=2
+  strings: tostring | GetOwnerID | type |  | string
+
+root/40: constants=3 instructions=6 children=0 vararg=0
+  strings: gamePlayerController | GetMainPlayerID | global
+
+root/41: constants=9 instructions=47 children=0 vararg=0
+  strings: GUI | pairs | setVisible | SL | hidebut | UnSchedule | rewardTimer | cruiseTimer
+
+root/42: constants=26 instructions=133 children=0 vararg=2
+  strings: 快捷栏移动: %d → %d | next | QuickUseProxy | SetQuickUsePosData | GetQuickUseData | GetQuickUseSize | DelItemData | 参数无效 | 物品已在目标位置 | addItemData | Bag | 物品不存在 | Index | ProxyTable | retrieveProxy | Facade | 目标位置超出范围 | string | 已从背包移动到快捷栏位置%d | format | GetItemDataByItemIndex | pairs | global | GetQucikUseDataByPos | 快捷栏交换: %d ↔ %d
+
+root/43: constants=105 instructions=419 children=23 vararg=0
+  strings: addOnClickEvent | pcall | Button_setTitleFontSize | RequestStorageData | ScheduleOnce | takebut | res/public/kaiti2.ttf | 声望卷 | SL | %Y-%m-%d %H:%M:%S | Builtsetting | slot | 开拉怪 | retrieveProxy | cruiseTimer | toggle | 恶魔令牌 | 灵符 | MainProperty | 转生水晶 | 绑定灵符 | Button_Create | res/public/fuzhu_btn.png | MoneyProxy | Button_setTitleFontName | 绑定元宝 | 快速小退 | 随机传送石 | 永久随机石 | 免战回城石 | GetMoneyCountById | 大陆传送石 | rewardbut | 关黑名单 | shiqubut | 关拉怪 | clearblacklistbut | NPCStorageProxy | 插件初始化完成 | getWorldPosition | time | width | 清距离值 | 开拾取 | 关丢物品 | getContentSize | Button_setTitleText | storagebut | 血龙宝珠 | UnSchedule | 资源统计 | Panel_mini_chat | 盟重传送石 | date | _ui | GetMoneyIdByName | hidebut | xiaotuibut | os | 洗髓丹 | -- | ProxyTable | Facade | initTimeStr | 隐 藏 | cleardistancebut | 开黑名单 | key | ipairs | blacklistbut | 关奖励 | GUI | moneybut | diuqibut | clearmonsterbut | initTime | initSnapshot | Schedule | yinguaibut | name | 盟重回城石 | 关拾取 | names | x | Attach_UITop | 清黑名单 | 元宝 | 开奖励 | 清怪物值 | y | 永久回城石 | global | 悟道茶 | 开丢物品
+
+root/43/1: constants=12 instructions=46 children=0 vararg=1
+  strings: find | Name | GetMetaValue | BAG_DATA | string | MakeIndex | ITEM_IS_BIND | SL | pairs | OverLap
+
+root/43/2: constants=8 instructions=33 children=1 vararg=0
+  strings: SL | 开启奖励功能 | UnSchedule | rewardTimer | Schedule | 关闭奖励功能
+
+root/43/2/1: constants=5 instructions=22 children=0 vararg=0
+  strings: LuaSendMsg
+
+root/43/3: constants=4 instructions=21 children=0 vararg=0
+  strings: 已清空怪物阈值 | 已清空怪物阈值存档：%s | 清空怪物阈值失败 | 清空怪物阈值失败：%s
+
+root/43/4: constants=72 instructions=320 children=5 vararg=0
+  strings: #FFFF00 | durTimeText | noteText | global | money | -- | initTimeCell | 元宝 | Schedule | titleText | Win_IsNotNull | #00FF00 | #FF0000 | 当前时间:-- | 绑定灵符 | （括号内数量为非绑定资源的收益） | 声望卷 | 历时:-- | ProxyTable | noteCell | Layout_Create | screenW | SL | Text_Create | curTimeCell | UnSchedule | resWin | 血龙宝珠 | Facade | ListView_setBackGroundColorOpacity | item | screenH | 转生水晶 | ListView_setBackGroundColorType | 恶魔令牌 | 绑定元宝 | initTimeText | 悟道茶 | GUI | Win_Close | 资源统计 | 关闭资源信息窗口 | curTimeText | setAnchorPoint | closeResWin | ListView_setBackGroundColor | resList | retrieveProxy | 初始时间: | addOnClickEvent | durTimeCell | resTimer | 灵符 | initTimeStr | titleCell | Win_Create | MoneyProxy | ListView_Create | #CEB5F7 | 洗髓丹 | setTouchEnabled
+
+root/43/4/1: constants=12 instructions=35 children=0 vararg=1
+  strings: 万 | format | string | %.1f亿 | tostring | floor | math
+
+root/43/4/2: constants=12 instructions=46 children=0 vararg=1
+  strings: string | SL | pairs | OverLap | ITEM_IS_BIND | Name | GetMetaValue | BAG_DATA | find | MakeIndex
+
+root/43/4/3: constants=17 instructions=65 children=0 vararg=3
+  strings: #FFFFFF | Layout_Create | :-- | math | _ | _cell_ | GUI | _text_ | Text_Create | ceil | setAnchorPoint
+
+root/43/4/4: constants=31 instructions=168 children=0 vararg=0
+  strings: : | -- | time | GUI | 小时 | floor | initTime | ) | %Y-%m-%d %H:%M:%S | 历时: | math | resWin | date | os | resTimer | pairs | 当前时间: | pcall | Text_setString | GetMoneyIdByName | SL | Win_IsNotNull | ( | 分钟 | initSnapshot | UnSchedule | GetMoneyCountById
+
+root/43/4/5: constants=8 instructions=20 children=0 vararg=0
+  strings: UnSchedule | GUI | resTimer | 点击空白,关闭资源信息窗口 | SL | resWin | Win_Close
+
+root/43/5: constants=3 instructions=5 children=0 vararg=0
+  strings: OnGameLeaveWorld | global | gameWorldController
+
+root/43/6: constants=10 instructions=41 children=0 vararg=2
+  strings: #ffffff | toggled | toggle | Button_setTitleText | Button_setTitleColor | #ff0000 | name | ipairs | GUI | key
+
+root/43/7: constants=5 instructions=31 children=0 vararg=0
+  strings: StopGatherMonsters | 路径中没有怪物数量阈值，弹出输入框 | 关闭引怪功能 | 开启引怪功能 | gatherTimer
+
+root/43/8: constants=2 instructions=17 children=0 vararg=1
+  strings: InitGatherMonsters | GATHER_THRESHOLD
+
+root/43/9: constants=10 instructions=29 children=0 vararg=0
+  strings: SL | storageTimer | isStoring | StorageItems | UnSchedule | 开启存仓功能 | 关闭存仓功能
+
+root/43/10: constants=17 instructions=50 children=1 vararg=3
+  strings: Button_setTitleFontSize | toggled | GUI | Button_Create | toggle | name | Button_setTitleColor | res/public/fuzhu_btn.png | res/public/kaiti2.ttf | #ffffff | Button_setTitleText | addOnClickEvent | Button_setTitleFontName | key
+
+root/43/10/1: constants=10 instructions=48 children=0 vararg=0
+  strings: Button_setTitleText | GUI | Button_setTitleColor | #ff0000 | toggled | name | key | toggle | #ffffff
+
+root/43/11: constants=8 instructions=25 children=0 vararg=0
+  strings: shiquTimer | 关闭拾取物品 | SL | UnSchedule | 开启拾取物品 | PickUpItems
+
+root/43/12: constants=1 instructions=12 children=1 vararg=0
+  strings: 请输入黑名单的距离格子（数字，按线路计算）
+
+root/43/12/1: constants=6 instructions=35 children=0 vararg=1
+  strings: 黑名单距离保存失败 |  格 | blacklistbut | 黑名单距离已保存： | 黑名单距离保存失败，路径：%s | 黑名单距离已保存：%d 格
+
+root/43/13: constants=25 instructions=43 children=0 vararg=0
+  strings: %04d%02d%02d | 到达 22:00:05，发送开启巡航协议 |  | sec | date | day | string | year | os | *t | hour | LuaSendMsg | min | format | month
+
+root/43/14: constants=2 instructions=6 children=0 vararg=0
+  strings: 清空黑名单 | ClearBlacklistItems
+
+root/43/15: constants=1 instructions=12 children=1 vararg=0
+  strings: 请输入拉怪的怪物数量阈值（数字）
+
+root/43/15/1: constants=5 instructions=34 children=0 vararg=1
+  strings: 怪物阈值已保存： | 怪物阈值保存失败，路径：%s | yinguaibut | 怪物阈值保存失败 | 怪物阈值已保存：%d
+
+root/43/16: constants=10 instructions=30 children=0 vararg=0
+  strings: 隐藏所有按钮 | hidebut | setOpacity | show | isHidden | GUI | 显示所有按钮 | hide
+
+root/43/17: constants=7 instructions=26 children=0 vararg=0
+  strings: ITEM_INDEX_BY_NAME | MoveItemToQuickUse | GetMetaValue | SL | ipairs | slot | names
+
+root/43/18: constants=5 instructions=28 children=0 vararg=1
+  strings: blacklistTimer | distance | BlacklistItems | 开启黑名单功能，距离格子：%d
+
+root/43/19: constants=9 instructions=39 children=0 vararg=0
+  strings: 路径中没有黑名单的距离格子，弹出输入框 | 开启黑名单功能，距离格子：%d | blacklistTimer | isBlacklisting | SL | UnSchedule | 关闭黑名单功能
+
+root/43/20: constants=10 instructions=29 children=0 vararg=0
+  strings: TakeItems | 开启取物功能 | isTaking | UnSchedule | SL | takeTimer | 关闭取物功能
+
+root/43/21: constants=4 instructions=21 children=0 vararg=0
+  strings: 清空黑名单距离失败：%s | 清空黑名单距离失败 | 已清空黑名单距离存档：%s | 已清空黑名单距离
+
+root/43/22: constants=10 instructions=29 children=0 vararg=0
+  strings: dropTimer | DiuItems | 开启丢弃物品 | 关闭丢弃物品 | SL | UnSchedule | isDiuing
+
+root/43/23: constants=0 instructions=8 children=1 vararg=2
+
+root/43/23/1: constants=13 instructions=27 children=1 vararg=1
+  strings: str | btnType | SL | OpenCommonTipsPop | 
+ | editParams | maxLength | showEdit | inputMode | callback
+
+root/43/23/1/1: constants=14 instructions=50 children=1 vararg=2
+  strings: match | %s：参数格式不对（%s） | ^%d+$ | gsub | ScheduleOnce | SL | %s | string |  | tonumber | tostring | editStr
+
+root/43/23/1/1/1: constants=1 instructions=4 children=0 vararg=0
+  strings: 参数格式不对，请输入数字
+
+root/44: constants=7 instructions=20 children=0 vararg=2
+  strings: 其他玩家 | GetOwnerID | 无归属 |  | 自己
+
+root/45: constants=5 instructions=17 children=0 vararg=1
+  strings: mCurrMapY | y | x | mCurrMapX
+
+root/46: constants=41 instructions=417 children=0 vararg=0
+  strings: 锁定怪物 %d: %s (ID: %s, 归属: %s) | 怪物 %s 归属未变更或已离开视野 | 怪物 %d (ID: %s) 已死亡，跳过 | 引怪中 | 视野内没有可攻击怪物 | ATTACKING |  | 怪物 %d (ID: %s) 已死亡或离开视野 | GetName | 未知怪物 | IDLE | 开始等待 %s 归属变更 (等待 %d 秒) | ATTACK_WAIT_TIME | 攻击中 | ipairs | IsInWhitelistMap | 攻击怪物 %d: %s (ID: %s) | 锁定怪物 %s 失败 | 开始引怪，目标数量: %d | GetID | table | time | 怪物列表处理完毕但未全部获取归属，重新扫描 | 怪物 %s 归属已变更为自己 | 扫描怪物中 | 等待归属变更中: %s (还剩 %d 秒) | 没有可攻击的怪物 | format | string | 所有怪物归属已获取，切换到攻击状态 | tostring | insert | 怪物 %d (ID: %s) 不在视野内，跳过 | 所有目标怪物已死亡或离开视野，切换到空闲状态 | 在白名单地图, 停止引怪 | os | 怪物 %d (%s, ID: %s) 归属属于其他玩家(归属ID: %s, %s)，跳过 | 怪物 %d (%s, ID: %s) 归属已属于自己(归属ID: %s, %s)，跳过 | GATHERING
+
+root/47: constants=64 instructions=169 children=1 vararg=0
+  strings: global | 时装晶魄 | 龙傲 | 敖顺 | 神凤 | MakeIndex | 上古 | 悟道茶 | MsgType | 残 | 熬光 | GetDroppedItems | 经验卷 | 冰雪 | 敖闰 | SL | MSG_CS_MAP_ITEM_DISCARD | ITEM_IS_BIND | count | 技能残页 | 麻痹 | 主印 | 血龙宝珠 | 共丢弃  | GetMetaValue | table | Name | 转生水晶 | 复活 | 副印 | 件，停止丢弃 | 晶石 | 之力 | makeIndex | insert | 起源 | pairs | name | 点点 | 护身 | len | string | LuaSendMsg | BAG_DATA | OverLap | )超过上限( | 地面物品( | 背包无可丢弃物品 | isDiuing |  件物品 | 丢:  | 称号卷 | 恶魔令牌 | 洗髓丹 | 声望卷 | ipairs | 地面物品已满 | ) | 鸿蒙
+
+root/47/1: constants=4 instructions=20 children=0 vararg=1
+  strings: string | ipairs | find
+
+root/48: constants=35 instructions=216 children=0 vararg=0
+  strings: 黑名单玩家 | deathHandled | ACTOR_MAP_X | nextTryAt | table | alertAt | distance | format | 黑名单玩家 %s，距离 %d 格，使用 %s 随机传送 | concat | os | SL | FIND_IN_VIEW_PLAYER_LIST | 没有随机传送石，黑名单玩家传送暂停 | 没有可用的随机传送道具（%s） | ACTOR_MAP_Y | MAIN_ACTOR_ID | 野外观测到黑名单玩家：%s（%d格） | IsInWhitelistMap | lastHp | GetMetaValue | time | / | tonumber | HP | ACTOR_NAME | isBlacklisting | 黑名单玩家：%s（%d格），飞随机 | string | noStoneWarned
+
+root/49: constants=1 instructions=10 children=1 vararg=0
+  strings: pcall
+
+root/49/1: constants=5 instructions=9 children=0 vararg=0
+  strings: FriendProxy | Facade | global | retrieveProxy | ProxyTable
+
+root/50: constants=0 instructions=5 children=0 vararg=0
+
+root/51: constants=57 instructions=224 children=2 vararg=0
+  strings: 涅槃石 | 神彩 | 麻痹戒指 | 至尊 | GetOpenSize | global | isStoring | 天神令 | MSG_CS_STORAGE_STORE_REQUEST | 宝石精魄 | GUIDefine | 使用:  | MsgType | 金刚石 | 神装碎片 | UseItemByIndex | 仓库已满,无法存仓 | pairs | find | GetMaxPage | NPCStorageProxy | STORAGE_PER_PAGE_MAX | MakeIndex | 待定 | SL | ITEM_INDEX_BY_NAME | ITEM_IS_BIND | 转生证明 | GetStorageDataByPage | 魔神石 | GetAvailableStoragePage | 金罡 | ipairs |  件物品 | 存仓完成, 共存入  | 凤凰 | 存:  | 玄铁 | GetMetaValue | 圣皇 | Name | len | BAG_DATA | string | 复活戒指 | 真金矿石 | 切割神戒 | NPC_STORAGE_MAX_PAGE | BOSS头骨 | LuaSendMsg | 背包物品为空 | MMO
+
+root/51/1: constants=15 instructions=52 children=0 vararg=2
+  strings: isOutputted | tostring | 聚灵珠信息:  |  Dura= | string | Dura |  DuraMax= | 聚灵珠 |  StdMode= | Name | StdMode | DuraMax | find
+
+root/51/2: constants=1 instructions=27 children=0 vararg=0
+
+root/52: constants=5 instructions=35 children=0 vararg=1
+  strings: SL | _blacklistData | Name | ACTOR_MASTER_ID | GetMetaValue
+
+root/53: constants=19 instructions=72 children=1 vararg=2
+  strings: ACTOR_IS_HERO | GetMetaValue | table | lastAttacker | UserID |  | pcall | string | AttackUserID | MAIN_ACTOR_ID | type | SL | ACTOR_MASTER_ID | name | id | ACTOR_NAME | 分身 | find
+
+root/53/1: constants=2 instructions=6 children=0 vararg=0
+  strings: JsonDecode | SL
+
+root/54: constants=2 instructions=7 children=0 vararg=2
+  strings: ScheduleOnce | SL
+
+root/55: constants=0 instructions=6 children=0 vararg=1
+
+root/56: constants=21 instructions=64 children=2 vararg=0
+  strings: 39770358 | GetMetaValue | 1627987432 | 1957840929 | 1580027021 | 3548598 | 游戏不一致，id： | Schedule | 账号ID： | 1585201915 | SL | GAME_ID | 6324648 | 1488903257 | [验证成功] 账号ID验证通过 | 1304755149 | UID | 游戏id： | [验证失败] 账号ID未在允许列表中
+
+root/56/1: constants=8 instructions=24 children=0 vararg=0
+  strings: Panel_mini_chat | doInit | _ui | 等待主界面属性栏(MainProperty)初始化完成... | UnSchedule | MainLeftBottom | MainProperty | SL
+
+root/56/2: constants=4 instructions=27 children=0 vararg=1
+  strings: [提示] 账号ID在允许列表中，功能已开启 | ipairs | 账号不存在，功能已限制，账号ID： | tostring
+
+root/57: constants=9 instructions=22 children=0 vararg=0
+  strings: MMO | global | ProxyTable | retrieveProxy | Facade | SetTargetID | PlayerInputProxy | SELETE_TARGET_TYPE_FIND
+
+root/58: constants=4 instructions=10 children=0 vararg=0
+  strings: GetMetaValue | X | Y | SL
+
+已识别的功能线索（由字符串常量和函数结构静态判断，不代表执行验证）：
+1. 主界面 MainLeftBottom 初始化及按钮创建。
+2. 自动拾取地面物品、物品丢弃、仓库存取。
+3. 怪物引导/拉怪状态机：IDLE、GATHERING、ATTACKING。
+4. 黑名单维护、玩家距离检测、使用随机传送道具规避黑名单玩家。
+5. 死亡消息钩子及自动将击杀者加入黑名单。
+6. 资源统计窗口、资源计数和在线/累计登录提示。
+7. 快捷栏物品移动。
+8. 存在账号/游戏 ID 白名单校验逻辑，包含验证成功/失败提示。
+
+内层处理链：外层 XXTEA -> LZW 字典解压 -> 每字节 XOR 0x38 -> 自定义 Lua VM 字节码解析/解释执行。
+注意：这份文件内层不是简单的第二把密钥加密；它将 Lua 编译为自定义虚拟机指令，解释器在原文件末尾执行。当前已将字节码完整静态解析，未运行其中代码。
