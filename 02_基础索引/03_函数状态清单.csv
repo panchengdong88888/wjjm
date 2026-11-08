@@ -92,7 +92,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 88,root/43,root.children[43],root/44,GetOwnerDescription,20,7,0,完整静态恢复（未运行时验证）,调用 actor:GetOwnerID；VM 的 ["unknown",2] 是 nil 序列化标记；按 nil/空串/-1/主玩家 ID 分类；参数 actor、mainPlayerID 及返回顺序 ownerID、description 已由 MainLoop 调用点核验。
 89,root/44,root.children[44],root/45,GetPlayerMapPosition,17,5,0,部分核验,涉及 mCurrMapX/mCurrMapY 与 x/y；返回表/边界条件尚未完整还原。
 90,root/45,root.children[45],root/46,MainLoop,417,41,0,结构与部分调用点已核验，源码未恢复,417 条指令引怪状态机；22 个 upvalue 映射已复核；upvalue[9]/[17] 分别为 GetOwnerID/GetOwnerIDText，PC49-60 与 PC124-147 为对应调用及分支；完整 CFG/source 未完成。
-91,root/46,root.children[46],root/47,DiuItems,169,64,1,部分静态核验（未运行时验证）,169 条指令自动丢弃物品逻辑；根 PC64 捕获父 root T[2]/T[5]；upvalue[0] 为状态表、upvalue[1] 为 ShowLocalNoticeByType；PC36-67 构造关键词表/匹配闭包，PC69-112 筛选 BAG_DATA，PC113-169 丢弃与收尾；精确谓词和消息参数待核验。
+91,root/46,root.children[46],root/47,DiuItems,169,64,1,部分静态核验（未运行时验证）,PC69-112 已确认 pairs(BAG_DATA) 遍历、Name/MakeIndex 有效性检查、ITEM_IS_BIND 元数据分支、纯文本关键词匹配及 makeIndex/count/name 候选记录（OverLap 缺失回退 1）；PC124-169 已定位 ipairs 丢弃循环、地面物品满提示、LuaSendMsg 与计数收尾；绑定标志极性、35 上限数据流、消息参数顺序仍待核验。
 92,root/46/0,root.children[46].children[0],root/47/1,Nested_string_2,20,4,0,静态源码候选,20 条指令，纯文本关键词匹配，捕获 root/46 R5 的关键词表；无运行时验证。
 93,root/47,root.children[47],root/48,BlacklistPlayerDetection,216,35,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 94,root/48,root.children[48],root/49,PCallHelper_2,10,1,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
