@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续批量恢复。追踪 root T[23]、T[13]、T[35] 在根初始化函数中的赋值来源；独立解析 root.children[17].children[0] PC9-13 的 OP_004/OP_252 融合调用及返回分支；然后处理 PickUpItems 的短子闭包或其他简单包装函数。",
+  "next_action": "继续追踪 root 初始化函数中用于 InitGatherMonsters 的父级 T[23]、T[13]、T[35] 的赋值来源，确认辅助函数和状态表的真实身份；随后批量恢复 PickUpItems 父函数中剩余可独立闭合的分支，或选择其他短包装函数。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -37,11 +37,9 @@
     "root.children[32]",
     "root.children[33]",
     "root.children[57]",
-    "root.children[17]",
-    "root.children[17].children[0]",
     "root.children[19]"
   ],
-  "static_candidate_count": 7,
+  "static_candidate_count": 5,
   "repository": {
     "full_name": "panchengdong88888/wjjm",
     "url": "https://github.com/panchengdong88888/wjjm",
@@ -302,26 +300,88 @@
         "false/nil coordinate values fall back to numeric zero",
         "returns one coordinate table"
       ]
+    },
+    {
+      "path": "root.children[17]",
+      "legacy_path": "root/18",
+      "name": "PCallHelper",
+      "physical_instructions": 14,
+      "constant_count": 2,
+      "child_count": 1,
+      "source_file": "04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua",
+      "audit_file": "docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "notes": [
+        "pcall failure or nested result exactly false => false",
+        "otherwise true, including successful nil result",
+        "nested writer invokes capturedOuter(arg0) and forwards all return values to FileUtils:writeStringToFile"
+      ]
+    },
+    {
+      "path": "root.children[17].children[0]",
+      "legacy_path": "root/18/1",
+      "name": "Nested_tostring",
+      "physical_instructions": 14,
+      "constant_count": 5,
+      "child_count": 0,
+      "source_file": "04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua",
+      "audit_file": "docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "notes": [
+        "cc.FileUtils:getInstance()",
+        "payload=tostring(UP[0])",
+        "calls UP[1](UP[2]); all results forwarded as trailing writeStringToFile arguments"
+      ]
+    },
+    {
+      "path": "root.children[21].children[0]",
+      "legacy_path": "root/22/1",
+      "name": "Nested_dist",
+      "physical_instructions": 19,
+      "constant_count": 2,
+      "child_count": 0,
+      "source_file": "04_源码候选/PickUpItems_距离比较闭包_第九批.lua",
+      "audit_file": "docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "notes": [
+        "lexicographic comparator: kIdx ascending, then dist ascending"
+      ]
+    },
+    {
+      "path": "root.children[21].children[1]",
+      "legacy_path": "root/22/2",
+      "name": "Nested_dist_2",
+      "physical_instructions": 8,
+      "constant_count": 1,
+      "child_count": 0,
+      "source_file": "04_源码候选/PickUpItems_距离比较闭包_第九批.lua",
+      "audit_file": "docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "notes": [
+        "dist ascending comparator"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "target": "GetPlayerPosition exact static recovery and helper-call recheck",
-    "status": "GetPlayerPosition_complete_static_reconstruction",
-    "source_file": "04_源码候选/位置读取函数_第五批草稿.lua",
-    "verified": [
-      "All 19 physical instructions accounted for",
-      "X false/nil fallback is numeric zero",
-      "Y false/nil fallback is numeric zero",
-      "Return table fields x and y confirmed",
-      "PC14 fused table/default path reconciled with PC15-17 assignments"
+    "target": "PCallHelper call-chain and PickUpItems comparator closures",
+    "status": "four_prototypes_complete_static_reconstruction",
+    "source_files": [
+      "04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua",
+      "04_源码候选/PickUpItems_距离比较闭包_第九批.lua"
     ],
-    "unresolved": [
-      "PCallHelper child closure: UP[1] is invoked with UP[2]; exact relation to the previously loaded writeStringToFile method still requires fused-call and stack/receiver verification",
-      "InitGatherMonsters UP[2..4] domain names remain unproven"
+    "verified": [
+      "PCallHelper pcall result contract",
+      "Nested_tostring invokes capturedOuter(arg0) and forwards its full return window as trailing writeStringToFile arguments",
+      "Nested_dist compares kIdx ascending then dist ascending on ties",
+      "Nested_dist_2 compares dist ascending"
     ],
     "runtime_verified": false,
-    "checkpoint_report": "docs/audit/检查点24_GetPlayerPosition完整静态恢复.md"
+    "checkpoint_report": "docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md"
   },
   "corrections": [
     {
