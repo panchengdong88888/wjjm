@@ -36,3 +36,14 @@
 - 当前优先顺序：核查 28 个辅助函数定义及调用点；解决 root.children[43] 的特殊常量语义；恢复 root.children[28]，再推进 MainLoop root.children[45]、DiuItems root.children[46]、UI 初始化 root.children[42]。
 - 最新已知批次：资源统计面板 6 个原型、654 条指令范围只是整体源码候选，尚未验收；MainLoop 320 指令主回调与刷新 168 指令逻辑仍需深入核验。
 - 下一个 AI 必须先读取本协议和 05_机器可读接续状态.json，并以 GitHub 实际文件为准重新确认停止点。
+
+
+## 检查点 #1（2026-11-08）：GetOwnerDescription 完整静态恢复
+- 已恢复 root.children[43]（旧 root/44，20 条物理指令），源码：04_源码候选/root43_GetOwnerDescription.lua。
+- 已核实 VM dump 的 ["unknown",2] 是 nil 的序列化占位，不是字符串；证据为跨 20 个原型共 23 处用途，主要用于 nil 状态/定时器字段初始化和清理。
+- MainLoop root.children[45] PC 208–211 调用该闭包，参数顺序为 actor、mainPlayerID；PC 228/230/231 确认返回顺序为 ownerID、description。
+- 正确逻辑：ownerID 为 nil、空字符串或 -1 -> “无归属”；等于 mainPlayerID -> “自己”；否则 -> “其他玩家”。
+- 函数状态 CSV 第 88 行已更新为“完整静态恢复（未运行时验证）”。
+- 旧辅助函数源码和 batch3 报告中误写的字符串判断、返回值顺序均已修正。
+- 本批 20/20 条指令已映射；运行时验证仍为 0，不将其计为运行时完成。
+- 下一批：root.children[28] FindMonsterCandidates；之后核查 root.children[7]、root.children[38] 两个 owner 判断函数。
