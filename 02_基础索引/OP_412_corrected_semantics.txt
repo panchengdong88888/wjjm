@@ -1,0 +1,14 @@
+# OP_412 阶段三修正语义补充
+
+本文件用于补足仓库中的早期 opcode reference。早期参考文件只定义 OP_000..OP_411；阶段三 corrected reference 将定义范围扩展到 OP_412。
+
+## OP_412：数值 for-loop 步进/边界检查
+
+- 循环变量：T[A]
+- 步长：T[A+2]
+- 上限：T[A+1]
+- 执行循环步进后，根据步长正负检查边界。
+- 满足继续循环条件时，将下一循环值写入 T[A+3]，并跳转到 B。
+- dump 中共出现 4 次：root/1 PC67、root/36 PC47、root/45 PC312、root/45 PC404。
+
+注意：PC 标签 root/N 在旧报告中采用子原型一基编号。新分析必须转换为 JSON 零基路径。该语义来自阶段三 corrected opcode reference 与控制流报告的既有核验记录；本补充文件不是完整的 413 项 opcode 表。
