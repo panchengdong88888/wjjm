@@ -27,7 +27,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 23,root/18,root.children[18],root/19,GetPlayerPosition,19,7,0,首版普通 Lua 草稿（待复核/未运行时验证）,04_源码候选/位置读取函数_第五批草稿.lua；读取 SL X/Y，false/nil 分支默认路径；PC14 含融合 table create/field assignment，当前 y=0 仅为临时表达。
 24,root/19,root.children[19],root/20,InitGatherMonsters,36,11,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 25,root/19/0,root.children[19].children[0],root/20/1,Nested_MainLoop,3,1,0,完整静态恢复（未运行时验证）,04_源码候选/短闭包辅助函数_第三批草稿.lua；无参数调用全局 MainLoop()。
-26,root/20,root.children[20],root/21,ShowLocalNoticeByType,15,14,0,首版普通 Lua 草稿（待复核/未运行时验证）,04_源码候选/其他短辅助函数_第二批草稿.lua；通知记录 Type=10、Msg=message、FColor=249、BColor=0、X=5、Y=UP[0].screenH-50；调用 SL.ShowLocalNoticeByType(notice)；UP[0]对象身份待核。
+26,root/20,root.children[20],root/21,ShowLocalNoticeByType,15,14,0,完整静态恢复（未运行时验证）,04_源码候选/其他短辅助函数_第二批草稿.lua；root PC46 创建闭包、PC47 捕获 parent T[0]；通知表 Type=10/Msg/FColor=249/BColor=0/X=5/Y=screenH-50，调用 SL.ShowLocalNoticeByType(notice)。
 27,root/21,root.children[21],root/22,PickUpItems,172,34,2,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 28,root/21/0,root.children[21].children[0],root/22/1,Nested_dist,19,2,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 29,root/21/1,root.children[21].children[1],root/22/2,Nested_dist_2,8,1,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
