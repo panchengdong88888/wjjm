@@ -288,3 +288,14 @@
 - 新增 `04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua`，恢复旧 timer 取消、running 标志、IDLE 状态切换、reset helper、Schedule(MainLoop,CHECK_INTERVAL)、阈值启动提示。
 - UP[2..4] 领域身份仍未知，使用角色型临时名称，保持草稿状态。
 - 详细报告：`docs/audit/检查点23_InitGatherMonsters主体草稿.md`。
+
+
+## 检查点 #33（2026-11-09）：DiuItems 独立复审与短函数草稿批次
+- 重新读取 README、机器状态、checkpoint 协议、DiuItems 阶段审计、函数状态 CSV、迁移清单；以 GitHub 当前内容为准。
+- 仓库内检查点 #31 存在；机器状态曾指向检查点 #32 文件，但该路径在 GitHub 返回 404，故不将未存在的文件视为已保存证据。
+- DiuItems（root.children[46]）首版草稿已对照 corrected 169-record 反汇编、VM dump 和闭包捕获映射独立复审。防重入、数量上限、背包筛选、候选字段、消息参数顺序、发送计数和清理路径与活动路径一致；仍保留草稿级状态，不计入完整静态恢复。
+- 新增短函数普通 Lua 草稿：DistanceCalculation（root.children[11]）、IsInWhitelistMap（root.children[31]）、SetTargetID（root.children[35]），文件 04_源码候选/短函数草稿_第十二批.lua。
+- 新增审计 docs/audit/检查点33_DiuItems复审与短函数草稿.md。
+- 函数状态 CSV 和机器状态 JSON 已同步；新源码和审计均已从 GitHub 复读验证。
+- 统计：完整静态恢复 27/110（24.5%）；普通 Lua 草稿 4 个；运行时验证 0。
+- 下一批：继续生成短函数草稿，优先 SetButtonVisibilityState、ResetGatherMonsterData、StopGatherMonsters；FindMonsterInCurrViewField 需先核对捕获谓词和 SL 调用契约。
