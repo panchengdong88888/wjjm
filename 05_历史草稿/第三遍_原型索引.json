@@ -1,0 +1,2182 @@
+[
+  {
+    "path": "root",
+    "name": "MainLeftBottom_Module",
+    "records": 412,
+    "children": 58,
+    "vararg": 0,
+    "globals": [
+      "BlacklistItems",
+      "Builtsetting",
+      "ClearBlacklistItems",
+      "DiuItems",
+      "GetAvailableStoragePage",
+      "GetDroppedItems",
+      "GetMapId",
+      "GetMapName",
+      "GetStorageItemData",
+      "InitGatherMonsters",
+      "IsInWhitelistMap",
+      "MainLeftBottom",
+      "MainLoop",
+      "MoveItemTopcuickUse",
+      "MoveTo",
+      "PickUpItems",
+      "PlayerPos",
+      "SL",
+      "StopGatherMonsters",
+      "StorageItems",
+      "TakeItems",
+      "_G",
+      "math"
+    ],
+    "closures": [
+      [
+        "16",
+        "root/17"
+      ],
+      [
+        "20",
+        "root/21"
+      ],
+      [
+        "12",
+        "root/13"
+      ],
+      [
+        "53",
+        "root/54"
+      ],
+      [
+        "34",
+        "root/35"
+      ],
+      [
+        "13",
+        "root/14"
+      ],
+      [
+        "30",
+        "root/31"
+      ],
+      [
+        "57",
+        "root/58"
+      ],
+      [
+        "4",
+        "root/5"
+      ],
+      [
+        "3",
+        "root/4"
+      ],
+      [
+        "46",
+        "root/47"
+      ],
+      [
+        "36",
+        "root/37"
+      ],
+      [
+        "1",
+        "root/2"
+      ],
+      [
+        "50",
+        "root/51"
+      ],
+      [
+        "5",
+        "root/6"
+      ],
+      [
+        "21",
+        "root/22"
+      ],
+      [
+        "8",
+        "root/9"
+      ],
+      [
+        "35",
+        "root/36"
+      ],
+      [
+        "56",
+        "root/57"
+      ],
+      [
+        "39",
+        "root/40"
+      ],
+      [
+        "18",
+        "root/19"
+      ],
+      [
+        "44",
+        "root/45"
+      ],
+      [
+        "11",
+        "root/12"
+      ],
+      [
+        "29",
+        "root/30"
+      ],
+      [
+        "7",
+        "root/8"
+      ],
+      [
+        "38",
+        "root/39"
+      ],
+      [
+        "43",
+        "root/44"
+      ],
+      [
+        "28",
+        "root/29"
+      ],
+      [
+        "26",
+        "root/27"
+      ],
+      [
+        "14",
+        "root/15"
+      ],
+      [
+        "31",
+        "root/32"
+      ],
+      [
+        "45",
+        "root/46"
+      ],
+      [
+        "19",
+        "root/20"
+      ],
+      [
+        "27",
+        "root/28"
+      ],
+      [
+        "23",
+        "root/24"
+      ],
+      [
+        "41",
+        "root/42"
+      ],
+      [
+        "37",
+        "root/38"
+      ],
+      [
+        "10",
+        "root/11"
+      ],
+      [
+        "40",
+        "root/41"
+      ],
+      [
+        "55",
+        "root/56"
+      ],
+      [
+        "2",
+        "root/3"
+      ],
+      [
+        "9",
+        "root/10"
+      ],
+      [
+        "17",
+        "root/18"
+      ],
+      [
+        "0",
+        "root/1"
+      ],
+      [
+        "49",
+        "root/50"
+      ],
+      [
+        "32",
+        "root/33"
+      ],
+      [
+        "33",
+        "root/34"
+      ],
+      [
+        "54",
+        "root/55"
+      ],
+      [
+        "22",
+        "root/23"
+      ],
+      [
+        "48",
+        "root/49"
+      ],
+      [
+        "51",
+        "root/52"
+      ],
+      [
+        "24",
+        "root/25"
+      ],
+      [
+        "52",
+        "root/53"
+      ],
+      [
+        "6",
+        "root/7"
+      ],
+      [
+        "25",
+        "root/26"
+      ],
+      [
+        "47",
+        "root/48"
+      ],
+      [
+        "15",
+        "root/16"
+      ],
+      [
+        "42",
+        "root/43"
+      ]
+    ],
+    "jumps": 0,
+    "ops": 38,
+    "known_refs": [
+      "Builtsetting",
+      "ClearBlacklistItems",
+      "DiuItems",
+      "GetAvailableStoragePage",
+      "GetDroppedItems",
+      "GetMapId",
+      "GetMapName",
+      "GetStorageItemData",
+      "InitGatherMonsters",
+      "IsInWhitelistMap",
+      "MainLoop",
+      "MoveTo",
+      "PickUpItems",
+      "PlayerPos",
+      "StopGatherMonsters",
+      "StorageItems",
+      "TakeItems"
+    ]
+  },
+  {
+    "path": "root/1",
+    "name": "GetStorageItemData",
+    "records": 32,
+    "children": 1,
+    "vararg": 1,
+    "globals": [
+      "cc",
+      "pcall"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/1/1"
+      ]
+    ],
+    "jumps": 2,
+    "ops": 18,
+    "known_refs": []
+  },
+  {
+    "path": "root/1/1",
+    "name": "Prototype_root_1_1",
+    "records": 5,
+    "children": 0,
+    "vararg": 0,
+    "globals": [],
+    "closures": [],
+    "jumps": 0,
+    "ops": 4,
+    "known_refs": []
+  },
+  {
+    "path": "root/2",
+    "name": "GetWritablePath",
+    "records": 77,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "GUIDefine",
+      "NPCStorageProxy",
+      "global",
+      "ipairs",
+      "table",
+      "type"
+    ],
+    "closures": [],
+    "jumps": 14,
+    "ops": 48,
+    "known_refs": []
+  },
+  {
+    "path": "root/3",
+    "name": "MoveTo",
+    "records": 10,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "cc"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 9,
+    "known_refs": []
+  },
+  {
+    "path": "root/4",
+    "name": "GetDroppedItems",
+    "records": 51,
+    "children": 0,
+    "vararg": 3,
+    "globals": [
+      "PlayerPos",
+      "SL",
+      "global",
+      "math",
+      "tonumber",
+      "x"
+    ],
+    "closures": [],
+    "jumps": 3,
+    "ops": 33,
+    "known_refs": [
+      "PlayerPos"
+    ]
+  },
+  {
+    "path": "root/5",
+    "name": "TakeItems",
+    "records": 8,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "global"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 8,
+    "known_refs": []
+  },
+  {
+    "path": "root/6",
+    "name": "InstallDamageHook",
+    "records": 99,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "GetStorageItemData",
+      "LuaSendMsg",
+      "global",
+      "ipairs",
+      "string"
+    ],
+    "closures": [],
+    "jumps": 16,
+    "ops": 60,
+    "known_refs": [
+      "GetStorageItemData",
+      "LuaSendMsg"
+    ]
+  },
+  {
+    "path": "root/7",
+    "name": "GetOwnerIDText",
+    "records": 40,
+    "children": 1,
+    "vararg": 0,
+    "globals": [
+      "global",
+      "type"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/7/1"
+      ]
+    ],
+    "jumps": 6,
+    "ops": 26,
+    "known_refs": []
+  },
+  {
+    "path": "root/7/1",
+    "name": "Prototype_root_7_1",
+    "records": 18,
+    "children": 0,
+    "vararg": 2,
+    "globals": [
+      "pcall",
+      "type"
+    ],
+    "closures": [],
+    "jumps": 1,
+    "ops": 15,
+    "known_refs": []
+  },
+  {
+    "path": "root/8",
+    "name": "FormatStateChange",
+    "records": 31,
+    "children": 0,
+    "vararg": 2,
+    "globals": [
+      "tostring",
+      "type"
+    ],
+    "closures": [],
+    "jumps": 8,
+    "ops": 19,
+    "known_refs": []
+  },
+  {
+    "path": "root/9",
+    "name": "ReadNumericConfig",
+    "records": 10,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "string"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 10,
+    "known_refs": []
+  },
+  {
+    "path": "root/10",
+    "name": "SetButtonVisibilityState",
+    "records": 45,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "cc",
+      "string",
+      "tonumber",
+      "type"
+    ],
+    "closures": [],
+    "jumps": 3,
+    "ops": 26,
+    "known_refs": []
+  },
+  {
+    "path": "root/11",
+    "name": "DistanceCalculation",
+    "records": 15,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "GUI",
+      "pairs"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 15,
+    "known_refs": []
+  },
+  {
+    "path": "root/12",
+    "name": "LuaSendMsg",
+    "records": 25,
+    "children": 0,
+    "vararg": 2,
+    "globals": [
+      "math"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 19,
+    "known_refs": []
+  },
+  {
+    "path": "root/13",
+    "name": "GetMapId",
+    "records": 92,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "LuaSendMsg(",
+      "global",
+      "ipairs",
+      "param4",
+      "pcall",
+      "table",
+      "tonumber",
+      "tostring",
+      "type"
+    ],
+    "closures": [],
+    "jumps": 9,
+    "ops": 67,
+    "known_refs": []
+  },
+  {
+    "path": "root/14",
+    "name": "FindMonsterInCurrViewField",
+    "records": 9,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 1,
+    "ops": 8,
+    "known_refs": []
+  },
+  {
+    "path": "root/15",
+    "name": "ClearBlacklistItems",
+    "records": 27,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL",
+      "ipairs"
+    ],
+    "closures": [],
+    "jumps": 5,
+    "ops": 20,
+    "known_refs": []
+  },
+  {
+    "path": "root/16",
+    "name": "PrintLog",
+    "records": 63,
+    "children": 1,
+    "vararg": 0,
+    "globals": [
+      "SL",
+      "ipairs",
+      "pairs"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/16/1"
+      ]
+    ],
+    "jumps": 7,
+    "ops": 36,
+    "known_refs": []
+  },
+  {
+    "path": "root/16/1",
+    "name": "Prototype_root_16_1",
+    "records": 13,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 1,
+    "ops": 11,
+    "known_refs": []
+  },
+  {
+    "path": "root/17",
+    "name": "PCallHelper",
+    "records": 38,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "SL",
+      "pcall",
+      "select",
+      "string",
+      "tostring",
+      "type"
+    ],
+    "closures": [],
+    "jumps": 6,
+    "ops": 26,
+    "known_refs": []
+  },
+  {
+    "path": "root/18",
+    "name": "GetPlayerPosition",
+    "records": 14,
+    "children": 1,
+    "vararg": 2,
+    "globals": [
+      "pcall"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/18/1"
+      ]
+    ],
+    "jumps": 2,
+    "ops": 13,
+    "known_refs": []
+  },
+  {
+    "path": "root/18/1",
+    "name": "Prototype_root_18_1",
+    "records": 14,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "cc",
+      "tostring"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 11,
+    "known_refs": []
+  },
+  {
+    "path": "root/19",
+    "name": "InitGatherMonsters",
+    "records": 19,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 17,
+    "known_refs": []
+  },
+  {
+    "path": "root/20",
+    "name": "ShowLocalNoticeByType",
+    "records": 36,
+    "children": 1,
+    "vararg": 0,
+    "globals": [
+      "SL",
+      "string"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/20/1"
+      ]
+    ],
+    "jumps": 1,
+    "ops": 24,
+    "known_refs": []
+  },
+  {
+    "path": "root/20/1",
+    "name": "Prototype_root_20_1",
+    "records": 3,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "MainLoop"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 3,
+    "known_refs": [
+      "MainLoop"
+    ]
+  },
+  {
+    "path": "root/21",
+    "name": "PickUpItems",
+    "records": 15,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "FColor",
+      "SL",
+      "Y"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 14,
+    "known_refs": []
+  },
+  {
+    "path": "root/22",
+    "name": "GetMapData2DPtr",
+    "records": 172,
+    "children": 2,
+    "vararg": 0,
+    "globals": [
+      "GetDroppedItems",
+      "MoveTo",
+      "PlayerPos",
+      "global",
+      "ipairs",
+      "math",
+      "string",
+      "table"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/22/1"
+      ],
+      [
+        "1",
+        "root/22/2"
+      ]
+    ],
+    "jumps": 28,
+    "ops": 69,
+    "known_refs": [
+      "GetDroppedItems",
+      "MoveTo",
+      "PlayerPos"
+    ]
+  },
+  {
+    "path": "root/22/1",
+    "name": "Prototype_root_22_1",
+    "records": 19,
+    "children": 0,
+    "vararg": 2,
+    "globals": [],
+    "closures": [],
+    "jumps": 3,
+    "ops": 13,
+    "known_refs": []
+  },
+  {
+    "path": "root/22/2",
+    "name": "Prototype_root_22_2",
+    "records": 8,
+    "children": 0,
+    "vararg": 2,
+    "globals": [],
+    "closures": [],
+    "jumps": 1,
+    "ops": 8,
+    "known_refs": []
+  },
+  {
+    "path": "root/23",
+    "name": "Builtsetting",
+    "records": 144,
+    "children": 0,
+    "vararg": 5,
+    "globals": [
+      "global",
+      "math"
+    ],
+    "closures": [],
+    "jumps": 29,
+    "ops": 64,
+    "known_refs": []
+  },
+  {
+    "path": "root/24",
+    "name": "UseItemByIndex",
+    "records": 55,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "CHANGE_SETTING"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 19,
+    "known_refs": []
+  },
+  {
+    "path": "root/25",
+    "name": "DeathAutoBlacklist",
+    "records": 33,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL",
+      "ipairs",
+      "tonumber"
+    ],
+    "closures": [],
+    "jumps": 5,
+    "ops": 26,
+    "known_refs": []
+  },
+  {
+    "path": "root/26",
+    "name": "ResetGatherMonsterData",
+    "records": 47,
+    "children": 1,
+    "vararg": 0,
+    "globals": [
+      "SL"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/26/1"
+      ]
+    ],
+    "jumps": 5,
+    "ops": 33,
+    "known_refs": []
+  },
+  {
+    "path": "root/26/1",
+    "name": "Prototype_root_26_1",
+    "records": 6,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 6,
+    "known_refs": []
+  },
+  {
+    "path": "root/27",
+    "name": "StopGatherMonsters",
+    "records": 20,
+    "children": 0,
+    "vararg": 0,
+    "globals": [],
+    "closures": [],
+    "jumps": 0,
+    "ops": 18,
+    "known_refs": []
+  },
+  {
+    "path": "root/28",
+    "name": "FindMonsterCandidates",
+    "records": 25,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 1,
+    "ops": 18,
+    "known_refs": []
+  },
+  {
+    "path": "root/29",
+    "name": "IsDie",
+    "records": 102,
+    "children": 1,
+    "vararg": 0,
+    "globals": [
+      "GET_SETTING",
+      "SL",
+      "global",
+      "ipairs",
+      "pairs",
+      "table",
+      "type"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/29/1"
+      ]
+    ],
+    "jumps": 17,
+    "ops": 53,
+    "known_refs": []
+  },
+  {
+    "path": "root/29/1",
+    "name": "Prototype_root_29_1",
+    "records": 8,
+    "children": 0,
+    "vararg": 2,
+    "globals": [],
+    "closures": [],
+    "jumps": 1,
+    "ops": 8,
+    "known_refs": []
+  },
+  {
+    "path": "root/30",
+    "name": "GetMapName",
+    "records": 7,
+    "children": 0,
+    "vararg": 1,
+    "globals": [],
+    "closures": [],
+    "jumps": 1,
+    "ops": 7,
+    "known_refs": []
+  },
+  {
+    "path": "root/31",
+    "name": "IsInWhitelistMap",
+    "records": 9,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 1,
+    "ops": 8,
+    "known_refs": []
+  },
+  {
+    "path": "root/32",
+    "name": "AnonymousHelper_32",
+    "records": 28,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL",
+      "ipairs"
+    ],
+    "closures": [],
+    "jumps": 4,
+    "ops": 21,
+    "known_refs": []
+  },
+  {
+    "path": "root/33",
+    "name": "AnonymousHelper_33",
+    "records": 6,
+    "children": 0,
+    "vararg": 1,
+    "globals": [],
+    "closures": [],
+    "jumps": 0,
+    "ops": 5,
+    "known_refs": []
+  },
+  {
+    "path": "root/34",
+    "name": "Schedule",
+    "records": 5,
+    "children": 0,
+    "vararg": 0,
+    "globals": [],
+    "closures": [],
+    "jumps": 0,
+    "ops": 5,
+    "known_refs": []
+  },
+  {
+    "path": "root/35",
+    "name": "SetTargetID",
+    "records": 7,
+    "children": 0,
+    "vararg": 2,
+    "globals": [
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 7,
+    "known_refs": []
+  },
+  {
+    "path": "root/36",
+    "name": "GetAvailableStoragePage",
+    "records": 26,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "global"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 20,
+    "known_refs": []
+  },
+  {
+    "path": "root/37",
+    "name": "DestroyUI",
+    "records": 51,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "GUIDefine",
+      "NPCStorageProxy",
+      "global"
+    ],
+    "closures": [],
+    "jumps": 8,
+    "ops": 37,
+    "known_refs": []
+  },
+  {
+    "path": "root/38",
+    "name": "GetOwnerID",
+    "records": 31,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "GUI",
+      "SL",
+      "pairs"
+    ],
+    "closures": [],
+    "jumps": 3,
+    "ops": 23,
+    "known_refs": []
+  },
+  {
+    "path": "root/39",
+    "name": "GetMainPlayerID",
+    "records": 31,
+    "children": 0,
+    "vararg": 2,
+    "globals": [
+      "tostring",
+      "type"
+    ],
+    "closures": [],
+    "jumps": 8,
+    "ops": 17,
+    "known_refs": []
+  },
+  {
+    "path": "root/40",
+    "name": "ShowHideAllButtons",
+    "records": 6,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "global"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 6,
+    "known_refs": []
+  },
+  {
+    "path": "root/41",
+    "name": "MoveItemToQuickUse",
+    "records": 47,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "GUI",
+      "SL",
+      "cruiseTimer",
+      "pairs"
+    ],
+    "closures": [],
+    "jumps": 5,
+    "ops": 26,
+    "known_refs": []
+  },
+  {
+    "path": "root/42",
+    "name": "doInit_UI",
+    "records": 133,
+    "children": 0,
+    "vararg": 2,
+    "globals": [
+      "global",
+      "next",
+      "pairs",
+      "string"
+    ],
+    "closures": [],
+    "jumps": 14,
+    "ops": 47,
+    "known_refs": []
+  },
+  {
+    "path": "root/43",
+    "name": "GetOwnerDescription",
+    "records": 419,
+    "children": 23,
+    "vararg": 0,
+    "globals": [
+      "Builtsetting",
+      "GUI",
+      "MainProperty",
+      "NPCStorageProxy",
+      "SL",
+      "global",
+      "initTimeStr",
+      "ipairs",
+      "os",
+      "pcall"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/43/1"
+      ],
+      [
+        "16",
+        "root/43/17"
+      ],
+      [
+        "12",
+        "root/43/13"
+      ],
+      [
+        "5",
+        "root/43/6"
+      ],
+      [
+        "17",
+        "root/43/18"
+      ],
+      [
+        "7",
+        "root/43/8"
+      ],
+      [
+        "22",
+        "root/43/23"
+      ],
+      [
+        "11",
+        "root/43/12"
+      ],
+      [
+        "14",
+        "root/43/15"
+      ],
+      [
+        "6",
+        "root/43/7"
+      ],
+      [
+        "2",
+        "root/43/3"
+      ],
+      [
+        "20",
+        "root/43/21"
+      ],
+      [
+        "1",
+        "root/43/2"
+      ],
+      [
+        "13",
+        "root/43/14"
+      ],
+      [
+        "18",
+        "root/43/19"
+      ],
+      [
+        "8",
+        "root/43/9"
+      ],
+      [
+        "19",
+        "root/43/20"
+      ],
+      [
+        "10",
+        "root/43/11"
+      ],
+      [
+        "21",
+        "root/43/22"
+      ],
+      [
+        "3",
+        "root/43/4"
+      ],
+      [
+        "4",
+        "root/43/5"
+      ],
+      [
+        "9",
+        "root/43/10"
+      ],
+      [
+        "15",
+        "root/43/16"
+      ]
+    ],
+    "jumps": 25,
+    "ops": 79,
+    "known_refs": [
+      "Builtsetting"
+    ]
+  },
+  {
+    "path": "root/43/1",
+    "name": "Prototype_root_43_1",
+    "records": 46,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "SL",
+      "pairs",
+      "string"
+    ],
+    "closures": [],
+    "jumps": 9,
+    "ops": 27,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/2",
+    "name": "Prototype_root_43_2",
+    "records": 33,
+    "children": 1,
+    "vararg": 0,
+    "globals": [
+      "SL"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/43/2/1"
+      ]
+    ],
+    "jumps": 1,
+    "ops": 26,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/2/1",
+    "name": "Prototype_root_43_2_1",
+    "records": 22,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "LuaSendMsg"
+    ],
+    "closures": [],
+    "jumps": 1,
+    "ops": 18,
+    "known_refs": [
+      "LuaSendMsg"
+    ]
+  },
+  {
+    "path": "root/43/3",
+    "name": "Prototype_root_43_3",
+    "records": 21,
+    "children": 0,
+    "vararg": 0,
+    "globals": [],
+    "closures": [],
+    "jumps": 2,
+    "ops": 13,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/4",
+    "name": "Prototype_root_43_4",
+    "records": 320,
+    "children": 5,
+    "vararg": 0,
+    "globals": [
+      "GUI",
+      "SL",
+      "global",
+      "resTimer"
+    ],
+    "closures": [
+      [
+        "4",
+        "root/43/4/5"
+      ],
+      [
+        "0",
+        "root/43/4/1"
+      ],
+      [
+        "2",
+        "root/43/4/3"
+      ],
+      [
+        "1",
+        "root/43/4/2"
+      ],
+      [
+        "3",
+        "root/43/4/4"
+      ]
+    ],
+    "jumps": 8,
+    "ops": 68,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/4/1",
+    "name": "Prototype_root_43_4_1",
+    "records": 35,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "math",
+      "string",
+      "tostring"
+    ],
+    "closures": [],
+    "jumps": 5,
+    "ops": 26,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/4/2",
+    "name": "Prototype_root_43_4_2",
+    "records": 46,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "SL",
+      "pairs",
+      "string"
+    ],
+    "closures": [],
+    "jumps": 9,
+    "ops": 28,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/4/3",
+    "name": "Prototype_root_43_4_3",
+    "records": 65,
+    "children": 0,
+    "vararg": 3,
+    "globals": [
+      "GUI",
+      "math"
+    ],
+    "closures": [],
+    "jumps": 4,
+    "ops": 42,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/4/4",
+    "name": "Prototype_root_43_4_4",
+    "records": 168,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "GUI",
+      "SL",
+      "math",
+      "os",
+      "pairs",
+      "pcall"
+    ],
+    "closures": [],
+    "jumps": 22,
+    "ops": 58,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/4/5",
+    "name": "Prototype_root_43_4_5",
+    "records": 20,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "GUI",
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 1,
+    "ops": 16,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/5",
+    "name": "Prototype_root_43_5",
+    "records": 5,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "global"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 5,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/6",
+    "name": "Prototype_root_43_6",
+    "records": 41,
+    "children": 0,
+    "vararg": 2,
+    "globals": [
+      "GUI",
+      "ipairs"
+    ],
+    "closures": [],
+    "jumps": 10,
+    "ops": 24,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/7",
+    "name": "Prototype_root_43_7",
+    "records": 31,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "StopGatherMonsters"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 18,
+    "known_refs": [
+      "StopGatherMonsters"
+    ]
+  },
+  {
+    "path": "root/43/8",
+    "name": "Prototype_root_43_8",
+    "records": 17,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "InitGatherMonsters"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 13,
+    "known_refs": [
+      "InitGatherMonsters"
+    ]
+  },
+  {
+    "path": "root/43/9",
+    "name": "Prototype_root_43_9",
+    "records": 29,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL",
+      "StorageItems"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 20,
+    "known_refs": [
+      "StorageItems"
+    ]
+  },
+  {
+    "path": "root/43/10",
+    "name": "Prototype_root_43_10",
+    "records": 50,
+    "children": 1,
+    "vararg": 3,
+    "globals": [
+      "GUI",
+      "toggled"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/43/10/1"
+      ]
+    ],
+    "jumps": 2,
+    "ops": 31,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/10/1",
+    "name": "Prototype_root_43_10_1",
+    "records": 48,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "GUI"
+    ],
+    "closures": [],
+    "jumps": 7,
+    "ops": 29,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/11",
+    "name": "Prototype_root_43_11",
+    "records": 25,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "PickUpItems",
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 20,
+    "known_refs": [
+      "PickUpItems"
+    ]
+  },
+  {
+    "path": "root/43/12",
+    "name": "Prototype_root_43_12",
+    "records": 12,
+    "children": 1,
+    "vararg": 0,
+    "globals": [],
+    "closures": [
+      [
+        "0",
+        "root/43/12/1"
+      ]
+    ],
+    "jumps": 0,
+    "ops": 6,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/12/1",
+    "name": "Prototype_root_43_12_1",
+    "records": 35,
+    "children": 0,
+    "vararg": 1,
+    "globals": [],
+    "closures": [],
+    "jumps": 2,
+    "ops": 23,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/13",
+    "name": "Prototype_root_43_13",
+    "records": 43,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "os",
+      "string"
+    ],
+    "closures": [],
+    "jumps": 4,
+    "ops": 30,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/14",
+    "name": "Prototype_root_43_14",
+    "records": 6,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "ClearBlacklistItems"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 5,
+    "known_refs": [
+      "ClearBlacklistItems"
+    ]
+  },
+  {
+    "path": "root/43/15",
+    "name": "Prototype_root_43_15",
+    "records": 12,
+    "children": 1,
+    "vararg": 0,
+    "globals": [],
+    "closures": [
+      [
+        "0",
+        "root/43/15/1"
+      ]
+    ],
+    "jumps": 0,
+    "ops": 6,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/15/1",
+    "name": "Prototype_root_43_15_1",
+    "records": 34,
+    "children": 0,
+    "vararg": 1,
+    "globals": [],
+    "closures": [],
+    "jumps": 2,
+    "ops": 19,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/16",
+    "name": "Prototype_root_43_16",
+    "records": 30,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "GUI"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 18,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/17",
+    "name": "Prototype_root_43_17",
+    "records": 26,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "MoveItemTopcuickUse",
+      "SL",
+      "ipairs"
+    ],
+    "closures": [],
+    "jumps": 5,
+    "ops": 21,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/18",
+    "name": "Prototype_root_43_18",
+    "records": 28,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "BlacklistItems"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 23,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/19",
+    "name": "Prototype_root_43_19",
+    "records": 39,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 23,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/20",
+    "name": "Prototype_root_43_20",
+    "records": 29,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL",
+      "TakeItems"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 19,
+    "known_refs": [
+      "TakeItems"
+    ]
+  },
+  {
+    "path": "root/43/21",
+    "name": "Prototype_root_43_21",
+    "records": 21,
+    "children": 0,
+    "vararg": 0,
+    "globals": [],
+    "closures": [],
+    "jumps": 2,
+    "ops": 12,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/22",
+    "name": "Prototype_root_43_22",
+    "records": 29,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "DiuItems",
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 22,
+    "known_refs": [
+      "DiuItems"
+    ]
+  },
+  {
+    "path": "root/43/23",
+    "name": "Prototype_root_43_23",
+    "records": 8,
+    "children": 1,
+    "vararg": 2,
+    "globals": [],
+    "closures": [
+      [
+        "0",
+        "root/43/23/1"
+      ]
+    ],
+    "jumps": 0,
+    "ops": 6,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/23/1",
+    "name": "Prototype_root_43_23_1",
+    "records": 27,
+    "children": 1,
+    "vararg": 1,
+    "globals": [
+      "SL"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/43/23/1/1"
+      ]
+    ],
+    "jumps": 1,
+    "ops": 19,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/23/1/1",
+    "name": "Prototype_root_43_23_1_1",
+    "records": 50,
+    "children": 1,
+    "vararg": 2,
+    "globals": [
+      "SL",
+      "string",
+      "tonumber",
+      "tostring"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/43/23/1/1/1"
+      ]
+    ],
+    "jumps": 6,
+    "ops": 30,
+    "known_refs": []
+  },
+  {
+    "path": "root/43/23/1/1/1",
+    "name": "Prototype_root_43_23_1_1_1",
+    "records": 4,
+    "children": 0,
+    "vararg": 0,
+    "globals": [],
+    "closures": [],
+    "jumps": 0,
+    "ops": 4,
+    "known_refs": []
+  },
+  {
+    "path": "root/44",
+    "name": "GetPlayerMapPosition",
+    "records": 20,
+    "children": 0,
+    "vararg": 2,
+    "globals": [],
+    "closures": [],
+    "jumps": 6,
+    "ops": 14,
+    "known_refs": []
+  },
+  {
+    "path": "root/45",
+    "name": "MainLoop",
+    "records": 17,
+    "children": 0,
+    "vararg": 1,
+    "globals": [],
+    "closures": [],
+    "jumps": 3,
+    "ops": 13,
+    "known_refs": []
+  },
+  {
+    "path": "root/46",
+    "name": "DiuItems",
+    "records": 417,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "IsInWhitelistMap",
+      "ipairs",
+      "os",
+      "string",
+      "table",
+      "tostring"
+    ],
+    "closures": [],
+    "jumps": 41,
+    "ops": 87,
+    "known_refs": [
+      "IsInWhitelistMap"
+    ]
+  },
+  {
+    "path": "root/47",
+    "name": "BlacklistPlayerDetection",
+    "records": 169,
+    "children": 1,
+    "vararg": 0,
+    "globals": [
+      "GetDroppedItems",
+      "LuaSendMsg",
+      "SL",
+      "global",
+      "ipairs",
+      "isDiuing",
+      "pairs",
+      "string",
+      "table"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/47/1"
+      ]
+    ],
+    "jumps": 19,
+    "ops": 90,
+    "known_refs": [
+      "GetDroppedItems",
+      "LuaSendMsg"
+    ]
+  },
+  {
+    "path": "root/47/1",
+    "name": "Prototype_root_47_1",
+    "records": 20,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "ipairs",
+      "string"
+    ],
+    "closures": [],
+    "jumps": 3,
+    "ops": 18,
+    "known_refs": []
+  },
+  {
+    "path": "root/48",
+    "name": "PCallHelper_2",
+    "records": 216,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "IsInWhitelistMap",
+      "SL",
+      "os",
+      "string",
+      "table",
+      "tonumber",
+      "没有可用的随机传送道具（%s）"
+    ],
+    "closures": [],
+    "jumps": 32,
+    "ops": 80,
+    "known_refs": [
+      "IsInWhitelistMap"
+    ]
+  },
+  {
+    "path": "root/49",
+    "name": "AnonymousHelper_49",
+    "records": 10,
+    "children": 1,
+    "vararg": 0,
+    "globals": [
+      "pcall"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/49/1"
+      ]
+    ],
+    "jumps": 2,
+    "ops": 9,
+    "known_refs": []
+  },
+  {
+    "path": "root/49/1",
+    "name": "Prototype_root_49_1",
+    "records": 9,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "global"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 9,
+    "known_refs": []
+  },
+  {
+    "path": "root/50",
+    "name": "StorageItems",
+    "records": 5,
+    "children": 0,
+    "vararg": 0,
+    "globals": [],
+    "closures": [],
+    "jumps": 0,
+    "ops": 5,
+    "known_refs": []
+  },
+  {
+    "path": "root/51",
+    "name": "FindBlacklistPlayer",
+    "records": 224,
+    "children": 2,
+    "vararg": 0,
+    "globals": [
+      "GUIDefine",
+      "GetAvailableStoragePage",
+      "LuaSendMsg",
+      "NPCStorageProxy",
+      "SL",
+      "global",
+      "ipairs",
+      "isStoring",
+      "pairs",
+      "string"
+    ],
+    "closures": [
+      [
+        "1",
+        "root/51/2"
+      ],
+      [
+        "0",
+        "root/51/1"
+      ]
+    ],
+    "jumps": 25,
+    "ops": 108,
+    "known_refs": [
+      "GetAvailableStoragePage",
+      "LuaSendMsg"
+    ]
+  },
+  {
+    "path": "root/51/1",
+    "name": "Prototype_root_51_1",
+    "records": 52,
+    "children": 0,
+    "vararg": 2,
+    "globals": [
+      " DuraMax=",
+      "string",
+      "tostring"
+    ],
+    "closures": [],
+    "jumps": 5,
+    "ops": 30,
+    "known_refs": []
+  },
+  {
+    "path": "root/51/2",
+    "name": "Prototype_root_51_2",
+    "records": 27,
+    "children": 0,
+    "vararg": 0,
+    "globals": [],
+    "closures": [],
+    "jumps": 4,
+    "ops": 23,
+    "known_refs": []
+  },
+  {
+    "path": "root/52",
+    "name": "onDamageMsg",
+    "records": 35,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 7,
+    "ops": 22,
+    "known_refs": []
+  },
+  {
+    "path": "root/53",
+    "name": "ScheduleOnce",
+    "records": 72,
+    "children": 1,
+    "vararg": 2,
+    "globals": [
+      "SL",
+      "pcall",
+      "string",
+      "type"
+    ],
+    "closures": [
+      [
+        "0",
+        "root/53/1"
+      ]
+    ],
+    "jumps": 13,
+    "ops": 39,
+    "known_refs": []
+  },
+  {
+    "path": "root/53/1",
+    "name": "Prototype_root_53_1",
+    "records": 6,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 6,
+    "known_refs": []
+  },
+  {
+    "path": "root/54",
+    "name": "AnonymousHelper_54",
+    "records": 7,
+    "children": 0,
+    "vararg": 2,
+    "globals": [
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 6,
+    "known_refs": []
+  },
+  {
+    "path": "root/55",
+    "name": "AccountIDValidation",
+    "records": 6,
+    "children": 0,
+    "vararg": 1,
+    "globals": [],
+    "closures": [],
+    "jumps": 0,
+    "ops": 5,
+    "known_refs": []
+  },
+  {
+    "path": "root/56",
+    "name": "ClearTargetID_2",
+    "records": 64,
+    "children": 2,
+    "vararg": 0,
+    "globals": [
+      "SL"
+    ],
+    "closures": [
+      [
+        "1",
+        "root/56/2"
+      ],
+      [
+        "0",
+        "root/56/1"
+      ]
+    ],
+    "jumps": 3,
+    "ops": 37,
+    "known_refs": []
+  },
+  {
+    "path": "root/56/1",
+    "name": "Prototype_root_56_1",
+    "records": 24,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "MainLeftBottom",
+      "MainProperty",
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 4,
+    "ops": 19,
+    "known_refs": []
+  },
+  {
+    "path": "root/56/2",
+    "name": "Prototype_root_56_2",
+    "records": 27,
+    "children": 0,
+    "vararg": 1,
+    "globals": [
+      "ipairs",
+      "tostring"
+    ],
+    "closures": [],
+    "jumps": 3,
+    "ops": 20,
+    "known_refs": []
+  },
+  {
+    "path": "root/57",
+    "name": "PlayerPos",
+    "records": 22,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "global"
+    ],
+    "closures": [],
+    "jumps": 2,
+    "ops": 19,
+    "known_refs": []
+  },
+  {
+    "path": "root/58",
+    "name": "Prototype_root_58",
+    "records": 10,
+    "children": 0,
+    "vararg": 0,
+    "globals": [
+      "SL"
+    ],
+    "closures": [],
+    "jumps": 0,
+    "ops": 7,
+    "known_refs": []
+  }
+]
