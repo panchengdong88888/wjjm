@@ -21,7 +21,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "恢复 root.children[28]（旧 root/29，FindMonsterCandidates，102 条物理指令、1 个子原型）；其后核查 root.children[7]（旧 root/8，GetOwnerIDText）与 root.children[38]（旧 root/39，GetOwnerID）两个归属判断函数。注意 root.children[27]（旧 root/28）才是 25 条指令的 StopGatherMonsters，不要混淆。",
+  "next_action": "继续 FindMonsterCandidates（root.children[28]）阶段分析：先逐槽位核验 5 个闭包捕获值（父 T 寄存器 27、30、28、29、8），再完成忽略怪物配置结构与候选筛选/距离计算的数据流；未确认前不写作者级最终源码。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -125,15 +125,22 @@
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "root.children[43] / GetOwnerDescription",
-    "physical_instruction_scope": 20,
-    "completed": [
-      "nil sentinel cross-prototype analysis (23 occurrences in 20 prototypes)",
-      "20/20 instruction semantic reconstruction",
-      "MainLoop caller argument mapping",
-      "return-value order verified against caller logging",
-      "Lua candidate and audit saved to GitHub"
+    "target": "root.children[28] / FindMonsterCandidates",
+    "status": "partial_static_analysis_checkpointed",
+    "verified": [
+      "102条物理指令、19个常量、1个子原型",
+      "视野怪物列表获取与空列表返回路径",
+      "读取 MMO.SETTING_IDX_IGNORE_MONSTER 设置",
+      "未知怪物名称过滤路径",
+      "距离字段 _distance 赋值与 table.sort 比较器调用",
+      "子闭包比较 a._distance < b._distance"
     ],
-    "runtime_verified": false
+    "unresolved": [
+      "5个捕获值的准确业务含义",
+      "忽略怪物配置表的数据结构及匹配语义",
+      "完整候选筛选与距离计算顺序"
+    ],
+    "runtime_verified": false,
+    "report_file": "docs/audit/root28_FindMonsterCandidates_阶段分析.md"
   }
 }
