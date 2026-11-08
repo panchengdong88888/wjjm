@@ -1,0 +1,35 @@
+MainLeftBottom(2).lua 本轮校验补充（2026-11-08）
+================================================
+
+本文件是对总账的补充，保留原始核验结论。原 Library 中的目录路径只作为来源记录；当前权威工作区已迁移到 GitHub。
+
+## 原始数据核验
+- 原始 Lua SHA256：458b2f98d635307cc566e38222cf7c59bea3d0eeee545b55dbdf79c665a96bfe
+- VM dump SHA256：7d79cecada92270dca0512dc4161d12c45a547ca8f9aeb74d0d2f87b5f996e43
+- 指令级清单 SHA256：2f0d6723e74b6f7be8b879024257143eeb0c0710d5c20df088e1449165a87e65
+- corrected 反汇编 SHA256：ddf30e2f5fa418561f2847e9febe6117abc0c54776c720fce138a88ec1aa6e0c
+- 本轮没有重新执行原始 LZW 提取器，不得声称本轮重跑了解码器。
+
+## 六个短函数候选
+以下均是高置信静态候选，不是运行时验收成果，也尚未全部通过父函数调用点核验：
+1. root.children[13]：SL:GetMetaValue("MAP_ID") or 0.0
+2. root.children[29]：actor 为假时原样返回，否则 not actor:IsDie()
+3. root.children[30]：SL:GetMetaValue("MAP_NAME") or ""
+4. root.children[39]：global.gamePlayerController:GetMainPlayerID()
+5. root.children[28].children[0]：a._distance < b._distance
+6. root.children[46].children[0]：遍历捕获的关键词表，使用 string.find(text, keyword, 1, true) 纯文本匹配。
+
+## 辅助函数和待解决点
+- `verified_helpers_batches_1_3.lua` 曾统计为 28 个 local function 定义，但存在跨批次重复、闭包转发器、候选及部分核验函数；不能直接算作 28 个已验收完整函数。
+- root.children[43]（旧一基 root/44）含特殊常量数组 ["unknown", 2]。OP_271 只说明与该常量对象比较相等，不能直接当成普通字符串 "unknown"。其业务分类结构可辨，但特殊常量语义仍待核。
+- root.children[28]（旧一基 root/29，FindMonsterCandidates）本体仍未恢复；其子闭包比较器单独有静态候选。
+
+## 下一步工作顺序
+1. 核查 28 个辅助函数定义，去重并追踪父级创建点、upvalue、调用点；分别标注候选/部分核验/完整静态恢复/运行时验证。
+2. 解决 root.children[43] 的 ["unknown", 2] 特殊常量含义。
+3. 恢复 root.children[28]（怪物过滤/排序），再把 MainLoop root.children[45] 的 upvalue 映射接入。
+4. 批量恢复 DiuItems root.children[46] 和 UI 初始化 root.children[42]。
+5. 每新增真实普通 Lua 源码，写入 GitHub，并同步更新函数状态 CSV、机器状态 JSON 和接续说明。
+6. 当前作者级普通 Lua 完成数仍为 0，目标运行时验证数仍为 0。静态候选不算最终明文。
+
+统一路径：新工作只用 JSON 零基路径 root.children[n]；旧 root/N 标签按总账双路径表换算。
