@@ -275,3 +275,10 @@
 - 注意 PC31–37 没有调用 SL.Print 的指令，源码候选保留空检查，不按函数名推测补调用。
 - PrintLog 加入完整静态恢复清单；总数由 15 增至 16，运行时验证仍为 0。
 - 详细报告：`docs/audit/检查点21_PrintLog恢复.md`。
+
+
+## 检查点 #22（2026-11-08）：ShowLocalNoticeByType 捕获来源闭合
+- root PC46 创建 `root.children[20]`，PC47 的 OP_387 描述捕获 parent T[0]；子函数读取该对象的 `.screenH`。
+- 通知表字段和 `SL.ShowLocalNoticeByType(notice)` 调用完整，已提升为完整静态恢复（未运行时验证）。
+- 总静态恢复数由 16 增至 17；运行时验证仍为 0。
+- 详细报告：`docs/audit/检查点22_ShowLocalNoticeByType捕获闭合.md`。
