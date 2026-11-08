@@ -413,3 +413,15 @@
 - 父级 `root/43` PC239 创建闭包，捕获来源依次为 parent UP5、UP6、UP2、UP7、UP0；子函数 UP[4] 的通知/格式化融合载荷仍待复核，源码以注释保留，不猜测调用。
 - 函数状态 CSV、机器状态 JSON 与本协议已同步；写入后需复读验证。
 - 普通 Lua 草稿累计 29；完整静态恢复仍 27/110（24.5%）；运行时验证 0；检查点 #45。
+
+
+## 检查点 #46（2026-11-09）：Nested_ITEM_INDEX_BY_NAME 普通 Lua 草稿与 DiuItems 再复核
+- 新增源码：`04_源码候选/短函数草稿_第二十五批.lua`。
+- 新增审计：`docs/audit/检查点46_短函数草稿与DiuItems复核.md`。
+- 新增 `Nested_ITEM_INDEX_BY_NAME`：规范路径 `root.children[42].children[16]`，legacy `root/43/17`，26 条物理指令、无子原型。
+- 父级 `root/43` PC125–129 构造配置表 `{slot=4, names={"免战回城石"}}`；PC137 创建闭包，child UP[0] 捕获 parent T[9]，child UP[1] 捕获 parent UP[0]。
+- 子函数按 names 使用 ipairs 遍历；调用 `SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)`；命中后调用 `MoveItemToQuickUse(config.slot, itemIndex)`，随后无条件调用第二捕获回调(itemIndex)；移动函数返回 truthy 时结束，false/nil 时继续下一项。第二捕获回调业务身份保留为未知。
+- 对 DiuItems 再次对照 169 条 corrected 反汇编与阶段审计独立复核，活动路径草稿无须修改；PC36–68 的关键词表/闭包构造仍以注释说明并省略，故继续保留草稿级，不计入完整静态恢复。
+- 函数状态 CSV、机器状态 JSON 与本协议同步；源码、审计、CSV、机器状态和本协议需复读验证。
+- 普通 Lua 草稿累计 30；完整静态恢复仍 27/110（24.5%）；运行时验证 0；检查点 #46。
+- 下一步：批量处理未开始的短函数，优先 Nested_Anonymous_2、Nested_ID、Nested_SL_3；随后集中静态复审第十二至二十五批。
