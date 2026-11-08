@@ -21,7 +21,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "开始 DiuItems 作者级普通 Lua 静态候选整理：根据已闭合 CFG 还原防重入、GetDroppedItems 两返回值、BAG_DATA pairs 筛选、死分支、候选记录、ipairs 丢弃与消息汇总；对每段代码逐项映射原始 PC，保留“死分支为何存在”及外部API语义未知的标注。完成独立静态审阅后再决定是否可列为完整静态恢复；运行时验证仍为 false。",
+  "next_action": "按新策略转入批量草稿恢复：先对 DiuItems 首版源码 04_源码候选/root46_DiuItems.lua 做独立静态复审（重点核 PC158 地面数量递增、闭包 upvalue、通知与发送调用参数）；复审通过后再标记完整静态恢复。随后优先批量恢复短小辅助函数/简单原型，直接生成普通 Lua 草稿，疑点注释保留，不再等待全量逐指令证明。每批保存源码、CSV、机器状态和检查点。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -44,9 +44,10 @@
     "root.children[30]",
     "root.children[39]",
     "root.children[28].children[0]",
-    "root.children[46].children[0]"
+    "root.children[46].children[0]",
+    "root.children[46]"
   ],
-  "static_candidate_count": 6,
+  "static_candidate_count": 7,
   "repository": {
     "full_name": "panchengdong88888/wjjm",
     "url": "https://github.com/panchengdong88888/wjjm",
@@ -144,29 +145,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "DiuItems generic-for control flow and ground-cap notice exact text",
-    "status": "iterator_cfg_verified_and_notice_text_corrected",
+    "target": "DiuItems first-pass readable Lua draft",
+    "status": "first_pass_lua_draft_created_pending_independent_review",
+    "source_file": "04_源码候选/root46_DiuItems.lua",
+    "checkpoint_report": "docs/audit/root46_DiuItems_检查点14_首版Lua草稿.md",
     "verified": [
-      "pairs(BAG_DATA) setup: pairs returns iterator/state/control; OP_117 calls iterator and uses first result nil to terminate, while second result is current item; nil/false item skips body and advances",
-      "Name and MakeIndex each have truthiness guards that skip the current item when false/nil",
-      "ITEM_IS_BIND truthy skips current item; false/nil proceeds",
-      "R4 remains constant 1, so PC91–95 matcher call remains unreachable; PC96–112 inserts candidate",
-      "candidate record is {makeIndex=item.MakeIndex, count=item.OverLap or 1, name=item.Name}; OverLap false/nil also defaults to 1 due to truthiness test",
-      "ipairs(candidates) iterator uses OP_339; first return nil terminates the loop",
-      "PC124 initializes R8=0; PC157 increments R8 once per message send; R8 is the summary count",
-      "At cap, PC131–136 constructs exact notice '地面物品已满35件，停止丢弃' using R0=35, not current ground count R2",
-      "PC129 compares R0<=R2; if true, sends cap notice and breaks to summary; if false, sends current candidate",
-      "PC143–156 message packet argument order remains statically resolved"
+      "Created readable closure-factory draft modelling UP[0] state and UP[1] notice helper",
+      "Draft includes re-entry guard, GetDroppedItems second return, 35-item cap, BAG_DATA filtering, candidate records, ipairs send loop, LuaSendMsg argument order, sent-count and ground-count increments, summary and cleanup",
+      "Unreachable keyword matcher construction is explicitly documented as omitted from active-path draft",
+      "DiuItems CSV status updated to first-pass draft only; not counted as complete static reconstruction"
     ],
     "unresolved": [
-      "why keyword matcher table/child closure and unreachable call path remain",
-      "external LuaSendMsg and UI helper runtime failure/side-effect semantics",
-      "author-level ordinary Lua candidate and independent static review",
-      "runtime validation"
+      "Independent source-to-PC review, especially PC157-PC158 counter increments",
+      "Parent closure creation/capture confirmation for factory representation",
+      "External helper/API runtime behavior",
+      "Runtime validation"
     ],
-    "runtime_verified": false,
-    "report_file": "docs/audit/root46_DiuItems_阶段分析.md",
-    "checkpoint_report": "docs/audit/root46_DiuItems_检查点13_迭代器与上限提示校正.md"
+    "runtime_verified": false
   },
   "corrections": [
     {
