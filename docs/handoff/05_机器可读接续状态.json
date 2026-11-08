@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续短函数批量恢复。优先处理简单代理获取、参数转发、状态包装和短回调；随后独立复核 GetPlayerPosition 与 ShowLocalNoticeByType。复杂原型先写主体草稿，保留捕获身份和外部 API 不确定注释。",
+  "next_action": "继续批量恢复短小代理、pcall 包装、转发闭包；优先检查 root.children[18] 及其子原型（文件写入 pcall wrapper）和 GetPlayerPosition/PlayerPos 的真实原型身份，避免按旧函数名错位。随后复核 ShowLocalNoticeByType 的父级捕获对象。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -243,24 +243,33 @@
       "source_file": "04_源码候选/代理与回调短函数_第四批.lua",
       "status": "complete_static_reconstruction",
       "runtime_verified": false
+    },
+    {
+      "path": "root.children[48]",
+      "legacy_path": "root/49",
+      "name": "PCallHelper_2",
+      "physical_instructions": 10,
+      "source_file": "04_源码候选/代理与回调短函数_第四批.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
     }
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "Proxy and callback helper batch 4",
-    "status": "one_complete_two_drafts",
+    "target": "PCallHelper_2 wrapper around FriendProxy lookup",
+    "status": "complete_static_reconstruction",
     "source_file": "04_源码候选/代理与回调短函数_第四批.lua",
     "verified": [
-      "Nested_FriendProxy directly returns Facade.retrieveProxy(ProxyTable.FriendProxy), no captures or explicit args",
-      "AnonymousHelper_33 forwards UP0 as callback, UP1 as first argument, and varargs",
-      "AnonymousHelper_34 forwards UP1 as sole argument to UP0"
+      "pcall child closure linkage exact",
+      "pcall failure returns nil",
+      "successful child result copied only when truthy, so false/nil normalize to nil",
+      "returns normalized result"
     ],
     "unresolved": [
-      "AnonymousHelper_33/34 captured value identities require parent call-site review",
-      "No runtime validation"
+      "Runtime validation"
     ],
     "runtime_verified": false,
-    "checkpoint_report": "docs/audit/检查点18_代理与回调短函数第四批.md"
+    "checkpoint_report": "docs/audit/检查点19_PCallHelper_2恢复.md"
   },
   "corrections": [
     {
