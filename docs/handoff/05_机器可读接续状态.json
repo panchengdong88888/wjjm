@@ -21,7 +21,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续 MainLoop root.children[45]：复核 root.children[7]/[38] 两个 owner helper 的分支真值表与调用参数；再沿 MainLoop 的目标数组/状态转换完成该段普通 Lua 重建。随后单独分析 DiuItems root.children[46]（仅 2 个 upvalue，父 root T[2]/T[5]），不得将 MainLoop 的 22 个 upvalue 套用到 DiuItems。",
+  "next_action": "继续 DiuItems root.children[46]：核验 PC69–112 的 BAG_DATA 物品筛选条件（Name/MakeIndex/ITEM_IS_BIND/关键词子闭包/OverLap），再核验 PC113–169 的地面物品数量上限、丢弃消息参数与计数更新。只在寄存器与跳转语义完全闭合后生成普通 Lua 候选。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -144,26 +144,29 @@
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "MainLoop owner helper call-site correction: root.children[45]",
+    "target": "DiuItems root.children[46] upvalue and high-level control-flow audit",
     "status": "partial_static_audit_checkpointed",
     "verified": [
-      "root.children[45] is MainLoop (legacy root/46), 417 instructions, 22 upvalues",
-      "root.children[46] is DiuItems (legacy root/47), 169 instructions, 2 upvalues",
-      "DiuItems captures only parent root T[2] and T[5]; it does not capture the owner helper closures",
-      "MainLoop upvalue[9] maps to root-created GetOwnerID (root.children[38]); upvalue[17] maps to GetOwnerIDText (root.children[7])",
-      "MainLoop PC 49-52 calls upvalue[9] with R8 and R0; PC53 branches on result; false path enters table.insert at PC55-60",
-      "MainLoop PC 124-127 calls upvalue[17] with R3 and R4; PC128-129 branch to self-owner or unchanged/out-of-view log messages",
-      "Previous checkpoint #7 mislabeled these call sites and the 22-capture closure as DiuItems; corrected disassembly and closure map show they belong to MainLoop"
+      "DiuItems is root.children[46] (legacy root/47), 169 physical instructions, 64 constants, one child prototype",
+      "Root PC64 creates DiuItems and captures parent root T[2] and T[5] into its two upvalue slots",
+      "DiuItems upvalue[0] is the module state table; DiuItems reads/writes its isDiuing field for reentrancy protection",
+      "DiuItems upvalue[1] is root.children[20] ShowLocalNoticeByType, created at root PC46 and assigned to root register R5 before DiuItems closure creation",
+      "DiuItems child root.children[46].children[0] is created at PC67 and captures DiuItems T[5], the assembled keyword list",
+      "PC1-8 guard and set isDiuing; PC9-10 call GetDroppedItems; PC27-30 fetch SL:GetMetaValue('BAG_DATA')",
+      "PC36-66 assemble the configured discard-name keyword list; PC67 creates its matcher closure",
+      "PC69-112 traverse BAG_DATA and construct candidate records containing makeIndex, count and name; exact filter predicates still under instruction-level audit",
+      "PC113-160 iterate candidates, enforce the ground-item limit of 35, call LuaSendMsg with MSG_CS_MAP_ITEM_DISCARD and item fields",
+      "PC161-169 summarize the count, clear isDiuing and return"
     ],
     "unresolved": [
-      "exact semantic identity of MainLoop call arguments R8/R0 and R3/R4 at each call site",
-      "meaning and contents of the table populated by MainLoop PC55-60",
-      "runtime ownerID type samples and runtime verification",
-      "complete author-level Lua reconstruction of MainLoop"
+      "exact branch polarity and short-circuit logic for ITEM_IS_BIND, keyword matching and item validity",
+      "whether OverLap defaults to 1 and exact candidate count semantics",
+      "exact LuaSendMsg argument order and item-count update semantics",
+      "complete ordinary Lua reconstruction and runtime verification"
     ],
     "runtime_verified": false,
-    "report_file": "docs/audit/owner_id_helpers_阶段核验.md",
-    "correction_file": "docs/audit/路径校正_检查点7_MainLoop与DiuItems.md"
+    "report_file": "docs/audit/root46_DiuItems_阶段分析.md",
+    "previous_path_correction": "docs/audit/路径校正_检查点7_MainLoop与DiuItems.md"
   },
   "corrections": [
     {
