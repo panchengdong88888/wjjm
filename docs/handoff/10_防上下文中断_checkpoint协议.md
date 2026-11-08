@@ -235,3 +235,10 @@
 - `root.children[4]` GetDroppedItems（8 指令）完整静态恢复：调用 `global.dropItemManager:FindDropItemInCurrViewFieldAll()`，原样返回两个值；CSV/机器状态已更新。
 - `root.children[20]` ShowLocalNoticeByType（15 指令）首版草稿：通知记录字段 Type/Msg/FColor/BColor/X/Y 与 `SL.ShowLocalNoticeByType(notice)` 调用已恢复；UP[0] 捕获对象身份仍待复核，因此不计完整静态恢复。
 - 详细报告：`docs/audit/检查点16_第二批短辅助函数恢复.md`。
+
+
+## 检查点 #17（2026-11-08）：第四批短闭包恢复
+- 新增 `04_源码候选/短闭包辅助函数_第三批草稿.lua`，恢复 4 个短原型：Nested_MainLoop、Nested_RequestAddBlacklistByName、Nested_OnGameLeaveWorld、Nested_Helper_6。
+- 参数和捕获对象用工厂参数表达；代码按指令窗口恢复调用顺序及参数。
+- 函数状态 CSV 与机器状态 JSON 已同步，4 个原型列入完整静态恢复（未运行时验证）。
+- 详细报告：`docs/audit/检查点17_短闭包辅助函数第三批.md`。
