@@ -17,7 +17,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 13,root/10,root.children[10],root/11,SetButtonVisibilityState,15,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 14,root/11,root.children[11],root/12,DistanceCalculation,25,6,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 15,root/12,root.children[12],root/13,LuaSendMsg,92,34,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-16,root/13,root.children[13],root/14,GetMapId,9,4,0,静态源码候选,"可重建为 SL:GetMetaValue(""MAP_ID"") or 0.0；无目标运行时验证。"
+16,root/13,root.children[13],root/14,GetMapId,9,4,0,首版普通 Lua 草稿（待复审/未运行时验证）,源码候选 04_源码候选/小型辅助函数_首批草稿.lua；PC1-9 还原为 SL:GetMetaValue(""MAP_ID"") or 0；保留 false/nil 回退行为。
 17,root/14,root.children[14],root/15,FindMonsterInCurrViewField,27,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 18,root/15,root.children[15],root/16,ClearBlacklistItems,63,17,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 19,root/15/0,root.children[15].children[0],root/16/1,Nested_SL,13,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
@@ -39,9 +39,9 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 35,root/26,root.children[26],root/27,ResetGatherMonsterData,20,3,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 36,root/27,root.children[27],root/28,StopGatherMonsters,25,6,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 37,root/28,root.children[28],root/29,FindMonsterCandidates,102,19,1,完整静态恢复（未运行时验证）,视野怪物候选→读取忽略设置第1项的true键→排除死亡/忽略怪物→计算_distance→升序排序→按GATHER_THRESHOLD截取；源码候选04_源码候选/root28_FindMonsterCandidates.lua，审计docs/audit/root28_FindMonsterCandidates_阶段分析.md。
-38,root/28/0,root.children[28].children[0],root/29/1,Nested_distance,8,1,0,静态源码候选,距离比较器：a._distance < b._distance；旧报告标签 root/29/1；需与父函数调用点复核。
-39,root/29,root.children[29],root/30,IsDie,7,1,0,静态源码候选,按 OP_247/OP_255/OP_121/OP_068/OP_172/OP_220 可重建为 actor and not actor:IsDie()；签名/调用点待核。
-40,root/30,root.children[30],root/31,GetMapName,9,4,0,静态源码候选,"可重建为 SL:GetMetaValue(""MAP_NAME"") or """"；无目标运行时验证。"
+38,root/28/0,root.children[28].children[0],root/29/1,Nested_distance,8,1,0,首版普通 Lua 草稿（待复审/未运行时验证）,源码候选 04_源码候选/小型辅助函数_首批草稿.lua；比较 a._distance < b._distance；由父函数 table.sort 比较器调用。
+39,root/29,root.children[29],root/30,IsDie,7,1,0,首版普通 Lua 草稿（待复审/未运行时验证）,源码候选 04_源码候选/小型辅助函数_首批草稿.lua；返回 actor and not actor:IsDie()；保留 actor false/nil 时短路返回原值。
+40,root/30,root.children[30],root/31,GetMapName,9,4,0,首版普通 Lua 草稿（待复审/未运行时验证）,源码候选 04_源码候选/小型辅助函数_首批草稿.lua；SL:GetMetaValue(""MAP_NAME"") or ""。
 41,root/31,root.children[31],root/32,IsInWhitelistMap,28,6,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 42,root/32,root.children[32],root/33,AnonymousHelper_32,6,0,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 43,root/33,root.children[33],root/34,AnonymousHelper_33,5,0,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
@@ -50,7 +50,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 46,root/36,root.children[36],root/37,GetAvailableStoragePage,51,12,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 47,root/37,root.children[37],root/38,DestroyUI,31,11,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 48,root/38,root.children[38],root/39,GetOwnerID,31,7,0,部分静态核验（未运行时验证）,已核对 MainLoop root.children[45] 的 upvalue[9] 调用点（PC49-52）及插入/跳过分支；参数与插入集合业务含义仍待确认。
-49,root/39,root.children[39],root/40,GetMainPlayerID,6,3,0,静态源码候选,可重建为 global.gamePlayerController:GetMainPlayerID()；无目标运行时验证。
+49,root/39,root.children[39],root/40,GetMainPlayerID,6,3,0,首版普通 Lua 草稿（待复审/未运行时验证）,源码候选 04_源码候选/小型辅助函数_首批草稿.lua；global.gamePlayerController:GetMainPlayerID()。
 50,root/40,root.children[40],root/41,ShowHideAllButtons,47,9,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 51,root/41,root.children[41],root/42,MoveItemToQuickUse,133,26,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 52,root/42,root.children[42],root/43,doInit_UI,419,105,23,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
@@ -93,7 +93,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 89,root/44,root.children[44],root/45,GetPlayerMapPosition,17,5,0,部分核验,涉及 mCurrMapX/mCurrMapY 与 x/y；返回表/边界条件尚未完整还原。
 90,root/45,root.children[45],root/46,MainLoop,417,41,0,结构与部分调用点已核验，源码未恢复,417 条指令引怪状态机；22 个 upvalue 映射已复核；upvalue[9]/[17] 分别为 GetOwnerID/GetOwnerIDText，PC49-60 与 PC124-147 为对应调用及分支；完整 CFG/source 未完成。
 91,root/46,root.children[46],root/47,DiuItems,169,64,1,首版普通 Lua 草稿（待独立复审/未运行时验证）,源码候选 04_源码候选/root46_DiuItems.lua；已按闭合 CFG 恢复防重入、地面数量上限、BAG_DATA pairs 筛选、候选记录、ipairs 丢弃、LuaSendMsg 参数、计数汇总和状态清理；PC36-68 关键词构造因 matcher 调用点不可达而以注释说明并省略；尚未计入完整静态恢复。
-92,root/46/0,root.children[46].children[0],root/47/1,Nested_string_2,20,4,0,静态源码候选,20 条指令，纯文本关键词匹配，捕获 root/46 R5 的关键词表；无运行时验证。
+92,root/46/0,root.children[46].children[0],root/47/1,Nested_string_2,20,4,0,首版普通 Lua 草稿（待复审/未运行时验证）,源码候选 04_源码候选/小型辅助函数_首批草稿.lua；捕获关键词数组；ipairs 遍历并用 string.find(text, keyword, 1, true) 做纯文本查找。
 93,root/47,root.children[47],root/48,BlacklistPlayerDetection,216,35,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 94,root/48,root.children[48],root/49,PCallHelper_2,10,1,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 95,root/48/0,root.children[48].children[0],root/49/1,Nested_FriendProxy,9,5,0,部分核验,访问 global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)；融合调用/返回需复核。
