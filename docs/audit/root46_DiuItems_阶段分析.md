@@ -84,3 +84,45 @@ end
 3. 按 fused payload 的真实执行顺序拆解 PC143–156，恢复 LuaSendMsg 的完整参数顺序。
 4. 检查异常/提前返回路径是否都会清理 isDiuing。
 5. 所有条件闭合后再将函数升级为完整静态恢复；运行时验证单独标记。
+
+
+---
+
+# 检查点 #11 补充：绑定过滤、地面上限与消息参数（2026-11-08）
+
+## ITEM_IS_BIND
+
+PC82–86 的寄存器构造为 `SL:GetMetaValue("ITEM_IS_BIND", item)`：SL 作为方法接收者，当前 pairs(BAG_DATA) 项作为第二个显式参数。PC87 检查返回值 truthy；truthy 时执行 PC88 跳至 PC113，当前物品被排除；false/nil 时跳过 PC88，继续处理。
+
+## 名称匹配死分支
+
+PC36 将常量 1 写入 R4；在活动路径到 PC89 之间没有对 R4 的写入。PC89 的 OP_092 比较 R4==1，结果恒真；PC90 无条件跳到 PC96，绕过 PC91–95。PC91–95 是唯一调用关键词 matcher 子闭包的路径。PC96 设置 R14=true，PC97 跳过 PC98 的退出跳转，随后 PC99–112 插入候选记录。
+
+因此关键词表和 matcher 子闭包虽被构造，实际 matcher 调用点在当前字节码活动路径不可达。有效筛选条件为 Name/MakeIndex 有效且 ITEM_IS_BIND 为假/空。死分支的设计原因未知，不猜测。
+
+## 地面物品上限
+
+PC1 初始化 R0=35。GetDroppedItems 调用的第二个返回值写入 R2，PC11–26 使用它构造超限提示。丢弃循环 PC129 执行 `R0 <= R2` 判断：R2>=35 时走“地面物品已满”提示；否则发送消息。每次发送后 PC158 将 R2 加 1，所以达到 35 件后不再发送下一条消息。
+
+## LuaSendMsg 参数
+
+PC143–156 依次构造：
+
+1. `global.MsgType.MSG_CS_MAP_ITEM_DISCARD`
+2. `candidate.makeIndex`
+3. `candidate.count`
+4. `0`
+5. `0`
+6. `candidate.name`
+7. `string.len(candidate.name)`
+
+## 计数
+
+PC157 每次发送路径将 R8 加一；PC161–166 汇总输出 R8。因此提示中的数量是发送次数，不是堆叠 count 的求和。
+
+## 未解决
+
+- 关键词 matcher 的死分支为何存在。
+- LuaSendMsg 外部失败/返回语义。
+- 运行时异常是否会导致 isDiuing 未清除。
+- 尚未完成全函数作者级源码整理，未运行时验证。
