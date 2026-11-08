@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续恢复剩余短小原型；优先处理返回值和参数窗口清楚的辅助函数。对通知 helper 复核 UP[0] 捕获对象后再决定是否完整静态验收。每批更新源码、CSV、机器状态和检查点。",
+  "next_action": "继续批量处理剩余短函数与包装闭包；优先直接生成代码，复核后标记静态完成。接着处理 GetPlayerPosition、ShowLocalNoticeByType 等已部分分析 helper，再进入更复杂的业务函数。每批更新源码、CSV、JSON和检查点。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -196,23 +196,60 @@
         "drop items",
         "ground item count"
       ]
+    },
+    {
+      "path": "root.children[19].children[0]",
+      "legacy_path": "root/20/1",
+      "name": "Nested_MainLoop",
+      "physical_instructions": 3,
+      "source_file": "04_源码候选/短闭包辅助函数_第三批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[25].children[0]",
+      "legacy_path": "root/26/1",
+      "name": "Nested_RequestAddBlacklistByName",
+      "physical_instructions": 6,
+      "source_file": "04_源码候选/短闭包辅助函数_第三批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[42].children[4]",
+      "legacy_path": "root/43/5",
+      "name": "Nested_OnGameLeaveWorld",
+      "physical_instructions": 5,
+      "source_file": "04_源码候选/短闭包辅助函数_第三批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[42].children[13]",
+      "legacy_path": "root/43/14",
+      "name": "Nested_Helper_6",
+      "physical_instructions": 6,
+      "source_file": "04_源码候选/短闭包辅助函数_第三批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
     }
   ],
   "latest_batch": {
     "date": "2026-11-08",
-    "target": "GetDroppedItems and ShowLocalNoticeByType helper batch",
-    "status": "one_complete_static_one_draft",
-    "source_file": "04_源码候选/其他短辅助函数_第二批草稿.lua",
+    "target": "Four short closure helpers",
+    "status": "four_short_closures_complete_static",
+    "source_file": "04_源码候选/短闭包辅助函数_第三批草稿.lua",
     "verified": [
-      "GetDroppedItems 8-instruction method call and two-value return fully reconstructed",
-      "ShowLocalNoticeByType 15-instruction notice record fields and forwarding call drafted"
+      "Nested_MainLoop calls MainLoop() with no arguments",
+      "Nested_RequestAddBlacklistByName forwards captured object.name via SL method call",
+      "Nested_OnGameLeaveWorld invokes global.gameWorldController:OnGameLeaveWorld()",
+      "Nested_Helper_6 invokes captured notice callback with '清空黑名单' before ClearBlacklistItems()"
     ],
     "unresolved": [
-      "ShowLocalNoticeByType UP[0] capture object identity and parent closure creation point",
-      "Runtime validation"
+      "Runtime validation remains absent; captured callback/object identities are represented by factory parameters"
     ],
     "runtime_verified": false,
-    "checkpoint_report": "docs/audit/检查点16_第二批短辅助函数恢复.md"
+    "checkpoint_report": "docs/audit/检查点17_短闭包辅助函数第三批.md"
   },
   "corrections": [
     {
