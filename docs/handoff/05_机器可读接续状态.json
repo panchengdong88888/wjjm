@@ -21,7 +21,7 @@
     "root.children[46]": "169-instruction DiuItems item discard function; legacy root/47; structural semantics available, high-level Lua pending",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续核查并恢复辅助函数组：优先分析 root.children[28]（25 条指令，FindMonsterCandidates）及其捕获辅助函数；随后回溯 root.children[7]（旧 root/8，GetOwnerIDText）和 root.children[38]（旧 root/39，GetOwnerID）两个归属判断函数，确认调用点后再合并。",
+  "next_action": "恢复 root.children[28]（旧 root/29，FindMonsterCandidates，102 条物理指令、1 个子原型）；其后核查 root.children[7]（旧 root/8，GetOwnerIDText）与 root.children[38]（旧 root/39，GetOwnerID）两个归属判断函数。注意 root.children[27]（旧 root/28）才是 25 条指令的 StopGatherMonsters，不要混淆。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
