@@ -1794,3 +1794,15 @@
 - 新增审计`docs/audit/检查点166_IsInWhitelistMap完整静态复审.md`；更新短函数草稿第十二批、CSV、机器状态JSON。
 - 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复87/110；运行时验证0。
 - 下一步：复审UseItemByIndex（root.children[24]，33条），核对捕获表、物品索引/数量字段、方法receiver与返回值。
+
+ 
+## 检查点 #167（2026-11-09）：UseItemByIndex 完整静态复审与闭包表达修正
+
+- 对象：`root.children[24]`（legacy root/25），33条物理指令，8个常量，无子原型。
+- 父root PC355创建child-index 24，PC356捕获T[37]为UP0；源码已由错误的自由变量访问改为`make_UseItemByIndex(itemNameList)`工厂闭包。
+- ipairs遍历UP0；每项调用`SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)`及`SL:GetMetaValue("ITEM_COUNT", itemName)`，两次调用均保留SL receiver。
+- ITEM_COUNT结果经tonumber，false/nil回退0；itemIndex truthy且itemCount>0时调用`SL:UseItemByIndex(itemIndex)`并返回当前itemName。
+- 循环耗尽时无值返回。捕获表业务来源仍未知，使用中性名称itemNameList，不妨碍函数体静态语义闭合。
+- 新增审计`docs/audit/检查点167_UseItemByIndex完整静态复审与闭包表达修正.md`；更新源码候选、CSV、机器状态JSON。
+- 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复88/110；运行时验证0。
+- 下一步：审查Nested_Panel_mini_chat（root.children[55].children[0]，24条）与Nested_ID（root.children[55].children[1]，27条）。
