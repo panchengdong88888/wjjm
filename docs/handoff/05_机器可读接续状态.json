@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next."
   },
-  "next_action": "继续从剩余普通Lua草稿中挑选短函数，优先追踪父级闭包创建点和捕获来源，并逐PC核对调用是否接收返回值。下一优先候选可检查AnonymousHelper_54（root.children[54]，6条指令、2项捕获）或GetWritablePath/FormatStateChange；Nested_Anonymous的T槽映射仍等待VM帧初始化实现，复杂BlacklistPlayerDetection与StorageItems继续分阶段复核。",
+  "next_action": "继续从剩余普通Lua草稿中挑选短函数；优先复核ClearTargetID_2（root.children[56]，22条指令）或GetWritablePath/FormatStateChange的参数槽位。AnonymousHelper_54已完成捕获身份、调用目标、参数顺序与多返回值转发恢复。复杂BlacklistPlayerDetection与StorageItems继续分阶段复核；Nested_Anonymous的T槽映射仍等待VM帧初始化实现。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -1787,27 +1787,27 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "124",
+    "checkpoint": "125",
     "targets": [
-      "root.children[0].children[0]",
-      "root.children[0]"
+      "root.children[54]"
     ],
-    "status": "Nested_removeFile promoted to complete static reconstruction; both closure captures resolved and no-return call semantics confirmed",
-    "audit_file": "docs/audit/检查点124_Nested_removeFile捕获与返回语义完整静态恢复.md",
+    "status": "AnonymousHelper_54 promoted to complete static reconstruction; both captures, callee identity, argument order, and return forwarding resolved",
+    "audit_file": "docs/audit/检查点125_AnonymousHelper_54捕获身份与调用顺序完整静态恢复.md",
     "files": [
-      "04_源码候选/短函数草稿_第十五批.lua",
-      "docs/audit/检查点124_Nested_removeFile捕获与返回语义完整静态恢复.md",
+      "04_源码候选/短函数草稿_第十六批.lua",
+      "docs/audit/检查点125_AnonymousHelper_54捕获身份与调用顺序完整静态恢复.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "Parent root/1 PC17 creates Nested_removeFile; PC18 captures parent R1 as child UP[0], the cc.FileUtils:getInstance() instance.",
-      "Parent PC19 captures parent R2 as child UP[1], the path argument also used by the parent's FileUtils:isFileExist check.",
-      "Child PC1-PC2 obtains UP[0].removeFile while preserving the receiver; PC3 reads UP[1]; PC4 invokes the method with receiver and path; PC5 returns without explicit values.",
-      "The prior candidate incorrectly returned the removeFile method result; corrected source calls fileUtils:removeFile(path) without return."
+      "Parent root PC313 creates root.children[54]; PC314 captures R46 as UP[0], the PCallHelper closure root.children[17].",
+      "Parent root PC315 captures R43 as UP[1], the string gather_monster_count.txt; root PC296 assigned that string to R43.",
+      "Child PC1-PC3 loads PCallHelper, the captured filename, and the first explicit argument; PC4 calls PCallHelper(filename, firstArg) and directly returns all results.",
+      "The old candidate had the callee and argument order reversed; the corrected source uses return PCallHelper('gather_monster_count.txt', firstArg).",
+      "PC5-PC6 are unreachable after the unconditional return at PC4."
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 66,
+      "complete_static_reconstruction": 67,
       "runtime_verified": 0
     }
   },
@@ -2378,55 +2378,55 @@
   ],
   "draft_function_count": 78,
   "ordinary_lua_draft_functions": 78,
-  "last_checkpoint": "124",
-  "checkpoint": "124",
+  "last_checkpoint": "125",
+  "checkpoint": "125",
   "drafts": 33,
-  "next": "继续从剩余普通Lua草稿中挑选短函数，优先追踪父级闭包创建点和捕获来源，并逐PC核对调用是否接收返回值。下一优先候选可检查AnonymousHelper_54（root.children[54]，6条指令、2项捕获）或GetWritablePath/FormatStateChange；Nested_Anonymous的T槽映射仍等待VM帧初始化实现，复杂BlacklistPlayerDetection与StorageItems继续分阶段复核。",
+  "next": "继续从剩余普通Lua草稿中挑选短函数；优先复核ClearTargetID_2（root.children[56]，22条指令）或GetWritablePath/FormatStateChange的参数槽位。AnonymousHelper_54已完成捕获身份、调用目标、参数顺序与多返回值转发恢复。复杂BlacklistPlayerDetection与StorageItems继续分阶段复核；Nested_Anonymous的T槽映射仍等待VM帧初始化实现。",
   "recent_checkpoint": {
-    "checkpoint": "124",
+    "checkpoint": "125",
     "date": "2026-11-09",
-    "summary": "Nested_removeFile两个闭包捕获来源及调用返回语义闭合，升级为完整静态恢复；无运行时验证。",
+    "summary": "AnonymousHelper_54的两个捕获身份、PCallHelper调用目标、参数顺序及多返回值转发闭合；未运行时验证。",
     "files": [
-      "04_源码候选/短函数草稿_第十五批.lua",
-      "docs/audit/检查点124_Nested_removeFile捕获与返回语义完整静态恢复.md",
+      "04_源码候选/短函数草稿_第十六批.lua",
+      "docs/audit/检查点125_AnonymousHelper_54捕获身份与调用顺序完整静态恢复.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 66,
+      "complete_static_reconstruction": 67,
       "runtime_verified": 0
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "124",
+    "checkpoint": "125",
     "date": "2026-11-09",
-    "summary": "Nested_removeFile（5条指令）完成完整静态恢复。父级两项捕获闭合：UP[0]为cc.FileUtils:getInstance()实例，UP[1]为路径参数。子函数调用fileUtils:removeFile(path)，调用结果被丢弃，函数无显式返回值；修正旧草稿错误的return转发。",
-    "audit_file": "docs/audit/检查点124_Nested_removeFile捕获与返回语义完整静态恢复.md",
+    "summary": "AnonymousHelper_54（6条指令）完成完整静态恢复。父root PC313创建闭包，UP[0]为root.children[17]的PCallHelper闭包，UP[1]为字符串gather_monster_count.txt。活跃路径按PCallHelper(文件名, firstArg)调用并原样转发全部返回值；修正旧草稿中目标与参数顺序颠倒的问题。",
+    "audit_file": "docs/audit/检查点125_AnonymousHelper_54捕获身份与调用顺序完整静态恢复.md",
     "unresolved": [
-      "AnonymousHelper_54的两个捕获来源与参数转发契约",
       "Nested_Anonymous的VM帧初始化和T槽映射",
       "BlacklistPlayerDetection的13项捕获身份、玩家元素结构、距离和随机传送调用",
       "StorageItems剩余复杂循环与宿主API参数",
-      "GUI宿主标志和Layout尾参1语义"
+      "GUI宿主标志和Layout尾参1语义",
+      "GetWritablePath与FormatStateChange的参数槽位细节"
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 66,
+      "complete_static_reconstruction": 67,
       "runtime_verified": 0
     }
   },
-  "complete_static_reconstruction_count": 66,
-  "complete_static_reconstruction": "66/110 (60.0%)",
+  "complete_static_reconstruction_count": 67,
+  "complete_static_reconstruction": "67/110 (60.9%)",
   "progress_reconciled": {
     "source_of_counts": "GitHub 02_基础索引/03_函数状态清单.csv 与静态恢复候选索引逐项核对",
     "ordinary_lua_draft_functions": 78,
-    "complete_static_reconstruction_functions": 66,
+    "complete_static_reconstruction_functions": 67,
     "runtime_verified_functions": 0,
-    "note": "检查点124将既有Nested_removeFile草稿升级为完整静态恢复；完整静态恢复由65/110升至66/110，普通草稿累计数保持78，运行时验证仍为0。"
+    "note": "检查点125将既有AnonymousHelper_54草稿升级为完整静态恢复；完整静态恢复由66/110升至67/110，普通草稿累计数保持78，运行时验证仍为0。"
   },
   "counts": {
     "ordinary_lua_drafts": 78,
-    "complete_static_reconstruction": 66,
+    "complete_static_reconstruction": 67,
     "runtime_verified": 0
   }
 }
