@@ -1413,3 +1413,14 @@
 - 两项均升级为完整静态恢复，未运行时验证。
 - 统计：普通Lua草稿78；完整静态恢复74/110（67.3%）；运行时验证0。
 - 下一步：复核TakeItems与Builtsetting，随后推进BlacklistPlayerDetection、StorageItems主体。
+
+
+## 检查点 #134（2026-11-09）：TakeItems 与 Builtsetting 完整静态恢复
+
+- TakeItems（root.children[5]，99条）：确认PC42-PC47常量分支跳过PC48-PC64的过滤循环，故"待定"过滤逻辑不可达；恢复LuaSendMsg七项参数顺序：消息类型、999999999、MakeIndex、0、0、trim后名称、名称长度；恢复计数、isTaking复位及完成提示。
+- Builtsetting（root.children[23]，55条）：六组CHANGE_SETTING编号及单元素数组值、后续中文提示均按物理PC确认。
+- 源码更新：`04_源码候选/短函数草稿_第五十七批.lua`、`04_源码候选/短函数草稿_第四十五批.lua`。
+- 新增审计：`docs/audit/检查点134_TakeItems与Builtsetting静态复核.md`。
+- 两项升级完整静态恢复，未运行时验证。
+- 统计：普通Lua草稿78；完整静态恢复76/110（69.1%）；运行时验证0。
+- 下一步：优先推进BlacklistPlayerDetection与StorageItems主体草稿，再处理GetMapData2DPtr。
