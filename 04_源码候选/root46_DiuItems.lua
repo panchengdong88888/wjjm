@@ -1,7 +1,7 @@
 -- root.children[46] / legacy root/47
 -- Reconstruction name: DiuItems
 -- 169 physical VM instructions; one nested keyword-matcher prototype.
--- Status: first-pass readable Lua draft from the statically closed control/data flow.
+-- Status: complete static reconstruction after independent review (checkpoint 89).
 -- Not original source text; not runtime-validated. Names such as state/candidates are
 -- readable reconstruction names, not recovered original local-variable identifiers.
 
