@@ -1734,3 +1734,15 @@
 - 新增审计`docs/audit/检查点161_SetButtonVisibilityState完整静态复审.md`；更新`04_源码候选/短函数草稿_第十三批.lua`、函数状态CSV和机器状态JSON。
 - 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复82/110；运行时验证0。
 - 下一步：复审ResetGatherMonsterData（root.children[26]，20条），重点核对捕获cell共享写入、回调身份与通知参数。
+
+ 
+## 检查点 #162（2026-11-09）：ResetGatherMonsterData 完整静态复审
+
+- 对象：`root.children[26]`（legacy root/27），20条物理指令，3个常量，无子原型。
+- 父root PC200按序捕获T[15],T[16],T[17],T[25],T[19],T[20],T[21],T[22],T[4]九个寄存器。
+- 函数顺序：UP0替换为空表；UP1/UP2置0；UP3零参调用（身份仍用resetAction中性名）；UP4/UP5置0；UP6置空字符串；UP7调用PrintLog("数据已重置")；最后return。
+- UP7=root T[4]=PrintLog，身份由MainLoop捕获映射和父root创建点交叉确认。捕获槽位赋值在Lua工厂闭包中以upvalue cell重绑定表达，不可改成临时局部赋值。
+- 20条物理指令的赋值顺序、调用次数/参数和返回路径闭合；UP3业务身份保留未知，不影响其调用契约。
+- 新增审计`docs/audit/检查点162_ResetGatherMonsterData完整静态复审.md`；更新`04_源码候选/短函数草稿_第十三批.lua`、函数状态CSV和机器状态JSON。
+- 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复83/110；运行时验证0。
+- 下一步：复审StopGatherMonsters（root.children[27]，25条），核对running标记、gatherTimer、预停止回调、IDLE切换、Reset helper与PrintLog顺序。
