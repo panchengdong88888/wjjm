@@ -1889,20 +1889,20 @@
       "path": "root.children[42].children[22]",
       "legacy_path": "root/43/23",
       "name": "Nested_Anonymous",
-      "source_file": "04_源码候选/短函数草稿_第四十二批.lua",
-      "audit_file": "docs/audit/检查点66_Nested_Anonymous保守草稿.md",
-      "status": "conservative_first_pass_draft_T0_vararg_mapping_pending_not_runtime_verified",
+      "source_file": "04_源码候选/Nested_Anonymous_第七十八批.lua",
+      "audit_file": "docs/audit/检查点114_Nested_Anonymous调用契约复核.md",
+      "status": "first_pass_draft_pending_T2_producer_review_not_runtime_verified",
       "physical_instructions": 8,
       "constant_count": 0,
       "child_count": 1,
       "vararg_flag": 2,
       "notes": [
-        "Parent root/43 PC248 creates closure; this UPVALUE_0 captures parent UPVALUE_0",
-        "PC1 child Nested_str captures current T[0], current UPVALUE_0, T[2], T[1] in that order",
-        "PC7 invokes Nested_str with no explicit arguments",
-        "Caller root/43/12 supplies prompt text and callback closure to Nested_Anonymous",
-        "VM T[0] and vararg argument slot mapping remain unresolved; T0_SLOT_UNRESOLVED retained as placeholder",
-        "No runtime validation"
+        "doInit_UI PC248 creates the closure; its sole upvalue captures parent UP[0], identified as PrintLog from the parent closure chain.",
+        "PC1 creates Nested_str; capture order is current T[0], current UP[0], current T[2], current T[1]. PC6-PC7 immediately invokes Nested_str with zero explicit arguments.",
+        "Nested_Helper_4 and Nested_Helper_7 both call Nested_Anonymous(promptText, callbackClosure); their UP[0] is the closure created at parent PC248.",
+        "T[0]/T[1] are provisionally named initialText/onValid from the observed callers. T[2] is called downstream as the delayed error-notice function, but its producer in this frame remains unresolved.",
+        "The readable draft uses an explicit nil placeholder for T[2]; it is not executable as recovered behavior and is not counted as complete static reconstruction.",
+        "Nested_str/Nested_match/Nested_Helper_11 remain independently statically recovered at checkpoint #112; no host runtime validation."
       ]
     },
     {
