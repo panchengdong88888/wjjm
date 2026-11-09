@@ -32,9 +32,10 @@
     "root.children[10]": "SetButtonVisibilityState：15条；检查点161闭合UP0共享状态对象、UP1按钮映射表、isHidden=true写入、pairs循环和GUI:setVisible(buttonMap[key],true) receiver/参数顺序。完整静态恢复，未运行时验证。",
     "root.children[26]": "ResetGatherMonsterData：20条；检查点162闭合9个父root T寄存器捕获、共享upvalue cell赋值顺序、零参resetAction调用、UP7=root T[4]=PrintLog及PrintLog(\"数据已重置\")。完整静态恢复，未运行时验证。",
     "root.children[27]": "StopGatherMonsters：25条；检查点163闭合UP0运行标记、UP1.gatherTimer状态对象、UP2零参预停止回调、UP3 FormatStateChange、UP4状态常量表、UP5 ResetGatherMonsterData、UP6 PrintLog。定时器存在时SL:UnSchedule(timer)并置nil；随后预停止回调、切IDLE、重置数据、PrintLog停止提示。完整静态恢复，未运行时验证。",
-    "root.children[37]": "DestroyUI：31条；检查点164根据父root PC261捕获描述修正为3个upvalue：UP0=root T[0] UI状态对象（isHidden/resWin）、UP1=root T[3]定时器状态对象（resTimer）、UP2=root T[1]按钮映射表。旧草稿两参数捕获映射已修正。完整静态恢复，未运行时验证。"
+    "root.children[37]": "DestroyUI：31条；检查点164根据父root PC261捕获描述修正为3个upvalue：UP0=root T[0] UI状态对象（isHidden/resWin）、UP1=root T[3]定时器状态对象（resTimer）、UP2=root T[1]按钮映射表。旧草稿两参数捕获映射已修正。完整静态恢复，未运行时验证。",
+    "root.children[40]": "ShowHideAllButtons：47条；检查点165按父root PC270捕获顺序修正为UP0=root T[3]定时器状态、UP1=root T[1]按钮表、UP2=root T[0]UI状态/hidebut控件。两个timer独立取消并清nil；pairs遍历UP1并显示；UP2.hidebut是单个控件，直接GUI:setVisible(hidebut,false)后清nil，不是第二张pairs表。完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点164已完成DestroyUI完整静态恢复并修正三个upvalue映射；普通Lua源码候选82、完整静态恢复85/110、运行时验证0。下一步复审root.children[40] ShowHideAllButtons（47条），纠正UP2.hidebut直接传入GUI:setVisible控件参数、false可见性及hidebut清nil路径；不能按旧草稿把hidebut当作第二张pairs表。",
+  "next_action": "检查点165已完成ShowHideAllButtons完整静态恢复；普通Lua源码候选82、完整静态恢复86/110、运行时验证0。下一步复审root.children[31] IsInWhitelistMap（28条）与其他短函数，随后回到尚未闭合的中型原型。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -107,7 +108,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "164"
+    "last_checkpoint": "165"
   },
   "static_recovered_functions": [
     {
@@ -1971,29 +1972,48 @@
         "Three captures: UP0 UI state; UP1 timer state; UP2 button map.",
         "Corrected old two-capture source draft; all 31 PCs mapped, not runtime validated."
       ]
+    },
+    {
+      "path": "root.children[40]",
+      "legacy_path": "root/41",
+      "name": "ShowHideAllButtons",
+      "physical_instructions": 47,
+      "constant_count": 9,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第十四批.lua",
+      "audit_file": "docs/audit/检查点165_ShowHideAllButtons完整静态复审与捕获映射纠错.md",
+      "parameters": [],
+      "returns": [],
+      "notes": [
+        "UP0 timer state; UP1 button map; UP2 UI state containing single hidebut control.",
+        "Two timer cancellation branches and one pairs loop; hidebut directly passed to GUI:setVisible(...,false), then nilled.",
+        "All 47 PCs reconciled; not runtime validated."
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "164",
+    "checkpoint": "165",
     "targets": [
-      "root.children[37]"
+      "root.children[40]"
     ],
-    "status": "Reviewed all 31 physical instruction records, corrected the three-upvalue capture mapping, and promoted DestroyUI to complete static reconstruction.",
-    "audit_file": "docs/audit/检查点164_DestroyUI完整静态复审与捕获映射修正.md",
+    "status": "Reviewed all 47 physical instruction records, corrected captures and hidebut semantics, and promoted ShowHideAllButtons to complete static reconstruction.",
+    "audit_file": "docs/audit/检查点165_ShowHideAllButtons完整静态复审与捕获映射纠错.md",
     "files": [
       "04_源码候选/短函数草稿_第十四批.lua",
-      "docs/audit/检查点164_DestroyUI完整静态复审与捕获映射修正.md",
+      "docs/audit/检查点165_ShowHideAllButtons完整静态复审与捕获映射纠错.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "UP0 UI state; UP1 timer state; UP2 button map.",
-      "resTimer belongs to UP1, resWin/isHidden to UP0.",
-      "GUI:Win_CloseAll() and GUI:setVisible(buttonMap[key],true) retain GUI receiver."
+      "UP0 timer state; UP1 button map; UP2 UI state.",
+      "rewardTimer/cruiseTimer canceled independently and cleared.",
+      "hidebut is one control passed directly to GUI:setVisible(hidebut,false), not a second map."
     ],
     "counts": {
       "ordinary_lua_drafts": 82,
-      "complete_static_reconstruction": 85,
+      "complete_static_reconstruction": 86,
       "runtime_verified": 0
     }
   },
@@ -2642,44 +2662,44 @@
   ],
   "draft_function_count": 82,
   "ordinary_lua_draft_functions": 82,
-  "last_checkpoint": "164",
-  "checkpoint": "164",
+  "last_checkpoint": "165",
+  "checkpoint": "165",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 164,
+    "number": 165,
     "date": "2026-11-09",
     "artifacts": [
       "04_源码候选/短函数草稿_第十四批.lua",
-      "docs/audit/检查点164_DestroyUI完整静态复审与捕获映射修正.md"
+      "docs/audit/检查点165_ShowHideAllButtons完整静态复审与捕获映射纠错.md"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 82,
-    "complete_static_reconstructions": 85,
+    "complete_static_reconstructions": 86,
     "runtime_verified": 0,
-    "notes": "DestroyUI 31条指令和3个upvalue映射完成静态复审，修正旧草稿捕获槽错误；运行时未验证。"
+    "notes": "ShowHideAllButtons的47条指令、三个捕获槽位、双timer和hidebut单控件隐藏逻辑完成静态复审；运行时未验证。"
   },
   "latest_checkpoint": {
-    "checkpoint": "164",
+    "checkpoint": "165",
     "date": "2026-11-09",
-    "summary": "DestroyUI三个upvalue的真实捕获顺序、timer/resWin状态对象分离、GUI关闭和按钮显示循环闭合。",
-    "audit_file": "docs/audit/检查点164_DestroyUI完整静态复审与捕获映射修正.md",
+    "summary": "ShowHideAllButtons捕获顺序、两个timer取消/清空、按钮表遍历、hidebut单控件隐藏并清nil完成静态闭合。",
+    "audit_file": "docs/audit/检查点165_ShowHideAllButtons完整静态复审与捕获映射纠错.md",
     "unresolved": [
       "Lua宿主/游戏运行时验证"
     ]
   },
-  "complete_static_reconstruction_count": 85,
-  "complete_static_reconstruction": "85/110 (77.3%)",
+  "complete_static_reconstruction_count": 86,
+  "complete_static_reconstruction": "86/110 (78.2%)",
   "progress_reconciled": {
     "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；机器状态中的static_recovered_functions是精选索引，不作为完整计数器。",
     "ordinary_lua_draft_functions": 82,
-    "complete_static_reconstruction_functions": 85,
+    "complete_static_reconstruction_functions": 86,
     "runtime_verified_functions": 0,
-    "note": "检查点164将DestroyUI root.children[37]由首版草稿升级为完整静态恢复，并修正原草稿将三个捕获值误写成两个参数的问题。运行时验证仍为0。"
+    "note": "检查点165将ShowHideAllButtons root.children[40]由首版草稿升级为完整静态恢复，并修正UP槽位顺序及hidebut单控件隐藏逻辑。运行时验证仍为0。"
   },
   "counts": {
     "ordinary_lua_drafts": 82,
-    "complete_static_reconstruction": 85,
+    "complete_static_reconstruction": 86,
     "runtime_verified": 0
   }
 }
