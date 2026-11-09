@@ -1,8 +1,9 @@
 -- root.children[50].children[1] / legacy root/51/2
 -- Reconstruction label: Nested_Anonymous_2
 -- 27 physical VM instructions; 4 captured values; no child prototypes.
--- Status: first-pass ordinary Lua draft. Static-complete status not asserted;
--- runtime behavior has not been validated.
+-- Status: complete static reconstruction after independent review (checkpoint 173);
+-- all 27 child instructions, four capture producers, and the parent zero-argument
+-- invocation/result-consumption path are reconciled. Runtime behavior is not validated.
 --
 -- Capture mapping (StorageItems parent, PC54-PC58):
 --   UP[0] = maxPage
@@ -49,7 +50,15 @@ end
 -- * Existing StorageItems review maps those captures to
 --   maxPage/pageCapacity/openSize/storedPageData and confirms the final-page
 --   capacity expression above.
--- * Parent code prepares storedPageData[page] as a per-page count (zero when
---   no stored-page record exists), so this helper compares the count directly.
+-- * Parent PC37-PC53 builds storedPageData: for each page it calls
+--   NPCStorageProxy:GetStorageDataByPage(page), stores #pageData when present,
+--   and stores 0 when the page data is absent. Thus the child compares a number,
+--   not a possibly-nil raw page-data array.
+-- * Parent PC177-PC179 calls this closure with zero explicit arguments and
+--   branches on its first return: a page number continues the store path; nil
+--   enters the '仓库已满,无法存仓' failure path.
+-- * The child loop checks pages in ascending order, applies the reduced
+--   final-page capacity only when page == maxPage, returns the first page with
+--   currentCount < pageLimit, and returns nil after exhausting all pages.
 -- * This is readable reconstruction, not recovered author formatting or
 --   original local names. No host runtime test has been performed.
