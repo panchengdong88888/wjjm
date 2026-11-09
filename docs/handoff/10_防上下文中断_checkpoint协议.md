@@ -1709,3 +1709,16 @@
 - 新增审计`docs/audit/检查点159_MainLoop依赖短helper静态复审.md`；更新三个源码候选、函数状态CSV和机器状态JSON。
 - 统计：普通Lua源码候选82；完整静态恢复80/110；运行时验证0。
 - 下一步：筛选函数状态CSV中仍未独立静态恢复的短函数与辅助闭包，批量推进可快速闭合的原型。
+
+ 
+## 检查点 #160（2026-11-09）：DistanceCalculation 完整静态复审
+
+- 对象：`root.children[11]`（legacy root/12），25条物理指令，6个常量，无upvalue、无子原型。
+- PC1-PC6：依次检查pointA/pointB；任一false/nil均加载99999并返回。
+- PC7-PC12：读取两表x字段，计算`math.abs(pointA.x-pointB.x)`。
+- PC13-PC18：读取两表y字段，计算`math.abs(pointA.y-pointB.y)`。
+- PC19-PC23：调用并返回`math.max(dx,dy)`。PC24-PC25位于无条件return之后，为不可达尾部记录。
+- 25条物理指令的活动路径、参数、字段、运算顺序、哨兵返回值和最终返回闭合；源码函数体与字节码一致。
+- 新增审计`docs/audit/检查点160_DistanceCalculation完整静态复审.md`；更新`04_源码候选/短函数草稿_第十二批.lua`、函数状态CSV、机器状态JSON。
+- 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复81/110；运行时验证0。
+- 下一步：复审SetButtonVisibilityState（root.children[10]，15条）和ResetGatherMonsterData（root.children[26]，20条），重点检查GUI调用receiver及闭包捕获单元共享写入。
