@@ -11,7 +11,7 @@
   "verified_complete_functions_runtime": 0,
   "static_candidates": [],
   "major_targets": {
-    "root.children[45]": "MainLoop：417条；检查点152-154已形成并校正普通Lua草稿。UPVALUE_15=FindMonsterInCurrViewField（返回ID->actor映射）、UPVALUE_20=SetTargetID（调用PlayerInputProxy:SetTargetID(id,FIND)）；GATHERING PC166/313数值循环和R2归属标志已闭合；ATTACKING PC359/405数值循环已闭合：缺失/死亡递增索引，首个存活目标SetTargetID后return，全部耗尽则IDLE并Reset。仍待前段IDLE/白名单/等待路径及全函数CFG复核；未运行时验证。",
+    "root.children[45]": "MainLoop：417条；检查点152-155已形成并校正普通Lua草稿。UPVALUE_15=FindMonsterInCurrViewField（返回ID->actor映射）、UPVALUE_20=SetTargetID（调用PlayerInputProxy:SetTargetID(id,FIND)）；检查点155逐PC复核PC1-PC159入口运行标记、白名单地图门槛、IDLE候选构造、GATHERING等待计时及到期清理；修正PC117/PC159两个helper调用点的实参位置，并删除无字节码依据的候选nil保护。GATHERING PC166/313循环和ATTACKING PC359/405循环分别由检查点153/154闭合。仍待全417条CFG最终汇总复核；未运行时验证。",
     "root.children[46]": "DiuItems：169条；普通Lua草稿已独立复审并标记完整静态恢复（未运行时验证）；源码04_源码候选/root46_DiuItems.lua；不计运行时验证。",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next.",
     "root.children[8]": "FormatStateChange：10条；检查点130独立复核PC1-PC10的格式化、回调调用和捕获状态更新时序；首版草稿保留，原始局部名未恢复，未运行时验证。",
@@ -29,7 +29,7 @@
     "root.children[7]": "GetOwnerIDText：检查点151新增04_源码候选/root7_GetOwnerIDText.lua。nil/空串/-1返回false；string分支ownerID==tostring(ownerID)；非string分支ownerID==第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
     "root.children[38]": "GetOwnerID：检查点151新增04_源码候选/root38_GetOwnerID.lua。nil/空串/-1返回false；string分支ownerID~=tostring(ownerID)；非string分支ownerID~=第二参数。首版普通Lua草稿，待静态复审，未运行时验证。"
   },
-  "next_action": "检查点154已闭合MainLoop ATTACKING PC359-PC405循环。普通Lua草稿82、完整静态恢复76/110、运行时验证0。下一步复核MainLoop PC1-PC159的入口门槛、白名单地图状态切换、IDLE候选构造、等待归属计时与状态清理，逐一对照所有跳转/return；只有全函数静态路径闭合后才考虑提升完整静态恢复。",
+  "next_action": "检查点155完成MainLoop PC1-PC159前段逐PC复核；普通Lua草稿82、完整静态恢复76/110、运行时验证0。下一步继续对照MainLoop PC160-PC417及CFG报告，汇总全部入口可达/不可达路径、状态写入、循环边界和return汇合，修正剩余草稿差异；只有全417条静态路径闭合后才考虑提升完整静态恢复。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -102,7 +102,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "154"
+    "last_checkpoint": "155"
   },
   "static_recovered_functions": [
     {
