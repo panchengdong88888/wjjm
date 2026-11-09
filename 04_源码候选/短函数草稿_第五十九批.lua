@@ -54,25 +54,31 @@ local function BlacklistPlayerDetection()
     for index = 1, #players do
         local player = players[index]
         if player then
-            -- UPVALUE_4负责取得玩家/实体信息；返回值具体结构待确认。
-            local actorInfo, actorObject = UPVALUE_4(player)
-            if actorInfo then
-                local actorName = SL.GetMetaValue("ACTOR_NAME", actorInfo)
-                if actorName then
-                    local distance = state.distance
-                    if distance then
-                        -- 获取玩家及本机坐标相关数据。坐标来源与UPVALUE_5..UPVALUE_9的对象身份待复核。
-                        local playerX = SL.GetMetaValue("ACTOR_MAP_X", actorInfo)
-                        local playerY = SL.GetMetaValue("ACTOR_MAP_Y", actorInfo)
-                        local playerX2 = SL.GetMetaValue("ACTOR_MAP_X", actorObject)
-                        local playerY2 = SL.GetMetaValue("ACTOR_MAP_Y", actorObject)
-                        local coordinateData = {
-                            playerX, playerY, playerX2, playerY2
-                        }
-                        local distanceResult = UPVALUE_5(coordinateData)
+            -- UPVALUE_4(player)返回两个值；首返回值用于存在性门控。
+            local playerInfo, playerObject = UPVALUE_4(player)
+            if playerInfo then
+                -- PC94-PC101：ACTOR_NAME查询的对象实参是视野列表中的player；
+                -- 名称缺失时回退为固定文本“黑名单玩家”，而不是跳过该玩家。
+                local actorName = SL.GetMetaValue("ACTOR_NAME", player)
+                if not actorName then
+                    actorName = "黑名单玩家"
+                end
 
-                        -- 原始比较使用unknown哨兵；该条件尚不能安全改写为确定的距离范围判断。
-                        if distanceResult ~= "unknown" then
+                local distance = state.distance
+                if distance then
+                    -- PC108-PC127：分别读取本机MAIN_ACTOR_ID与视野player的地图坐标。
+                    local mainActorX = SL.GetMetaValue("ACTOR_MAP_X", mainActorID)
+                    local mainActorY = SL.GetMetaValue("ACTOR_MAP_Y", mainActorID)
+                    local playerX = SL.GetMetaValue("ACTOR_MAP_X", player)
+                    local playerY = SL.GetMetaValue("ACTOR_MAP_Y", player)
+
+                    -- PC128-PC134：捕获的距离函数接收五个独立实参，非坐标表。
+                    local distanceResult = UPVALUE_5(
+                        mainActorX, mainActorY, playerX, playerY, distance
+                    )
+
+                    -- PC136-PC141将nil作为无效距离哨兵；非nil结果才继续处理。
+                    if distanceResult ~= nil then
                             local now = os.time()
                             if now - state.alertAt >= (UPVALUE_6 or 0) then
                                 state.alertAt = now
