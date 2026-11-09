@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "继续核对 root.children[42].children[3].children[2]（Nested_FFFFFF，legacy root/43/4/3）的65条指令：还原ListView行创建的GUI融合参数、列/行布局、Text节点参数、资源名称到Text节点的映射返回值；然后回写Nested_FFFF00父函数草稿，清除已闭合部分的TODO。",
+  "next_action": "继续独立复核 Nested_FFFFFF（root.children[42].children[3].children[2]）：逐项核实PC5-63的双层数值for循环、cell/text位置参数和GUI融合实参；通过父函数PC265捕获来源确定T[5]/T[1]的业务身份。随后回写Nested_FFFF00父函数草稿，确认两次Nested_FFFFFF调用分别生成moneyRows/itemRows，并清理已闭合TODO。Nested_string和Nested_Helper_3已于检查点90升级静态完成，不重复处理。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "90"
+    "last_checkpoint": "91"
   },
   "static_recovered_functions": [
     {
