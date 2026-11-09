@@ -789,3 +789,13 @@
 - 待复核：13个upvalue业务身份；HP分支unknown哨兵与融合跳转；玩家列表元素结构；坐标/距离计算；alertAt/nextTryAt阈值来源；道具筛选、使用函数及LuaSendMsg参数；两类无道具提示关系。UPVALUE占位调用不是已确认的API映射。
 - 本批新增普通Lua草稿1个；累计73个。完整静态恢复仍29/110（26.4%）；运行时验证0。本函数不升级完整静态恢复。
 - 下一步处理StorageItems（root.children[50]，224条，含两个子原型），先追踪主函数与两个子原型的闭包/返回契约。
+
+
+## 检查点 #84（2026-11-09）：StorageItems 首版普通 Lua 草稿
+- 新增源码：04_源码候选/短函数草稿_第六十批.lua；新增审计：docs/audit/检查点84_StorageItems首版草稿.md。
+- StorageItems：原型索引97，规范路径root.children[50]，legacy root/51，224条物理指令、57常量、2个子原型、vararg_flag=0。root PC73创建主闭包，捕获3个父寄存器。
+- 恢复存仓isStoring门控、NPCStorageProxy/可用页检查、GetMaxPage/STORAGE_PER_PAGE_MAX/NPC_STORAGE_MAX_PAGE/GetOpenSize读取、按页GetStorageDataByPage、18个特殊名称常量、BAG_DATA读取、两段pairs/ipairs/string.find筛选、ITEM_IS_BIND/ITEM_INDEX_BY_NAME/UseItemByIndex调用、“使用:”提示、仓库满提示、LuaSendMsg存仓请求及完成数量提示主体。
+- child0 Nested_isOutputted（root.children[50].children[0]）此前已有独立草稿；child1 Nested_Anonymous_2（root.children[50].children[1]，27条）仍为阶段分析。本函数PC54创建child1闭包，4个捕获值及算术/返回契约待复核。
+- 待复核：主函数3个捕获身份；页数/容量算法；child0调用点与实参；两段过滤循环的数据结构；LuaSendMsg所有实参顺序/字段语义；计数是否代表发送成功。源码中的pageCalculation、回调及消息参数为显式占位，不能作为最终可执行协议。
+- 本轮新增BlacklistPlayerDetection及StorageItems两个普通Lua草稿；累计74个。完整静态恢复仍29/110（26.4%）；运行时验证0。
+- 下一步继续评估剩余未开始原型，并复核Nested_Anonymous_2及LuaSendMsg参数布局。
