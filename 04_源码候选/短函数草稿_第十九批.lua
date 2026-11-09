@@ -4,7 +4,7 @@
 -- UPVALUE_0：保存 shiquTimer 的状态表（由读写行为推断）。
 -- UPVALUE_1：状态提示回调（由调用行为推断）。
 -- UPVALUE_2：PickUpItems 函数（由调用行为推断）。
--- “unknown”状态标记按反汇编常量原样保留，不能擅自替换为 nil。
+-- 反汇编常量 ["unknown",2] 是 nil 的VM dump序列化占位，源码赋值必须使用 nil。
 
 -- 原型：root.children[42].children[10]
 -- legacy：root/43/11；物理指令：25
