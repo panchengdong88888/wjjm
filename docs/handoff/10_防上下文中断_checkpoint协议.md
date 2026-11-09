@@ -1633,3 +1633,16 @@
 - 本批仅校正既有普通Lua草稿，不新增草稿、不升级完整静态恢复、不增加运行时验证。
 - 统计保持：普通Lua草稿82、完整静态恢复76/110、运行时验证0。
 - 下一步：逐PC复核MainLoop PC359-PC405 ATTACKING循环，再核查其余CFG与返回路径。
+
+## 检查点 #154（2026-11-09）：MainLoop ATTACKING 数值循环校正
+
+- 对照 corrected phase3 指令和 CFG，闭合 PC359-PC405 攻击目标扫描循环。
+- PC352-PC353 调用 UPVALUE_15=FindMonsterInCurrViewField，取得 actorID->actor 映射；PC355-PC359以UPVALUE_10为起点、#UPVALUE_8为上限、1为步长准备数值for循环。
+- PC360-PC362按目标ID查actor；actor缺失时跳到PC393统一跳过路径。actor存在时PC365-PC367调用UPVALUE_18存活判断包装器；非存活也跳到PC393。
+- 存活actor路径PC370将R2清false；PC371-PC376读取GetName，缺失回退“未知怪物”；PC377-PC390输出攻击日志并调用UPVALUE_20=SetTargetID(targetID)，PC391立即return。因此每次MainLoop调用最多提交一个存活目标，SetTargetID返回值不参与该分支后续判断。
+- 缺失/死亡路径PC393-PC404输出“已死亡或离开视野”日志并将UPVALUE_10更新为index+1；PC405 OP_412继续循环。
+- 列表耗尽到PC406时，正常耗尽路径没有进入存活actor分支，R2仍为true；PC408-PC416输出“所有目标怪物已死亡或离开视野”，切换IDLE并调用ResetGatherMonsterData。
+- 修订 04_源码候选/root45_MainLoop.lua 的ATTACKING helper注释和循环注释；新增审计 docs/audit/检查点154_MainLoop_ATTACKING循环校正.md；更新函数状态CSV与机器状态JSON。
+- 本批仅校正既有普通Lua草稿，不新增草稿、不升级完整静态恢复、不增加运行时验证。
+- 统计保持：普通Lua草稿82、完整静态恢复76/110、运行时验证0。
+- 下一步：复核MainLoop PC1-PC159入口门槛、白名单地图状态切换、IDLE候选构造、等待归属计时和状态清理的完整CFG路径。
