@@ -15,16 +15,17 @@ end
 
 -- 原型：root.children[15].children[0]
 -- legacy：root/16/1；物理指令：13
--- 依据：先调用 SL:RequestOutBlacklist(UP[0])；
---      随后若 UP[1]._blacklistData 存在，则删除其中以 UP[0] 为键的条目。
-local function Nested_SL()
-    local blacklistEntry = UPVALUE_0
-    local blacklistState = UPVALUE_1
+-- 检查点170：父 ClearBlacklistItems PC52 创建闭包，PC53 捕获 R8=当前 entryKey，
+-- PC54 捕获 R0=FriendProxy；两个捕获槽位顺序已闭合。
+-- 子函数先调用 SL:RequestOutBlacklist(entryKey)，再在 FriendProxy._blacklistData
+-- 存在时删除该 key；删除操作是本地数据清理，不改变 RequestOutBlacklist 的参数。
+local function make_Nested_SL(entryKey, friendProxy)
+    return function Nested_SL()
+        SL:RequestOutBlacklist(entryKey)
 
-    SL:RequestOutBlacklist(blacklistEntry)
-
-    if blacklistState._blacklistData then
-        blacklistState._blacklistData[blacklistEntry] = nil
+        if friendProxy._blacklistData then
+            friendProxy._blacklistData[entryKey] = nil
+        end
     end
 end
 
@@ -54,4 +55,4 @@ local function Nested_Helper_11()
     UPVALUE_0("参数格式不对，请输入数字")
 end
 
--- Nested_Helper_11的4条指令、唯一捕获和固定提示文本已逐PC核闭；其他函数不因本项完成而自动升级。
+-- Nested_Helper_11（4条）与 Nested_SL（13条）已完成逐PC静态复核；Nested_UnSchedule、Nested_removeFile仍按各自状态管理。
