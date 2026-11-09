@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续批量恢复未开始的短函数；优先选择调用和返回契约明确的原型。FormatStateChange的vararg/T栈参数映射待结合解释器参数初始化规则复核，不在此处反复停滞。",
+  "next_action": "继续批量恢复其他未开始的短函数或调用链明确的辅助函数；ReadNumericConfig的vararg_flag=1固定参数声明待解释器参数初始化规则复核，不影响继续推进其他目标。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "67"
+    "last_checkpoint": "68"
   },
   "static_recovered_functions": [
     {
@@ -487,23 +487,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 67,
-    "target": "FormatStateChange",
-    "status": "conservative_first_pass_draft; argument slots pending; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第四十三批.lua",
-    "audit_file": "docs/audit/检查点67_FormatStateChange保守草稿.md",
+    "checkpoint": 68,
+    "target": "ReadNumericConfig",
+    "status": "first_pass_draft; vararg declaration pending; no runtime validation",
+    "source_file": "04_源码候选/短函数草稿_第四十四批.lua",
+    "audit_file": "docs/audit/检查点68_ReadNumericConfig首版草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[8]",
-        "legacy": "root/9",
-        "name": "FormatStateChange",
-        "instructions": 10
+        "path": "root.children[9]",
+        "legacy": "root/10",
+        "name": "ReadNumericConfig",
+        "instructions": 45
       }
     ],
-    "draft_count_total": 54,
+    "draft_count_total": 55,
     "complete_static_reconstruction_count": 29,
     "runtime_verified_count": 0,
-    "note": "新增FormatStateChange保守首版草稿。确认string.format状态切换模板、UPVALUE_0调用、UPVALUE_1写回，以及根函数创建闭包时R4/R14捕获关系；vararg/T栈参数边界仍待核验。"
+    "note": "新增ReadNumericConfig首版草稿。闭包捕获已追到GetWritablePath；恢复了文件存在检查、文本读取、空白清理、纯数字转number及非数字字符串返回分支。vararg声明形式待解释器参数规则复核，未运行时验证。"
   },
   "corrections": [
     {
@@ -563,7 +563,7 @@
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   },
-  "draft_recovered_count": 9,
+  "draft_recovered_count": 10,
   "draft_recovered_functions": [
     {
       "path": "root.children[46]",
@@ -693,27 +693,48 @@
         "VM T-stack fixed/vararg argument mapping and capture business names remain unresolved",
         "No runtime validation"
       ]
+    },
+    {
+      "path": "root.children[9]",
+      "legacy_path": "root/10",
+      "name": "ReadNumericConfig",
+      "source_file": "04_源码候选/短函数草稿_第四十四批.lua",
+      "audit_file": "docs/audit/检查点68_ReadNumericConfig首版草稿.md",
+      "status": "first_pass_draft_vararg_declaration_pending_not_runtime_verified",
+      "physical_instructions": 45,
+      "constant_count": 13,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "notes": [
+        "UPVALUE_0 captures root R44; root PC297 created GetWritablePath at root.children[2]",
+        "Calls captured GetWritablePath with R0 input to construct writable path",
+        "Checks FileUtils:isFileExist; false branch returns check result",
+        "Reads getStringFromFile; non-string value returned unchanged",
+        "String values have %s whitespace removed; ^%d+$ match converts with tonumber; otherwise cleaned string returned",
+        "vararg_flag=1 exact formal declaration remains pending",
+        "No runtime validation"
+      ]
     }
   ],
-  "draft_function_count": 54,
-  "ordinary_lua_draft_functions": 54,
-  "last_checkpoint": 67,
-  "checkpoint": "67",
+  "draft_function_count": 55,
+  "ordinary_lua_draft_functions": 55,
+  "last_checkpoint": 68,
+  "checkpoint": "68",
   "drafts": 32,
   "next": "继续筛选未开始的短函数。优先检查 root.children[42].children[22]（Nested_Anonymous，8条指令且有1个子原型）及 root.children[42].children[22].children[0]（Nested_str，27条）/其子函数，先闭合匿名包装函数的调用与捕获关系；再处理 root.children[42].children[9] / Nested_Button_setTitleText。不要重做Nested_Helper_4/7与其已完成回调主体。",
   "recent_checkpoint": {
-    "checkpoint": "67",
+    "checkpoint": "68",
     "date": "2026-11-09",
-    "summary": "新增FormatStateChange保守首版草稿。确认string.format状态切换模板、UPVALUE_0调用、UPVALUE_1写回，以及根函数创建闭包时R4/R14捕获关系；vararg/T栈参数边界仍待核验。",
+    "summary": "新增ReadNumericConfig首版草稿。闭包捕获已追到GetWritablePath；恢复了文件存在检查、文本读取、空白清理、纯数字转number及非数字字符串返回分支。vararg声明形式待解释器参数规则复核，未运行时验证。",
     "files": [
-      "04_源码候选/短函数草稿_第四十三批.lua",
-      "docs/audit/检查点67_FormatStateChange保守草稿.md",
+      "04_源码候选/短函数草稿_第四十四批.lua",
+      "docs/audit/检查点68_ReadNumericConfig首版草稿.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "added_draft_functions": [
-      "root.children[8]"
+      "root.children[9]"
     ],
     "unchanged": {
       "complete_static_reconstruction": 29,
@@ -721,15 +742,15 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "67",
+    "checkpoint": "68",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第四十三批.lua",
-    "audit_file": "docs/audit/检查点67_FormatStateChange保守草稿.md",
-    "ordinary_lua_draft_functions": 54,
+    "source_file": "04_源码候选/短函数草稿_第四十四批.lua",
+    "audit_file": "docs/audit/检查点68_ReadNumericConfig首版草稿.md",
+    "ordinary_lua_draft_functions": 55,
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增FormatStateChange保守首版草稿。确认string.format状态切换模板、UPVALUE_0调用、UPVALUE_1写回，以及根函数创建闭包时R4/R14捕获关系；vararg/T栈参数边界仍待核验。"
+    "summary": "新增ReadNumericConfig首版草稿。闭包捕获已追到GetWritablePath；恢复了文件存在检查、文本读取、空白清理、纯数字转number及非数字字符串返回分支。vararg声明形式待解释器参数规则复核，未运行时验证。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)"
