@@ -575,7 +575,7 @@
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   },
-  "draft_recovered_count": 70,
+  "draft_recovered_count": 15,
   "draft_recovered_functions": [
     {
       "path": "root.children[46]",
