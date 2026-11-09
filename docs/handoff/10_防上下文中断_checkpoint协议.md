@@ -1528,3 +1528,13 @@
 - LuaSendMsg第4实参来自子原型1返回值，调用点业务身份为目标仓库页码；服务端协议字段正式名称/编码仍未由接收端验证。
 - 主函数仍不升级完整静态恢复：消息协议字段未闭合。统计：普通Lua草稿78、完整静态恢复76/110、运行时验证0。
 - 下一步转回`BlacklistPlayerDetection`（`root.children[47]`）PC174-PC192，核查通知回调参数及随机传送物品路径是否真实存在。
+
+
+## 检查点 #145（2026-11-09）：BlacklistPlayerDetection 随机传送真实调用链及检查点140纠错
+- PC164-PC165的UPVALUE_8()不是时间间隔函数，而是root.children[24]（legacy root/25）随机传送辅助闭包。该闭包遍历捕获列表`{"随机传送石"}`，查询ITEM_INDEX_BY_NAME与ITEM_COUNT，有库存时调用`SL.UseItemByIndex`并返回道具名，无库存返回nil。
+- PC166-PC167按UPVALUE_8()返回值真假分支。成功路径PC168-PC173执行`nextTryAt=now+UPVALUE_9`，UPVALUE_9为0.01，并复位noStoneWarned=false。
+- PC174-PC183调用UPVALUE_10本地通知包装器，格式化实参为UPVALUE_11（数值30.0）和distanceResult或0；PC184-PC191调用UPVALUE_7日志包装器，实参为格式串、actorName、distanceResult或0、已使用道具名称。
+- 无道具路径PC193-PC196执行`nextTryAt=now+UPVALUE_11`（30.0）；PC197-PC205按noStoneWarned一次性提示；PC206-PC213调用UPVALUE_7记录诊断，正确表达式为`table.concat(UPVALUE_12, "/")`。UPVALUE_12是捕获数组本身`{"随机传送石"}`，不是零参数函数。
+- UPVALUE_7=日志包装器root.children[16]；UPVALUE_10=本地通知包装器root.children[20]；UPVALUE_8=随机传送辅助闭包root.children[24]。UPVALUE_9=0.01；UPVALUE_11=30.0；UPVALUE_12=随机传送道具名称数组。
+- 纠正检查点140旧表述：UPVALUE_8并非间隔函数；UPVALUE_11不是通用第二间隔函数（只在失败重试路径加到now）；UPVALUE_7不是本地通知回调；UPVALUE_12不应加括号调用。
+- 函数保持首版普通Lua草稿状态，仍需确认其余前置upvalue身份及UPVALUE_11在成功通知格式中的业务意图。统计：普通Lua草稿78、完整静态恢复76/110、运行时验证0。
