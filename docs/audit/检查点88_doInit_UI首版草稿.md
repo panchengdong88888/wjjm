@@ -13,7 +13,7 @@
 2. PC4-PC17：货币/资源名称集合，包含元宝、绑定元宝、灵符、绑定灵符、声望卷、悟道茶、洗髓丹、转生水晶、恶魔令牌、血龙宝珠。
 3. PC19-PC58：初始化initTime/initTimeStr，使用pcall保护os.time/os.date，建立initSnapshot。
 4. PC59-PC99：获取MoneyProxy，遍历名称并调用GetMoneyIdByName/GetMoneyCountById，写入数量快照。
-5. PC100-PC130：调用Builtsetting，构造4组传送道具槽位配置：slot 1含永久回城石/盟重回城石/盟重传送石，slot 2含永久随机石/随机传送石，slot 3含大陆传送石，slot 4含免战回城石。PC131-PC145遍历槽位并建立ITEM_INDEX_BY_NAME延迟处理闭包。子原型Nested_ITEM_INDEX_BY_NAME已确认：遍历当前配置的names，调用SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)，取得索引后调用MoveItemToQuickUse(itemIndex, slotConfig.slot)，再将返回值交给PrintLog。父PC140按循环索引乘0.1计算延迟；PC141的ScheduleOnce多寄存器实参栈仍待核。
+5. PC100-PC130：调用Builtsetting，构造4组传送道具槽位配置：slot 1含永久回城石/盟重回城石/盟重传送石，slot 2含永久随机石/随机传送石，slot 3含大陆传送石，slot 4含免战回城石。PC131-PC145遍历槽位并建立ITEM_INDEX_BY_NAME延迟处理闭包。子原型Nested_ITEM_INDEX_BY_NAME已确认：遍历当前配置的names，调用SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)，取得索引后调用MoveItemToQuickUse(itemIndex, slotConfig.slot)，再将返回值交给PrintLog。父PC140按循环索引乘0.1计算延迟；PC141调用形式已闭合为`SL:ScheduleOnce(callback, slotIndex * 0.1)`。子闭包的MoveItemToQuickUse双返回值语义也已确认：第二返回值交PrintLog，第一返回值成功时结束该组回调，失败则继续尝试后续名称。
 6. PC146-PC166：检查cruiseTimer，存在时UnSchedule并写入unknown哨兵，随后建立1.0秒Schedule并保存句柄。
 7. PC167-PC180：获取NPCStorageProxy并调用RequestStorageData。
 8. PC181-PC195：Attach_UITop、MainProperty._ui.Panel_mini_chat、getWorldPosition/getContentSize及位置/尺寸运算。
@@ -30,7 +30,7 @@
 - 20个父级捕获的寄存器来源已由root PC390-PC410闭合；已进一步确认其中10个槽位的值/对象身份，其他槽位仍待业务映射。
 - PC4-PC17名称表及PC102-PC130四组slot/names表的嵌套结构已按物理表构造指令修正；仍需确认这些数据被ScheduleOnce回调消费时的完整业务协议。
 - MoneyProxy快照键值结构及两组名称循环差异。
-- ScheduleOnce实参栈虽确认以循环索引乘0.1作为延迟量，调用携带的完整多寄存器参数列表仍待核。
+- ScheduleOnce参数顺序已由PC135-PC141调用栈闭合为回调在前、延迟值在后；仍需在宿主调度器中验证时序表现。
 - Attach_UITop完整参数、mini-chat坐标换算、GUI对象调用方式。
 - PC236-PC337各功能闭包的捕获业务身份/部分外部API参数仍待核；按钮创建child9的三个实参及坐标公式、buttonMap/handler映射已闭合。
 - PC338-PC378的按钮布局坐标公式已由child9反汇编与父循环共同闭合；仍需在宿主GUI中验证视觉布局。
