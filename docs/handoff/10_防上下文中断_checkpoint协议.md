@@ -1195,3 +1195,15 @@
 - 函数在此前已计入完整静态恢复，本批只修订候选表达和机器记录，不增加草稿或完整静态恢复数量。
 - 统计保持：普通Lua草稿78；完整静态恢复58/110；运行时验证0。
 - 下一步：继续追踪Nested_Anonymous（`root.children[42].children[22]`）的VM帧入口与T[0]/T[1]/T[2]初始化及T[2]生产者；不要把两个调用包装器的实参顺序直接等同于T槽映射。
+
+
+## 检查点 #116（2026-11-09）：Nested_find / Nested_UnSchedule 静态复核
+
+- 修订源码：`04_源码候选/短函数草稿_第五十二批.lua`、`04_源码候选/短函数草稿_第十五批.lua`。
+- 新增审计：`docs/audit/检查点116_Nested_find与Nested_UnSchedule静态复核.md`。
+- Nested_find（`root.children[42].children[0]`，46条指令）升级完整静态恢复：BAG_DATA缺失返回0；pairs遍历并检查item/Name/MakeIndex；string.find(item.Name,searchText,1,true)；ITEM_IS_BIND实参是完整item对象，不是MakeIndex；绑定truthy跳过；未绑定条目按`item.OverLap or 1`累加，OverLap=0不会回退1。
+- Nested_UnSchedule（`root.children[42].children[3].children[4]`，20条指令）升级完整静态恢复：父Nested_FFFF00 PC68-PC71捕获顺序UP[1]/UP[2]/UP[0]，映射本函数UP[0]=PrintLog、UP[1]=timerState、UP[2]=moduleState；关闭窗口时resWin必须从UP[2]读取。
+- Nested_UnSchedule在resTimer存在时写入常量`['unknown',2]`；候选源码中的nil仅是未解哨兵的占位，不能声称等价，宿主运行时语义未验证。
+- 状态 JSON 与 CSV 已同步，修改前读取SHA，更新后需重新读取核验。
+- 统计：普通Lua草稿78；完整静态恢复60/110；运行时验证0。
+- 下一步：继续追踪Nested_Anonymous帧入口/vararg布局及T[0]/T[1]/T[2]来源，特别是T[2]延迟错误提示回调生产者；随后继续Nested_FFFF00父函数剩余部分。
