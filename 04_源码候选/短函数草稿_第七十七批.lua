@@ -19,13 +19,18 @@ local function Nested_str(...)
     }
 
     local initialText = UPVALUE_0
+    local errorFormatter = UPVALUE_1
+    local errorContext = UPVALUE_0
+    local delayedErrorNotice = UPVALUE_2
+    local onValid = UPVALUE_3
+
     if optionalSuffix then
         initialText = initialText .. "\n" .. optionalSuffix
     end
     dialogParams.str = initialText
 
     -- 此回调是Nested_str的真实子原型；在每次创建弹窗时建立，
-    -- 捕获当前Nested_str闭包中的UPVALUE_1/0/2/3。
+    -- 捕获当前Nested_str中的errorFormatter/errorContext/delayedErrorNotice/onValid。
     local function Nested_match(status, result)
         if status ~= 1 then
             return
@@ -42,19 +47,19 @@ local function Nested_str(...)
         end
 
         if numericValue then
-            UPVALUE_3(numericValue)
+            onValid(numericValue)
             return
         end
 
-        UPVALUE_1(
+        errorFormatter(
             "%s：参数格式不对（%s）",
-            UPVALUE_0,
+            errorContext,
             tostring(editStr)
         )
 
         -- 此函数对应Nested_match的唯一子原型；捕获Nested_match UPVALUE_2。
         local function Nested_Helper_11()
-            UPVALUE_2("参数格式不对，请输入数字")
+            delayedErrorNotice("参数格式不对，请输入数字")
         end
 
         SL:ScheduleOnce(Nested_Helper_11, 0.1)
