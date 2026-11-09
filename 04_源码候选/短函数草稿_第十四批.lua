@@ -52,16 +52,17 @@ local function make_GetAvailableStoragePage(notify)
 end
 
 -- root.children[37] / legacy root/38 / DestroyUI
--- UP[0] and UP[1] are captured state objects; retain neutral names until parent
--- initializer mapping is reviewed.
-local function make_DestroyUI(uiState, buttonMap)
+-- Status: complete static reconstruction; not runtime-validated.
+-- Captures: UP[0]=root T[0] UI state; UP[1]=root T[3] timer state;
+-- UP[2]=root T[1] button map.
+local function make_DestroyUI(uiState, timerState, buttonMap)
     return function()
         uiState.isHidden = false
 
-        local timer = uiState.resTimer
+        local timer = timerState.resTimer
         if timer then
             SL:UnSchedule(timer)
-            uiState.resTimer = nil
+            timerState.resTimer = nil
         end
 
         uiState.resWin = nil
