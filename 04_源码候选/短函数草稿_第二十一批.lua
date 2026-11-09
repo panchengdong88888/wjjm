@@ -1,6 +1,6 @@
 -- MainLeftBottom(2).lua 普通 Lua 草稿
 -- 第二十一批：拉怪初始化判断与伤害消息包装回调
--- 状态：首版普通 Lua 草稿；尚未运行时验证。
+-- 状态：Nested_InitGatherMonsters已完成静态恢复；Nested_onDamageMsg仍为普通Lua草稿；均未运行时验证。
 -- 捕获变量采用按访问行为命名的临时名，父级原始局部变量名尚未恢复。
 
 -- 原型：root.children[42].children[7]
@@ -8,17 +8,22 @@
 -- UPVALUE_0：配置/状态表，读写 GATHER_THRESHOLD。
 -- UPVALUE_1：无参数阈值获取回调。
 local function Nested_InitGatherMonsters(refreshFlag)
-    -- VM 条件跳转表明 refreshFlag 为假时才重新获取阈值。
+    local config = UPVALUE_0
+    local getThreshold = UPVALUE_1
+
+    -- PC2-PC6：refreshFlag为假时调用无参getter，并写入GATHER_THRESHOLD。
     if not refreshFlag then
-        UPVALUE_0.GATHER_THRESHOLD = UPVALUE_1()
+        config.GATHER_THRESHOLD = getThreshold()
     end
 
-    if UPVALUE_0.GATHER_THRESHOLD then
-        return false
+    -- PC9-PC16：阈值字段truthy时调用InitGatherMonsters并返回true；
+    -- 字段为false/nil时直接返回false。
+    if config.GATHER_THRESHOLD then
+        InitGatherMonsters()
+        return true
     end
 
-    InitGatherMonsters()
-    return true
+    return false
 end
 
 -- 原型：root.children[6].children[0]
