@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "继续复核Nested_FFFF00父函数的GUI创建实参与时间/标题节点锚点条件，特别是PC139-146、PC173-180、PC201-208、PC229-236的条件跳转；再核实父级doInit_UI传入的4个闭包捕获来源及Nested_Helper_3的Schedule返回句柄。随后批量推进root.children[42]中尚未开始的短子原型。",
+  "next_action": "继续追踪doInit_UI在PC331-PC334传给Nested_FFFF00的父T[3],T[0],T[2],T[1]的定义，核实UPVALUE_0..3的业务身份；然后复核父函数中其他GUI调用的尾随实参和Schedule句柄，不要把尚未确认的父状态变量名称当作事实。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "93"
+    "last_checkpoint": "94"
   },
   "static_recovered_functions": [
     {
@@ -1257,23 +1257,20 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "93",
+    "checkpoint": "94",
     "date": "2026-11-09",
-    "function": "Nested_FFFFFF",
-    "source_file": "04_源码候选/Nested_FFFFFF_第六十五批.lua",
-    "parent_source_file": "04_源码候选/短函数草稿_第六十二批.lua",
-    "audit_file": "docs/audit/检查点93_Nested_FFFFFF节点命名与GUI实参闭合.md",
+    "function": "Nested_FFFF00",
+    "source_file": "04_源码候选/短函数草稿_第六十二批.lua",
+    "audit_file": "docs/audit/检查点94_Nested_FFFF00布局参数与锚点校正.md",
     "findings": [
-      "第三参数rowType被PC13实际读取；父函数传money/item。",
-      "PC7-PC9的ceil(15/layoutOption)用于cell名称后缀。",
-      "cell名=rowType..'_cell_'..ceil(15/layoutOption)，Layout实参含0,0,width,35,1。",
-      "Text名为'2_text_0.5_'..columnIndex，不是resourceIndex。",
-      "Text初始内容resourceName..':--'；外层/内层循环、捕获、映射表返回均已复核。"
+      "titleCell/initTimeCell/curTimeCell/durTimeCell/noteCell五个Layout_Create均补齐尾随数值1。",
+      "titleText/initTimeText/curTimeText/durTimeText/noteText五个Text_Create之后均调用setAnchorPoint(0.5,0.5)。",
+      "child2调用契约及rowType money/item已在检查点93校正。"
     ],
     "unresolved": [
-      "Layout_Create尾随参数1的宿主端语义。",
-      "Nested_FFFF00其他GUI调用的完整宿主参数语义和条件锚点设置。",
-      "doInit_UI对Nested_FFFF00的捕获身份及Schedule句柄返回契约仍需复核。",
+      "doInit_UI PC331-PC334捕获的父T[3],T[0],T[2],T[1]业务身份。",
+      "其余GUI融合实参及尾随数值1宿主语义。",
+      "SL:Schedule返回句柄的宿主运行时行为。",
       "宿主GUI运行时验证。"
     ],
     "status": "ordinary_lua_draft_static_review_in_progress",
