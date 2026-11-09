@@ -871,3 +871,11 @@
 - child9（Nested_Button_setTitleFontSize）是按钮创建闭包，三个实参为配置记录、列索引、行偏移；捕获buttonMap与buttonHandlers。其按钮位置公式为`x=(miniChat.x+miniChat.width-10)-85*columnIndex`、`y=(miniChat.y+1)+rowOffset`。
 - PC346-PC378三组循环的行偏移依次为40、0、80。按钮创建后写入buttonMap[key]，设置name、字号18、字体res/public/kaiti2.ttf、初始白色；有toggle字段的配置会绑定点击闭包，按key分派功能回调并更新toggled文字/颜色。
 - 以上是静态指令契约，尚未在宿主GUI运行验证。普通Lua草稿77，完整静态恢复29/110，运行时验证0。
+
+
+### 检查点 #88 补充静态复核：ScheduleOnce 参数及回调返回值
+- doInit_UI PC135-PC141的寄存器栈闭合为`SL:ScheduleOnce(callback, slotIndex * 0.1)`，每个slot配置创建独立child16闭包。
+- child16遍历当前配置的names；通过`SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)`查找索引；索引存在时调用`MoveItemToQuickUse(itemIndex, slotConfig.slot)`。
+- MoveItemToQuickUse的第一返回值作为成功标志，第二返回值交给PrintLog；成功则提前结束该组回调，失败则继续尝试该组后续名称。
+- 该调用链和静态返回契约已写入第六十三批草稿；宿主ScheduleOnce的真实时序尚未运行验证。
+- 计数不变：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
