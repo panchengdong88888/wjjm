@@ -9,9 +9,11 @@
 --
 -- Confirmed capture identities:
 --   UPVALUE_9  = GetOwnerID
+--   UPVALUE_15 = FindMonsterInCurrViewField; returns actor map keyed by actor ID
 --   UPVALUE_17 = GetOwnerIDText
 --   UPVALUE_18 = root.children[29] alive-like wrapper; truthy means actor alive
 --   UPVALUE_19 = GetOwnerDescription(actor, mainPlayerID), returns two values
+--   UPVALUE_20 = SetTargetID; calls PlayerInputProxy:SetTargetID(id, FIND)
 --   UPVALUE_21 = configuration table with ATTACK_WAIT_TIME
 
 local function MainLoop()
@@ -81,8 +83,9 @@ local function MainLoop()
                 return
             end
 
-            -- UPVALUE_15 is an actor-map/provider helper. Its true identity and
-            -- the exact meaning of this optional argument are still unknown.
+            -- Confirmed helper: FindMonsterInCurrViewField has no formal
+            -- parameters and returns an ID-keyed actor map. This call site passes
+            -- UPVALUE_12 as an extra argument; the helper does not read it.
             local actorMap = UPVALUE_15(UPVALUE_12)
             local actor = actorMap and actorMap[UPVALUE_16]
             local mainPlayerID = UPVALUE_6()
@@ -108,6 +111,7 @@ local function MainLoop()
 
         local actorMap = UPVALUE_15()
         local mainPlayerID = UPVALUE_6()
+        local allOwnersResolved = true -- PC161; PC263 clears this on an unowned target.
 
         for index = UPVALUE_10, #UPVALUE_8 do
             local targetID = UPVALUE_8[index]
@@ -163,13 +167,15 @@ local function MainLoop()
                     UPVALUE_10 = index + 1
 
                 else
+                    allOwnersResolved = false
                     UPVALUE_3(string.format(
                         "怪物 %s 归属未变更或已离开视野",
                         monsterName
                     ))
 
-                    -- UPVALUE_20 accepts a target ID. Do not rename this helper
-                    -- as SetTargetID/PickUpItems before its producer is proven.
+                    -- Confirmed helper: SetTargetID(targetID). It returns false
+                    -- when Facade/PlayerInputProxy is unavailable; on success it
+                    -- calls proxy:SetTargetID(targetID, global.MMO.SELETE_TARGET_TYPE_FIND).
                     local accepted = UPVALUE_20(targetID)
 
                     if accepted then
@@ -184,29 +190,32 @@ local function MainLoop()
                             monsterName,
                             UPVALUE_21.ATTACK_WAIT_TIME
                         ))
-                        return
+                    else
+                        UPVALUE_3(string.format(
+                            "锁定怪物 %s 失败",
+                            monsterName
+                        ))
                     end
 
-                    UPVALUE_3(string.format(
-                        "锁定怪物 %s 失败",
-                        monsterName
-                    ))
+                    -- Both SetTargetID outcomes advance the cursor and let the
+                    -- numeric for-loop continue; neither branch returns here.
                     UPVALUE_10 = index + 1
-                    return
                 end
             end
         end
 
-        -- PC 313-343 aggregate/loop-bound logic is represented conservatively.
-        -- Its exact counter and termination dataflow remains to be reviewed.
-        if UPVALUE_11 >= #UPVALUE_8 then
-            UPVALUE_3("所有怪物归属已获取，切换到攻击状态")
-            UPVALUE_10 = 1
-            UPVALUE_4(UPVALUE_2.ATTACKING)
-            return
-        end
-
-        if UPVALUE_10 > #UPVALUE_8 then
+        -- PC166 prepares the numeric loop counter (UPVALUE_10 - 1); PC313
+        -- increments/tests it and repeats at PC167. The loop therefore visits
+        -- UPVALUE_10..#UPVALUE_8. The R2 flag starts true at PC161 and is cleared
+        -- at PC263 when an unowned target is encountered.
+        if allOwnersResolved then
+            if UPVALUE_10 > #UPVALUE_8 then
+                UPVALUE_3("所有怪物归属已获取，切换到攻击状态")
+                UPVALUE_10 = 1
+                UPVALUE_4(UPVALUE_2.ATTACKING)
+                return
+            end
+        elseif UPVALUE_10 > #UPVALUE_8 then
             UPVALUE_3("怪物列表处理完毕但未全部获取归属，重新扫描")
             UPVALUE_4(UPVALUE_2.IDLE)
             UPVALUE_5()
