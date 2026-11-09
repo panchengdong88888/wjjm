@@ -1834,3 +1834,13 @@
 - 新增 `04_源码候选/root56_root57_short_functions.lua`，补齐 root.children[56] ClearTargetID_2（22条）与 root.children[57] PlayerPos（10条）的独立可读源码文件；这两项原已计入完整静态恢复数，不重复计数。
 - 检查点 #169 文件：`04_源码候选/root55_children_drafts.lua`、`04_源码候选/root56_root57_short_functions.lua`、`docs/audit/检查点169_AccountIDValidation捕获闭合与短函数源码补齐.md`、`02_基础索引/03_函数状态清单.csv`、`docs/handoff/05_机器可读接续状态.json`、本协议。
 - 下一步：继续筛选状态表中尚无独立源码文件的短函数，优先无捕获或捕获链已闭合者；所有运行时验证统计保持0。
+
+
+## 检查点 #170：Nested_SL 完整静态复审
+
+- root.children[15].children[0] / Nested_SL（13条）独立复核完成。父 ClearBlacklistItems PC52 创建闭包；PC53 捕获当前 R8=entryKey，PC54 捕获 R0=FriendProxy。
+- 子函数 PC1-PC4 调用 SL:RequestOutBlacklist(entryKey)，保留 SL receiver；PC5-PC8 检查 FriendProxy._blacklistData；PC9-PC12 在表存在时删除 [entryKey]；PC13 返回。全部13条指令、捕获顺序及活动路径闭合。
+- 将 `04_源码候选/短函数草稿_第十五批.lua` 中 Nested_SL 改为 make_Nested_SL(entryKey, friendProxy) 工厂闭包表达；升级为完整静态恢复（未运行时验证）。
+- 计数：普通 Lua 草稿 81；完整静态恢复 92/110；运行时验证 0。
+- 新增审计：`docs/audit/检查点170_Nested_SL完整静态复审.md`。
+- 下一步：继续短函数 Nested_removeFile（5条）、Nested_UnSchedule（20条）等。
