@@ -29,9 +29,10 @@
     "root.children[7]": "GetOwnerIDText：检查点151新增04_源码候选/root7_GetOwnerIDText.lua。nil/空串/-1返回false；string分支ownerID==tostring(ownerID)；非string分支ownerID==第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
     "root.children[38]": "GetOwnerID：检查点151新增04_源码候选/root38_GetOwnerID.lua。nil/空串/-1返回false；string分支ownerID~=tostring(ownerID)；非string分支ownerID~=第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
     "root.children[11]": "DistanceCalculation：25条；检查点160逐PC复审PC1-PC23活动路径，任一坐标表false/nil返回99999，否则返回max(abs(dx),abs(dy))；PC24-PC25为return后的不可达尾部。无upvalue/子原型。完整静态恢复，未运行时验证。",
-    "root.children[10]": "SetButtonVisibilityState：15条；检查点161闭合UP0共享状态对象、UP1按钮映射表、isHidden=true写入、pairs循环和GUI:setVisible(buttonMap[key],true) receiver/参数顺序。完整静态恢复，未运行时验证。"
+    "root.children[10]": "SetButtonVisibilityState：15条；检查点161闭合UP0共享状态对象、UP1按钮映射表、isHidden=true写入、pairs循环和GUI:setVisible(buttonMap[key],true) receiver/参数顺序。完整静态恢复，未运行时验证。",
+    "root.children[26]": "ResetGatherMonsterData：20条；检查点162闭合9个父root T寄存器捕获、共享upvalue cell赋值顺序、零参resetAction调用、UP7=root T[4]=PrintLog及PrintLog(\"数据已重置\")。完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点161已完成SetButtonVisibilityState完整静态恢复；普通Lua源码候选82、完整静态恢复82/110、运行时验证0。下一步复审root.children[26] ResetGatherMonsterData（20条），重点核对9个upvalue槽位的共享cell赋值、回调身份和通知参数；若有未能闭合的业务名，保留中性工厂参数名但不能因此忽略可恢复的字节码语义。",
+  "next_action": "检查点162已完成ResetGatherMonsterData完整静态恢复；普通Lua源码候选82、完整静态恢复83/110、运行时验证0。下一步复审root.children[27] StopGatherMonsters（25条），追溯其7个捕获值的身份，核对running标记、gatherTimer取消/清空、预停止回调、IDLE切换、Reset helper与PrintLog通知顺序。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -104,7 +105,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "161"
+    "last_checkpoint": "162"
   },
   "static_recovered_functions": [
     {
@@ -1911,29 +1912,48 @@
         "UP1 button map; pairs iteration; GUI:setVisible(buttonMap[key],true) with GUI as receiver.",
         "All 15 physical instruction records reconciled; not runtime validated."
       ]
+    },
+    {
+      "path": "root.children[26]",
+      "legacy_path": "root/27",
+      "name": "ResetGatherMonsterData",
+      "physical_instructions": 20,
+      "constant_count": 3,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第十三批.lua",
+      "audit_file": "docs/audit/检查点162_ResetGatherMonsterData完整静态复审.md",
+      "parameters": [],
+      "returns": [],
+      "notes": [
+        "Nine parent T-register captures; closure writes update captured cells.",
+        "UP3 no-argument resetAction identity remains neutral; UP7=root T[4]=PrintLog receives '数据已重置'.",
+        "All 20 physical instruction records reconciled; not runtime validated."
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "161",
+    "checkpoint": "162",
     "targets": [
-      "root.children[10]"
+      "root.children[26]"
     ],
-    "status": "Independently reviewed all 15 physical instruction records; promoted SetButtonVisibilityState to complete static reconstruction.",
-    "audit_file": "docs/audit/检查点161_SetButtonVisibilityState完整静态复审.md",
+    "status": "Independently reviewed all 20 physical instruction records; promoted ResetGatherMonsterData to complete static reconstruction.",
+    "audit_file": "docs/audit/检查点162_ResetGatherMonsterData完整静态复审.md",
     "files": [
       "04_源码候选/短函数草稿_第十三批.lua",
-      "docs/audit/检查点161_SetButtonVisibilityState完整静态复审.md",
+      "docs/audit/检查点162_ResetGatherMonsterData完整静态复审.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "UP0 shared state object receives isHidden=true.",
-      "UP1 is traversed with pairs.",
-      "GUI:setVisible receives GUI as self, mapped button and true."
+      "All nine captured parent T-register slots and write order reconciled.",
+      "UP3 is a zero-argument callback retained under a neutral name.",
+      "UP7 is PrintLog and receives exactly '数据已重置'."
     ],
     "counts": {
       "ordinary_lua_drafts": 82,
-      "complete_static_reconstruction": 82,
+      "complete_static_reconstruction": 83,
       "runtime_verified": 0
     }
   },
@@ -2582,44 +2602,45 @@
   ],
   "draft_function_count": 82,
   "ordinary_lua_draft_functions": 82,
-  "last_checkpoint": "161",
-  "checkpoint": "161",
+  "last_checkpoint": "162",
+  "checkpoint": "162",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 161,
+    "number": 162,
     "date": "2026-11-09",
     "artifacts": [
       "04_源码候选/短函数草稿_第十三批.lua",
-      "docs/audit/检查点161_SetButtonVisibilityState完整静态复审.md"
+      "docs/audit/检查点162_ResetGatherMonsterData完整静态复审.md"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 82,
-    "complete_static_reconstructions": 82,
+    "complete_static_reconstructions": 83,
     "runtime_verified": 0,
-    "notes": "SetButtonVisibilityState的15条指令逐PC复审完成，升级完整静态恢复；运行时未验证。"
+    "notes": "ResetGatherMonsterData的20条指令、9个捕获cell写入和PrintLog调用完成静态复审；运行时未验证。"
   },
   "latest_checkpoint": {
-    "checkpoint": "161",
+    "checkpoint": "162",
     "date": "2026-11-09",
-    "summary": "SetButtonVisibilityState的isHidden写入、pairs迭代、GUI:setVisible receiver和参数顺序完成静态闭合。",
-    "audit_file": "docs/audit/检查点161_SetButtonVisibilityState完整静态复审.md",
+    "summary": "ResetGatherMonsterData的9个捕获槽位、upvalue cell赋值顺序、无参回调和PrintLog提示参数完成静态闭合。",
+    "audit_file": "docs/audit/检查点162_ResetGatherMonsterData完整静态复审.md",
     "unresolved": [
+      "UP3回调的业务身份",
       "Lua宿主/游戏运行时验证"
     ]
   },
-  "complete_static_reconstruction_count": 82,
-  "complete_static_reconstruction": "82/110 (74.5%)",
+  "complete_static_reconstruction_count": 83,
+  "complete_static_reconstruction": "83/110 (75.5%)",
   "progress_reconciled": {
     "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；机器状态中的static_recovered_functions是精选索引，不作为完整计数器。",
     "ordinary_lua_draft_functions": 82,
-    "complete_static_reconstruction_functions": 82,
+    "complete_static_reconstruction_functions": 83,
     "runtime_verified_functions": 0,
-    "note": "检查点161将SetButtonVisibilityState root.children[10]由首版草稿升级为完整静态恢复；运行时验证仍为0。"
+    "note": "检查点162将ResetGatherMonsterData root.children[26]由首版草稿升级为完整静态恢复；PrintLog回调身份由父root T[4]和MainLoop捕获映射交叉确认；运行时验证仍为0。"
   },
   "counts": {
     "ordinary_lua_drafts": 82,
-    "complete_static_reconstruction": 82,
+    "complete_static_reconstruction": 83,
     "runtime_verified": 0
   }
 }
