@@ -942,3 +942,13 @@
 - 首版代码保留待复核GUI位置参数和两层数值循环边界，仍为普通Lua草稿，不计入完整静态恢复。
 - 统计不变：普通Lua草稿77；完整静态恢复32/110；运行时验证0。
 - 下一步：对照PC5-63核实循环、GUI融合参数，并确定父T[5]/T[1]业务身份，再回写Nested_FFFF00。
+
+
+## 检查点 #92（2026-11-09）：Nested_FFFFFF 循环与捕获来源复核
+- 更新源码：`04_源码候选/Nested_FFFFFF_第六十五批.lua`；新增审计：`docs/audit/检查点92_Nested_FFFFFF循环与捕获复核.md`。
+- 父函数PC265-PC267确认捕获顺序：UPVALUE_0=父T[5]=resList（ListView节点）；UPVALUE_1=父T[1]=screenW*0.6（列表宽度）。
+- 按PC5/62/63闭合双层数值循环：外层从1到资源数组长度、步长layoutOption；内层从1到layoutOption、步长1；资源索引=outer+inner-1。
+- 修正Text初始文本：资源名称与`:--`拼接；补入Text横向位置表达式及锚点(0.5,0.5)。
+- Layout_Create/Text_Create的融合参数、Text节点名称后缀、PC9 ceil结果用途仍未闭合；未做宿主GUI运行时验证。因此仍为普通Lua草稿，不升级完整静态恢复。
+- 统计保持：普通Lua草稿77；完整静态恢复32/110；运行时验证0。
+- 下一步：回写Nested_FFFF00父函数草稿，进一步核实两次Nested_FFFFFF调用与返回映射；随后推进root.children[42]剩余短子原型。
