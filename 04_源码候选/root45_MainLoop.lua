@@ -4,17 +4,36 @@
 --
 -- STATUS: first-pass ordinary Lua draft. This is NOT original author source,
 -- NOT a complete CFG proof, and NOT runtime validated.
--- UPVALUE_n names below are zero-based capture-slot placeholders. Their exact
--- parent-scope declarations and most business identities remain provisional.
+-- Confirmed parent-capture mapping (zero-based UPVALUE slots):
+--   UPVALUE_0  = running flag (root T[18], InitGatherMonsters sets true,
+--                StopGatherMonsters sets false)
+--   UPVALUE_1  = current state cell (root T[14], initially stateConstants.IDLE)
+--   UPVALUE_2  = state constants table (root T[13]: IDLE/GATHERING/ATTACKING)
+--   UPVALUE_3  = PrintLog (root.children[16], root T[4])
+--   UPVALUE_4  = FormatStateChange (root.children[8], root T[23])
+--   UPVALUE_5  = ResetGatherMonsterData (root.children[26], root T[35])
+--   UPVALUE_6  = GetMainPlayerID (root.children[39], root T[26])
+--   UPVALUE_7  = FindMonsterCandidates (root.children[28], root T[34])
+--   UPVALUE_8  = mutable target-ID array (root T[15], initially {})
+--   UPVALUE_9  = GetOwnerID (root.children[38], root T[32])
+--   UPVALUE_10 = current target-list cursor (root T[17], initially 0)
+--   UPVALUE_11 = self-owned target counter (root T[16], initially 0)
+--   UPVALUE_12 = pending owner-change flag (root T[19], initially false)
+--   UPVALUE_13 = owner-change deadline (root T[20], initially 0)
+--   UPVALUE_14 = pending monster name (root T[22], initially "")
+--   UPVALUE_15 = FindMonsterInCurrViewField (root.children[14], root T[36])
+--   UPVALUE_16 = pending target ID (root T[21], initially nil)
+--   UPVALUE_17 = GetOwnerIDText (root.children[7], root T[31])
+--   UPVALUE_18 = IsDie/alive wrapper (root.children[29], root T[30])
+--   UPVALUE_19 = GetOwnerDescription (root.children[43], root T[33])
+--   UPVALUE_20 = SetTargetID (root.children[35], root T[24])
+--   UPVALUE_21 = configuration table (root T[8]: GATHER_THRESHOLD,
+--                CHECK_INTERVAL, ATTACK_WAIT_TIME)
 --
--- Confirmed capture identities:
---   UPVALUE_9  = GetOwnerID
---   UPVALUE_15 = FindMonsterInCurrViewField; returns actor map keyed by actor ID
---   UPVALUE_17 = GetOwnerIDText
---   UPVALUE_18 = root.children[29] alive-like wrapper; truthy means actor alive
---   UPVALUE_19 = GetOwnerDescription(actor, mainPlayerID), returns two values
---   UPVALUE_20 = SetTargetID; calls PlayerInputProxy:SetTargetID(id, FIND)
---   UPVALUE_21 = configuration table with ATTACK_WAIT_TIME
+-- The 22 captured parent T-registers are ordered:
+--   18,14,13,4,23,35,26,34,15,32,17,16,19,20,22,36,21,31,30,33,24,8.
+-- The identities above are grounded in root closure descriptors, helper creation
+-- sites, function-state records, and the root/19 + root/27 state-helper captures.
 
 local function MainLoop()
     if not UPVALUE_0 then
