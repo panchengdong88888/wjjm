@@ -56,6 +56,7 @@ local function make_ResetGatherMonsterData(
 end
 
 -- root.children[27] / legacy root/28 / StopGatherMonsters
+-- Status: complete static reconstruction; not runtime-validated.
 -- Captures (in slot order): root T[18], T[3], T[25], T[23], T[13], T[35], T[4].
 local function make_StopGatherMonsters(
     runningFlag,
@@ -64,7 +65,7 @@ local function make_StopGatherMonsters(
     setGatherState,
     gatherStates,
     resetGatherMonsterData,
-    notify
+    printLog
 )
     return function()
         -- PC 1-2: clear the captured running flag.
@@ -81,7 +82,7 @@ local function make_StopGatherMonsters(
         preStopAction()
         setGatherState(gatherStates.IDLE)
         resetGatherMonsterData()
-        notify("引怪功能已停止")
+        printLog("引怪功能已停止")
     end
 end
 
