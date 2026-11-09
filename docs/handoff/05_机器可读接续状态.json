@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next."
   },
-  "next_action": "继续核对Nested_FFFF00父函数GUI构造调用的剩余参数/宿主语义，并寻找VM入口/调用帧初始化资料以解决Nested_Anonymous的T槽映射；对GUI宿主行为和unknown哨兵语义保持证据边界，不臆测。",
+  "next_action": "继续恢复doInit_UI尚未完成的子原型，或核对Nested_FFFF00周边调用方中有完整反汇编和闭包捕获证据的目标；Nested_Anonymous的T槽映射保持未决，除非取得VM解释器/加载器/调用帧初始化实现；GUI宿主标志语义不臆测。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -1787,23 +1787,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 118,
+    "checkpoint": 119,
     "targets": [
-      "root.children[42].children[3]",
-      "root.children[42].children[3].children[3]"
+      "root.children[42].children[3]"
     ],
-    "status": "corrected receiver argument in two already statically recovered source candidates; no count changes",
-    "audit_file": "docs/audit/检查点118_Nested_FFFF00窗口检查方法调用接收者校正.md",
+    "status": "cross-checked 29 object-method call sites in Nested_FFFF00; all source candidates preserve receiver arguments; repository scan found no VM interpreter/loader/frame-init implementation",
+    "audit_file": "docs/audit/检查点119_Nested_FFFF00方法接收者与VM实现资料边界复核.md",
     "files": [
       "04_源码候选/短函数草稿_第六十二批.lua",
-      "04_源码候选/资源统计刷新链_第六十四批.lua",
+      "docs/audit/检查点119_Nested_FFFF00方法接收者与VM实现资料边界复核.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "Nested_FFFF00 PC1-PC5: method lookup stores GUI receiver in R1, resWin in R2, and call uses U(T,1,2); source must be gui:Win_IsNotNull(moduleState.resWin).",
-      "Nested_Helper_3 PC1-PC5 has the same receiver/argument layout and requires the same colon call.",
-      "Old candidates used dot calls, which omitted the GUI receiver and changed the actual argument list.",
-      "No function signature, branch polarity, closure capture, or runtime status changed."
+      "Nested_FFFF00 has 29 object-method calls in the current source candidate; all use colon syntax and match receiver-inclusive argument ranges in corrected disassembly.",
+      "Cross-checked window checks/close, timer cancel/schedule, GUI creation and widget setup, Facade.retrieveProxy, and all five Layout/Text groups.",
+      "Repository recursive tree has 233 paths; VM-related source implementation candidates are limited to dump, early opcode reference, corrected disassembly and non-author-source devirtualized listing; no interpreter, loader, parser or frame initialization source was found.",
+      "No evidence to resolve Nested_Anonymous T[0]/T[1]/T[2] call-frame mapping or the exact vararg field encoding; do not guess.",
+      "GUI host flag and trailing Layout argument semantics remain unknown without host SDK documentation or implementation."
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
@@ -2378,10 +2378,10 @@
   ],
   "draft_function_count": 78,
   "ordinary_lua_draft_functions": 78,
-  "last_checkpoint": "118",
-  "checkpoint": "118",
+  "last_checkpoint": "119",
+  "checkpoint": "119",
   "drafts": 33,
-  "next": "继续核对Nested_FFFF00父函数GUI构造调用的剩余参数/宿主语义，并寻找VM入口/调用帧初始化资料以解决Nested_Anonymous的T槽映射；对GUI宿主行为和unknown哨兵语义保持证据边界，不臆测。",
+  "next": "继续恢复doInit_UI尚未完成的子原型，或核对Nested_FFFF00周边调用方中有完整反汇编和闭包捕获证据的目标；Nested_Anonymous的T槽映射保持未决，除非取得VM解释器/加载器/调用帧初始化实现；GUI宿主标志语义不臆测。",
   "recent_checkpoint": {
     "checkpoint": "116",
     "date": "2026-11-09",
@@ -2403,12 +2403,12 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "118",
+    "checkpoint": "119",
     "date": "2026-11-09",
-    "summary": "修正Nested_FFFF00与Nested_Helper_3两个已恢复源码中的GUI.Win_IsNotNull点调用。反汇编PC1-PC5证明GUI接收者保存在R1、resWin在R2，调用范围U(T,1,2)传入两项，因此普通Lua应使用gui:Win_IsNotNull(moduleState.resWin)。",
-    "audit_file": "docs/audit/检查点118_Nested_FFFF00窗口检查方法调用接收者校正.md",
+    "summary": "完成Nested_FFFF00全部29处对象方法调用的接收者/实参布局交叉核对，均保留接收者；扫描GitHub仓库233个路径未发现VM解释器、加载器或调用帧初始化源码，Nested_Anonymous T槽映射继续保持未决。",
+    "audit_file": "docs/audit/检查点119_Nested_FFFF00方法接收者与VM实现资料边界复核.md",
     "unresolved": [
-      "GUI宿主方法具体内部语义",
+      "GUI宿主标志和Layout尾参1的具体语义",
       "Nested_Anonymous的VM帧初始化和T槽映射",
       "Nested_UnSchedule unknown哨兵运行时语义"
     ],
