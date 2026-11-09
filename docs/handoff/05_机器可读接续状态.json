@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next."
   },
-  "next_action": "继续核对Nested_Anonymous（root.children[42].children[22]）的VM帧入口与T[0]/T[1]/T[2]初始化；两个调用包装器实参虽已确认，但尚无证据映射到这三个T槽。追踪T[2]延迟提示回调的真实生产者。完成后再按root.children[42]剩余未恢复子原型推进。",
+  "next_action": "继续追踪Nested_Anonymous（root.children[42].children[22]）的VM帧入口/vararg参数布局与T[0]/T[1]/T[2]来源；两个调用包装器传入两个实参，但不能直接映射到三个捕获寄存器。尤其追踪T[2]延迟错误提示回调的生产者。之后继续Nested_FFFF00父函数剩余GUI/刷新调用契约。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -92,41 +92,29 @@
   },
   "static_recovered_functions": [
     {
-      "path": "root.children[43]",
-      "legacy_path": "root/44",
-      "name": "GetOwnerDescription",
-      "physical_instructions": 20,
+      "path": "root.children[0]",
+      "legacy_path": "root/1",
+      "name": "FileExistCheck_pcall_wrapper",
+      "physical_instructions": 32,
+      "constant_count": 5,
+      "child_count": 1,
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
-      "source_file": "04_源码候选/root43_GetOwnerDescription.lua",
-      "audit_file": "docs/audit/root43_GetOwnerDescription_静态恢复核验.md",
+      "source_file": "04_源码候选/短函数草稿_第三十八批.lua",
+      "audit_file": "docs/audit/检查点62_FileExistCheck_pcall_wrapper静态恢复.md",
       "parameters": [
-        "actor",
-        "mainPlayerID"
+        "path"
       ],
       "returns": [
-        "ownerID",
-        "description"
-      ],
-      "key_correction": "[\"unknown\",2] is the VM dump's serialized nil marker, not the string \"unknown\"."
-    },
-    {
-      "path": "root.children[28]",
-      "legacy_path": "root/29",
-      "name": "FindMonsterCandidates",
-      "physical_instructions": 102,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/root28_FindMonsterCandidates.lua",
-      "audit_file": "docs/audit/root28_FindMonsterCandidates_阶段分析.md",
-      "parameters": [],
-      "returns": [
-        "sorted candidate actor array, limited by GATHER_THRESHOLD"
+        "boolean result",
+        "resolved writable path"
       ],
       "notes": [
-        "Ignore setting uses first return item's true-valued keys",
-        "IsDie helper returns truthy for alive actor",
-        "Sorts by actor._distance ascending"
+        "UPVALUE_0 is root.children[2] / legacy root/3, which concatenates FileUtils:getWritablePath() with the supplied path",
+        "Initial isFileExist true returns true,resolvedPath",
+        "If initially absent, pcall invokes captured FileUtils:removeFile(resolvedPath); pcall failure returns false,resolvedPath",
+        "After successful pcall, returns not FileUtils:isFileExist(resolvedPath),resolvedPath",
+        "Nested closure captures FileUtils instance and resolvedPath; no runtime validation"
       ]
     },
     {
@@ -139,118 +127,6 @@
       "runtime_verified": false
     },
     {
-      "path": "root.children[29]",
-      "legacy_path": "root/30",
-      "name": "IsDie",
-      "physical_instructions": 7,
-      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[30]",
-      "legacy_path": "root/31",
-      "name": "GetMapName",
-      "physical_instructions": 9,
-      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[39]",
-      "legacy_path": "root/40",
-      "name": "GetMainPlayerID",
-      "physical_instructions": 6,
-      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[28].children[0]",
-      "legacy_path": "root/29/1",
-      "name": "Nested_distance",
-      "physical_instructions": 8,
-      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[46].children[0]",
-      "legacy_path": "root/47/1",
-      "name": "Nested_string_2",
-      "physical_instructions": 20,
-      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[4]",
-      "legacy_path": "root/5",
-      "name": "GetDroppedItems",
-      "physical_instructions": 8,
-      "source_file": "04_源码候选/其他短辅助函数_第二批草稿.lua",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "returns": [
-        "drop items",
-        "ground item count"
-      ]
-    },
-    {
-      "path": "root.children[19].children[0]",
-      "legacy_path": "root/20/1",
-      "name": "Nested_MainLoop",
-      "physical_instructions": 3,
-      "source_file": "04_源码候选/短闭包辅助函数_第三批草稿.lua",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[25].children[0]",
-      "legacy_path": "root/26/1",
-      "name": "Nested_RequestAddBlacklistByName",
-      "physical_instructions": 6,
-      "source_file": "04_源码候选/短闭包辅助函数_第三批草稿.lua",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[42].children[4]",
-      "legacy_path": "root/43/5",
-      "name": "Nested_OnGameLeaveWorld",
-      "physical_instructions": 5,
-      "source_file": "04_源码候选/短闭包辅助函数_第三批草稿.lua",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[42].children[13]",
-      "legacy_path": "root/43/14",
-      "name": "Nested_Helper_6",
-      "physical_instructions": 6,
-      "source_file": "04_源码候选/短闭包辅助函数_第三批草稿.lua",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[48].children[0]",
-      "legacy_path": "root/49/1",
-      "name": "Nested_FriendProxy",
-      "physical_instructions": 9,
-      "source_file": "04_源码候选/代理与回调短函数_第四批.lua",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false
-    },
-    {
-      "path": "root.children[48]",
-      "legacy_path": "root/49",
-      "name": "PCallHelper_2",
-      "physical_instructions": 10,
-      "source_file": "04_源码候选/代理与回调短函数_第四批.lua",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false
-    },
-    {
       "path": "root.children[16]",
       "legacy_path": "root/17",
       "name": "PrintLog",
@@ -259,42 +135,6 @@
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
       "audit_file": "docs/audit/检查点21_PrintLog恢复.md"
-    },
-    {
-      "path": "root.children[20]",
-      "legacy_path": "root/21",
-      "name": "ShowLocalNoticeByType",
-      "physical_instructions": 15,
-      "source_file": "04_源码候选/其他短辅助函数_第二批草稿.lua",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "audit_file": "docs/audit/检查点22_ShowLocalNoticeByType捕获闭合.md",
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "root initializer T[0]",
-          "usage": "screenH"
-        }
-      ]
-    },
-    {
-      "path": "root.children[18]",
-      "legacy_path": "root/19",
-      "name": "GetPlayerPosition",
-      "physical_instructions": 19,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/位置读取函数_第五批草稿.lua",
-      "audit_file": "docs/audit/检查点24_GetPlayerPosition完整静态恢复.md",
-      "parameters": [],
-      "returns": [
-        "{x = X or 0, y = Y or 0}"
-      ],
-      "notes": [
-        "X/Y are read independently through SL:GetMetaValue",
-        "false/nil coordinate values fall back to numeric zero",
-        "returns one coordinate table"
-      ]
     },
     {
       "path": "root.children[17]",
@@ -331,33 +171,22 @@
       ]
     },
     {
-      "path": "root.children[21].children[0]",
-      "legacy_path": "root/22/1",
-      "name": "Nested_dist",
+      "path": "root.children[18]",
+      "legacy_path": "root/19",
+      "name": "GetPlayerPosition",
       "physical_instructions": 19,
-      "constant_count": 2,
-      "child_count": 0,
-      "source_file": "04_源码候选/PickUpItems_距离比较闭包_第九批.lua",
-      "audit_file": "docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md",
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
+      "source_file": "04_源码候选/位置读取函数_第五批草稿.lua",
+      "audit_file": "docs/audit/检查点24_GetPlayerPosition完整静态恢复.md",
+      "parameters": [],
+      "returns": [
+        "{x = X or 0, y = Y or 0}"
+      ],
       "notes": [
-        "lexicographic comparator: kIdx ascending, then dist ascending"
-      ]
-    },
-    {
-      "path": "root.children[21].children[1]",
-      "legacy_path": "root/22/2",
-      "name": "Nested_dist_2",
-      "physical_instructions": 8,
-      "constant_count": 1,
-      "child_count": 0,
-      "source_file": "04_源码候选/PickUpItems_距离比较闭包_第九批.lua",
-      "audit_file": "docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md",
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "notes": [
-        "dist ascending comparator"
+        "X/Y are read independently through SL:GetMetaValue",
+        "false/nil coordinate values fall back to numeric zero",
+        "returns one coordinate table"
       ]
     },
     {
@@ -379,6 +208,32 @@
         "UP[4] is ResetGatherMonsterData closure created at root PC200",
         "Cancels prior timer, sets captured running flag, transitions to IDLE, resets gather data, schedules MainLoop, and emits threshold notice",
         "SL:UnSchedule and SL:Schedule retain SL as method receiver"
+      ]
+    },
+    {
+      "path": "root.children[19].children[0]",
+      "legacy_path": "root/20/1",
+      "name": "Nested_MainLoop",
+      "physical_instructions": 3,
+      "source_file": "04_源码候选/短闭包辅助函数_第三批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[20]",
+      "legacy_path": "root/21",
+      "name": "ShowLocalNoticeByType",
+      "physical_instructions": 15,
+      "source_file": "04_源码候选/其他短辅助函数_第二批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "audit_file": "docs/audit/检查点22_ShowLocalNoticeByType捕获闭合.md",
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "root initializer T[0]",
+          "usage": "screenH"
+        }
       ]
     },
     {
@@ -412,6 +267,91 @@
       ]
     },
     {
+      "path": "root.children[21].children[0]",
+      "legacy_path": "root/22/1",
+      "name": "Nested_dist",
+      "physical_instructions": 19,
+      "constant_count": 2,
+      "child_count": 0,
+      "source_file": "04_源码候选/PickUpItems_距离比较闭包_第九批.lua",
+      "audit_file": "docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "notes": [
+        "lexicographic comparator: kIdx ascending, then dist ascending"
+      ]
+    },
+    {
+      "path": "root.children[21].children[1]",
+      "legacy_path": "root/22/2",
+      "name": "Nested_dist_2",
+      "physical_instructions": 8,
+      "constant_count": 1,
+      "child_count": 0,
+      "source_file": "04_源码候选/PickUpItems_距离比较闭包_第九批.lua",
+      "audit_file": "docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "notes": [
+        "dist ascending comparator"
+      ]
+    },
+    {
+      "path": "root.children[25].children[0]",
+      "legacy_path": "root/26/1",
+      "name": "Nested_RequestAddBlacklistByName",
+      "physical_instructions": 6,
+      "source_file": "04_源码候选/短闭包辅助函数_第三批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[28]",
+      "legacy_path": "root/29",
+      "name": "FindMonsterCandidates",
+      "physical_instructions": 102,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/root28_FindMonsterCandidates.lua",
+      "audit_file": "docs/audit/root28_FindMonsterCandidates_阶段分析.md",
+      "parameters": [],
+      "returns": [
+        "sorted candidate actor array, limited by GATHER_THRESHOLD"
+      ],
+      "notes": [
+        "Ignore setting uses first return item's true-valued keys",
+        "IsDie helper returns truthy for alive actor",
+        "Sorts by actor._distance ascending"
+      ]
+    },
+    {
+      "path": "root.children[28].children[0]",
+      "legacy_path": "root/29/1",
+      "name": "Nested_distance",
+      "physical_instructions": 8,
+      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[29]",
+      "legacy_path": "root/30",
+      "name": "IsDie",
+      "physical_instructions": 7,
+      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[30]",
+      "legacy_path": "root/31",
+      "name": "GetMapName",
+      "physical_instructions": 9,
+      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
       "path": "root.children[32]",
       "legacy_path": "root/33",
       "name": "AnonymousHelper_32",
@@ -442,484 +382,53 @@
       ]
     },
     {
-      "path": "root.children[57]",
-      "legacy_path": "root/58",
-      "name": "PlayerPos",
-      "physical_instructions": 10,
-      "constant_count": 4,
-      "child_count": 0,
+      "path": "root.children[39]",
+      "legacy_path": "root/40",
+      "name": "GetMainPlayerID",
+      "physical_instructions": 6,
+      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
       "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
-      "audit_file": "docs/audit/检查点30_PlayerPos与匿名转发闭包.md",
-      "notes": [
-        "依次调用 SL:GetMetaValue('X') 与 SL:GetMetaValue('Y')，返回两个值；不同于 GetPlayerPosition 的坐标表返回契约。"
-      ]
+      "runtime_verified": false
     },
     {
-      "path": "root.children[0]",
-      "legacy_path": "root/1",
-      "name": "FileExistCheck_pcall_wrapper",
-      "physical_instructions": 32,
-      "constant_count": 5,
-      "child_count": 1,
+      "path": "root.children[4]",
+      "legacy_path": "root/5",
+      "name": "GetDroppedItems",
+      "physical_instructions": 8,
+      "source_file": "04_源码候选/其他短辅助函数_第二批草稿.lua",
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第三十八批.lua",
-      "audit_file": "docs/audit/检查点62_FileExistCheck_pcall_wrapper静态恢复.md",
-      "parameters": [
-        "path"
-      ],
       "returns": [
-        "boolean result",
-        "resolved writable path"
-      ],
-      "notes": [
-        "UPVALUE_0 is root.children[2] / legacy root/3, which concatenates FileUtils:getWritablePath() with the supplied path",
-        "Initial isFileExist true returns true,resolvedPath",
-        "If initially absent, pcall invokes captured FileUtils:removeFile(resolvedPath); pcall failure returns false,resolvedPath",
-        "After successful pcall, returns not FileUtils:isFileExist(resolvedPath),resolvedPath",
-        "Nested closure captures FileUtils instance and resolvedPath; no runtime validation"
+        "drop items",
+        "ground item count"
       ]
     },
     {
-      "path": "root.children[46]",
-      "legacy_path": "root/47",
-      "name": "DiuItems",
-      "physical_instructions": 169,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/root46_DiuItems.lua",
-      "audit_file": "docs/audit/检查点89_DiuItems独立静态复审.md",
-      "parameters": [],
-      "returns": [],
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "parent root T[2]",
-          "usage": "module state table; isDiuing re-entry flag"
-        },
-        {
-          "index": 1,
-          "source": "parent root T[5]",
-          "usage": "ShowLocalNoticeByType notification helper"
-        }
-      ],
-      "notes": [
-        "pairs(BAG_DATA) filters truthy item/Name/MakeIndex and excludes ITEM_IS_BIND truthy items",
-        "keyword matcher call at PC91-95 is unreachable because PC89 compares unchanged R4==1; local construction omitted from readable draft with note",
-        "candidate record fields makeIndex/count/name; OverLap or 1",
-        "ground-item cap 35; LuaSendMsg arguments statically closed",
-        "all visible normal/early cleanup paths clear isDiuing; runtime behavior unverified"
-      ]
-    },
-    {
-      "path": "root.children[42].children[3].children[1]",
-      "legacy_path": "root/43/4/2",
-      "name": "Nested_string",
+      "path": "root.children[42].children[0]",
+      "legacy_path": "root/43/1",
+      "name": "Nested_find",
       "physical_instructions": 46,
       "constant_count": 12,
       "child_count": 0,
+      "vararg_flag": 1,
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
-      "source_file": "04_源码候选/资源统计刷新链_第六十四批.lua",
-      "audit_file": "docs/audit/检查点90_资源统计刷新链静态恢复.md",
+      "source_file": "04_源码候选/短函数草稿_第五十二批.lua",
+      "audit_file": "docs/audit/检查点116_Nested_find与Nested_UnSchedule静态复核.md",
       "parameters": [
-        "searchName (first vararg)"
+        "searchText",
+        "...（未见额外变参读取）"
       ],
       "returns": [
-        "count of matching non-bound BAG_DATA units; 0 if BAG_DATA absent"
+        "匹配的非绑定背包物品数量，按OverLap or 1累计"
       ],
+      "upvalues": [],
       "notes": [
-        "string.find(item.Name, searchName, 1, true) plain-text search",
-        "requires truthy item/Name/MakeIndex",
-        "truthy ITEM_IS_BIND excluded; OverLap or 1 accumulated"
-      ]
-    },
-    {
-      "path": "root.children[42].children[3].children[3]",
-      "legacy_path": "root/43/4/4",
-      "name": "Nested_Helper_3",
-      "physical_instructions": 168,
-      "constant_count": 31,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/资源统计刷新链_第六十四批.lua",
-      "audit_file": "docs/audit/检查点115_Nested_Helper_3闭包捕获与入口参数校正.md",
-      "parameters": [],
-      "returns": [],
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "Nested_FFFF00 UP[0] / MainLeftBottom module state",
-          "usage": "resWin"
-        },
-        {
-          "index": 1,
-          "source": "Nested_FFFF00 UP[2] / timer state",
-          "usage": "resTimer"
-        },
-        {
-          "index": 2,
-          "source": "Nested_FFFF00 R12",
-          "usage": "curTimeText Text node"
-        },
-        {
-          "index": 3,
-          "source": "Nested_FFFF00 R14",
-          "usage": "durTimeText Text node"
-        },
-        {
-          "index": 4,
-          "source": "Nested_FFFF00 UP[3] / init state",
-          "usage": "initTime/initSnapshot"
-        },
-        {
-          "index": 5,
-          "source": "MoneyProxy",
-          "usage": "money ID and count queries"
-        },
-        {
-          "index": 6,
-          "source": "Nested_FFFF00 R20",
-          "usage": "moneyRows mapping: money name -> Text node"
-        },
-        {
-          "index": 7,
-          "source": "Nested_FFFF00 child0 / Nested_Helper_2",
-          "usage": "number formatting"
-        },
-        {
-          "index": 8,
-          "source": "Nested_FFFF00 R21",
-          "usage": "itemRows mapping: item name -> Text node"
-        },
-        {
-          "index": 9,
-          "source": "Nested_FFFF00 child1 / Nested_string",
-          "usage": "non-bound item count by name"
-        }
-      ],
-      "notes": [
-        "Nested_Helper_3 has vararg_flag=0 and no explicit parameters; parent PC300 captures ten upvalues, and PC311-PC312 immediately invokes the closure with zero arguments.",
-        "PC1-PC19: invalid window causes resTimer unschedule, nil clear, and return.",
-        "PC20-PC38: os.time protected by pcall; failure skips time display but continues resource-row refresh.",
-        "PC39-PC94: protected os.date current-time display and elapsed-time calculation/formatting.",
-        "PC95-PC137: pairs(moneyRows), MoneyProxy:GetMoneyIdByName/GetMoneyCountById, snapshot key initSnapshot[moneyId], Text_setString(textNode,current:delta).",
-        "PC138-PC167: pairs(itemRows), Nested_string(itemName), snapshot key initSnapshot[itemName], Text_setString(textNode,current:delta).",
-        "Complete static control flow/capture mapping; GUI and timer host runtime not verified."
-      ]
-    },
-    {
-      "path": "root.children[42].children[2]",
-      "legacy_path": "root/43/3",
-      "name": "Nested_Helper",
-      "physical_instructions": 21,
-      "constant_count": 4,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第十七批.lua",
-      "audit_file": "docs/audit/检查点98_Nested_Helper与Nested_s格式回调复核.md",
-      "parameters": [],
-      "returns": [],
-      "notes": [
-        "UP[0](UP[1])返回success/detail；truthy分支决定成功/失败通知。",
-        "UP[2]接收固定单字符串通知；UP[3]为PrintLog，接收格式串与原始detail两个实参。",
-        "PrintLog会尝试string.format，但其当前字节码未调用SL.Print；不能把格式化路径描述成输出通知。",
-        "UP[0..2]业务身份保留槽位名；本函数21条指令控制流与调用实参均已闭合。"
-      ]
-    },
-    {
-      "path": "root.children[42].children[20]",
-      "legacy_path": "root/43/21",
-      "name": "Nested_s",
-      "physical_instructions": 21,
-      "constant_count": 4,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第十七批.lua",
-      "audit_file": "docs/audit/检查点98_Nested_Helper与Nested_s格式回调复核.md",
-      "parameters": [],
-      "returns": [],
-      "notes": [
-        "UP[0](UP[1])返回success/detail；truthy分支决定成功/失败通知。",
-        "UP[2]接收固定单字符串通知；UP[3]为PrintLog，接收格式串与原始detail两个实参。",
-        "PrintLog会尝试string.format，但其当前字节码未调用SL.Print；不能把格式化路径描述成输出通知。",
-        "UP[0..2]业务身份保留槽位名；本函数21条指令控制流与调用实参均已闭合。"
-      ]
-    },
-    {
-      "path": "root.children[42].children[7]",
-      "legacy_path": "root/43/8",
-      "name": "Nested_InitGatherMonsters",
-      "physical_instructions": 17,
-      "constant_count": 2,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第七十二批.lua",
-      "audit_file": "docs/audit/检查点107_四个UI定时器与引怪阈值函数复核.md",
-      "parameters": [
-        "...（读取首参）"
-      ],
-      "returns": [
-        "config.GATHER_THRESHOLD false/nil时false；truthy时调用InitGatherMonsters()并返回true"
-      ],
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "doInit_UI UP[8]",
-          "usage": "GATHER_THRESHOLD配置表"
-        },
-        {
-          "index": 1,
-          "source": "doInit_UI UP[9]",
-          "usage": "阈值读取回调"
-        }
-      ],
-      "notes": [
-        "首参truthy直接使用；false/nil时调用getter。",
-        "写入GATHER_THRESHOLD后，字段false/nil返回false；truthy时调用全局InitGatherMonsters()并返回true。",
-        "17条指令分支方向及返回值闭合；未运行时验证。"
-      ]
-    },
-    {
-      "path": "root.children[42].children[8]",
-      "legacy_path": "root/43/9",
-      "name": "Nested_SL_3",
-      "physical_instructions": 29,
-      "constant_count": 10,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第七十二批.lua",
-      "audit_file": "docs/audit/检查点107_四个UI定时器与引怪阈值函数复核.md",
-      "parameters": [],
-      "returns": [],
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "doInit_UI UP[2]",
-          "usage": "storageTimer状态表"
-        },
-        {
-          "index": 1,
-          "source": "doInit_UI UP[0]",
-          "usage": "提示回调"
-        },
-        {
-          "index": 2,
-          "source": "doInit_UI UP[1]",
-          "usage": "isStoring状态表"
-        },
-        {
-          "index": 3,
-          "source": "doInit_UI UP[7]",
-          "usage": "周期调度回调"
-        }
-      ],
-      "notes": [
-        "timer存在：通知关闭、SL.UnSchedule(timer)、storageTimer=nil、isStoring=false。",
-        "timer不存在：通知开启、立即StorageItems()，再schedule(StorageItems,1.0)并保存句柄。",
-        "29条指令控制流、调用参数、字段更新闭合；未运行时验证。"
-      ]
-    },
-    {
-      "path": "root.children[42].children[10]",
-      "legacy_path": "root/43/11",
-      "name": "Nested_shiquTimer",
-      "physical_instructions": 25,
-      "constant_count": 8,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第七十二批.lua",
-      "audit_file": "docs/audit/检查点107_四个UI定时器与引怪阈值函数复核.md",
-      "parameters": [],
-      "returns": [],
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "doInit_UI UP[2]",
-          "usage": "shiquTimer状态表"
-        },
-        {
-          "index": 1,
-          "source": "doInit_UI UP[0]",
-          "usage": "提示回调"
-        },
-        {
-          "index": 2,
-          "source": "doInit_UI UP[7]",
-          "usage": "周期调度回调"
-        }
-      ],
-      "notes": [
-        "timer存在：通知关闭、SL.UnSchedule(timer)、shiquTimer=nil。",
-        "timer不存在：通知开启，调用schedule(PickUpItems,0.01)并保存句柄；不会立即调用PickUpItems()。",
-        "25条指令控制流、调用参数、字段更新闭合；未运行时验证。"
-      ]
-    },
-    {
-      "path": "root.children[42].children[21]",
-      "legacy_path": "root/43/22",
-      "name": "Nested_dropTimer",
-      "physical_instructions": 29,
-      "constant_count": 10,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第二十批.lua",
-      "audit_file": "docs/audit/检查点100_四个定时器回调与nil占位复核.md",
-      "parameters": [],
-      "returns": [],
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "doInit_UI UP[2]",
-          "usage": "dropTimer状态表"
-        },
-        {
-          "index": 1,
-          "source": "doInit_UI UP[0]",
-          "usage": "功能提示回调"
-        },
-        {
-          "index": 2,
-          "source": "doInit_UI UP[1]",
-          "usage": "isDiuing状态表"
-        },
-        {
-          "index": 3,
-          "source": "doInit_UI UP[7]",
-          "usage": "调度函数"
-        }
-      ],
-      "notes": [
-        "关闭分支取消dropTimer并置nil、isDiuing=false。",
-        "开启分支先DiuItems()，再schedule(DiuItems,1.0)保存句柄。",
-        "29条指令闭合；未运行时验证。"
-      ]
-    },
-    {
-      "path": "root.children[42].children[19]",
-      "legacy_path": "root/43/20",
-      "name": "Nested_TakeItems",
-      "physical_instructions": 29,
-      "constant_count": 10,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第二十三批.lua",
-      "audit_file": "docs/audit/检查点100_四个定时器回调与nil占位复核.md",
-      "parameters": [],
-      "returns": [],
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "doInit_UI UP[2]",
-          "usage": "takeTimer状态表"
-        },
-        {
-          "index": 1,
-          "source": "doInit_UI UP[0]",
-          "usage": "功能提示回调"
-        },
-        {
-          "index": 2,
-          "source": "doInit_UI UP[1]",
-          "usage": "isTaking状态表"
-        },
-        {
-          "index": 3,
-          "source": "doInit_UI UP[7]",
-          "usage": "调度函数"
-        }
-      ],
-      "notes": [
-        "关闭分支取消takeTimer并置nil、isTaking=false。",
-        "开启分支先TakeItems()，再schedule(TakeItems,1.0)保存句柄。",
-        "29条指令闭合；未运行时验证。"
-      ]
-    },
-    {
-      "path": "root.children[44]",
-      "legacy_path": "root/45",
-      "name": "GetPlayerMapPosition",
-      "physical_instructions": 17,
-      "constant_count": 5,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第三十七批.lua",
-      "audit_file": "",
-      "parameters": [
-        "actor"
-      ],
-      "returns": [
-        "actor为假值时nil；否则返回{x,y}，坐标假值回退0"
-      ],
-      "notes": [
-        "检查点61确认actor假值返回nil。",
-        "读取mCurrMapX/mCurrMapY，false/nil坐标默认0，返回{x,y}。",
-        "17条指令静态闭合；未运行时验证。"
-      ]
-    },
-    {
-      "path": "root.children[42].children[6]",
-      "legacy_path": "root/43/7",
-      "name": "Nested_StopGatherMonsters",
-      "physical_instructions": 31,
-      "constant_count": 5,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第六十七批.lua",
-      "audit_file": "docs/audit/检查点101_Nested_StopGatherMonsters分支与捕获复核.md",
-      "parameters": [],
-      "returns": [
-        "gatherTimer存在时true；无timer且ready truthy时true；ready false/nil时false"
-      ],
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "doInit_UI UP[2]",
-          "usage": "gatherTimer状态表"
-        },
-        {
-          "index": 1,
-          "source": "doInit_UI UP[11]",
-          "usage": "提示回调"
-        },
-        {
-          "index": 2,
-          "source": "doInit_UI UP[9]",
-          "usage": "无参条件检查回调"
-        },
-        {
-          "index": 3,
-          "source": "doInit_UI UP[0]",
-          "usage": "阈值输入交互回调"
-        },
-        {
-          "index": 4,
-          "source": "doInit_UI R20",
-          "usage": "输入交互后的无参处理回调"
-        },
-        {
-          "index": 5,
-          "source": "doInit_UI R17",
-          "usage": "接收ready结果的状态/启动回调"
-        }
-      ],
-      "notes": [
-        "gatherTimer存在时提示关闭、调用StopGatherMonsters()并返回true。",
-        "无timer时调用UP[2]()；truthy结果走开启分支并传给UP[5]，返回true。",
-        "false/nil结果才提示缺少阈值，调用UP[3]()、UP[4]()并返回false。",
-        "31条物理指令控制流闭合；未运行时验证。"
+        "BAG_DATA false/nil returns 0; pairs iterates entries; entry, Name and MakeIndex must be truthy.",
+        "string.find(item.Name, searchText, 1, true); plain=true is derived from R1~=0 where R1 is the already truthy BAG_DATA.",
+        "SL:GetMetaValue('ITEM_IS_BIND', item) receives the complete item object, not item.MakeIndex.",
+        "Bound truthy items are skipped; unbound items add item.OverLap or 1. OverLap=0 remains 0.",
+        "PC43-PC46 iterator progression and final count return closed; no runtime validation."
       ]
     },
     {
@@ -1008,30 +517,39 @@
       ]
     },
     {
-      "path": "root.children[42].children[3].children[0]",
-      "legacy_path": "root/43/4/1",
-      "name": "Nested_Helper_2",
-      "physical_instructions": 35,
-      "constant_count": 12,
+      "path": "root.children[42].children[10]",
+      "legacy_path": "root/43/11",
+      "name": "Nested_shiquTimer",
+      "physical_instructions": 25,
+      "constant_count": 8,
       "child_count": 0,
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第六十九批.lua",
-      "audit_file": "docs/audit/检查点103_Nested_Helper_2数值格式化静态复核.md",
-      "parameters": [
-        "...（读取首参）"
+      "source_file": "04_源码候选/短函数草稿_第七十二批.lua",
+      "audit_file": "docs/audit/检查点107_四个UI定时器与引怪阈值函数复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[2]",
+          "usage": "shiquTimer状态表"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[0]",
+          "usage": "提示回调"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[7]",
+          "usage": "周期调度回调"
+        }
       ],
-      "returns": [
-        "<100000: tostring(value)",
-        "[100000,100000000): tostring(floor(value/10000))..'万'",
-        ">=100000000: string.format('%.1f亿',floor(value/100000000*10)/10)"
-      ],
-      "upvalues": [],
       "notes": [
-        "首参false/nil回退0；truthy值不做类型保护。",
-        "三个数值区间及比较边界逐PC核对。",
-        "亿级分支为floor到一位小数，不是四舍五入。",
-        "35条指令控制流、算术和返回闭合；未运行时验证。"
+        "timer存在：通知关闭、SL.UnSchedule(timer)、shiquTimer=nil。",
+        "timer不存在：通知开启，调用schedule(PickUpItems,0.01)并保存句柄；不会立即调用PickUpItems()。",
+        "25条指令控制流、调用参数、字段更新闭合；未运行时验证。"
       ]
     },
     {
@@ -1096,6 +614,112 @@
       ]
     },
     {
+      "path": "root.children[42].children[11].children[0]",
+      "legacy_path": "root/43/12/1",
+      "name": "Nested_Helper_5",
+      "physical_instructions": 35,
+      "constant_count": 6,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十批.lua",
+      "audit_file": "docs/audit/检查点105_Nested_Helper_5与Nested_Helper_8回调主体静态复核.md",
+      "parameters": [
+        "...（读取首参）"
+      ],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "Nested_Helper_4 UP[1] / root UP[10]",
+          "usage": "输入值校验回调"
+        },
+        {
+          "index": 1,
+          "source": "Nested_Helper_4 UP[2] / root UP[11]",
+          "usage": "通知回调"
+        },
+        {
+          "index": 2,
+          "source": "Nested_Helper_4 UP[3] / root T[0]",
+          "usage": "模板消息回调"
+        },
+        {
+          "index": 3,
+          "source": "Nested_Helper_4 UP[4] / root UP[12]",
+          "usage": "失败上下文解析回调"
+        },
+        {
+          "index": 4,
+          "source": "Nested_Helper_4 UP[5] / root UP[13]",
+          "usage": "失败上下文参数"
+        },
+        {
+          "index": 5,
+          "source": "Nested_Helper_4 UP[6] / root T[16]",
+          "usage": "距离保存回调"
+        },
+        {
+          "index": 6,
+          "source": "Nested_Helper_4 UP[7] / root T[15]",
+          "usage": "按钮状态回调"
+        }
+      ],
+      "notes": [
+        "校验truthy进入成功路径，false/nil进入失败路径。",
+        "失败上下文解析回调的多返回值经OP_392后通过开放参数调用模板消息回调。",
+        "成功路径通知并调用模板消息回调；保存回调(value)仅truthy返回时启用blacklistbut。",
+        "35条指令控制流、回调参数及按钮分支闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[12]",
+      "legacy_path": "root/43/13",
+      "name": "Nested_04d_02d_02d",
+      "physical_instructions": 43,
+      "constant_count": 25,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第三十三批.lua",
+      "audit_file": "docs/audit/检查点111_Nested_04d_02d_02d每日巡航触发复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI R5",
+          "usage": "上次发送日期标记"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[3]",
+          "usage": "含LuaSendMsg的发送对象"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[0]",
+          "usage": "通知回调"
+        }
+      ],
+      "notes": [
+        "os.date('*t')取当前日期时间；nil时返回。",
+        "仅在当天秒数79205..79208（22:00:05..22:00:08，含边界）执行。",
+        "日期键YYYYMMDD；与捕获日期标记相同则返回。",
+        "发送前更新日期标记，再调用LuaSendMsg(9002,55556,1,2,3,'',0)，随后发送固定通知。",
+        "43条指令控制流、边界、捕获和调用顺序闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[13]",
+      "legacy_path": "root/43/14",
+      "name": "Nested_Helper_6",
+      "physical_instructions": 6,
+      "source_file": "04_源码候选/短闭包辅助函数_第三批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
       "path": "root.children[42].children[14]",
       "legacy_path": "root/43/15",
       "name": "Nested_Helper_7",
@@ -1154,65 +778,6 @@
         "调用输入交互函数，参数为怪物数量阈值数字提示文本及Nested_Helper_8闭包。",
         "Nested_Helper_8的7个捕获来自本函数UP[1..7]；子函数本体不随本父包装函数自动升级。",
         "12条指令闭合；未运行时验证。"
-      ]
-    },
-    {
-      "path": "root.children[42].children[11].children[0]",
-      "legacy_path": "root/43/12/1",
-      "name": "Nested_Helper_5",
-      "physical_instructions": 35,
-      "constant_count": 6,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第七十批.lua",
-      "audit_file": "docs/audit/检查点105_Nested_Helper_5与Nested_Helper_8回调主体静态复核.md",
-      "parameters": [
-        "...（读取首参）"
-      ],
-      "returns": [],
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "Nested_Helper_4 UP[1] / root UP[10]",
-          "usage": "输入值校验回调"
-        },
-        {
-          "index": 1,
-          "source": "Nested_Helper_4 UP[2] / root UP[11]",
-          "usage": "通知回调"
-        },
-        {
-          "index": 2,
-          "source": "Nested_Helper_4 UP[3] / root T[0]",
-          "usage": "模板消息回调"
-        },
-        {
-          "index": 3,
-          "source": "Nested_Helper_4 UP[4] / root UP[12]",
-          "usage": "失败上下文解析回调"
-        },
-        {
-          "index": 4,
-          "source": "Nested_Helper_4 UP[5] / root UP[13]",
-          "usage": "失败上下文参数"
-        },
-        {
-          "index": 5,
-          "source": "Nested_Helper_4 UP[6] / root T[16]",
-          "usage": "距离保存回调"
-        },
-        {
-          "index": 6,
-          "source": "Nested_Helper_4 UP[7] / root T[15]",
-          "usage": "按钮状态回调"
-        }
-      ],
-      "notes": [
-        "校验truthy进入成功路径，false/nil进入失败路径。",
-        "失败上下文解析回调的多返回值经OP_392后通过开放参数调用模板消息回调。",
-        "成功路径通知并调用模板消息回调；保存回调(value)仅truthy返回时启用blacklistbut。",
-        "35条指令控制流、回调参数及按钮分支闭合；未运行时验证。"
       ]
     },
     {
@@ -1275,96 +840,69 @@
       ]
     },
     {
-      "path": "root.children[42].children[9]",
-      "legacy_path": "root/43/10",
-      "name": "Nested_Button_setTitleFontSize",
-      "physical_instructions": 50,
-      "constant_count": 17,
-      "child_count": 1,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第七十一批.lua",
-      "audit_file": "docs/audit/检查点106_Nested_Button_setTitleFontSize与点击回调复核.md",
-      "parameters": [
-        "config",
-        "offsetX",
-        "offsetY"
-      ],
-      "returns": [],
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "doInit_UI T[6]",
-          "usage": "Button_Create父容器/首个参数"
-        },
-        {
-          "index": 1,
-          "source": "doInit_UI T[22]",
-          "usage": "横向基准值"
-        },
-        {
-          "index": 2,
-          "source": "doInit_UI T[23]",
-          "usage": "纵向基准值"
-        },
-        {
-          "index": 3,
-          "source": "doInit_UI UP[4]",
-          "usage": "按钮对象注册表"
-        },
-        {
-          "index": 4,
-          "source": "doInit_UI T[21]",
-          "usage": "按key索引的点击状态门控表"
-        }
-      ],
-      "notes": [
-        "Button_Create调用参数含GUI self、父容器、config.key、baseX-85*offsetX、baseY+offsetY、贴图路径。",
-        "创建失败直接返回；成功后按key登记按钮。",
-        "初始化标题、字号18、字体kaiti2.ttf、白色；toggle假值时toggled=false。",
-        "点击回调捕获本函数UP[4]、config和button。",
-        "50条指令控制流与GUI调用参数闭合；未运行时验证。"
-      ]
-    },
-    {
-      "path": "root.children[42].children[9].children[0]",
-      "legacy_path": "root/43/10/1",
-      "name": "Nested_Button_setTitleText",
-      "physical_instructions": 48,
+      "path": "root.children[42].children[15]",
+      "legacy_path": "root/43/16",
+      "name": "Nested_Helper_9",
+      "physical_instructions": 30,
       "constant_count": 10,
       "child_count": 0,
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第七十一批.lua",
-      "audit_file": "docs/audit/检查点106_Nested_Button_setTitleFontSize与点击回调复核.md",
+      "source_file": "04_源码候选/短函数草稿_第七十五批.lua",
+      "audit_file": "docs/audit/检查点110_Nested_Helper_9显示隐藏按钮复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[3]",
+          "usage": "UI状态对象，含isHidden/hide/show/hidebut"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[0]",
+          "usage": "提示回调"
+        }
+      ],
+      "notes": [
+        "isHidden truthy：通知隐藏、调用hide()、GUI:setOpacity(hidebut,0)。",
+        "isHidden false/nil：通知显示、调用show()、GUI:setOpacity(hidebut,255)。",
+        "无显式返回值；30条指令控制流和GUI参数闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[16]",
+      "legacy_path": "root/43/17",
+      "name": "Nested_ITEM_INDEX_BY_NAME",
+      "physical_instructions": 26,
+      "constant_count": 7,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十四批.lua",
+      "audit_file": "docs/audit/检查点109_Nested_ITEM_INDEX_BY_NAME参数顺序与循环复核.md",
       "parameters": [
-        "config",
-        "button"
+        "config"
       ],
       "returns": [],
       "upvalues": [
         {
           "index": 0,
-          "source": "Nested_Button_setTitleFontSize UP[4] / doInit_UI T[21]",
-          "usage": "按按钮key索引的门控表"
+          "source": "doInit_UI R9",
+          "usage": "配置表，slot与names字段"
         },
         {
           "index": 1,
-          "source": "Nested_Button_setTitleFontSize R0",
-          "usage": "config对象"
-        },
-        {
-          "index": 2,
-          "source": "Nested_Button_setTitleFontSize R3",
-          "usage": "button对象"
+          "source": "doInit_UI UP[0]",
+          "usage": "接收移动函数第二返回值的回调"
         }
       ],
       "notes": [
-        "gate=stateGateMap[config.key]；默认allowed=true；gate truthy时调用gate()。",
-        "config.toggle假值时返回；仅allowed严格等于false时返回，nil不会被拒绝。",
-        "config.toggled取反写回；GUI:Button_setTitleText(button,config.name)。",
-        "toggled truthy时颜色#ff0000，否则#ffffff；GUI:Button_setTitleColor(button,color)。",
-        "48条指令分支、捕获、方法self及显式参数闭合；未运行时验证。"
+        "父调用点配置为{slot=4,names={\"免战回城石\"}}。",
+        "遍历config.names；逐个查询SL:GetMetaValue(\"ITEM_INDEX_BY_NAME\",itemName)。",
+        "命中时MoveItemToQuickUse(itemIndex,config.slot)，接收success与callbackValue。",
+        "无论success真假，均调用UP[1](callbackValue)；success truthy才break，否则继续。",
+        "26条指令参数顺序、双返回值和循环控制闭合；未运行时验证。"
       ]
     },
     {
@@ -1419,144 +957,125 @@
       ]
     },
     {
-      "path": "root.children[42].children[5]",
-      "legacy_path": "root/43/6",
-      "name": "Nested_ffffff",
-      "physical_instructions": 41,
+      "path": "root.children[42].children[19]",
+      "legacy_path": "root/43/20",
+      "name": "Nested_TakeItems",
+      "physical_instructions": 29,
       "constant_count": 10,
       "child_count": 0,
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第七十三批.lua",
-      "audit_file": "docs/audit/检查点108_Nested_ffffff批量按钮状态同步复核.md",
-      "parameters": [
-        "key",
-        "toggled"
-      ],
-      "returns": [],
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "doInit_UI T[12]",
-          "usage": "按钮配置数组"
-        },
-        {
-          "index": 1,
-          "source": "doInit_UI UP[4]",
-          "usage": "按key索引的按钮对象注册表"
-        }
-      ],
-      "notes": [
-        "遍历按钮配置数组；所有key匹配项都写toggled，不提前break。",
-        "最后一个匹配项作为后续GUI更新所用配置。",
-        "buttonByKey[key]、匹配配置、config.toggle均需truthy，否则返回。",
-        "标题在toggled且config.toggle truthy时取config.toggle，否则取config.name。",
-        "颜色按toggled truthy选择#ff0000，否则#ffffff。",
-        "41条指令循环、分支和GUI调用闭合；未运行时验证。"
-      ]
-    },
-    {
-      "path": "root.children[42].children[16]",
-      "legacy_path": "root/43/17",
-      "name": "Nested_ITEM_INDEX_BY_NAME",
-      "physical_instructions": 26,
-      "constant_count": 7,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第七十四批.lua",
-      "audit_file": "docs/audit/检查点109_Nested_ITEM_INDEX_BY_NAME参数顺序与循环复核.md",
-      "parameters": [
-        "config"
-      ],
-      "returns": [],
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "doInit_UI R9",
-          "usage": "配置表，slot与names字段"
-        },
-        {
-          "index": 1,
-          "source": "doInit_UI UP[0]",
-          "usage": "接收移动函数第二返回值的回调"
-        }
-      ],
-      "notes": [
-        "父调用点配置为{slot=4,names={\"免战回城石\"}}。",
-        "遍历config.names；逐个查询SL:GetMetaValue(\"ITEM_INDEX_BY_NAME\",itemName)。",
-        "命中时MoveItemToQuickUse(itemIndex,config.slot)，接收success与callbackValue。",
-        "无论success真假，均调用UP[1](callbackValue)；success truthy才break，否则继续。",
-        "26条指令参数顺序、双返回值和循环控制闭合；未运行时验证。"
-      ]
-    },
-    {
-      "path": "root.children[42].children[15]",
-      "legacy_path": "root/43/16",
-      "name": "Nested_Helper_9",
-      "physical_instructions": 30,
-      "constant_count": 10,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第七十五批.lua",
-      "audit_file": "docs/audit/检查点110_Nested_Helper_9显示隐藏按钮复核.md",
+      "source_file": "04_源码候选/短函数草稿_第二十三批.lua",
+      "audit_file": "docs/audit/检查点100_四个定时器回调与nil占位复核.md",
       "parameters": [],
       "returns": [],
       "upvalues": [
         {
           "index": 0,
-          "source": "doInit_UI UP[3]",
-          "usage": "UI状态对象，含isHidden/hide/show/hidebut"
+          "source": "doInit_UI UP[2]",
+          "usage": "takeTimer状态表"
         },
         {
           "index": 1,
           "source": "doInit_UI UP[0]",
-          "usage": "提示回调"
-        }
-      ],
-      "notes": [
-        "isHidden truthy：通知隐藏、调用hide()、GUI:setOpacity(hidebut,0)。",
-        "isHidden false/nil：通知显示、调用show()、GUI:setOpacity(hidebut,255)。",
-        "无显式返回值；30条指令控制流和GUI参数闭合；未运行时验证。"
-      ]
-    },
-    {
-      "path": "root.children[42].children[12]",
-      "legacy_path": "root/43/13",
-      "name": "Nested_04d_02d_02d",
-      "physical_instructions": 43,
-      "constant_count": 25,
-      "child_count": 0,
-      "status": "complete_static_reconstruction",
-      "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第三十三批.lua",
-      "audit_file": "docs/audit/检查点111_Nested_04d_02d_02d每日巡航触发复核.md",
-      "parameters": [],
-      "returns": [],
-      "upvalues": [
-        {
-          "index": 0,
-          "source": "doInit_UI R5",
-          "usage": "上次发送日期标记"
-        },
-        {
-          "index": 1,
-          "source": "doInit_UI UP[3]",
-          "usage": "含LuaSendMsg的发送对象"
+          "usage": "功能提示回调"
         },
         {
           "index": 2,
-          "source": "doInit_UI UP[0]",
-          "usage": "通知回调"
+          "source": "doInit_UI UP[1]",
+          "usage": "isTaking状态表"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[7]",
+          "usage": "调度函数"
         }
       ],
       "notes": [
-        "os.date('*t')取当前日期时间；nil时返回。",
-        "仅在当天秒数79205..79208（22:00:05..22:00:08，含边界）执行。",
-        "日期键YYYYMMDD；与捕获日期标记相同则返回。",
-        "发送前更新日期标记，再调用LuaSendMsg(9002,55556,1,2,3,'',0)，随后发送固定通知。",
-        "43条指令控制流、边界、捕获和调用顺序闭合；未运行时验证。"
+        "关闭分支取消takeTimer并置nil、isTaking=false。",
+        "开启分支先TakeItems()，再schedule(TakeItems,1.0)保存句柄。",
+        "29条指令闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[2]",
+      "legacy_path": "root/43/3",
+      "name": "Nested_Helper",
+      "physical_instructions": 21,
+      "constant_count": 4,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第十七批.lua",
+      "audit_file": "docs/audit/检查点98_Nested_Helper与Nested_s格式回调复核.md",
+      "parameters": [],
+      "returns": [],
+      "notes": [
+        "UP[0](UP[1])返回success/detail；truthy分支决定成功/失败通知。",
+        "UP[2]接收固定单字符串通知；UP[3]为PrintLog，接收格式串与原始detail两个实参。",
+        "PrintLog会尝试string.format，但其当前字节码未调用SL.Print；不能把格式化路径描述成输出通知。",
+        "UP[0..2]业务身份保留槽位名；本函数21条指令控制流与调用实参均已闭合。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[20]",
+      "legacy_path": "root/43/21",
+      "name": "Nested_s",
+      "physical_instructions": 21,
+      "constant_count": 4,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第十七批.lua",
+      "audit_file": "docs/audit/检查点98_Nested_Helper与Nested_s格式回调复核.md",
+      "parameters": [],
+      "returns": [],
+      "notes": [
+        "UP[0](UP[1])返回success/detail；truthy分支决定成功/失败通知。",
+        "UP[2]接收固定单字符串通知；UP[3]为PrintLog，接收格式串与原始detail两个实参。",
+        "PrintLog会尝试string.format，但其当前字节码未调用SL.Print；不能把格式化路径描述成输出通知。",
+        "UP[0..2]业务身份保留槽位名；本函数21条指令控制流与调用实参均已闭合。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[21]",
+      "legacy_path": "root/43/22",
+      "name": "Nested_dropTimer",
+      "physical_instructions": 29,
+      "constant_count": 10,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第二十批.lua",
+      "audit_file": "docs/audit/检查点100_四个定时器回调与nil占位复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[2]",
+          "usage": "dropTimer状态表"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[0]",
+          "usage": "功能提示回调"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[1]",
+          "usage": "isDiuing状态表"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[7]",
+          "usage": "调度函数"
+        }
+      ],
+      "notes": [
+        "关闭分支取消dropTimer并置nil、isDiuing=false。",
+        "开启分支先DiuItems()，再schedule(DiuItems,1.0)保存句柄。",
+        "29条指令闭合；未运行时验证。"
       ]
     },
     {
@@ -1675,6 +1194,56 @@
       ]
     },
     {
+      "path": "root.children[42].children[3].children[0]",
+      "legacy_path": "root/43/4/1",
+      "name": "Nested_Helper_2",
+      "physical_instructions": 35,
+      "constant_count": 12,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第六十九批.lua",
+      "audit_file": "docs/audit/检查点103_Nested_Helper_2数值格式化静态复核.md",
+      "parameters": [
+        "...（读取首参）"
+      ],
+      "returns": [
+        "<100000: tostring(value)",
+        "[100000,100000000): tostring(floor(value/10000))..'万'",
+        ">=100000000: string.format('%.1f亿',floor(value/100000000*10)/10)"
+      ],
+      "upvalues": [],
+      "notes": [
+        "首参false/nil回退0；truthy值不做类型保护。",
+        "三个数值区间及比较边界逐PC核对。",
+        "亿级分支为floor到一位小数，不是四舍五入。",
+        "35条指令控制流、算术和返回闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[3].children[1]",
+      "legacy_path": "root/43/4/2",
+      "name": "Nested_string",
+      "physical_instructions": 46,
+      "constant_count": 12,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/资源统计刷新链_第六十四批.lua",
+      "audit_file": "docs/audit/检查点90_资源统计刷新链静态恢复.md",
+      "parameters": [
+        "searchName (first vararg)"
+      ],
+      "returns": [
+        "count of matching non-bound BAG_DATA units; 0 if BAG_DATA absent"
+      ],
+      "notes": [
+        "string.find(item.Name, searchName, 1, true) plain-text search",
+        "requires truthy item/Name/MakeIndex",
+        "truthy ITEM_IS_BIND excluded; OverLap or 1 accumulated"
+      ]
+    },
+    {
       "path": "root.children[42].children[3].children[2]",
       "legacy_path": "root/43/4/3",
       "name": "Nested_FFFFFF",
@@ -1716,22 +1285,532 @@
         "Layout_Create trailing numeric argument 1 is confirmed in position; host-side meaning unknown and intentionally unnamed.",
         "All 65 physical instructions statically reconciled; no host runtime validation."
       ]
+    },
+    {
+      "path": "root.children[42].children[3].children[3]",
+      "legacy_path": "root/43/4/4",
+      "name": "Nested_Helper_3",
+      "physical_instructions": 168,
+      "constant_count": 31,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/资源统计刷新链_第六十四批.lua",
+      "audit_file": "docs/audit/检查点115_Nested_Helper_3闭包捕获与入口参数校正.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "Nested_FFFF00 UP[0] / MainLeftBottom module state",
+          "usage": "resWin"
+        },
+        {
+          "index": 1,
+          "source": "Nested_FFFF00 UP[2] / timer state",
+          "usage": "resTimer"
+        },
+        {
+          "index": 2,
+          "source": "Nested_FFFF00 R12",
+          "usage": "curTimeText Text node"
+        },
+        {
+          "index": 3,
+          "source": "Nested_FFFF00 R14",
+          "usage": "durTimeText Text node"
+        },
+        {
+          "index": 4,
+          "source": "Nested_FFFF00 UP[3] / init state",
+          "usage": "initTime/initSnapshot"
+        },
+        {
+          "index": 5,
+          "source": "MoneyProxy",
+          "usage": "money ID and count queries"
+        },
+        {
+          "index": 6,
+          "source": "Nested_FFFF00 R20",
+          "usage": "moneyRows mapping: money name -> Text node"
+        },
+        {
+          "index": 7,
+          "source": "Nested_FFFF00 child0 / Nested_Helper_2",
+          "usage": "number formatting"
+        },
+        {
+          "index": 8,
+          "source": "Nested_FFFF00 R21",
+          "usage": "itemRows mapping: item name -> Text node"
+        },
+        {
+          "index": 9,
+          "source": "Nested_FFFF00 child1 / Nested_string",
+          "usage": "non-bound item count by name"
+        }
+      ],
+      "notes": [
+        "Nested_Helper_3 has vararg_flag=0 and no explicit parameters; parent PC300 captures ten upvalues, and PC311-PC312 immediately invokes the closure with zero arguments.",
+        "PC1-PC19: invalid window causes resTimer unschedule, nil clear, and return.",
+        "PC20-PC38: os.time protected by pcall; failure skips time display but continues resource-row refresh.",
+        "PC39-PC94: protected os.date current-time display and elapsed-time calculation/formatting.",
+        "PC95-PC137: pairs(moneyRows), MoneyProxy:GetMoneyIdByName/GetMoneyCountById, snapshot key initSnapshot[moneyId], Text_setString(textNode,current:delta).",
+        "PC138-PC167: pairs(itemRows), Nested_string(itemName), snapshot key initSnapshot[itemName], Text_setString(textNode,current:delta).",
+        "Complete static control flow/capture mapping; GUI and timer host runtime not verified."
+      ]
+    },
+    {
+      "path": "root.children[42].children[3].children[4]",
+      "legacy_path": "root/43/4/5",
+      "name": "Nested_UnSchedule",
+      "physical_instructions": 20,
+      "constant_count": 8,
+      "child_count": 0,
+      "vararg_flag": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第十五批.lua",
+      "audit_file": "docs/audit/检查点116_Nested_find与Nested_UnSchedule静态复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "Nested_FFFF00 UP[1]",
+          "usage": "PrintLog/notification callback"
+        },
+        {
+          "index": 1,
+          "source": "Nested_FFFF00 UP[2]",
+          "usage": "timerState; resTimer"
+        },
+        {
+          "index": 2,
+          "source": "Nested_FFFF00 UP[0]",
+          "usage": "moduleState; resWin"
+        }
+      ],
+      "notes": [
+        "Parent Nested_FFFF00 PC68 creates closure; PC69-PC71 capture parent UP[1], UP[2], UP[0] in that order.",
+        "Calls notification callback with fixed text '点击空白,关闭资源信息窗口'.",
+        "If timerState.resTimer is truthy, calls SL:UnSchedule and writes constant ['unknown',2] into resTimer.",
+        "Calls GUI:Win_Close(moduleState.resWin); all 20 physical instructions statically reconciled.",
+        "Readable candidate uses nil as a placeholder for the unknown sentinel; exact host/runtime meaning is not verified."
+      ]
+    },
+    {
+      "path": "root.children[42].children[4]",
+      "legacy_path": "root/43/5",
+      "name": "Nested_OnGameLeaveWorld",
+      "physical_instructions": 5,
+      "source_file": "04_源码候选/短闭包辅助函数_第三批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[42].children[5]",
+      "legacy_path": "root/43/6",
+      "name": "Nested_ffffff",
+      "physical_instructions": 41,
+      "constant_count": 10,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十三批.lua",
+      "audit_file": "docs/audit/检查点108_Nested_ffffff批量按钮状态同步复核.md",
+      "parameters": [
+        "key",
+        "toggled"
+      ],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI T[12]",
+          "usage": "按钮配置数组"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[4]",
+          "usage": "按key索引的按钮对象注册表"
+        }
+      ],
+      "notes": [
+        "遍历按钮配置数组；所有key匹配项都写toggled，不提前break。",
+        "最后一个匹配项作为后续GUI更新所用配置。",
+        "buttonByKey[key]、匹配配置、config.toggle均需truthy，否则返回。",
+        "标题在toggled且config.toggle truthy时取config.toggle，否则取config.name。",
+        "颜色按toggled truthy选择#ff0000，否则#ffffff。",
+        "41条指令循环、分支和GUI调用闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[6]",
+      "legacy_path": "root/43/7",
+      "name": "Nested_StopGatherMonsters",
+      "physical_instructions": 31,
+      "constant_count": 5,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第六十七批.lua",
+      "audit_file": "docs/audit/检查点101_Nested_StopGatherMonsters分支与捕获复核.md",
+      "parameters": [],
+      "returns": [
+        "gatherTimer存在时true；无timer且ready truthy时true；ready false/nil时false"
+      ],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[2]",
+          "usage": "gatherTimer状态表"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[11]",
+          "usage": "提示回调"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[9]",
+          "usage": "无参条件检查回调"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[0]",
+          "usage": "阈值输入交互回调"
+        },
+        {
+          "index": 4,
+          "source": "doInit_UI R20",
+          "usage": "输入交互后的无参处理回调"
+        },
+        {
+          "index": 5,
+          "source": "doInit_UI R17",
+          "usage": "接收ready结果的状态/启动回调"
+        }
+      ],
+      "notes": [
+        "gatherTimer存在时提示关闭、调用StopGatherMonsters()并返回true。",
+        "无timer时调用UP[2]()；truthy结果走开启分支并传给UP[5]，返回true。",
+        "false/nil结果才提示缺少阈值，调用UP[3]()、UP[4]()并返回false。",
+        "31条物理指令控制流闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[7]",
+      "legacy_path": "root/43/8",
+      "name": "Nested_InitGatherMonsters",
+      "physical_instructions": 17,
+      "constant_count": 2,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十二批.lua",
+      "audit_file": "docs/audit/检查点107_四个UI定时器与引怪阈值函数复核.md",
+      "parameters": [
+        "...（读取首参）"
+      ],
+      "returns": [
+        "config.GATHER_THRESHOLD false/nil时false；truthy时调用InitGatherMonsters()并返回true"
+      ],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[8]",
+          "usage": "GATHER_THRESHOLD配置表"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[9]",
+          "usage": "阈值读取回调"
+        }
+      ],
+      "notes": [
+        "首参truthy直接使用；false/nil时调用getter。",
+        "写入GATHER_THRESHOLD后，字段false/nil返回false；truthy时调用全局InitGatherMonsters()并返回true。",
+        "17条指令分支方向及返回值闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[8]",
+      "legacy_path": "root/43/9",
+      "name": "Nested_SL_3",
+      "physical_instructions": 29,
+      "constant_count": 10,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十二批.lua",
+      "audit_file": "docs/audit/检查点107_四个UI定时器与引怪阈值函数复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[2]",
+          "usage": "storageTimer状态表"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[0]",
+          "usage": "提示回调"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[1]",
+          "usage": "isStoring状态表"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[7]",
+          "usage": "周期调度回调"
+        }
+      ],
+      "notes": [
+        "timer存在：通知关闭、SL.UnSchedule(timer)、storageTimer=nil、isStoring=false。",
+        "timer不存在：通知开启、立即StorageItems()，再schedule(StorageItems,1.0)并保存句柄。",
+        "29条指令控制流、调用参数、字段更新闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[9]",
+      "legacy_path": "root/43/10",
+      "name": "Nested_Button_setTitleFontSize",
+      "physical_instructions": 50,
+      "constant_count": 17,
+      "child_count": 1,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十一批.lua",
+      "audit_file": "docs/audit/检查点106_Nested_Button_setTitleFontSize与点击回调复核.md",
+      "parameters": [
+        "config",
+        "offsetX",
+        "offsetY"
+      ],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI T[6]",
+          "usage": "Button_Create父容器/首个参数"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI T[22]",
+          "usage": "横向基准值"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI T[23]",
+          "usage": "纵向基准值"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[4]",
+          "usage": "按钮对象注册表"
+        },
+        {
+          "index": 4,
+          "source": "doInit_UI T[21]",
+          "usage": "按key索引的点击状态门控表"
+        }
+      ],
+      "notes": [
+        "Button_Create调用参数含GUI self、父容器、config.key、baseX-85*offsetX、baseY+offsetY、贴图路径。",
+        "创建失败直接返回；成功后按key登记按钮。",
+        "初始化标题、字号18、字体kaiti2.ttf、白色；toggle假值时toggled=false。",
+        "点击回调捕获本函数UP[4]、config和button。",
+        "50条指令控制流与GUI调用参数闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[9].children[0]",
+      "legacy_path": "root/43/10/1",
+      "name": "Nested_Button_setTitleText",
+      "physical_instructions": 48,
+      "constant_count": 10,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十一批.lua",
+      "audit_file": "docs/audit/检查点106_Nested_Button_setTitleFontSize与点击回调复核.md",
+      "parameters": [
+        "config",
+        "button"
+      ],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "Nested_Button_setTitleFontSize UP[4] / doInit_UI T[21]",
+          "usage": "按按钮key索引的门控表"
+        },
+        {
+          "index": 1,
+          "source": "Nested_Button_setTitleFontSize R0",
+          "usage": "config对象"
+        },
+        {
+          "index": 2,
+          "source": "Nested_Button_setTitleFontSize R3",
+          "usage": "button对象"
+        }
+      ],
+      "notes": [
+        "gate=stateGateMap[config.key]；默认allowed=true；gate truthy时调用gate()。",
+        "config.toggle假值时返回；仅allowed严格等于false时返回，nil不会被拒绝。",
+        "config.toggled取反写回；GUI:Button_setTitleText(button,config.name)。",
+        "toggled truthy时颜色#ff0000，否则#ffffff；GUI:Button_setTitleColor(button,color)。",
+        "48条指令分支、捕获、方法self及显式参数闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[43]",
+      "legacy_path": "root/44",
+      "name": "GetOwnerDescription",
+      "physical_instructions": 20,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/root43_GetOwnerDescription.lua",
+      "audit_file": "docs/audit/root43_GetOwnerDescription_静态恢复核验.md",
+      "parameters": [
+        "actor",
+        "mainPlayerID"
+      ],
+      "returns": [
+        "ownerID",
+        "description"
+      ],
+      "key_correction": "[\"unknown\",2] is the VM dump's serialized nil marker, not the string \"unknown\"."
+    },
+    {
+      "path": "root.children[44]",
+      "legacy_path": "root/45",
+      "name": "GetPlayerMapPosition",
+      "physical_instructions": 17,
+      "constant_count": 5,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第三十七批.lua",
+      "audit_file": "",
+      "parameters": [
+        "actor"
+      ],
+      "returns": [
+        "actor为假值时nil；否则返回{x,y}，坐标假值回退0"
+      ],
+      "notes": [
+        "检查点61确认actor假值返回nil。",
+        "读取mCurrMapX/mCurrMapY，false/nil坐标默认0，返回{x,y}。",
+        "17条指令静态闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[46]",
+      "legacy_path": "root/47",
+      "name": "DiuItems",
+      "physical_instructions": 169,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/root46_DiuItems.lua",
+      "audit_file": "docs/audit/检查点89_DiuItems独立静态复审.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "parent root T[2]",
+          "usage": "module state table; isDiuing re-entry flag"
+        },
+        {
+          "index": 1,
+          "source": "parent root T[5]",
+          "usage": "ShowLocalNoticeByType notification helper"
+        }
+      ],
+      "notes": [
+        "pairs(BAG_DATA) filters truthy item/Name/MakeIndex and excludes ITEM_IS_BIND truthy items",
+        "keyword matcher call at PC91-95 is unreachable because PC89 compares unchanged R4==1; local construction omitted from readable draft with note",
+        "candidate record fields makeIndex/count/name; OverLap or 1",
+        "ground-item cap 35; LuaSendMsg arguments statically closed",
+        "all visible normal/early cleanup paths clear isDiuing; runtime behavior unverified"
+      ]
+    },
+    {
+      "path": "root.children[46].children[0]",
+      "legacy_path": "root/47/1",
+      "name": "Nested_string_2",
+      "physical_instructions": 20,
+      "source_file": "04_源码候选/小型辅助函数_首批草稿.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[48]",
+      "legacy_path": "root/49",
+      "name": "PCallHelper_2",
+      "physical_instructions": 10,
+      "source_file": "04_源码候选/代理与回调短函数_第四批.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[48].children[0]",
+      "legacy_path": "root/49/1",
+      "name": "Nested_FriendProxy",
+      "physical_instructions": 9,
+      "source_file": "04_源码候选/代理与回调短函数_第四批.lua",
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false
+    },
+    {
+      "path": "root.children[57]",
+      "legacy_path": "root/58",
+      "name": "PlayerPos",
+      "physical_instructions": 10,
+      "constant_count": 4,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
+      "audit_file": "docs/audit/检查点30_PlayerPos与匿名转发闭包.md",
+      "notes": [
+        "依次调用 SL:GetMetaValue('X') 与 SL:GetMetaValue('Y')，返回两个值；不同于 GetPlayerPosition 的坐标表返回契约。"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 115,
-    "target": "Nested_Helper_3 closure capture/entry signature correction",
-    "status": "existing complete static reconstruction source corrected; no new function count; no runtime validation",
-    "source_file": "04_源码候选/资源统计刷新链_第六十四批.lua",
-    "audit_file": "docs/audit/检查点115_Nested_Helper_3闭包捕获与入口参数校正.md",
-    "corrected_functions": [
-      "root.children[42].children[3].children[3]"
+    "checkpoint": 116,
+    "targets": [
+      "root.children[42].children[0]",
+      "root.children[42].children[3].children[4]"
+    ],
+    "status": "two existing drafts statically reviewed and corrected; no runtime validation",
+    "source_files": [
+      "04_源码候选/短函数草稿_第五十二批.lua",
+      "04_源码候选/短函数草稿_第十五批.lua"
+    ],
+    "audit_file": "docs/audit/检查点116_Nested_find与Nested_UnSchedule静态复核.md",
+    "completed_functions": [
+      "Nested_find",
+      "Nested_UnSchedule"
+    ],
+    "corrected_findings": [
+      "Nested_find passes the item object to ITEM_IS_BIND, not item.MakeIndex.",
+      "Nested_find counts unbound matches by item.OverLap or 1; OverLap truthy is not a filter condition.",
+      "Nested_UnSchedule capture order is [PrintLog,timerState,moduleState]; Win_Close reads resWin from UP[2], not UP[1].",
+      "Nested_UnSchedule writes the literal unknown sentinel ['unknown',2]; nil in the Lua candidate is explicitly only a placeholder."
     ],
     "draft_count_total": 78,
-    "complete_static_reconstruction_count": 58,
-    "runtime_verified_count": 0,
-    "note": "Nested_Helper_3 has zero explicit arguments; ten values are captured upvalues. Corrected prior source candidate that represented captures as parameters. os.time failure skips time display but does not skip money/item row updates."
+    "complete_static_reconstruction_count": 60,
+    "runtime_verified_count": 0
   },
   "corrections": [
     {
@@ -2092,25 +2171,6 @@
       ]
     },
     {
-      "path": "root.children[42].children[0]",
-      "legacy_path": "root/43/1",
-      "name": "Nested_find",
-      "source_file": "04_源码候选/短函数草稿_第五十二批.lua",
-      "audit_file": "docs/audit/检查点76_Nested_find与Nested_string首版草稿.md",
-      "status": "first_pass_draft_bag_name_filter_count_logic_pending_filter_direction_and_varargs_not_runtime_verified",
-      "physical_instructions": 46,
-      "constant_count": 12,
-      "child_count": 0,
-      "notes": [
-        "No closure captures; created at parent root/42 PC17",
-        "Reads SL:GetMetaValue('BAG_DATA'); nil path returns 0",
-        "pairs iterates items; checks Name and MakeIndex; string.find searches item.Name",
-        "Queries SL:GetMetaValue('ITEM_IS_BIND', item.MakeIndex), checks OverLap, increments count and returns it",
-        "vararg argument mapping, string.find plain flag and filter directions pending",
-        "No runtime validation"
-      ]
-    },
-    {
       "path": "root.children[42].children[3].children[1]",
       "legacy_path": "root/43/4/2",
       "name": "Nested_string",
@@ -2319,62 +2379,68 @@
   ],
   "draft_function_count": 78,
   "ordinary_lua_draft_functions": 78,
-  "last_checkpoint": "115",
-  "checkpoint": "115",
+  "last_checkpoint": "116",
+  "checkpoint": "116",
   "drafts": 33,
-  "next": "继续核对Nested_Anonymous（root.children[42].children[22]）的VM帧入口与T[0]/T[1]/T[2]初始化；两个调用包装器实参虽已确认，但尚无证据映射到这三个T槽。追踪T[2]延迟提示回调的真实生产者。完成后再按root.children[42]剩余未恢复子原型推进。",
+  "next": "继续追踪Nested_Anonymous（root.children[42].children[22]）的VM帧入口/vararg参数布局与T[0]/T[1]/T[2]来源；两个调用包装器传入两个实参，但不能直接映射到三个捕获寄存器。尤其追踪T[2]延迟错误提示回调的生产者。之后继续Nested_FFFF00父函数剩余GUI/刷新调用契约。",
   "recent_checkpoint": {
-    "checkpoint": "115",
+    "checkpoint": "116",
     "date": "2026-11-09",
-    "summary": "修订Nested_Helper_3普通Lua候选：纠正10项闭包捕获被误写为函数形参的问题；原型vararg_flag=0，回调无显式参数，父PC300捕获十项并在PC311-PC312无参调用。进一步明确取时失败只跳过时间/历时显示，仍继续货币和物品行刷新。函数原本已计入完整静态恢复，本批不增加数量。",
+    "summary": "完成Nested_find和Nested_UnSchedule两个既有草稿的静态复核并校正。Nested_find修正ITEM_IS_BIND参数为item对象、绑定truthy跳过、未绑定按OverLap or 1累计；Nested_UnSchedule修正UPVALUE映射，UP[1]=timerState、UP[2]=moduleState，并记录unknown哨兵语义未验证。完整静态恢复由58提升至60，运行时验证仍为0。",
     "files": [
-      "04_源码候选/资源统计刷新链_第六十四批.lua",
-      "docs/audit/检查点115_Nested_Helper_3闭包捕获与入口参数校正.md",
+      "04_源码候选/短函数草稿_第五十二批.lua",
+      "04_源码候选/短函数草稿_第十五批.lua",
+      "docs/audit/检查点116_Nested_find与Nested_UnSchedule静态复核.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "unchanged": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 58,
       "runtime_verified": 0
+    },
+    "updated": {
+      "complete_static_reconstruction": 60
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "115",
+    "checkpoint": "116",
     "date": "2026-11-09",
-    "function": "Nested_Helper_3",
-    "source_file": "04_源码候选/资源统计刷新链_第六十四批.lua",
-    "audit_file": "docs/audit/检查点115_Nested_Helper_3闭包捕获与入口参数校正.md",
+    "targets": [
+      "Nested_find",
+      "Nested_UnSchedule"
+    ],
     "findings": [
-      "Nested_Helper_3 vararg_flag=0，回调本体无显式参数；10项为PC300创建闭包时的UPVALUE。",
-      "PC311-PC312立即无参调用，PC313-PC319由父函数安排SL:Schedule(callback,1.0)。",
-      "10项捕获映射为moduleState、timerState、curTimeText、durTimeText、initState、MoneyProxy、moneyRows、formatNumber、itemRows、Nested_string。",
-      "os.time/pcall失败跳过时间与历时更新，但仍执行moneyRows/itemRows两个刷新循环。",
-      "money快照键为moneyId；item快照键为itemName；对应Text节点由迭代表值提供。"
+      "Nested_find string.find plain=true由R1~=0证明，R1为已确认truthy的BAG_DATA。",
+      "Nested_find调用SL:GetMetaValue('ITEM_IS_BIND', item)，传入完整item对象。",
+      "Nested_find未绑定条目按OverLap or 1累加；OverLap=0仍为truthy，计数增加0。",
+      "Nested_UnSchedule父级捕获顺序UP[1]/UP[2]/UP[0]，对应本函数UP[0]=PrintLog、UP[1]=timerState、UP[2]=moduleState。",
+      "Nested_UnSchedule写入常量['unknown',2]；候选nil只是占位，不宣称运行时等价。"
     ],
     "unresolved": [
-      "未做宿主GUI/代理/定时器运行时验证"
+      "宿主环境中unknown哨兵的真实语义",
+      "没有运行时验证",
+      "Nested_Anonymous帧参数及T[0]/T[1]/T[2]映射和T[2]生产者"
     ],
-    "status": "complete_static_reconstruction_not_runtime_verified",
+    "status": "two_more_complete_static_reconstructions_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 58,
+      "complete_static_reconstruction": 60,
       "runtime_verified": 0
     }
   },
-  "complete_static_reconstruction_count": 58,
-  "complete_static_reconstruction": "58/110 (52.7%)",
+  "complete_static_reconstruction_count": 60,
+  "complete_static_reconstruction": "60/110 (54.5%)",
   "progress_reconciled": {
     "source_of_counts": "GitHub 03_函数状态清单.csv 与机器状态草稿/静态恢复索引逐项核对（检查点114）",
     "ordinary_lua_draft_functions": 78,
     "complete_static_reconstruction_functions": 58,
     "runtime_verified_functions": 0,
-    "note": "检查点114新增Nested_Anonymous首版普通Lua草稿；调用包装器实参已确认，但VM T槽映射与T[2]生产者未闭合，不升级完整静态恢复。"
+    "note": "检查点116：Nested_find和Nested_UnSchedule由首版草稿升级完整静态恢复；Nested_find参数/计数逻辑及Nested_UnSchedule闭包槽位已校正。普通Lua草稿总量统计口径保持78，完整静态恢复60/110，运行时验证0。"
   },
   "counts": {
     "ordinary_lua_drafts": 78,
-    "complete_static_reconstruction": 58,
+    "complete_static_reconstruction": 60,
     "runtime_verified": 0
   }
 }
