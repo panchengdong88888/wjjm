@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "继续批量复审root.children[42]已有短函数草稿，重点检查分支方向、truthy语义、返回值和回调实参。当前仅root模块体与root.children[45] MainLoop仍标为未开始；短函数复审后再攻复杂主原型。",
+  "next_action": "继续复审doInit_UI剩余子原型，优先Nested_Helper_5/Nested_Helper_8两个输入回调及Nested_Button_setTitleFontSize/Nested_Button_setTitleText，再处理Nested_ffffff、Nested_find等尚未完整的UI函数。每次先核对父级创建点与捕获顺序，再逐PC校正真假分支、格式回调和GUI调用实参。UI辅助函数收尾后，转向root模块体和417指令MainLoop；不重复已完成的底层VM提取。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
