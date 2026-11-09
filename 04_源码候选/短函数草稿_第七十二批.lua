@@ -18,8 +18,8 @@ local function Nested_InitGatherMonsters(...)
 
     config.GATHER_THRESHOLD = threshold
 
-    if config.GATHER_THRESHOLD then
-        return config.GATHER_THRESHOLD
+    if not config.GATHER_THRESHOLD then
+        return false
     end
 
     InitGatherMonsters()
