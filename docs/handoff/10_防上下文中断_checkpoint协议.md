@@ -1283,3 +1283,17 @@
 - 函数状态CSV及机器状态JSON同步更新。
 - 统计：普通Lua草稿78；完整静态恢复64/110；运行时验证0。本批新增2个完整静态恢复函数，均未进行游戏客户端运行时验证。
 - 下一步：继续批量复核剩余草稿，优先选择短函数和可闭合调用契约；FindBlacklistPlayer的唯一捕获源及R0/vararg参数关系仍需核验，不能沿用旧草稿中未经证明的player解析器假设。Nested_Anonymous帧映射继续等待VM调用帧初始化证据。
+
+
+## 检查点 #123（2026-11-09）：FindBlacklistPlayer捕获身份与查表控制流完整恢复
+
+- 修订源码：`04_源码候选/短函数草稿_第三十批.lua`中的FindBlacklistPlayer段落。
+- 新增审计：`docs/audit/检查点123_FindBlacklistPlayer捕获身份与查表控制流完整恢复.md`。
+- 原型：`root.children[51]` / `root/52`，35条物理指令、5常量、无子原型、vararg字段1、唯一捕获。
+- 父级root PC353创建闭包，PC354的`OP_387 B=54`明确UP[0]来自父root R54。root PC352已将`root.children[48]`写入R54；该函数是PCallHelper_2，通过pcall调用Nested_FriendProxy，安全取得FriendProxy，失败时返回nil。
+- Nested_FriendProxy（`root.children[48].children[0]` / root/49/1）调用`global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)`。因此FindBlacklistPlayer唯一捕获值是代理安全获取函数，不是玩家对象，也不是_blacklistData本身。
+- FindBlacklistPlayer保留`...`形式，仅读取首个vararg作为targetId。无代理、无_blacklistData或targetId假值时返回false；先按`blacklistData[targetId]`查找，命中返回`true, entry.Name`；未命中时调用`SL:GetMetaValue("ACTOR_MASTER_ID", targetId)`，只有masterActorId为真且与targetId不同才回查`blacklistData[masterActorId]`；命中返回true和Name，否则false。
+- 删除旧草稿中未经证实的`getPlayerFromArguments`、player.Name前置判定及masterId与Name比较。
+- 函数状态CSV升级为完整静态恢复；机器状态JSON同步更新。
+- 统计：普通Lua草稿78；完整静态恢复65/110（59.1%）；运行时验证0。本批只升级1个既有草稿，不新增普通草稿。
+- 下一步：继续其他短函数或doInit_UI父级未闭合逻辑；BlacklistPlayerDetection和StorageItems保留分阶段复核；Nested_Anonymous帧映射继续等待VM初始化证据。
