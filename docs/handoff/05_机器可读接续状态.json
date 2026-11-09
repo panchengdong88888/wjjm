@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "99"
+    "last_checkpoint": "100"
   },
   "static_recovered_functions": [
     {
@@ -682,6 +682,165 @@
         "GATHER_THRESHOLD truthy时调用全局InitGatherMonsters()并返回true；false/nil时返回false。",
         "纠正首版草稿将阈值分支方向写反的问题。",
         "17条物理指令控制流完整闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[8]",
+      "legacy_path": "root/43/9",
+      "name": "Nested_SL_3",
+      "physical_instructions": 29,
+      "constant_count": 10,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第六十六批.lua",
+      "audit_file": "docs/audit/检查点100_四个定时器回调与nil占位复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[2]",
+          "usage": "storageTimer状态表"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[0]",
+          "usage": "功能提示回调"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[1]",
+          "usage": "isStoring状态表"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[7]",
+          "usage": "调度函数"
+        }
+      ],
+      "notes": [
+        "关闭分支取消storageTimer并置nil、isStoring=false。",
+        "开启分支通知、立即StorageItems()、再schedule(StorageItems,1.0)保存句柄。",
+        "29条指令闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[10]",
+      "legacy_path": "root/43/11",
+      "name": "Nested_shiquTimer",
+      "physical_instructions": 25,
+      "constant_count": 8,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第十九批.lua",
+      "audit_file": "docs/audit/检查点100_四个定时器回调与nil占位复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[2]",
+          "usage": "shiquTimer状态表"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[0]",
+          "usage": "功能提示回调"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[7]",
+          "usage": "调度函数"
+        }
+      ],
+      "notes": [
+        "关闭分支取消shiquTimer并置nil。",
+        "开启分支schedule(PickUpItems,0.01)，没有立即调用PickUpItems。",
+        "25条指令闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[21]",
+      "legacy_path": "root/43/22",
+      "name": "Nested_dropTimer",
+      "physical_instructions": 29,
+      "constant_count": 10,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第二十批.lua",
+      "audit_file": "docs/audit/检查点100_四个定时器回调与nil占位复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[2]",
+          "usage": "dropTimer状态表"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[0]",
+          "usage": "功能提示回调"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[1]",
+          "usage": "isDiuing状态表"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[7]",
+          "usage": "调度函数"
+        }
+      ],
+      "notes": [
+        "关闭分支取消dropTimer并置nil、isDiuing=false。",
+        "开启分支先DiuItems()，再schedule(DiuItems,1.0)保存句柄。",
+        "29条指令闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[19]",
+      "legacy_path": "root/43/20",
+      "name": "Nested_TakeItems",
+      "physical_instructions": 29,
+      "constant_count": 10,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第二十三批.lua",
+      "audit_file": "docs/audit/检查点100_四个定时器回调与nil占位复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[2]",
+          "usage": "takeTimer状态表"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[0]",
+          "usage": "功能提示回调"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[1]",
+          "usage": "isTaking状态表"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[7]",
+          "usage": "调度函数"
+        }
+      ],
+      "notes": [
+        "关闭分支取消takeTimer并置nil、isTaking=false。",
+        "开启分支先TakeItems()，再schedule(TakeItems,1.0)保存句柄。",
+        "29条指令闭合；未运行时验证。"
       ]
     }
   ],
@@ -1333,25 +1492,38 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "99",
+    "checkpoint": "100",
     "date": "2026-11-09",
-    "function": "Nested_InitGatherMonsters",
-    "source_file": "04_源码候选/短函数草稿_第二十一批.lua",
-    "audit_file": "docs/audit/检查点99_Nested_InitGatherMonsters分支方向校正.md",
+    "function_group": [
+      "Nested_SL_3",
+      "Nested_shiquTimer",
+      "Nested_dropTimer",
+      "Nested_TakeItems"
+    ],
+    "source_files": [
+      "04_源码候选/短函数草稿_第六十六批.lua",
+      "04_源码候选/短函数草稿_第十九批.lua",
+      "04_源码候选/短函数草稿_第二十批.lua",
+      "04_源码候选/短函数草稿_第二十三批.lua"
+    ],
+    "audit_file": "docs/audit/检查点100_四个定时器回调与nil占位复核.md",
     "findings": [
-      "refreshFlag为假时调用UP[1]()并写入UP[0].GATHER_THRESHOLD。",
-      "GATHER_THRESHOLD truthy时调用InitGatherMonsters()并返回true。",
-      "GATHER_THRESHOLD false/nil时直接返回false。",
-      "父级doInit_UI PC245-PC247确认两个捕获来源为UP[8]/UP[9]。"
+      "四函数关闭分支写入的[\"unknown\",2]均为nil序列化占位，已修正为timerField=nil。",
+      "父级doInit_UI闭包创建点确认四函数捕获来源分别为UP2/UP0/UP1/UP7的对应组合。",
+      "Nested_SL_3开启时立即StorageItems()再schedule(StorageItems,1.0)。",
+      "Nested_shiquTimer开启时仅schedule(PickUpItems,0.01)，不立即执行。",
+      "Nested_dropTimer与Nested_TakeItems开启时先立即执行操作，再按1.0周期调度。",
+      "所有四函数的分支、通知、取消调度、状态标志、句柄写入及无返回已逐PC闭合。"
     ],
     "unresolved": [
-      "UP[0]/UP[1]的原始业务局部变量名未恢复。",
-      "游戏客户端运行时验证。"
+      "父级捕获寄存器原始局部变量名不强行恢复。",
+      "schedule保留为捕获的调度函数名称，不推断宿主API身份。",
+      "未进行游戏客户端运行时验证。"
     ],
     "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 35,
+      "complete_static_reconstruction": 39,
       "runtime_verified": 0
     }
   },
@@ -1366,7 +1538,7 @@
   },
   "counts": {
     "ordinary_lua_drafts": 77,
-    "complete_static_reconstruction": 35,
+    "complete_static_reconstruction": 39,
     "runtime_verified": 0
   }
 }
