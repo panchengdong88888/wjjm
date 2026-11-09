@@ -1673,3 +1673,15 @@
 - 修订`04_源码候选/root45_MainLoop.lua`，新增审计`docs/audit/检查点156_MainLoop_GATHERING未归属锁定路径校正.md`，更新CSV与机器状态JSON。
 - 本批不新增普通Lua草稿、不提升完整静态恢复、不增加运行时验证；统计保持82/76/110/0。
 - 下一步：独立总复核MainLoop PC1-PC417的314个可达节点与103个静态不可达节点，核对所有分支、状态写入、循环和return。
+
+ 
+## 检查点 #157（2026-11-09）：MainLoop 全417条指令 CFG 总账复核
+
+- 依据阶段三控制流报告，MainLoop共417条物理指令，入口可达节点314个、静态不可达节点103个。
+- 按PC1-417汇总为：入口运行门槛、白名单地图、IDLE候选构造、GATHERING等待归属、GATHERING目标扫描、GATHERING循环退出/状态汇总、ATTACKING状态门槛、ATTACKING目标扫描、ATTACKING耗尽处理。
+- 状态写入总账：UPVALUE_8目标ID数组；UPVALUE_10扫描游标；UPVALUE_11自己归属计数；UPVALUE_12/13/14/16等待状态；状态IDLE/GATHERING/ATTACKING切换；GATHERING和ATTACKING的R2局部标志各自独立。
+- 返回路径与当前草稿高层结构对应；PC115是PC104跳转至116后被绕过的明显不可达位置，PC392位于PC391 return之后。对其余静态不可达记录不伪称已逐条解释。
+- 全CFG结构已总账复核，但多个upvalue仍仅有槽位/角色名，外部helper副作用和部分参数命名仍待补齐，故MainLoop继续保持首版普通Lua草稿，不提升完整静态恢复。
+- 新增`docs/audit/检查点157_MainLoop全CFG总账复核.md`；更新CSV、机器状态JSON和本协议。
+- 统计保持：普通Lua草稿82、完整静态恢复76/110、运行时验证0。
+- 下一步：追溯MainLoop剩余未命名upvalue槽位的父root T寄存器生产者，识别运行开关、状态对象/常量、日志、状态设置/重置、候选构造和玩家ID读取helper。
