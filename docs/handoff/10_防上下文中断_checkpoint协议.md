@@ -1607,3 +1607,15 @@
 - 两函数状态改为首版普通Lua草稿，待静态复审/未运行时验证。
 - 本批新增草稿2个；普通Lua草稿总数79增至81。完整静态恢复76/110不变，运行时验证0不变。
 - 下一步继续筛选尚无独立普通Lua草稿的小函数，先提高第一层覆盖率；之后再集中复核两个owner helper的PC跳转、参数来源和真实ID类型样本。
+
+## 检查点 #152（2026-11-09）：MainLoop 首版普通 Lua 主体草稿
+
+- 对象：root.children[45]（legacy root/46），417条物理指令、41个常量、无子原型。
+- 新增普通Lua候选：04_源码候选/root45_MainLoop.lua；新增审计：docs/audit/检查点152_MainLoop首版普通Lua主体草稿.md。
+- 草稿覆盖运行标记/白名单地图门槛、IDLE候选列表构造、GATHERING归属判断与等待流程、ATTACKING目标检查和状态复位。
+- 已确认捕获槽位：UPVALUE_9=GetOwnerID；UPVALUE_17=GetOwnerIDText；UPVALUE_18为本调用路径中truthy表示存活的包装器；UPVALUE_19=GetOwnerDescription；UPVALUE_21为包含ATTACK_WAIT_TIME的配置表。
+- UPVALUE_15（actor map/provider）与UPVALUE_20（接收targetID的动作helper）身份/调用契约未确认；PC313-PC343循环终止、计数器和归属汇总条件仍待独立逐PC核验。草稿使用占位名与TODO，不以猜测补齐业务身份。
+- 控制流报告记载314个入口可达节点、103个静态不可达节点；这不代表完整源码恢复。没有做Lua宿主、解释器或游戏运行时验证。
+- 函数状态CSV index 90 已改为“首版普通Lua草稿（待静态复审/未运行时验证）”。
+- 统计：普通Lua草稿81→82；完整静态恢复76/110不变；运行时验证0不变。
+- 下一步：优先复核UPVALUE_15/20的父级生产者/调用关系，逐PC闭合PC313-PC343，再独立复核MainLoop全函数控制流；在完成前不升级完整静态恢复。
