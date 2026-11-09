@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "继续doInit_UI剩余短函数：优先Nested_Helper_9、Nested_TakeItems、Nested_s、Nested_dropTimer、Nested_04d_02d_02d；再复核Nested_FFFFFF资源统计行构造与Nested_FFFF00父函数调用整合。随后推进root模块体和417指令MainLoop。",
+  "next_action": "继续doInit_UI剩余短函数：复审Nested_04d_02d_02d定时通知函数，并逐条校正Nested_ffffff/按钮相关的调用点；随后整合Nested_FFFFFF资源统计行构造与Nested_FFFF00父函数调用。再推进root模块体和417指令MainLoop。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "109"
+    "last_checkpoint": "110"
   },
   "static_recovered_functions": [
     {
@@ -1486,6 +1486,37 @@
         "无论success真假，均调用UP[1](callbackValue)；success truthy才break，否则继续。",
         "26条指令参数顺序、双返回值和循环控制闭合；未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[42].children[15]",
+      "legacy_path": "root/43/16",
+      "name": "Nested_Helper_9",
+      "physical_instructions": 30,
+      "constant_count": 10,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十五批.lua",
+      "audit_file": "docs/audit/检查点110_Nested_Helper_9显示隐藏按钮复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[3]",
+          "usage": "UI状态对象，含isHidden/hide/show/hidebut"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[0]",
+          "usage": "提示回调"
+        }
+      ],
+      "notes": [
+        "isHidden truthy：通知隐藏、调用hide()、GUI:setOpacity(hidebut,0)。",
+        "isHidden false/nil：通知显示、调用show()、GUI:setOpacity(hidebut,255)。",
+        "无显式返回值；30条指令控制流和GUI参数闭合；未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
@@ -2136,27 +2167,25 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "109",
+    "checkpoint": "110",
     "date": "2026-11-09",
-    "function": "Nested_ITEM_INDEX_BY_NAME",
-    "source_file": "04_源码候选/短函数草稿_第七十四批.lua",
-    "audit_file": "docs/audit/检查点109_Nested_ITEM_INDEX_BY_NAME参数顺序与循环复核.md",
+    "function": "Nested_Helper_9",
+    "source_file": "04_源码候选/短函数草稿_第七十五批.lua",
+    "audit_file": "docs/audit/检查点110_Nested_Helper_9显示隐藏按钮复核.md",
     "findings": [
-      "doInit_UI PC137捕获父R9配置表与父UP0移动结果回调。",
-      "父调用点配置为slot=4,names={\"免战回城石\"}。",
-      "遍历names，查询SL:GetMetaValue(\"ITEM_INDEX_BY_NAME\",name)。",
-      "命中时MoveItemToQuickUse(itemIndex,config.slot)，接收双返回值；第二返回值交UP1。",
-      "第一返回值truthy时break，否则继续尝试后续名称。",
-      "纠正旧CSV备注中MoveItemToQuickUse实参顺序颠倒的问题。"
+      "doInit_UI PC415捕获UI状态对象及通知回调。",
+      "isHidden truthy时隐藏：notify、hide()、setOpacity(hidebut,0)。",
+      "isHidden false/nil时显示：notify、show()、setOpacity(hidebut,255)。",
+      "GUI self与hidebut/opacity实参已核对；函数无显式返回。"
     ],
     "unresolved": [
-      "UP[1]移动结果回调的具体宿主业务含义未在本函数内展开。",
-      "无宿主运行时验证。"
+      "UI状态对象的作者原始变量名未确认。",
+      "未进行游戏客户端运行时验证。"
     ],
     "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 52,
+      "complete_static_reconstruction": 53,
       "runtime_verified": 0
     }
   },
@@ -2171,7 +2200,7 @@
   },
   "counts": {
     "ordinary_lua_drafts": 77,
-    "complete_static_reconstruction": 52,
+    "complete_static_reconstruction": 53,
     "runtime_verified": 0
   }
 }
