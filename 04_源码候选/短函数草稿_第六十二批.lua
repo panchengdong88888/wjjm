@@ -86,46 +86,51 @@ local function Nested_FFFF00()
 
     -- 标题区域。
     local titleCell = gui:Layout_Create(
-        resList, "titleCell", 0, 0, 1, 30
+        resList, "titleCell", 0, 0, 1, 30, 1
     )
     local titleText = gui:Text_Create(
         titleCell, "titleText", 0.5, 15, 20, "#FF0000", "资源统计"
     )
+    gui:setAnchorPoint(titleText, 0.5, 0.5)
 
     -- 初始时间区域。
     local initTimeCell = gui:Layout_Create(
-        resList, "initTimeCell", 0, 0, 1, 30
+        resList, "initTimeCell", 0, 0, 1, 30, 1
     )
     local initTimeText = gui:Text_Create(
         initTimeCell, "initTimeText", 0.5, 15, 20, "#00FF00",
         "初始时间:" .. tostring(initState.initTimeStr or "--")
     )
+    gui:setAnchorPoint(initTimeText, 0.5, 0.5)
 
     -- 当前时间区域。
     local curTimeCell = gui:Layout_Create(
-        resList, "curTimeCell", 0, 0, 1, 30
+        resList, "curTimeCell", 0, 0, 1, 30, 1
     )
     local curTimeText = gui:Text_Create(
         curTimeCell, "curTimeText", 0.5, 15, 20, "#00FF00",
         "当前时间:--"
     )
+    gui:setAnchorPoint(curTimeText, 0.5, 0.5)
 
     -- 历时区域。
     local durTimeCell = gui:Layout_Create(
-        resList, "durTimeCell", 0, 0, 1, 30
+        resList, "durTimeCell", 0, 0, 1, 30, 1
     )
     local durTimeText = gui:Text_Create(
         durTimeCell, "durTimeText", 0.5, 15, 20, "#00FF00", "历时:--"
     )
+    gui:setAnchorPoint(durTimeText, 0.5, 0.5)
 
     -- 说明区域。
     local noteCell = gui:Layout_Create(
-        resList, "noteCell", 0, 0, 1, 30
+        resList, "noteCell", 0, 0, 1, 30, 1
     )
     local noteText = gui:Text_Create(
         noteCell, "noteText", 0.5, 15, 20, "#FFFF00",
         "（括号内数量为非绑定资源的收益）"
     )
+    gui:setAnchorPoint(noteText, 0.5, 0.5)
 
     -- 数值格式化子闭包：child0，父级PC118创建，零捕获。
     local formatNumber = Nested_Helper_2
@@ -164,5 +169,12 @@ local function Nested_FFFF00()
 
     return
 end
+
+
+
+--[[
+检查点94补充：PC139-146、PC173-180、PC201-208、PC229-236、PC257-264均执行对应Text节点的setAnchorPoint(node,0.5,0.5)；原草稿漏掉这些调用，现已补齐。
+PC125/153/187/215/243等Layout_Create实参序列均包含末尾数值1，原草稿五处时间/标题/备注Layout调用漏掉该参数，现已补齐。该参数的GUI宿主语义仍未确认。
+]]
 
 return Nested_FFFF00
