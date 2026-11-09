@@ -23,10 +23,10 @@
     "root.children[15]": "ClearBlacklistItems：63条父指令+13条子指令；检查点133确认pairs首返回值key、子回调捕获entryKey/friendProxy、异步删除索引及ScheduleOnce延迟；完整静态恢复，未运行时验证。",
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
     "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。",
-    "root.children[47]": "BlacklistPlayerDetection：216条；检查点135补回MAIN_ACTOR_ID前置门槛；检查点137/138逐PC闭合PC21-PC54的nil哨兵与HP/deathHandled状态转移，修正原草稿错误分支。剩余13个upvalue身份、PC74-PC216玩家遍历/坐标/距离/节流/随机传送与通知API仍待复核。",
+    "root.children[47]": "BlacklistPlayerDetection：216条；检查点135前置MAIN_ACTOR_ID；检查点137/138闭合HP/deathHandled；检查点139闭合PC94-PC141名称回退、坐标对象与距离函数五实参、nil哨兵。仍待13个upvalue业务身份及PC142-PC216节流/随机传送/通知调用契约。",
     "root.children[50]": "StorageItems：224条；检查点136确认PC120的ITEM_IS_BIND严格比较值为数值1并修正草稿；主函数页/容量、两子原型调用契约、捕获身份及LuaSendMsg参数仍待复核。"
   },
-  "next_action": "检查点138：BlacklistPlayerDetection PC21-PC54状态机已闭合并修正草稿。下一步复核PC74-PC141玩家遍历、actorInfo/actorObject来源、ACTOR_NAME/坐标数据流和距离哨兵；再复核PC142-PC216的alertAt/nextTryAt节流、随机传送物品选择及通知参数。StorageItems继续复核PC151-PC224和两个子原型调用契约。统计仍为普通Lua草稿78、完整静态恢复76/110、运行时验证0。",
+  "next_action": "检查点139：PC94-PC141已校正名称查询对象及缺名回退、本机与目标坐标来源、UPVALUE_5五个独立参数和nil距离哨兵。下一步逐PC复核PC142-PC216的alertAt阈值、nextTryAt时间计算、随机传送道具分支、table.concat参数和通知回调；同时继续StorageItems PC151-PC224及两个子原型调用契约。统计仍为草稿78、完整静态恢复76/110、运行时验证0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -99,7 +99,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "138"
+    "last_checkpoint": "139"
   },
   "static_recovered_functions": [
     {
