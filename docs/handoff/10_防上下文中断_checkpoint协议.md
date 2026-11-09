@@ -1697,3 +1697,15 @@
 - MainLoop状态：**完整静态恢复（未运行时验证）**。这不代表原作者源码逐字节还原，也不代表Lua宿主/游戏运行时验证。
 - 统计：普通Lua源码候选82；完整静态恢复77/110；运行时验证0。
 - 下一步：独立复审短helper root.children[35] SetTargetID、root.children[7] GetOwnerIDText、root.children[38] GetOwnerID。
+
+ 
+## 检查点 #159（2026-11-09）：MainLoop依赖三个短helper独立静态复审
+
+- 复审对象：root.children[35] SetTargetID（26条）、root.children[7] GetOwnerIDText（31条）、root.children[38] GetOwnerID（31条）。
+- SetTargetID PC1-PC26闭合：Facade缺失返回false；PC8/13证明retrieveProxy以Facade为self，故普通Lua必须使用`global.Facade:retrieveProxy(...)`；PlayerInputProxy缺失返回false；存在时proxy:SetTargetID(targetID, FIND)并返回true。已修正`短函数草稿_第十二批.lua`中错误的点调用。
+- GetOwnerIDText：nil/空串/-1=false；string分支ownerID==tostring(ownerID)；非string分支ownerID==第二参数；MainLoop PC124-PC129用truthy判定归属已变更为自己。
+- GetOwnerID：nil/空串/-1=false；string分支ownerID~=tostring(ownerID)；非string分支ownerID~=第二参数；MainLoop PC49-PC54用truthy判定跳过候选插入。
+- 三个函数的可达PC、receiver/参数、分支极性与返回值闭合，升级为完整静态恢复（未运行时验证）。
+- 新增审计`docs/audit/检查点159_MainLoop依赖短helper静态复审.md`；更新三个源码候选、函数状态CSV和机器状态JSON。
+- 统计：普通Lua源码候选82；完整静态恢复80/110；运行时验证0。
+- 下一步：筛选函数状态CSV中仍未独立静态恢复的短函数与辅助闭包，批量推进可快速闭合的原型。
