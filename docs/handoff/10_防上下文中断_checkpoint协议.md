@@ -1146,3 +1146,15 @@
 - os.date("*t")读取时间；仅在22:00:05至22:00:08（含边界）窗口执行；日期键按YYYYMMDD同日去重。
 - 日期标记在发送前更新；随后LuaSendMsg(9002,55556,1,2,3,"",0)，再发送固定通知。
 - 统计更新：普通Lua草稿77；完整静态恢复54/110；运行时验证0。
+
+
+## 检查点 #112（2026-11-09）：数字输入弹窗与校验回调链
+- 新增源码：`04_源码候选/短函数草稿_第七十七批.lua`；同步更正第36批和第15批旧草稿。
+- 新增审计：`docs/audit/检查点112_Nested_str与Nested_match数字输入链复核.md`。
+- Nested_str：构造btnType=2/showEdit=true/editParams(inputMode=2,maxLength=6)，初始文本来自捕获槽；首个变参truthy时追加换行和suffix；注册Nested_match回调并调用SL:OpenCommonTipsPop。
+- Nested_match：status严格等于1才继续；result/editStr缺失回退空串；tostring后gsub删除空白，再按`^%d+$`校验。
+- 非数字时调用格式错误回调，并通过SL:ScheduleOnce延迟0.1秒调用Nested_Helper_11提示；数字转换成功时调用捕获保存回调。
+- Nested_Helper_11调用捕获提示回调并传入“参数格式不对，请输入数字”。
+- 纠正旧草稿错误：result为nil时不会直接return，而是按空串继续校验并进入格式错误提示。
+- Nested_Anonymous父包装函数仍保留草稿状态，T0/T1/T2参数映射与R2()调用语义待核验。
+- 统计更新：普通Lua草稿77；完整静态恢复57/110；运行时验证0。
