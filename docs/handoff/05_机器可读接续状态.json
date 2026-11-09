@@ -23,10 +23,10 @@
     "root.children[15]": "ClearBlacklistItems：63条父指令+13条子指令；检查点133确认pairs首返回值key、子回调捕获entryKey/friendProxy、异步删除索引及ScheduleOnce延迟；完整静态恢复，未运行时验证。",
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
     "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。",
-    "root.children[47]": "BlacklistPlayerDetection：检查点145闭合PC164-PC192真实随机传送路径并纠正检查点140旧归属。UPVALUE_8()对应root.children[24]，遍历捕获数组{\"随机传送石\"}，通过ITEM_INDEX_BY_NAME/ITEM_COUNT查库存，有库存调用SL.UseItemByIndex并返回道具名；成功时UPVALUE_9=0.01作为短重试间隔，UPVALUE_10为本地通知包装器，UPVALUE_7为日志包装器。失败时UPVALUE_11=30.0作为重试延迟并做noStoneWarned一次性提示；UPVALUE_12是道具名称数组本身，table.concat(UPVALUE_12,\"/\")。PC174-PC192格式化通知/日志实参已闭合。仍有部分13个upvalue前置业务身份未全映射，函数不升级完整静态恢复。",
+    "root.children[47]": "BlacklistPlayerDetection：检查点145闭合真实随机传送/通知/日志路径；检查点146新增完整13槽捕获映射（父root T[2,57,41,58,55,53,38,4,56,39,5,40,37]）。UP[1]=root/53 onDamageMsg回调，UP[3]=root/26死亡自动拉黑回调，UP[4]=root/52黑名单actor查询辅助，UP[5]=root/23距离计算，UP[6]=2.0，UP[7]=root/17日志，UP[8]=root/25随机传送石查找/使用，UP[9]=0.01，UP[10]=root/21本地通知，UP[11]=30.0，UP[12]={\"随机传送石\"}。全部父捕获寄存器已映射；函数仍需对照216条指令复审并整理完整普通Lua，不升级完整静态恢复。",
     "root.children[50]": "StorageItems：检查点144闭合子原型1（root/51/2）逐页容量算法：普通页上限pageCapacity，末页上限min(pageCapacity,openSize-(maxPage-1)*pageCapacity)，读取storedPageData[page]，返回首个未满页码；PC37-PC53建立每页物品数量表（#pageData，不存在记0）。PC206-PC211融合链闭合：R12[MakeIndex]=true（已处理索引集合），storedPageData[targetPage]递增，R13成功发送计数递增。LuaSendMsg第4参数在调用点承载目标仓库页码，服务端协议正式字段名仍待接收端验证。"
   },
-  "next_action": "检查点145已确认随机传送辅助闭包真实调用SL.UseItemByIndex，PC174-PC192通知与日志调用实参已闭合；并纠正检查点140中UPVALUE_8/9/10/11/12的旧归属。下一步继续核对BlacklistPlayerDetection剩余upvalue（特别UPVALUE_1、UPVALUE_3、UPVALUE_4、UPVALUE_5）与父闭包业务身份，回查UPVALUE_11=30.0在通知格式中的实际意图但不改变已证实实参；再判断函数是否达到完整静态恢复标准。统计：普通Lua草稿78、完整静态恢复76/110、运行时验证0。",
+  "next_action": "检查点146已补齐BlacklistPlayerDetection的13槽父寄存器捕获映射。下一步逐PC复审PC1-PC216全函数，重点闭合UPVALUE_4（root/52）返回的两个值及其对视野玩家筛选的业务语义、UPVALUE_1(root/53)零参调用路径，以及UPVALUE_11=30.0在成功通知格式中的%s用途；确认所有分支后再整理完整普通Lua候选并决定是否升级完整静态恢复。统计：普通Lua草稿78、完整静态恢复76/110、运行时验证0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -99,7 +99,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "145"
+    "last_checkpoint": "146"
   },
   "static_recovered_functions": [
     {
