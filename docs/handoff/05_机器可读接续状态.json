@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "继续doInit_UI剩余短函数：优先Nested_ITEM_INDEX_BY_NAME、Nested_Helper_9、Nested_TakeItems、Nested_s、Nested_dropTimer、Nested_04d_02d_02d；同时复核Nested_FFFFFF资源统计行构造与Nested_FFFF00父函数调用整合。短辅助函数收尾后推进root模块体和417指令MainLoop。",
+  "next_action": "继续doInit_UI剩余短函数：优先Nested_Helper_9、Nested_TakeItems、Nested_s、Nested_dropTimer、Nested_04d_02d_02d；再复核Nested_FFFFFF资源统计行构造与Nested_FFFF00父函数调用整合。随后推进root模块体和417指令MainLoop。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "108"
+    "last_checkpoint": "109"
   },
   "static_recovered_functions": [
     {
@@ -1451,6 +1451,41 @@
         "颜色按toggled truthy选择#ff0000，否则#ffffff。",
         "41条指令循环、分支和GUI调用闭合；未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[42].children[16]",
+      "legacy_path": "root/43/17",
+      "name": "Nested_ITEM_INDEX_BY_NAME",
+      "physical_instructions": 26,
+      "constant_count": 7,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十四批.lua",
+      "audit_file": "docs/audit/检查点109_Nested_ITEM_INDEX_BY_NAME参数顺序与循环复核.md",
+      "parameters": [
+        "config"
+      ],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI R9",
+          "usage": "配置表，slot与names字段"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[0]",
+          "usage": "接收移动函数第二返回值的回调"
+        }
+      ],
+      "notes": [
+        "父调用点配置为{slot=4,names={\"免战回城石\"}}。",
+        "遍历config.names；逐个查询SL:GetMetaValue(\"ITEM_INDEX_BY_NAME\",itemName)。",
+        "命中时MoveItemToQuickUse(itemIndex,config.slot)，接收success与callbackValue。",
+        "无论success真假，均调用UP[1](callbackValue)；success truthy才break，否则继续。",
+        "26条指令参数顺序、双返回值和循环控制闭合；未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
@@ -2101,30 +2136,27 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "108",
+    "checkpoint": "109",
     "date": "2026-11-09",
-    "function": "Nested_ffffff",
-    "source_file": "04_源码候选/短函数草稿_第七十三批.lua",
-    "audit_file": "docs/audit/检查点108_Nested_ffffff批量按钮状态同步复核.md",
+    "function": "Nested_ITEM_INDEX_BY_NAME",
+    "source_file": "04_源码候选/短函数草稿_第七十四批.lua",
+    "audit_file": "docs/audit/检查点109_Nested_ITEM_INDEX_BY_NAME参数顺序与循环复核.md",
     "findings": [
-      "捕获按钮配置数组及key到按钮对象的注册表。",
-      "遍历所有配置，key匹配时写入toggled；不提前break，保留最后匹配项。",
-      "只有按钮对象、匹配配置和config.toggle均truthy才更新GUI。",
-      "标题按toggled选择config.toggle或config.name。",
-      "颜色按toggled选择#ff0000或#ffffff。",
-      "GUI self与button/title/color参数布局已核对。",
-      "修正拾取定时器开启分支：PC21-PC23只把PickUpItems函数及0.01间隔传给调度回调，不会立即调用PickUpItems()。",
-      "Nested_InitGatherMonsters、Nested_SL_3、Nested_shiquTimer早在检查点99/100已有完整静态恢复，本轮仅复审，不重复增加完成数；本轮新增计数仅Nested_blacklistTimer与Nested_ffffff。"
+      "doInit_UI PC137捕获父R9配置表与父UP0移动结果回调。",
+      "父调用点配置为slot=4,names={\"免战回城石\"}。",
+      "遍历names，查询SL:GetMetaValue(\"ITEM_INDEX_BY_NAME\",name)。",
+      "命中时MoveItemToQuickUse(itemIndex,config.slot)，接收双返回值；第二返回值交UP1。",
+      "第一返回值truthy时break，否则继续尝试后续名称。",
+      "纠正旧CSV备注中MoveItemToQuickUse实参顺序颠倒的问题。"
     ],
     "unresolved": [
-      "父T[12]和UP[4]原作者变量名未知，按用途命名。",
-      "未进行游戏客户端运行时验证。",
-      "Nested_InitGatherMonsters、Nested_SL_3、Nested_shiquTimer在更早检查点已完成静态恢复；检查点107为集中复审/修正，不重复计数。"
+      "UP[1]移动结果回调的具体宿主业务含义未在本函数内展开。",
+      "无宿主运行时验证。"
     ],
     "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 51,
+      "complete_static_reconstruction": 52,
       "runtime_verified": 0
     }
   },
@@ -2139,7 +2171,7 @@
   },
   "counts": {
     "ordinary_lua_drafts": 77,
-    "complete_static_reconstruction": 51,
+    "complete_static_reconstruction": 52,
     "runtime_verified": 0
   }
 }
