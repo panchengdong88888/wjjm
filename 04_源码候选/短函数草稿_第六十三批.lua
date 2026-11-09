@@ -6,8 +6,14 @@
 ]]
 local function doInit_UI()
     -- PC390在root创建本闭包时明确捕获20个父级T寄存器。
-    -- 这里列出准确的槽位->父寄存器映射；业务变量身份不因寄存器编号而臆测。
     -- UP[0..19]依次对应父root的T[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。
+    -- 可直接确认的身份：UP[0]=PrintLog函数；UP[1]与UP[3]均引用MainLeftBottom模块表；
+    -- UP[2]是root PC42创建的独立状态表，本函数在其中读写cruiseTimer；
+    -- UP[5]是root创建并挂到MainLeftBottom.blacklist的黑名单状态表；
+    -- UP[8]是含GATHER_THRESHOLD/CHECK_INTERVAL/ATTACK_WAIT_TIME的配置表；
+    -- UP[11]是root PC46创建的ShowLocalNoticeByType闭包；
+    -- UP[13]/UP[15]分别是黑名单距离/拉怪数量配置文件路径；
+    -- UP[17]=math.floor；UP[19]=0.2。其余槽位保持编号，不猜业务名称。
     local UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALUE_4 =
         UP[0], UP[1], UP[2], UP[3], UP[4]
     local UPVALUE_5, UPVALUE_6, UPVALUE_7, UPVALUE_8, UPVALUE_9 =
