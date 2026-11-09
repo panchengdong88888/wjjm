@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "继续doInit_UI辅助函数：先复审Nested_ffffff、Nested_find、Nested_SL_3、Nested_InitGatherMonsters、Nested_shiquTimer、Nested_blacklistTimer等尚未完整的短函数；优先逐PC核实父级调用与闭包捕获，处理真假分支、计时器句柄、GUI/SL方法self及参数布局。之后回到Nested_FFFFFF及Nested_FFFF00整合，再推进root模块体和417指令MainLoop。",
+  "next_action": "继续复审doInit_UI余下的短函数：Nested_ffffff（批量切换按钮）、Nested_ITEM_INDEX_BY_NAME、Nested_Helper_9、Nested_TakeItems、Nested_s、Nested_dropTimer、Nested_04d_02d_02d等；逐PC核对调用点和捕获来源。然后整合Nested_FFFF00与资源统计面板，最后推进root模块体和417指令MainLoop。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "106"
+    "last_checkpoint": "107"
   },
   "static_recovered_functions": [
     {
@@ -657,31 +657,30 @@
       "child_count": 0,
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第二十一批.lua",
-      "audit_file": "docs/audit/检查点99_Nested_InitGatherMonsters分支方向校正.md",
+      "source_file": "04_源码候选/短函数草稿_第七十二批.lua",
+      "audit_file": "docs/audit/检查点107_四个UI定时器与引怪阈值函数复核.md",
       "parameters": [
-        "refreshFlag"
+        "...（读取首参）"
       ],
       "returns": [
-        "阈值truthy时调用InitGatherMonsters并返回true；否则false"
+        "config.GATHER_THRESHOLD false/nil时false；truthy时调用InitGatherMonsters()并返回true"
       ],
       "upvalues": [
         {
           "index": 0,
           "source": "doInit_UI UP[8]",
-          "usage": "配置表，读写GATHER_THRESHOLD"
+          "usage": "GATHER_THRESHOLD配置表"
         },
         {
           "index": 1,
           "source": "doInit_UI UP[9]",
-          "usage": "无参阈值获取回调"
+          "usage": "阈值读取回调"
         }
       ],
       "notes": [
-        "refreshFlag为假时才调用UPVALUE_1()刷新GATHER_THRESHOLD。",
-        "GATHER_THRESHOLD truthy时调用全局InitGatherMonsters()并返回true；false/nil时返回false。",
-        "纠正首版草稿将阈值分支方向写反的问题。",
-        "17条物理指令控制流完整闭合；未运行时验证。"
+        "首参truthy直接使用；false/nil时调用getter。",
+        "写入GATHER_THRESHOLD后，字段false/nil返回false；truthy时调用全局InitGatherMonsters()并返回true。",
+        "17条指令分支方向及返回值闭合；未运行时验证。"
       ]
     },
     {
@@ -693,8 +692,8 @@
       "child_count": 0,
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第六十六批.lua",
-      "audit_file": "docs/audit/检查点100_四个定时器回调与nil占位复核.md",
+      "source_file": "04_源码候选/短函数草稿_第七十二批.lua",
+      "audit_file": "docs/audit/检查点107_四个UI定时器与引怪阈值函数复核.md",
       "parameters": [],
       "returns": [],
       "upvalues": [
@@ -706,7 +705,7 @@
         {
           "index": 1,
           "source": "doInit_UI UP[0]",
-          "usage": "功能提示回调"
+          "usage": "提示回调"
         },
         {
           "index": 2,
@@ -716,13 +715,13 @@
         {
           "index": 3,
           "source": "doInit_UI UP[7]",
-          "usage": "调度函数"
+          "usage": "周期调度回调"
         }
       ],
       "notes": [
-        "关闭分支取消storageTimer并置nil、isStoring=false。",
-        "开启分支通知、立即StorageItems()、再schedule(StorageItems,1.0)保存句柄。",
-        "29条指令闭合；未运行时验证。"
+        "timer存在：通知关闭、SL.UnSchedule(timer)、storageTimer=nil、isStoring=false。",
+        "timer不存在：通知开启、立即StorageItems()，再schedule(StorageItems,1.0)并保存句柄。",
+        "29条指令控制流、调用参数、字段更新闭合；未运行时验证。"
       ]
     },
     {
@@ -734,8 +733,8 @@
       "child_count": 0,
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
-      "source_file": "04_源码候选/短函数草稿_第十九批.lua",
-      "audit_file": "docs/audit/检查点100_四个定时器回调与nil占位复核.md",
+      "source_file": "04_源码候选/短函数草稿_第七十二批.lua",
+      "audit_file": "docs/audit/检查点107_四个UI定时器与引怪阈值函数复核.md",
       "parameters": [],
       "returns": [],
       "upvalues": [
@@ -747,18 +746,18 @@
         {
           "index": 1,
           "source": "doInit_UI UP[0]",
-          "usage": "功能提示回调"
+          "usage": "提示回调"
         },
         {
           "index": 2,
           "source": "doInit_UI UP[7]",
-          "usage": "调度函数"
+          "usage": "周期调度回调"
         }
       ],
       "notes": [
-        "关闭分支取消shiquTimer并置nil。",
-        "开启分支schedule(PickUpItems,0.01)，没有立即调用PickUpItems。",
-        "25条指令闭合；未运行时验证。"
+        "timer存在：通知关闭、SL.UnSchedule(timer)、shiquTimer=nil。",
+        "timer不存在：通知开启、立即PickUpItems()，再schedule(PickUpItems,0.01)并保存句柄。",
+        "25条指令控制流、调用参数、字段更新闭合；未运行时验证。"
       ]
     },
     {
@@ -1363,6 +1362,57 @@
         "config.toggled取反写回；GUI:Button_setTitleText(button,config.name)。",
         "toggled truthy时颜色#ff0000，否则#ffffff；GUI:Button_setTitleColor(button,color)。",
         "48条指令分支、捕获、方法self及显式参数闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[17]",
+      "legacy_path": "root/43/18",
+      "name": "Nested_blacklistTimer",
+      "physical_instructions": 28,
+      "constant_count": 5,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十二批.lua",
+      "audit_file": "docs/audit/检查点107_四个UI定时器与引怪阈值函数复核.md",
+      "parameters": [
+        "...（读取首参）"
+      ],
+      "returns": [
+        "distance缺失false；成功启动后true"
+      ],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[5]",
+          "usage": "distance配置表"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[6]",
+          "usage": "distance读取回调"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[2]",
+          "usage": "blacklistTimer状态表"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[7]",
+          "usage": "周期调度回调"
+        },
+        {
+          "index": 4,
+          "source": "doInit_UI UP[0]",
+          "usage": "模板消息回调"
+        }
+      ],
+      "notes": [
+        "首参truthy直接使用；false/nil时调用getter。",
+        "写入distance，字段false/nil返回false。",
+        "有效时立即BlacklistItems()，schedule(BlacklistItems,0.1)保存句柄，模板通知后返回true。",
+        "该原型无关闭/取消既有定时器分支；28条指令闭合，未运行时验证。"
       ]
     }
   ],
@@ -2014,31 +2064,32 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "106",
+    "checkpoint": "107",
     "date": "2026-11-09",
     "function_group": [
-      "Nested_Button_setTitleFontSize",
-      "Nested_Button_setTitleText"
+      "Nested_InitGatherMonsters",
+      "Nested_SL_3",
+      "Nested_shiquTimer",
+      "Nested_blacklistTimer"
     ],
-    "source_file": "04_源码候选/短函数草稿_第七十一批.lua",
-    "audit_file": "docs/audit/检查点106_Nested_Button_setTitleFontSize与点击回调复核.md",
+    "source_file": "04_源码候选/短函数草稿_第七十二批.lua",
+    "audit_file": "docs/audit/检查点107_四个UI定时器与引怪阈值函数复核.md",
     "findings": [
-      "Nested_Button_setTitleFontSize父级doInit_UI PC340捕获root T6/T22/T23/UP4/T21。",
-      "按钮创建坐标按baseX-85*offsetX、baseY+offsetY计算；早期CSV中旧坐标备注已纠正。",
-      "按钮创建失败直接返回；成功按config.key登记并设置标题、字号18、字体kaiti2、白色。",
-      "点击闭包捕获门控表、config、button；门控回调不存在默认允许，存在时调用。",
-      "config.toggle假值退出；门控返回值仅严格false时退出，nil允许。",
-      "点击时toggled取反，更新标题；toggled真时红色，否则白色。",
-      "GUI self及显式参数根据寄存器布局复核。"
+      "Nested_InitGatherMonsters：首参false/nil走getter，写入GATHER_THRESHOLD；字段false/nil返回false，truthy时调用InitGatherMonsters并返回true。",
+      "Nested_SL_3：关闭存仓时UnSchedule、timer=nil、isStoring=false；开启时立即StorageItems并schedule 1.0秒回调。",
+      "Nested_shiquTimer：关闭拾取时UnSchedule并清timer；开启时立即PickUpItems并schedule 0.01秒回调。",
+      "Nested_blacklistTimer：距离首参或getter，缺失false；有效时立即BlacklistItems并schedule 0.1秒回调，保存句柄、模板提示、返回true；没有关闭分支。",
+      "四函数捕获来源已由doInit_UI闭包创建点逐项核对。"
     ],
     "unresolved": [
-      "doInit_UI T6/T22/T23/T21的原始业务命名尚未完全确认，保留语义临时名。",
+      "UP[7]调度回调的宿主实现未在子原型中展开。",
+      "doInit_UI若干捕获寄存器的原作者变量名尚未确认，按行为命名。",
       "未进行游戏客户端运行时验证。"
     ],
     "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 49,
+      "complete_static_reconstruction": 53,
       "runtime_verified": 0
     }
   },
@@ -2053,7 +2104,7 @@
   },
   "counts": {
     "ordinary_lua_drafts": 77,
-    "complete_static_reconstruction": 49,
+    "complete_static_reconstruction": 53,
     "runtime_verified": 0
   }
 }
