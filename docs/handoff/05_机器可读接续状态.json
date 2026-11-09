@@ -22,7 +22,8 @@
     "root.children[6]": "InstallDamageHook：40条父指令+18条子指令；检查点133闭合父级PC31-PC36元数据对象链及提示回调，子闭包pcall/原处理器返回闭合；完整静态恢复，未运行时验证。",
     "root.children[15]": "ClearBlacklistItems：63条父指令+13条子指令；检查点133确认pairs首返回值key、子回调捕获entryKey/friendProxy、异步删除索引及ScheduleOnce延迟；完整静态恢复，未运行时验证。",
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
-    "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。"
+    "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。",
+    "root.children[47]": "BlacklistPlayerDetection：216条；检查点135补回PC5-PC11 MAIN_ACTOR_ID前置门槛，假值立即返回后才读取HP；其余仍为首版草稿，13个捕获身份、坐标/距离数据流、道具选择与API契约待复核。未运行时验证。"
   },
   "next_action": "检查点134完成TakeItems（99条）与Builtsetting（55条）完整静态复核，完整静态恢复计数更新为76/110。下一批优先批量恢复BlacklistPlayerDetection(root.children[47])和StorageItems(root.children[50])的可读主体，保留未闭合的捕获/对象结构/协议参数为明确TODO；随后复核GetMapData2DPtr(root.children[22])与其余短函数。",
   "authoritative_files": [
@@ -2388,22 +2389,21 @@
   "draft_function_count": 78,
   "ordinary_lua_draft_functions": 78,
   "last_checkpoint": "127",
-  "checkpoint": "134",
+  "checkpoint": "135",
   "drafts": 33,
-  "next": "TakeItems（root.children[5]）与Builtsetting（root.children[23]）已在检查点134完成完整静态恢复；完整静态恢复计数76/110。下一批优先独立复核BlacklistPlayerDetection（root.children[47]，216条）和StorageItems（root.children[50]，224条、含两个子原型）的既有主体草稿，先批量校正确定的控制流/调用参数，再保留捕获和宿主语义未明部分为TODO。",
+  "next": "检查点135已对BlacklistPlayerDetection（root.children[47]）补回PC5-PC11的MAIN_ACTOR_ID前置门槛：本机ID缺失时在HP读取前返回。下一步继续静态复核BlacklistPlayerDetection的PC21-PC216状态/坐标/距离/节流分支，并复核StorageItems（root.children[50]）主函数前半段及两个子原型的调用实参和返回契约；先校正确定事实，不将未知捕获/API语义写成事实。",
   "recent_checkpoint": {
-    "number": 134,
+    "number": 135,
     "date": "2026-11-09",
     "artifacts": [
-      "04_源码候选/短函数草稿_第五十七批.lua",
-      "04_源码候选/短函数草稿_第四十五批.lua",
-      "docs/audit/检查点134_TakeItems与Builtsetting完整静态恢复.md"
+      "04_源码候选/短函数草稿_第五十九批.lua",
+      "docs/audit/检查点135_BlacklistPlayerDetection前置门槛校正.md"
     ],
-    "draft_prototypes": 78,
+    "draft_prototypes_touched": 1,
+    "draft_prototype_total": 78,
     "complete_static_reconstructions": 76,
-    "total_prototypes": 110,
     "runtime_verified": 0,
-    "notes": "TakeItems和Builtsetting已从首版草稿升级为完整静态恢复；不运行时验证，不将宿主API行为计为已验证。"
+    "notes": "独立逐PC复核发现并补回MAIN_ACTOR_ID缺失时的前置返回；不升级完整静态恢复。"
   },
   "latest_checkpoint": {
     "checkpoint": "127",
