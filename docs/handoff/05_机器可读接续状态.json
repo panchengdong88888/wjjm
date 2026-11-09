@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续批量恢复其他未开始的短函数或可读子原型；Nested_SL_2的T[0]调用方来源及root UPVALUE业务名留待doInit_UI调用/赋值链追踪。",
+  "next_action": "继续恢复未开始函数或当前父函数的子原型Nested_Button_setTitleText；优先闭合子原型UPVALUE_0/1/2与按钮点击事件中T栈值的对应关系。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "70"
+    "last_checkpoint": "71"
   },
   "static_recovered_functions": [
     {
@@ -487,24 +487,24 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 70,
-    "target": "Nested_SL_2",
-    "status": "first_pass_draft; T0 origin and capture business names pending; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第四十六批.lua",
-    "audit_file": "docs/audit/检查点70_Nested_SL_2首版草稿.md",
+    "checkpoint": 71,
+    "target": "Nested_Button_setTitleFontSize",
+    "status": "first_pass_draft; captures and UI setup restored, child callback body and vararg semantics pending; no runtime validation",
+    "source_file": "04_源码候选/短函数草稿_第四十七批.lua",
+    "audit_file": "docs/audit/检查点71_Nested_Button_setTitleFontSize首版草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[1]",
-        "legacy": "root/43/2",
-        "name": "Nested_SL_2",
-        "instructions": 33,
+        "path": "root.children[42].children[9]",
+        "legacy": "root/43/10",
+        "name": "Nested_Button_setTitleFontSize",
+        "instructions": 50,
         "child_prototypes": 1
       }
     ],
-    "draft_count_total": 57,
+    "draft_count_total": 58,
     "complete_static_reconstruction_count": 29,
     "runtime_verified_count": 0,
-    "note": "新增Nested_SL_2及其定时回调子原型的首版普通Lua草稿。五个外层捕获来源和子原型三个捕获来源已核实；恢复rewardTimer开关、UnSchedule/Schedule及按周期索引检查后LuaSendMsg的流程。T[0]来源与捕获变量业务名仍待追踪。"
+    "note": "新增Nested_Button_setTitleFontSize首版草稿。恢复按钮创建坐标、资源、失败返回、key映射、标题/字体/字号/颜色设置、toggle初始状态以及点击回调注册。外层5捕获来源与子回调3捕获来源已确认；子回调主体及vararg语义仍待复核。"
   },
   "corrections": [
     {
@@ -564,7 +564,7 @@
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   },
-  "draft_recovered_count": 12,
+  "draft_recovered_count": 13,
   "draft_recovered_functions": [
     {
       "path": "root.children[46]",
@@ -756,27 +756,50 @@
         "Missing entry sends LuaSendMsg with 9002 and captured table values",
         "T0 caller source and business names of captures remain unresolved; no runtime validation"
       ]
+    },
+    {
+      "path": "root.children[42].children[9]",
+      "legacy_path": "root/43/10",
+      "name": "Nested_Button_setTitleFontSize",
+      "source_file": "04_源码候选/短函数草稿_第四十七批.lua",
+      "audit_file": "docs/audit/检查点71_Nested_Button_setTitleFontSize首版草稿.md",
+      "status": "first_pass_draft_capture_business_names_vararg_and_child_body_pending_not_runtime_verified",
+      "physical_instructions": 50,
+      "constant_count": 17,
+      "child_count": 1,
+      "vararg_flag": 3,
+      "notes": [
+        "doInit_UI PC340 creates closure; captures parent R6, R22, R23, UPVALUE_4, R21 in order",
+        "Creates GUI button at x=85*UPVALUE_1 and y=UPVALUE_0.key-(UPVALUE_2+2.5), image res/public/fuzhu_btn.png",
+        "Returns early if button creation fails",
+        "Stores button in UPVALUE_3[button.key]",
+        "Sets title from UPVALUE_0.name, font size 18, font file res/public/kaiti2.ttf, title color #ffffff",
+        "If button.toggle then sets button.toggled=false",
+        "Registers child prototype Nested_Button_setTitleText via GUI.addOnClickEvent",
+        "Child captures parent R4, T[0], T[3]; child body not yet reliably reconstructed",
+        "vararg_flag=3 interpretation pending; no runtime validation"
+      ]
     }
   ],
-  "draft_function_count": 57,
-  "ordinary_lua_draft_functions": 57,
-  "last_checkpoint": 70,
-  "checkpoint": "70",
+  "draft_function_count": 58,
+  "ordinary_lua_draft_functions": 58,
+  "last_checkpoint": 71,
+  "checkpoint": "71",
   "drafts": 32,
   "next": "继续筛选未开始的短函数。优先检查 root.children[42].children[22]（Nested_Anonymous，8条指令且有1个子原型）及 root.children[42].children[22].children[0]（Nested_str，27条）/其子函数，先闭合匿名包装函数的调用与捕获关系；再处理 root.children[42].children[9] / Nested_Button_setTitleText。不要重做Nested_Helper_4/7与其已完成回调主体。",
   "recent_checkpoint": {
-    "checkpoint": "70",
+    "checkpoint": "71",
     "date": "2026-11-09",
-    "summary": "新增Nested_SL_2及其定时回调子原型的首版普通Lua草稿。五个外层捕获来源和子原型三个捕获来源已核实；恢复rewardTimer开关、UnSchedule/Schedule及按周期索引检查后LuaSendMsg的流程。T[0]来源与捕获变量业务名仍待追踪。",
+    "summary": "新增Nested_Button_setTitleFontSize首版草稿。恢复按钮创建坐标、资源、失败返回、key映射、标题/字体/字号/颜色设置、toggle初始状态以及点击回调注册。外层5捕获来源与子回调3捕获来源已确认；子回调主体及vararg语义仍待复核。",
     "files": [
-      "04_源码候选/短函数草稿_第四十六批.lua",
-      "docs/audit/检查点70_Nested_SL_2首版草稿.md",
+      "04_源码候选/短函数草稿_第四十七批.lua",
+      "docs/audit/检查点71_Nested_Button_setTitleFontSize首版草稿.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "added_draft_functions": [
-      "root.children[42].children[1]"
+      "root.children[42].children[9]"
     ],
     "unchanged": {
       "complete_static_reconstruction": 29,
@@ -784,15 +807,15 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "70",
+    "checkpoint": "71",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第四十六批.lua",
-    "audit_file": "docs/audit/检查点70_Nested_SL_2首版草稿.md",
-    "ordinary_lua_draft_functions": 57,
+    "source_file": "04_源码候选/短函数草稿_第四十七批.lua",
+    "audit_file": "docs/audit/检查点71_Nested_Button_setTitleFontSize首版草稿.md",
+    "ordinary_lua_draft_functions": 58,
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增Nested_SL_2及其定时回调子原型的首版普通Lua草稿。五个外层捕获来源和子原型三个捕获来源已核实；恢复rewardTimer开关、UnSchedule/Schedule及按周期索引检查后LuaSendMsg的流程。T[0]来源与捕获变量业务名仍待追踪。"
+    "summary": "新增Nested_Button_setTitleFontSize首版草稿。恢复按钮创建坐标、资源、失败返回、key映射、标题/字体/字号/颜色设置、toggle初始状态以及点击回调注册。外层5捕获来源与子回调3捕获来源已确认；子回调主体及vararg语义仍待复核。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)"
