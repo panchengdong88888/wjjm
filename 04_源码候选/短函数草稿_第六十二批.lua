@@ -8,7 +8,7 @@ legacy路径：root/43/4
 状态：首版普通 Lua 草稿；未运行时验证。
 
 本函数是资源统计窗口的创建/关闭入口。恢复依据包括：
-- GUI.Win_IsNotNull(resWin) 的窗口存在性分支；
+- GUI:Win_IsNotNull(resWin) 的窗口存在性分支；
 - 关闭提示、resTimer取消、GUI.Win_Close；
 - Win_Create、Layout_Create、ListView_Create；
 - 标题、初始时间、当前时间、历时和备注等UI节点；
@@ -32,7 +32,7 @@ local function Nested_FFFF00()
     local initState = UP[3]         -- doInit_UI UP[1]：initTime/initTimeStr/initSnapshot状态表
 
     -- 已存在窗口：执行关闭路径。
-    if gui.Win_IsNotNull(moduleState.resWin) then
+    if gui:Win_IsNotNull(moduleState.resWin) then
         printLog("关闭资源信息窗口")
 
         if timerState.resTimer then
