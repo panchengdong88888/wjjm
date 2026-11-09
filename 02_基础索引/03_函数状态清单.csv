@@ -73,7 +73,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 70,root/42/10,root.children[42].children[10],root/43/11,Nested_shiquTimer,25,8,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十九批.lua；读取shiquTimer；存在时提示关闭、SL:UnSchedule并写入常量标记{unknown,2}；不存在时提示开启、PickUpItems(0.01)并保存返回句柄；UP槽位来源待父级创建点核实；检查点40。
 71,root/42/11,root.children[42].children[11],root/43/12,Nested_Helper_4,12,1,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 72,root/42/11/0,root.children[42].children[11].children[0],root/43/12/1,Nested_Helper_5,35,6,0,首版普通 Lua 草稿（未运行时验证）,黑名单距离输入回调：捕获校验回调返回假值时提示保存失败并格式化路径；真值时提示距离已保存，执行保存回调，成功后启用blacklistbut。捕获槽位原名待复核；检查点52。
-73,root/42/12,root.children[42].children[12],root/43/13,Nested_04d_02d_02d,43,25,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+73,root/42/12,root.children[42].children[12],root/43/13,Nested_04d_02d_02d,43,25,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第三十三批.lua；os.date获取当天时间，22:00:05–22:00:08窗口内按YYYYMMDD去重，调用捕获对象LuaSendMsg(9002,55556,1,2,3,"",0)，随后发送固定通知；捕获对象业务名待复核；检查点55。
 74,root/42/13,root.children[42].children[13],root/43/14,Nested_Helper_6,6,2,0,完整静态恢复（未运行时验证）,04_源码候选/短闭包辅助函数_第三批草稿.lua；先调用捕获通知函数显示“清空黑名单”，再调用 ClearBlacklistItems()。
 75,root/42/14,root.children[42].children[14],root/43/15,Nested_Helper_7,12,1,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 76,root/42/14/0,root.children[42].children[14].children[0],root/43/15/1,Nested_Helper_8,34,5,0,首版普通 Lua 草稿（未运行时验证）,怪物阈值输入回调：捕获校验回调返回假值时提示保存失败并格式化路径；真值时提示阈值已保存，执行保存回调，成功后启用yinguaibut。捕获槽位原名待复核；检查点52。
