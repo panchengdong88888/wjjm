@@ -425,3 +425,13 @@
 - 函数状态 CSV、机器状态 JSON 与本协议同步；源码、审计、CSV、机器状态和本协议需复读验证。
 - 普通 Lua 草稿累计 30；完整静态恢复仍 27/110（24.5%）；运行时验证 0；检查点 #46。
 - 下一步：批量处理未开始的短函数，优先 Nested_Anonymous_2、Nested_ID、Nested_SL_3；随后集中静态复审第十二至二十五批。
+
+
+## 检查点 #47（2026-11-09）：Nested_ID 与 Nested_SL_3 普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第二十六批.lua`。
+- 新增审计：`docs/audit/检查点47_ID与存仓开关草稿.md`。
+- 新增 `Nested_ID`：规范路径 `root.children[55].children[1]`，legacy `root/56/2`，27 条物理指令、无子原型、vararg_flag=1。父级 `root/56` PC38 捕获 parent T[2]、UP[0]、UP[1]；子函数逐项 ipairs 遍历允许列表，以 tostring 比较账号 ID，命中调用允许提示回调并返回 true，未命中调用限制提示回调并返回 false。
+- 新增 `Nested_SL_3`：规范路径 `root.children[42].children[8]`，legacy `root/43/9`，29 条物理指令、无子原型。父级 `root/43` PC307 捕获 parent UP2、UP0、UP1、UP7；子函数按字段访问确认 timerState、notify、featureState、schedule。恢复已有 timer 时取消调度并复位状态；无 timer 时立即执行 StorageItems，再按 1.0 间隔调度并保存句柄。
+- 函数状态 CSV、机器状态 JSON 与本协议同步；源码、审计、CSV、机器状态和本协议需复读验证。
+- 普通 Lua 草稿累计 32；完整静态恢复仍 27/110（24.5%）；运行时验证 0；检查点 #47。
+- 下一步：复核 Nested_Anonymous_2 的融合算术和数值 for 循环，确认捕获值及参数来源后恢复草稿。
