@@ -466,3 +466,14 @@
 - CSV、机器状态 JSON 和本协议同步；源码、审计、CSV、机器状态和协议需复读验证。
 - 普通 Lua 草稿累计34；完整静态恢复27/110；运行时验证0；检查点50。
 - 下一步优先从剩余未开始的无子原型短函数中选取目标；Nested_Anonymous_2 保留阶段分析，不猜测融合算术。
+
+
+## 检查点 #51（2026-11-09）：Nested_StopGatherMonsters 普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第二十九批.lua`。
+- 新增审计：`docs/audit/检查点51_Nested_StopGatherMonsters草稿.md`。
+- 函数：`root.children[42].children[6]` / legacy `root/43/7`，原型索引65，31条指令，无子原型。
+- 父级 `root/43` PC269 创建闭包，captures=6；child UP[0..5]依次捕获 parent UP2、UP11、UP9、UP0、R20、R17。
+- 已恢复 gatherTimer 存在时关闭引怪、调用全局 StopGatherMonsters 并返回true；否则调用条件检查回调，按返回值选择缺少怪物阈值的提示/输入分支或开启回调分支。
+- parent UP9、R20、R17 的原始业务名仍待追溯；未运行时验证。
+- CSV、机器状态 JSON 和本协议同步；源码、审计、CSV、机器状态和协议需复读验证。
+- 普通 Lua 草稿累计35；完整静态恢复27/110；运行时验证0；检查点51。
