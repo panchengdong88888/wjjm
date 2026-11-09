@@ -63,6 +63,8 @@ local function Nested_FFFF00()
     )
 
     gui:setTouchEnabled(rootLayout, true)
+    -- child4（Nested_UnSchedule）捕获[printLog,timerState,moduleState]；
+    -- 点击空白时输出“点击空白,关闭资源信息窗口”，取消resTimer、清句柄并关闭resWin。
     gui:addOnClickEvent(rootLayout, Nested_UnSchedule)
 
     -- 列表容器。
@@ -128,10 +130,14 @@ local function Nested_FFFF00()
     -- 数值格式化子闭包：child0，父级PC118创建，零捕获。
     local formatNumber = Nested_Helper_2
 
-    -- 资源统计更新子闭包：child2，父级PC265创建，捕获2个值。
+    -- 资源统计行创建子闭包：child2，PC265捕获[ListView, screenW*0.6]；
+    -- 父函数用(names, 2, "money"/"item")两次调用。
     local updateResourceRows = Nested_FFFFFF
 
-    -- 时间与资源刷新子闭包：child3，父级PC300创建，捕获10个值。
+    -- 时间/资源刷新子闭包：child3，PC300捕获10项，顺序为：
+    -- [moduleState,timerState,curTimeText,durTimeText,initState,MoneyProxy,
+    --  updateResourceRows,formatNumber,updateResourceRows,2.0]。
+    -- 父函数在PC311-PC312立即调用；该闭包内部自调度。
     local refreshResourceStatistics = Nested_Helper_3
 
     -- PC268-PC281的两组准确名称数组。
