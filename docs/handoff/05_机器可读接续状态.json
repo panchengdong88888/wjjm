@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续恢复未开始短函数MoveTo（root.children[3]，51条物理指令）；随后评估ClearBlacklistItems（root.children[15]，63条）与AccountIDValidation（root.children[55]，64条）。Nested_find、Nested_string已形成首版草稿，vararg与过滤方向留待复审。",
+  "next_action": "继续恢复ClearBlacklistItems（root.children[15]，63条物理指令）；随后评估AccountIDValidation（root.children[55]，64条）。MoveTo已形成首版草稿，range缺省、通知调用参数和距离比较返回极性待复审。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "76"
+    "last_checkpoint": "77"
   },
   "static_recovered_functions": [
     {
@@ -900,28 +900,46 @@
         "vararg argument mapping, string.find plain flag and filter directions pending",
         "No runtime validation"
       ]
+    },
+    {
+      "path": "root.children[3]",
+      "legacy_path": "root/4",
+      "name": "MoveTo",
+      "source_file": "04_源码候选/短函数草稿_第五十三批.lua",
+      "audit_file": "docs/audit/检查点77_MoveTo首版草稿.md",
+      "status": "first_pass_draft_move_notification_and_distance_checks_pending_return_polarity_not_runtime_verified",
+      "physical_instructions": 51,
+      "constant_count": 20,
+      "child_count": 0,
+      "notes": [
+        "No closure captures; created at root PC61",
+        "Builds move notification data with MAP_ID, numeric x/y, MMO.INPUT_MOVE_TYPE_AUTOMOVE and range",
+        "Calls global.Facade.sendNotification with NoticeTable.InputMove and moveInfo",
+        "Calls PlayerPos and compares absolute x/y deltas against range",
+        "Formal parameter/vararg mapping, range default condition, Facade self/argument layout, PlayerPos return order and final boolean polarity pending",
+        "No runtime validation"
+      ]
     }
   ],
-  "draft_function_count": 64,
-  "ordinary_lua_draft_functions": 64,
-  "last_checkpoint": 76,
-  "checkpoint": "76",
+  "draft_function_count": 65,
+  "ordinary_lua_draft_functions": 65,
+  "last_checkpoint": 77,
+  "checkpoint": "77",
   "drafts": 32,
   "next": "继续评估未开始的短函数LuaSendMsg（root.children[12]）和GetMapData2DPtr（root.children[22]）；优先恢复清楚的主体，保留未闭合参数/捕获名。",
   "recent_checkpoint": {
-    "checkpoint": "76",
+    "checkpoint": "77",
     "date": "2026-11-09",
-    "summary": "批量新增Nested_find与Nested_string两个相似的46指令短函数草稿。恢复BAG_DATA读取、pairs遍历、Name/MakeIndex检查、string.find名称匹配、ITEM_IS_BIND/OverLap过滤和计数返回；vararg及过滤方向待复审。",
+    "summary": "新增MoveTo首版普通Lua草稿，恢复MAP_ID/x/y/type/range移动通知数据、Facade.sendNotification调用、PlayerPos坐标读取及两轴绝对差与range比较；通知调用参数和最终布尔极性待复审。",
     "files": [
-      "04_源码候选/短函数草稿_第五十二批.lua",
-      "docs/audit/检查点76_Nested_find与Nested_string首版草稿.md",
+      "04_源码候选/短函数草稿_第五十三批.lua",
+      "docs/audit/检查点77_MoveTo首版草稿.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "added_draft_functions": [
-      "root.children[42].children[0]",
-      "root.children[42].children[3].children[1]"
+      "root.children[3]"
     ],
     "unchanged": {
       "complete_static_reconstruction": 29,
@@ -929,23 +947,23 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "76",
+    "checkpoint": "77",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第五十二批.lua",
-    "audit_file": "docs/audit/检查点76_Nested_find与Nested_string首版草稿.md",
-    "ordinary_lua_draft_functions": 64,
+    "source_file": "04_源码候选/短函数草稿_第五十三批.lua",
+    "audit_file": "docs/audit/检查点77_MoveTo首版草稿.md",
+    "ordinary_lua_draft_functions": 65,
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增Nested_find与Nested_string两个首版普通Lua草稿；过滤方向和vararg映射待复审。"
+    "summary": "新增MoveTo首版普通Lua草稿；range缺省、通知调用参数和距离比较返回极性待复审。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)",
   "progress_reconciled": {
-    "source_of_counts": "检查点#73历史累计60；检查点#74新增LuaSendMsg 1个；#75新增GetMapData2DPtr 1个；#76新增Nested_find与Nested_string 2个。",
-    "ordinary_lua_draft_functions": 64,
+    "source_of_counts": "检查点#73历史累计60；#74新增LuaSendMsg 1个；#75新增GetMapData2DPtr 1个；#76新增Nested_find与Nested_string 2个；#77新增MoveTo 1个。",
+    "ordinary_lua_draft_functions": 65,
     "complete_static_reconstruction_functions": 29,
     "runtime_verified_functions": 0,
-    "note": "本批新增2个普通Lua草稿；完整静态恢复及运行时验证数量不变。CSV中的旧状态文字标签存在历史差异，函数行已逐项更新。"
+    "note": "本批仅新增1个普通Lua草稿；完整静态恢复及运行时验证数量不变。"
   }
 }
