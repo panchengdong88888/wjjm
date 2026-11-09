@@ -6,11 +6,11 @@
 -- Not original source text and not runtime-validated.
 
 -- The observed callers pass (initialText, onValid).
--- T[2] is captured by the child but is not supplied as a third argument at either
--- observed call site; keep it explicit as an unresolved optional context slot.
+-- The child also captures the parent's T[2] slot. Its producer is not yet traced;
+-- it is used as a callable delayed-notice function, so keep an explicit placeholder.
 local function make_Nested_Anonymous(PrintLog)
-    return function Nested_Anonymous(initialText, onValid, capturedT2)
-        local delayedErrorNotice = capturedT2 -- Nested_Anonymous T[2]; invoked by Nested_Helper_11.
+    return function Nested_Anonymous(initialText, onValid)
+        local delayedErrorNotice = nil -- PLACEHOLDER: Nested_Anonymous T[2]; producer not yet traced.
 
         -- Child root.children[42].children[22].children[0] is created with:
         -- UP[0] <- parent T[0] (initialText)
@@ -86,8 +86,9 @@ end
 -- * Nested_Helper_4 and Nested_Helper_7 both invoke this wrapper with exactly
 --   (promptText, callbackClosure).
 -- * The child receives T[0], UP[0], T[2], T[1] in that capture order.
--- * The T[2] slot remains explicitly unresolved; observed wrappers provide no
---   third argument, so this draft preserves it as an optional nil-valued context.
+-- * T[2] is not a third wrapper argument. The child calls it as a delayed-notice
+--   function, but the T[2] producer in this VM frame remains unresolved. The nil
+--   assignment above is a placeholder, not a recovered runtime value.
 -- * The child is invoked immediately; no function object is returned to the caller.
 -- * SL:OpenCommonTipsPop, delayed callback effects, and PrintLog runtime behavior
 --   have not been tested in the host game runtime.
