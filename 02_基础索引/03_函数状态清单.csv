@@ -97,7 +97,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 94,root/48,root.children[48],root/49,PCallHelper_2,10,1,1,完整静态恢复（未运行时验证）,04_源码候选/代理与回调短函数_第四批.lua；pcall 执行无参子闭包 Nested_FriendProxy；失败或结果 false/nil 时返回 nil，否则返回代理对象。
 95,root/48/0,root.children[48].children[0],root/49/1,Nested_FriendProxy,9,5,0,完整静态恢复（未运行时验证）,04_源码候选/代理与回调短函数_第四批.lua；无参数/无捕获，返回 global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)。
 96,root/49,root.children[49],root/50,AnonymousHelper_49,5,0,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十六批.lua；调用UP[0](UP[1])并原样返回结果；后续return不可达；捕获槽位名待确认；检查点37。
-97,root/50,root.children[50],root/51,StorageItems,224,57,2,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+97,root/50,root.children[50],root/51,StorageItems,224,57,2,首版普通Lua草稿（待静态复审/未运行时验证）,检查点84；恢复存仓状态门控、仓库页/容量读取、BAG_DATA读取、特殊物品名表、两段pairs/ipairs筛选、UseItemByIndex及存仓LuaSendMsg主体；child1页数算术、child0调用点、3个捕获身份及消息协议参数待复核。
 98,root/50/0,root.children[50].children[0],root/51/1,Nested_isOutputted,52,15,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第三十四批.lua；纯文本查找“聚灵珠”，首次命中置共享isOutputted并回调物品及Name/StdMode/Dura/DuraMax信息；随后校验Dura/DuraMax存在且Dura不大于DuraMax；参数位置和捕获对象原名待复核；检查点56。
 99,root/50/1,root.children[50].children[1],root/51/2,Nested_Anonymous_2,27,1,0,阶段分析中（未形成普通 Lua 草稿）,已确认 27 条指令、4 个捕获、1.0 起始值和步长、数值循环回跳 PC24→5、动态表索引及多返回值 return；PC9–14 融合算术操作数顺序、捕获来源和父级消费点仍未闭合；检查点48。
 100,root/51,root.children[51],root/52,FindBlacklistPlayer,35,5,0,首版普通 Lua 草稿（未运行时验证）,按传入目标标识查询捕获对象的_blacklistData，命中时返回true及Name；未命中时再通过SL:GetMetaValue('ACTOR_MASTER_ID')核对并尝试查表。对象来源/ID语义仍待校正；检查点52。
