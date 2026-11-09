@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "100"
+    "last_checkpoint": "101"
   },
   "static_recovered_functions": [
     {
@@ -865,6 +865,60 @@
         "读取mCurrMapX/mCurrMapY，false/nil坐标默认0，返回{x,y}。",
         "17条指令静态闭合；未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[42].children[6]",
+      "legacy_path": "root/43/7",
+      "name": "Nested_StopGatherMonsters",
+      "physical_instructions": 31,
+      "constant_count": 5,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第六十七批.lua",
+      "audit_file": "docs/audit/检查点101_Nested_StopGatherMonsters分支与捕获复核.md",
+      "parameters": [],
+      "returns": [
+        "gatherTimer存在时true；无timer且ready truthy时true；ready false/nil时false"
+      ],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[2]",
+          "usage": "gatherTimer状态表"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[11]",
+          "usage": "提示回调"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[9]",
+          "usage": "无参条件检查回调"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[0]",
+          "usage": "阈值输入交互回调"
+        },
+        {
+          "index": 4,
+          "source": "doInit_UI R20",
+          "usage": "输入交互后的无参处理回调"
+        },
+        {
+          "index": 5,
+          "source": "doInit_UI R17",
+          "usage": "接收ready结果的状态/启动回调"
+        }
+      ],
+      "notes": [
+        "gatherTimer存在时提示关闭、调用StopGatherMonsters()并返回true。",
+        "无timer时调用UP[2]()；truthy结果走开启分支并传给UP[5]，返回true。",
+        "false/nil结果才提示缺少阈值，调用UP[3]()、UP[4]()并返回false。",
+        "31条物理指令控制流闭合；未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
@@ -1515,38 +1569,26 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "100",
+    "checkpoint": "101",
     "date": "2026-11-09",
-    "function_group": [
-      "Nested_SL_3",
-      "Nested_shiquTimer",
-      "Nested_dropTimer",
-      "Nested_TakeItems"
-    ],
-    "source_files": [
-      "04_源码候选/短函数草稿_第六十六批.lua",
-      "04_源码候选/短函数草稿_第十九批.lua",
-      "04_源码候选/短函数草稿_第二十批.lua",
-      "04_源码候选/短函数草稿_第二十三批.lua"
-    ],
-    "audit_file": "docs/audit/检查点100_四个定时器回调与nil占位复核.md",
+    "function": "Nested_StopGatherMonsters",
+    "source_file": "04_源码候选/短函数草稿_第六十七批.lua",
+    "audit_file": "docs/audit/检查点101_Nested_StopGatherMonsters分支与捕获复核.md",
     "findings": [
-      "四函数关闭分支写入的[\"unknown\",2]均为nil序列化占位，已修正为timerField=nil。",
-      "父级doInit_UI闭包创建点确认四函数捕获来源分别为UP2/UP0/UP1/UP7的对应组合。",
-      "Nested_SL_3开启时立即StorageItems()再schedule(StorageItems,1.0)。",
-      "Nested_shiquTimer开启时仅schedule(PickUpItems,0.01)，不立即执行。",
-      "Nested_dropTimer与Nested_TakeItems开启时先立即执行操作，再按1.0周期调度。",
-      "所有四函数的分支、通知、取消调度、状态标志、句柄写入及无返回已逐PC闭合。"
+      "父级doInit_UI PC269-PC275确认6项捕获来源依次为UP2,UP11,UP9,UP0,R20,R17。",
+      "gatherTimer存在时通知关闭、调用StopGatherMonsters并返回true。",
+      "无timer时UP2() truthy才走开启分支，通知开启、UP5(ready)、返回true。",
+      "UP2() false/nil才提示缺少阈值、调用UP3()和UP4()、返回false。",
+      "纠正旧草稿摘要把ready真假分支写反的问题。"
     ],
     "unresolved": [
-      "父级捕获寄存器原始局部变量名不强行恢复。",
-      "schedule保留为捕获的调度函数名称，不推断宿主API身份。",
-      "未进行游戏客户端运行时验证。"
+      "UP3/UP4/UP5的原作者业务变量名未确认。",
+      "无游戏客户端运行时验证。"
     ],
     "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 39,
+      "complete_static_reconstruction": 40,
       "runtime_verified": 0
     }
   },
@@ -1561,7 +1603,7 @@
   },
   "counts": {
     "ordinary_lua_drafts": 77,
-    "complete_static_reconstruction": 39,
+    "complete_static_reconstruction": 40,
     "runtime_verified": 0
   }
 }
