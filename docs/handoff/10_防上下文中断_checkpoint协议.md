@@ -720,3 +720,13 @@
 - 待复核：vararg参数映射、string.find第四参数true的plain语义、ITEM_IS_BIND返回值过滤方向、OverLap过滤方向，以及两个不同父级上下文下的细微差异。
 - 本批新增普通Lua草稿2个；累计按检查点口径64个。完整静态恢复仍29/110（26.4%）；运行时验证0。
 - 下一步优先处理未开始短函数`MoveTo`（`root.children[3]`，51条指令），再评估`ClearBlacklistItems`（63条）和`AccountIDValidation`（64条）。
+
+
+## 检查点 #77（2026-11-09）：MoveTo 首版普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第五十三批.lua`；新增审计：`docs/audit/检查点77_MoveTo首版草稿.md`。
+- 函数：`MoveTo`，原型索引5，规范路径`root.children[3]`，legacy`root/4`，51条物理指令、20个常量、无子原型、`vararg_flag=3`。
+- 根函数PC61创建闭包，捕获数0。
+- 已恢复移动通知主体：读取MAP_ID，转换x/y参数为number，设置`MMO.INPUT_MOVE_TYPE_AUTOMOVE`及range，调用`Facade.sendNotification(NoticeTable.InputMove, moveInfo)`；随后调用PlayerPos取得当前坐标，计算两轴绝对差并与range比较。
+- 待复核：vararg参数声明、range缺省分支、Facade self/实参布局、PlayerPos返回顺序、两轴比较的跳转极性和最终true/false含义。草稿中最终布尔表达式仅为临时候选。
+- 本批新增普通Lua草稿1个；累计按检查点口径65个。完整静态恢复仍29/110（26.4%）；运行时验证0。
+- 下一步优先处理`ClearBlacklistItems`（`root.children[15]`，63条指令），再评估`AccountIDValidation`（`root.children[55]`，64条）。
