@@ -24,9 +24,9 @@
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
     "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。",
     "root.children[47]": "BlacklistPlayerDetection：216条；检查点135前置MAIN_ACTOR_ID；137/138闭合HP/deathHandled；139闭合名称/坐标/距离五实参；140闭合alertAt阈值、nextTryAt两条间隔路径、noStoneWarned门控及table.concat(UPVALUE_12(), \"/\")。仍待PC174-PC192回调/道具使用契约及13个upvalue业务身份。",
-    "root.children[50]": "StorageItems：224条；检查点136确认PC120的ITEM_IS_BIND严格比较值为数值1并修正草稿；主函数页/容量、两子原型调用契约、捕获身份及LuaSendMsg参数仍待复核。"
+    "root.children[50]": "StorageItems：224条、2子原型；检查点136校正ITEM_IS_BIND==1；141确认子原型0捕获2值且二参数调用，子原型1捕获maxPage/pageCapacity/openSize/storedPageData并零参数返回容量门控；LuaSendMsg七实参顺序已闭合。仍待R8/R9迭代、子原型0实参身份、子原型1容量算术、协议第4字段语义及PC206-PC211记账。"
   },
-  "next_action": "检查点140：已复核BlacklistPlayerDetection PC142-PC213的alertAt阈值、nextTryAt两条时间更新路径、noStoneWarned一次性提示门控及table.concat(UPVALUE_12(), \"/\")。UPVALUE_6为直接阈值，UPVALUE_8为零参数间隔函数，UPVALUE_11参与另一条重试间隔计算。PC174-PC192随机传送提示/回调寄存器契约、实际道具筛选与使用API及13个upvalue业务身份仍未闭合。下一步继续逐PC复核该段分支，再处理StorageItems PC151-PC224和两个子原型。统计仍为草稿78、完整静态恢复76/110、运行时验证0。",
+  "next_action": "检查点141：StorageItems已复核PC102子原型0的2捕获/二参数调用位置，PC54子原型1捕获父R1/R2/R3/R4（maxPage、pageCapacity、openSize、storedPageData）且在PC177零参数调用；其返回假值触发仓库已满提示、复位isStoring并return，真值继续。PC187-PC205确认UPVALUE_2存仓提示和LuaSendMsg七实参顺序：消息类型、999999999、MakeIndex、子原型1返回值、0、Name、string.len(Name)。仍待R8/R9两层迭代和子原型0实参业务身份、子原型1算术公式、协议第4字段含义、PC206-PC211记账。下一步继续StorageItems闭包和容量算术复核。统计仍为草稿78、完整静态恢复76/110、运行时验证0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -99,7 +99,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "140"
+    "last_checkpoint": "141"
   },
   "static_recovered_functions": [
     {
