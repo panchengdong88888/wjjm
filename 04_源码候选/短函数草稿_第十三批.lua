@@ -119,4 +119,7 @@ end
 -- * FindMonsterInCurrViewField calls SL:FindMonsterInCurrViewField(true, true), applies
 --   captured IsDie (whose established truthy result denotes an alive actor), then indexes
 --   the result by actor:GetID().
--- * All four are drafts. No runtime execution or original-local-name recovery is claimed.
+-- * SetButtonVisibilityState, ResetGatherMonsterData, and StopGatherMonsters remain
+--   first-pass drafts. FindMonsterInCurrViewField was independently checked against
+--   all 27 physical PCs and its captured IsDie helper; it is complete static
+--   reconstruction (not runtime-validated). Original local names are not claimed.
