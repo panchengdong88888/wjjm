@@ -29,7 +29,13 @@ local function MakeNested_Button_setTitleText(
 )
     return function Nested_Button_setTitleText()
         -- TODO(PC1-PC9)：还原按钮注册表查找与有效性/回调检查。
-        -- 不能在缺少准确寄存器映射时伪写为 buttonRegistry[buttonInfo.key]。
+        -- PC15-PC16明确表明：前置调用结果为false时直接退出。
+        -- 该结果来自PC8-PC9对PC1-PC3取得对象/函数后的调用；
+        -- 由于融合载荷的数据流未闭合，这里不伪造其函数名。
+        local preconditionResult = nil -- TODO(PC1-PC9)：补齐真实调用结果
+        if preconditionResult == false then
+            return
+        end
 
         if buttonInfo.toggle then
             return
@@ -38,15 +44,16 @@ local function MakeNested_Button_setTitleText(
         -- VM 在此路径将 toggled 取反并写回捕获对象。
         buttonInfo.toggled = not buttonInfo.toggled
 
-        -- TODO(PC22-PC35)：确认 GUI.Button_setTitleText 的实参寄存器顺序。
-        -- 已确认其读取 buttonInfo.name，并使用捕获的 GUI 按钮对象。
-        -- GUI.Button_setTitleText(guiButton, buttonInfo.name)
-
-        -- 颜色选择：默认白色；满足红色分支条件时改为红色。
-        local titleColor = "#ffffff"
-        if buttonInfo.toggle then
-            titleColor = "#ff0000"
+        -- PC31-PC35：仅在 toggle 为假时，按 name 更新按钮标题。
+        -- GUI.Button_setTitleText 的实参寄存器顺序仍待融合载荷复核。
+        if not buttonInfo.toggle then
+            -- TODO(PC22-PC35)：核对 GUI 按钮对象及标题参数顺序。
+            -- GUI.Button_setTitleText(guiButton, buttonInfo.name)
         end
+
+        -- PC40-PC47：根据更新后的 toggled 选择标题颜色。
+        -- toggled 为真走红色分支；为假走白色分支。
+        local titleColor = buttonInfo.toggled and "#ff0000" or "#ffffff"
 
         -- TODO(PC36-PC47)：核对 Button_setTitleColor 的参数寄存器顺序。
         -- GUI.Button_setTitleColor(guiButton, titleColor)
