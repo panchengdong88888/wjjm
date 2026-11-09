@@ -42,12 +42,8 @@ local function StorageItems()
         end
     end
 
-    -- PC61-PC79建立需要特殊处理/排除的物品名称集合。
-    local specialNames = {
-        "金刚石", "玄铁", "真金矿石", "BOSS头骨", "转生证明", "魔神石",
-        "神装碎片", "涅槃石", "宝石精魄", "天神令", "神彩", "金罡",
-        "至尊", "圣皇", "凤凰", "麻痹戒指", "复活戒指", "切割神戒"
-    }
+    -- PC61-PC83分别构造R8/R9两张表；当前仅能确认它们被后续两段ipairs使用，
+    -- 尚未将常量和构造寄存器完整对应，故不把常量池内容猜成单一specialNames表。
 
     local bagData = SL.GetMetaValue("BAG_DATA")
     if not bagData then
