@@ -27,13 +27,13 @@ local function MoveTo(x, y, range)
 
     -- PC33-PC38：若X轴差值大于range，直接返回false。
     local deltaX = math.abs(moveInfo.x - playerX)
-    if deltaX > moveInfo.range then
+    if not (deltaX <= moveInfo.range) then
         return false
     end
 
     -- PC40-PC45：只有X轴通过后才检查Y轴；Y轴差值大于range则false。
     local deltaY = math.abs(moveInfo.y - playerY)
-    if deltaY > moveInfo.range then
+    if not (deltaY <= moveInfo.range) then
         return false
     end
 
