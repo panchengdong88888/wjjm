@@ -606,3 +606,11 @@
 - 新增首版普通Lua草稿1个；累计51个。完整静态恢复仍29/110（26.4%）；运行时验证0；最新检查点#64。
 - 下一步：优先短函数`Nested_Anonymous`（8条）及`GetWritablePath`（10条），并追踪父级T[3]来源。
 
+## 检查点 #65（2026-11-09）：GetWritablePath 首版普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第四十一批.lua`；新增审计：`docs/audit/检查点65_GetWritablePath首版草稿.md`。
+- 函数：`GetWritablePath`，原型索引4，规范路径`root.children[2]`，legacy`root/3`，10条物理指令、4个常量、无子原型、vararg_flag=1。
+- 已确认`cc.FileUtils:getInstance():getWritablePath()`调用链。PC8融合拼接可见操作数为`T[1] .. R2)；结合已恢复的FileExistCheck_pcall_wrapper调用点（将输入path传入该闭包，并把返回值用于isFileExist/removeFile），首版暂恢复为`writablePath .. path`。
+- vararg参数槽位与拼接方向仍有静态映射假设，故只记为首版草稿，不升级完整静态恢复；未运行时验证。
+- 新增普通Lua草稿1个；累计52个。完整静态恢复仍29/110（26.4%）；运行时验证0；最新检查点#65。
+- 下一步：恢复8条指令的`Nested_Anonymous`，重点追踪父级两个实参与vararg T槽、Nested_str四个捕获槽位的映射；无法闭合时保留UPVALUE槽位并继续推进。
+
