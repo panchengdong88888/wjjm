@@ -1722,3 +1722,15 @@
 - 新增审计`docs/audit/检查点160_DistanceCalculation完整静态复审.md`；更新`04_源码候选/短函数草稿_第十二批.lua`、函数状态CSV、机器状态JSON。
 - 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复81/110；运行时验证0。
 - 下一步：复审SetButtonVisibilityState（root.children[10]，15条）和ResetGatherMonsterData（root.children[26]，20条），重点检查GUI调用receiver及闭包捕获单元共享写入。
+
+ 
+## 检查点 #161（2026-11-09）：SetButtonVisibilityState 完整静态复审
+
+- 对象：`root.children[10]`（legacy root/11），15条物理指令，5个常量，无子原型。
+- UP0为共享状态对象；PC1-PC2写入`isHidden=true`。UP1为按钮映射表。
+- PC3-PC6建立pairs泛型迭代器；PC13推进迭代，PC14回跳PC7。
+- PC7-PC12读取全局GUI.setVisible、映射值buttonMap[key]和true；调用保留GUI作为self，等价于`GUI:setVisible(buttonMap[key], true)`。
+- PC15返回。15条物理指令的活动路径、捕获值用途、字段写入、迭代器和调用参数闭合。
+- 新增审计`docs/audit/检查点161_SetButtonVisibilityState完整静态复审.md`；更新`04_源码候选/短函数草稿_第十三批.lua`、函数状态CSV和机器状态JSON。
+- 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复82/110；运行时验证0。
+- 下一步：复审ResetGatherMonsterData（root.children[26]，20条），重点核对捕获cell共享写入、回调身份与通知参数。
