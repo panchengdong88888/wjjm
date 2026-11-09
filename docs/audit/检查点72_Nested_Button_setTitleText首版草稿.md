@@ -20,8 +20,8 @@
 - 常量包括`toggle`、`toggled`、`name`、`key`、`#ff0000`、`#ffffff`。
 - PC11-PC16对`UPVALUE_1.toggle`及前序有效性结果进行分支判断；toggle为真或前置判断不满足时跳到函数尾部。
 - PC17-PC21从UPVALUE_1读取`toggled`，取逻辑非，并写回`UPVALUE_1.toggled`。
-- PC22-PC35取得`GUI.Button_setTitleText`，随后读取UPVALUE_1的`toggle/name`相关状态及UPVALUE_2；其调用参数的精确寄存器映射仍需结合融合载荷复核。
-- PC36-PC47取得`GUI.Button_setTitleColor`；颜色常量为红色`#ff0000`和白色`#ffffff`，并存在基于toggle状态的条件分支。
+- PC22-PC35取得`GUI.Button_setTitleText`；PC31-PC35的分支表明，仅当UPVALUE_1.toggle为假时才执行标题更新，标题文本来自UPVALUE_1.name。GUI按钮对象与参数寄存器顺序仍需结合融合载荷复核。
+- PC36-PC47取得`GUI.Button_setTitleColor`；PC40-PC47依据更新后的UPVALUE_1.toggled选择颜色：toggled为真走红色`#ff0000`，为假走白色`#ffffff`。GUI按钮对象与颜色参数寄存器顺序仍待复核。
 
 ## 保留的未闭合事项
 - PC1-PC9有多条融合载荷：注册表/键值访问、可调用对象及结果检查的准确数据流未闭合。
