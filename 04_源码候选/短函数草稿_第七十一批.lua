@@ -77,13 +77,13 @@ local function Nested_Button_setTitleText(config, button)
 
     config.toggled = not config.toggled
 
-    GUI:Button_setTitleText(config.toggled, button, config.name)
+    GUI:Button_setTitleText(button, config.name)
 
     local titleColor = "#ffffff"
     if config.toggled and config.toggle then
         titleColor = "#ff0000"
     end
-    GUI:Button_setTitleColor(config.toggled, button, titleColor)
+    GUI:Button_setTitleColor(button, titleColor)
 end
 
 -- Nested_Button_setTitleFontSize捕获链：
