@@ -1557,3 +1557,19 @@
 - 本批扩写已有草稿，不增加函数草稿数量；函数状态仍为“首版普通Lua草稿（待静态复审/未运行时验证）”。
 - 统计：普通Lua草稿78、完整静态恢复76/110、运行时验证0（均不变）。
 - 下一步：先独立闭合PC21-PC54的HP/deathHandled转移表，再核验PC74-PC141的迭代器索引、UP[4]/UP[5]调用契约，最后复核PC168-PC214通知和日志参数；全部静态闭合前不得升级函数状态。
+
+
+## 检查点 #148（2026-11-09）：BlacklistPlayerDetection 状态机与调用实参校正
+- 对照 corrected phase3 的 PC21-PC54、PC55-PC57、PC74-PC141、PC142-PC192，并读取 root/52 黑名单辅助函数、root/23 距离辅助函数。
+- PC12-PC20确认 `tonumber(HP)` 返回nil/false时寄存器回退为0.0，不是提前return。
+- PC21-PC54确认状态转移：lastHp为nil时初始化lastHp并令deathHandled=(hp<=0)；已有lastHp且hp>0时刷新lastHp并清deathHandled=false；当前hp<=0、此前lastHp>0且deathHandled未置位时，置deathHandled=true、lastHp=0.0并调用UP[3]()。
+- PC55-PC57确认hp<=0提前return，草稿已校正。
+- PC74-PC141确认数字索引遍历1..playerCount，跳过nil玩家和自身actorID；UP[4](actorID)第一个返回值控制是否继续，第二个返回值为黑名单记录Name；若第二返回值缺失才查询ACTOR_NAME，仍缺失时使用“黑名单玩家”。
+- root/52辅助函数按actorID查询FriendProxy._blacklistData，未命中时通过ACTOR_MASTER_ID回退；命中返回true/Name，未命中返回false/nil。
+- UP[5]调用的五个实参闭合为mainX、mainY、candidateX、candidateY、blacklistState.distance；第五参数是距离上限。root/23前段计算Chebyshev距离并将第五参数作为范围上限；超限返回nil，另有地图边界/障碍检查。
+- 纠正检查点146/147遗留误判：PC184-PC191成功日志的第三个%s参数来自UP[8]()返回的实际随机传送道具名称，不是UP[11]=30.0。UP[11]只作为失败路径的重试延迟；草稿和函数CSV已同步修正。
+- 新增审计：`docs/audit/检查点148_BlacklistPlayerDetection状态机与距离调用校正.md`。
+- 更新草稿：`04_源码候选/root47_BlacklistPlayerDetection.lua`。
+- 尚未升级完整静态恢复；UP[1]（root/53）零参回调内部契约、root/23地图/障碍校验的完整作者级表达、全函数CFG独立复核仍待完成。
+- 统计保持：普通Lua草稿78、完整静态恢复76/110、运行时验证0。
+- 下一步：核验UP[1]回调契约和root/23剩余地图/障碍检查；随后可先批量恢复其他尚无草稿的短函数，不让root/47少量疑点阻塞第一层产出。
