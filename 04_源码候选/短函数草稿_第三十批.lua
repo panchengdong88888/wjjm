@@ -55,33 +55,45 @@ end
 -- ============================================================
 -- FindBlacklistPlayer
 -- 规范路径 root.children[51]
--- legacy root/52；原型100；35条；vararg
--- 父级 root PC352 创建闭包，captures=1。
+-- legacy root/52；原型100；35条；vararg_flag=1；captures=1。
+-- 父级 root PC353 创建闭包，PC354 OP_387 B=54：
+--   UPVALUE_0 <- 父 root R54，即 root.children[48] / PCallHelper_2。
+-- PCallHelper_2通过pcall安全取得FriendProxy，失败时返回nil。
 -- ============================================================
 local function FindBlacklistPlayer(...)
-    local player = getPlayerFromArguments(...)
-    if not player then
+    local targetId = ...
+
+    -- UPVALUE_0()：PCallHelper_2()，安全取得FriendProxy。
+    local friendProxy = PCallHelper_2()
+    if not friendProxy then
         return false
     end
 
-    local blacklistData = player._blacklistData
+    local blacklistData = friendProxy._blacklistData
     if not blacklistData then
         return false
     end
 
-    local playerName = player.Name
-    if not playerName then
+    -- 先按传入标识直接查询黑名单表。
+    if targetId then
+        local entry = blacklistData[targetId]
+        if entry then
+            return true, entry.Name
+        end
+    else
         return false
     end
 
-    local masterId = SL:GetMetaValue("ACTOR_MASTER_ID", player)
-    if masterId and masterId == playerName then
-        return true
+    -- 直接键未命中后，读取该目标对应的主控Actor ID。
+    local masterActorId = SL:GetMetaValue("ACTOR_MASTER_ID", targetId)
+    if not masterActorId or masterActorId == targetId then
+        return false
     end
 
-    local blacklistEntry = blacklistData[masterId]
-    if blacklistEntry and blacklistEntry.Name then
-        return true
+    -- 仅当主控ID有效且不同于原始标识时，再按主控ID查询。
+    local masterEntry = blacklistData[masterActorId]
+    if masterEntry then
+        return true, masterEntry.Name
     end
 
     return false
