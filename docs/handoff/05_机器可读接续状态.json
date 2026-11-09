@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续评估剩余未开始原型，优先选择指令数较少、控制流和调用返回契约更明确者；同时复核StorageItems的Nested_Anonymous_2子原型及LuaSendMsg参数布局。",
+  "next_action": "转向未开始的短函数root.children[12]（LuaSendMsg）与root.children[22]（GetMapData2DPtr），优先选择控制流及返回契约更清晰者；同时保留StorageItems的LuaSendMsg消息字段待核。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "84"
+    "last_checkpoint": "85"
   },
   "static_recovered_functions": [
     {
@@ -487,23 +487,16 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 84,
-    "target": "StorageItems",
-    "status": "first_pass_draft; static review pending; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第六十批.lua",
-    "audit_file": "docs/audit/检查点84_StorageItems首版草稿.md",
-    "added_drafts": [
-      {
-        "path": "root.children[50]",
-        "legacy": "root/51",
-        "name": "StorageItems",
-        "instructions": 224
-      }
-    ],
+    "checkpoint": 85,
+    "target": "StorageItems / Nested_Anonymous_2",
+    "status": "stage analysis reviewed; not promoted to ordinary Lua draft",
+    "source_file": "03_静态反汇编/MainLeftBottom_vm_disassembly_corrected_phase3.txt",
+    "audit_file": "docs/audit/检查点85_StorageItems_Nested_Anonymous_2复核.md",
+    "added_drafts": [],
     "draft_count_total": 74,
     "complete_static_reconstruction_count": 29,
     "runtime_verified_count": 0,
-    "note": "本轮在检查点83 BlacklistPlayerDetection后新增StorageItems主原型草稿；其child0已有草稿，child1仍为阶段分析。"
+    "note": "确认child1的数值循环、捕获值比较、融合算术、动态表键和多返回值分支；由于四个捕获身份、算术表达式及父级消费契约未闭合，不臆造普通Lua草稿。"
   },
   "corrections": [
     {
@@ -1092,10 +1085,10 @@
   ],
   "draft_function_count": 74,
   "ordinary_lua_draft_functions": 74,
-  "last_checkpoint": 84,
-  "checkpoint": "84",
+  "last_checkpoint": 85,
+  "checkpoint": "85",
   "drafts": 32,
-  "next": "继续评估未开始的短函数LuaSendMsg（root.children[12]）和GetMapData2DPtr（root.children[22]）；优先恢复清楚的主体，保留未闭合参数/捕获名。",
+  "next": "转向未开始的短函数root.children[12]（LuaSendMsg）与root.children[22]（GetMapData2DPtr），优先选择控制流及返回契约更清晰者；同时保留StorageItems的LuaSendMsg消息字段待核。",
   "recent_checkpoint": {
     "checkpoint": "79",
     "date": "2026-11-09",
@@ -1116,23 +1109,22 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "84",
+    "checkpoint": "85",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第六十批.lua",
-    "audit_file": "docs/audit/检查点84_StorageItems首版草稿.md",
+    "audit_file": "docs/audit/检查点85_StorageItems_Nested_Anonymous_2复核.md",
     "ordinary_lua_draft_functions": 74,
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增StorageItems主原型首版普通Lua草稿；存仓门控、分页容量、背包筛选、使用物品、存仓请求及完成提示主体已整理；child1公式与消息协议仍待复核。"
+    "summary": "复核StorageItems的Nested_Anonymous_2：确认循环/比较/算术/动态索引/多返回结构，但捕获身份和父级消费契约未闭合，不新增草稿、不升级完整静态恢复。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)",
   "progress_reconciled": {
-    "source_of_counts": "检查点#82累计72个普通Lua草稿；检查点#83新增BlacklistPlayerDetection；检查点#84新增StorageItems。",
+    "source_of_counts": "检查点#84累计74个普通Lua草稿；检查点#85仅复核StorageItems子原型，不新增普通Lua草稿。",
     "ordinary_lua_draft_functions": 74,
     "complete_static_reconstruction_functions": 29,
     "runtime_verified_functions": 0,
-    "note": "本轮新增2个普通Lua草稿（BlacklistPlayerDetection、StorageItems）；完整静态恢复及运行时验证数量不变。"
+    "note": "本轮未新增普通Lua草稿；完整静态恢复与运行时验证数量不变。"
   }
 }
