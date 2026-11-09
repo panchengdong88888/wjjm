@@ -842,6 +842,29 @@
         "开启分支先TakeItems()，再schedule(TakeItems,1.0)保存句柄。",
         "29条指令闭合；未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[44]",
+      "legacy_path": "root/45",
+      "name": "GetPlayerMapPosition",
+      "physical_instructions": 17,
+      "constant_count": 5,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第三十七批.lua",
+      "audit_file": "",
+      "parameters": [
+        "actor"
+      ],
+      "returns": [
+        "actor为假值时nil；否则返回{x,y}，坐标假值回退0"
+      ],
+      "notes": [
+        "检查点61确认actor假值返回nil。",
+        "读取mCurrMapX/mCurrMapY，false/nil坐标默认0，返回{x,y}。",
+        "17条指令静态闭合；未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
