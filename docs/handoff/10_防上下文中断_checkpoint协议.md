@@ -1619,3 +1619,17 @@
 - 函数状态CSV index 90 已改为“首版普通Lua草稿（待静态复审/未运行时验证）”。
 - 统计：普通Lua草稿81→82；完整静态恢复76/110不变；运行时验证0不变。
 - 下一步：优先复核UPVALUE_15/20的父级生产者/调用关系，逐PC闭合PC313-PC343，再独立复核MainLoop全函数控制流；在完成前不升级完整静态恢复。
+
+## 检查点 #153（2026-11-09）：MainLoop 捕获身份与 GATHERING 循环校正
+
+- 重新读取 root.children[45] 的22槽闭包映射、corrected phase3 指令级清单和阶段三控制流报告。
+- UPVALUE_15 来源为父root T[36]，父PC210创建child-index 14，即 root.children[14] FindMonsterInCurrViewField。该helper无形式参数，调用 SL:FindMonsterInCurrViewField(true,true)，构造 actorID -> actor 映射；MainLoop PC159额外传入UPVALUE_12，但callee不读取该实参。
+- UPVALUE_20 来源为父root T[24]，父PC184创建child-index 35，即 root.children[35] SetTargetID。该函数检查global.Facade与PlayerInputProxy；缺失返回false，存在时调用 proxy:SetTargetID(targetID, global.MMO.SELETE_TARGET_TYPE_FIND) 并返回true。
+- PC162-PC166构成数值for准备：起始索引UPVALUE_10、上限#UPVALUE_8、步长1；PC166执行R3=R3-1并跳转PC313。PC313 OP_412循环体回边至PC167，循环退出至PC314，故遍历UPVALUE_10..#UPVALUE_8。
+- PC161将R2置true；PC263在GetOwnerIDText为false、进入未归属分支时将R2清false。循环后PC314按R2分流；两分支均以UPVALUE_10是否超过#UPVALUE_8决定状态转换：true且完成则切ATTACKING；false且完成则提示未全部获取归属、切IDLE并ResetGatherMonsterData；未完成则留待下一次调度。
+- 未归属分支SetTargetID成功/失败均汇合到PC311，将UPVALUE_10设为当前索引+1，继续for循环；检查点152草稿中成功/失败后立即return的两处已删除。
+- UPVALUE_11仅在“归属已属于自己”分支递增；PC314-PC343的最终状态转换并不以UPVALUE_11与目标数量比较。删除检查点152原稿中该比较。
+- 修订 04_源码候选/root45_MainLoop.lua，更新函数状态CSV和机器状态JSON，新增审计 docs/audit/检查点153_MainLoop捕获身份与GATHERING循环校正.md。
+- 本批仅校正既有普通Lua草稿，不新增草稿、不升级完整静态恢复、不增加运行时验证。
+- 统计保持：普通Lua草稿82、完整静态恢复76/110、运行时验证0。
+- 下一步：逐PC复核MainLoop PC359-PC405 ATTACKING循环，再核查其余CFG与返回路径。
