@@ -1806,3 +1806,13 @@
 - 新增审计`docs/audit/检查点167_UseItemByIndex完整静态复审与闭包表达修正.md`；更新源码候选、CSV、机器状态JSON。
 - 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复88/110；运行时验证0。
 - 下一步：审查Nested_Panel_mini_chat（root.children[55].children[0]，24条）与Nested_ID（root.children[55].children[1]，27条）。
+
+## 检查点 #168（2026-11-09）：AccountIDValidation 两个子原型普通 Lua 恢复
+
+- 新增源码：`04_源码候选/root55_children_drafts.lua`。
+- 新增审计：`docs/audit/检查点168_AccountIDValidation子原型恢复.md`。
+- `root.children[55].children[1]` / Nested_ID（27条）：完成普通 Lua 重建与独立静态复审。确认对首个显式参数及允许列表项分别执行 tostring 后比较；命中调用 UP[1] 并返回 true，未命中调用 UP[2] 并返回 false；额外变参未读取。提升为“完整静态恢复（未运行时验证）”。
+- `root.children[55].children[0]` / Nested_Panel_mini_chat（24条）：完成主体控制流独立复审。确认 MainProperty、_ui、Panel_mini_chat 三级门槛；满足时 SL:UnSchedule(UP[0])，随后零参调用 MainLeftBottom.doInit；所有路径均调用 UP[1] 输出固定等待提示。仍保留普通 Lua 草稿状态，因为父 PC58 的两个捕获值生产者未闭合。
+- 父函数 AccountIDValidation（root.children[55]）仍是首版草稿；其 Schedule 参数栈/调度捕获没有被本批擅自判定完成。
+- 统计：普通 Lua 草稿函数数 83；完整静态恢复 89/110；运行时验证 0。草稿数与完整静态恢复数分开统计。
+- 下一步：追溯 root.children[55] PC27-PC64，闭合 Panel 子闭包捕获来源与 Schedule 参数顺序；随后继续批量恢复未有可读草稿的短函数。
