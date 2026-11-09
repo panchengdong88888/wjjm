@@ -13,9 +13,9 @@
   "major_targets": {
     "root.children[45]": "417-instruction MainLoop gather/attack state machine; legacy root/46; structural/CFG and captures mapped, high-level Lua still pending",
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
-    "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous wrapper now drafted with caller contract from Nested_Helper_4/7, but T[2] delayed-notice producer unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next."
+    "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next."
   },
-  "next_action": "追踪Nested_Anonymous（root.children[42].children[22]）的T[2]生产者；其子回调将该槽作为延迟错误提示函数调用，当前草稿以nil占位，尚不可升级完整静态恢复。随后整合Nested_FFFF00（root.children[42].children[3]）剩余父函数指令及Nested_Helper_3刷新闭包，继续复核doInit_UI剩余子原型。",
+  "next_action": "核对Nested_Anonymous（root.children[42].children[22]）的函数入口参数初始化与T[0]/T[1]/T[2]寄存器映射；两个调用包装器的实参已确认，但不能据此臆测VM帧槽位。T[2]下游被作为延迟错误提示函数调用，生产者未追出。随后整合Nested_FFFF00剩余320条指令及Nested_Helper_3刷新闭包，继续复核doInit_UI剩余子原型。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -1719,7 +1719,7 @@
     "date": "2026-11-09",
     "checkpoint": 114,
     "target": "Nested_Anonymous and input wrappers Nested_Helper_4/7",
-    "status": "first-pass ordinary Lua draft; call contract verified; T[2] producer unresolved; no runtime validation",
+    "status": "first-pass ordinary Lua draft; caller argument values confirmed but VM T-slot mapping and T[2] producer unresolved; no runtime validation",
     "source_file": "04_源码候选/Nested_Anonymous_第七十八批.lua",
     "audit_file": "docs/audit/检查点114_Nested_Anonymous调用契约复核.md",
     "added_drafts": [
@@ -1733,7 +1733,7 @@
     "draft_count_total": 78,
     "complete_static_reconstruction_count": 58,
     "runtime_verified_count": 0,
-    "note": "Nested_Helper_4/7 both call Nested_Anonymous(promptText,callbackClosure). Nested_Anonymous creates Nested_str and invokes it immediately. T[2] is used as delayed error-notice callback but its producer remains unresolved; keep nil placeholder visibly marked and do not count as complete static reconstruction."
+    "note": "Nested_Helper_4/7 both call Nested_Anonymous with prompt text and callback closure. The wrapper creates Nested_str and invokes it immediately. Do not equate call arguments with T[0]/T[1]/T[2] without VM frame-entry proof; all three slots remain explicit draft placeholders."
   },
   "corrections": [
     {
@@ -1891,7 +1891,7 @@
       "name": "Nested_Anonymous",
       "source_file": "04_源码候选/Nested_Anonymous_第七十八批.lua",
       "audit_file": "docs/audit/检查点114_Nested_Anonymous调用契约复核.md",
-      "status": "first_pass_draft_pending_T2_producer_review_not_runtime_verified",
+      "status": "first_pass_draft_pending_VM_T_slot_mapping_and_T2_producer_not_runtime_verified",
       "physical_instructions": 8,
       "constant_count": 0,
       "child_count": 1,
@@ -1899,9 +1899,9 @@
       "notes": [
         "doInit_UI PC248 creates the closure; its sole upvalue captures parent UP[0], identified as PrintLog from the parent closure chain.",
         "PC1 creates Nested_str; capture order is current T[0], current UP[0], current T[2], current T[1]. PC6-PC7 immediately invokes Nested_str with zero explicit arguments.",
-        "Nested_Helper_4 and Nested_Helper_7 both call Nested_Anonymous(promptText, callbackClosure); their UP[0] is the closure created at parent PC248.",
-        "T[0]/T[1] are provisionally named initialText/onValid from the observed callers. T[2] is called downstream as the delayed error-notice function, but its producer in this frame remains unresolved.",
-        "The readable draft uses an explicit nil placeholder for T[2]; it is not executable as recovered behavior and is not counted as complete static reconstruction.",
+        "Nested_Helper_4 and Nested_Helper_7 both call Nested_Anonymous with two values: prompt text and callback closure. Exact mapping of these caller values to callee T[0]/T[1]/T[2] is not proven.",
+        "Nested_str/Nested_match/Nested_Helper_11 use T[2] downstream as a delayed error-notice callable; its producer in the Nested_Anonymous frame remains unresolved.",
+        "The readable draft uses explicit nil placeholders for T[0]/T[1]/T[2]; these are analysis placeholders only, not recovered runtime values.",
         "Nested_str/Nested_match/Nested_Helper_11 remain independently statically recovered at checkpoint #112; no host runtime validation."
       ]
     },
@@ -2342,11 +2342,11 @@
   "last_checkpoint": "114",
   "checkpoint": "114",
   "drafts": 33,
-  "next": "追踪Nested_Anonymous（root.children[42].children[22]）的T[2]生产者；其子回调将该槽作为延迟错误提示函数调用，当前草稿以nil占位，尚不可升级完整静态恢复。随后整合Nested_FFFF00（root.children[42].children[3]）剩余父函数指令及Nested_Helper_3刷新闭包，继续复核doInit_UI剩余子原型。",
+  "next": "核对Nested_Anonymous（root.children[42].children[22]）的函数入口参数初始化与T[0]/T[1]/T[2]寄存器映射；两个调用包装器的实参已确认，但不能据此臆测VM帧槽位。T[2]下游被作为延迟错误提示函数调用，生产者未追出。随后整合Nested_FFFF00剩余320条指令及Nested_Helper_3刷新闭包，继续复核doInit_UI剩余子原型。",
   "recent_checkpoint": {
     "checkpoint": "114",
     "date": "2026-11-09",
-    "summary": "新增Nested_Anonymous首版普通Lua草稿；核实Nested_Helper_4与Nested_Helper_7均以提示文字和回调闭包调用该包装器；其8条指令创建Nested_str并立即无参调用。T[2]被子回调作为延迟错误提示函数调用，但生产者未追出，草稿保留nil占位，不升级完整静态恢复。",
+    "summary": "新增Nested_Anonymous首版普通Lua草稿；核实Nested_Helper_4与Nested_Helper_7均传入提示文字和回调闭包；8条指令创建Nested_str并立即无参调用。VM帧参数到T[0]/T[1]/T[2]映射未证明，T[2]下游作为延迟错误提示函数调用但生产者未追出，三个槽位保留占位，不升级完整静态恢复。",
     "files": [
       "04_源码候选/Nested_Anonymous_第七十八批.lua",
       "docs/audit/检查点114_Nested_Anonymous调用契约复核.md",
@@ -2369,17 +2369,18 @@
     "source_file": "04_源码候选/Nested_Anonymous_第七十八批.lua",
     "audit_file": "docs/audit/检查点114_Nested_Anonymous调用契约复核.md",
     "findings": [
-      "Nested_Helper_4与Nested_Helper_7均确认调用Nested_Anonymous(promptText,callbackClosure)。",
-      "Nested_Anonymous PC1创建Nested_str，捕获T[0]/UP[0]/T[2]/T[1]；PC6-PC7立即无参调用子闭包。",
-      "父级UP[0]为PrintLog；T[0]/T[1]按调用链暂恢复为initialText/onValid。",
-      "Nested_str链将T[2]作为延迟错误提示回调调用；其生产者尚未追出，源码保留nil占位并继续标记草稿。"
+      "Nested_Helper_4与Nested_Helper_7均确认传入提示文字和回调闭包，但实参到Nested_Anonymous帧T[0]/T[1]/T[2]的映射未证明。",
+      "Nested_Anonymous PC1创建Nested_str，捕获顺序为T[0]/UP[0]/T[2]/T[1]；PC6-PC7立即无参调用子闭包。",
+      "父级UP[0]为PrintLog；T[2]下游作为延迟错误提示函数调用，但其生产者尚未追出。",
+      "源码三个T槽均保留nil占位，不得当作已恢复值；运行时验证0。"
     ],
     "unresolved": [
+      "Nested_Anonymous VM函数入口参数初始化及调用实参到T[0]/T[1]/T[2]映射",
       "Nested_Anonymous T[2]生产者及真实业务来源",
       "doInit_UI剩余父捕获/GUI参数和Nested_FFFF00/Nested_Helper_3闭包契约",
       "未进行游戏客户端运行时验证"
     ],
-    "status": "first_pass_draft_pending_T2_producer_not_runtime_verified",
+    "status": "first_pass_draft_pending_VM_T_slot_mapping_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 78,
       "complete_static_reconstruction": 58,
@@ -2393,7 +2394,7 @@
     "ordinary_lua_draft_functions": 78,
     "complete_static_reconstruction_functions": 58,
     "runtime_verified_functions": 0,
-    "note": "检查点114新增Nested_Anonymous首版普通Lua草稿；T[2]生产者未闭合，不升级完整静态恢复。"
+    "note": "检查点114新增Nested_Anonymous首版普通Lua草稿；调用包装器实参已确认，但VM T槽映射与T[2]生产者未闭合，不升级完整静态恢复。"
   },
   "counts": {
     "ordinary_lua_drafts": 78,
