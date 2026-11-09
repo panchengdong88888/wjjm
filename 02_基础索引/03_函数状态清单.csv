@@ -67,7 +67,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 64,root/42/5,root.children[42].children[5],root/43/6,Nested_ffffff,41,10,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 65,root/42/6,root.children[42].children[6],root/43/7,Nested_StopGatherMonsters,31,5,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 66,root/42/7,root.children[42].children[7],root/43/8,Nested_InitGatherMonsters,17,2,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第二十一批.lua；refreshFlag 为假时刷新 GATHER_THRESHOLD；阈值为真返回 false，否则调用 InitGatherMonsters 并返回 true；父级捕获 UP8/UP9 原名待核；检查点42。
-67,root/42/8,root.children[42].children[8],root/43/9,Nested_SL_3,29,10,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+67,root/42/8,root.children[42].children[8],root/43/9,Nested_SL_3,29,10,0,首版普通 Lua 草稿（未运行时验证）,存仓定时开关：已有 storageTimer 时提示关闭、SL:UnSchedule、清空 timer 并置 isStoring=false；无 timer 时提示开启、立即 StorageItems()，再以 1.0 间隔调用捕获调度函数并保存句柄；父级 PC307 捕获槽位已映射；检查点47。
 68,root/42/9,root.children[42].children[9],root/43/10,Nested_Button_setTitleFontSize,50,17,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 69,root/42/9/0,root.children[42].children[9].children[0],root/43/10/1,Nested_Button_setTitleText,48,10,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 70,root/42/10,root.children[42].children[10],root/43/11,Nested_shiquTimer,25,8,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十九批.lua；读取shiquTimer；存在时提示关闭、SL:UnSchedule并写入常量标记{unknown,2}；不存在时提示开启、PickUpItems(0.01)并保存返回句柄；UP槽位来源待父级创建点核实；检查点40。
@@ -107,6 +107,6 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 104,root/54,root.children[54],root/55,AnonymousHelper_54,6,0,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十六批.lua；将UP[0]与首个显式参数转交UP[1]并原样返回；后续return不可达；检查点37。
 105,root/55,root.children[55],root/56,AccountIDValidation,64,21,2,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 106,root/55/0,root.children[55].children[0],root/56/1,Nested_Panel_mini_chat,24,8,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十八批.lua；检查MainProperty、_ui、Panel_mini_chat；均存在时SL:UnSchedule(UP[0])并调用MainLeftBottom.doInit()；所有路径最后调用UP[1]显示等待提示；捕获来源待父级创建点核实；检查点39。
-107,root/55/1,root.children[55].children[1],root/56/2,Nested_ID,27,4,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+107,root/55/1,root.children[55].children[1],root/56/2,Nested_ID,27,4,0,首版普通 Lua 草稿（未运行时验证）,ipairs 遍历允许账号列表，逐项与 tostring(accountID) 比较；命中调用允许提示回调并返回 true；未命中调用限制提示回调并返回 false；父级 PC38 捕获允许列表及两个提示回调；额外变参在主体中未见读取；检查点47。
 108,root/56,root.children[56],root/57,ClearTargetID_2,22,9,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十六批.lua；检查Facade并retrieveProxy(PlayerInputProxy)，代理存在时SetTargetID(0, SELETE_TARGET_TYPE_FIND)；检查点37。
 109,root/58,root.children[57],root/58,PlayerPos,10,4,0,完整静态恢复（未运行时验证）,04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua；依次调用 SL:GetMetaValue('X') 与 SL:GetMetaValue('Y')，返回两个值；不同于 GetPlayerPosition 的坐标表返回契约。 审计见docs/audit/检查点30_PlayerPos与匿名转发闭包.md。
