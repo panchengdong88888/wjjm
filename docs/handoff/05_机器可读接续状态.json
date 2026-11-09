@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续筛选未开始的短函数。优先检查 root.children[42].children[22]（Nested_Anonymous，8条指令且有1个子原型）及 root.children[42].children[22].children[0]（Nested_str，27条）/其子函数，先闭合匿名包装函数的调用与捕获关系；再处理 root.children[42].children[9] / Nested_Button_setTitleText。不要重做Nested_Helper_4/7与其已完成回调主体。",
+  "next_action": "DiuItems（root.children[46]）已有普通Lua草稿并在检查点#33完成独立静态复审，本次#58再次核对文件、审计和CSV状态一致；不要重写或重复计数。下一目标按检查点#57选择 root.children[42].children[22]（Nested_Anonymous，8条指令）及其子函数 root.children[42].children[22].children[0]（Nested_str，27条）/其子函数。先追踪Nested_Anonymous创建的回调闭包、四个捕获来源及调用关系；若闭包语义仍有疑点，先写可证实的主体草稿并注释未知部分，再转其他短函数。不要重做已完成的底层反汇编或Nested_Helper_4/7。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "56"
+    "last_checkpoint": "58"
   },
   "static_recovered_functions": [
     {
@@ -585,27 +585,13 @@
   "drafts": 32,
   "next": "继续筛选未开始的短函数。优先检查 root.children[42].children[22]（Nested_Anonymous，8条指令且有1个子原型）及 root.children[42].children[22].children[0]（Nested_str，27条）/其子函数，先闭合匿名包装函数的调用与捕获关系；再处理 root.children[42].children[9] / Nested_Button_setTitleText。不要重做Nested_Helper_4/7与其已完成回调主体。",
   "recent_checkpoint": {
-    "id": 57,
+    "checkpoint": "58",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第三十五批.lua",
-    "audit_file": "docs/audit/检查点57_Nested_Helper_4与7包装函数草稿.md",
-    "added_drafts": [
-      {
-        "path": "root.children[42].children[11]",
-        "legacy": "root/43/12",
-        "name": "Nested_Helper_4",
-        "instructions": 12
-      },
-      {
-        "path": "root.children[42].children[14]",
-        "legacy": "root/43/15",
-        "name": "Nested_Helper_7",
-        "instructions": 12
-      }
-    ],
-    "draft_count_total": 45,
-    "complete_static_reconstruction_count": 27,
-    "runtime_verified_count": 0,
-    "note": "新增两个输入包装函数草稿，分别连接既有Nested_Helper_5与Nested_Helper_8回调主体。"
+    "summary": "接续状态核对：确认DiuItems普通Lua草稿已存在且CSV标记为首版普通Lua草稿（已独立复审/未运行时验证）；机器状态原last_checkpoint落后于检查点协议#57，现统一更新至#58。未新增函数，不改变草稿数、完整静态恢复数或运行时验证数。",
+    "verified": {
+      "diu_items_source": "04_源码候选/root46_DiuItems.lua",
+      "diu_items_audit": "docs/audit/root46_DiuItems_阶段分析.md",
+      "diu_items_status": "首版普通 Lua 草稿（已独立复审/未运行时验证）"
+    }
   }
 }
