@@ -1593,3 +1593,17 @@
 - 新增审计：`docs/audit/检查点150_StorageItems可用页码辅助函数普通Lua草稿.md`；更新函数状态CSV。
 - 该子函数从“阶段分析中（未形成普通Lua草稿）”改为“首版普通Lua草稿（待静态复审/未运行时验证）”。本批草稿总数由78增至79；完整静态恢复76/110不变；运行时验证0不变。
 - 下一步继续从函数状态CSV挑选已有控制流/捕获映射但尚无独立Lua草稿的短函数，优先补齐第一层草稿覆盖率；BlacklistPlayerDetection和StorageItems主函数剩余疑点不阻塞该工作。
+
+
+## 检查点 #151（2026-11-09）：GetOwnerIDText / GetOwnerID 双普通 Lua 草稿
+- 对象：`root.children[7]`（legacy root/8，31条指令）与 `root.children[38]`（legacy root/39，31条指令）。
+- 重新读取 `docs/audit/owner_id_helpers_阶段核验.md` 和 corrected phase3 对应PC1-PC31；沿用已记录的静态真值表，不重复底层反汇编研究。
+- 新增 `04_源码候选/root7_GetOwnerIDText.lua` 与 `04_源码候选/root38_GetOwnerID.lua`。
+- 两函数均调用第一个参数对象的GetOwnerID()；nil、空字符串、-1返回false。
+- GetOwnerIDText：string分支返回 ownerID==tostring(ownerID)，非string分支返回 ownerID==第二参数。
+- GetOwnerID：string分支返回 ownerID~=tostring(ownerID)，非string分支返回 ownerID~=第二参数。
+- 既有MainLoop调用关系保留：upvalue[17]调用GetOwnerIDText并控制归属变更日志；upvalue[9]调用GetOwnerID并控制候选插入/跳过。参数作者级名称仍使用描述性占位。
+- 更新函数状态CSV第10、48项；新增审计 `docs/audit/检查点151_OwnerID辅助函数双草稿恢复.md`。
+- 两函数状态改为首版普通Lua草稿，待静态复审/未运行时验证。
+- 本批新增草稿2个；普通Lua草稿总数79增至81。完整静态恢复76/110不变，运行时验证0不变。
+- 下一步继续筛选尚无独立普通Lua草稿的小函数，先提高第一层覆盖率；之后再集中复核两个owner helper的PC跳转、参数来源和真实ID类型样本。
