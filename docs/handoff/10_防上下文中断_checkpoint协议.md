@@ -799,3 +799,12 @@
 - 待复核：主函数3个捕获身份；页数/容量算法；child0调用点与实参；两段过滤循环的数据结构；LuaSendMsg所有实参顺序/字段语义；计数是否代表发送成功。源码中的pageCalculation、回调及消息参数为显式占位，不能作为最终可执行协议。
 - 本轮新增BlacklistPlayerDetection及StorageItems两个普通Lua草稿；累计74个。完整静态恢复仍29/110（26.4%）；运行时验证0。
 - 下一步继续评估剩余未开始原型，并复核Nested_Anonymous_2及LuaSendMsg参数布局。
+
+
+## 检查点 #85（2026-11-09）：StorageItems / Nested_Anonymous_2 子原型复核
+- 新增审计：docs/audit/检查点85_StorageItems_Nested_Anonymous_2复核.md。
+- 复核原型索引99，规范路径root.children[50].children[1]，legacy root/51/2，27条指令、1个数值常量、4个闭包捕获。
+- 确认数值循环回跳PC24→5、捕获值比较、PC9–14融合算术、PC19–20动态表键访问、PC23/26多返回值路径。
+- 四个捕获值的业务身份、融合算术的高层表达式、父函数消费返回值的位置/约定仍未闭合；因此只保存阶段分析，不新增普通Lua草稿，不升级完整静态恢复。
+- 累计普通Lua草稿74；完整静态恢复29/110（26.4%）；运行时验证0。
+- 下一步转向未开始短函数root.children[12]（LuaSendMsg）与root.children[22]（GetMapData2DPtr），择其控制流和返回契约较清晰者先恢复。
