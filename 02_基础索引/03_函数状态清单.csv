@@ -105,7 +105,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 102,root/53/1,root.children[52].children[0],root/53/1,Nested_JsonDecode,6,2,0,首版普通Lua草稿（待静态复审/未运行时验证）,检查点64；父级onDamageMsg在PC7创建闭包，UPVALUE_0捕获父级T[3]；主路径调用SL.JsonDecode(UPVALUE_0)并直接返回；PC5备用返回路径的触发条件尚未闭合，参数业务语义待追踪。
 103,root/53,root.children[53],root/54,ScheduleOnce,7,2,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十七批.lua；取SL.ScheduleOnce并转发vararg参数；PC6-7位于return之后不可达；检查点38。
 104,root/54,root.children[54],root/55,AnonymousHelper_54,6,0,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十六批.lua；将UP[0]与首个显式参数转交UP[1]并原样返回；后续return不可达；检查点37。
-105,root/55,root.children[55],root/56,AccountIDValidation,64,21,2,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+105,root/55,root.children[55],root/56,AccountIDValidation,64,21,2,首版普通Lua草稿（游戏ID/账号白名单验证主体已恢复；调度捕获待复核；未运行时验证）,检查点79；主函数捕获root T[4]/T[5]；读取GAME_ID并与204208比较，读取UID并输出；构造9项字符串允许列表，子原型Nested_ID遍历比较UID并输出命中/未命中提示、返回布尔值；主函数再输出验证结果并Schedule 0.5秒界面初始化检查；子原型检查MainProperty/_ui/Panel_mini_chat并调用UnSchedule/MainLeftBottom.doInit；T[4]调度标识及Schedule参数顺序待复核。
 106,root/55/0,root.children[55].children[0],root/56/1,Nested_Panel_mini_chat,24,8,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十八批.lua；检查MainProperty、_ui、Panel_mini_chat；均存在时SL:UnSchedule(UP[0])并调用MainLeftBottom.doInit()；所有路径最后调用UP[1]显示等待提示；捕获来源待父级创建点核实；检查点39。
 107,root/55/1,root.children[55].children[1],root/56/2,Nested_ID,27,4,0,首版普通 Lua 草稿（未运行时验证）,ipairs 遍历允许账号列表，逐项与 tostring(accountID) 比较；命中调用允许提示回调并返回 true；未命中调用限制提示回调并返回 false；父级 PC38 捕获允许列表及两个提示回调；额外变参在主体中未见读取；检查点47。
 108,root/56,root.children[56],root/57,ClearTargetID_2,22,9,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十六批.lua；检查Facade并retrieveProxy(PlayerInputProxy)，代理存在时SetTargetID(0, SELETE_TARGET_TYPE_FIND)；检查点37。
