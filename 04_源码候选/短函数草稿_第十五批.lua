@@ -5,10 +5,12 @@
 
 -- 原型：root.children[0].children[0]
 -- legacy：root/1/1；物理指令：5
--- 依据：UP[0].removeFile，调用时传入 UP[0] 作为 self、UP[1] 作为路径参数。
+-- 父root/1 PC17创建闭包，PC18-PC19依次捕获父R1与R2：
+-- UP[0]=cc.FileUtils:getInstance()返回的FileUtils实例；
+-- UP[1]=父函数收到并用于isFileExist检查的路径参数。
+-- 本体仅调用removeFile(path)，不保留该方法的返回值。
 local function Nested_removeFile()
-    local fileUtilsLikeObject = UPVALUE_0
-    return fileUtilsLikeObject:removeFile(UPVALUE_1)
+    fileUtils:removeFile(path)
 end
 
 -- 原型：root.children[15].children[0]
