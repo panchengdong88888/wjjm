@@ -916,3 +916,12 @@
 - Nested_Helper_3捕获moneyRows/itemRows两张映射表：moneyRows由MoneyProxy按名称取ID/当前数量，并结合initSnapshot计算括号内差值后格式化更新Text节点；itemRows通过Nested_string从BAG_DATA按名称查找物品，读取绑定/叠加信息并更新Text节点。
 - 两张映射表与两条刷新数据源已在第六十二批草稿和检查点87审计中区分记录；具体绑定/非绑定资源分支和Nested_string多返回值仍待逐条复核。
 - 计数不变：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
+
+
+### 检查点 #89（2026-11-09）：DiuItems 独立静态复审完成
+- 原型 `root.children[46]`（legacy `root/47`），169条物理指令、64常量、1个子原型。
+- 复审源码：`04_源码候选/root46_DiuItems.lua`；独立审计：`docs/audit/检查点89_DiuItems独立静态复审.md`。
+- 对照反汇编、原型索引、闭包捕获映射及既有检查点，确认父级两个捕获分别为模块状态表和ShowLocalNoticeByType；确认pairs/ipairs迭代器返回槽位、ITEM_IS_BIND truthy排除、PC89恒真分支使关键词matcher调用不可达、候选字段、35件上限、固定提示文案、LuaSendMsg七项参数及发送计数。
+- 正常/提前退出路径的显式isDiuing清理已闭合；无可见异常保护，外部调用抛错时标记可能遗留。
+- DiuItems状态提升为“完整静态恢复（未运行时验证）”。普通Lua草稿数量仍为77；完整静态恢复29→30/110；运行时验证仍为0。
+- 下一目标：继续root.children[42] doInit_UI资源刷新链，核对Nested_Helper_3的MoneyProxy分支、Nested_string多返回值及Nested_FFFFFF GUI构造参数；不重复DiuItems。
