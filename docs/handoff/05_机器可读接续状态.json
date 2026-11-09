@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续筛选未开始短原型；优先评估root.children[41]（MoveItemToQuickUse，133条）与root.children[42].children[3].children[3]（Nested_Helper_3，168条），以主体清晰度和闭包/返回契约为准；TakeItems过滤表与LuaSendMsg参数可集中复核。",
+  "next_action": "继续评估剩余未开始函数；优先对BlacklistPlayerDetection（root.children[47]，216条）与StorageItems（root.children[50]，224条）做主体可读性评估，再选择更容易闭合的函数；同时可复核Nested_Helper_3十个upvalue与两组快照字段。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "81"
+    "last_checkpoint": "82"
   },
   "static_recovered_functions": [
     {
@@ -487,23 +487,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 81,
-    "target": "TakeItems",
+    "checkpoint": 82,
+    "target": "Nested_Helper_3",
     "status": "first_pass_draft; static review pending; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第五十七批.lua",
-    "audit_file": "docs/audit/检查点81_TakeItems首版草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第五十八批.lua",
+    "audit_file": "docs/audit/检查点82_Nested_Helper_3首版草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[5]",
-        "legacy": "root/6",
-        "name": "TakeItems",
-        "instructions": 99
+        "path": "root.children[42].children[3].children[3]",
+        "legacy": "root/43/4/4",
+        "name": "Nested_Helper_3",
+        "instructions": 168
       }
     ],
-    "draft_count_total": 71,
+    "draft_count_total": 72,
     "complete_static_reconstruction_count": 29,
     "runtime_verified_count": 0,
-    "note": "恢复取仓库物品主流程、状态互斥、物品检查/过滤、请求发送和完成提示；过滤表内容及发送参数映射仍待复核。"
+    "note": "恢复定时器清理、pcall时间获取/格式化、当前时间/历时UI和两组货币数量快照差值刷新结构；捕获身份与数据/控件字段待复核。"
   },
   "corrections": [
     {
@@ -1034,12 +1034,30 @@
         "isTaking mutual exclusion, storage enumeration, empty-state message, item validation/trim, string.find filter loop, storage pickup request and completion message recovered at control-flow level.",
         "Filter table population and contents are unresolved; LuaSendMsg exact argument order/count remains provisional; capture identities and count semantics pending."
       ]
+    },
+    {
+      "path": "root.children[42].children[3].children[3]",
+      "legacy_path": "root/43/4/4",
+      "name": "Nested_Helper_3",
+      "source_file": "04_源码候选/短函数草稿_第五十八批.lua",
+      "audit_file": "docs/audit/检查点82_Nested_Helper_3首版草稿.md",
+      "status": "first_pass_draft_pending_static_review_not_runtime_verified",
+      "physical_instructions": 168,
+      "constant_count": 31,
+      "child_count": 0,
+      "parent_path": "root.children[42].children[3]",
+      "parent_create_pc": 299,
+      "capture_count": 10,
+      "notes": [
+        "Window validity and timer unschedule/clear; protected os.time/os.date; current-time and elapsed-time UI; two pairs-based money/count snapshot-delta refresh loops.",
+        "Ten capture identities, both iterator tables and entry fields, initSnapshot nested keys, and Text_setString target/argument mappings remain unresolved."
+      ]
     }
   ],
-  "draft_function_count": 71,
-  "ordinary_lua_draft_functions": 71,
-  "last_checkpoint": 81,
-  "checkpoint": "81",
+  "draft_function_count": 72,
+  "ordinary_lua_draft_functions": 72,
+  "last_checkpoint": 82,
+  "checkpoint": "82",
   "drafts": 32,
   "next": "继续评估未开始的短函数LuaSendMsg（root.children[12]）和GetMapData2DPtr（root.children[22]）；优先恢复清楚的主体，保留未闭合参数/捕获名。",
   "recent_checkpoint": {
@@ -1062,21 +1080,21 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "81",
+    "checkpoint": "82",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第五十七批.lua",
-    "audit_file": "docs/audit/检查点81_TakeItems首版草稿.md",
-    "ordinary_lua_draft_functions": 71,
+    "source_file": "04_源码候选/短函数草稿_第五十八批.lua",
+    "audit_file": "docs/audit/检查点82_Nested_Helper_3首版草稿.md",
+    "ordinary_lua_draft_functions": 72,
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增TakeItems首版普通Lua草稿；过滤表内容、LuaSendMsg参数窗口、捕获对象身份及计数语义待复核。"
+    "summary": "新增Nested_Helper_3首版普通Lua草稿；窗口/计时/日期与两组货币UI刷新控制流已恢复，十个捕获身份及快照/控件参数待复核。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)",
   "progress_reconciled": {
-    "source_of_counts": "检查点#80累计70个普通Lua草稿；检查点#81新增TakeItems。",
-    "ordinary_lua_draft_functions": 71,
+    "source_of_counts": "检查点#81累计71个普通Lua草稿；检查点#82新增Nested_Helper_3。",
+    "ordinary_lua_draft_functions": 72,
     "complete_static_reconstruction_functions": 29,
     "runtime_verified_functions": 0,
     "note": "本批新增1个普通Lua草稿；完整静态恢复及运行时验证数量不变。"
