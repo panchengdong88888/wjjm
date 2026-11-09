@@ -36,9 +36,9 @@
     "root.children[40]": "ShowHideAllButtons：47条；检查点165按父root PC270捕获顺序修正为UP0=root T[3]定时器状态、UP1=root T[1]按钮表、UP2=root T[0]UI状态/hidebut控件。两个timer独立取消并清nil；pairs遍历UP1并显示；UP2.hidebut是单个控件，直接GUI:setVisible(hidebut,false)后清nil，不是第二张pairs表。完整静态恢复，未运行时验证。",
     "root.children[31]": "IsInWhitelistMap：28条；检查点166闭合SL:GetMetaValue(IN_SAFE_AREA) truthy快速返回true；否则读取MAP_NAME，以ipairs遍历唯一白名单“土城”，匹配返回true、耗尽返回false。PC28为不可达尾部return。无upvalue/子原型；完整静态恢复，未运行时验证。",
     "root.children[24]": "UseItemByIndex：33条；检查点167确认父root PC355/356捕获T[37]为UP0，源码改为make_UseItemByIndex(itemNameList)工厂闭包；ipairs遍历捕获列表，分别读取ITEM_INDEX_BY_NAME与ITEM_COUNT，tonumber(...) or 0归一；itemIndex truthy且数量>0时SL:UseItemByIndex(itemIndex)，返回当前itemName；耗尽无值返回。函数体完整静态恢复，捕获表业务来源仍未追踪，未运行时验证。",
-    "root.children[55]": "AccountIDValidation：64条；检查点168新增两个子原型普通Lua候选。Nested_ID（root.children[55].children[1]，27条）完整静态恢复，tostring归一比较、提示回调及true/false返回已闭合；Nested_Panel_mini_chat（root.children[55].children[0]，24条）主体控制流已复审，父PC58两个捕获值的生产者仍待核对。父函数自身仍为首版草稿，Schedule参数顺序/调度捕获未完整闭合；均未运行时验证。"
+    "root.children[55]": "AccountIDValidation：64条；检查点168新增父函数与两个子原型普通Lua草稿。Nested_ID（27条）完整静态恢复；Nested_Panel_mini_chat（24条）主体控制流复审，父PC58捕获生产者/语义仍待核验；父函数主体首版草稿，读取GAME_ID/UID、9项白名单、成功失败提示及SL:Schedule(callback,0.5)已整理。PC58第一个捕获值为验证结果寄存器，子闭包将其传入UnSchedule，暂不作语义猜测；未运行时验证。"
   },
-  "next_action": "检查点168：root.children[55].children[1] Nested_ID（27条）已完成普通Lua重建与独立静态复审，提升为完整静态恢复（未运行时验证）；root.children[55].children[0] Nested_Panel_mini_chat（24条）主体控制流已独立复审，仍为普通Lua草稿，待追溯父root PC58创建闭包时两个捕获值的生产者。下一步优先核对root.children[55] PC27-PC64的父级调用、Schedule参数顺序及Panel闭包捕获来源；随后批量选择尚无可读草稿的短函数。",
+  "next_action": "检查点168：root.children[55] AccountIDValidation及两个子原型均已有普通Lua草稿。Nested_ID已完整静态恢复（未运行时验证）；Nested_Panel_mini_chat主体控制流已复审，但父PC58第一个捕获值来自验证结果寄存器，第二捕获为UP0，具体调度语义保留未决；父函数Schedule回调/0.5秒参数栈已整理为草稿，尚未验证。下一步优先独立复核root.children[55] PC38-PC64捕获/返回/调度数据流，解决UnSchedule捕获值语义；之后批量处理其他无草稿短函数。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2063,10 +2063,11 @@
     "date": "2026-11-09",
     "checkpoint": "168",
     "targets": [
+      "root.children[55]",
       "root.children[55].children[0]",
       "root.children[55].children[1]"
     ],
-    "status": "Recovered both AccountIDValidation child prototypes as ordinary Lua; independently reviewed Nested_ID and promoted it to complete static reconstruction. Nested_Panel_mini_chat remains a draft because parent capture producers are not yet proven.",
+    "status": "Added a first-pass parent AccountIDValidation draft and both child prototypes. Nested_ID independently reviewed and promoted to complete static reconstruction; Nested_Panel_mini_chat body reviewed but parent capture source remains unresolved.",
     "audit_file": "docs/audit/检查点168_AccountIDValidation子原型恢复.md",
     "files": [
       "04_源码候选/root55_children_drafts.lua",
@@ -2077,10 +2078,12 @@
       "Nested_ID iterates UP[0] with ipairs; compares tostring(first explicit argument) with tostring(each allowed ID); UP[1] success callback and UP[2] failure callback; returns true/false respectively.",
       "Nested_ID reads no extra varargs; parent PC38 capture order matches allowed list and the two notice callbacks.",
       "Nested_Panel_mini_chat checks MainProperty, _ui and Panel_mini_chat; if present calls SL:UnSchedule(UP[0]) then MainLeftBottom.doInit(); every path calls UP[1] with the fixed waiting notice.",
-      "Nested_Panel_mini_chat parent PC58 capture producers and parent Schedule argument stack remain unresolved."
+      "Nested_Panel_mini_chat parent PC58 capture producers and parent Schedule argument stack remain unresolved.",
+      "Parent AccountIDValidation reads GAME_ID and UID, builds the nine-string allowlist, invokes Nested_ID, emits success/failure notices and schedules the panel callback at 0.5 seconds.",
+      "At parent PC58, the first Panel closure capture is the validation-result register; the child passes it to SL:UnSchedule. This unusual dataflow is preserved without assigning an unproven timer-handle meaning."
     ],
     "counts": {
-      "ordinary_lua_drafts": 83,
+      "ordinary_lua_drafts": 84,
       "complete_static_reconstruction": 89,
       "runtime_verified": 0
     }
@@ -2143,7 +2146,7 @@
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   },
-  "draft_recovered_count": 83,
+  "draft_recovered_count": 84,
   "draft_recovered_functions": [
     {
       "path": "root.children[46]",
@@ -2514,26 +2517,6 @@
       ]
     },
     {
-      "path": "root.children[55]",
-      "legacy_path": "root/56",
-      "name": "AccountIDValidation",
-      "source_file": "04_源码候选/短函数草稿_第五十五批.lua",
-      "audit_file": "docs/audit/检查点79_AccountIDValidation首版草稿.md",
-      "status": "first_pass_draft_game_and_account_whitelist_logic_pending_schedule_capture_contract_not_runtime_verified",
-      "physical_instructions": 64,
-      "constant_count": 21,
-      "child_count": 2,
-      "notes": [
-        "Root PC276 creates closure capturing root T[4] and T[5]; business identities pending",
-        "Reads GAME_ID and compares against 204208; reads UID and emits account ID",
-        "Builds nine-string allowlist; child Nested_ID iterates with ipairs and compares tostring(uid), emits allowed/denied notice and returns boolean",
-        "Parent emits verification result based on child boolean",
-        "Nested_Panel_mini_chat checks MainProperty/_ui/Panel_mini_chat; calls SL.UnSchedule and MainLeftBottom.doInit when ready, otherwise emits wait notice",
-        "Schedule uses 0.5-second delay; parameter order and captured parent T[4] identity pending",
-        "No runtime validation"
-      ]
-    },
-    {
       "path": "root.children[42].children[3].children[2]",
       "legacy_path": "root/43/4/3",
       "name": "Nested_FFFFFF",
@@ -2752,10 +2735,28 @@
         "Every path calls UP1 with the fixed waiting notice.",
         "UP0/UP1 use roles are clear; parent PC58 capture producers remain unresolved."
       ]
+    },
+    {
+      "path": "root.children[55]",
+      "legacy_path": "root/56",
+      "name": "AccountIDValidation",
+      "source_file": "04_源码候选/root55_children_drafts.lua",
+      "audit_file": "docs/audit/检查点168_AccountIDValidation子原型恢复.md",
+      "status": "first_pass_draft_parent_capture_and_schedule_semantics_pending_not_runtime_verified",
+      "physical_instructions": 64,
+      "constant_count": 21,
+      "child_count": 2,
+      "capture_count": 2,
+      "notes": [
+        "Reads GAME_ID and compares with 204208; mismatch notice then return.",
+        "Reads UID, emits account ID notice, builds nine-string allowlist, calls Nested_ID and branches to success/failure notices.",
+        "Schedules Nested_Panel_mini_chat with 0.5-second delay.",
+        "PC58 first child capture is the validation-result register, passed by child to SL:UnSchedule; semantic identity is intentionally unresolved."
+      ]
     }
   ],
-  "draft_function_count": 83,
-  "ordinary_lua_draft_functions": 83,
+  "draft_function_count": 84,
+  "ordinary_lua_draft_functions": 84,
   "last_checkpoint": "168",
   "checkpoint": "168",
   "drafts": 33,
@@ -2768,19 +2769,19 @@
       "docs/audit/检查点168_AccountIDValidation子原型恢复.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
-    "draft_prototypes_touched": 2,
-    "draft_prototype_total": 83,
+    "draft_prototypes_touched": 3,
+    "draft_prototype_total": 84,
     "complete_static_reconstructions": 89,
     "runtime_verified": 0,
-    "notes": "AccountIDValidation两个子原型完成普通Lua重建；Nested_ID完成静态复审，Panel_mini_chat保留草稿并明确父捕获来源未闭合。"
+    "notes": "新增AccountIDValidation父函数首版草稿及两个子原型；Nested_ID完成静态恢复，Panel子函数及父函数仍保留捕获语义待核验项。"
   },
   "latest_checkpoint": {
     "checkpoint": "168",
-    "summary": "新增AccountIDValidation两个子原型的可读Lua；Nested_ID完成静态恢复，Panel_mini_chat主体已复审但捕获生产者未闭合。",
+    "summary": "AccountIDValidation父函数和两个子原型均有普通Lua草稿；Nested_ID完成静态恢复，Panel闭包捕获语义仍未闭合。",
     "audit_file": "docs/audit/检查点168_AccountIDValidation子原型恢复.md",
     "unresolved": [
-      "Nested_Panel_mini_chat父PC58捕获值的生产者",
-      "AccountIDValidation父函数Schedule参数顺序与调度捕获",
+      "Nested_Panel_mini_chat父PC58捕获值（validationResult）传给SL:UnSchedule的语义",
+      "AccountIDValidation父函数UP0/UP1业务身份",
       "Lua宿主/游戏运行时验证"
     ]
   },
@@ -2794,7 +2795,7 @@
     "note": "检查点167将UseItemByIndex root.children[24]升级为完整静态恢复，并将UPVALUE_0=T[37]正确表达为工厂闭包捕获；列表业务来源仍未命名。运行时验证仍为0。"
   },
   "counts": {
-    "ordinary_lua_drafts": 83,
+    "ordinary_lua_drafts": 84,
     "complete_static_reconstruction": 89,
     "runtime_verified": 0
   }
