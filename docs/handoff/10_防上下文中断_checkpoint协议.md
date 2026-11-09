@@ -1033,3 +1033,13 @@
 - Nested_TakeItems：关闭时UnSchedule并清nil、isTaking=false；开启时先TakeItems，再schedule(TakeItems,1.0)。
 - 四函数控制流、通知、参数、句柄保存及无返回结尾已闭合，升级完整静态恢复。
 - 统计更新：普通Lua草稿77；完整静态恢复39/110；运行时验证0。
+
+
+## 检查点 #101（2026-11-09）：Nested_StopGatherMonsters真假分支纠正
+- 新增源码：`04_源码候选/短函数草稿_第六十七批.lua`。
+- 新增审计：`docs/audit/检查点101_Nested_StopGatherMonsters分支与捕获复核.md`。
+- 父级doInit_UI PC269-PC275确认6项捕获来源依次为UP2、UP11、UP9、UP0、R20、R17。
+- 已存在gatherTimer：通知关闭、调用StopGatherMonsters()、返回true。
+- 无timer时调用UP[2]()：truthy才走开启分支，通知开启、将ready传给UP[5]、返回true；false/nil才提示缺少阈值，调用UP[3]()及UP[4]()、返回false。
+- 纠正旧CSV/早期草稿摘要中将ready真假分支写反的问题。31条物理指令控制流及调用实参闭合。
+- 统计更新：普通Lua草稿77；完整静态恢复40/110；运行时验证0。
