@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续筛选剩余短函数。优先检查 root.children[42].children[9].children[0]（legacy root/43/10/1，Nested_Button_setTitleText，48条指令）；追踪父级创建点、捕获值和所有调用点，确认是否为单纯按钮标题包装。若不是，转向 root.children[50].children[0]（Nested_isOutputted，52条指令）。",
+  "next_action": "继续筛选剩余短函数。Nested_Button_setTitleText（root.children[42].children[9].children[0]）已完成阶段分析但调用链仍有歧义，后续结合父级按钮创建流程追踪UP[0]/UP[1]/UP[2]与PC8-10调用返回；若需先推进新草稿，优先检查 root.children[42].children[14]（Nested_Helper_7，12条指令且有一个子原型）及其子函数，避免重复已完成函数。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "52"
+    "last_checkpoint": "56"
   },
   "static_recovered_functions": [
     {
@@ -461,23 +461,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 55,
-    "target": "Nested_04d_02d_02d 定时巡航触发草稿",
+    "checkpoint": 56,
+    "target": "Nested_isOutputted 首版普通 Lua 草稿",
     "status": "draft_saved; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第三十三批.lua",
-    "audit_file": "docs/audit/检查点55_Nested_定时巡航触发草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第三十四批.lua",
+    "audit_file": "docs/audit/检查点56_Nested_isOutputted草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[12]",
-        "legacy": "root/43/13",
-        "name": "Nested_DailyCruiseTrigger",
-        "instructions": 43
+        "path": "root.children[50].children[0]",
+        "legacy": "root/51/1",
+        "name": "Nested_isOutputted",
+        "instructions": 52
       }
     ],
-    "draft_count_total": 42,
+    "draft_count_total": 43,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0,
-    "note": "确认os.date日历时间、22:00:05–22:00:08秒数窗口、YYYYMMDD按日去重、LuaSendMsg七个参数和固定通知；捕获对象业务名待父级数据流复核。"
+    "note": "恢复聚灵珠纯文本识别、共享isOutputted首次命中标记、物品与信息字符串双回调、Dura/DuraMax有效性与大小判断；调用参数位置及捕获对象原名待复核。"
   },
   "corrections": [
     {
@@ -572,28 +572,28 @@
       "status": "first_pass_draft_pending_static_review_not_runtime_verified"
     }
   ],
-  "draft_function_count": 42,
-  "ordinary_lua_draft_functions": 42,
-  "last_checkpoint": "55",
-  "checkpoint": "55",
+  "draft_function_count": 43,
+  "ordinary_lua_draft_functions": 43,
+  "last_checkpoint": "56",
+  "checkpoint": "56",
   "drafts": 32,
-  "next": "继续筛选剩余短函数。优先检查 root.children[42].children[9].children[0]（legacy root/43/10/1，Nested_Button_setTitleText，48条指令）；追踪父级创建点、捕获值和所有调用点，确认是否为单纯按钮标题包装。若不是，转向 root.children[50].children[0]（Nested_isOutputted，52条指令）。",
+  "next": "继续筛选剩余短函数。Nested_Button_setTitleText（root.children[42].children[9].children[0]）已完成阶段分析但调用链仍有歧义，后续结合父级按钮创建流程追踪UP[0]/UP[1]/UP[2]与PC8-10调用返回；若需先推进新草稿，优先检查 root.children[42].children[14]（Nested_Helper_7，12条指令且有一个子原型）及其子函数，避免重复已完成函数。",
   "recent_checkpoint": {
-    "id": 55,
+    "id": 56,
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第三十三批.lua",
-    "audit_file": "docs/audit/检查点55_Nested_定时巡航触发草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第三十四批.lua",
+    "audit_file": "docs/audit/检查点56_Nested_isOutputted草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[12]",
-        "legacy": "root/43/13",
-        "name": "Nested_DailyCruiseTrigger",
-        "instructions": 43
+        "path": "root.children[50].children[0]",
+        "legacy": "root/51/1",
+        "name": "Nested_isOutputted",
+        "instructions": 52
       }
     ],
-    "draft_count_total": 42,
+    "draft_count_total": 43,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0,
-    "note": "新增定时巡航触发草稿；捕获对象名称仍待复核。"
+    "note": "新增Nested_isOutputted草稿；参数位置和捕获对象原名待静态复审。"
   }
 }
