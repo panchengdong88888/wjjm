@@ -13,9 +13,9 @@
   "major_targets": {
     "root.children[45]": "417-instruction MainLoop gather/attack state machine; legacy root/46; structural/CFG and captures mapped, high-level Lua still pending",
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
-    "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
+    "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous wrapper now drafted with caller contract from Nested_Helper_4/7, but T[2] delayed-notice producer unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next."
   },
-  "next_action": "继续核对Nested_Anonymous（root.children[42].children[22]）与两个输入包装函数Nested_Helper_4/7的真实调用契约；其后整合Nested_FFFF00父函数剩余320条指令及Nested_Helper_3刷新闭包，继续复核doInit_UI剩余子原型。",
+  "next_action": "追踪Nested_Anonymous（root.children[42].children[22]）的T[2]生产者；其子回调将该槽作为延迟错误提示函数调用，当前草稿以nil占位，尚不可升级完整静态恢复。随后整合Nested_FFFF00（root.children[42].children[3]）剩余父函数指令及Nested_Helper_3刷新闭包，继续复核doInit_UI剩余子原型。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "113"
+    "last_checkpoint": "114"
   },
   "static_recovered_functions": [
     {
@@ -1717,23 +1717,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 87,
-    "target": "Nested_FFFF00",
-    "status": "first-pass ordinary Lua draft; UI/API and closure contracts pending; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第六十二批.lua",
-    "audit_file": "docs/audit/检查点87_Nested_FFFF00首版草稿.md",
+    "checkpoint": 114,
+    "target": "Nested_Anonymous and input wrappers Nested_Helper_4/7",
+    "status": "first-pass ordinary Lua draft; call contract verified; T[2] producer unresolved; no runtime validation",
+    "source_file": "04_源码候选/Nested_Anonymous_第七十八批.lua",
+    "audit_file": "docs/audit/检查点114_Nested_Anonymous调用契约复核.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[3]",
-        "legacy": "root/43/4",
-        "name": "Nested_FFFF00",
-        "instructions": 320
+        "path": "root.children[42].children[22]",
+        "legacy": "root/43/23",
+        "name": "Nested_Anonymous",
+        "instructions": 8
       }
     ],
-    "draft_count_total": 76,
-    "complete_static_reconstruction_count": 29,
+    "draft_count_total": 78,
+    "complete_static_reconstruction_count": 58,
     "runtime_verified_count": 0,
-    "note": "恢复资源统计窗口关闭/创建主路径、ListView及五个文本区域、五个子闭包创建点、MoneyProxy和1秒刷新调度；4个捕获身份及融合GUI/调度实参待复核。"
+    "note": "Nested_Helper_4/7 both call Nested_Anonymous(promptText,callbackClosure). Nested_Anonymous creates Nested_str and invokes it immediately. T[2] is used as delayed error-notice callback but its producer remains unresolved; keep nil placeholder visibly marked and do not count as complete static reconstruction."
   },
   "corrections": [
     {
@@ -1793,7 +1793,7 @@
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   },
-  "draft_recovered_count": 77,
+  "draft_recovered_count": 78,
   "draft_recovered_functions": [
     {
       "path": "root.children[46]",
@@ -2337,52 +2337,51 @@
       ]
     }
   ],
-  "draft_function_count": 77,
-  "ordinary_lua_draft_functions": 77,
-  "last_checkpoint": 113,
-  "checkpoint": "113",
+  "draft_function_count": 78,
+  "ordinary_lua_draft_functions": 78,
+  "last_checkpoint": "114",
+  "checkpoint": "114",
   "drafts": 33,
-  "next": "继续按PC顺序复核doInit_UI的父级捕获来源、按钮配置表、ScheduleOnce/GUI融合参数及23个子闭包实参；随后复核Nested_FFFF00的4个父捕获和刷新闭包契约。",
+  "next": "追踪Nested_Anonymous（root.children[42].children[22]）的T[2]生产者；其子回调将该槽作为延迟错误提示函数调用，当前草稿以nil占位，尚不可升级完整静态恢复。随后整合Nested_FFFF00（root.children[42].children[3]）剩余父函数指令及Nested_Helper_3刷新闭包，继续复核doInit_UI剩余子原型。",
   "recent_checkpoint": {
-    "checkpoint": "79",
+    "checkpoint": "114",
     "date": "2026-11-09",
-    "summary": "新增AccountIDValidation首版普通Lua草稿，恢复GAME_ID校验、UID读取、9项字符串允许列表、Nested_ID白名单比较和提示、父函数验证结果通知，以及0.5秒界面初始化检查调度；调度捕获业务身份待复核。",
+    "summary": "新增Nested_Anonymous首版普通Lua草稿；核实Nested_Helper_4与Nested_Helper_7均以提示文字和回调闭包调用该包装器；其8条指令创建Nested_str并立即无参调用。T[2]被子回调作为延迟错误提示函数调用，但生产者未追出，草稿保留nil占位，不升级完整静态恢复。",
     "files": [
-      "04_源码候选/短函数草稿_第五十五批.lua",
-      "docs/audit/检查点79_AccountIDValidation首版草稿.md",
+      "04_源码候选/Nested_Anonymous_第七十八批.lua",
+      "docs/audit/检查点114_Nested_Anonymous调用契约复核.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "added_draft_functions": [
-      "root.children[55]"
+      "root.children[42].children[22]"
     ],
     "unchanged": {
-      "complete_static_reconstruction": 29,
+      "complete_static_reconstruction": 58,
       "runtime_verified": 0
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "113",
+    "checkpoint": "114",
     "date": "2026-11-09",
-    "function": "Nested_FFFFFF",
-    "source_file": "04_源码候选/Nested_FFFFFF_第六十五批.lua",
-    "audit_file": "docs/audit/检查点113_Nested_FFFFFF完整静态恢复复核.md",
+    "function": "Nested_Anonymous",
+    "source_file": "04_源码候选/Nested_Anonymous_第七十八批.lua",
+    "audit_file": "docs/audit/检查点114_Nested_Anonymous调用契约复核.md",
     "findings": [
-      "参数(resourceNames,layoutOption,rowType,...)；父Nested_FFFF00 PC265-PC267捕获resList与screenW*0.6。",
-      "外层循环1..#resourceNames步长layoutOption；内层循环1..layoutOption；资源索引groupStart+columnIndex-1。",
-      "cell名rowType..'_cell_'..ceil(15/layoutOption)，Layout_Create尾参数值1。",
-      "Text名'2_text_0.5_'..columnIndex；x=cellWidth*(columnIndex-0.5)，y=15；初始文本resourceName..':--'。",
-      "创建成功后设置锚点(0.5,0.5)，按resourceName写入映射表并返回。",
-      "父函数分别调用(moneyNames,2,'money')和(resourceNames,2,'item')，返回moneyRows/itemRows。"
+      "Nested_Helper_4与Nested_Helper_7均确认调用Nested_Anonymous(promptText,callbackClosure)。",
+      "Nested_Anonymous PC1创建Nested_str，捕获T[0]/UP[0]/T[2]/T[1]；PC6-PC7立即无参调用子闭包。",
+      "父级UP[0]为PrintLog；T[0]/T[1]按调用链暂恢复为initialText/onValid。",
+      "Nested_str链将T[2]作为延迟错误提示回调调用；其生产者尚未追出，源码保留nil占位并继续标记草稿。"
     ],
     "unresolved": [
-      "Layout_Create尾随实参1的宿主端语义未知，保留原值不命名。",
-      "未进行游戏客户端运行时验证。"
+      "Nested_Anonymous T[2]生产者及真实业务来源",
+      "doInit_UI剩余父捕获/GUI参数和Nested_FFFF00/Nested_Helper_3闭包契约",
+      "未进行游戏客户端运行时验证"
     ],
-    "status": "complete_static_reconstruction_not_runtime_verified",
+    "status": "first_pass_draft_pending_T2_producer_not_runtime_verified",
     "counts": {
-      "ordinary_lua_drafts": 77,
+      "ordinary_lua_drafts": 78,
       "complete_static_reconstruction": 58,
       "runtime_verified": 0
     }
@@ -2390,14 +2389,14 @@
   "complete_static_reconstruction_count": 58,
   "complete_static_reconstruction": "58/110 (52.7%)",
   "progress_reconciled": {
-    "source_of_counts": "GitHub 03_函数状态清单.csv 与 static_recovered_functions 逐项核对（检查点113）",
-    "ordinary_lua_draft_functions": 77,
+    "source_of_counts": "GitHub 03_函数状态清单.csv 与机器状态草稿/静态恢复索引逐项核对（检查点114）",
+    "ordinary_lua_draft_functions": 78,
     "complete_static_reconstruction_functions": 58,
     "runtime_verified_functions": 0,
-    "note": "Nested_FFFFFF在检查点113由普通Lua草稿升级为完整静态恢复；Layout_Create尾随数值1的宿主端含义未知但原始位置与值已闭合。"
+    "note": "检查点114新增Nested_Anonymous首版普通Lua草稿；T[2]生产者未闭合，不升级完整静态恢复。"
   },
   "counts": {
-    "ordinary_lua_drafts": 77,
+    "ordinary_lua_drafts": 78,
     "complete_static_reconstruction": 58,
     "runtime_verified": 0
   }
