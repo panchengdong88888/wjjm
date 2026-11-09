@@ -1500,3 +1500,11 @@
 - 更新第六十批源码、函数状态CSV、机器状态JSON；新增 `docs/audit/检查点141_StorageItems子原型调用与存仓消息参数复核.md`。
 - 本批仅校正已有草稿，不新增草稿、不升级完整静态恢复；统计仍为草稿78、完整静态恢复76/110、运行时验证0。
 - 下一步逐PC闭合子原型1容量算术、R8/R9两层迭代及PC206-PC211记账，再回到BlacklistPlayerDetection PC174-PC192。
+
+
+## 检查点 #142（2026-11-09）：StorageItems 双表与聚灵珠子原型复核
+- PC61-PC80确认R8为18项特殊名称表；PC81-PC83确认R9为单项表{"待定"}。PC122-PC150遍历R9并在名称匹配后调用ITEM_INDEX_BY_NAME、SL.UseItemByIndex；PC151-PC176遍历R8。
+- 子原型0（root/51/1）vararg=2；UPVALUE_0为isOutputted状态表，UPVALUE_1为输出回调；第二实参用于匹配“聚灵珠”；首次命中时置位，先将第一实参交给回调，再将含Name/StdMode/Dura/DuraMax的详情文本交给同一回调；随后根据Dura/DuraMax生成返回状态供父函数门控。
+- PC167-PC170两个实参的寄存器业务身份、子原型1容量算术、PC206-PC211记账及LuaSendMsg第4参数协议语义仍待闭合。
+- 更新第六十批源码、函数状态CSV、机器状态JSON；新增 `docs/audit/检查点142_StorageItems双表与聚灵珠子原型复核.md`。
+- 本批不新增草稿、不升级完整静态恢复；统计仍为草稿78、完整静态恢复76/110、运行时验证0。
