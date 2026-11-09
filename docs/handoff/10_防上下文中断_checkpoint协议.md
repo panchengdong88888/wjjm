@@ -1103,7 +1103,7 @@
 - Nested_shiquTimer：拾取timer存在时通知关闭、UnSchedule、句柄nil；否则通知开启、立即PickUpItems()、再schedule(PickUpItems,0.01)并保存句柄。
 - Nested_blacklistTimer：首参false/nil走distance getter；distance缺失返回false；有效时立即BlacklistItems()、schedule(BlacklistItems,0.1)、保存句柄、发送模板提示并返回true；原型没有关闭分支。
 - 四函数捕获来源均按doInit_UI对应创建点核对。
-- 统计更新：普通Lua草稿77；完整静态恢复53/110；运行时验证0。
+- 统计更新：普通Lua草稿77；完整静态恢复50/110；运行时验证0。
 
 
 ## 检查点 #108（2026-11-09）：Nested_ffffff批量按钮状态同步
@@ -1112,7 +1112,7 @@
 - Nested_ffffff（41条）捕获按钮配置数组与key→按钮注册表；遍历全部配置，匹配key时写toggled，不提前break，最后一个匹配项用于GUI更新。
 - 只有按钮对象、匹配配置、config.toggle均truthy时更新标题与颜色；标题按toggled选择config.toggle或config.name，颜色按toggled选择红#ff0000或白#ffffff。
 - 同步修正第35批包装函数源码注释与CSV备注：Nested_Helper_5/Nested_Helper_8主体已于检查点105完成静态恢复。
-- 统计更新：普通Lua草稿77；完整静态恢复54/110；运行时验证0。
+- 统计更新：普通Lua草稿77；完整静态恢复51/110；运行时验证0。
 
 
 ## 检查点 #107/#108 复核更正（2026-11-09）
