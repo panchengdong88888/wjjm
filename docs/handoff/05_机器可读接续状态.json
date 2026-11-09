@@ -24,9 +24,9 @@
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
     "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。",
     "root.children[47]": "BlacklistPlayerDetection：216条；检查点135前置MAIN_ACTOR_ID；137/138闭合HP/deathHandled；139闭合名称/坐标/距离五实参；140闭合alertAt阈值、nextTryAt两条间隔路径、noStoneWarned门控及table.concat(UPVALUE_12(), \"/\")。仍待PC174-PC192回调/道具使用契约及13个upvalue业务身份。",
-    "root.children[50]": "StorageItems：224条、2子原型；检查点136校正ITEM_IS_BIND==1；141确认子原型0捕获2值且二参数调用，子原型1捕获maxPage/pageCapacity/openSize/storedPageData并零参数返回容量门控；LuaSendMsg七实参顺序已闭合。仍待R8/R9迭代、子原型0实参身份、子原型1容量算术、协议第4字段语义及PC206-PC211记账。"
+    "root.children[50]": "StorageItems：检查点141确认两个子原型捕获/调用及LuaSendMsg七实参；检查点142闭合R8=18项特殊名称表、R9={\"待定\"}；子原型0 vararg=2，UPVALUE_0为isOutputted状态表、UPVALUE_1为输出回调，匹配第二参数中的“聚灵珠”，首次命中时置位并两次调用回调（第一个实参、详情字符串），再依据Dura/DuraMax返回状态。仍待子原型1容量算术、PC167-PC170实参身份、PC206-PC211记账和消息第4字段语义。"
   },
-  "next_action": "检查点141：StorageItems已复核PC102子原型0的2捕获/二参数调用位置，PC54子原型1捕获父R1/R2/R3/R4（maxPage、pageCapacity、openSize、storedPageData）且在PC177零参数调用；其返回假值触发仓库已满提示、复位isStoring并return，真值继续。PC187-PC205确认UPVALUE_2存仓提示和LuaSendMsg七实参顺序：消息类型、999999999、MakeIndex、子原型1返回值、0、Name、string.len(Name)。仍待R8/R9两层迭代和子原型0实参业务身份、子原型1算术公式、协议第4字段含义、PC206-PC211记账。下一步继续StorageItems闭包和容量算术复核。统计仍为草稿78、完整静态恢复76/110、运行时验证0。",
+  "next_action": "检查点142：StorageItems的R8/R9表已闭合：R8为18项特殊名称，R9为单项表{\"待定\"}；子原型0（root/51/1）vararg=2，UPVALUE_0为isOutputted状态表、UPVALUE_1为输出回调；第二实参用于匹配“聚灵珠”，首次命中置位后将第一个实参及聚灵珠Name/StdMode/Dura/DuraMax详情文本分别交给回调，最后按Dura/DuraMax存在性及大小关系返回状态。仍待子原型1容量算术逐PC化简、PC167-PC170实参身份、PC206-PC211记账表达式及LuaSendMsg第4参数协议语义。之后继续BlacklistPlayerDetection PC174-PC192随机道具路径。统计仍为草稿78、完整静态恢复76/110、运行时验证0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -99,7 +99,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "141"
+    "last_checkpoint": "142"
   },
   "static_recovered_functions": [
     {
