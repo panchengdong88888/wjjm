@@ -1309,3 +1309,16 @@
 - 函数状态CSV与机器状态JSON同步更新。
 - 统计：普通Lua草稿78；完整静态恢复66/110（60.0%）；运行时验证0。本批只升级1个既有草稿，没有新增草稿。
 - 下一步：检查AnonymousHelper_54（6条指令、2项捕获）或GetWritablePath/FormatStateChange等短函数，继续按父级捕获和逐PC调用契约闭合；Nested_Anonymous T槽映射仍等待VM帧初始化证据。
+
+
+## 检查点 #125（2026-11-09）：AnonymousHelper_54捕获身份与调用顺序完整静态恢复
+
+- 修改源码：`04_源码候选/短函数草稿_第十六批.lua`中的AnonymousHelper_54。
+- 新增审计：`docs/audit/检查点125_AnonymousHelper_54捕获身份与调用顺序完整静态恢复.md`。
+- 原型：`root.children[54]` / `root/55`，6条物理指令、0常量、无子原型、vararg标记1。
+- 父root PC313创建闭包；PC314捕获R46为UP[0]，身份是`root.children[17]`的PCallHelper闭包；PC315捕获R43为UP[1]，身份是字符串`gather_monster_count.txt`（PC296写入R43）。
+- 子函数PC1-PC3依次取得PCallHelper、固定文件名和第一个显式参数；PC4调用`PCallHelper("gather_monster_count.txt", firstArg)`并直接返回全部结果。PC5-PC6位于无条件return后不可达。
+- 修正旧草稿中调用目标与两个参数顺序颠倒的问题；没有猜测firstArg在具体调用点的业务内容。
+- 更新函数状态CSV与机器状态JSON。
+- 统计：普通Lua草稿78；完整静态恢复67/110（60.9%）；运行时验证0。本批只升级1个既有草稿，没有新增草稿。
+- 下一步：复核ClearTargetID_2或GetWritablePath/FormatStateChange的参数槽位；复杂BlacklistPlayerDetection、StorageItems继续分阶段推进，Nested_Anonymous的T槽映射仍等待VM帧初始化证据。
