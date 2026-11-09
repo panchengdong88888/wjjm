@@ -15,7 +15,7 @@ legacy路径：root/43/4
 - 四类货币/资源配置表；
 - MoneyProxy、Nested_FFFFFF、Nested_Helper_3 及 Schedule。
 
-四个父闭包捕获暂以 UPVALUE_0..3 表示，不擅自映射业务名称。
+父闭包捕获已由doInit_UI PC330-PC334闭合：UP[0]=MainLeftBottom模块表，UP[1]=PrintLog，UP[2]=独立计时器状态表，UP[3]=MainLeftBottom模块表（initTime/initSnapshot所在表）。
 GUI构造函数的位置参数因融合指令尚未完全展开，保留TODO。
 ]]
 
@@ -23,17 +23,17 @@ local function Nested_FFFF00()
     local gui = GUI
     local sl = SL
 
-    -- 捕获对象：创建窗口/状态对象/计时器等，真实业务身份待闭包数据流复核。
-    local UPVALUE_0 = UP[0]
-    local UPVALUE_1 = UP[1]
-    local UPVALUE_2 = UP[2]
-    local UPVALUE_3 = UP[3]
+    -- doInit_UI PC330-PC334的捕获顺序已核实。
+    local moduleState = UP[0]       -- MainLeftBottom：resWin、screenW、screenH
+    local printLog = UP[1]          -- PrintLog函数
+    local timerState = UP[2]        -- 独立状态表：resTimer
+    local initState = UP[3]         -- MainLeftBottom：initTimeStr、initSnapshot
 
     -- 已存在窗口：执行关闭路径。
-    if gui.Win_IsNotNull(UPVALUE_0.resWin) then
-        UPVALUE_1("关闭资源信息窗口")
+    if gui.Win_IsNotNull(moduleState.resWin) then
+        printLog("关闭资源信息窗口")
 
-        if UPVALUE_2.resTimer then
+        if timerState.resTimer then
             sl:UnSchedule(UPVALUE_2.resTimer)
             UPVALUE_2.resTimer = nil
         end
@@ -46,8 +46,9 @@ local function Nested_FFFF00()
     local resWin = gui:Win_Create(
         "resWin",
         0, 0,
-        global.screenW,
-        global.screenH,
+        moduleState.screenW,
+        moduleState.screenH,
+        false, true, true, true, true,
         999
     )
     UPVALUE_0.resWin = resWin
@@ -56,22 +57,25 @@ local function Nested_FFFF00()
         resWin,
         "closeResWin",
         0, 0,
-        global.screenW,
-        global.screenH
+        moduleState.screenW,
+        moduleState.screenH,
+        true
     )
 
     gui:setTouchEnabled(rootLayout, true)
     gui:addOnClickEvent(rootLayout, Nested_UnSchedule)
 
     -- 列表容器。
+    local screenW = moduleState.screenW
+    local screenH = moduleState.screenH
     local resList = gui:ListView_Create(
         resWin,
         "resList",
-        -- TODO: 精确位置、宽高和方向参数待融合载荷复核
-        0, 0,
-        global.screenW,
-        global.screenH,
-        1
+        (screenW - 1) / 2,
+        screenH / 2,
+        screenW * 0.6,
+        screenH * 0.6,
+        1.0
     )
     gui:setAnchorPoint(resList, 0, 0.5)
     gui:ListView_setBackGroundColorType(resList, 1)
@@ -83,7 +87,7 @@ local function Nested_FFFF00()
         resList, "titleCell", 0, 0, 1, 30
     )
     local titleText = gui:Text_Create(
-        titleCell, "titleText", 1, 15, 20, "#FF0000", "资源统计"
+        titleCell, "titleText", 0.5, 15, 20, "#FF0000", "资源统计"
     )
 
     -- 初始时间区域。
@@ -91,8 +95,8 @@ local function Nested_FFFF00()
         resList, "initTimeCell", 0, 0, 1, 30
     )
     local initTimeText = gui:Text_Create(
-        initTimeCell, "initTimeText", 1, 15, 20, "#00FF00",
-        "初始时间:" .. tostring(UPVALUE_3.initTimeStr or "--")
+        initTimeCell, "initTimeText", 0.5, 15, 20, "#00FF00",
+        "初始时间:" .. tostring(initState.initTimeStr or "--")
     )
 
     -- 当前时间区域。
@@ -100,7 +104,7 @@ local function Nested_FFFF00()
         resList, "curTimeCell", 0, 0, 1, 30
     )
     local curTimeText = gui:Text_Create(
-        curTimeCell, "curTimeText", 1, 15, 20, "#00FF00",
+        curTimeCell, "curTimeText", 0.5, 15, 20, "#00FF00",
         "当前时间:--"
     )
 
@@ -109,7 +113,7 @@ local function Nested_FFFF00()
         resList, "durTimeCell", 0, 0, 1, 30
     )
     local durTimeText = gui:Text_Create(
-        durTimeCell, "durTimeText", 1, 15, 20, "#00FF00", "历时:--"
+        durTimeCell, "durTimeText", 0.5, 15, 20, "#00FF00", "历时:--"
     )
 
     -- 说明区域。
@@ -117,7 +121,7 @@ local function Nested_FFFF00()
         resList, "noteCell", 0, 0, 1, 30
     )
     local noteText = gui:Text_Create(
-        noteCell, "noteText", 1, 15, 20, "#FFFF00",
+        noteCell, "noteText", 0.5, 15, 20, "#FFFF00",
         "（括号内数量为非绑定资源的收益）"
     )
 
@@ -130,16 +134,10 @@ local function Nested_FFFF00()
     -- 时间与资源刷新子闭包：child3，父级PC300创建，捕获10个值。
     local refreshResourceStatistics = Nested_Helper_3
 
-    -- 四类货币配置；原型常量依次出现元宝/绑定元宝/灵符/绑定灵符。
-    local moneyGroups = {
-        { "元宝", "绑定元宝", 2, "money" },
-        { "灵符", "绑定灵符", 2, "item" },
-    }
-
-    -- 其他资源配置；原型常量依次出现声望卷、悟道茶、洗髓丹、
-    -- 转生水晶、恶魔令牌、血龙宝珠。
-    local itemGroups = {
-        { "声望卷", "悟道茶", "洗髓丹", "转生水晶", "恶魔令牌", "血龙宝珠" },
+    -- PC268-PC281的两组准确名称数组。
+    local moneyNames = {"元宝", "绑定元宝", "灵符", "绑定灵符"}
+    local resourceNames = {
+        "声望卷", "悟道茶", "洗髓丹", "转生水晶", "恶魔令牌", "血龙宝珠"
     }
 
     local moneyProxy = global.Facade:retrieveProxy(
