@@ -1011,3 +1011,12 @@
 - 两函数控制流、参数传递、分支及无返回结尾已闭合，升级完整静态恢复；UP[0..2]业务名称仍保留槽位，不影响本函数本体静态语义。
 - 统计更新：普通Lua草稿77；完整静态恢复34/110；运行时验证0。
 - 下一步：继续复审root.children[42]已有短函数草稿；全仓库状态表目前仅root模块体和root.children[45] MainLoop标为未开始，待短函数复审后再攻复杂原型。
+
+
+## 检查点 #99（2026-11-09）：Nested_InitGatherMonsters分支方向校正
+- 更新 `04_源码候选/短函数草稿_第二十一批.lua`；新增 `docs/audit/检查点99_Nested_InitGatherMonsters分支方向校正.md`。
+- PC2-PC6确认refreshFlag为假时才调用捕获UP[1]()，并写入UP[0].GATHER_THRESHOLD。
+- PC9-PC16确认GATHER_THRESHOLD truthy时调用全局InitGatherMonsters()并返回true；字段false/nil时直接返回false。
+- 纠正首版草稿把阈值truthy分支写反的关键错误。
+- 17条指令控制流及返回已闭合，升级完整静态恢复；UP[0]/UP[1]业务名仍保留槽位。
+- 统计更新：普通Lua草稿77；完整静态恢复35/110；运行时验证0。
