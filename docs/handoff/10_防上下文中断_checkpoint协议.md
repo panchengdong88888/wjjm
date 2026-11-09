@@ -1769,3 +1769,16 @@
 - 新增审计`docs/audit/检查点164_DestroyUI完整静态复审与捕获映射修正.md`；更新短函数草稿第十四批、CSV、机器状态JSON。
 - 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复85/110；运行时验证0。
 - 下一步：复审ShowHideAllButtons（root.children[40]，47条）；其UP2.hidebut是单个控件，字节码直接调用GUI:setVisible(hidebut,false)，不是第二张pairs表。
+
+ 
+## 检查点 #165（2026-11-09）：ShowHideAllButtons 完整静态复审与捕获映射纠错
+
+- 对象：`root.children[40]`（legacy root/41），47条物理指令，9个常量，无子原型。
+- 父root PC270捕获顺序T[3]、T[1]、T[0]：UP0定时器状态对象；UP1按钮映射表；UP2 UI状态对象（hidebut单控件）。
+- PC1-PC22：分别检查rewardTimer、cruiseTimer；存在时以SL为receiver调用`SL:UnSchedule(timer)`，随后清空对应字段。
+- PC23-PC34：pairs遍历UP1，调用`GUI:setVisible(buttonMap[key],true)`。
+- PC35-PC38检查UP2.hidebut；truthy时PC39-PC44直接调用`GUI:setVisible(hidebut,false)`，PC45-PC46将hidebut置nil。hidebut不是第二张pairs表。
+- 已修正旧草稿捕获顺序和虚构的secondaryButtonMap遍历。
+- 新增审计`docs/audit/检查点165_ShowHideAllButtons完整静态复审与捕获映射纠错.md`；更新短函数草稿第十四批、CSV和机器状态JSON。
+- 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复86/110；运行时验证0。
+- 下一步：复审IsInWhitelistMap（root.children[31]，28条）和剩余短函数。
