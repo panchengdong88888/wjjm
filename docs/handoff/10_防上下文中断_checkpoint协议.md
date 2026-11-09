@@ -753,3 +753,12 @@
 - 待复核：主捕获T[4]/T[5]业务身份、Nested_Panel_mini_chat的T[4]是否调度句柄、SL.Schedule参数顺序和返回契约。未运行时验证。
 - 本批新增普通Lua草稿1个；累计按检查点口径67个。完整静态恢复仍29/110（26.4%）；运行时验证0。
 - 下一步从函数状态清单筛选尚未开始且短小的原型继续推进。
+
+
+## 检查点 #80（2026-11-09）：三个短原型首版普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第五十六批.lua`；新增审计：`docs/audit/检查点80_Nested_FFFFFF_onDamageMsg_GetStorageItemData首版草稿.md`。
+- `Nested_FFFFFF`：原型索引60，规范路径`root.children[42].children[3].children[2]`，legacy`root/43/4/3`，65条指令、17常量、无子原型、`vararg_flag=3`；父`root/43/4` PC265创建，捕获父T[5]、T[1]。恢复GUI Layout/Text单元创建、ceil(15/arg1)、双层循环骨架、锚点和结果表；循环边界/步长、vararg映射、捕获业务身份及GUI实参待复核。
+- `onDamageMsg`：原型索引101，规范路径`root.children[52]`，legacy`root/53`，72条指令、19常量、1子原型、`vararg_flag=2`；root PC356创建，捕获root T[57]。恢复pcall保护JSON解码、table检查、本机UserID/AttackUserID过滤、ACTOR_IS_HERO/ACTOR_MASTER_ID/ACTOR_NAME检查、分身过滤及lastAttacker赋值。子原型Nested_JsonDecode捕获父T[3]并调用SL.JsonDecode；vararg参数、元数据分支方向、T[57]身份待复核。
+- `GetStorageItemData`：原型索引3，规范路径`root.children[1]`，legacy`root/2`，77条指令、16常量、无子原型、`vararg_flag=0`；root PC70创建，捕获root T[4]。恢复NPCStorageProxy按页读取、table/ipairs汇总、容量相关常量与GetOpenSize读取、通知回调及返回数组；PC47-PC70容量计算精确循环和UPVALUE_0身份待复核。
+- 本批新增普通Lua草稿3个；累计70个。完整静态恢复仍29/110（26.4%）；运行时验证0。三个函数均不升级完整静态恢复。
+- 下一步继续筛选尚未开始的短原型；本批参数/循环/捕获身份集中静态复核不阻塞其他短函数草稿推进。
