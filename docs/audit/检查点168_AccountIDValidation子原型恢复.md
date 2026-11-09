@@ -44,3 +44,17 @@
 ## 下一步
 
 核对 root.children[55] PC27-64 的父级调用与调度捕获，尤其是 Nested_Panel_mini_chat 的两个捕获值、Schedule 参数顺序和 Nested_ID 的实参来源；然后再批量处理其他仍为首版草稿的短函数。
+
+## 检查点 #168 补充：父函数 AccountIDValidation 首版草稿
+
+同批新增父函数 `root.children[55]` 的第一层普通 Lua 草稿，仍保留在同一源码文件 `04_源码候选/root55_children_drafts.lua`。
+
+- PC1-PC9：`SL:GetMetaValue("GAME_ID")`，输出“游戏id：”及值。
+- PC10-PC17：与数值 204208 比较；不匹配时调用 UP[0] 输出“游戏不一致，id：”及当前值，然后返回。
+- PC18-PC26：读取 UID，并调用 UP[0] 输出“账号ID：”及 UID。
+- PC27-PC37：构造包含 9 个字符串 ID 的允许列表。
+- PC38-PC44：创建 Nested_ID，捕获允许列表、UP[0]、UP[1]，并以 UID 作为第一个显式参数调用；结果写回局部结果寄存器。
+- PC45-PC54：按验证结果分支，成功走 UP[0] 提示，失败走 UP[1] 提示。
+- PC56-PC62：取 SL.Schedule 方法，创建 Nested_Panel_mini_chat 子闭包，按调用栈传入回调及 0.5 秒间隔。
+- 重要保留项：父 PC58 创建 Panel 子闭包时，第一个捕获值来自验证结果寄存器；子闭包随后把 UP[0] 传给 SL:UnSchedule。该值语义看起来不寻常，但当前草稿忠实保留字节码数据流，不将其擅自改名为已确认的 timer handle。
+- 本函数仍为首版普通 Lua 草稿。两个父 upvalue 的业务身份、外部 Schedule/UnSchedule 运行时语义及真实宿主效果尚未验证；不计入完整静态恢复或运行时验证。
