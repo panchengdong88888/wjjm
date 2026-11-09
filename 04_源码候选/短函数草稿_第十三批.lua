@@ -5,7 +5,8 @@
 -- are not established. These are reconstruction names, not recovered source identifiers.
 
 -- root.children[10] / legacy root/11 / SetButtonVisibilityState
--- Captures: UP[0]=root T[0], UP[1]=root T[1].
+-- Status: complete static reconstruction; not runtime-validated.
+-- Captures: UP[0]=root T[0] (state object), UP[1]=root T[1] (button map).
 local function make_SetButtonVisibilityState(moduleState, buttonMap)
     return function()
         -- PC 1-2: set the captured module/UI state flag.
