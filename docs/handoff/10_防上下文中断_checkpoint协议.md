@@ -566,3 +566,13 @@
 - Nested_Anonymous的T[0..2]与调用实参的精确寄存器映射仍未闭合，暂不新增其普通Lua草稿。
 - 普通Lua草稿47个（不变）；完整静态恢复27/110（24.5%，不变）；运行时验证0；最新检查点#60。
 - 下一步：继续核对Nested_Anonymous参数映射；若不能快速闭合，转向其他尚未开始的短函数。
+
+
+## 检查点 #61（2026-11-09）：GetPlayerMapPosition 静态恢复
+- 新增普通 Lua 源码候选：`04_源码候选/短函数草稿_第三十七批.lua`。
+- 新增审计：`docs/audit/检查点61_GetPlayerMapPosition静态恢复.md`。
+- 函数：`GetPlayerMapPosition`，原型索引89，规范路径`root.children[44]`，legacy`root/45`，17条物理指令。
+- 已恢复：actor假值时返回nil；读取mCurrMapX/mCurrMapY，坐标假值时分别默认0；返回包含x/y字段的表。按Lua truthiness保留假值分支，不缩窄为nil判断。
+- 静态控制流闭合，升级为“完整静态恢复（未运行时验证）”；未宣称运行时验证。
+- 普通Lua草稿48个；完整静态恢复28/110（25.5%）；运行时验证0；最新检查点#61。
+- 下一目标：root.children[0] FileExistCheck_pcall_wrapper（32条）或root.children[6] InstallDamageHook（40条），优先确认闭包捕获参数。
