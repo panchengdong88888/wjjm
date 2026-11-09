@@ -659,3 +659,12 @@
 - 新增普通Lua草稿1个；累计57个。完整静态恢复仍29/110（26.4%）；运行时验证0；最新检查点#70。
 - 下一步继续恢复其他未开始函数；T[0]来源和捕获业务名留待调用/赋值链追踪，不阻塞推进。
 
+## 检查点 #71（2026-11-09）：Nested_Button_setTitleFontSize 首版普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第四十七批.lua`；新增审计：`docs/audit/检查点71_Nested_Button_setTitleFontSize首版草稿.md`。
+- 函数：`Nested_Button_setTitleFontSize`，原型索引68，规范路径`root.children[42].children[9]`，legacy`root/43/10`，50条物理指令、17个常量、1个子原型、`vararg_flag=3`。
+- doInit_UI PC340创建闭包，五个捕获来源依次为doInit_UI.R6、R22、R23、UPVALUE_4、R21。
+- 主体恢复GUI按钮创建：x=`85*UPVALUE_1`，y=`UPVALUE_0.key-(UPVALUE_2+2.5)`，图片`res/public/fuzhu_btn.png`；创建失败直接返回；成功后写入`UPVALUE_3[button.key]`，设置标题`UPVALUE_0.name`、字号18、字体`res/public/kaiti2.ttf`、颜色`#ffffff`；若toggle为真则toggled=false；最后调用`GUI.addOnClickEvent`注册子原型。
+- 子原型`Nested_Button_setTitleText`（`root/43/10/1`）捕获父函数R4、T[0]、T[3]；它的点击状态处理主体尚未可靠闭合，因此草稿保留回调挂接点，不伪造其内部代码。五个捕获的业务名与`vararg_flag=3`解释待核；未运行时验证。
+- 新增普通Lua草稿1个；累计58个。完整静态恢复仍29/110（26.4%）；运行时验证0；最新检查点#71。
+- 下一步继续恢复未开始函数或子原型`Nested_Button_setTitleText`，重点闭合按钮事件回调的捕获值和T栈参数来源。
+
