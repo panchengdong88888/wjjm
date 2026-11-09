@@ -1376,3 +1376,18 @@
 - ReadNumericConfig源码已更新并回读验证；同步更新函数状态CSV、机器状态JSON及本审计。
 - 统计仍为普通Lua草稿78、完整静态恢复69/110、运行时验证0。本批仅复核既有草稿，不增加任何统计。
 - 下一步：批量整理/复核短函数草稿；随后先产出BlacklistPlayerDetection和StorageItems主体草稿。
+
+
+## 检查点 #131（2026-11-09）：FindMonsterInCurrViewField 完整静态恢复
+
+- 复核原型：`root.children[14]` / legacy `root/15`，27条物理指令。
+- 源码位置：`04_源码候选/短函数草稿_第十三批.lua`。
+- PC1-PC8：调用 `SL:FindMonsterInCurrViewField(true, true)`；假值结果替换为空表。
+- PC9-PC12：初始化结果表并准备ipairs迭代。
+- PC14-PC17：调用捕获的UP[0] IsDie包装器，truthy时继续。
+- PC19-PC23：调用actor:GetID()；ID为真时写入 result[actorID]=actor。
+- PC24-PC26：迭代结束并返回结果表。
+- 交叉复核捕获函数 `root.children[29]` / legacy `root/30`：actor对象存在时调用 `actor:IsDie()` 并取反；因此truthy表示存活。
+- 27条物理指令全部映射，升级为完整静态恢复；未运行时验证。
+- 统计：普通Lua草稿78；完整静态恢复70/110（63.6%）；运行时验证0。
+- 下一步：复核GetStorageItemData、MoveTo、InstallDamageHook、ClearBlacklistItems等已有短函数草稿。
