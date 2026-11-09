@@ -79,16 +79,27 @@ local function doInit_UI()
         {slot=4, names={"免战回城石"}},
     }
 
-    -- PC131-PC145：ipairs遍历四组槽位配置，创建child16（Nested_ITEM_INDEX_BY_NAME）。
-    -- child16的两项捕获已由子原型本身闭合：UP[0]=当前slotConfig，UP[1]=父函数UP[0]（PrintLog）。
-    -- 子闭包遍历slotConfig.names，对每个名称调用SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)，
-    -- 若取得索引则调用MoveItemToQuickUse(itemIndex, slotConfig.slot)，并将返回结果交给PrintLog。
-    -- 父函数PC140按循环索引乘0.1计算延迟量；PC141确实调用SL.ScheduleOnce，
-    -- 但其多寄存器实参栈尚未完全还原，故不写成猜测的ScheduleOnce签名。
+    -- PC131-PC145：逐组创建child16（Nested_ITEM_INDEX_BY_NAME）并调用SL:ScheduleOnce。
+    -- child16捕获当前slotConfig及UP[0]（PrintLog）；它遍历slotConfig.names，
+    -- 通过SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)查询索引。
+    -- 若索引存在，则调用MoveItemToQuickUse(itemIndex, slotConfig.slot)，
+    -- 将第二返回值交给PrintLog；若第一返回值成功则提前结束该组回调，
+    -- 否则继续尝试该组的下一个名称。
     for slotIndex, slotConfig in ipairs(itemSlotConfig) do
-        local delay = slotIndex * 0.1
-        local _callback = Nested_ITEM_INDEX_BY_NAME
-        local _ = delay, slotConfig, _callback
+        local callback = function()
+            for _, name in ipairs(slotConfig.names) do
+                local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)
+                if itemIndex then
+                    local succeeded, message =
+                        MoveItemToQuickUse(itemIndex, slotConfig.slot)
+                    PrintLog(message)
+                    if succeeded then
+                        return
+                    end
+                end
+            end
+        end
+        SL:ScheduleOnce(callback, slotIndex * 0.1)
     end
 
     -- PC146-PC166：替换cruiseTimer并建立周期任务。
