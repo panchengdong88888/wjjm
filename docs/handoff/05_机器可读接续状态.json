@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "继续复核Nested_Anonymous父包装函数的参数/vararg与R2()调用，再整合Nested_FFFFFF资源统计行构造和Nested_FFFF00父函数调用；其后推进root模块体及417指令MainLoop。",
+  "next_action": "继续核对Nested_Anonymous（root.children[42].children[22]）与两个输入包装函数Nested_Helper_4/7的真实调用契约；其后整合Nested_FFFF00父函数剩余320条指令及Nested_Helper_3刷新闭包，继续复核doInit_UI剩余子原型。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "112"
+    "last_checkpoint": "113"
   },
   "static_recovered_functions": [
     {
@@ -1670,6 +1670,49 @@
         "调用捕获回调并传入固定提示“参数格式不对，请输入数字”。",
         "4条指令闭合；未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[42].children[3].children[2]",
+      "legacy_path": "root/43/4/3",
+      "name": "Nested_FFFFFF",
+      "physical_instructions": 65,
+      "constant_count": 17,
+      "child_count": 0,
+      "vararg_flag": 3,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/Nested_FFFFFF_第六十五批.lua",
+      "audit_file": "docs/audit/检查点113_Nested_FFFFFF完整静态恢复复核.md",
+      "parameters": [
+        "resourceNames",
+        "layoutOption",
+        "rowType",
+        "..."
+      ],
+      "returns": [
+        "resourceName -> Text node mapping table"
+      ],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "Nested_FFFF00 T[5]",
+          "usage": "resList ListView node"
+        },
+        {
+          "index": 1,
+          "source": "Nested_FFFF00 T[1]",
+          "usage": "screenW*0.6 list width"
+        }
+      ],
+      "notes": [
+        "Outer numeric loop 1..#resourceNames step layoutOption; inner loop 1..layoutOption step 1.",
+        "resourceIndex=groupStart+columnIndex-1; false/nil resourceName skips Text creation.",
+        "Cell name=rowType..'_cell_'..ceil(15/layoutOption); Layout_Create visible args include trailing 1.",
+        "Text name='2_text_0.5_'..columnIndex; x=cellWidth*(columnIndex-0.5)/1; y=15; width-related argument 30; color #FFFFFF; text resourceName..':--'.",
+        "Anchor point (0.5,0.5); map indexed by resourceName; returns map.",
+        "Layout_Create trailing numeric argument 1 is confirmed in position; host-side meaning unknown and intentionally unnamed.",
+        "All 65 physical instructions statically reconciled; no host runtime validation."
+      ]
     }
   ],
   "latest_batch": {
@@ -2296,8 +2339,8 @@
   ],
   "draft_function_count": 77,
   "ordinary_lua_draft_functions": 77,
-  "last_checkpoint": 88,
-  "checkpoint": "88",
+  "last_checkpoint": 113,
+  "checkpoint": "113",
   "drafts": 33,
   "next": "继续按PC顺序复核doInit_UI的父级捕获来源、按钮配置表、ScheduleOnce/GUI融合参数及23个子闭包实参；随后复核Nested_FFFF00的4个父捕获和刷新闭包契约。",
   "recent_checkpoint": {
@@ -2320,50 +2363,42 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "112",
+    "checkpoint": "113",
     "date": "2026-11-09",
-    "function_group": [
-      "Nested_str",
-      "Nested_match",
-      "Nested_Helper_11"
-    ],
-    "source_file": "04_源码候选/短函数草稿_第七十七批.lua",
-    "additional_sources": [
-      "04_源码候选/短函数草稿_第三十六批.lua",
-      "04_源码候选/短函数草稿_第十五批.lua"
-    ],
-    "audit_file": "docs/audit/检查点112_Nested_str与Nested_match数字输入链复核.md",
+    "function": "Nested_FFFFFF",
+    "source_file": "04_源码候选/Nested_FFFFFF_第六十五批.lua",
+    "audit_file": "docs/audit/检查点113_Nested_FFFFFF完整静态恢复复核.md",
     "findings": [
-      "Nested_str构造固定参数数字输入弹窗，首个变参truthy时追加换行及suffix，注册Nested_match回调并调用SL:OpenCommonTipsPop。",
-      "Nested_match status严格等于1才继续；result/editStr缺失回退空串，不提前返回。",
-      "输入先tostring并删除所有空白，再按^%d+$校验。",
-      "非数字调用格式错误回调，并通过SL:ScheduleOnce延迟0.1秒调用Nested_Helper_11提示。",
-      "数字转换成功时调用UP3(numericValue)。",
-      "Nested_Helper_11调用捕获提示回调并传入固定错误文本。"
+      "参数(resourceNames,layoutOption,rowType,...)；父Nested_FFFF00 PC265-PC267捕获resList与screenW*0.6。",
+      "外层循环1..#resourceNames步长layoutOption；内层循环1..layoutOption；资源索引groupStart+columnIndex-1。",
+      "cell名rowType..'_cell_'..ceil(15/layoutOption)，Layout_Create尾参数值1。",
+      "Text名'2_text_0.5_'..columnIndex；x=cellWidth*(columnIndex-0.5)，y=15；初始文本resourceName..':--'。",
+      "创建成功后设置锚点(0.5,0.5)，按resourceName写入映射表并返回。",
+      "父函数分别调用(moneyNames,2,'money')和(resourceNames,2,'item')，返回moneyRows/itemRows。"
     ],
     "unresolved": [
-      "父包装函数Nested_Anonymous仍未完成；其T0/T1/T2参数布局及R2()调用业务身份待核验。",
-      "无游戏客户端运行时验证。"
+      "Layout_Create尾随实参1的宿主端语义未知，保留原值不命名。",
+      "未进行游戏客户端运行时验证。"
     ],
     "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 57,
+      "complete_static_reconstruction": 58,
       "runtime_verified": 0
     }
   },
-  "complete_static_reconstruction_count": 32,
-  "complete_static_reconstruction": "29/110 (26.4%)",
+  "complete_static_reconstruction_count": 58,
+  "complete_static_reconstruction": "58/110 (52.7%)",
   "progress_reconciled": {
-    "source_of_counts": "检查点#87累计76个普通Lua草稿；检查点#88新增doInit_UI首版普通Lua草稿。",
+    "source_of_counts": "GitHub 03_函数状态清单.csv 与 static_recovered_functions 逐项核对（检查点113）",
     "ordinary_lua_draft_functions": 77,
-    "complete_static_reconstruction_functions": 29,
+    "complete_static_reconstruction_functions": 58,
     "runtime_verified_functions": 0,
-    "note": "本轮新增1个普通Lua草稿；完整静态恢复与运行时验证数量不变。 另已校正doInit_UI捕获槽位数为20，并记录root父寄存器映射。 PC102-PC130已根据物理指令改为四组slot/names道具配置，不再误写为按钮列表。 进一步回溯root初始化，识别了doInit_UI的10个捕获槽位业务身份/值。 已从root/43/17子原型反汇编确认ITEM_INDEX_BY_NAME→MoveItemToQuickUse→PrintLog调用链。 已确认按钮创建子闭包参数为配置记录/列索引/行偏移，x/y坐标公式与三组行偏移40/0/80。 ScheduleOnce调用顺序与延迟参数、ITEM_INDEX_BY_NAME回调的双返回值处理已由PC135-PC145及child16闭合。 Nested_FFFF00的4项父捕获和关键3个子闭包捕获/调用关系已静态闭合；不改变完整静态恢复数。 已根据PC311-PC319更正Schedule归属：由Nested_FFFF00父函数在立即调用刷新闭包后安排周期调度，而非刷新闭包自调度。 Nested_Helper_3捕获第10槽位已纠正为Nested_string；Nested_FFFF00返回契约为无返回值。 已依据PC286/291函数调用返回寄存器生命周期，确认刷新闭包捕获的是moneyRows/itemRows结果表。 moneyRows/itemRows映射表语义已确认，刷新函数的货币与背包物品两条数据更新路径已区分。"
+    "note": "Nested_FFFFFF在检查点113由普通Lua草稿升级为完整静态恢复；Layout_Create尾随数值1的宿主端含义未知但原始位置与值已闭合。"
   },
   "counts": {
     "ordinary_lua_drafts": 77,
-    "complete_static_reconstruction": 57,
+    "complete_static_reconstruction": 58,
     "runtime_verified": 0
   }
 }
