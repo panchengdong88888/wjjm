@@ -53,35 +53,33 @@ local function make_BlacklistPlayerDetection(
         end
 
         -- PC 12-20: convert the current HP value.
-        local hp = tonumber(SL:GetMetaValue("HP"))
-        if not hp then
-            return
-        end
+        -- PC 12-20: tonumber(HP); the VM explicitly substitutes 0.0 when
+        -- tonumber returns nil/false. This is not an early return.
+        local hp = tonumber(SL:GetMetaValue("HP")) or 0.0
 
-        -- PC 21-54: HP/deathHandled state machine.
-        -- The bytecode reads and updates blacklistState.lastHp and
-        -- blacklistState.deathHandled. Its exact transition table is retained
-        -- as a dedicated review item; this readable form records the visible
-        -- state intent without claiming a fully proven event interpretation.
+        -- PC 21-54: exact lastHp/deathHandled transition structure.
         local previousHP = blacklistState.lastHp
         if previousHP == nil then
+            -- First observation initializes both fields. deathHandled is
+            -- true exactly when the initial HP is <= 0.
             blacklistState.lastHp = hp
             blacklistState.deathHandled = (hp <= 0)
-        elseif hp <= 0 and previousHP > 0 and not blacklistState.deathHandled then
-            blacklistState.lastHp = hp
-            blacklistState.deathHandled = true
-            onDeathAutoBlacklist()
         elseif hp > 0 then
+            -- A living observation refreshes HP and clears the one-shot latch.
             blacklistState.lastHp = hp
             blacklistState.deathHandled = false
+        elseif previousHP > 0 and not blacklistState.deathHandled then
+            -- Transition from previously positive HP to non-positive HP:
+            -- latch once, normalize lastHp to 0, then invoke UP[3].
+            blacklistState.deathHandled = true
+            blacklistState.lastHp = 0.0
+            onDeathAutoBlacklist()
         end
 
-        -- PC 55-57: a register comparison against 1.0 gates an early return.
-        -- The compared register's author-level meaning is not assigned here;
-        -- keep this as an explicit unresolved predicate rather than guessing
-        -- that it is HP, a percentage, or deathHandled.
-        -- TODO(static): bind the PC55 comparison register to its reaching
-        -- definition before expressing this branch as a named Lua condition.
+        -- PC 55-57: HP <= 0 returns before whitelist/player scanning.
+        if hp <= 0 then
+            return
+        end
 
         -- PC 58-62: whitelist-map gate.
         if IsInWhitelistMap() then
@@ -130,12 +128,12 @@ local function make_BlacklistPlayerDetection(
                     local actorX = SL:GetMetaValue("ACTOR_MAP_X", actor)
                     local actorY = SL:GetMetaValue("ACTOR_MAP_Y", actor)
 
-                    -- Five operands are passed to UP[5] in the bytecode.
-                    -- Their register order is preserved in the phase-3
-                    -- disassembly; the semantic names/order still need a
-                    -- final cross-check against root.children[23].
+                    -- UP[5] is root.children[23]. Its fifth argument is
+                    -- the configured distance limit (state.distance), not
+                    -- the actor id. The four coordinate operands are passed
+                    -- in main-X, main-Y, candidate-X, candidate-Y order.
                     local distance = distanceCalculation(
-                        mainX, mainY, actorX, actorY, actor
+                        mainX, mainY, actorX, actorY, blacklistState.distance
                     )
 
                     -- The nil-sentinel branch at PC 136-141 gates the
@@ -210,15 +208,22 @@ end
 
 -- Review notes:
 -- 1. This is a first-pass ordinary-Lua rendering, not verified source text.
--- 2. The bytecode's actor scan and the exact five-argument UP[5] distance
---    call still need register-by-register semantic reconciliation.
--- 3. UP[4] returns two values; the truthiness and display-name fallback need
---    final confirmation against root.children[52] and root.children[51].
--- 4. UP[1] is invoked with zero explicit arguments at PC 4; its external
+-- 2. PC21-PC54 is now structurally reconciled: missing numeric HP becomes
+--    0.0; first observation initializes lastHp/deathHandled; positive HP
+--    refreshes lastHp and clears deathHandled; a positive-to-zero transition
+--    fires UP[3] once and stores lastHp=0.0.
+-- 3. PC74-PC141 uses a numeric 1..playerCount traversal, skips nil actors and
+--    the main actor id, calls UP[4](actorId), and only continues on its first
+--    return value. UP[4]'s second return is used as a truthiness gate before
+--    ACTOR_NAME is fetched; exact fallback-name behavior still needs review.
+-- 4. UP[5] is root.children[23], called with mainX, mainY, candidateX,
+--    candidateY, and blacklistState.distance (the fifth argument is a range
+--    limit, not an actor id).
+-- 5. UP[1] is invoked with zero explicit arguments at PC 4; its external
 --    side effects are not inferred here.
--- 5. UP[11] is 30.0 and is passed into the successful-format path as well as
---    used for the failed retry delay. The original formatting conversion is
---    not proven to be a human-readable duration.
--- 6. isBlacklisting is set true at entry; no clear operation appears in this
+-- 6. UP[11] is 30.0 and is passed into the successful notification formatting
+--    path as well as used for the failed retry delay; preserve the numeric
+--    argument until the local-notice wrapper's formatter is audited.
+-- 7. isBlacklisting is set true at entry; no clear operation appears in this
 --    prototype's visible 216-instruction body. Do not add a reset/finally.
--- 7. Runtime behavior and all host API side effects remain unverified.
+-- 8. Runtime behavior and all host API side effects remain unverified.
