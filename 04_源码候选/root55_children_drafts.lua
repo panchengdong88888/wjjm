@@ -1,3 +1,58 @@
+----------------------------------------------------------------
+-- root.children[55]
+-- legacy root/56；AccountIDValidation；64 条物理指令；首版主体草稿
+----------------------------------------------------------------
+local function make_AccountIDValidation(logCallback, failureCallback)
+    -- UP[0] 在父函数中承担常规日志/成功提示回调。
+    -- UP[1] 用于账号验证失败提示。业务名称仍按调用用途命名。
+    return function AccountIDValidation()
+        local gameID = SL:GetMetaValue("GAME_ID")
+        logCallback("游戏id：" .. gameID)
+
+        if gameID ~= 204208 then
+            logCallback("游戏不一致，id：" .. gameID)
+            return
+        end
+
+        local accountID = SL:GetMetaValue("UID")
+        logCallback("账号ID：" .. accountID)
+
+        local allowedAccountIDs = {
+            "6324648",
+            "39770358",
+            "3548598",
+            "1957840929",
+            "1488903257",
+            "1585201915",
+            "1627987432",
+            "1580027021",
+            "1304755149",
+        }
+
+        local validateAccountID = make_Nested_ID(
+            allowedAccountIDs,
+            logCallback,
+            failureCallback
+        )
+        local validationResult = validateAccountID(accountID)
+
+        if validationResult then
+            logCallback("[验证成功] 账号ID验证通过")
+        else
+            failureCallback("[验证失败] 账号ID未在允许列表中")
+        end
+
+        -- PC58 捕获当前 validationResult 与 UP[0]。
+        -- 子闭包将第一个捕获值传给 SL:UnSchedule；虽然其值来自验证结果，
+        -- 这里按字节码保留，不擅自解释为真实 timer handle。
+        local scheduledCallback = make_Nested_Panel_mini_chat(
+            validationResult,
+            logCallback
+        )
+        SL:Schedule(scheduledCallback, 0.5)
+    end
+end
+
 -- MainLeftBottom(2).lua 普通 Lua 恢复候选
 -- 检查点 #168：root.children[55] 的两个子原型
 -- 说明：这是基于 corrected phase3 反汇编的可读重建，不是原始源码逐字节恢复。
