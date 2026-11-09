@@ -35,9 +35,10 @@
     "root.children[37]": "DestroyUI：31条；检查点164根据父root PC261捕获描述修正为3个upvalue：UP0=root T[0] UI状态对象（isHidden/resWin）、UP1=root T[3]定时器状态对象（resTimer）、UP2=root T[1]按钮映射表。旧草稿两参数捕获映射已修正。完整静态恢复，未运行时验证。",
     "root.children[40]": "ShowHideAllButtons：47条；检查点165按父root PC270捕获顺序修正为UP0=root T[3]定时器状态、UP1=root T[1]按钮表、UP2=root T[0]UI状态/hidebut控件。两个timer独立取消并清nil；pairs遍历UP1并显示；UP2.hidebut是单个控件，直接GUI:setVisible(hidebut,false)后清nil，不是第二张pairs表。完整静态恢复，未运行时验证。",
     "root.children[31]": "IsInWhitelistMap：28条；检查点166闭合SL:GetMetaValue(IN_SAFE_AREA) truthy快速返回true；否则读取MAP_NAME，以ipairs遍历唯一白名单“土城”，匹配返回true、耗尽返回false。PC28为不可达尾部return。无upvalue/子原型；完整静态恢复，未运行时验证。",
-    "root.children[24]": "UseItemByIndex：33条；检查点167确认父root PC355/356捕获T[37]为UP0，源码改为make_UseItemByIndex(itemNameList)工厂闭包；ipairs遍历捕获列表，分别读取ITEM_INDEX_BY_NAME与ITEM_COUNT，tonumber(...) or 0归一；itemIndex truthy且数量>0时SL:UseItemByIndex(itemIndex)，返回当前itemName；耗尽无值返回。函数体完整静态恢复，捕获表业务来源仍未追踪，未运行时验证。"
+    "root.children[24]": "UseItemByIndex：33条；检查点167确认父root PC355/356捕获T[37]为UP0，源码改为make_UseItemByIndex(itemNameList)工厂闭包；ipairs遍历捕获列表，分别读取ITEM_INDEX_BY_NAME与ITEM_COUNT，tonumber(...) or 0归一；itemIndex truthy且数量>0时SL:UseItemByIndex(itemIndex)，返回当前itemName；耗尽无值返回。函数体完整静态恢复，捕获表业务来源仍未追踪，未运行时验证。",
+    "root.children[55]": "AccountIDValidation：64条；检查点168新增两个子原型普通Lua候选。Nested_ID（root.children[55].children[1]，27条）完整静态恢复，tostring归一比较、提示回调及true/false返回已闭合；Nested_Panel_mini_chat（root.children[55].children[0]，24条）主体控制流已复审，父PC58两个捕获值的生产者仍待核对。父函数自身仍为首版草稿，Schedule参数顺序/调度捕获未完整闭合；均未运行时验证。"
   },
-  "next_action": "检查点167已完成UseItemByIndex完整静态恢复；普通Lua源码候选82、完整静态恢复88/110、运行时验证0。下一步审查root.children[55].children[0] Nested_Panel_mini_chat（24条）和root.children[55].children[1] Nested_ID（27条），核对父root/56捕获参数、SL回调receiver、状态门槛和返回契约。",
+  "next_action": "检查点168：root.children[55].children[1] Nested_ID（27条）已完成普通Lua重建与独立静态复审，提升为完整静态恢复（未运行时验证）；root.children[55].children[0] Nested_Panel_mini_chat（24条）主体控制流已独立复审，仍为普通Lua草稿，待追溯父root PC58创建闭包时两个捕获值的生产者。下一步优先核对root.children[55] PC27-PC64的父级调用、Schedule参数顺序及Panel闭包捕获来源；随后批量选择尚无可读草稿的短函数。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2036,29 +2037,51 @@
         "All 33 PCs and method receivers/arguments closed; captured list origin remains unresolved.",
         "Not runtime validated."
       ]
+    },
+    {
+      "path": "root.children[55].children[1]",
+      "legacy_path": "root/56/2",
+      "name": "Nested_ID",
+      "physical_instructions": 27,
+      "constant_count": 4,
+      "child_count": 0,
+      "parent_path": "root.children[55]",
+      "parent_create_pc": 38,
+      "capture_count": 3,
+      "source_file": "04_源码候选/root55_children_drafts.lua",
+      "audit_file": "docs/audit/检查点168_AccountIDValidation子原型恢复.md",
+      "status": "complete_static_reconstruction_not_runtime_verified",
+      "notes": [
+        "ipairs over captured allowed account IDs.",
+        "Compares tostring(first explicit argument) with tostring(each allowed ID).",
+        "UP1 success notice and true return; UP2 failure notice and false return.",
+        "Only first explicit argument is read; extra varargs are unused."
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "167",
+    "checkpoint": "168",
     "targets": [
-      "root.children[24]"
+      "root.children[55].children[0]",
+      "root.children[55].children[1]"
     ],
-    "status": "Reviewed all 33 physical instruction records, corrected the UPVALUE factory closure, and promoted UseItemByIndex to complete static reconstruction.",
-    "audit_file": "docs/audit/检查点167_UseItemByIndex完整静态复审与闭包表达修正.md",
+    "status": "Recovered both AccountIDValidation child prototypes as ordinary Lua; independently reviewed Nested_ID and promoted it to complete static reconstruction. Nested_Panel_mini_chat remains a draft because parent capture producers are not yet proven.",
+    "audit_file": "docs/audit/检查点168_AccountIDValidation子原型恢复.md",
     "files": [
-      "04_源码候选/短函数草稿_第三十一批.lua",
-      "docs/audit/检查点167_UseItemByIndex完整静态复审与闭包表达修正.md",
+      "04_源码候选/root55_children_drafts.lua",
+      "docs/audit/检查点168_AccountIDValidation子原型恢复.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "UP0 captures parent root T[37] and is represented by a factory closure.",
-      "GetMetaValue receiver/arguments, tonumber fallback, itemIndex/itemCount gates, use call and return value closed.",
-      "Captured list origin remains unnamed."
+      "Nested_ID iterates UP[0] with ipairs; compares tostring(first explicit argument) with tostring(each allowed ID); UP[1] success callback and UP[2] failure callback; returns true/false respectively.",
+      "Nested_ID reads no extra varargs; parent PC38 capture order matches allowed list and the two notice callbacks.",
+      "Nested_Panel_mini_chat checks MainProperty, _ui and Panel_mini_chat; if present calls SL:UnSchedule(UP[0]) then MainLeftBottom.doInit(); every path calls UP[1] with the fixed waiting notice.",
+      "Nested_Panel_mini_chat parent PC58 capture producers and parent Schedule argument stack remain unresolved."
     ],
     "counts": {
-      "ordinary_lua_drafts": 82,
-      "complete_static_reconstruction": 88,
+      "ordinary_lua_drafts": 83,
+      "complete_static_reconstruction": 89,
       "runtime_verified": 0
     }
   },
@@ -2120,7 +2143,7 @@
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   },
-  "draft_recovered_count": 82,
+  "draft_recovered_count": 83,
   "draft_recovered_functions": [
     {
       "path": "root.children[46]",
@@ -2709,39 +2732,60 @@
         "PC1-PC159 entry/whitelist/IDLE/wait logic reviewed; PC203-PC312 unowned lock path corrected; GATHERING and ATTACKING loops closed.",
         "Complete static reconstruction only; not validated in Lua host or game runtime."
       ]
+    },
+    {
+      "path": "root.children[55].children[0]",
+      "legacy_path": "root/56/1",
+      "name": "Nested_Panel_mini_chat",
+      "source_file": "04_源码候选/root55_children_drafts.lua",
+      "audit_file": "docs/audit/检查点168_AccountIDValidation子原型恢复.md",
+      "status": "first_pass_draft_body_independently_reviewed_parent_capture_producers_pending_not_runtime_verified",
+      "physical_instructions": 24,
+      "constant_count": 8,
+      "child_count": 0,
+      "parent_path": "root.children[55]",
+      "parent_create_pc": 58,
+      "capture_count": 2,
+      "notes": [
+        "Checks MainProperty, MainProperty._ui and Panel_mini_chat.",
+        "When all are truthy, calls SL:UnSchedule(UP0) and MainLeftBottom.doInit() with zero explicit args.",
+        "Every path calls UP1 with the fixed waiting notice.",
+        "UP0/UP1 use roles are clear; parent PC58 capture producers remain unresolved."
+      ]
     }
   ],
-  "draft_function_count": 82,
-  "ordinary_lua_draft_functions": 82,
-  "last_checkpoint": "167",
-  "checkpoint": "167",
+  "draft_function_count": 83,
+  "ordinary_lua_draft_functions": 83,
+  "last_checkpoint": "168",
+  "checkpoint": "168",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 167,
+    "number": 168,
     "date": "2026-11-09",
     "artifacts": [
-      "04_源码候选/短函数草稿_第三十一批.lua",
-      "docs/audit/检查点167_UseItemByIndex完整静态复审与闭包表达修正.md"
+      "04_源码候选/root55_children_drafts.lua",
+      "docs/audit/检查点168_AccountIDValidation子原型恢复.md",
+      "02_基础索引/03_函数状态清单.csv"
     ],
-    "draft_prototypes_touched": 1,
-    "draft_prototype_total": 82,
-    "complete_static_reconstructions": 88,
+    "draft_prototypes_touched": 2,
+    "draft_prototype_total": 83,
+    "complete_static_reconstructions": 89,
     "runtime_verified": 0,
-    "notes": "UseItemByIndex的33条指令、捕获闭包表达、元数据查询和返回契约完成静态复审；运行时未验证。"
+    "notes": "AccountIDValidation两个子原型完成普通Lua重建；Nested_ID完成静态复审，Panel_mini_chat保留草稿并明确父捕获来源未闭合。"
   },
   "latest_checkpoint": {
-    "checkpoint": "167",
-    "date": "2026-11-09",
-    "summary": "UseItemByIndex正确表达UPVALUE_0=T[37]工厂捕获；item索引/数量查询、数量归一、使用门槛和返回契约闭合。",
-    "audit_file": "docs/audit/检查点167_UseItemByIndex完整静态复审与闭包表达修正.md",
+    "checkpoint": "168",
+    "summary": "新增AccountIDValidation两个子原型的可读Lua；Nested_ID完成静态恢复，Panel_mini_chat主体已复审但捕获生产者未闭合。",
+    "audit_file": "docs/audit/检查点168_AccountIDValidation子原型恢复.md",
     "unresolved": [
-      "捕获列表业务来源",
+      "Nested_Panel_mini_chat父PC58捕获值的生产者",
+      "AccountIDValidation父函数Schedule参数顺序与调度捕获",
       "Lua宿主/游戏运行时验证"
     ]
   },
-  "complete_static_reconstruction_count": 88,
-  "complete_static_reconstruction": "88/110 (80.0%)",
+  "complete_static_reconstruction_count": 89,
+  "complete_static_reconstruction": "89/110 (80.9%)",
   "progress_reconciled": {
     "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；机器状态中的static_recovered_functions是精选索引，不作为完整计数器。",
     "ordinary_lua_draft_functions": 82,
@@ -2750,8 +2794,8 @@
     "note": "检查点167将UseItemByIndex root.children[24]升级为完整静态恢复，并将UPVALUE_0=T[37]正确表达为工厂闭包捕获；列表业务来源仍未命名。运行时验证仍为0。"
   },
   "counts": {
-    "ordinary_lua_drafts": 82,
-    "complete_static_reconstruction": 88,
+    "ordinary_lua_drafts": 83,
+    "complete_static_reconstruction": 89,
     "runtime_verified": 0
   }
 }
