@@ -48,7 +48,7 @@ local function SetTargetID(targetID)
     end
 
     local playerInputProxy =
-        global.Facade.retrieveProxy(global.ProxyTable.PlayerInputProxy)
+        global.Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)
 
     if not playerInputProxy then
         return false
