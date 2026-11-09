@@ -27,20 +27,22 @@ local function Nested_SL()
 end
 
 -- 原型：root.children[42].children[3].children[4]
--- legacy：root/43/4/5；物理指令：20
--- 依据：UP[0] 是提示回调；UP[1] 持有 resTimer/resWin。
+-- legacy：root/43/4/5；物理指令：20；3项捕获。
+-- 父Nested_FFFF00 PC68-PC71捕获顺序为父UP[1]、父UP[2]、父UP[0]：
+-- 本函数UP[0]=PrintLog/通知回调，UP[1]=timerState，UP[2]=moduleState。
 local function Nested_UnSchedule()
     local notify = UPVALUE_0
-    local resourceState = UPVALUE_1
+    local timerState = UPVALUE_1
+    local moduleState = UPVALUE_2
 
     notify("点击空白,关闭资源信息窗口")
 
-    if resourceState.resTimer then
-        SL:UnSchedule(resourceState.resTimer)
-        resourceState.resTimer = nil
+    if timerState.resTimer then
+        SL:UnSchedule(timerState.resTimer)
+        timerState.resTimer = nil
     end
 
-    GUI:Win_Close(resourceState.resWin)
+    GUI:Win_Close(moduleState.resWin)
 end
 
 -- 原型：root.children[42].children[22].children[0].children[0].children[0]
