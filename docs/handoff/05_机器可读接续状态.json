@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next."
   },
-  "next_action": "优先从原始VM包装器/加载器/调用帧初始化逻辑寻找T寄存器基址、固定参数复制和vararg初始化；当前仓库未找到M(I,U,S)、U(T,A+1,B)的解释器实现。若VM入口规则无法获得可靠证据，不猜测Nested_Anonymous的T[0]/T[1]/T[2]映射，转向Nested_FFFF00剩余父级GUI/调度逻辑。",
+  "next_action": "继续核对Nested_FFFF00父函数GUI构造调用的剩余参数/宿主语义，并寻找VM入口/调用帧初始化资料以解决Nested_Anonymous的T槽映射；对GUI宿主行为和unknown哨兵语义保持证据边界，不臆测。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -1787,27 +1787,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 117,
+    "checkpoint": 118,
     "targets": [
-      "root.children[42].children[22]",
-      "root.children[42].children[11]",
-      "root.children[42].children[14]"
+      "root.children[42].children[3]",
+      "root.children[42].children[3].children[3]"
     ],
-    "status": "additional VM call-frame and prototype metadata review; no new slot mapping proven",
-    "audit_file": "docs/audit/检查点117_Nested_Anonymous原型参数元数据与调用帧复核.md",
-    "confirmed": [
-      "Nested_Helper_4 PC11 OP_187 A=0 B=2 calls Nested_Anonymous using caller U(T,1,2).",
-      "Nested_Helper_7 PC11 OP_358 A=0 B=2 calls Nested_Anonymous using caller U(T,1,2).",
-      "Both caller sites pass two arguments; exact callee-frame mapping remains dependent on unavailable VM frame setup.",
-      "Nested_Anonymous vararg metadata is 2; Nested_str=1; Nested_match=2; Nested_Helper_11=0; Nested_Helper_3=0; Nested_FFFFFF=3.",
-      "Metadata values correlate with observed parameter patterns but do not conclusively establish fixed-parameter counts or Lua vararg flags.",
-      "Nested_Anonymous has no explicit writes to T[0], T[1], or T[2] in its 8 instructions; values must be initialized by VM call-frame entry or other VM mechanism."
+    "status": "corrected receiver argument in two already statically recovered source candidates; no count changes",
+    "audit_file": "docs/audit/检查点118_Nested_FFFF00窗口检查方法调用接收者校正.md",
+    "files": [
+      "04_源码候选/短函数草稿_第六十二批.lua",
+      "04_源码候选/资源统计刷新链_第六十四批.lua",
+      "02_基础索引/03_函数状态清单.csv"
     ],
-    "unresolved": [
-      "VM callee frame setup and T register base",
-      "exact mapping of the two caller arguments to T[0]/T[1]/T[2]",
-      "producer/business identity of T[2] error callback",
-      "meaning of dump vararg metadata field"
+    "findings": [
+      "Nested_FFFF00 PC1-PC5: method lookup stores GUI receiver in R1, resWin in R2, and call uses U(T,1,2); source must be gui:Win_IsNotNull(moduleState.resWin).",
+      "Nested_Helper_3 PC1-PC5 has the same receiver/argument layout and requires the same colon call.",
+      "Old candidates used dot calls, which omitted the GUI receiver and changed the actual argument list.",
+      "No function signature, branch polarity, closure capture, or runtime status changed."
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
@@ -2382,10 +2378,10 @@
   ],
   "draft_function_count": 78,
   "ordinary_lua_draft_functions": 78,
-  "last_checkpoint": "117",
-  "checkpoint": "117",
+  "last_checkpoint": "118",
+  "checkpoint": "118",
   "drafts": 33,
-  "next": "优先从原始VM包装器/加载器/调用帧初始化逻辑寻找T寄存器基址、固定参数复制和vararg初始化；当前仓库未找到M(I,U,S)、U(T,A+1,B)的解释器实现。若VM入口规则无法获得可靠证据，不猜测Nested_Anonymous的T[0]/T[1]/T[2]映射，转向Nested_FFFF00剩余父级GUI/调度逻辑。",
+  "next": "继续核对Nested_FFFF00父函数GUI构造调用的剩余参数/宿主语义，并寻找VM入口/调用帧初始化资料以解决Nested_Anonymous的T槽映射；对GUI宿主行为和unknown哨兵语义保持证据边界，不臆测。",
   "recent_checkpoint": {
     "checkpoint": "116",
     "date": "2026-11-09",
@@ -2407,21 +2403,20 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "117",
+    "checkpoint": "118",
     "date": "2026-11-09",
-    "summary": "核对Nested_Anonymous两个真实调用点的opcode参数范围，并交叉比对相关原型vararg元数据。两调用均从调用方U(T,1,2)构造两项参数；Nested_Anonymous本体无T槽赋值指令，因此T槽来源取决于尚未找到的VM调用帧初始化机制。元数据字段与参数形态相关但语义未证明，未更改函数签名或草稿占位。",
-    "audit_file": "docs/audit/检查点117_Nested_Anonymous原型参数元数据与调用帧复核.md",
+    "summary": "修正Nested_FFFF00与Nested_Helper_3两个已恢复源码中的GUI.Win_IsNotNull点调用。反汇编PC1-PC5证明GUI接收者保存在R1、resWin在R2，调用范围U(T,1,2)传入两项，因此普通Lua应使用gui:Win_IsNotNull(moduleState.resWin)。",
+    "audit_file": "docs/audit/检查点118_Nested_FFFF00窗口检查方法调用接收者校正.md",
+    "unresolved": [
+      "GUI宿主方法具体内部语义",
+      "Nested_Anonymous的VM帧初始化和T槽映射",
+      "Nested_UnSchedule unknown哨兵运行时语义"
+    ],
     "counts": {
       "ordinary_lua_drafts": 78,
       "complete_static_reconstruction": 60,
       "runtime_verified": 0
-    },
-    "unresolved": [
-      "callee frame setup",
-      "T[0]/T[1]/T[2]映射",
-      "T[2]生产者",
-      "vararg字段语义"
-    ]
+    }
   },
   "complete_static_reconstruction_count": 60,
   "complete_static_reconstruction": "60/110 (54.5%)",
@@ -2430,7 +2425,7 @@
     "ordinary_lua_draft_functions": 78,
     "complete_static_reconstruction_functions": 58,
     "runtime_verified_functions": 0,
-    "note": "检查点116：Nested_find和Nested_UnSchedule由首版草稿升级完整静态恢复；Nested_find参数/计数逻辑及Nested_UnSchedule闭包槽位已校正。普通Lua草稿总量统计口径保持78，完整静态恢复60/110，运行时验证0。"
+    "note": "检查点118仅修正已静态恢复源码中的GUI方法接收者实参，不新增草稿或完整静态恢复计数。"
   },
   "counts": {
     "ordinary_lua_drafts": 78,
