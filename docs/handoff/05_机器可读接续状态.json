@@ -25,7 +25,7 @@
     "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。",
     "root.children[47]": "BlacklistPlayerDetection：检查点148已校正HP状态机、hp<=0门槛、UP[4] true/Name或false/nil与ACTOR_NAME回退、UP[5]坐标+state.distance五实参、成功日志第三%s参数为UP[8]返回道具名。检查点149确认UP[1]=root/53，零参调用触发PC1-PC5入口return，不会执行后续pcall/lastAttacker路径。仍待root/23地图/障碍校验与全CFG独立复核；首版普通Lua草稿，不计完整静态恢复，未运行时验证。",
     "root.children[50]": "StorageItems：检查点144闭合子原型1（root/51/2）逐页容量算法：普通页上限pageCapacity，末页上限min(pageCapacity,openSize-(maxPage-1)*pageCapacity)，读取storedPageData[page]，返回首个未满页码；PC37-PC53建立每页物品数量表（#pageData，不存在记0）。PC206-PC211融合链闭合：R12[MakeIndex]=true（已处理索引集合），storedPageData[targetPage]递增，R13成功发送计数递增。LuaSendMsg第4参数在调用点承载目标仓库页码，服务端协议正式字段名仍待接收端验证。",
-    "root.children[50].children[1]": "Nested_Anonymous_2：检查点150新增04_源码候选/root50_Nested_Anonymous_2.lua。4个捕获为maxPage/pageCapacity/openSize/storedPageData；数字遍历页码，末页容量min(pageCapacity,openSize-(maxPage-1)*pageCapacity)，返回首个未满页码或nil。首版草稿，待独立静态复审，未运行时验证。",
+    "root.children[50].children[1]": "Nested_Anonymous_2：27条；检查点173独立静态复审完成。父StorageItems PC54-PC58捕获maxPage/pageCapacity/openSize/storedPageData；父PC37-PC53逐页构建计数表（#pageData或0）；子函数升序遍历，末页容量按openSize剩余空间裁剪，返回首个可用页码或nil；父PC177-PC179零参调用并消费页码/nil。完整静态恢复，未运行时验证。",
     "root.children[7]": "GetOwnerIDText：检查点151新增04_源码候选/root7_GetOwnerIDText.lua。nil/空串/-1返回false；string分支ownerID==tostring(ownerID)；非string分支ownerID==第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
     "root.children[38]": "GetOwnerID：检查点151新增04_源码候选/root38_GetOwnerID.lua。nil/空串/-1返回false；string分支ownerID~=tostring(ownerID)；非string分支ownerID~=第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
     "root.children[11]": "DistanceCalculation：25条；检查点160逐PC复审PC1-PC23活动路径，任一坐标表false/nil返回99999，否则返回max(abs(dx),abs(dy))；PC24-PC25为return后的不可达尾部。无upvalue/子原型。完整静态恢复，未运行时验证。",
@@ -42,7 +42,7 @@
     "root.children[0].children[0]": "Nested_removeFile：5条；检查点171独立静态复审完成。父root/1 PC17创建闭包，PC18捕获R1=cc.FileUtils:getInstance()实例，PC19捕获R2=路径参数；子函数调用fileUtils:removeFile(path)，不保留返回值。完整静态恢复，未运行时验证。",
     "root.children[42].children[3].children[4]": "Nested_UnSchedule：20条；原检查点116已完成控制流静态复核。检查点172修正源码表达：子UP0=通知回调、UP1=timerState、UP2=moduleState；父PC68-PC71捕获顺序为父UP1/UP2/UP0。取消timer后写回反汇编未知常量['unknown',2]，源码以UNKNOWN_VALUE_SENTINEL占位，禁止误写nil。完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点172：Nested_UnSchedule源码已修正为按真实捕获顺序的工厂闭包，并将反汇编['unknown',2]哨兵保留为UNKNOWN_VALUE_SENTINEL占位，不再误写nil。下一步继续检查其他已有完整静态结论但源码候选仍使用UPVALUE占位/错误默认值的短闭包，再批量复核未完成的短草稿。运行时验证仍为0。",
+  "next_action": "检查点173：Nested_Anonymous_2（root.children[50].children[1]，27条）全部子指令、四项捕获生产者、storedPageData构造逻辑及父级零参调用/返回值消费点已闭合并升级为完整静态恢复。下一步继续批量复核其他短草稿及仍有UPVALUE占位/参数契约待核的子原型；优先挑选可由父级调用点闭合的短函数。运行时验证仍为0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -115,7 +115,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "172"
+    "last_checkpoint": "173"
   },
   "static_recovered_functions": [
     {
@@ -2151,28 +2151,58 @@
         "Calls fileUtils:removeFile(path); no explicit return.",
         "All five physical instructions reconciled; not runtime validated."
       ]
+    },
+    {
+      "path": "root.children[50].children[1]",
+      "legacy_path": "root/51/2",
+      "name": "Nested_Anonymous_2",
+      "physical_instructions": 27,
+      "constant_count": 1,
+      "child_count": 0,
+      "parent_path": "root.children[50]",
+      "parent_create_pc": 54,
+      "capture_count": 4,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/root50_Nested_Anonymous_2.lua",
+      "audit_file": "docs/audit/检查点173_Nested_Anonymous_2完整静态复审.md",
+      "parameters": [],
+      "returns": [
+        "page number or nil"
+      ],
+      "notes": [
+        "UP0=maxPage from NPCStorageProxy:GetMaxPage() with parent fallback global.MMO.NPC_STORAGE_MAX_PAGE.",
+        "UP1=GUIDefine.STORAGE_PER_PAGE_MAX.",
+        "UP2=NPCStorageProxy:GetOpenSize().",
+        "UP3=storedPageData; parent fills each page with #GetStorageDataByPage(page) or 0.",
+        "Child scans pages ascending and uses reduced final-page capacity.",
+        "Parent PC177-PC179 invokes with zero args and branches on page/nil.",
+        "All 27 instructions reconciled; not runtime validated."
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "172",
+    "checkpoint": "173",
     "targets": [
-      "root.children[42].children[3].children[4]"
+      "root.children[50].children[1]"
     ],
-    "status": "Corrected the source representation of the already statically recovered Nested_UnSchedule: factory capture order is explicit and the disassembler's unknown sentinel is no longer incorrectly represented as nil.",
-    "audit_file": "docs/audit/检查点172_Nested_UnSchedule捕获与未知哨兵表达修正.md",
+    "status": "Independently reviewed all 27 child instructions, four parent capture producers, the per-page count-table producer, and the parent zero-argument call/result-consumption path; promoted to complete static reconstruction.",
+    "audit_file": "docs/audit/检查点173_Nested_Anonymous_2完整静态复审.md",
     "files": [
-      "04_源码候选/短函数草稿_第十五批.lua",
-      "docs/audit/检查点172_Nested_UnSchedule捕获与未知哨兵表达修正.md"
+      "04_源码候选/root50_Nested_Anonymous_2.lua",
+      "docs/audit/检查点173_Nested_Anonymous_2完整静态复审.md",
+      "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "Child capture order: parent UP1 notification callback, parent UP2 timerState, parent UP0 moduleState.",
-      "Nested_UnSchedule cancels timerState.resTimer, then writes the disassembler-marked ['unknown',2] value back.",
-      "The source now uses UNKNOWN_VALUE_SENTINEL as an explicit unresolved placeholder rather than nil."
+      "Parent PC54-PC58 captures maxPage, pageCapacity, openSize, and storedPageData in order.",
+      "Parent PC37-PC53 builds a numeric count for every page using #pageData or 0.",
+      "Child iterates pages ascending, uses reduced last-page capacity, returns first page with room or nil.",
+      "Parent PC177-PC179 calls closure with no arguments and routes page/nil to success/failure paths."
     ],
     "counts": {
-      "ordinary_lua_drafts": 80,
-      "complete_static_reconstruction": 93,
+      "ordinary_lua_drafts": 79,
+      "complete_static_reconstruction": 94,
       "runtime_verified": 0
     }
   },
@@ -2843,35 +2873,36 @@
       ]
     }
   ],
-  "draft_function_count": 80,
-  "ordinary_lua_draft_functions": 80,
-  "last_checkpoint": "172",
-  "checkpoint": "172",
+  "draft_function_count": 79,
+  "ordinary_lua_draft_functions": 79,
+  "last_checkpoint": "173",
+  "checkpoint": "173",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 172,
+    "number": 173,
     "date": "2026-11-09",
     "artifacts": [
-      "04_源码候选/短函数草稿_第十五批.lua",
-      "docs/audit/检查点172_Nested_UnSchedule捕获与未知哨兵表达修正.md"
+      "04_源码候选/root50_Nested_Anonymous_2.lua",
+      "docs/audit/检查点173_Nested_Anonymous_2完整静态复审.md",
+      "02_基础索引/03_函数状态清单.csv"
     ],
-    "draft_prototypes_touched": 0,
-    "draft_prototype_total": 80,
-    "complete_static_reconstructions": 93,
+    "draft_prototypes_touched": 1,
+    "draft_prototype_total": 79,
+    "complete_static_reconstructions": 94,
     "runtime_verified": 0,
-    "notes": "修正Nested_UnSchedule的工厂捕获顺序，并将未知哨兵保留为显式占位，不误写nil。"
+    "notes": "Nested_Anonymous_2的27条指令、四项父捕获、每页数量表生产者和父级调用消费点全部闭合。"
   },
   "latest_checkpoint": {
-    "checkpoint": "172",
-    "summary": "Nested_UnSchedule源码工厂闭包捕获顺序与unknown sentinel表达修正；静态恢复计数不变。",
-    "audit_file": "docs/audit/检查点172_Nested_UnSchedule捕获与未知哨兵表达修正.md",
+    "checkpoint": "173",
+    "summary": "Nested_Anonymous_2（27条）独立静态复审完成；捕获、父级计数表构造和返回值消费链闭合。",
+    "audit_file": "docs/audit/检查点173_Nested_Anonymous_2完整静态复审.md",
     "unresolved": [
-      "UNKNOWN_VALUE_SENTINEL的真实宿主值/运行时语义",
+      "NPCStorageProxy宿主接口真实运行行为尚未验证",
       "尚未运行时验证"
     ]
   },
-  "complete_static_reconstruction_count": 93,
+  "complete_static_reconstruction_count": 94,
   "complete_static_reconstruction": "89/110 (80.9%)",
   "progress_reconciled": {
     "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；机器状态中的static_recovered_functions是精选索引，不作为完整计数器。",
@@ -2879,14 +2910,14 @@
     "complete_static_reconstruction_functions": 88,
     "runtime_verified_functions": 0,
     "note": "检查点167将UseItemByIndex root.children[24]升级为完整静态恢复，并将UPVALUE_0=T[37]正确表达为工厂闭包捕获；列表业务来源仍未命名。运行时验证仍为0。",
-    "checkpoint": 172,
-    "ordinary_lua_drafts": 80,
-    "complete_static_reconstruction": 93,
+    "checkpoint": 173,
+    "ordinary_lua_drafts": 79,
+    "complete_static_reconstruction": 94,
     "runtime_verified": 0
   },
   "counts": {
-    "ordinary_lua_drafts": 80,
-    "complete_static_reconstruction": 93,
+    "ordinary_lua_drafts": 79,
+    "complete_static_reconstruction": 94,
     "runtime_verified": 0
   }
 }
