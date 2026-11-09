@@ -39,7 +39,7 @@ local function make_Nested_Helper_3(
         local gui = GUI
 
         -- PC1-PC19：窗口无效时取消已有定时器、清空句柄并退出。
-        if not gui.Win_IsNotNull(moduleState.resWin) then
+        if not gui:Win_IsNotNull(moduleState.resWin) then
             if timerState.resTimer then
                 SL:UnSchedule(timerState.resTimer)
                 timerState.resTimer = nil
