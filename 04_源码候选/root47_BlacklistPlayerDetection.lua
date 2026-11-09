@@ -111,18 +111,22 @@ local function make_BlacklistPlayerDetection(
                 -- PC 83-84 contains an additional equality gate. Its second
                 -- operand is not renamed as mainActorID until its loop-register
                 -- identity is independently checked.
-                -- UP[4] is the FriendProxy-backed blacklist lookup helper.
-                -- Its two return values are preserved separately; exact
-                -- false/nil handling is still under independent review.
+                -- UP[4] first checks FriendProxy._blacklistData[actorID],
+                -- then retries by ACTOR_MASTER_ID. It returns (true, Name)
+                -- on a match, otherwise (false, nil).
                 local isBlacklisted, blacklistDisplayName = findBlacklistActor(actor)
 
                 if isBlacklisted then
-                    local actorName = SL:GetMetaValue("ACTOR_NAME", actor)
+                    -- PC92-PC101: a truthy second return is used directly as
+                    -- the display name. Only when it is nil/false does the
+                    -- bytecode query ACTOR_NAME; a missing actor name falls
+                    -- back to the literal "黑名单玩家".
+                    local actorName = blacklistDisplayName
                     if not actorName then
-                        actorName = blacklistDisplayName
+                        actorName = SL:GetMetaValue("ACTOR_NAME", actor)
                     end
                     if not actorName then
-                        actorName = "未知玩家"
+                        actorName = "黑名单玩家"
                     end
 
                     local actorX = SL:GetMetaValue("ACTOR_MAP_X", actor)
@@ -173,8 +177,8 @@ local function make_BlacklistPlayerDetection(
         if usedTeleportItemName then
             -- PC 168-192: successful-use path. The bytecode schedules a short
             -- retry, clears the one-shot no-stone warning, and emits notice/log
-            -- messages. UP[11] is also present as the %s formatting operand in
-            -- one success log; this unusual reuse is kept explicit in notes.
+            -- messages. The success log's third %s argument is the item name
+            -- returned by UP[8], not the failed-path delay UP[11].
             blacklistState.nextTryAt = now + successRetryDelay
             blacklistState.noStoneWarned = false
 
@@ -214,8 +218,8 @@ end
 --    fires UP[3] once and stores lastHp=0.0.
 -- 3. PC74-PC141 uses a numeric 1..playerCount traversal, skips nil actors and
 --    the main actor id, calls UP[4](actorId), and only continues on its first
---    return value. UP[4]'s second return is used as a truthiness gate before
---    ACTOR_NAME is fetched; exact fallback-name behavior still needs review.
+--    return value. A truthy second return is the display name; otherwise the
+--    function queries ACTOR_NAME and falls back to "黑名单玩家".
 -- 4. UP[5] is root.children[23], called with mainX, mainY, candidateX,
 --    candidateY, and blacklistState.distance (the fifth argument is a range
 --    limit, not an actor id).
