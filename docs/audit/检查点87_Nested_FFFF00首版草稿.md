@@ -20,13 +20,13 @@
 4. 创建根Layout及点击回调，创建ListView并设置锚点、背景类型、背景颜色`#CEB5F7`和透明度255。
 5. 创建标题、初始时间、当前时间、历时、备注五个布局/文本区域；常量可确认标题“资源统计”、初始时间前缀“初始时间:”、当前时间默认文本“当前时间:--”、历时默认文本“历时:--”及备注“（括号内数量为非绑定资源的收益）”。
 6. 创建5个子原型的顺序为：child4在PC68、child0在PC118、child2在PC265、child1在PC292、child3在PC300。child4捕获[PrintLog,timerState,moduleState]，点击空白时提示并取消resTimer、关闭窗口。child2捕获ListView对象及screenW*0.6宽度参数。child3捕获10项：[moduleState,timerState,curTimeText,durTimeText,initState,MoneyProxy,updateResourceRows,formatNumber,updateResourceRows,2.0]。
-7. PC268-PC281构造两组资源名称数组：money=[元宝、绑定元宝、灵符、绑定灵符]，item=[声望卷、悟道茶、洗髓丹、转生水晶、恶魔令牌、血龙宝珠]。PC282-PC291分别以`updateResourceRows(names,2,"money"/"item")`建立列表行。PC293-PC299获取MoneyProxy。PC300创建刷新闭包，PC311-PC312立即调用；刷新闭包内部检查窗口有效性、更新当前时间/历时及资源统计，并自行调用`SL:Schedule(callback,1.0)`、保存`timerState.resTimer`。
+7. PC268-PC281构造两组资源名称数组：money=[元宝、绑定元宝、灵符、绑定灵符]，item=[声望卷、悟道茶、洗髓丹、转生水晶、恶魔令牌、血龙宝珠]。PC282-PC291分别以`updateResourceRows(names,2,"money"/"item")`建立列表行。PC293-PC299获取MoneyProxy。PC300创建刷新闭包，PC311-PC312立即调用；刷新闭包检查窗口有效性、更新当前时间/历时及资源统计。随后父函数PC313-PC319调用`SL:Schedule(refreshCallback,1.0)`并保存`timerState.resTimer`。
 
 ## 草稿限制
 - 本轮以窗口状态分支、UI区域和资源刷新流程为骨架；大量GUI构造调用存在融合载荷，具体参数位置/含义未全部展开。草稿中TODO与临时返回结构仅为阅读骨架，不等同作者原始Lua。
 - 四个父闭包捕获业务身份已闭合并写入源码；PC300刷新闭包的10项捕获顺序也已核实。
 - child0/child1/child2/child3/child4各自的已有草稿不能自动证明其在本父函数中的全部参数契约；尤其PC265和PC300创建点后的捕获寄存器/闭包传参还需复核。
-- `SL:Schedule(callback,1.0)`参数顺序及timerState.resTimer句柄写入已闭合；MoneyProxy各资源ID/数量读取与差值显示的细节仍需继续校正。
+- `SL:Schedule(refreshCallback,1.0)`参数顺序及timerState.resTimer句柄写入已闭合，且确认由父函数在首次立即调用刷新闭包后执行；MoneyProxy各资源ID/数量读取与差值显示的细节仍需继续校正。
 - 当前草稿不计入完整静态恢复，未做运行时验证。
 
 ## 计数
