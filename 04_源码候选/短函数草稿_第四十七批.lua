@@ -58,7 +58,7 @@ local function MakeNested_Button_setTitleFontSize(
             -- 这里保留真实闭包挂接位置，等待子原型专项静态复核。
         end
 
-        GUI.Button_addOnClickEvent(button, onClick)
+        GUI.addOnClickEvent(button, onClick)
     end
 end
 
