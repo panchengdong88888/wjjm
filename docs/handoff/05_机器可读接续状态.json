@@ -23,9 +23,10 @@
     "root.children[15]": "ClearBlacklistItems：63条父指令+13条子指令；检查点133确认pairs首返回值key、子回调捕获entryKey/friendProxy、异步删除索引及ScheduleOnce延迟；完整静态恢复，未运行时验证。",
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
     "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。",
-    "root.children[47]": "BlacklistPlayerDetection：216条；检查点135补回PC5-PC11 MAIN_ACTOR_ID前置门槛，假值立即返回后才读取HP；其余仍为首版草稿，13个捕获身份、坐标/距离数据流、道具选择与API契约待复核。未运行时验证。"
+    "root.children[47]": "BlacklistPlayerDetection：216条；检查点135补回PC5-PC11 MAIN_ACTOR_ID前置门槛，假值立即返回后才读取HP；其余仍为首版草稿，13个捕获身份、坐标/距离数据流、道具选择与API契约待复核。未运行时验证。",
+    "root.children[50]": "StorageItems：224条；检查点136确认PC120的ITEM_IS_BIND严格比较值为数值1并修正草稿；主函数页/容量、两子原型调用契约、捕获身份及LuaSendMsg参数仍待复核。"
   },
-  "next_action": "检查点134完成TakeItems（99条）与Builtsetting（55条）完整静态复核，完整静态恢复计数更新为76/110。下一批优先批量恢复BlacklistPlayerDetection(root.children[47])和StorageItems(root.children[50])的可读主体，保留未闭合的捕获/对象结构/协议参数为明确TODO；随后复核GetMapData2DPtr(root.children[22])与其余短函数。",
+  "next_action": "检查点136：StorageItems PC120确认ITEM_IS_BIND必须严格等于数值1才进入特殊名称分支，已修正短函数草稿第六十批并更新CSV。下一步继续复核StorageItems主函数PC151-PC224及两个子原型的捕获/实参/返回契约；同时逐PC复核BlacklistPlayerDetection PC21-PC216，特别是HP/deathHandled比较、坐标参数对象、距离哨兵、alertAt/nextTryAt节流和随机传送/通知分支。草稿78、完整静态恢复76/110、运行时验证0，计数不变。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -98,7 +99,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "134"
+    "last_checkpoint": "136"
   },
   "static_recovered_functions": [
     {
