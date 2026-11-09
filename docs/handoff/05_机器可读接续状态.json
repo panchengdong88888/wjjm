@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "继续独立复核 Nested_FFFFFF（root.children[42].children[3].children[2]）：逐项核实PC5-63的双层数值for循环、cell/text位置参数和GUI融合实参；通过父函数PC265捕获来源确定T[5]/T[1]的业务身份。随后回写Nested_FFFF00父函数草稿，确认两次Nested_FFFFFF调用分别生成moneyRows/itemRows，并清理已闭合TODO。Nested_string和Nested_Helper_3已于检查点90升级静态完成，不重复处理。",
+  "next_action": "继续回写Nested_FFFF00（root.children[42].children[3]）父函数草稿：核实两次Nested_FFFFFF调用参数与返回映射、Layout/Text节点变量关系，纠正父草稿中尚存的GUI参数/捕获注释；随后优先批量恢复root.children[42]尚未开始的短子原型。Nested_FFFFFF仍为普通Lua草稿，不升级完整静态恢复。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "91"
+    "last_checkpoint": "92"
   },
   "static_recovered_functions": [
     {
@@ -1257,15 +1257,29 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "88",
+    "checkpoint": "92",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第六十三批.lua",
-    "audit_file": "docs/audit/检查点88_doInit_UI首版草稿.md",
-    "ordinary_lua_draft_functions": 77,
-    "complete_static_reconstruction": 29,
-    "complete_static_reconstruction_ratio": "26.4%",
-    "runtime_verified": 0,
-    "summary": "新增doInit_UI首版普通Lua草稿，覆盖初始化提示、时间/资源快照、代理初始化、按钮配置与子闭包绑定、隐藏按钮创建；捕获身份、GUI融合参数和闭包契约待复核。 已追加静态复核：root PC390-PC410证明doInit_UI有20个父级捕获，寄存器映射已写入草稿与审计。 进一步校正PC102-PC130为四组传送道具slot/names配置，并确认mini-chat右边界x+width。 已进一步识别UP[0]/[1]/[2]/[3]/[5]/[8]/[11]/[13]/[15]/[17]/[19]的父级值或对象身份。 已确认Nested_ITEM_INDEX_BY_NAME闭包行为及MoveItemToQuickUse/PrintLog调用关系，父循环延迟量为循环索引×0.1。 已还原三组按钮数组、功能回调映射、按钮创建/点击切换逻辑及坐标公式。 已闭合SL:ScheduleOnce(callback, slotIndex*0.1)实参顺序，并确认MoveItemToQuickUse双返回值处理及成功提前返回路径。 已复核Nested_FFFF00父级四捕获、PC68/265/300子闭包捕获契约、两组资源行调用，以及刷新闭包内部自调度SL:Schedule(callback,1.0)。 更正调度归属：刷新闭包先被父函数立即调用，随后父函数自身执行SL:Schedule(refreshCallback,1.0)并保存resTimer。 更正Nested_Helper_3第10个捕获为Nested_string（PC292创建的BAG_DATA查询辅助闭包），并确认Nested_FFFF00 PC320无返回值。 更正Nested_Helper_3第7/9捕获分别为moneyRows/itemRows两张节点表（由Nested_FFFFFF两次调用返回），不再误标为重复函数引用。 已确认Nested_FFFFFF返回资源名称→Text节点映射表；Nested_Helper_3用MoneyProxy/初始快照刷新货币行，用Nested_string查询BAG_DATA刷新物品行。"
+    "function": "Nested_FFFFFF",
+    "source_file": "04_源码候选/Nested_FFFFFF_第六十五批.lua",
+    "audit_file": "docs/audit/检查点92_Nested_FFFFFF循环与捕获复核.md",
+    "findings": [
+      "父级PC265捕获T[5]=resList（ListView节点）、T[1]=screenW*0.6。",
+      "外层数值循环1..#resourceNames，步长layoutOption；内层循环1..layoutOption，步长1。",
+      "resourceIndex=groupStart+columnIndex-1。",
+      "Text初始文本拼接resourceName与':--'；setAnchorPoint(0.5,0.5)。"
+    ],
+    "unresolved": [
+      "Layout_Create/Text_Create的融合参数与宿主API完整签名。",
+      "Text节点名称的完整后缀拼接表达式。",
+      "PC9 ceil(15/layoutOption)结果的用途。",
+      "宿主GUI运行时验证。"
+    ],
+    "status": "ordinary_lua_draft_static_review_in_progress",
+    "counts": {
+      "ordinary_lua_drafts": 77,
+      "complete_static_reconstruction": 32,
+      "runtime_verified": 0
+    }
   },
   "complete_static_reconstruction_count": 32,
   "complete_static_reconstruction": "29/110 (26.4%)",
