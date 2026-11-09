@@ -1471,3 +1471,12 @@
 - PC23的 K[16]=['unknown',2] 为nil序列化哨兵；不应作为字符串比较。
 - 本次仅修正已有草稿，不增加草稿计数，不升级完整静态恢复。统计：草稿78、完整静态恢复76/110、运行时验证0。
 - 下一步复核PC74-PC141玩家遍历/actor信息/坐标/距离，以及PC142-PC216节流、随机传送和通知分支。
+
+
+## 检查点 #139（2026-11-09）：BlacklistPlayerDetection 玩家名称、坐标与距离调用契约
+- PC94-PC101：ACTOR_NAME通过SL.GetMetaValue查询，显式对象实参为视野列表元素player；结果假值时使用常量文本“黑名单玩家”，不会直接跳过该玩家。
+- PC108-PC127：ACTOR_MAP_X/Y分别对本机MAIN_ACTOR_ID和当前视野player读取，形成mainActorX、mainActorY、playerX、playerY四个独立坐标值。
+- PC128-PC134：调用捕获的UPVALUE_5时，连续传入上述四个坐标值以及state.distance，共五个实参；不能合并为单一coordinateData表。
+- PC136-PC141：距离返回值与K[16] nil哨兵比较；nil路径跳过本轮后续处理，非nil结果继续。草稿中字符串"unknown"比较已改为nil判断。
+- 已更新第五十九批草稿及函数状态CSV。当前仍未映射13个upvalue的全部业务身份，PC142-PC216的通知/随机传送分支尚待闭合。
+- 统计不变：普通Lua草稿78；完整静态恢复76/110；运行时验证0。
