@@ -17,10 +17,12 @@ end
 
 -- 原型：root.children[54]
 -- legacy：root/55；物理指令：6；vararg 标记：1
--- PC1-4：将 UP[0] 与第一个显式参数转交给 UP[1]，原样返回多返回值。
--- PC5 位于无条件 return 之后，不可达。
+-- 父root PC313创建闭包；PC314捕获R46（root.children[17] PCallHelper闭包）为UP[0]，
+-- PC315捕获R43（"gather_monster_count.txt"）为UP[1]。
+-- PC1-PC4调用PCallHelper("gather_monster_count.txt", firstArg)，并原样返回全部结果。
+-- PC5-PC6位于PC4无条件return之后，不可达。
 local function AnonymousHelper_54(firstArg)
-    return UPVALUE_1(UPVALUE_0, firstArg)
+    return PCallHelper("gather_monster_count.txt", firstArg)
 end
 
 -- 原型：root.children[56]
