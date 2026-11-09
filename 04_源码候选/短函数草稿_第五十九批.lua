@@ -25,25 +25,21 @@ local function BlacklistPlayerDetection()
     local state = UPVALUE_2
     local previousHp = state.lastHp
 
-    -- HP首次出现、归零或变化时维护lastHp/deathHandled。
-    -- 比较中的unknown常量是反汇编占位，具体原始哨兵值待复核。
-    -- PC23常量["unknown",2]是nil序列化哨兵，不是字符串"unknown"。
+    -- PC21-PC54已逐条闭合：
+    -- lastHp为nil时先记录当前HP，并按当前HP是否<=0初始化deathHandled；
+    -- 已有lastHp时，当前HP>0则更新lastHp并清除deathHandled；
+    -- 当前HP<=0且previousHp>0且尚未处理死亡时，只触发一次死亡回调。
+    -- PC23的["unknown",2]是nil序列化哨兵，不是字符串"unknown"。
     if previousHp == nil then
         state.lastHp = hp
-    elseif hp <= 0 then
-        state.deathHandled = true
-        state.lastHp = hp
-    elseif previousHp <= 0 then
+        state.deathHandled = (hp <= 0)
+    elseif hp > 0 then
         state.lastHp = hp
         state.deathHandled = false
-    elseif previousHp > hp then
-        if state.deathHandled then
-            state.lastHp = hp
-        else
-            state.deathHandled = true
-            state.lastHp = 0
-            UPVALUE_3()
-        end
+    elseif previousHp > 0 and not state.deathHandled then
+        state.deathHandled = true
+        state.lastHp = 0
+        UPVALUE_3()
     end
 
     -- 仅在满足HP/死亡状态门槛且不处于白名单地图时继续。
