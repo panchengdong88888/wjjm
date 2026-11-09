@@ -53,16 +53,16 @@ doInit_UI PC340创建Nested_Button_setTitleFontSize，PC341-PC345捕获：
 - PC11-PC14：config.toggle false/nil时跳至尾部返回。
 - PC15-PC16：严格比较allowed==false；仅等于false时跳至尾部。nil不会触发该退出分支。
 - PC17-PC21：config.toggled取反并写回config.toggled。
-- PC22-PC35：调用GUI.Button_setTitleText，实参为更新后的toggled值、button对象、config.name。
+- PC22-PC35：调用GUI.Button_setTitleText，GUI self由方法调用布局隐式传入；显式实参为button对象、config.name。
 - PC36-PC37：取得GUI.Button_setTitleColor。
 - PC38-PC42：读取config.toggled，真值时进入红色分支，否则跳过红色赋值。
 - PC43-PC45：若config.toggled truthy，且config.toggle truthy，颜色设为#ff0000；否则保留/装载#ffffff。
-- PC46-PC48：调用GUI.Button_setTitleColor，实参为更新后的toggled值、button对象、颜色。
+- PC46-PC48：调用GUI.Button_setTitleColor，GUI self由方法调用布局隐式传入；显式实参为button对象、颜色。
 
 ## 重要语义
 1. 父函数PC6-PC9坐标公式按寄存器算术顺序确认为`baseX-85*offsetX`与`baseY+offsetY`。CSV早期备注中的旧坐标表达式不再作为依据。
 2. 点击子闭包门控退出比较是`allowed == false`，不是`not allowed`；nil与false行为不同。
-3. 子回调Button_setTitleText/Button_setTitleColor的首个显式参数是更新后的toggled值；GUI self由方法调用寄存器布局隐式传入。
+3. 子回调Button_setTitleText/Button_setTitleColor均通过GUI self调用，显式参数分别是button与标题/颜色；toggled值仅用于状态写回和颜色分支。
 4. 父函数创建阶段的GUI初始化方法使用GUI self、button和对应属性值，不能与子回调实参布局混淆。
 
 ## 结论
