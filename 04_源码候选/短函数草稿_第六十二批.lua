@@ -137,7 +137,7 @@ local function Nested_FFFF00()
     -- 时间/资源刷新子闭包：child3，PC300捕获10项，顺序为：
     -- [moduleState,timerState,curTimeText,durTimeText,initState,MoneyProxy,
     --  updateResourceRows,formatNumber,updateResourceRows,2.0]。
-    -- 父函数在PC311-PC312立即调用；该闭包内部自调度。
+    -- 父函数在PC311-PC312立即调用，随后PC313-PC319由父函数安排1.0秒周期调度。
     local refreshResourceStatistics = Nested_Helper_3
 
     -- PC268-PC281的两组准确名称数组。
