@@ -27,7 +27,8 @@ local function BlacklistPlayerDetection()
 
     -- HP首次出现、归零或变化时维护lastHp/deathHandled。
     -- 比较中的unknown常量是反汇编占位，具体原始哨兵值待复核。
-    if previousHp == "unknown" then
+    -- PC23常量["unknown",2]是nil序列化哨兵，不是字符串"unknown"。
+    if previousHp == nil then
         state.lastHp = hp
     elseif hp <= 0 then
         state.deathHandled = true
