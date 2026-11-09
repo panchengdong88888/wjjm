@@ -30,7 +30,7 @@ local function MakeNested_SL_2(
     return function Nested_SL_2(counterSeed)
         if rewardState.rewardTimer then
             notifyStatus("关闭奖励功能")
-            SL:UnSchedule(rewardState.rewardTimer)
+            SL.UnSchedule(rewardState.rewardTimer)
             rewardState.rewardTimer = { "unknown", 2 }
             return true
         end
@@ -56,7 +56,7 @@ local function MakeNested_SL_2(
             end
         end
 
-        rewardState.rewardTimer = SL:Schedule(
+        rewardState.rewardTimer = SL.Schedule(
             0,
             rewardTimerCallback,
             scheduleInterval
