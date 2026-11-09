@@ -1583,3 +1583,13 @@
 - 本批仅确认调用点可达路径，不新增草稿、不升级完整静态恢复、不增加运行时验证。
 - 统计保持：普通Lua草稿78、完整静态恢复76/110、运行时验证0。
 - 下一步：root/47仍待root/23地图边界/障碍校验和全CFG独立复核；按新方案优先转向尚无草稿的短函数批量恢复，不让少量复杂疑点阻塞第一层产出。
+
+
+## 检查点 #150（2026-11-09）：StorageItems 可用页码辅助函数普通 Lua 草稿
+- 对象：`root.children[50].children[1]`（legacy root/51/2），27条物理指令、4个捕获槽、无子原型。
+- 根据既有检查点144已闭合的容量算法，将辅助闭包整理为普通Lua草稿：`04_源码候选/root50_Nested_Anonymous_2.lua`。
+- 父StorageItems root/51 PC54创建child-index 1，PC55-PC58依次捕获R1/R2/R3/R4；语义为maxPage、pageCapacity、openSize、storedPageData。
+- 草稿表达数字遍历page=1..maxPage；普通页容量pageCapacity；末页容量min(pageCapacity, openSize-(maxPage-1)*pageCapacity)；返回首个storedPageData[page]小于该页容量的页码，全部已满则nil。
+- 新增审计：`docs/audit/检查点150_StorageItems可用页码辅助函数普通Lua草稿.md`；更新函数状态CSV。
+- 该子函数从“阶段分析中（未形成普通Lua草稿）”改为“首版普通Lua草稿（待静态复审/未运行时验证）”。本批草稿总数由78增至79；完整静态恢复76/110不变；运行时验证0不变。
+- 下一步继续从函数状态CSV挑选已有控制流/捕获映射但尚无独立Lua草稿的短函数，优先补齐第一层草稿覆盖率；BlacklistPlayerDetection和StorageItems主函数剩余疑点不阻塞该工作。
