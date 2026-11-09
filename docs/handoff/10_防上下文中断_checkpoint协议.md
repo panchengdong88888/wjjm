@@ -1854,3 +1854,12 @@
 - 计数：普通 Lua 草稿 80；完整静态恢复 93/110；运行时验证 0。
 - 新增审计：`docs/audit/检查点171_Nested_removeFile完整静态复审.md`。
 - 下一步：复核 Nested_UnSchedule（20条）等短闭包。
+
+
+## 检查点 #172：Nested_UnSchedule 捕获与未知哨兵表达修正
+
+- root.children[42].children[3].children[4] / Nested_UnSchedule（20条）此前已在检查点116完成静态控制流复核。本批不重复计数，只修正源码候选。
+- 父 Nested_FFFF00 PC68-PC71捕获顺序为父UP[1]/UP[2]/UP[0]，子UP[0]=通知回调、UP[1]=timerState、UP[2]=moduleState；源码改为 `make_Nested_UnSchedule(notify, timerState, moduleState)`。
+- PC13-PC14在取消定时器后写回反汇编标记为 `['unknown',2]` 的常量。旧草稿将其写成nil不准确；现改用 `UNKNOWN_VALUE_SENTINEL` 明确占位，不伪造真实宿主值。
+- 计数不变：普通草稿80；完整静态恢复93/110；运行时验证0。
+- 新增审计：`docs/audit/检查点172_Nested_UnSchedule捕获与未知哨兵表达修正.md`。
