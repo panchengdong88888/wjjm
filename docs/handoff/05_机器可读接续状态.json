@@ -24,9 +24,10 @@
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
     "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。",
     "root.children[47]": "BlacklistPlayerDetection：检查点148已校正HP状态机、hp<=0门槛、UP[4] true/Name或false/nil与ACTOR_NAME回退、UP[5]坐标+state.distance五实参、成功日志第三%s参数为UP[8]返回道具名。检查点149确认UP[1]=root/53，零参调用触发PC1-PC5入口return，不会执行后续pcall/lastAttacker路径。仍待root/23地图/障碍校验与全CFG独立复核；首版普通Lua草稿，不计完整静态恢复，未运行时验证。",
-    "root.children[50]": "StorageItems：检查点144闭合子原型1（root/51/2）逐页容量算法：普通页上限pageCapacity，末页上限min(pageCapacity,openSize-(maxPage-1)*pageCapacity)，读取storedPageData[page]，返回首个未满页码；PC37-PC53建立每页物品数量表（#pageData，不存在记0）。PC206-PC211融合链闭合：R12[MakeIndex]=true（已处理索引集合），storedPageData[targetPage]递增，R13成功发送计数递增。LuaSendMsg第4参数在调用点承载目标仓库页码，服务端协议正式字段名仍待接收端验证。"
+    "root.children[50]": "StorageItems：检查点144闭合子原型1（root/51/2）逐页容量算法：普通页上限pageCapacity，末页上限min(pageCapacity,openSize-(maxPage-1)*pageCapacity)，读取storedPageData[page]，返回首个未满页码；PC37-PC53建立每页物品数量表（#pageData，不存在记0）。PC206-PC211融合链闭合：R12[MakeIndex]=true（已处理索引集合），storedPageData[targetPage]递增，R13成功发送计数递增。LuaSendMsg第4参数在调用点承载目标仓库页码，服务端协议正式字段名仍待接收端验证。",
+    "root.children[50].children[1]": "Nested_Anonymous_2：检查点150新增04_源码候选/root50_Nested_Anonymous_2.lua。4个捕获为maxPage/pageCapacity/openSize/storedPageData；数字遍历页码，末页容量min(pageCapacity,openSize-(maxPage-1)*pageCapacity)，返回首个未满页码或nil。首版草稿，待独立静态复审，未运行时验证。"
   },
-  "next_action": "检查点149确认UP[1]=root.children[53]，BlacklistPlayerDetection在PC4零参调用使其第二形参为nil，root/53 PC1-PC5立即返回，后续pcall/lastAttacker逻辑不执行。root/47剩余主要待核验root/23地图边界/障碍检查和全CFG独立复核；按新策略不再让该复杂函数阻塞草稿产出，下一步从函数状态CSV中挑选尚无草稿、指令短、闭包/参数简单的函数，批量恢复普通Lua草稿。统计保持：普通Lua草稿78、完整静态恢复76/110、运行时验证0。",
+  "next_action": "检查点150新增root.children[50].children[1]（StorageItems可用页码辅助闭包）普通Lua草稿，普通Lua草稿数增至79；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选已有控制流/捕获映射但尚无独立普通Lua草稿的短函数，批量补齐第一层覆盖率。BlacklistPlayerDetection仍待root/23地图/障碍校验和全CFG复核；StorageItems主函数消息协议/过滤分支仍待复核，但这些不阻塞短函数草稿批量产出。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -99,7 +100,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "149"
+    "last_checkpoint": "150"
   },
   "static_recovered_functions": [
     {
@@ -1798,25 +1799,24 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "149",
+    "checkpoint": "150",
     "targets": [
-      "root.children[47]",
-      "root.children[53] call-site"
+      "root.children[50].children[1]"
     ],
-    "status": "Verified zero-argument callback call-site takes root/53 entry early return; no static-complete or runtime-validation promotion",
-    "audit_file": "docs/audit/检查点149_onDamageMsg零参数调用路径核验.md",
+    "status": "Added first-pass ordinary Lua draft from previously analyzed storage page-capacity helper; not promoted to complete static reconstruction; not runtime-validated",
+    "audit_file": "docs/audit/检查点150_StorageItems可用页码辅助函数普通Lua草稿.md",
     "files": [
-      "04_源码候选/root47_BlacklistPlayerDetection.lua",
-      "docs/audit/检查点149_onDamageMsg零参数调用路径核验.md",
+      "04_源码候选/root50_Nested_Anonymous_2.lua",
+      "docs/audit/检查点150_StorageItems可用页码辅助函数普通Lua草稿.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "root/47 PC4 invokes UP[1] with zero explicit arguments.",
-      "UP[1] maps to root/53; root/53 PC1-PC5 returns when its second formal argument is nil/false.",
-      "Thus this specific call does not reach root/53's pcall/lastAttacker payload."
+      "Parent StorageItems PC54-PC58 captures maxPage, pageCapacity, openSize and storedPageData.",
+      "Helper searches pages 1..maxPage and returns the first page whose occupied count is below its capacity.",
+      "Final page capacity is min(pageCapacity, openSize-(maxPage-1)*pageCapacity); returns nil if all pages are full."
     ],
     "counts": {
-      "ordinary_lua_drafts": 78,
+      "ordinary_lua_drafts": 79,
       "complete_static_reconstruction": 76,
       "runtime_verified": 0
     }
@@ -1879,7 +1879,7 @@
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   },
-  "draft_recovered_count": 78,
+  "draft_recovered_count": 79,
   "draft_recovered_functions": [
     {
       "path": "root.children[46]",
@@ -2384,38 +2384,58 @@
         "PC181-PC195 Attach_UITop and MainProperty._ui.Panel_mini_chat position/size reads; PC196-PC340 button configuration and child closure wiring; PC379-PC418 hide button creation and click callback.",
         "Parent upvalue identities, exact nested table shape, ScheduleOnce/GUI argument stacks, child capture values and button layout formula remain provisional; no runtime validation."
       ]
+    },
+    {
+      "path": "root.children[50].children[1]",
+      "legacy_path": "root/51/2",
+      "name": "Nested_Anonymous_2",
+      "source_file": "04_源码候选/root50_Nested_Anonymous_2.lua",
+      "audit_file": "docs/audit/检查点150_StorageItems可用页码辅助函数普通Lua草稿.md",
+      "status": "first_pass_draft_pending_static_review_not_runtime_verified",
+      "physical_instructions": 27,
+      "constant_count": 1,
+      "child_count": 0,
+      "parent_path": "root.children[50]",
+      "parent_create_pc": 54,
+      "capture_count": 4,
+      "notes": [
+        "UPVALUE_0..3 map to maxPage, pageCapacity, openSize and storedPageData.",
+        "Returns first page whose occupied count is below its capacity; final page uses min(pageCapacity, openSize-(maxPage-1)*pageCapacity).",
+        "First-pass ordinary Lua draft only; no runtime validation."
+      ]
     }
   ],
-  "draft_function_count": 78,
-  "ordinary_lua_draft_functions": 78,
-  "last_checkpoint": "149",
-  "checkpoint": "149",
+  "draft_function_count": 79,
+  "ordinary_lua_draft_functions": 79,
+  "last_checkpoint": "150",
+  "checkpoint": "150",
   "drafts": 33,
-  "next": "检查点149确认UP[1]=root.children[53]，BlacklistPlayerDetection在PC4零参调用使其第二形参为nil，root/53 PC1-PC5立即返回，后续pcall/lastAttacker逻辑不执行。root/47剩余主要待核验root/23地图边界/障碍检查和全CFG独立复核；按新策略不再让该复杂函数阻塞草稿产出，下一步从函数状态CSV中挑选尚无草稿、指令短、闭包/参数简单的函数，批量恢复普通Lua草稿。统计保持：普通Lua草稿78、完整静态恢复76/110、运行时验证0。",
+  "next": "检查点150新增root.children[50].children[1]（StorageItems可用页码辅助闭包）普通Lua草稿，普通Lua草稿数增至79；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选已有控制流/捕获映射但尚无独立普通Lua草稿的短函数，批量补齐第一层覆盖率。BlacklistPlayerDetection仍待root/23地图/障碍校验和全CFG复核；StorageItems主函数消息协议/过滤分支仍待复核，但这些不阻塞短函数草稿批量产出。",
   "recent_checkpoint": {
-    "number": 149,
+    "number": 150,
     "date": "2026-11-09",
     "artifacts": [
-      "04_源码候选/root47_BlacklistPlayerDetection.lua",
-      "docs/audit/检查点149_onDamageMsg零参数调用路径核验.md"
+      "04_源码候选/root50_Nested_Anonymous_2.lua",
+      "docs/audit/检查点150_StorageItems可用页码辅助函数普通Lua草稿.md"
     ],
     "draft_prototypes_touched": 1,
-    "draft_prototype_total": 78,
+    "draft_prototype_total": 79,
     "complete_static_reconstructions": 76,
     "runtime_verified": 0,
-    "notes": "确认UP[1]零参调用必经root/53入口return；未新增草稿、未升级完整静态恢复。"
+    "notes": "为此前只有阶段分析的StorageItems child1形成独立普通Lua草稿；仅增加草稿计数。"
   },
   "latest_checkpoint": {
-    "checkpoint": "149",
+    "checkpoint": "150",
     "date": "2026-11-09",
-    "summary": "BlacklistPlayerDetection调用UP[1]零参路径已闭合：root/53入口检查第二形参，零参调用必定在PC1-PC5提前返回。",
-    "audit_file": "docs/audit/检查点149_onDamageMsg零参数调用路径核验.md",
+    "summary": "StorageItems child1（root.children[50].children[1]）新增普通Lua草稿，表达按页容量寻找首个未满页码；草稿数79，完整静态恢复76/110，运行时验证0。",
+    "audit_file": "docs/audit/检查点150_StorageItems可用页码辅助函数普通Lua草稿.md",
     "unresolved": [
-      "root/23距离辅助函数剩余地图边界/障碍检查",
-      "root/47全216条指令的独立CFG复核"
+      "该子函数全路径静态复审及父级返回值消费点复核",
+      "StorageItems主函数过滤/消息协议分支",
+      "BlacklistPlayerDetection root/23地图/障碍校验和全CFG复核"
     ],
     "counts": {
-      "ordinary_lua_drafts": 78,
+      "ordinary_lua_drafts": 79,
       "complete_static_reconstruction": 76,
       "runtime_verified": 0
     }
@@ -2430,7 +2450,7 @@
     "note": "检查点127新增GetWritablePath完整静态恢复；完整静态恢复由68/110升至69/110，普通Lua草稿累计数保持78，运行时验证仍为0。"
   },
   "counts": {
-    "ordinary_lua_drafts": 78,
+    "ordinary_lua_drafts": 79,
     "complete_static_reconstruction": 76,
     "runtime_verified": 0
   }
