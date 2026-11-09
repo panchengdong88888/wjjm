@@ -1490,3 +1490,13 @@
 - 更新第五十九批源码、函数状态CSV、机器状态JSON；新增 `docs/audit/检查点140_BlacklistPlayerDetection节流与重试路径复核.md`。
 - 本批仅校正已有草稿；统计仍为草稿78、完整静态恢复76/110、运行时验证0。
 - 下一步继续PC174-PC192及随机传送道具实际调用契约，然后处理StorageItems PC151-PC224与两个子原型。
+
+
+## 检查点 #141（2026-11-09）：StorageItems 子原型调用与存仓消息参数复核
+- PC102创建子原型0，捕获2值；PC167-PC170调用处准备两个实参，PC175使用调用结果作为后续门控。两个参数及捕获值业务身份仍待映射。
+- PC54创建子原型1，捕获父函数R1/R2/R3/R4，即maxPage、pageCapacity、openSize、storedPageData；PC177-PC178零参数调用，返回假值触发仓库已满提示、isStoring复位和return，真值继续存仓。
+- PC187-PC205确认UPVALUE_2存仓提示及LuaSendMsg七实参顺序：消息类型、999999999、MakeIndex、子原型1返回值、0、Name、string.len(Name)。第4字段业务含义尚未确认。
+- 确认PC105-PC215是连续pairs遍历处理路径，PC151后不是独立ipairs(bagData)循环；R8/R9两层迭代、子原型0参数身份及PC206-PC211记账仍待复核。
+- 更新第六十批源码、函数状态CSV、机器状态JSON；新增 `docs/audit/检查点141_StorageItems子原型调用与存仓消息参数复核.md`。
+- 本批仅校正已有草稿，不新增草稿、不升级完整静态恢复；统计仍为草稿78、完整静态恢复76/110、运行时验证0。
+- 下一步逐PC闭合子原型1容量算术、R8/R9两层迭代及PC206-PC211记账，再回到BlacklistPlayerDetection PC174-PC192。
