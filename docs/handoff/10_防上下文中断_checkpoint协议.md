@@ -1084,3 +1084,12 @@
 - 两级闭包捕获来源已按父级PC250/PC259及包装函数子闭包捕获顺序核对。
 - 两个包装函数本体及其回调主体均已完成静态恢复；不代表宿主运行时验证。
 - 统计更新：普通Lua草稿77；完整静态恢复47/110；运行时验证0。
+
+
+## 检查点 #106（2026-11-09）：辅助按钮创建与点击切换回调
+- 新增源码：`04_源码候选/短函数草稿_第七十一批.lua`。
+- 新增审计：`docs/audit/检查点106_Nested_Button_setTitleFontSize与点击回调复核.md`。
+- Nested_Button_setTitleFontSize（50条）父级doInit_UI PC340捕获root T6/T22/T23/UP4/T21；按钮坐标为baseX-85*offsetX、baseY+offsetY。创建失败返回；成功按config.key登记，设置标题button.name、字号18、字体kaiti2.ttf、白色，并注册点击闭包。
+- Nested_Button_setTitleText（48条）捕获门控表、config、button；门控回调不存在时默认允许，存在时调用；config.toggle假值退出；门控结果严格等于false才退出，nil允许；随后toggled取反，更新标题及颜色（toggled真红色，否则白色）。
+- 纠正早期CSV坐标备注，并明确GUI self隐式传入与点击回调方法显式参数。
+- 统计更新：普通Lua草稿77；完整静态恢复49/110；运行时验证0。
