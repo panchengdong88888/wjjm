@@ -1,68 +1,65 @@
--- MainLeftBottom(2).lua 普通 Lua 草稿
--- 第五十七批 / 检查点 #81
--- 原型：root.children[5] / legacy root/6；99条物理指令；23常量；无子原型；vararg_flag=0。
--- 根函数 PC79 创建闭包，两个捕获依次为 root T[2]、root T[5]。
--- 以下保留已恢复控制流；未闭合的请求实参、过滤表及捕获对象业务身份明确标注。
+-- 检查点 #81 / #134：TakeItems 完整静态恢复
+-- root.children[5] / legacy root/6；99条物理指令；23常量；无子原型；无vararg。
+-- 父root PC79创建闭包：UP[0]=root T[2]状态对象；UP[1]=root T[5]文本回调。
+local function make_TakeItems(takingState, notify)
+    return function()
+        -- PC1-PC7：isTaking互斥保护并置为true。
+        if takingState.isTaking then
+            return
+        end
+        takingState.isTaking = true
 
-local function TakeItems()
-    local takingState = UPVALUE_0
-    if takingState.isTaking then
-        return
-    end
+        -- PC12-PC18：取得仓库物品；假值或空数组进入空仓提示分支。
+        local storageItems = GetStorageItemData()
+        if not storageItems or #storageItems == 0 then
+            notify("仓库无可取物品")
+            takingState.isTaking = false
+            return
+        end
 
-    takingState.isTaking = true
+        -- PC8-PC11确实构造了含"待定"的临时过滤表，但PC42-PC47的常量分支
+        -- 将控制流直接送至PC65，PC48-PC64的ipairs/string.find过滤循环不可达。
+        -- 因此可达路径不按"待定"过滤，不能把死分支写成实际过滤规则。
+        local _deadFilterTerms = { "待定" }
 
-    local storageItems = GetStorageItemData()
-    if not storageItems then
-        storageItems = {}
-    end
+        local takenCount = 0
 
-    if #storageItems == 0 then
-        -- UPVALUE_1 在本函数中以函数方式调用；准确业务名称/来源待追踪。
-        UPVALUE_1("仓库无可取物品")
-        takingState.isTaking = false
-        return
-    end
+        -- PC25-PC41、PC65-PC71：遍历仓库条目，只处理item、Name、MakeIndex均truthy的项。
+        for _, item in ipairs(storageItems) do
+            if item and item.Name and item.MakeIndex then
+                local itemName = string.trim(item.Name)
 
-    local takenCount = 0
-    local filterTerms = {} -- TODO：PC8-PC11的表构造载荷及其内容尚未完整映射。
+                notify("取: " .. itemName)
 
-    for _, item in ipairs(storageItems) do
-        if item and item.Name and item.MakeIndex then
-            local itemName = string.trim(item.Name)
-            local skipRequest = false
-
-            -- PC42-PC66：按过滤条件表逐项 string.find。
-            -- 命中后置位标记并跳过本条仓库取出请求；过滤表的准确来源/元素待复核。
-            for _, filterText in ipairs(filterTerms) do
-                if string.find(itemName, filterText, 1, true) then
-                    skipRequest = true
-                    break
-                end
-            end
-
-            if not skipRequest then
-                -- PC67-PC71：调用捕获函数输出“取: ”及物品名称。
-                UPVALUE_1("取: " .. itemName)
-
-                -- PC72-PC85：发送仓库取出请求。
-                -- 消息类型与MakeIndex/999999999等常量可确认；完整位置参数映射待复核。
+                -- PC72-PC85：7项参数，顺序由调用寄存器窗口恢复。
                 LuaSendMsg(
                     global.MsgType.MSG_CS_STORAGE_PICK_OUT_REQUEST,
-                    item.MakeIndex,
                     999999999,
+                    item.MakeIndex,
                     0,
-                    0
-                ) -- TODO：后四项/实参顺序为首版占位，不能视为最终协议。
+                    0,
+                    itemName,
+                    string.len(itemName)
+                )
 
+                -- PC86：仅在发送调用之后增加计数。
                 takenCount = takenCount + 1
             end
         end
-    end
 
-    takingState.isTaking = false
+        -- PC89-PC90：循环结束后复位isTaking。
+        takingState.isTaking = false
 
-    if takenCount > 0 then
-        UPVALUE_1("取出物品完成, 共取出 " .. tostring(takenCount) .. " 件")
+        -- PC91-PC98：只有计数大于0才发送完成提示。
+        if takenCount > 0 then
+            notify("取出物品完成, 共取出 " .. tostring(takenCount) .. " 件")
+        end
     end
 end
+
+-- 静态复核：
+-- * PC42-PC64的过滤循环位于常量条件分支的不可达路径；可达路径直接进入PC65。
+-- * LuaSendMsg参数顺序为消息类型、999999999、MakeIndex、0、0、trim后的名称、名称长度。
+-- * 计数在LuaSendMsg调用后递增；最后只在计数大于0时提示完成。
+-- * 没有字节码级异常保护；若宿主调用抛错，isTaking可能保持true，不擅自添加finally。
+-- * 99条物理指令均已映射；未运行时验证。
