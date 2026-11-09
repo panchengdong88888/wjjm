@@ -597,3 +597,12 @@
 - 新增普通Lua草稿1个；累计50个。完整静态恢复仍29/110（26.4%）；运行时验证0；最新检查点#63。
 - 下一步：优先恢复其他尚未开始的短函数；并追踪root顶层T[6]/T[2]及InstallDamageHook PC31-PC36的对象别名。
 
+## 检查点 #64（2026-11-09）：Nested_JsonDecode 首版普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第四十批.lua`；新增审计：`docs/audit/检查点64_Nested_JsonDecode首版草稿.md`。
+- 函数：`Nested_JsonDecode`，原型索引102，规范路径`root.children[52].children[0]`，legacy一基路径`root/53/1`，6条物理指令、2个常量、无子原型。
+- 身份校正：旧CSV原路径列曾写`root/52/0`，与原型总索引的canonical path和legacy label不一致；本检查点已修正为`root/53/1`。
+- 父函数`onDamageMsg`（`root.children[52]` / legacy `root/53`）PC7创建闭包；UPVALUE_0捕获父函数T[3]。其业务来源仍待上游调用点追踪。
+- 主路径恢复为调用`SL.JsonDecode(UPVALUE_0)`并直接返回解码结果。PC5存在备用返回路径，但触发条件尚未闭合，草稿不虚构其条件。
+- 新增首版普通Lua草稿1个；累计51个。完整静态恢复仍29/110（26.4%）；运行时验证0；最新检查点#64。
+- 下一步：优先短函数`Nested_Anonymous`（8条）及`GetWritablePath`（10条），并追踪父级T[3]来源。
+
