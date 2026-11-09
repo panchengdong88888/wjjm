@@ -49,3 +49,13 @@ vararg 标志保留为 `function(fileName, ...)`；当前指令体只读取首�
 - 运行时验证：0，不变。
 
 下一步：独立复核两个新文件，重点核对 FormatStateChange 的 vararg/T 栈映射与 UP[0]/UP[1] 回调时序；ReadNumericConfig 的失败返回值、文件读取多返回值与 string.gsub 返回值接收方式。随后继续批量恢复短函数草稿，并推进 BlacklistPlayerDetection、StorageItems 的主体草稿。
+
+
+## 检查点 #129 补充：ReadNumericConfig 初始化顺序独立复核
+
+复核发现首版草稿把 GetWritablePath 调用放在 FileUtils:getInstance() 之前，与 PC 顺序不一致。现已修正为：
+1. PC1-PC4：先取得 `cc.FileUtils:getInstance()`。
+2. PC5-PC7：再调用捕获的 GetWritablePath(fileName)。
+3. PC8-PC10：以 FileUtils 实例为接收者调用 isFileExist(fullPath)。
+
+这次修正保留字节码中的可观察调用顺序；不改变后续存在性判断、读取、清理和数字转换逻辑。源码已重新写入 GitHub，仍为首版草稿、未运行时验证。
