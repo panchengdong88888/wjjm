@@ -856,3 +856,10 @@
 - 回溯root初始化PC1-PC46及黑名单/配置对象构造，确认doInit_UI捕获槽位中的部分身份：UP[0]=PrintLog；UP[1]与UP[3]均为MainLeftBottom模块表；UP[2]为独立状态表（本函数使用其cruiseTimer字段）；UP[5]为MainLeftBottom.blacklist状态表；UP[8]为含GATHER_THRESHOLD/CHECK_INTERVAL/ATTACK_WAIT_TIME的配置表；UP[11]=ShowLocalNoticeByType闭包；UP[13]/UP[15]分别为黑名单距离/拉怪数量配置文件路径；UP[17]=math.floor；UP[19]=0.2。
 - 其余槽位尚未完成业务身份映射，仍按UP槽位编号引用，不猜名称。源码与审计已补注上述确认结果。
 - 本补充不增加函数数或完整静态恢复数：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
+
+
+### 检查点 #88 补充静态复核：Nested_ITEM_INDEX_BY_NAME 调用契约
+- 子原型`root.children[42].children[16]`（legacy `root/43/17`）共26条指令、7常量、无子原型。
+- 该闭包遍历捕获配置的`names`；每个名称调用`SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)`，取得索引后调用`MoveItemToQuickUse(itemIndex, slotConfig.slot)`，再把返回值交给捕获的`PrintLog`函数。
+- 父函数PC137创建该闭包时捕获当前slot配置与父UP[0]（PrintLog）；PC140的延迟量为循环索引乘0.1。PC141的ScheduleOnce完整多寄存器实参栈尚待核验。
+- 本补充不增加函数数或完整静态恢复数：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
