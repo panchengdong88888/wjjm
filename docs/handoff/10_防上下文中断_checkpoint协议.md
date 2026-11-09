@@ -879,3 +879,12 @@
 - MoveItemToQuickUse的第一返回值作为成功标志，第二返回值交给PrintLog；成功则提前结束该组回调，失败则继续尝试该组后续名称。
 - 该调用链和静态返回契约已写入第六十三批草稿；宿主ScheduleOnce的真实时序尚未运行验证。
 - 计数不变：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
+
+
+### 检查点 #88 补充静态复核：Nested_FFFF00 父捕获、子闭包和自调度
+- doInit_UI PC330-PC334捕获顺序为[UP3,UP0,UP2,UP1]，映射为[MainLeftBottom模块表,PrintLog,独立timer状态表,MainLeftBottom模块表]；第六十二批源码已改用moduleState/printLog/timerState/initState命名。
+- Nested_FFFF00 PC68创建child4（Nested_UnSchedule），捕获[PrintLog,timerState,moduleState]；点击空白提示“点击空白,关闭资源信息窗口”，取消resTimer、清空句柄并关闭resWin。
+- PC265创建child2（Nested_FFFFFF），捕获ListView对象与screenW*0.6；PC282-PC291调用两次，分别处理moneyNames和resourceNames，参数为(names,2,"money"/"item")。
+- PC300创建child3（Nested_Helper_3），10项捕获依次为[moduleState,timerState,curTimeText,durTimeText,initState,MoneyProxy,updateResourceRows,formatNumber,updateResourceRows,2.0]。PC311-PC312立即调用一次；该刷新闭包检查窗口有效性、更新当前时间/历时及资源数据，并在内部执行`SL:Schedule(callback,1.0)`，将句柄写入timerState.resTimer。父函数本身不直接Schedule。
+- 第六十二批源码已同步捕获映射、两组资源数组/行创建调用和刷新闭包自调度关系。GUI参数及MoneyProxy刷新细节仍待进一步校正。
+- 计数不变：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
