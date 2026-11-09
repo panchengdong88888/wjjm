@@ -1863,3 +1863,13 @@
 - PC13-PC14在取消定时器后写回反汇编标记为 `['unknown',2]` 的常量。旧草稿将其写成nil不准确；现改用 `UNKNOWN_VALUE_SENTINEL` 明确占位，不伪造真实宿主值。
 - 计数不变：普通草稿80；完整静态恢复93/110；运行时验证0。
 - 新增审计：`docs/audit/检查点172_Nested_UnSchedule捕获与未知哨兵表达修正.md`。
+
+
+## 检查点 #173：Nested_Anonymous_2 完整静态复审
+
+- root.children[50].children[1] / Nested_Anonymous_2（27条）独立复核完成。父 StorageItems PC54-PC58依次捕获 maxPage/pageCapacity/openSize/storedPageData。
+- 父 PC37-PC53逐页调用 GetStorageDataByPage，写入 #pageData 或0，闭合 storedPageData 的生产者。
+- 子函数27条指令闭合：升序遍历页码，末页容量裁剪为 `min(pageCapacity, openSize-(maxPage-1)*pageCapacity)`，找到首个当前数量小于容量的页即返回页码，遍历结束返回nil。
+- 父 PC177-PC179零参数调用闭包并消费首个返回值：页码继续存仓，nil进入“仓库已满”提示/复位分支。
+- 源码候选 `04_源码候选/root50_Nested_Anonymous_2.lua` 更新为完整静态恢复说明；新增审计 `docs/audit/检查点173_Nested_Anonymous_2完整静态复审.md`。
+- 计数：普通草稿79；完整静态恢复94/110；运行时验证0。
