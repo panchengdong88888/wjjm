@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续处理尚未开始的短函数，优先root.children[42].children[22]（Nested_Anonymous，8条）及root.children[2]（GetWritablePath，10条），并继续追踪onDamageMsg传入T[3]的上游业务来源。",
+  "next_action": "继续处理Nested_Anonymous（root.children[42].children[22]，8条指令）：优先追踪父级调用点的两个实参、vararg T[0..2]的VM参数布局，以及它对Nested_str四个捕获槽位的映射；若映射无法闭合，先写保守草稿并明确保留UPVALUE槽位。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "64"
+    "last_checkpoint": "65"
   },
   "static_recovered_functions": [
     {
@@ -487,23 +487,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 64,
-    "target": "Nested_JsonDecode",
+    "checkpoint": 65,
+    "target": "GetWritablePath",
     "status": "first_pass_draft; pending static review; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第四十批.lua",
-    "audit_file": "docs/audit/检查点64_Nested_JsonDecode首版草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第四十一批.lua",
+    "audit_file": "docs/audit/检查点65_GetWritablePath首版草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[52].children[0]",
-        "legacy": "root/53/1",
-        "name": "Nested_JsonDecode",
-        "instructions": 6
+        "path": "root.children[2]",
+        "legacy": "root/3",
+        "name": "GetWritablePath",
+        "instructions": 10
       }
     ],
-    "draft_count_total": 51,
+    "draft_count_total": 52,
     "complete_static_reconstruction_count": 29,
     "runtime_verified_count": 0,
-    "note": "UPVALUE_0捕获父函数onDamageMsg的T[3]；主路径调用SL.JsonDecode(UPVALUE_0)；PC5备用返回路径触发条件未闭合。"
+    "note": "cc.FileUtils/getInstance/getWritablePath调用链已确认；PC8拼接方向按FileExistCheck_pcall_wrapper调用点暂恢复，vararg槽位映射待复核。"
   },
   "corrections": [
     {
@@ -563,7 +563,7 @@
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   },
-  "draft_recovered_count": 6,
+  "draft_recovered_count": 7,
   "draft_recovered_functions": [
     {
       "path": "root.children[46]",
@@ -635,27 +635,46 @@
         "PC5 alternate return path trigger condition is unresolved",
         "No runtime validation"
       ]
+    },
+    {
+      "path": "root.children[2]",
+      "legacy_path": "root/3",
+      "name": "GetWritablePath",
+      "source_file": "04_源码候选/短函数草稿_第四十一批.lua",
+      "audit_file": "docs/audit/检查点65_GetWritablePath首版草稿.md",
+      "status": "first_pass_draft_pending_static_review_not_runtime_verified",
+      "physical_instructions": 10,
+      "constant_count": 4,
+      "child_count": 0,
+      "vararg_flag": 1,
+      "notes": [
+        "Calls cc.FileUtils:getInstance():getWritablePath()",
+        "PC8 concatenation is T[1] .. R2; based on the known caller, draft maps this to writablePath .. path",
+        "FileExistCheck_pcall_wrapper passes path to this closure and uses result for isFileExist/removeFile",
+        "Vararg argument slot mapping and concatenation direction remain pending static review",
+        "No runtime validation"
+      ]
     }
   ],
-  "draft_function_count": 51,
-  "ordinary_lua_draft_functions": 51,
-  "last_checkpoint": 64,
-  "checkpoint": "64",
+  "draft_function_count": 52,
+  "ordinary_lua_draft_functions": 52,
+  "last_checkpoint": 65,
+  "checkpoint": "65",
   "drafts": 32,
   "next": "继续筛选未开始的短函数。优先检查 root.children[42].children[22]（Nested_Anonymous，8条指令且有1个子原型）及 root.children[42].children[22].children[0]（Nested_str，27条）/其子函数，先闭合匿名包装函数的调用与捕获关系；再处理 root.children[42].children[9] / Nested_Button_setTitleText。不要重做Nested_Helper_4/7与其已完成回调主体。",
   "recent_checkpoint": {
-    "checkpoint": "64",
+    "checkpoint": "65",
     "date": "2026-11-09",
-    "summary": "新增6指令Nested_JsonDecode首版草稿；确认UPVALUE_0捕获父级onDamageMsg的T[3]，主路径调用SL.JsonDecode并返回；备用返回路径触发条件待核验。",
+    "summary": "新增GetWritablePath首版草稿；确认FileUtils实例及getWritablePath调用链，结合FileExistCheck_pcall_wrapper调用点暂恢复writablePath与输入path拼接；vararg槽位映射仍待复核。",
     "files": [
-      "04_源码候选/短函数草稿_第四十批.lua",
-      "docs/audit/检查点64_Nested_JsonDecode首版草稿.md",
+      "04_源码候选/短函数草稿_第四十一批.lua",
+      "docs/audit/检查点65_GetWritablePath首版草稿.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "added_draft_functions": [
-      "root.children[52].children[0]"
+      "root.children[2]"
     ],
     "unchanged": {
       "complete_static_reconstruction": 29,
@@ -663,15 +682,15 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "64",
+    "checkpoint": "65",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第四十批.lua",
-    "audit_file": "docs/audit/检查点64_Nested_JsonDecode首版草稿.md",
-    "ordinary_lua_draft_functions": 51,
+    "source_file": "04_源码候选/短函数草稿_第四十一批.lua",
+    "audit_file": "docs/audit/检查点65_GetWritablePath首版草稿.md",
+    "ordinary_lua_draft_functions": 52,
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增6指令Nested_JsonDecode首版草稿；确认UPVALUE_0捕获父级onDamageMsg的T[3]，主路径调用SL.JsonDecode并返回；备用返回路径触发条件待核验。"
+    "summary": "新增GetWritablePath首版草稿；确认FileUtils实例及getWritablePath调用链，结合FileExistCheck_pcall_wrapper调用点暂恢复writablePath与输入path拼接；vararg槽位映射仍待复核。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)"
