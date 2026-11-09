@@ -64,34 +64,22 @@ local function doInit_UI()
     -- PC100-PC101。
     Builtsetting()
 
-    -- PC102-PC130：按钮配置项。名称和key来自常量；原始表的嵌套层级仍待复核。
-    local buttonConfig = {
-        {
-            {key="yinguaibut", name="开拉怪", toggle="关拉怪"},
-            {key="blacklistbut", name="开黑名单", toggle="关黑名单"},
-            {key="clearblacklistbut", name="清黑名单"},
-            {key="moneybut", name="资源统计"},
-        },
-        {
-            {key="shiqubut", name="开拾取", toggle="关拾取"},
-            {key="diuqibut", name="开丢物品", toggle="关丢物品"},
-            {key="xiaotuibut", name="快速小退"},
-        },
-        {
-            {key="clearmonsterbut", name="清怪物值"},
-            {key="cleardistancebut", name="清距离值"},
-            {key="rewardbut", name="开奖励", toggle="关奖励"},
-        },
+    -- PC102-PC130：四组传送道具槽位配置。每组包含slot与names数组，
+    -- 其数组成员由相邻寄存器表构造指令确定。
+    local itemSlotConfig = {
+        {slot=1, names={"永久回城石", "盟重回城石", "盟重传送石"}},
+        {slot=2, names={"永久随机石", "随机传送石"}},
+        {slot=3, names={"大陆传送石"}},
+        {slot=4, names={"免战回城石"}},
     }
 
-    -- PC131-PC145：遍历配置项并创建ITEM_INDEX_BY_NAME延迟处理闭包；
-    -- 0.1秒常量可见，ScheduleOnce实参栈仍待复核。
+    -- PC131-PC145：ipairs遍历四组槽位配置，取出SL.ScheduleOnce，
+    -- 创建Nested_ITEM_INDEX_BY_NAME闭包，并以0.1秒相关值安排延迟处理。
+    -- PC141的调用参数栈涉及多个寄存器；在确认宿主ScheduleOnce签名前不伪造实参列表。
     local itemIndexCallback = Nested_ITEM_INDEX_BY_NAME
-    for _, group in ipairs(buttonConfig) do
-        for _, item in ipairs(group) do
-            -- 保留已确认的配置与回调关系，不猜写ScheduleOnce的调用签名。
-            local _ = item, itemIndexCallback
-        end
+    for _, slotConfig in ipairs(itemSlotConfig) do
+        -- slotConfig及UP[0]被捕获进child16；延迟值由VM寄存器计算。
+        local _ = slotConfig, itemIndexCallback
     end
 
     -- PC146-PC166：替换cruiseTimer并建立周期任务。
@@ -111,13 +99,11 @@ local function doInit_UI()
     -- PC181-PC195：顶部UI挂接与mini-chat位置/尺寸读取。
     -- Attach_UITop的准确参数尚未从融合载荷完整还原。
     local mainProperty = MainProperty
-    local miniChat = mainProperty and mainProperty._ui
-        and mainProperty._ui.Panel_mini_chat
-    local miniChatPosition, miniChatSize
-    if miniChat then
-        miniChatPosition = miniChat:getWorldPosition()
-        miniChatSize = miniChat:getContentSize()
-    end
+    local miniChat = mainProperty._ui.Panel_mini_chat
+    local miniChatPosition = miniChat:getWorldPosition()
+    local miniChatSize = miniChat:getContentSize()
+    local miniChatRight = miniChatPosition.x + miniChatSize.width
+    local miniChatY = miniChatPosition.y
 
     -- PC196-PC235：配置数据主体；PC236-PC340创建回调闭包并写入按钮字段。
     -- 下列名称依原型索引/既有草稿引用，捕获参数和真实字段映射仍待复核。
@@ -143,8 +129,8 @@ local function doInit_UI()
 
     -- PC338-PC378：按钮位置/字号计算与列表遍历。
     -- 可见常量包含10、1、40、0、80；融合参数含义未全部闭合。
-    local _layoutWidth = miniChatSize and miniChatSize.width
-    local _layoutOrigin = miniChatPosition
+    local _layoutWidth = miniChatRight
+    local _layoutOriginY = miniChatY
 
     -- PC379-PC418：创建“隐 藏”按钮，设置标题、字号、字体并绑定点击闭包。
     local hideButton = GUI.Button_Create(
