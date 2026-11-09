@@ -265,5 +265,128 @@
       "legacy root/47": "canonical root.children[46]（169 条指令 DiuItems）",
       "legacy root/47/1": "canonical root.children[46].children[0]（20 条指令关键词闭包）"
     }
+  },
+  "root47": {
+    "path": "root/48",
+    "parent_create_pc": 367,
+    "create_instruction": [
+      0,
+      154,
+      59,
+      47,
+      13
+    ],
+    "capture_descriptors": [
+      [
+        192,
+        387,
+        0,
+        2,
+        0
+      ],
+      [
+        192,
+        387,
+        0,
+        57,
+        0
+      ],
+      [
+        128,
+        387,
+        0,
+        41,
+        0
+      ],
+      [
+        0,
+        387,
+        0,
+        58,
+        0
+      ],
+      [
+        0,
+        387,
+        0,
+        55,
+        0
+      ],
+      [
+        64,
+        387,
+        0,
+        53,
+        0
+      ],
+      [
+        192,
+        387,
+        0,
+        38,
+        0
+      ],
+      [
+        192,
+        387,
+        0,
+        4,
+        0
+      ],
+      [
+        64,
+        387,
+        0,
+        56,
+        0
+      ],
+      [
+        64,
+        387,
+        0,
+        39,
+        0
+      ],
+      [
+        0,
+        387,
+        0,
+        5,
+        0
+      ],
+      [
+        0,
+        387,
+        0,
+        40,
+        0
+      ],
+      [
+        128,
+        387,
+        0,
+        37,
+        0
+      ]
+    ],
+    "captured_parent_T_registers": [
+      2,
+      57,
+      41,
+      58,
+      55,
+      53,
+      38,
+      4,
+      56,
+      39,
+      5,
+      40,
+      37
+    ],
+    "interpretation": "13个upvalue槽位按序捕获父root的T寄存器。UP[0]=R2主模块状态表；UP[1]=R57，root/53回调并挂到R41.onDamageMsg；UP[2]=R41黑名单玩家状态表（lastAttacker/lastHp/deathHandled/alertAt/nextTryAt/noStoneWarned/distance）；UP[3]=R58，root/26死亡后自动拉黑处理闭包；UP[4]=R55，root/52黑名单actor查询辅助闭包（基于_blacklistData与ACTOR_MASTER_ID，返回匹配状态及名称）；UP[5]=R53，root/23距离计算闭包；UP[6]=R38数值2.0（alertAt节流阈值）；UP[7]=R4，root/17日志格式化包装器；UP[8]=R56，root/25随机传送石查找/使用闭包；UP[9]=R39数值0.01（成功使用后的短重试延迟）；UP[10]=R5，root/21本地通知包装器；UP[11]=R40数值30.0（无可用道具时重试延迟，且在成功通知模板中作为%s实参）；UP[12]=R37数组{\"随机传送石\"}。捕获值及其创建点均由root PC368-PC381与相应父寄存器定义交叉确认。",
+    "canonical_json_path": "root.children[47]",
+    "legacy_one_based_label": "root/48",
+    "legacy_pc_one_based": 368
   }
 }
