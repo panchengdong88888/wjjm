@@ -60,6 +60,23 @@ local function StorageItems()
 
     local storedCount = 0
 
+    -- R8/R9表身份已由PC61-PC83闭合：
+    -- R8是PC61-PC80构造的18项特殊名称表：
+    -- 金刚石、玄铁、真金矿石、BOSS头骨、转生证明、魔神石、神装碎片、
+    -- 涅槃石、宝石精魄、天神令、神彩、金罡、至尊、圣皇、凤凰、
+    -- 麻痹戒指、复活戒指、切割神戒。
+    -- R9是PC81-PC83构造的单项表 {"待定"}。
+    -- 因而PC122-PC150对R9逐项string.find，匹配后通过ITEM_INDEX_BY_NAME
+    -- 查询索引并调用SL.UseItemByIndex；PC151-PC176对R8逐项匹配特殊名称。
+    --
+    -- 子原型0（root.children[50].children[0] / root/51/1）已逐PC复核：
+    -- vararg=2，UPVALUE_0为含isOutputted字段的状态表，UPVALUE_1为输出回调。
+    -- 第二个参数用于string.find(..., "聚灵珠", 1)；命中后仅在isOutputted未置位时
+    -- 将其设为true，先把第一个参数交给输出回调，再构造“聚灵珠信息: ”
+    -- + Name/StdMode/Dura/DuraMax的tostring拼接文本并再次交给同一回调。
+    -- 随后根据Dura、DuraMax是否存在及二者大小关系返回状态值；
+    -- 返回值用于PC175门控。不要把该子原型误写成通用isOutputted(item)过滤器。
+    --
     -- PC105-PC215仍在恢复中：这里必须保持为单一pairs遍历体，不能拆成
     -- ipairs(bagData)和第二次pairs(bagData)两个循环。
     --
