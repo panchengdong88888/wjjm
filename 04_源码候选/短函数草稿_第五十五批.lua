@@ -38,16 +38,18 @@ local function AccountIDValidation()
 
     -- PC38-PC50：创建并调用 Nested_ID(uid)。
     -- 子原型捕获 allowedAccountIds、父UPVALUE_0、父UPVALUE_1。
+    local childSuccessNotice = UPVALUE_0 -- Nested_ID 捕获槽位1
+    local childFailureNotice = UPVALUE_1 -- Nested_ID 捕获槽位2
     local function Nested_ID(accountId)
         local accountIdText = tostring(accountId)
         for _, allowedId in ipairs(allowedAccountIds) do
             if tostring(allowedId) == accountIdText then
-                UPVALUE_1("[提示] 账号ID在允许列表中，功能已开启")
+                childSuccessNotice("[提示] 账号ID在允许列表中，功能已开启")
                 return true
             end
         end
 
-        UPVALUE_2("账号不存在，功能已限制，账号ID：" .. accountIdText)
+        childFailureNotice("账号不存在，功能已限制，账号ID：" .. accountIdText)
         return false
     end
 
@@ -61,7 +63,7 @@ local function AccountIDValidation()
     -- PC55-PC64：安排0.5秒后的界面初始化检查。
     -- 子原型捕获父T[4]与父UPVALUE_0；T[4]暂称scheduleToken，
     -- 实际对象/标识以及Schedule参数顺序待复核。
-    local scheduleToken = T[4] -- 捕获槽位占位，不是已确认的局部变量来源
+    local scheduleToken = nil -- TODO：父函数T[4]捕获值，尚未恢复其真实业务来源
     local function Nested_Panel_mini_chat()
         local mainProperty = MainProperty
         if mainProperty and mainProperty._ui and mainProperty._ui.Panel_mini_chat then
@@ -71,7 +73,7 @@ local function AccountIDValidation()
             UPVALUE_0("等待主界面属性栏(MainProperty)初始化完成...")
         end
     end
-    SL.Schedule(Nested_Panel_mini_chat, 0.5)
+    SL.Schedule(0.5, Nested_Panel_mini_chat) -- 参数顺序待复核
 end
 
 -- 子原型 Nested_ID（root.children[55].children[1]，27条指令）：
