@@ -42,7 +42,10 @@ local function make_BlacklistPlayerDetection(
     randomTeleportNames
 )
     return function BlacklistPlayerDetection()
-        -- PC 1-4: acquire the feature latch and refresh damage-message state.
+        -- PC 1-4: set the module latch, then invoke UP[1] with zero arguments.
+        -- root.children[53] checks its second formal parameter at entry and
+        -- returns immediately when it is nil/false; with this zero-argument
+        -- call, that callback currently takes its early-return path.
         featureState.isBlacklisting = true
         onDamageMsg()
 
@@ -223,8 +226,9 @@ end
 -- 4. UP[5] is root.children[23], called with mainX, mainY, candidateX,
 --    candidateY, and blacklistState.distance (the fifth argument is a range
 --    limit, not an actor id).
--- 5. UP[1] is invoked with zero explicit arguments at PC 4; its external
---    side effects are not inferred here.
+-- 5. UP[1] is root.children[53]. PC1-PC5 checks the second formal argument
+--    and returns immediately when it is nil/false; this zero-argument call
+--    therefore follows the early-return path and does not reach its payload.
 -- 6. UP[11] is 30.0 and is used as the failed-path retry delay only.
 --    The successful log's third %s operand is the item name returned by UP[8],
 --    not UP[11]. The PC184-PC191 call-site confirms this.
