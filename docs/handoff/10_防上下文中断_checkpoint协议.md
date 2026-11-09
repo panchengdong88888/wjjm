@@ -668,3 +668,12 @@
 - 新增普通Lua草稿1个；累计58个。完整静态恢复仍29/110（26.4%）；运行时验证0；最新检查点#71。
 - 下一步继续恢复未开始函数或子原型`Nested_Button_setTitleText`，重点闭合按钮事件回调的捕获值和T栈参数来源。
 
+## 检查点 #72（2026-11-09）：Nested_Button_setTitleText 首版普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第四十八批.lua`；新增审计：`docs/audit/检查点72_Nested_Button_setTitleText首版草稿.md`。
+- 函数：`Nested_Button_setTitleText`，原型索引69，规范路径`root.children[42].children[9].children[0]`，legacy`root/43/10/1`，48条物理指令、10个常量、无子原型、`vararg_flag=0`。
+- 创建于父函数`Nested_Button_setTitleFontSize` PC45；闭包捕获顺序为父R4、T[0]、T[3]。
+- 控制流：PC11-PC16对前置调用结果及UPVALUE_1.toggle做保护；前置结果为false或toggle为真时退出。PC17-PC21将UPVALUE_1.toggled取反并写回。PC22-PC35取得GUI.Button_setTitleText，仅toggle为假时按UPVALUE_1.name更新标题。PC36-PC47取得GUI.Button_setTitleColor，按更新后的toggled选择红色`#ff0000`（真）或白色`#ffffff`（假）。
+- PC1-PC9融合查找/可调用值身份、父函数PC46-PC48捕获的准确来源，以及两次GUI调用的参数寄存器映射仍待复核。草稿保留TODO，不写行为改变型占位判断；未运行时验证。
+- 新增普通Lua草稿1个；累计59个。完整静态恢复仍29/110（26.4%）；运行时验证0；最新检查点#72。
+- 下一步继续其他未开始函数，并在专项静态复核中追踪PC1-PC9、父捕获来源及GUI调用参数。
+
