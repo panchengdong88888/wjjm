@@ -5,12 +5,13 @@
 
 -- 原型：root.children[0].children[0]
 -- legacy：root/1/1；物理指令：5
--- 父root/1 PC17创建闭包，PC18-PC19依次捕获父R1与R2：
--- UP[0]=cc.FileUtils:getInstance()返回的FileUtils实例；
--- UP[1]=父函数收到并用于isFileExist检查的路径参数。
--- 本体仅调用removeFile(path)，不保留该方法的返回值。
-local function Nested_removeFile()
-    fileUtils:removeFile(path)
+-- 检查点171：父root/1 PC17创建闭包，PC18捕获R1=FileUtils实例，
+-- PC19捕获R2=路径参数；捕获顺序及两个生产者均已闭合。
+-- 子函数仅调用 FileUtils:removeFile(path)，不保留方法返回值。
+local function make_Nested_removeFile(fileUtils, path)
+    return function Nested_removeFile()
+        fileUtils:removeFile(path)
+    end
 end
 
 -- 原型：root.children[15].children[0]
@@ -55,4 +56,4 @@ local function Nested_Helper_11()
     UPVALUE_0("参数格式不对，请输入数字")
 end
 
--- Nested_Helper_11（4条）与 Nested_SL（13条）已完成逐PC静态复核；Nested_UnSchedule、Nested_removeFile仍按各自状态管理。
+-- Nested_removeFile（5条）、Nested_SL（13条）与 Nested_Helper_11（4条）均已完成逐PC静态复核；Nested_UnSchedule仍待复审。
