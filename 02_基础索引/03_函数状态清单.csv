@@ -4,7 +4,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 0,root,root,root,MainLeftBottom_Module,412,109,58,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 1,root/0,root.children[0],root/1,FileExistCheck_pcall_wrapper,32,5,1,完整静态恢复（未运行时验证）,检查点62；32条指令控制流闭合；UPVALUE_0为root/3路径拼接闭包；子闭包捕获FileUtils实例与resolvedPath并pcall执行removeFile；返回值及二次存在检查已核对；未运行时验证。
 2,root/0/0,root.children[0].children[0],root/1/1,Nested_removeFile,5,1,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十五批.lua；读取 UP[0].removeFile 并以 UP[0] 为 self、UP[1] 为路径调用；捕获业务名待确认；检查点36。
-3,root/1,root.children[1],root/2,GetStorageItemData,77,16,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+3,root/1,root.children[1],root/2,GetStorageItemData,77,16,0,首版普通Lua草稿（待静态复审/未运行时验证）,检查点80；按页读取NPCStorageProxy.GetStorageDataByPage，table结果经ipairs汇总；读取STORAGE_PER_PAGE_MAX、NPC_STORAGE_MAX_PAGE、GetOpenSize并通知仓库总可用格子；容量循环精确公式及UPVALUE_0回调身份待复核。
 4,root/2,root.children[2],root/3,GetWritablePath,10,4,0,首版普通Lua草稿（待静态复审/未运行时验证）,检查点65；确认cc.FileUtils:getInstance():getWritablePath()调用链；PC8融合拼接为T[1]..R2，结合调用点暂恢复为writablePath..path；vararg_flag=1，首参槽位与拼接方向仍待静态复核。
 5,root/3,root.children[3],root/4,MoveTo,51,20,0,首版普通Lua草稿（移动通知主体已恢复；距离返回极性待复核；未运行时验证）,检查点77；无闭包捕获；构造mapID/x/y/type/range移动通知数据并调用Facade.sendNotification(NoticeTable.InputMove,...)；调用PlayerPos获取坐标，计算两轴绝对差并与range比较，存在true/false返回；参数声明、range缺省判断、Facade self/实参布局、坐标顺序及返回极性待复核。
 6,root/4,root.children[4],root/5,GetDroppedItems,8,3,0,完整静态恢复（未运行时验证）,04_源码候选/其他短辅助函数_第二批草稿.lua；PC1-8 完整还原为 global.dropItemManager:FindDropItemInCurrViewFieldAll() 并原样返回两个结果。
@@ -60,7 +60,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 57,root/42/3,root.children[42].children[3],root/43/4,Nested_FFFF00,320,72,5,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 58,root/42/3/0,root.children[42].children[3].children[0],root/43/4/1,Nested_Helper_2,35,12,0,首版普通 Lua 草稿（未运行时验证）,数字缩写格式化：nil/false转0；小于100000直接tostring；小于100000000时floor(value/10000)并追加“万”；更大时floor(value/100000000*10)/10并按“%.1f亿”格式化；父级PC118创建零捕获闭包；检查点50。
 59,root/42/3/1,root.children[42].children[3].children[1],root/43/4/2,Nested_string,46,12,0,首版普通Lua草稿（背包名称筛选/计数主体已恢复；过滤条件待复核；未运行时验证）,检查点76；无闭包捕获；读取SL:GetMetaValue('BAG_DATA')，pairs遍历条目，检查Name/MakeIndex，string.find按搜索文本匹配，查询ITEM_IS_BIND并检查OverLap，符合条件递增计数并返回；vararg参数、string.find第四参数、绑定/重叠过滤方向待复核。
-60,root/42/3/2,root.children[42].children[3].children[2],root/43/4/3,Nested_FFFFFF,65,17,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+60,root/42/3/2,root.children[42].children[3].children[2],root/43/4/3,Nested_FFFFFF,65,17,0,首版普通Lua草稿（待静态复审/未运行时验证）,检查点80；捕获父T[5]/T[1]；恢复ceil(15/arg1)、Layout_Create、双层数值循环、Text_Create、锚点及索引结果表；循环边界/参数映射/捕获业务身份/GUI实参待复核。
 61,root/42/3/3,root.children[42].children[3].children[3],root/43/4/4,Nested_Helper_3,168,31,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 62,root/42/3/4,root.children[42].children[3].children[4],root/43/4/5,Nested_UnSchedule,20,8,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十五批.lua；通知“点击空白,关闭资源信息窗口”；取消并清空resTimer；调用GUI:Win_Close(resWin)；捕获对象名待确认；检查点36。
 63,root/42/4,root.children[42].children[4],root/43/5,Nested_OnGameLeaveWorld,5,3,0,完整静态恢复（未运行时验证）,04_源码候选/短闭包辅助函数_第三批草稿.lua；调用 global.gameWorldController:OnGameLeaveWorld()。
@@ -101,7 +101,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 98,root/50/0,root.children[50].children[0],root/51/1,Nested_isOutputted,52,15,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第三十四批.lua；纯文本查找“聚灵珠”，首次命中置共享isOutputted并回调物品及Name/StdMode/Dura/DuraMax信息；随后校验Dura/DuraMax存在且Dura不大于DuraMax；参数位置和捕获对象原名待复核；检查点56。
 99,root/50/1,root.children[50].children[1],root/51/2,Nested_Anonymous_2,27,1,0,阶段分析中（未形成普通 Lua 草稿）,已确认 27 条指令、4 个捕获、1.0 起始值和步长、数值循环回跳 PC24→5、动态表索引及多返回值 return；PC9–14 融合算术操作数顺序、捕获来源和父级消费点仍未闭合；检查点48。
 100,root/51,root.children[51],root/52,FindBlacklistPlayer,35,5,0,首版普通 Lua 草稿（未运行时验证）,按传入目标标识查询捕获对象的_blacklistData，命中时返回true及Name；未命中时再通过SL:GetMetaValue('ACTOR_MASTER_ID')核对并尝试查表。对象来源/ID语义仍待校正；检查点52。
-101,root/52,root.children[52],root/53,onDamageMsg,72,19,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+101,root/52,root.children[52],root/53,onDamageMsg,72,19,1,首版普通Lua草稿（待静态复审/未运行时验证）,检查点80；恢复pcall保护JSON解码、table验证、本机UserID/AttackUserID过滤、ACTOR_IS_HERO/MASTER_ID/NAME检查、分身过滤及lastAttacker赋值；vararg参数、元数据真假方向、T[57]身份待复核。
 102,root/53/1,root.children[52].children[0],root/53/1,Nested_JsonDecode,6,2,0,首版普通Lua草稿（待静态复审/未运行时验证）,检查点64；父级onDamageMsg在PC7创建闭包，UPVALUE_0捕获父级T[3]；主路径调用SL.JsonDecode(UPVALUE_0)并直接返回；PC5备用返回路径的触发条件尚未闭合，参数业务语义待追踪。
 103,root/53,root.children[53],root/54,ScheduleOnce,7,2,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十七批.lua；取SL.ScheduleOnce并转发vararg参数；PC6-7位于return之后不可达；检查点38。
 104,root/54,root.children[54],root/55,AnonymousHelper_54,6,0,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十六批.lua；将UP[0]与首个显式参数转交UP[1]并原样返回；后续return不可达；检查点37。
