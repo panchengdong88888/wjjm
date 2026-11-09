@@ -488,3 +488,12 @@
 - 本批未运行时验证，不计入完整静态恢复。
 - CSV、机器状态 JSON、本协议已更新；随后需复读五份文件。
 - 普通 Lua 草稿累计39；完整静态恢复27/110；运行时验证0；检查点52。
+
+
+## 检查点 #53（2026-11-09）：UseItemByIndex 首版普通 Lua 草稿
+- 对象：`root.children[24]`（legacy `root/25`），原型索引32，33条物理指令，无子原型。
+- 源码：`04_源码候选/短函数草稿_第三十一批.lua`；审计：`docs/audit/检查点53_UseItemByIndex草稿.md`。
+- 已按 corrected PC 追踪泛型循环：遍历唯一捕获表，分别调用 `SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)` 与 `SL:GetMetaValue("ITEM_COUNT", itemName)`；数量经 `tonumber` 转换，假值归零；仅在索引存在且数量大于0时调用 `SL:UseItemByIndex(itemIndex)`，随后返回当前迭代项。
+- 父级 root PC355 创建闭包，PC356 捕获父级 R37 到 UP[0]。父级 PC282曾初始化R37为空表，但后续填充/别名关系尚待追踪；`itemNames` 为临时语义名。
+- 新增普通 Lua 草稿1个；累计40个。完整静态恢复仍27/110（24.5%）；运行时验证仍0。
+- 本批仅计入草稿，不计入完整静态恢复。下一目标优先 `root.children[42].children[5]`（Nested_ffffff，41条指令），追踪两个捕获值与调用点。
