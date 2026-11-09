@@ -1823,3 +1823,14 @@
 - 父 PC58 创建 Panel 子闭包时，第一个捕获值是验证结果寄存器；子闭包将其作为唯一显式参数传给 `SL:UnSchedule`。该数据流按字节码保留，不将它猜测成 timer handle。
 - 父函数仍为首版草稿，UP0/UP1 业务身份及上述 UnSchedule 参数语义未闭合，不计完整静态恢复。
 - 更新统计：普通 Lua 草稿 84；完整静态恢复 89/110；运行时验证 0。
+
+
+## 检查点 #169：AccountIDValidation 捕获闭合与短函数源码补齐
+
+- 复核 root.children[55] / AccountIDValidation 的 PC38-PC64。PC42-PC44 调用 Nested_ID(accountID)，返回布尔值写入 R4；PC45-PC54 按结果分支调用成功/失败提示回调。
+- PC58 创建 Nested_Panel_mini_chat；PC59 OP_387 B=4 精确捕获父 R4，即 validationResult；PC60 OP_325 B=0 精确捕获父 UP[0]。Panel 子函数 UP[0]=validationResult，UP[1]=父 UP[0] 提示回调。
+- PC61-PC62 闭合 SL:Schedule(callback, 0.5)。子函数将 validationResult 原样传给 SL:UnSchedule。此处只确认静态数据流，不推断为 timer handle；宿主 API 语义未运行时验证。
+- AccountIDValidation（64条）及 Nested_Panel_mini_chat（24条）提升为完整静态恢复；Nested_ID 维持完整静态恢复。新增静态完整函数2个，普通草稿数由84降至82，完整静态恢复由89升至91/110，运行时验证仍为0。
+- 新增 `04_源码候选/root56_root57_short_functions.lua`，补齐 root.children[56] ClearTargetID_2（22条）与 root.children[57] PlayerPos（10条）的独立可读源码文件；这两项原已计入完整静态恢复数，不重复计数。
+- 检查点 #169 文件：`04_源码候选/root55_children_drafts.lua`、`04_源码候选/root56_root57_short_functions.lua`、`docs/audit/检查点169_AccountIDValidation捕获闭合与短函数源码补齐.md`、`02_基础索引/03_函数状态清单.csv`、`docs/handoff/05_机器可读接续状态.json`、本协议。
+- 下一步：继续筛选状态表中尚无独立源码文件的短函数，优先无捕获或捕获链已闭合者；所有运行时验证统计保持0。
