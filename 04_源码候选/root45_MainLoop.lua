@@ -232,6 +232,8 @@ local function MainLoop()
         UPVALUE_3("攻击中")
 
         local actorMap = UPVALUE_15()
+        -- PC354 initializes the no-living-target flag; PC359/405 form the
+        -- numeric for-loop over UPVALUE_10..#UPVALUE_8.
 
         for index = UPVALUE_10, #UPVALUE_8 do
             local targetID = UPVALUE_8[index]
@@ -250,7 +252,8 @@ local function MainLoop()
                     tostring(targetID)
                 ))
 
-                -- Same unresolved one-argument target-action helper.
+                -- Confirmed SetTargetID(targetID); this branch ignores its
+                -- boolean result and returns immediately after the call.
                 UPVALUE_20(targetID)
                 return
             end
