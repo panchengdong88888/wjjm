@@ -1573,3 +1573,13 @@
 - 尚未升级完整静态恢复；UP[1]（root/53）零参回调内部契约、root/23地图/障碍校验的完整作者级表达、全函数CFG独立复核仍待完成。
 - 统计保持：普通Lua草稿78、完整静态恢复76/110、运行时验证0。
 - 下一步：核验UP[1]回调契约和root/23剩余地图/障碍检查；随后可先批量恢复其他尚无草稿的短函数，不让root/47少量疑点阻塞第一层产出。
+
+
+## 检查点 #149（2026-11-09）：onDamageMsg 零参数调用路径核验
+- BlacklistPlayerDetection PC1-PC4 将UP[0].isBlacklisting设为true，并以零个显式参数调用UP[1]。
+- 检查点146已映射UP[1]=root.children[53]。重读root/53 PC1-PC5：入口检查第二个形式参数R1；R1为nil/false时直接return。
+- 由于root/47调用点不传参，R1必为nil；所以本次onDamageMsg()调用必走PC1-PC5提前返回，后续pcall、ACTOR_IS_HERO、攻击者身份读取和lastAttacker写入均不会执行。
+- 已更新 `04_源码候选/root47_BlacklistPlayerDetection.lua` 注释和 `02_基础索引/03_函数状态清单.csv`；新增审计 `docs/audit/检查点149_onDamageMsg零参数调用路径核验.md`。
+- 本批仅确认调用点可达路径，不新增草稿、不升级完整静态恢复、不增加运行时验证。
+- 统计保持：普通Lua草稿78、完整静态恢复76/110、运行时验证0。
+- 下一步：root/47仍待root/23地图边界/障碍校验和全CFG独立复核；按新方案优先转向尚无草稿的短函数批量恢复，不让少量复杂疑点阻塞第一层产出。
