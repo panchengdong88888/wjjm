@@ -1402,3 +1402,14 @@
 - 两函数均升级为完整静态恢复；未运行时验证。
 - 统计：普通Lua草稿78；完整静态恢复72/110（65.5%）；运行时验证0。
 - 下一步：复核InstallDamageHook与ClearBlacklistItems。
+
+
+## 检查点 #133（2026-11-09）：InstallDamageHook 与 ClearBlacklistItems 完整静态恢复
+
+- InstallDamageHook（root.children[6]）：40条父指令+18条子指令。修正PC31-PC36：UP[0]读取后被覆盖；PC33写入控制器处理器表；PC34-PC36从originalHandler.mNetMsgHandle取值并写入originalHandler.__ylwHookedOrigin。通知回调及子闭包原处理器返回闭合。
+- ClearBlacklistItems（root.children[15]）：63条父指令+13条子指令。确认pairs迭代第一个返回值key被收集；ScheduleOnce延迟(index-1)*0.01；子闭包捕获entryKey/friendProxy，调用RequestOutBlacklist后删除_blacklistData[entryKey]；循环后清空lastAttacker。
+- 源码更新：`04_源码候选/短函数草稿_第三十九批.lua`、`04_源码候选/短函数草稿_第五十四批.lua`。
+- 新增审计：`docs/audit/检查点133_InstallDamageHook与ClearBlacklistItems静态复核.md`。
+- 两项均升级为完整静态恢复，未运行时验证。
+- 统计：普通Lua草稿78；完整静态恢复74/110（67.3%）；运行时验证0。
+- 下一步：复核TakeItems与Builtsetting，随后推进BlacklistPlayerDetection、StorageItems主体。
