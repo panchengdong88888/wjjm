@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "继续doInit_UI剩余短函数与父函数整合：核对Nested_FFFFFF全部GUI行/标题构造及其父Nested_FFFF00调用，整合Nested_FFFF00资源统计刷新链；然后推进root模块体和417指令MainLoop。剩余短函数优先完成Nested_Anonymous/Nested_str/Nested_match链及任何仍为草稿的独立回调。",
+  "next_action": "继续复核Nested_Anonymous父包装函数的参数/vararg与R2()调用，再整合Nested_FFFFFF资源统计行构造和Nested_FFFF00父函数调用；其后推进root模块体及417指令MainLoop。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "111"
+    "last_checkpoint": "112"
   },
   "static_recovered_functions": [
     {
@@ -1555,6 +1555,121 @@
         "发送前更新日期标记，再调用LuaSendMsg(9002,55556,1,2,3,'',0)，随后发送固定通知。",
         "43条指令控制流、边界、捕获和调用顺序闭合；未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[42].children[22].children[0]",
+      "legacy_path": "root/43/23/1",
+      "name": "Nested_str",
+      "physical_instructions": 27,
+      "constant_count": 13,
+      "child_count": 1,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十七批.lua",
+      "audit_file": "docs/audit/检查点112_Nested_str与Nested_match数字输入链复核.md",
+      "parameters": [
+        "...（首个变参作为optionalSuffix）"
+      ],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "Nested_Anonymous T[0]",
+          "usage": "输入弹窗初始文本"
+        },
+        {
+          "index": 1,
+          "source": "Nested_Anonymous UP[0]",
+          "usage": "错误格式化回调所需上下文"
+        },
+        {
+          "index": 2,
+          "source": "Nested_Anonymous T[2]",
+          "usage": "延迟错误提示回调"
+        },
+        {
+          "index": 3,
+          "source": "Nested_Anonymous T[1]",
+          "usage": "数字校验成功回调"
+        }
+      ],
+      "notes": [
+        "构造btnType=2/showEdit=true/editParams(inputMode=2,maxLength=6)。",
+        "首个变参truthy时在初始文本后追加换行及suffix。",
+        "创建Nested_match回调并调用SL:OpenCommonTipsPop(dialogParams)。",
+        "27条指令及四项捕获闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[22].children[0].children[0]",
+      "legacy_path": "root/43/23/1/1",
+      "name": "Nested_match",
+      "physical_instructions": 50,
+      "constant_count": 14,
+      "child_count": 1,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十七批.lua",
+      "audit_file": "docs/audit/检查点112_Nested_str与Nested_match数字输入链复核.md",
+      "parameters": [
+        "status",
+        "result"
+      ],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "Nested_str UP[1]",
+          "usage": "格式错误回调"
+        },
+        {
+          "index": 1,
+          "source": "Nested_str UP[0]",
+          "usage": "错误消息上下文文本"
+        },
+        {
+          "index": 2,
+          "source": "Nested_str UP[2]",
+          "usage": "延迟错误提示回调"
+        },
+        {
+          "index": 3,
+          "source": "Nested_str UP[3]",
+          "usage": "数字校验成功回调"
+        }
+      ],
+      "notes": [
+        "status严格等于1才继续。",
+        "result/editStr缺失回退空串，不提前返回；tostring后gsub删除空白，再用^%d+$匹配。",
+        "非数字时调用UP[0](format,UP[1],tostring(editStr))并ScheduleOnce 0.1秒提示。",
+        "数字转换成功后调用UP[3](numericValue)。",
+        "50条指令控制流、捕获、多返回值与延迟回调闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[22].children[0].children[0].children[0]",
+      "legacy_path": "root/43/23/1/1/1",
+      "name": "Nested_Helper_11",
+      "physical_instructions": 4,
+      "constant_count": 1,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十七批.lua",
+      "audit_file": "docs/audit/检查点112_Nested_str与Nested_match数字输入链复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "Nested_match UP[2]",
+          "usage": "错误提示回调"
+        }
+      ],
+      "notes": [
+        "调用捕获回调并传入固定提示“参数格式不对，请输入数字”。",
+        "4条指令闭合；未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
@@ -2205,26 +2320,35 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "111",
+    "checkpoint": "112",
     "date": "2026-11-09",
-    "function": "Nested_04d_02d_02d",
-    "source_file": "04_源码候选/短函数草稿_第三十三批.lua",
-    "audit_file": "docs/audit/检查点111_Nested_04d_02d_02d每日巡航触发复核.md",
+    "function_group": [
+      "Nested_str",
+      "Nested_match",
+      "Nested_Helper_11"
+    ],
+    "source_file": "04_源码候选/短函数草稿_第七十七批.lua",
+    "additional_sources": [
+      "04_源码候选/短函数草稿_第三十六批.lua",
+      "04_源码候选/短函数草稿_第十五批.lua"
+    ],
+    "audit_file": "docs/audit/检查点112_Nested_str与Nested_match数字输入链复核.md",
     "findings": [
-      "doInit_UI PC160-PC163捕获日期标记、LuaSendMsg发送对象、通知回调。",
-      "os.date('*t')；22:00:05至22:00:08含边界。",
-      "生成YYYYMMDD日期键，同日已发送则返回。",
-      "日期标记在发送前更新；LuaSendMsg七实参为9002、55556、1、2、3、空串、0。",
-      "发送完成后调用固定通知回调。"
+      "Nested_str构造固定参数数字输入弹窗，首个变参truthy时追加换行及suffix，注册Nested_match回调并调用SL:OpenCommonTipsPop。",
+      "Nested_match status严格等于1才继续；result/editStr缺失回退空串，不提前返回。",
+      "输入先tostring并删除所有空白，再按^%d+$校验。",
+      "非数字调用格式错误回调，并通过SL:ScheduleOnce延迟0.1秒调用Nested_Helper_11提示。",
+      "数字转换成功时调用UP3(numericValue)。",
+      "Nested_Helper_11调用捕获提示回调并传入固定错误文本。"
     ],
     "unresolved": [
-      "父R5日期标记、父UP3发送对象的原作者业务变量名未恢复，保留用途名。",
-      "未进行宿主运行时验证。"
+      "父包装函数Nested_Anonymous仍未完成；其T0/T1/T2参数布局及R2()调用业务身份待核验。",
+      "无游戏客户端运行时验证。"
     ],
     "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 54,
+      "complete_static_reconstruction": 57,
       "runtime_verified": 0
     }
   },
@@ -2239,7 +2363,7 @@
   },
   "counts": {
     "ordinary_lua_drafts": 77,
-    "complete_static_reconstruction": 54,
+    "complete_static_reconstruction": 57,
     "runtime_verified": 0
   }
 }
