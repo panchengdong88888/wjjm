@@ -1335,3 +1335,16 @@
 - 更新函数状态CSV与机器状态JSON。
 - 统计：普通Lua草稿78；完整静态恢复68/110（61.8%）；运行时验证0。本批只升级1个既有草稿，没有新增草稿。
 - 下一步：复核GetWritablePath（参数槽位/vararg）和FormatStateChange（T栈参数边界）；复杂函数继续分阶段处理。
+
+
+## 检查点 #127（2026-11-09）：GetWritablePath路径参数与拼接顺序完整静态恢复
+
+- 新增源码：`04_源码候选/GetWritablePath_路径拼接辅助函数_第八十二批.lua`。
+- 新增审计：`docs/audit/检查点127_GetWritablePath路径参数与拼接顺序完整静态恢复.md`。
+- 原型：`root.children[2]` / `root/3`，10条物理指令、4常量、无子原型、零捕获、vararg字段1。
+- 父root PC297创建零捕获闭包。PC1-PC4调用`cc.FileUtils:getInstance()`；PC5-PC6以返回实例为接收者调用`getWritablePath()`；PC7读取第一个显式路径参数；PC8按可写目录前缀在前、路径参数在后的顺序拼接；PC9返回结果，PC10不可达。
+- 调用点交叉验证：ReadNumericConfig（`root.children[9]` / legacy `root/10`）捕获该闭包，并将自己的第一个显式文件路径参数传入；该路径随后用于`isFileExist`和`getStringFromFile`。
+- 未根据平台习惯额外添加路径分隔符、规范化或字符串转换。未运行时验证。
+- 更新函数状态CSV与机器状态JSON。
+- 统计：普通Lua草稿78；完整静态恢复69/110（62.7%）；运行时验证0。本批新增1个完整静态恢复函数，不新增普通草稿。
+- 下一步：复核FormatStateChange（root.children[8]）的T栈参数边界与形参映射；再检查ReadNumericConfig的vararg声明和返回路径。
