@@ -23,10 +23,10 @@
     "root.children[15]": "ClearBlacklistItems：63条父指令+13条子指令；检查点133确认pairs首返回值key、子回调捕获entryKey/friendProxy、异步删除索引及ScheduleOnce延迟；完整静态恢复，未运行时验证。",
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
     "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。",
-    "root.children[47]": "BlacklistPlayerDetection：检查点145闭合真实随机传送/通知/日志路径；检查点146新增完整13槽捕获映射（父root T[2,57,41,58,55,53,38,4,56,39,5,40,37]）。UP[1]=root/53 onDamageMsg回调，UP[3]=root/26死亡自动拉黑回调，UP[4]=root/52黑名单actor查询辅助，UP[5]=root/23距离计算，UP[6]=2.0，UP[7]=root/17日志，UP[8]=root/25随机传送石查找/使用，UP[9]=0.01，UP[10]=root/21本地通知，UP[11]=30.0，UP[12]={\"随机传送石\"}。全部父捕获寄存器已映射；函数仍需对照216条指令复审并整理完整普通Lua，不升级完整静态恢复。",
+    "root.children[47]": "BlacklistPlayerDetection：检查点147新增扩展普通Lua草稿04_源码候选/root47_BlacklistPlayerDetection.lua；覆盖入口/HP状态、白名单门控、玩家遍历、黑名单查询、坐标距离、日志节流、随机传送成功失败路径。仍待独立闭合PC21-PC54状态转移、PC55比较寄存器、PC83-PC84门控、UP[4]双返回值、UP[5]五实参语义和日志格式参数；未升级完整静态恢复，未运行时验证。",
     "root.children[50]": "StorageItems：检查点144闭合子原型1（root/51/2）逐页容量算法：普通页上限pageCapacity，末页上限min(pageCapacity,openSize-(maxPage-1)*pageCapacity)，读取storedPageData[page]，返回首个未满页码；PC37-PC53建立每页物品数量表（#pageData，不存在记0）。PC206-PC211融合链闭合：R12[MakeIndex]=true（已处理索引集合），storedPageData[targetPage]递增，R13成功发送计数递增。LuaSendMsg第4参数在调用点承载目标仓库页码，服务端协议正式字段名仍待接收端验证。"
   },
-  "next_action": "检查点146已补齐BlacklistPlayerDetection的13槽父寄存器捕获映射。下一步逐PC复审PC1-PC216全函数，重点闭合UPVALUE_4（root/52）返回的两个值及其对视野玩家筛选的业务语义、UPVALUE_1(root/53)零参调用路径，以及UPVALUE_11=30.0在成功通知格式中的%s用途；确认所有分支后再整理完整普通Lua候选并决定是否升级完整静态恢复。统计：普通Lua草稿78、完整静态恢复76/110、运行时验证0。",
+  "next_action": "检查点147已扩写root.children[47] BlacklistPlayerDetection普通Lua草稿并完成PC1-PC216反汇编重读；仍不升级完整静态恢复。下一步独立闭合PC21-PC54的HP/deathHandled转移表，核验PC55比较操作数与PC83-PC84相等门控；随后复核PC74-PC141中UP[4]双返回值及UP[5]五实参调用语义，最后核对PC168-PC214通知/日志格式参数。统计保持：普通Lua草稿78、完整静态恢复76/110、运行时验证0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -99,7 +99,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "146"
+    "last_checkpoint": "147"
   },
   "static_recovered_functions": [
     {
@@ -1798,27 +1798,25 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "127",
+    "checkpoint": "147",
     "targets": [
-      "root.children[2]"
+      "root.children[47]"
     ],
-    "status": "GetWritablePath promoted to complete static reconstruction; zero captures, first path argument, FileUtils receiver chain, concatenation order and caller verified",
-    "audit_file": "docs/audit/检查点127_GetWritablePath路径参数与拼接顺序完整静态恢复.md",
+    "status": "Expanded readable Lua draft persisted; independent static review remains in progress; not runtime-validated",
+    "audit_file": "docs/audit/检查点147_BlacklistPlayerDetection草稿整理与复审进度.md",
     "files": [
-      "04_源码候选/GetWritablePath_路径拼接辅助函数_第八十二批.lua",
-      "docs/audit/检查点127_GetWritablePath路径参数与拼接顺序完整静态恢复.md",
+      "04_源码候选/root47_BlacklistPlayerDetection.lua",
+      "docs/audit/检查点147_BlacklistPlayerDetection草稿整理与复审进度.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "Parent root PC297 creates root.children[2] with zero captures.",
-      "PC1-PC4 call cc.FileUtils:getInstance(), preserving the class receiver; PC5-PC6 call getWritablePath on the returned instance.",
-      "PC7 reads the first explicit path argument; PC8 concatenates the writable-directory prefix followed by that path; PC9 returns the result and PC10 is unreachable.",
-      "ReadNumericConfig root.children[9] captures this helper and calls it with its own first explicit file-path argument; the same path is used for isFileExist and getStringFromFile.",
-      "The active body is fully mapped. Runtime validation has not been performed."
+      "Re-read the complete corrected phase3 disassembly PC1-PC216 for root/48.",
+      "Persisted a readable 13-capture closure-factory draft covering entry/state, view-player scan, blacklist lookup, distance, alert throttling and random-teleport success/failure paths.",
+      "Unresolved predicates and external helper semantics remain explicitly marked TODO; no static-complete or runtime-verified status promotion."
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 69,
+      "complete_static_reconstruction": 76,
       "runtime_verified": 0
     }
   },
@@ -2389,39 +2387,40 @@
   ],
   "draft_function_count": 78,
   "ordinary_lua_draft_functions": 78,
-  "last_checkpoint": "127",
-  "checkpoint": "135",
+  "last_checkpoint": "147",
+  "checkpoint": "147",
   "drafts": 33,
-  "next": "检查点135已对BlacklistPlayerDetection（root.children[47]）补回PC5-PC11的MAIN_ACTOR_ID前置门槛：本机ID缺失时在HP读取前返回。下一步继续静态复核BlacklistPlayerDetection的PC21-PC216状态/坐标/距离/节流分支，并复核StorageItems（root.children[50]）主函数前半段及两个子原型的调用实参和返回契约；先校正确定事实，不将未知捕获/API语义写成事实。",
+  "next": "检查点147已扩写root.children[47] BlacklistPlayerDetection普通Lua草稿并完成PC1-PC216反汇编重读；仍不升级完整静态恢复。下一步独立闭合PC21-PC54的HP/deathHandled转移表，核验PC55比较操作数与PC83-PC84相等门控；随后复核PC74-PC141中UP[4]双返回值及UP[5]五实参调用语义，最后核对PC168-PC214通知/日志格式参数。统计保持：普通Lua草稿78、完整静态恢复76/110、运行时验证0。",
   "recent_checkpoint": {
-    "number": 135,
+    "number": 147,
     "date": "2026-11-09",
     "artifacts": [
-      "04_源码候选/短函数草稿_第五十九批.lua",
-      "docs/audit/检查点135_BlacklistPlayerDetection前置门槛校正.md"
+      "04_源码候选/root47_BlacklistPlayerDetection.lua",
+      "docs/audit/检查点147_BlacklistPlayerDetection草稿整理与复审进度.md"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 78,
     "complete_static_reconstructions": 76,
     "runtime_verified": 0,
-    "notes": "独立逐PC复核发现并补回MAIN_ACTOR_ID缺失时的前置返回；不升级完整静态恢复。"
+    "notes": "扩写已有root.children[47]草稿；未增加草稿计数，未升级完整静态恢复。"
   },
   "latest_checkpoint": {
-    "checkpoint": "127",
+    "checkpoint": "147",
     "date": "2026-11-09",
-    "summary": "GetWritablePath（10条指令）完成完整静态恢复。父root PC297创建零捕获闭包；函数调用cc.FileUtils:getInstance()和实例getWritablePath()，将返回的可写目录前缀与第一个显式路径参数按此前后顺序拼接并返回。ReadNumericConfig的调用点确认该参数就是待读取文件路径。",
-    "audit_file": "docs/audit/检查点127_GetWritablePath路径参数与拼接顺序完整静态恢复.md",
+    "summary": "BlacklistPlayerDetection扩展普通Lua草稿已写入GitHub，覆盖主要执行路径；PC55比较寄存器、PC83-PC84门控及部分捕获辅助函数调用语义仍待独立复审。",
+    "audit_file": "docs/audit/检查点147_BlacklistPlayerDetection草稿整理与复审进度.md",
     "unresolved": [
-      "FormatStateChange的T栈参数边界及形参映射",
-      "ReadNumericConfig的vararg声明与返回路径",
-      "Nested_Anonymous的VM帧初始化和T槽映射",
-      "BlacklistPlayerDetection的13项捕获身份、玩家元素结构、距离和随机传送调用",
-      "StorageItems剩余复杂循环与宿主API参数",
-      "GUI宿主标志和Layout尾参1语义"
+      "PC21-PC54 HP/deathHandled精确转移表",
+      "PC55-PC57比较寄存器业务身份",
+      "PC83-PC84相等门控第二操作数",
+      "UP[4]双返回值真假与名称回退契约",
+      "UP[5]五实参距离函数的作者级参数语义",
+      "UP[1]零参调用副作用",
+      "UP[11]成功日志%s实参格式化语义"
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 69,
+      "complete_static_reconstruction": 76,
       "runtime_verified": 0
     }
   },
