@@ -1001,3 +1001,13 @@
 - 上述可见参数与源码草稿一致；宿主GUI枚举语义及运行时行为仍未知。
 - 统计保持：普通Lua草稿77；完整静态恢复32/110；运行时验证0。
 - 下一步：复审root.children[42]剩余子原型，优先尚无普通Lua草稿的短函数。
+
+
+## 检查点 #98（2026-11-09）：Nested_Helper / Nested_s格式回调纠正与静态闭合
+- 更新 `04_源码候选/短函数草稿_第十七批.lua`；新增 `docs/audit/检查点98_Nested_Helper与Nested_s格式回调复核.md`。
+- 两个函数均为21条物理指令。PC1-PC3调用UP[0](UP[1])接收success/detail；按success truthy分支。
+- UP[2]只接收固定单字符串成功/失败通知；UP[3]为PrintLog，接收格式串与原始detail两个独立实参。已纠正此前错误的`tostring(detail)`拼接及把UP[3]当第二通知回调的表达。
+- PrintLog独立静态源码显示：会尝试pcall(string.format,message,...)，但其字节码在SL.Print存在性检查后没有实际Print调用。因此不声称归档详情会输出。
+- 两函数控制流、参数传递、分支及无返回结尾已闭合，升级完整静态恢复；UP[0..2]业务名称仍保留槽位，不影响本函数本体静态语义。
+- 统计更新：普通Lua草稿77；完整静态恢复34/110；运行时验证0。
+- 下一步：继续复审root.children[42]已有短函数草稿；全仓库状态表目前仅root模块体和root.children[45] MainLoop标为未开始，待短函数复审后再攻复杂原型。
