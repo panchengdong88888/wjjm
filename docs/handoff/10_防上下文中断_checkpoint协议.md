@@ -952,3 +952,14 @@
 - Layout_Create/Text_Create的融合参数、Text节点名称后缀、PC9 ceil结果用途仍未闭合；未做宿主GUI运行时验证。因此仍为普通Lua草稿，不升级完整静态恢复。
 - 统计保持：普通Lua草稿77；完整静态恢复32/110；运行时验证0。
 - 下一步：回写Nested_FFFF00父函数草稿，进一步核实两次Nested_FFFFFF调用与返回映射；随后推进root.children[42]剩余短子原型。
+
+
+## 检查点 #93（2026-11-09）：Nested_FFFFFF 节点命名与GUI实参闭合
+- 更新 `04_源码候选/Nested_FFFFFF_第六十五批.lua`；同步父函数草稿 `04_源码候选/短函数草稿_第六十二批.lua`；新增 `docs/audit/检查点93_Nested_FFFFFF节点命名与GUI实参闭合.md`。
+- child2第三参数rowType由PC13直接读取；父函数两次调用分别传入money/item。
+- PC7-PC9的ceil(15/layoutOption)参与cell名称，cell名=rowType.."_cell_"..ceil(15/layoutOption)。
+- Text名称已修正为按列索引拼接的"2_text_0.5_"..columnIndex，不是resourceIndex；初始文本resourceName..":--"。
+- Layout_Create可见参数为父resList、cellName、0/0、捕获宽度、高度35、尾随数值1；最后一个参数宿主语义未明，保留原始值不命名。
+- 父函数草稿同步注明moneyRows/itemRows映射调用契约。
+- 统计保持：普通Lua草稿77；完整静态恢复32/110；运行时验证0。
+- 下一步：复核Nested_FFFF00父函数条件锚点、GUI调用及doInit_UI闭包捕获/Schedule句柄。
