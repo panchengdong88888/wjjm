@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next."
   },
-  "next_action": "核对Nested_Anonymous（root.children[42].children[22]）的函数入口参数初始化与T[0]/T[1]/T[2]寄存器映射；两个调用包装器的实参已确认，但不能据此臆测VM帧槽位。T[2]下游被作为延迟错误提示函数调用，生产者未追出。随后整合Nested_FFFF00剩余320条指令及Nested_Helper_3刷新闭包，继续复核doInit_UI剩余子原型。",
+  "next_action": "继续核对Nested_Anonymous（root.children[42].children[22]）的VM帧入口与T[0]/T[1]/T[2]初始化；两个调用包装器实参虽已确认，但尚无证据映射到这三个T槽。追踪T[2]延迟提示回调的真实生产者。完成后再按root.children[42]剩余未恢复子原型推进。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "114"
+    "last_checkpoint": "115"
   },
   "static_recovered_functions": [
     {
@@ -546,33 +546,33 @@
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
       "source_file": "04_源码候选/资源统计刷新链_第六十四批.lua",
-      "audit_file": "docs/audit/检查点90_资源统计刷新链静态恢复.md",
+      "audit_file": "docs/audit/检查点115_Nested_Helper_3闭包捕获与入口参数校正.md",
       "parameters": [],
       "returns": [],
       "upvalues": [
         {
           "index": 0,
-          "source": "MainLeftBottom module state",
+          "source": "Nested_FFFF00 UP[0] / MainLeftBottom module state",
           "usage": "resWin"
         },
         {
           "index": 1,
-          "source": "timer state",
+          "source": "Nested_FFFF00 UP[2] / timer state",
           "usage": "resTimer"
         },
         {
           "index": 2,
-          "source": "curTimeText",
-          "usage": "current-time Text node"
+          "source": "Nested_FFFF00 R12",
+          "usage": "curTimeText Text node"
         },
         {
           "index": 3,
-          "source": "durTimeText",
-          "usage": "duration Text node"
+          "source": "Nested_FFFF00 R14",
+          "usage": "durTimeText Text node"
         },
         {
           "index": 4,
-          "source": "MainLeftBottom module state",
+          "source": "Nested_FFFF00 UP[3] / init state",
           "usage": "initTime/initSnapshot"
         },
         {
@@ -582,30 +582,33 @@
         },
         {
           "index": 6,
-          "source": "moneyRows",
-          "usage": "money name -> Text node"
+          "source": "Nested_FFFF00 R20",
+          "usage": "moneyRows mapping: money name -> Text node"
         },
         {
           "index": 7,
-          "source": "formatNumber",
+          "source": "Nested_FFFF00 child0 / Nested_Helper_2",
           "usage": "number formatting"
         },
         {
           "index": 8,
-          "source": "itemRows",
-          "usage": "item name -> Text node"
+          "source": "Nested_FFFF00 R21",
+          "usage": "itemRows mapping: item name -> Text node"
         },
         {
           "index": 9,
-          "source": "Nested_string",
+          "source": "Nested_FFFF00 child1 / Nested_string",
           "usage": "non-bound item count by name"
         }
       ],
       "notes": [
-        "PC300 capture order verified",
-        "money snapshot keyed by moneyId; item snapshot keyed by itemName",
-        "pcall protects os.time/os.date",
-        "runtime GUI refresh not verified"
+        "Nested_Helper_3 has vararg_flag=0 and no explicit parameters; parent PC300 captures ten upvalues, and PC311-PC312 immediately invokes the closure with zero arguments.",
+        "PC1-PC19: invalid window causes resTimer unschedule, nil clear, and return.",
+        "PC20-PC38: os.time protected by pcall; failure skips time display but continues resource-row refresh.",
+        "PC39-PC94: protected os.date current-time display and elapsed-time calculation/formatting.",
+        "PC95-PC137: pairs(moneyRows), MoneyProxy:GetMoneyIdByName/GetMoneyCountById, snapshot key initSnapshot[moneyId], Text_setString(textNode,current:delta).",
+        "PC138-PC167: pairs(itemRows), Nested_string(itemName), snapshot key initSnapshot[itemName], Text_setString(textNode,current:delta).",
+        "Complete static control flow/capture mapping; GUI and timer host runtime not verified."
       ]
     },
     {
@@ -1717,23 +1720,18 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 114,
-    "target": "Nested_Anonymous and input wrappers Nested_Helper_4/7",
-    "status": "first-pass ordinary Lua draft; caller argument values confirmed but VM T-slot mapping and T[2] producer unresolved; no runtime validation",
-    "source_file": "04_源码候选/Nested_Anonymous_第七十八批.lua",
-    "audit_file": "docs/audit/检查点114_Nested_Anonymous调用契约复核.md",
-    "added_drafts": [
-      {
-        "path": "root.children[42].children[22]",
-        "legacy": "root/43/23",
-        "name": "Nested_Anonymous",
-        "instructions": 8
-      }
+    "checkpoint": 115,
+    "target": "Nested_Helper_3 closure capture/entry signature correction",
+    "status": "existing complete static reconstruction source corrected; no new function count; no runtime validation",
+    "source_file": "04_源码候选/资源统计刷新链_第六十四批.lua",
+    "audit_file": "docs/audit/检查点115_Nested_Helper_3闭包捕获与入口参数校正.md",
+    "corrected_functions": [
+      "root.children[42].children[3].children[3]"
     ],
     "draft_count_total": 78,
     "complete_static_reconstruction_count": 58,
     "runtime_verified_count": 0,
-    "note": "Nested_Helper_4/7 both call Nested_Anonymous with prompt text and callback closure. The wrapper creates Nested_str and invokes it immediately. Do not equate call arguments with T[0]/T[1]/T[2] without VM frame-entry proof; all three slots remain explicit draft placeholders."
+    "note": "Nested_Helper_3 has zero explicit arguments; ten values are captured upvalues. Corrected prior source candidate that represented captures as parameters. os.time failure skips time display but does not skip money/item row updates."
   },
   "corrections": [
     {
@@ -2266,24 +2264,6 @@
       ]
     },
     {
-      "path": "root.children[42].children[3].children[3]",
-      "legacy_path": "root/43/4/4",
-      "name": "Nested_Helper_3",
-      "source_file": "04_源码候选/短函数草稿_第五十八批.lua",
-      "audit_file": "docs/audit/检查点82_Nested_Helper_3首版草稿.md",
-      "status": "first_pass_draft_pending_static_review_not_runtime_verified",
-      "physical_instructions": 168,
-      "constant_count": 31,
-      "child_count": 0,
-      "parent_path": "root.children[42].children[3]",
-      "parent_create_pc": 299,
-      "capture_count": 10,
-      "notes": [
-        "Window validity and timer unschedule/clear; protected os.time/os.date; current-time and elapsed-time UI; two pairs-based money/count snapshot-delta refresh loops.",
-        "Ten capture identities, both iterator tables and entry fields, initSnapshot nested keys, and Text_setString target/argument mappings remain unresolved."
-      ]
-    },
-    {
       "path": "root.children[47]",
       "legacy_path": "root/48",
       "name": "BlacklistPlayerDetection",
@@ -2339,48 +2319,44 @@
   ],
   "draft_function_count": 78,
   "ordinary_lua_draft_functions": 78,
-  "last_checkpoint": "114",
-  "checkpoint": "114",
+  "last_checkpoint": "115",
+  "checkpoint": "115",
   "drafts": 33,
-  "next": "核对Nested_Anonymous（root.children[42].children[22]）的函数入口参数初始化与T[0]/T[1]/T[2]寄存器映射；两个调用包装器的实参已确认，但不能据此臆测VM帧槽位。T[2]下游被作为延迟错误提示函数调用，生产者未追出。随后整合Nested_FFFF00剩余320条指令及Nested_Helper_3刷新闭包，继续复核doInit_UI剩余子原型。",
+  "next": "继续核对Nested_Anonymous（root.children[42].children[22]）的VM帧入口与T[0]/T[1]/T[2]初始化；两个调用包装器实参虽已确认，但尚无证据映射到这三个T槽。追踪T[2]延迟提示回调的真实生产者。完成后再按root.children[42]剩余未恢复子原型推进。",
   "recent_checkpoint": {
-    "checkpoint": "114",
+    "checkpoint": "115",
     "date": "2026-11-09",
-    "summary": "新增Nested_Anonymous首版普通Lua草稿；核实Nested_Helper_4与Nested_Helper_7均传入提示文字和回调闭包；8条指令创建Nested_str并立即无参调用。VM帧参数到T[0]/T[1]/T[2]映射未证明，T[2]下游作为延迟错误提示函数调用但生产者未追出，三个槽位保留占位，不升级完整静态恢复。",
+    "summary": "修订Nested_Helper_3普通Lua候选：纠正10项闭包捕获被误写为函数形参的问题；原型vararg_flag=0，回调无显式参数，父PC300捕获十项并在PC311-PC312无参调用。进一步明确取时失败只跳过时间/历时显示，仍继续货币和物品行刷新。函数原本已计入完整静态恢复，本批不增加数量。",
     "files": [
-      "04_源码候选/Nested_Anonymous_第七十八批.lua",
-      "docs/audit/检查点114_Nested_Anonymous调用契约复核.md",
+      "04_源码候选/资源统计刷新链_第六十四批.lua",
+      "docs/audit/检查点115_Nested_Helper_3闭包捕获与入口参数校正.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
-    "added_draft_functions": [
-      "root.children[42].children[22]"
-    ],
     "unchanged": {
+      "ordinary_lua_drafts": 78,
       "complete_static_reconstruction": 58,
       "runtime_verified": 0
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "114",
+    "checkpoint": "115",
     "date": "2026-11-09",
-    "function": "Nested_Anonymous",
-    "source_file": "04_源码候选/Nested_Anonymous_第七十八批.lua",
-    "audit_file": "docs/audit/检查点114_Nested_Anonymous调用契约复核.md",
+    "function": "Nested_Helper_3",
+    "source_file": "04_源码候选/资源统计刷新链_第六十四批.lua",
+    "audit_file": "docs/audit/检查点115_Nested_Helper_3闭包捕获与入口参数校正.md",
     "findings": [
-      "Nested_Helper_4与Nested_Helper_7均确认传入提示文字和回调闭包，但实参到Nested_Anonymous帧T[0]/T[1]/T[2]的映射未证明。",
-      "Nested_Anonymous PC1创建Nested_str，捕获顺序为T[0]/UP[0]/T[2]/T[1]；PC6-PC7立即无参调用子闭包。",
-      "父级UP[0]为PrintLog；T[2]下游作为延迟错误提示函数调用，但其生产者尚未追出。",
-      "源码三个T槽均保留nil占位，不得当作已恢复值；运行时验证0。"
+      "Nested_Helper_3 vararg_flag=0，回调本体无显式参数；10项为PC300创建闭包时的UPVALUE。",
+      "PC311-PC312立即无参调用，PC313-PC319由父函数安排SL:Schedule(callback,1.0)。",
+      "10项捕获映射为moduleState、timerState、curTimeText、durTimeText、initState、MoneyProxy、moneyRows、formatNumber、itemRows、Nested_string。",
+      "os.time/pcall失败跳过时间与历时更新，但仍执行moneyRows/itemRows两个刷新循环。",
+      "money快照键为moneyId；item快照键为itemName；对应Text节点由迭代表值提供。"
     ],
     "unresolved": [
-      "Nested_Anonymous VM函数入口参数初始化及调用实参到T[0]/T[1]/T[2]映射",
-      "Nested_Anonymous T[2]生产者及真实业务来源",
-      "doInit_UI剩余父捕获/GUI参数和Nested_FFFF00/Nested_Helper_3闭包契约",
-      "未进行游戏客户端运行时验证"
+      "未做宿主GUI/代理/定时器运行时验证"
     ],
-    "status": "first_pass_draft_pending_VM_T_slot_mapping_not_runtime_verified",
+    "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 78,
       "complete_static_reconstruction": 58,
