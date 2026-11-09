@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "103"
+    "last_checkpoint": "104"
   },
   "static_recovered_functions": [
     {
@@ -1031,6 +1031,128 @@
         "亿级分支为floor到一位小数，不是四舍五入。",
         "35条指令控制流、算术和返回闭合；未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[42].children[11]",
+      "legacy_path": "root/43/12",
+      "name": "Nested_Helper_4",
+      "physical_instructions": 12,
+      "constant_count": 1,
+      "child_count": 1,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第三十五批.lua",
+      "audit_file": "docs/audit/检查点104_两个输入弹窗包装函数复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI R18",
+          "usage": "输入交互函数"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[10]",
+          "usage": "校验回调"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[11]",
+          "usage": "失败通知回调"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[0]",
+          "usage": "失败路径格式化回调"
+        },
+        {
+          "index": 4,
+          "source": "doInit_UI UP[12]",
+          "usage": "失败路径报告回调"
+        },
+        {
+          "index": 5,
+          "source": "doInit_UI UP[13]",
+          "usage": "成功通知回调"
+        },
+        {
+          "index": 6,
+          "source": "doInit_UI R16",
+          "usage": "黑名单距离保存回调"
+        },
+        {
+          "index": 7,
+          "source": "doInit_UI R15",
+          "usage": "按钮状态设置回调"
+        }
+      ],
+      "notes": [
+        "调用输入交互函数，参数为黑名单距离数字提示文本及Nested_Helper_5闭包。",
+        "Nested_Helper_5的7个捕获来自本函数UP[1..7]；子函数本体不随本父包装函数自动升级。",
+        "12条指令闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[14]",
+      "legacy_path": "root/43/15",
+      "name": "Nested_Helper_7",
+      "physical_instructions": 12,
+      "constant_count": 1,
+      "child_count": 1,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第三十五批.lua",
+      "audit_file": "docs/audit/检查点104_两个输入弹窗包装函数复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI R18",
+          "usage": "输入交互函数"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[14]",
+          "usage": "校验回调"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[11]",
+          "usage": "失败通知回调"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[0]",
+          "usage": "失败路径格式化回调"
+        },
+        {
+          "index": 4,
+          "source": "doInit_UI UP[12]",
+          "usage": "失败路径报告回调"
+        },
+        {
+          "index": 5,
+          "source": "doInit_UI UP[15]",
+          "usage": "成功通知回调"
+        },
+        {
+          "index": 6,
+          "source": "doInit_UI R17",
+          "usage": "怪物阈值保存回调"
+        },
+        {
+          "index": 7,
+          "source": "doInit_UI R15",
+          "usage": "按钮状态设置回调"
+        }
+      ],
+      "notes": [
+        "调用输入交互函数，参数为怪物数量阈值数字提示文本及Nested_Helper_8闭包。",
+        "Nested_Helper_8的7个捕获来自本函数UP[1..7]；子函数本体不随本父包装函数自动升级。",
+        "12条指令闭合；未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
@@ -1681,26 +1803,28 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "103",
+    "checkpoint": "104",
     "date": "2026-11-09",
-    "function": "Nested_Helper_2",
-    "source_file": "04_源码候选/短函数草稿_第六十九批.lua",
-    "audit_file": "docs/audit/检查点103_Nested_Helper_2数值格式化静态复核.md",
+    "function_group": [
+      "Nested_Helper_4",
+      "Nested_Helper_7"
+    ],
+    "source_file": "04_源码候选/短函数草稿_第三十五批.lua",
+    "audit_file": "docs/audit/检查点104_两个输入弹窗包装函数复核.md",
     "findings": [
-      "无捕获，vararg_flag=1，仅读取首个参数。",
-      "false/nil首参回退0。",
-      "小于100000直接tostring。",
-      "100000至小于100000000使用floor(value/10000)并追加万。",
-      "不小于100000000使用floor(value/100000000*10)/10并按%.1f亿格式化。"
+      "两个12指令包装函数本体均只加载提示文本、创建7捕获子闭包并调用输入交互函数(提示文本,回调闭包)。",
+      "Nested_Helper_4父级PC250捕获来源及Nested_Helper_7父级PC259捕获来源已分别逐项核对。",
+      "子函数Nested_Helper_5/Nested_Helper_8仍独立保持普通Lua草稿状态，不随父包装函数自动升级。"
     ],
     "unresolved": [
-      "非数字truthy输入没有类型保护，可能按Lua规则触发比较错误；未添加字节码不存在的保护。",
-      "无宿主运行时验证。"
+      "两个输入交互函数的宿主API原始名称仍使用行为名。",
+      "子回调主体仍需单独复审。",
+      "未进行宿主运行时验证。"
     ],
     "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 43,
+      "complete_static_reconstruction": 45,
       "runtime_verified": 0
     }
   },
@@ -1715,7 +1839,7 @@
   },
   "counts": {
     "ordinary_lua_drafts": 77,
-    "complete_static_reconstruction": 43,
+    "complete_static_reconstruction": 45,
     "runtime_verified": 0
   }
 }
