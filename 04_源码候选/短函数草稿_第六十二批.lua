@@ -131,13 +131,13 @@ local function Nested_FFFF00()
     local formatNumber = Nested_Helper_2
 
     -- 资源统计行创建子闭包：child2，PC265捕获[ListView, screenW*0.6]；
-    -- 两次调用分别返回moneyRows与itemRows，后续刷新闭包直接捕获这两张行节点表。
+    -- 两次调用分别返回moneyRows与itemRows，均为“资源名称 -> Text节点”的映射表。
     local updateResourceRows = Nested_FFFFFF
 
     -- 时间/资源刷新子闭包：child3，PC300捕获10项，顺序为：
     -- [moduleState,timerState,curTimeText,durTimeText,initState,MoneyProxy,
     --  moneyRows,formatNumber,itemRows,Nested_string]。
-    -- Nested_string（child1）是BAG_DATA物品名称/索引查询辅助闭包。
+    -- Nested_string（child1）从BAG_DATA按名称查找背包物品并读取绑定/叠加信息。
     -- 父函数在PC311-PC312立即调用，随后PC313-PC319由父函数安排1.0秒周期调度。
     local refreshResourceStatistics = Nested_Helper_3
 
