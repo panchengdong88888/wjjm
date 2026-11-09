@@ -933,3 +933,12 @@
 - Nested_Helper_3（root.children[42].children[3].children[3]，168条指令）十项捕获顺序已核实；窗口失效时取消resTimer；pcall安全读取os.time/os.date；更新当前时间与历时；moneyRows通过MoneyProxy ID/数量及initSnapshot[id]计算差值；itemRows通过Nested_string(name)及initSnapshot[name]计算差值。
 - 两个函数状态升级为完整静态恢复（未运行时验证）。普通Lua草稿总数保持77；完整静态恢复30→32/110；运行时验证仍为0。
 - 下一步：核对Nested_FFFFFF（root.children[42].children[3].children[2]，65条指令）的GUI行构造参数与映射表返回契约，再回写Nested_FFFF00父函数草稿。
+
+
+### 检查点 #91（2026-11-09）：Nested_FFFFFF 首版普通 Lua 草稿
+- 新增整理源码：`04_源码候选/Nested_FFFFFF_第六十五批.lua`；审计：`docs/audit/检查点91_Nested_FFFFFF首版草稿.md`。
+- 原型 `root.children[42].children[3].children[2]`（legacy `root/43/4/3`），65条指令、17常量、无子原型。
+- 已确认父PC265捕获父T[5]/T[1]；计算`ceil(15 / 第二参数)`；构造`_cell_`与`_text_`命名；Text_Create使用`:--`默认文本、15/30数值参数、`#FFFFFF`颜色；setAnchorPoint(0.5,0.5)；返回资源名称到Text节点映射表。
+- 首版代码保留待复核GUI位置参数和两层数值循环边界，仍为普通Lua草稿，不计入完整静态恢复。
+- 统计不变：普通Lua草稿77；完整静态恢复32/110；运行时验证0。
+- 下一步：对照PC5-63核实循环、GUI融合参数，并确定父T[5]/T[1]业务身份，再回写Nested_FFFF00。
