@@ -1322,3 +1322,16 @@
 - 更新函数状态CSV与机器状态JSON。
 - 统计：普通Lua草稿78；完整静态恢复67/110（60.9%）；运行时验证0。本批只升级1个既有草稿，没有新增草稿。
 - 下一步：复核ClearTargetID_2或GetWritablePath/FormatStateChange的参数槽位；复杂BlacklistPlayerDetection、StorageItems继续分阶段推进，Nested_Anonymous的T槽映射仍等待VM帧初始化证据。
+
+
+## 检查点 #126（2026-11-09）：ClearTargetID_2控制流与方法接收者完整静态恢复
+
+- 修改源码：`04_源码候选/短函数草稿_第十六批.lua`中的ClearTargetID_2。
+- 新增审计：`docs/audit/检查点126_ClearTargetID_2控制流与方法接收者完整静态恢复.md`。
+- 原型：`root.children[56]` / `root/57`，22条物理指令、9常量、无子原型、无捕获、无vararg。
+- 父root PC185创建零捕获闭包。
+- PC1-PC5读取`global.Facade`并处理假值提前返回；PC6-PC15调用`facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)`并处理代理假值提前返回；PC16-PC22以proxy为接收者调用`proxy:SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)`，函数无显式返回值。
+- 两处对象方法调用均保留self；22条物理指令全部映射。未运行时验证。
+- 更新函数状态CSV与机器状态JSON。
+- 统计：普通Lua草稿78；完整静态恢复68/110（61.8%）；运行时验证0。本批只升级1个既有草稿，没有新增草稿。
+- 下一步：复核GetWritablePath（参数槽位/vararg）和FormatStateChange（T栈参数边界）；复杂函数继续分阶段处理。
