@@ -114,18 +114,18 @@ local function doInit_UI()
     -- PC196-PC235：配置数据主体；PC236-PC340创建回调闭包并写入按钮字段。
     -- 下列名称依原型索引/既有草稿引用，捕获参数和真实字段映射仍待复核。
     local buttonHandlers = {
-        yinguaibut = Nested_Helper,
-        clearmonsterbut = Nested_StopGatherMonsters,
-        cleardistancebut = Nested_s,
-        rewardbut = Nested_Helper_6,
-        clearblacklistbut = Nested_Helper_4,
-        blacklistbut = Nested_Helper_10,
-        storagebut = Nested_SL_3,
-        takebut = Nested_TakeItems,
-        shiqubut = Nested_shiquTimer,
-        diuqibut = Nested_dropTimer,
-        moneybut = Nested_FFFF00,
-        xiaotuibut = Nested_OnGameLeaveWorld,
+        yinguaibut = Nested_StopGatherMonsters, -- child6, PC269-PC276
+        clearmonsterbut = Nested_Helper,        -- child2, PC277-PC282
+        cleardistancebut = Nested_s,            -- child20, PC283-PC288
+        rewardbut = Nested_SL_2,                -- child1, PC289-PC295
+        clearblacklistbut = Nested_Helper_6,    -- child13, PC296-PC298
+        blacklistbut = Nested_Helper_10,        -- child18, PC299-PC306
+        storagebut = Nested_SL_3,               -- child8, PC307-PC312
+        takebut = Nested_TakeItems,             -- child19, PC313-PC318
+        shiqubut = Nested_shiquTimer,           -- child10, PC319-PC323
+        diuqibut = Nested_dropTimer,             -- child21, PC324-PC329
+        moneybut = Nested_FFFF00,               -- child3, PC330-PC335
+        xiaotuibut = Nested_OnGameLeaveWorld,   -- child4, PC336-PC337
     }
     for key, callback in pairs(buttonHandlers) do
         -- 父级VM在此段构造对应闭包并写入按钮配置表；
