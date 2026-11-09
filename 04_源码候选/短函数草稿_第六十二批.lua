@@ -155,10 +155,10 @@ local function Nested_FFFF00()
     updateResourceRows(resourceNames, 2, "item")
 
     -- PC300创建Nested_Helper_3刷新闭包；PC311-PC312立即调用一次。
-    -- 刷新闭包检查窗口有效性，更新当前时间/历时和资源文本，
-    -- 并在末尾自行执行SL:Schedule(self, 1.0)，将句柄写入timerState.resTimer。
-    -- 因此Schedule由刷新闭包自己调用，而不是由本父函数直接调用。
+    -- 刷新闭包检查窗口有效性，更新当前时间/历时和资源文本。
+    -- 随后父函数PC313-PC319调用SL:Schedule(callback,1.0)，并将返回句柄写入timerState.resTimer。
     refreshResourceStatistics()
+    timerState.resTimer = sl:Schedule(refreshResourceStatistics, 1.0)
 
     return resWin, resList, moneyProxy, formatNumber,
         updateResourceRows, moneyNames, resourceNames
