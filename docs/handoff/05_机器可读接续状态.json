@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "102"
+    "last_checkpoint": "103"
   },
   "static_recovered_functions": [
     {
@@ -1004,6 +1004,33 @@
         "条目假值时不发送；truthy时LuaSendMsg七参数为9002、entry[1]、1.0、2.0、3.0、entry[2]、entry[3]。",
         "22条指令闭合；未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[42].children[3].children[0]",
+      "legacy_path": "root/43/4/1",
+      "name": "Nested_Helper_2",
+      "physical_instructions": 35,
+      "constant_count": 12,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第六十九批.lua",
+      "audit_file": "docs/audit/检查点103_Nested_Helper_2数值格式化静态复核.md",
+      "parameters": [
+        "...（读取首参）"
+      ],
+      "returns": [
+        "<100000: tostring(value)",
+        "[100000,100000000): tostring(floor(value/10000))..'万'",
+        ">=100000000: string.format('%.1f亿',floor(value/100000000*10)/10)"
+      ],
+      "upvalues": [],
+      "notes": [
+        "首参false/nil回退0；truthy值不做类型保护。",
+        "三个数值区间及比较边界逐PC核对。",
+        "亿级分支为floor到一位小数，不是四舍五入。",
+        "35条指令控制流、算术和返回闭合；未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
@@ -1654,30 +1681,26 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "102",
+    "checkpoint": "103",
     "date": "2026-11-09",
-    "function_group": [
-      "Nested_SL_2",
-      "Nested_LuaSendMsg"
-    ],
-    "source_file": "04_源码候选/短函数草稿_第六十八批.lua",
-    "additional_source": "04_源码候选/短函数草稿_第二十二批.lua",
-    "audit_file": "docs/audit/检查点102_Nested_SL_2奖励定时器与消息轮询复核.md",
+    "function": "Nested_Helper_2",
+    "source_file": "04_源码候选/短函数草稿_第六十九批.lua",
+    "audit_file": "docs/audit/检查点103_Nested_Helper_2数值格式化静态复核.md",
     "findings": [
-      "Nested_SL_2父级doInit_UI PC289-PC294捕获rewardTimer状态表、通知回调、取模基数、消息条目表、Schedule附加上下文。",
-      "关闭奖励时UnSchedule、rewardTimer=nil、返回true；开启时SL:Schedule(0,callback,UP[4])保存句柄并返回true。",
-      "Nested_LuaSendMsg捕获父T[0]计数器、UP[2]取模基数、UP[3]消息表。",
-      "轮询索引(counter-1)%modulus+1；缺条目跳过；命中时LuaSendMsg七参数顺序已核实。",
-      "[unknown,2]为nil占位，rewardTimer清理恢复为nil。"
+      "无捕获，vararg_flag=1，仅读取首个参数。",
+      "false/nil首参回退0。",
+      "小于100000直接tostring。",
+      "100000至小于100000000使用floor(value/10000)并追加万。",
+      "不小于100000000使用floor(value/100000000*10)/10并按%.1f亿格式化。"
     ],
     "unresolved": [
-      "UP[2..4]原作者变量名与Schedule第三参数宿主含义未知，保留行为名。",
-      "无游戏客户端运行时验证。"
+      "非数字truthy输入没有类型保护，可能按Lua规则触发比较错误；未添加字节码不存在的保护。",
+      "无宿主运行时验证。"
     ],
     "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 42,
+      "complete_static_reconstruction": 43,
       "runtime_verified": 0
     }
   },
@@ -1692,7 +1715,7 @@
   },
   "counts": {
     "ordinary_lua_drafts": 77,
-    "complete_static_reconstruction": 42,
+    "complete_static_reconstruction": 43,
     "runtime_verified": 0
   }
 }
