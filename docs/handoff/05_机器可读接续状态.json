@@ -12,10 +12,12 @@
   "static_candidates": [],
   "major_targets": {
     "root.children[45]": "417-instruction MainLoop gather/attack state machine; legacy root/46; structural/CFG and captures mapped, high-level Lua still pending",
-    "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
-    "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next."
+    "root.children[46]": "DiuItems：169条；普通Lua草稿已独立复审并标记完整静态恢复（未运行时验证）；源码04_源码候选/root46_DiuItems.lua；不计运行时验证。",
+    "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next.",
+    "root.children[8]": "FormatStateChange：10条；检查点128已整理独立普通Lua草稿，UP[0]/UP[1]用途初步表达；父捕获R4/R14已知，形参/T栈边界仍待独立复核。",
+    "root.children[9]": "ReadNumericConfig：45条；检查点128已整理独立普通Lua草稿；GetWritablePath捕获与文件读取/空白清理/数字转换主体已表达，失败返回与多返回值接收细节待独立复核。"
   },
-  "next_action": "继续复核FormatStateChange（root.children[8]，10条指令）：根PC181创建闭包，两个捕获来源已知为R4与R14，但T栈参数边界和函数形参映射待核。完成后再检查ReadNumericConfig（root.children[9]，45条指令）vararg声明与返回路径。复杂BlacklistPlayerDetection、StorageItems继续分阶段复核；Nested_Anonymous的T槽映射仍等待VM帧初始化实现。",
+  "next_action": "独立复核检查点128的FormatStateChange与ReadNumericConfig两份草稿，尤其FormatStateChange首个显式参数与捕获状态更新时序、ReadNumericConfig文件不存在返回值及string.gsub/string.match多返回值处理；完成后批量整理短函数草稿。随后优先为BlacklistPlayerDetection(root.children[47])与StorageItems(root.children[50])形成主体草稿，复杂Nested_Anonymous T槽映射继续单独挂起。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "122"
+    "last_checkpoint": "128"
   },
   "static_recovered_functions": [
     {
@@ -2383,19 +2385,18 @@
   "drafts": 33,
   "next": "继续复核FormatStateChange（root.children[8]，10条指令）：根PC181创建闭包，两个捕获来源已知为R4与R14，但T栈参数边界和函数形参映射待核。完成后再检查ReadNumericConfig（root.children[9]，45条指令）vararg声明与返回路径。复杂BlacklistPlayerDetection、StorageItems继续分阶段复核；Nested_Anonymous的T槽映射仍等待VM帧初始化实现。",
   "recent_checkpoint": {
-    "checkpoint": "127",
+    "number": 128,
     "date": "2026-11-09",
-    "summary": "GetWritablePath的零捕获身份、FileUtils调用接收者、路径参数来源和拼接方向闭合；未运行时验证。",
-    "files": [
-      "04_源码候选/GetWritablePath_路径拼接辅助函数_第八十二批.lua",
-      "docs/audit/检查点127_GetWritablePath路径参数与拼接顺序完整静态恢复.md",
-      "02_基础索引/03_函数状态清单.csv"
+    "artifacts": [
+      "04_源码候选/root8_FormatStateChange.lua",
+      "04_源码候选/root9_ReadNumericConfig.lua",
+      "docs/audit/检查点128_FormatStateChange与ReadNumericConfig草稿整理.md"
     ],
-    "counts": {
-      "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 69,
-      "runtime_verified": 0
-    }
+    "draft_prototypes_touched": 2,
+    "draft_prototype_total": 78,
+    "complete_static_reconstructions": 69,
+    "runtime_verified": 0,
+    "notes": "将已有两项首版草稿独立整理为可读Lua文件；未增加草稿原型统计，未提升完整静态恢复或运行时验证计数。"
   },
   "latest_checkpoint": {
     "checkpoint": "127",
