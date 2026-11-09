@@ -30,9 +30,10 @@
     "root.children[38]": "GetOwnerID：检查点151新增04_源码候选/root38_GetOwnerID.lua。nil/空串/-1返回false；string分支ownerID~=tostring(ownerID)；非string分支ownerID~=第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
     "root.children[11]": "DistanceCalculation：25条；检查点160逐PC复审PC1-PC23活动路径，任一坐标表false/nil返回99999，否则返回max(abs(dx),abs(dy))；PC24-PC25为return后的不可达尾部。无upvalue/子原型。完整静态恢复，未运行时验证。",
     "root.children[10]": "SetButtonVisibilityState：15条；检查点161闭合UP0共享状态对象、UP1按钮映射表、isHidden=true写入、pairs循环和GUI:setVisible(buttonMap[key],true) receiver/参数顺序。完整静态恢复，未运行时验证。",
-    "root.children[26]": "ResetGatherMonsterData：20条；检查点162闭合9个父root T寄存器捕获、共享upvalue cell赋值顺序、零参resetAction调用、UP7=root T[4]=PrintLog及PrintLog(\"数据已重置\")。完整静态恢复，未运行时验证。"
+    "root.children[26]": "ResetGatherMonsterData：20条；检查点162闭合9个父root T寄存器捕获、共享upvalue cell赋值顺序、零参resetAction调用、UP7=root T[4]=PrintLog及PrintLog(\"数据已重置\")。完整静态恢复，未运行时验证。",
+    "root.children[27]": "StopGatherMonsters：25条；检查点163闭合UP0运行标记、UP1.gatherTimer状态对象、UP2零参预停止回调、UP3 FormatStateChange、UP4状态常量表、UP5 ResetGatherMonsterData、UP6 PrintLog。定时器存在时SL:UnSchedule(timer)并置nil；随后预停止回调、切IDLE、重置数据、PrintLog停止提示。完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点162已完成ResetGatherMonsterData完整静态恢复；普通Lua源码候选82、完整静态恢复83/110、运行时验证0。下一步复审root.children[27] StopGatherMonsters（25条），追溯其7个捕获值的身份，核对running标记、gatherTimer取消/清空、预停止回调、IDLE切换、Reset helper与PrintLog通知顺序。",
+  "next_action": "检查点163已完成StopGatherMonsters完整静态恢复；普通Lua源码候选82、完整静态恢复84/110、运行时验证0。下一步复审root.children[37] DestroyUI（31条）和root.children[40] ShowHideAllButtons（47条），核对timer字段、窗口关闭、按钮映射迭代和hidebut清理。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -105,7 +106,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "162"
+    "last_checkpoint": "163"
   },
   "static_recovered_functions": [
     {
@@ -1931,29 +1932,49 @@
         "UP3 no-argument resetAction identity remains neutral; UP7=root T[4]=PrintLog receives '数据已重置'.",
         "All 20 physical instruction records reconciled; not runtime validated."
       ]
+    },
+    {
+      "path": "root.children[27]",
+      "legacy_path": "root/28",
+      "name": "StopGatherMonsters",
+      "physical_instructions": 25,
+      "constant_count": 6,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第十三批.lua",
+      "audit_file": "docs/audit/检查点163_StopGatherMonsters完整静态复审.md",
+      "parameters": [],
+      "returns": [],
+      "notes": [
+        "Running flag, timer state, pre-stop callback, FormatStateChange, state constants, reset helper and PrintLog captures reconciled.",
+        "SL:UnSchedule(timer) preserves SL receiver; timer cleared after cancellation.",
+        "Pre-stop callback identity retained neutral; zero-argument contract and order closed.",
+        "Not runtime validated."
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "162",
+    "checkpoint": "163",
     "targets": [
-      "root.children[26]"
+      "root.children[27]"
     ],
-    "status": "Independently reviewed all 20 physical instruction records; promoted ResetGatherMonsterData to complete static reconstruction.",
-    "audit_file": "docs/audit/检查点162_ResetGatherMonsterData完整静态复审.md",
+    "status": "Independently reviewed all 25 physical instruction records; promoted StopGatherMonsters to complete static reconstruction.",
+    "audit_file": "docs/audit/检查点163_StopGatherMonsters完整静态复审.md",
     "files": [
       "04_源码候选/短函数草稿_第十三批.lua",
-      "docs/audit/检查点162_ResetGatherMonsterData完整静态复审.md",
+      "docs/audit/检查点163_StopGatherMonsters完整静态复审.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "All nine captured parent T-register slots and write order reconciled.",
-      "UP3 is a zero-argument callback retained under a neutral name.",
-      "UP7 is PrintLog and receives exactly '数据已重置'."
+      "Running flag cleared first.",
+      "Conditional timer cancellation preserves SL receiver and clears timer field.",
+      "Pre-stop callback, IDLE transition, reset helper and PrintLog notice order closed."
     ],
     "counts": {
       "ordinary_lua_drafts": 82,
-      "complete_static_reconstruction": 83,
+      "complete_static_reconstruction": 84,
       "runtime_verified": 0
     }
   },
@@ -2602,45 +2623,45 @@
   ],
   "draft_function_count": 82,
   "ordinary_lua_draft_functions": 82,
-  "last_checkpoint": "162",
-  "checkpoint": "162",
+  "last_checkpoint": "163",
+  "checkpoint": "163",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 162,
+    "number": 163,
     "date": "2026-11-09",
     "artifacts": [
       "04_源码候选/短函数草稿_第十三批.lua",
-      "docs/audit/检查点162_ResetGatherMonsterData完整静态复审.md"
+      "docs/audit/检查点163_StopGatherMonsters完整静态复审.md"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 82,
-    "complete_static_reconstructions": 83,
+    "complete_static_reconstructions": 84,
     "runtime_verified": 0,
-    "notes": "ResetGatherMonsterData的20条指令、9个捕获cell写入和PrintLog调用完成静态复审；运行时未验证。"
+    "notes": "StopGatherMonsters的25条指令、7个捕获值和定时器/回调顺序完成静态复审；运行时未验证。"
   },
   "latest_checkpoint": {
-    "checkpoint": "162",
+    "checkpoint": "163",
     "date": "2026-11-09",
-    "summary": "ResetGatherMonsterData的9个捕获槽位、upvalue cell赋值顺序、无参回调和PrintLog提示参数完成静态闭合。",
-    "audit_file": "docs/audit/检查点162_ResetGatherMonsterData完整静态复审.md",
+    "summary": "StopGatherMonsters的running标记、gatherTimer取消与清空、预停止回调、IDLE切换、Reset helper和PrintLog调用顺序完成静态闭合。",
+    "audit_file": "docs/audit/检查点163_StopGatherMonsters完整静态复审.md",
     "unresolved": [
-      "UP3回调的业务身份",
+      "UP2预停止回调业务身份",
       "Lua宿主/游戏运行时验证"
     ]
   },
-  "complete_static_reconstruction_count": 83,
-  "complete_static_reconstruction": "83/110 (75.5%)",
+  "complete_static_reconstruction_count": 84,
+  "complete_static_reconstruction": "84/110 (76.4%)",
   "progress_reconciled": {
     "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；机器状态中的static_recovered_functions是精选索引，不作为完整计数器。",
     "ordinary_lua_draft_functions": 82,
-    "complete_static_reconstruction_functions": 83,
+    "complete_static_reconstruction_functions": 84,
     "runtime_verified_functions": 0,
-    "note": "检查点162将ResetGatherMonsterData root.children[26]由首版草稿升级为完整静态恢复；PrintLog回调身份由父root T[4]和MainLoop捕获映射交叉确认；运行时验证仍为0。"
+    "note": "检查点163将StopGatherMonsters root.children[27]由首版草稿升级为完整静态恢复；预停止回调业务身份仍保留中性名称，但零参调用契约和顺序已闭合。运行时验证仍为0。"
   },
   "counts": {
     "ordinary_lua_drafts": 82,
-    "complete_static_reconstruction": 83,
+    "complete_static_reconstruction": 84,
     "runtime_verified": 0
   }
 }
