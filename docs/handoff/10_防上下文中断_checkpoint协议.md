@@ -1782,3 +1782,15 @@
 - 新增审计`docs/audit/检查点165_ShowHideAllButtons完整静态复审与捕获映射纠错.md`；更新短函数草稿第十四批、CSV和机器状态JSON。
 - 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复86/110；运行时验证0。
 - 下一步：复审IsInWhitelistMap（root.children[31]，28条）和剩余短函数。
+
+ 
+## 检查点 #166（2026-11-09）：IsInWhitelistMap 完整静态复审
+
+- 对象：`root.children[31]`（legacy root/32），28条物理指令，6个常量，无upvalue、无子原型。
+- PC1-PC8调用`SL:GetMetaValue("IN_SAFE_AREA")`；truthy直接返回true。
+- 否则PC9-PC12调用`SL:GetMetaValue("MAP_NAME")`；PC13-PC15构造唯一元素白名单`{"土城"}`。
+- PC16-PC25以ipairs遍历并比较mapName；匹配返回true；遍历结束PC26-PC27返回false；PC28为return后的不可达尾部。
+- 28条指令活动路径、SL receiver、元数据键、白名单常量和返回极性闭合。
+- 新增审计`docs/audit/检查点166_IsInWhitelistMap完整静态复审.md`；更新短函数草稿第十二批、CSV、机器状态JSON。
+- 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复87/110；运行时验证0。
+- 下一步：复审UseItemByIndex（root.children[24]，33条），核对捕获表、物品索引/数量字段、方法receiver与返回值。
