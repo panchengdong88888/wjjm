@@ -17,7 +17,9 @@
 6. PC146-PC166：检查cruiseTimer，存在时UnSchedule并写入unknown哨兵，随后建立1.0秒Schedule并保存句柄。
 7. PC167-PC180：获取NPCStorageProxy并调用RequestStorageData。
 8. PC181-PC195：Attach_UITop、MainProperty._ui.Panel_mini_chat、getWorldPosition/getContentSize及位置/尺寸运算。
-9. PC196-PC340：按钮配置与多个子闭包创建/绑定；涉及yinguaibut、blacklistbut、clearblacklistbut、moneybut、shiqubut、diuqibut、xiaotuibut、clearmonsterbut、cleardistancebut、rewardbut、storagebut、takebut。
+9. PC196-PC235：三组按钮数组，分别为4项（拉怪/黑名单/清黑名单/资源统计）、3项（拾取/丢弃/快速小退）、3项（清怪物阈值/清距离/奖励），各项的key/name/toggle均按常量重建。
+10. PC236-PC337：创建功能闭包并填充buttonHandlers[key]，映射关系已按各闭包创建PC和字段写入PC核对。
+11. PC338-PC378：按钮创建子闭包的参数契约已闭合：配置记录、列索引、行偏移；xBase=miniChat右边界-10，yBase=miniChat的y+1；按钮坐标x=xBase-85*列索引、y=yBase+行偏移；三组行偏移依次40、0、80。创建按钮后按key存入buttonMap，设置标题/字号18/字体/白色；有toggle项时绑定点击闭包，调用buttonHandlers对应功能并切换文字与颜色。
 10. PC338-PC378：基于mini-chat位置/尺寸执行按钮布局计算和列表遍历；常量10、1、40、0、80可见，融合参数含义未全部闭合。
 11. PC379-PC418：创建“隐 藏”按钮，设置标题、字号18、字体res/public/kaiti2.ttf并注册child15点击回调。
 
@@ -30,8 +32,8 @@
 - MoneyProxy快照键值结构及两组名称循环差异。
 - ScheduleOnce实参栈虽确认以循环索引乘0.1作为延迟量，调用携带的完整多寄存器参数列表仍待核。
 - Attach_UITop完整参数、mini-chat坐标换算、GUI对象调用方式。
-- PC236-PC340各子闭包捕获寄存器、按钮字段写入顺序和实参栈。
-- PC338-PC378布局/字号公式的融合参数解释。
+- PC236-PC337各功能闭包的捕获业务身份/部分外部API参数仍待核；按钮创建child9的三个实参及坐标公式、buttonMap/handler映射已闭合。
+- PC338-PC378的按钮布局坐标公式已由child9反汇编与父循环共同闭合；仍需在宿主GUI中验证视觉布局。
 - GUI.Button_Create及标题/字体/点击注册实参布局；草稿中的简化调用仅为阅读占位。
 - 未在宿主环境运行；不升级完整静态恢复。
 
