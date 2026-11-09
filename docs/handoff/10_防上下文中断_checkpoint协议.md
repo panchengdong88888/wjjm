@@ -1158,3 +1158,15 @@
 - 纠正旧草稿错误：result为nil时不会直接return，而是按空串继续校验并进入格式错误提示。
 - Nested_Anonymous父包装函数仍保留草稿状态，T0/T1/T2参数映射与R2()调用语义待核验。
 - 统计更新：普通Lua草稿77；完整静态恢复57/110；运行时验证0。
+
+
+## 检查点 #113（2026-11-09）：Nested_FFFFFF完整静态恢复
+- 更新源码：`04_源码候选/Nested_FFFFFF_第六十五批.lua`；同步父函数草稿`04_源码候选/短函数草稿_第六十二批.lua`的child2状态说明。
+- 新增审计：`docs/audit/检查点113_Nested_FFFFFF完整静态恢复复核.md`。
+- 参数为(resourceNames,layoutOption,rowType,...)；捕获父T[5]=resList、父T[1]=screenW*0.6。
+- 外层循环1..#resourceNames步长layoutOption，内层循环1..layoutOption；索引groupStart+columnIndex-1。
+- cell名rowType.."_cell_"..ceil(15/layoutOption)，Layout_Create可见实参含尾随数值1。
+- Text名"2_text_0.5_"..columnIndex；x=cellWidth*(columnIndex-0.5)，y=15；尺寸相关数值30，颜色#FFFFFF，文本resourceName..":--"；锚点0.5/0.5。
+- 按resourceName写入Text节点映射表并返回；父函数两次调用分别建立moneyRows/itemRows。
+- Layout_Create尾随数值1的宿主端语义未知，但原始实参与位置已确认，不阻碍静态源码恢复；未进行运行时验证。
+- 统计更新：普通Lua草稿77；完整静态恢复58/110；运行时验证0。
