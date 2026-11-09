@@ -40,9 +40,10 @@
     "root.children[55].children[0]": "Nested_Panel_mini_chat：24条；检查点169父PC58/59/60捕获来源闭合，UP0=validationResult（Nested_ID布尔返回值），UP1=父UP0提示回调；满足MainProperty/_ui/Panel_mini_chat门槛时SL:UnSchedule(validationResult)并调用MainLeftBottom.doInit()；所有路径提示等待。完整静态恢复，未运行时验证。",
     "root.children[15].children[0]": "Nested_SL：13条；检查点170独立静态复审完成。父ClearBlacklistItems PC52创建闭包，PC53捕获R8=当前entryKey，PC54捕获R0=FriendProxy；子函数先SL:RequestOutBlacklist(entryKey)，再检查friendProxy._blacklistData并删除对应键。完整静态恢复，未运行时验证。",
     "root.children[0].children[0]": "Nested_removeFile：5条；检查点171独立静态复审完成。父root/1 PC17创建闭包，PC18捕获R1=cc.FileUtils:getInstance()实例，PC19捕获R2=路径参数；子函数调用fileUtils:removeFile(path)，不保留返回值。完整静态恢复，未运行时验证。",
-    "root.children[42].children[3].children[4]": "Nested_UnSchedule：20条；原检查点116已完成控制流静态复核。检查点172修正源码表达：子UP0=通知回调、UP1=timerState、UP2=moduleState；父PC68-PC71捕获顺序为父UP1/UP2/UP0。取消timer后写回反汇编未知常量['unknown',2]，源码以UNKNOWN_VALUE_SENTINEL占位，禁止误写nil。完整静态恢复，未运行时验证。"
+    "root.children[42].children[3].children[4]": "Nested_UnSchedule：20条；原检查点116已完成控制流静态复核。检查点172修正源码表达：子UP0=通知回调、UP1=timerState、UP2=moduleState；父PC68-PC71捕获顺序为父UP1/UP2/UP0。取消timer后写回反汇编未知常量['unknown',2]，源码以UNKNOWN_VALUE_SENTINEL占位，禁止误写nil。完整静态恢复，未运行时验证。",
+    "root.children[50].children[0]": "Nested_isOutputted：52条；检查点174独立静态复审完成。父StorageItems PC102创建闭包，PC103/PC104捕获父UP0共享输出状态对象及父UP1输出回调；父PC154-PC170闭合ipairs迭代、Name匹配和两参数调用（item=R19,itemText=R25），PC171消费返回值。子函数纯文本查找聚灵珠、首次命中置位并两次回调输出物品/详情，校验Dura/DuraMax并返回布尔值。完整静态恢复，未运行时验证；更上层捕获原名未知。"
   },
-  "next_action": "检查点173：Nested_Anonymous_2（root.children[50].children[1]，27条）全部子指令、四项捕获生产者、storedPageData构造逻辑及父级零参调用/返回值消费点已闭合并升级为完整静态恢复。下一步继续批量复核其他短草稿及仍有UPVALUE占位/参数契约待核的子原型；优先挑选可由父级调用点闭合的短函数。运行时验证仍为0。",
+  "next_action": "检查点174：Nested_isOutputted（root.children[50].children[0]，52条）子函数全部指令、父级两个捕获槽、迭代器参数顺序及返回值消费点已闭合并升级为完整静态恢复。下一步继续批量复核其他短草稿及剩余子原型；优先追踪能通过父级调用点闭合的函数。运行时验证仍为0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -115,7 +116,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "173"
+    "last_checkpoint": "174"
   },
   "static_recovered_functions": [
     {
@@ -2179,30 +2180,60 @@
         "Parent PC177-PC179 invokes with zero args and branches on page/nil.",
         "All 27 instructions reconciled; not runtime validated."
       ]
+    },
+    {
+      "path": "root.children[50].children[0]",
+      "legacy_path": "root/51/1",
+      "name": "Nested_isOutputted",
+      "physical_instructions": 52,
+      "constant_count": 15,
+      "child_count": 0,
+      "parent_path": "root.children[50]",
+      "parent_create_pc": 102,
+      "capture_count": 2,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第三十四批.lua",
+      "audit_file": "docs/audit/检查点174_Nested_isOutputted完整静态复审.md",
+      "parameters": [
+        "item",
+        "itemText"
+      ],
+      "returns": [
+        "boolean"
+      ],
+      "notes": [
+        "UP0 is shared output state with isOutputted field; UP1 is output callback.",
+        "Parent PC167-PC170 passes current item R19 and ipairs(R8) current value R25; PC171 consumes return.",
+        "Plain string.find(itemText, '聚灵珠', 1, true).",
+        "Sets isOutputted once, invokes callback with item then detail text.",
+        "Validates Dura and DuraMax and returns boolean.",
+        "All 52 instructions reconciled; upper-level capture identities unresolved; not runtime validated."
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "173",
+    "checkpoint": "174",
     "targets": [
-      "root.children[50].children[1]"
+      "root.children[50].children[0]"
     ],
-    "status": "Independently reviewed all 27 child instructions, four parent capture producers, the per-page count-table producer, and the parent zero-argument call/result-consumption path; promoted to complete static reconstruction.",
-    "audit_file": "docs/audit/检查点173_Nested_Anonymous_2完整静态复审.md",
+    "status": "Independently reconciled all 52 instructions, both closure captures, the parent's ipairs iteration and two-argument call site, and the returned boolean consumer; promoted to complete static reconstruction.",
+    "audit_file": "docs/audit/检查点174_Nested_isOutputted完整静态复审.md",
     "files": [
-      "04_源码候选/root50_Nested_Anonymous_2.lua",
-      "docs/audit/检查点173_Nested_Anonymous_2完整静态复审.md",
+      "04_源码候选/短函数草稿_第三十四批.lua",
+      "docs/audit/检查点174_Nested_isOutputted完整静态复审.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "Parent PC54-PC58 captures maxPage, pageCapacity, openSize, and storedPageData in order.",
-      "Parent PC37-PC53 builds a numeric count for every page using #pageData or 0.",
-      "Child iterates pages ascending, uses reduced last-page capacity, returns first page with room or nil.",
-      "Parent PC177-PC179 calls closure with no arguments and routes page/nil to success/failure paths."
+      "Child UP0 is shared state with isOutputted field; UP1 is output callback; parent PC103-PC104 capture in that order.",
+      "Parent PC167-PC170 passes current item R19 and current ipairs(R8) value R25; PC171 consumes child return.",
+      "Child performs plain string.find for 聚灵珠, one-time output state mutation, two callback invocations, and Dura/DuraMax validation.",
+      "All 52 instructions reconciled; no extra vararg reads; upper-level original capture identifiers remain unknown."
     ],
     "counts": {
-      "ordinary_lua_drafts": 79,
-      "complete_static_reconstruction": 94,
+      "ordinary_lua_drafts": 78,
+      "complete_static_reconstruction": 95,
       "runtime_verified": 0
     }
   },
@@ -2873,36 +2904,36 @@
       ]
     }
   ],
-  "draft_function_count": 79,
-  "ordinary_lua_draft_functions": 79,
-  "last_checkpoint": "173",
-  "checkpoint": "173",
+  "draft_function_count": 78,
+  "ordinary_lua_draft_functions": 78,
+  "last_checkpoint": "174",
+  "checkpoint": "174",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 173,
+    "number": 174,
     "date": "2026-11-09",
     "artifacts": [
-      "04_源码候选/root50_Nested_Anonymous_2.lua",
-      "docs/audit/检查点173_Nested_Anonymous_2完整静态复审.md",
+      "04_源码候选/短函数草稿_第三十四批.lua",
+      "docs/audit/检查点174_Nested_isOutputted完整静态复审.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "draft_prototypes_touched": 1,
-    "draft_prototype_total": 79,
-    "complete_static_reconstructions": 94,
+    "draft_prototype_total": 78,
+    "complete_static_reconstructions": 95,
     "runtime_verified": 0,
-    "notes": "Nested_Anonymous_2的27条指令、四项父捕获、每页数量表生产者和父级调用消费点全部闭合。"
+    "notes": "Nested_isOutputted的52条指令、捕获顺序、item/itemText实参及返回值消费闭合。"
   },
   "latest_checkpoint": {
-    "checkpoint": "173",
-    "summary": "Nested_Anonymous_2（27条）独立静态复审完成；捕获、父级计数表构造和返回值消费链闭合。",
-    "audit_file": "docs/audit/检查点173_Nested_Anonymous_2完整静态复审.md",
+    "checkpoint": "174",
+    "summary": "Nested_isOutputted（52条）完整静态复审；父级捕获、迭代器参数和布尔返回值消费链闭合。",
+    "audit_file": "docs/audit/检查点174_Nested_isOutputted完整静态复审.md",
     "unresolved": [
-      "NPCStorageProxy宿主接口真实运行行为尚未验证",
+      "父 StorageItems 上层 UP0/UP1 的原始业务标识尚未知",
       "尚未运行时验证"
     ]
   },
-  "complete_static_reconstruction_count": 94,
+  "complete_static_reconstruction_count": 95,
   "complete_static_reconstruction": "89/110 (80.9%)",
   "progress_reconciled": {
     "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；机器状态中的static_recovered_functions是精选索引，不作为完整计数器。",
@@ -2910,14 +2941,14 @@
     "complete_static_reconstruction_functions": 88,
     "runtime_verified_functions": 0,
     "note": "检查点167将UseItemByIndex root.children[24]升级为完整静态恢复，并将UPVALUE_0=T[37]正确表达为工厂闭包捕获；列表业务来源仍未命名。运行时验证仍为0。",
-    "checkpoint": 173,
-    "ordinary_lua_drafts": 79,
-    "complete_static_reconstruction": 94,
+    "checkpoint": 174,
+    "ordinary_lua_drafts": 78,
+    "complete_static_reconstruction": 95,
     "runtime_verified": 0
   },
   "counts": {
-    "ordinary_lua_drafts": 79,
-    "complete_static_reconstruction": 94,
+    "ordinary_lua_drafts": 78,
+    "complete_static_reconstruction": 95,
     "runtime_verified": 0
   }
 }
