@@ -1844,3 +1844,13 @@
 - 计数：普通 Lua 草稿 81；完整静态恢复 92/110；运行时验证 0。
 - 新增审计：`docs/audit/检查点170_Nested_SL完整静态复审.md`。
 - 下一步：继续短函数 Nested_removeFile（5条）、Nested_UnSchedule（20条）等。
+
+
+## 检查点 #171：Nested_removeFile 完整静态复审
+
+- root.children[0].children[0] / Nested_removeFile（5条）独立复核完成。父 root/1 PC17 创建闭包；PC18 捕获 R1=cc.FileUtils:getInstance() 实例，PC19 捕获 R2=路径参数。
+- 子函数 PC1-PC2 读取 FileUtils 实例及 removeFile 方法，保留实例为 receiver；PC3 读取 path；PC4 调用 fileUtils:removeFile(path)；PC5 返回，无显式返回值。5条指令全部闭合。
+- 将 `04_源码候选/短函数草稿_第十五批.lua` 中 Nested_removeFile 改为工厂闭包表达，避免捕获值被误写为全局变量；提升为完整静态恢复（未运行时验证）。
+- 计数：普通 Lua 草稿 80；完整静态恢复 93/110；运行时验证 0。
+- 新增审计：`docs/audit/检查点171_Nested_removeFile完整静态复审.md`。
+- 下一步：复核 Nested_UnSchedule（20条）等短闭包。
