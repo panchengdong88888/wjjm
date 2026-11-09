@@ -1480,3 +1480,13 @@
 - PC136-PC141：距离返回值与K[16] nil哨兵比较；nil路径跳过本轮后续处理，非nil结果继续。草稿中字符串"unknown"比较已改为nil判断。
 - 已更新第五十九批草稿及函数状态CSV。当前仍未映射13个upvalue的全部业务身份，PC142-PC216的通知/随机传送分支尚待闭合。
 - 统计不变：普通Lua草稿78；完整静态恢复76/110；运行时验证0。
+
+
+## 检查点 #140（2026-11-09）：BlacklistPlayerDetection 节流与重试路径复核
+- PC142-PC159确认 `os.time()`、`now-state.alertAt`、UPVALUE_6直接阈值、达到阈值后写回alertAt并调用UPVALUE_7通知。
+- PC160-PC173确认 `state.nextTryAt<=now` 门槛；UPVALUE_8是零参数间隔函数，写入 `now+UPVALUE_8()`，并将noStoneWarned复位false。
+- PC193-PC213确认UPVALUE_11参与另一条重试间隔计算；noStoneWarned仅未提示时置true并发送一次提示；另有 `table.concat(UPVALUE_12(), "/")` 路径文本构造。
+- PC174-PC192提示回调契约、实际随机传送道具筛选/使用API和13个upvalue身份仍待复核，源码已移除未经证实的UPVALUE_9道具选择调用并保留TODO。
+- 更新第五十九批源码、函数状态CSV、机器状态JSON；新增 `docs/audit/检查点140_BlacklistPlayerDetection节流与重试路径复核.md`。
+- 本批仅校正已有草稿；统计仍为草稿78、完整静态恢复76/110、运行时验证0。
+- 下一步继续PC174-PC192及随机传送道具实际调用契约，然后处理StorageItems PC151-PC224与两个子原型。
