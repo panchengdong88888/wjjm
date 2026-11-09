@@ -1179,7 +1179,7 @@
 - 对照doInit_UI PC248-PC249确认Nested_Anonymous创建点及唯一父捕获：父UP[0]；该槽按检查点95的父闭包使用身份为PrintLog。
 - Nested_Anonymous PC1创建Nested_str，四项捕获顺序为父T[0]、父UP[0]、父T[2]、父T[1]；PC6-PC7立即无参调用Nested_str，PC8返回。
 - 对照Nested_Helper_4与Nested_Helper_7：二者UP[0]均来自父R18（Nested_Anonymous）；分别以固定提示文字和七捕获回调闭包调用UP[0]，实参契约均为`Nested_Anonymous(promptText, callbackClosure)`。
-- T[0]/T[1]暂按initialText/onValid恢复；T[2]沿子闭包链被Nested_Helper_11作为延迟错误提示函数调用，但其生产者在Nested_Anonymous帧中的来源尚未追出。源码保留明确nil占位，不将该函数冒充完整静态恢复。
+- 两个调用包装器均传入提示文字和回调闭包，但实参到Nested_Anonymous帧T[0]/T[1]/T[2]的映射未证明；禁止把参数顺序直接套入T槽。T[2]沿子闭包链被Nested_Helper_11作为延迟错误提示函数调用，但其生产者尚未追出。源码三个T槽均保留明确nil占位，不将其冒充恢复值。
 - Nested_str/Nested_match/Nested_Helper_11仍沿用检查点112已完成静态恢复的子原型结果，不重复计数。
 - 统计更新：普通Lua草稿78；完整静态恢复58/110；运行时验证0。
-- 下一步：追踪Nested_Anonymous T[2]生产者；随后整合Nested_FFFF00剩余320条指令及Nested_Helper_3刷新闭包，继续复核doInit_UI其他未完成子原型。
+- 下一步：核对Nested_Anonymous函数入口参数初始化与T[0]/T[1]/T[2]映射，追踪T[2]生产者；随后整合Nested_FFFF00剩余320条指令及Nested_Helper_3刷新闭包，继续复核doInit_UI其他未完成子原型。
