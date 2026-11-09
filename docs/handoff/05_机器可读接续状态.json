@@ -2459,7 +2459,7 @@
         "UPVALUE_20 is root.children[35] SetTargetID; it resolves global.Facade / PlayerInputProxy and invokes proxy:SetTargetID(targetID, global.MMO.SELETE_TARGET_TYPE_FIND); returns false if the required facade/proxy is absent, true after invoking the method.",
         "PC166 prepares the numeric for-loop counter and PC313 OP_412 repeats at PC167; the loop visits UPVALUE_10 through #UPVALUE_8.",
         "The per-pass R2 flag is initialized true at PC161 and cleared at PC263 on the unowned-target branch. Both SetTargetID success/failure paths advance UPVALUE_10 and continue the loop.",
-        "First-pass draft corrected; complete CFG review and attack loop PC359-405 remain pending. No runtime validation.",
+        "First-pass draft corrected; front-half CFG review remains pending. No runtime validation.",
         "PC359/405 form the ATTACKING numeric for-loop over UPVALUE_10..#UPVALUE_8. Missing/dead actors log and advance the cursor; the first living actor is logged, passed to SetTargetID, then the function returns. Exhaustion resets IDLE and gather data."
       ]
     }
