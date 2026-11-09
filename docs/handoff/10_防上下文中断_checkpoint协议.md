@@ -677,3 +677,16 @@
 - 新增普通Lua草稿1个；累计59个。完整静态恢复仍29/110（26.4%）；运行时验证0；最新检查点#72。
 - 下一步继续其他未开始函数，并在专项静态复核中追踪PC1-PC9、父捕获来源及GUI调用参数。
 
+
+
+## 检查点 #73（2026-11-09）：DeathAutoBlacklist 首版普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第四十九批.lua`；新增审计：`docs/audit/检查点73_DeathAutoBlacklist首版草稿.md`。
+- 函数：`DeathAutoBlacklist`，原型索引33，规范路径`root.children[25]`，legacy`root/26`，47条物理指令、15个常量、1个子原型、`vararg_flag=0`。
+- 根函数PC363创建闭包，捕获来源依次为root R41、R4、R55、R5；业务名称尚未全部闭合，草稿保留UPVALUE槽位。
+- 主体读取`UPVALUE_0.lastAttacker`后立即清空；攻击者/name缺失或name为空时提示并返回；调用`UPVALUE_2(attacker.id)`，真值分支提示凶手已在黑名单并返回。
+- 未命中时提示被该攻击者击杀并自动加入黑名单，再调用`UPVALUE_3("自动拉黑：" .. attacker.name)`。
+- PC36-PC46数值循环范围0至5、步长1；每轮调用`SL.ScheduleOnce(callback, index*0.5)`，共六次，延迟0、0.5、1、1.5、2、2.5秒。
+- 子原型`root/26/1`捕获父函数R0（攻击者对象），调用`SL.RequestAddBlacklistByName(attacker.name)`。
+- 本批新增普通Lua草稿1个；累计60个。完整静态恢复仍29/110（26.4%）；运行时验证0。
+- 未闭合事项：四个捕获寄存器的业务身份、外部调度及请求API的宿主行为；本批不升级完整静态恢复。
+- 下一步：优先评估未开始的`LuaSendMsg`（`root.children[12]`）与`GetMapData2DPtr`（`root.children[22]`），恢复可确认的主体后继续批量推进。
