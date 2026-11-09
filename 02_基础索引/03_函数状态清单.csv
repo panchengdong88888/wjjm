@@ -102,7 +102,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 99,root/50/1,root.children[50].children[1],root/51/2,Nested_Anonymous_2,27,1,0,阶段分析中（未形成普通 Lua 草稿）,已确认 27 条指令、4 个捕获、1.0 起始值和步长、数值循环回跳 PC24→5、动态表索引及多返回值 return；PC9–14 融合算术操作数顺序、捕获来源和父级消费点仍未闭合；检查点48。
 100,root/51,root.children[51],root/52,FindBlacklistPlayer,35,5,0,首版普通 Lua 草稿（未运行时验证）,按传入目标标识查询捕获对象的_blacklistData，命中时返回true及Name；未命中时再通过SL:GetMetaValue('ACTOR_MASTER_ID')核对并尝试查表。对象来源/ID语义仍待校正；检查点52。
 101,root/52,root.children[52],root/53,onDamageMsg,72,19,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-102,root/52/0,root.children[52].children[0],root/53/1,Nested_JsonDecode,6,2,0,部分核验,调用 SL.JsonDecode，参数来自 upvalue[0]；参数语义由父级传入，待追踪。
+102,root/53/1,root.children[52].children[0],root/53/1,Nested_JsonDecode,6,2,0,首版普通Lua草稿（待静态复审/未运行时验证）,检查点64；父级onDamageMsg在PC7创建闭包，UPVALUE_0捕获父级T[3]；主路径调用SL.JsonDecode(UPVALUE_0)并直接返回；PC5备用返回路径的触发条件尚未闭合，参数业务语义待追踪。
 103,root/53,root.children[53],root/54,ScheduleOnce,7,2,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十七批.lua；取SL.ScheduleOnce并转发vararg参数；PC6-7位于return之后不可达；检查点38。
 104,root/54,root.children[54],root/55,AnonymousHelper_54,6,0,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十六批.lua；将UP[0]与首个显式参数转交UP[1]并原样返回；后续return不可达；检查点37。
 105,root/55,root.children[55],root/56,AccountIDValidation,64,21,2,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
