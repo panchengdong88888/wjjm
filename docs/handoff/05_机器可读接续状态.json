@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next."
   },
-  "next_action": "继续从剩余普通Lua草稿中挑选短函数；优先复核ClearTargetID_2（root.children[56]，22条指令）或GetWritablePath/FormatStateChange的参数槽位。AnonymousHelper_54已完成捕获身份、调用目标、参数顺序与多返回值转发恢复。复杂BlacklistPlayerDetection与StorageItems继续分阶段复核；Nested_Anonymous的T槽映射仍等待VM帧初始化实现。",
+  "next_action": "继续复核短函数候选，优先检查GetWritablePath（root.children[2]，10条指令，vararg/参数槽位待复核）和FormatStateChange（root.children[8]，10条指令，闭包捕获已知但T栈参数边界待核）。ClearTargetID_2已完成22条指令控制流静态恢复。复杂BlacklistPlayerDetection与StorageItems继续分阶段复核；Nested_Anonymous的T槽映射仍等待VM帧初始化实现。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -1787,27 +1787,27 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "125",
+    "checkpoint": "126",
     "targets": [
-      "root.children[54]"
+      "root.children[56]"
     ],
-    "status": "AnonymousHelper_54 promoted to complete static reconstruction; both captures, callee identity, argument order, and return forwarding resolved",
-    "audit_file": "docs/audit/检查点125_AnonymousHelper_54捕获身份与调用顺序完整静态恢复.md",
+    "status": "ClearTargetID_2 promoted to complete static reconstruction; all 22 instructions and both method receiver paths mapped",
+    "audit_file": "docs/audit/检查点126_ClearTargetID_2控制流与方法接收者完整静态恢复.md",
     "files": [
       "04_源码候选/短函数草稿_第十六批.lua",
-      "docs/audit/检查点125_AnonymousHelper_54捕获身份与调用顺序完整静态恢复.md",
+      "docs/audit/检查点126_ClearTargetID_2控制流与方法接收者完整静态恢复.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "Parent root PC313 creates root.children[54]; PC314 captures R46 as UP[0], the PCallHelper closure root.children[17].",
-      "Parent root PC315 captures R43 as UP[1], the string gather_monster_count.txt; root PC296 assigned that string to R43.",
-      "Child PC1-PC3 loads PCallHelper, the captured filename, and the first explicit argument; PC4 calls PCallHelper(filename, firstArg) and directly returns all results.",
-      "The old candidate had the callee and argument order reversed; the corrected source uses return PCallHelper('gather_monster_count.txt', firstArg).",
-      "PC5-PC6 are unreachable after the unconditional return at PC4."
+      "Parent root PC185 creates root.children[56] with zero captures.",
+      "PC1-PC5 read global.Facade and return early if it is falsey.",
+      "PC6-PC15 call facade:retrieveProxy(global.ProxyTable.PlayerInputProxy), preserving facade as receiver, and return early if the proxy is falsey.",
+      "PC16-PC22 call proxy:SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND), preserving proxy as receiver; function has no explicit return values.",
+      "All 22 physical instructions are mapped; runtime validation has not been performed."
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 67,
+      "complete_static_reconstruction": 68,
       "runtime_verified": 0
     }
   },
@@ -2378,55 +2378,56 @@
   ],
   "draft_function_count": 78,
   "ordinary_lua_draft_functions": 78,
-  "last_checkpoint": "125",
-  "checkpoint": "125",
+  "last_checkpoint": "126",
+  "checkpoint": "126",
   "drafts": 33,
-  "next": "继续从剩余普通Lua草稿中挑选短函数；优先复核ClearTargetID_2（root.children[56]，22条指令）或GetWritablePath/FormatStateChange的参数槽位。AnonymousHelper_54已完成捕获身份、调用目标、参数顺序与多返回值转发恢复。复杂BlacklistPlayerDetection与StorageItems继续分阶段复核；Nested_Anonymous的T槽映射仍等待VM帧初始化实现。",
+  "next": "继续复核短函数候选，优先检查GetWritablePath（root.children[2]，10条指令，vararg/参数槽位待复核）和FormatStateChange（root.children[8]，10条指令，闭包捕获已知但T栈参数边界待核）。ClearTargetID_2已完成22条指令控制流静态恢复。复杂BlacklistPlayerDetection与StorageItems继续分阶段复核；Nested_Anonymous的T槽映射仍等待VM帧初始化实现。",
   "recent_checkpoint": {
-    "checkpoint": "125",
+    "checkpoint": "126",
     "date": "2026-11-09",
-    "summary": "AnonymousHelper_54的两个捕获身份、PCallHelper调用目标、参数顺序及多返回值转发闭合；未运行时验证。",
+    "summary": "ClearTargetID_2的零捕获身份、两个提前返回分支、Facade/Proxy方法接收者及SetTargetID参数完整静态恢复；未运行时验证。",
     "files": [
       "04_源码候选/短函数草稿_第十六批.lua",
-      "docs/audit/检查点125_AnonymousHelper_54捕获身份与调用顺序完整静态恢复.md",
+      "docs/audit/检查点126_ClearTargetID_2控制流与方法接收者完整静态恢复.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 67,
+      "complete_static_reconstruction": 68,
       "runtime_verified": 0
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "125",
+    "checkpoint": "126",
     "date": "2026-11-09",
-    "summary": "AnonymousHelper_54（6条指令）完成完整静态恢复。父root PC313创建闭包，UP[0]为root.children[17]的PCallHelper闭包，UP[1]为字符串gather_monster_count.txt。活跃路径按PCallHelper(文件名, firstArg)调用并原样转发全部返回值；修正旧草稿中目标与参数顺序颠倒的问题。",
-    "audit_file": "docs/audit/检查点125_AnonymousHelper_54捕获身份与调用顺序完整静态恢复.md",
+    "summary": "ClearTargetID_2（22条指令）完成完整静态恢复。父root PC185创建零捕获闭包；先检查global.Facade，再取得PlayerInputProxy；代理存在时以proxy为接收者调用SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)。全部22条指令映射，无显式返回值。",
+    "audit_file": "docs/audit/检查点126_ClearTargetID_2控制流与方法接收者完整静态恢复.md",
     "unresolved": [
+      "GetWritablePath的vararg声明、首参槽位与拼接方向",
+      "FormatStateChange的T栈参数边界",
       "Nested_Anonymous的VM帧初始化和T槽映射",
       "BlacklistPlayerDetection的13项捕获身份、玩家元素结构、距离和随机传送调用",
       "StorageItems剩余复杂循环与宿主API参数",
-      "GUI宿主标志和Layout尾参1语义",
-      "GetWritablePath与FormatStateChange的参数槽位细节"
+      "GUI宿主标志和Layout尾参1语义"
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 67,
+      "complete_static_reconstruction": 68,
       "runtime_verified": 0
     }
   },
-  "complete_static_reconstruction_count": 67,
-  "complete_static_reconstruction": "67/110 (60.9%)",
+  "complete_static_reconstruction_count": 68,
+  "complete_static_reconstruction": "68/110 (61.8%)",
   "progress_reconciled": {
     "source_of_counts": "GitHub 02_基础索引/03_函数状态清单.csv 与静态恢复候选索引逐项核对",
     "ordinary_lua_draft_functions": 78,
-    "complete_static_reconstruction_functions": 67,
+    "complete_static_reconstruction_functions": 68,
     "runtime_verified_functions": 0,
-    "note": "检查点125将既有AnonymousHelper_54草稿升级为完整静态恢复；完整静态恢复由66/110升至67/110，普通草稿累计数保持78，运行时验证仍为0。"
+    "note": "检查点126将既有ClearTargetID_2草稿升级为完整静态恢复；完整静态恢复由67/110升至68/110，普通草稿累计数保持78，运行时验证仍为0。"
   },
   "counts": {
     "ordinary_lua_drafts": 78,
-    "complete_static_reconstruction": 67,
+    "complete_static_reconstruction": 68,
     "runtime_verified": 0
   }
 }
