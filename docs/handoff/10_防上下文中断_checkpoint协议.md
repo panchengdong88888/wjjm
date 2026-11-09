@@ -1043,3 +1043,14 @@
 - 无timer时调用UP[2]()：truthy才走开启分支，通知开启、将ready传给UP[5]、返回true；false/nil才提示缺少阈值，调用UP[3]()及UP[4]()、返回false。
 - 纠正旧CSV/早期草稿摘要中将ready真假分支写反的问题。31条物理指令控制流及调用实参闭合。
 - 统计更新：普通Lua草稿77；完整静态恢复40/110；运行时验证0。
+
+
+## 检查点 #102（2026-11-09）：Nested_SL_2奖励定时器与消息轮询闭包静态恢复
+- 新增源码：`04_源码候选/短函数草稿_第六十八批.lua`；更新`04_源码候选/短函数草稿_第二十二批.lua`。
+- 新增审计：`docs/audit/检查点102_Nested_SL_2奖励定时器与消息轮询复核.md`。
+- Nested_SL_2父级doInit_UI PC289-PC294捕获rewardTimer状态表、通知回调、轮询取模基数、消息条目表、Schedule附加上下文。
+- 关闭奖励：通知、SL:UnSchedule、rewardTimer=nil、返回true。开启奖励：通知、创建轮询闭包、SL:Schedule(0,callback,UP[4])、保存句柄、返回true。
+- Nested_LuaSendMsg捕获父T[0]计数器、UP[2]取模基数、UP[3]消息表；counter递增，索引(counter-1)%modulus+1；缺条目不发送，命中时LuaSendMsg七参数顺序为9002、entry[1]、1.0、2.0、3.0、entry[2]、entry[3]。
+- 纠正rewardTimer关闭分支的nil序列化占位，不能写成普通Lua表。
+- 两函数控制流、捕获、调用参数、句柄保存和返回已闭合。
+- 统计更新：普通Lua草稿77；完整静态恢复42/110；运行时验证0。
