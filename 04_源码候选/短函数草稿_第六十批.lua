@@ -1,7 +1,7 @@
 -- 第六十批 / 检查点 #84
 -- StorageItems：root.children[50] / legacy root/51
 -- 224条物理指令、57常量、2个子原型、vararg_flag=0。
--- 子原型0 Nested_isOutputted已有独立草稿（第五十?批次中的第三十四批）；子原型1 Nested_Anonymous_2仍处阶段分析。
+-- 子原型0 Nested_isOutputted已有独立草稿（第三十四批）；子原型1 Nested_Anonymous_2仍处阶段分析。
 -- 主函数首版保留未闭合的数据结构、捕获对象与消息协议，不把占位参数当成作者原始调用。
 
 local function StorageItems()
