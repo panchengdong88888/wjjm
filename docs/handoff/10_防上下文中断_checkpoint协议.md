@@ -991,3 +991,13 @@
 - 相邻调用复核：rootLayout Layout_Create尾随true；ListView_Create尾随1.0，x=(screenW-1)/2、y=screenH/2、宽高分别screenW*0.6/screenH*0.6。
 - GUI标志的宿主含义仍未知，未进行运行时验证。
 - 统计保持：普通Lua草稿77；完整静态恢复32/110；运行时验证0。
+
+
+## 检查点 #97（2026-11-09）：Nested_FFFF00根布局与ListView参数复核
+- 新增 `docs/audit/检查点97_Nested_FFFF00根布局与ListView参数复核.md`。
+- PC47-PC59确认rootLayout的父节点resWin、名称closeResWin、位置0/0、宽高screenW/screenH、尾随true；PC61-PC64启用触摸；PC65-PC72绑定Nested_UnSchedule点击回调。
+- PC73-PC85确认ListView位置x=(screenW-1)/2、y=screenH/2、尺寸screenW*0.6与screenH*0.6；PC88-PC96调用ListView_Create且尾参1.0。
+- PC97-PC102设置锚点(0,0.5)；PC103-PC107背景类型1；PC108-PC112背景色#CEB5F7；PC113-PC117透明度255。
+- 上述可见参数与源码草稿一致；宿主GUI枚举语义及运行时行为仍未知。
+- 统计保持：普通Lua草稿77；完整静态恢复32/110；运行时验证0。
+- 下一步：复审root.children[42]剩余子原型，优先尚无普通Lua草稿的短函数。
