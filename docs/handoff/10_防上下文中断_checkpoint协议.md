@@ -1646,3 +1646,19 @@
 - 本批仅校正既有普通Lua草稿，不新增草稿、不升级完整静态恢复、不增加运行时验证。
 - 统计保持：普通Lua草稿82、完整静态恢复76/110、运行时验证0。
 - 下一步：复核MainLoop PC1-PC159入口门槛、白名单地图状态切换、IDLE候选构造、等待归属计时和状态清理的完整CFG路径。
+
+ 
+## 检查点 #155（2026-11-09）：MainLoop PC1-PC159 前段控制流复核
+
+- 对照 corrected phase3 反汇编逐段复核入口运行门槛、白名单地图分支、IDLE候选构造、GATHERING等待计时及等待到期后的状态清理。
+- PC1-PC4：UPVALUE_0假值时继续，truthy时立即return。
+- PC5-PC23：IsInWhitelistMap truthy时检查当前状态；非IDLE则提示、切IDLE、Reset helper，已经IDLE则直接return；白名单地图路径总是结束本次MainLoop。
+- PC24-PC87：IDLE分支调用UPVALUE_7构造候选；空候选提示并return；重建UPVALUE_8，遍历候选并以UPVALUE_9过滤归属，写入actor:GetID；空目标数组提示并return；否则UPVALUE_10=1、UPVALUE_11=0，切GATHERING并return。
+- 删除草稿中`if not candidates or #candidates == 0`的额外nil保护；字节码仅执行`#candidates == 0`判断。
+- PC88-PC114：GATHERING等待标志truthy时读取os.time；未到截止时间输出剩余时间并return；到期则进入PC116。
+- PC116-PC158：调用UPVALUE_15查目标actor，调用UPVALUE_17判断归属，输出归属已变更或未变更/离开视野提示；清UPVALUE_12/13/16/14并推进UPVALUE_10。
+- PC117调用UPVALUE_15时使用两个寄存器参数槽，但helper无形式参数且不读取它们；草稿保留无参表达并注释调用点参数槽。PC159-PC160则明确将UPVALUE_12作为一个额外实参传入UPVALUE_15；修正草稿此前把该实参写在等待到期分支的错误。
+- PC159-PC166继续进入GATHERING主扫描并准备PC166/313数值循环；循环主体由检查点153闭合。
+- 新增审计：`docs/audit/检查点155_MainLoop_PC1-PC159前段控制流复核.md`；修订`04_源码候选/root45_MainLoop.lua`；更新函数状态CSV与机器状态JSON。
+- 状态仍为首版普通Lua草稿；普通Lua草稿82、完整静态恢复76/110、运行时验证0均不变。
+- 下一步：继续全量核对MainLoop PC160-PC417及CFG可达性/状态写入/return汇合。
