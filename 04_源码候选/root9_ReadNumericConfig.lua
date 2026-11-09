@@ -21,7 +21,7 @@ local function make_ReadNumericConfig(GetWritablePath)
             return nil
         end
 
-        -- PC 15-20: read file contents and preserve non-string results.
+        -- PC 15-20: read the file contents and inspect its Lua type.
         local content = fileUtils:getStringFromFile(fullPath)
         if type(content) ~= "string" then
             -- PC 21 skips the jump at PC 22; PC 23 clears T[4], and PC 24
@@ -33,7 +33,7 @@ local function make_ReadNumericConfig(GetWritablePath)
         local normalized = string.gsub(content, "%s", "")
         local isUnsignedInteger = string.match(normalized, "^%d+$")
 
-        -- PC 41-43: pure digit strings become numbers; other strings stay strings.
+        -- PC 41-43: a matching digit string is converted and returned as a number.
         if isUnsignedInteger then
             return tonumber(normalized)
         end
