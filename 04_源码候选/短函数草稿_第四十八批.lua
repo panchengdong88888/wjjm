@@ -32,10 +32,8 @@ local function MakeNested_Button_setTitleText(
         -- PC15-PC16明确表明：前置调用结果为false时直接退出。
         -- 该结果来自PC8-PC9对PC1-PC3取得对象/函数后的调用；
         -- 由于融合载荷的数据流未闭合，这里不伪造其函数名。
-        local preconditionResult = nil -- TODO(PC1-PC9)：补齐真实调用结果
-        if preconditionResult == false then
-            return
-        end
+        -- 仅当PC1-PC9前置检查结果不为false时才继续；
+        -- 在准确的数据流恢复前不写占位判断，避免改变函数行为。
 
         if buttonInfo.toggle then
             return
