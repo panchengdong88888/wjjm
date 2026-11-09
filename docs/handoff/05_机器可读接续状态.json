@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续评估未开始的短原型，优先root.children[42].children[3].children[2]（Nested_FFFFFF，65条指令），随后root.children[52]（onDamageMsg，72条）与root.children[1]（GetStorageItemData，77条）。AccountIDValidation已形成首版草稿，主捕获及调度句柄仍待复核。",
+  "next_action": "继续筛选未开始短函数，优先选择物理指令较少且参数/返回路径可闭合的原型；本批三个函数的循环、vararg与捕获身份可集中复核，但不阻塞其他草稿推进。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "79"
+    "last_checkpoint": "80"
   },
   "static_recovered_functions": [
     {
@@ -487,23 +487,35 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 72,
-    "target": "Nested_Button_setTitleText",
-    "status": "first_pass_draft; fused lookup and GUI call argument mapping pending; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第四十八批.lua",
-    "audit_file": "docs/audit/检查点72_Nested_Button_setTitleText首版草稿.md",
+    "checkpoint": 80,
+    "target": "Nested_FFFFFF; onDamageMsg; GetStorageItemData",
+    "status": "first_pass_drafts; static review pending; no runtime validation",
+    "source_file": "04_源码候选/短函数草稿_第五十六批.lua",
+    "audit_file": "docs/audit/检查点80_Nested_FFFFFF_onDamageMsg_GetStorageItemData首版草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[9].children[0]",
-        "legacy": "root/43/10/1",
-        "name": "Nested_Button_setTitleText",
-        "instructions": 48
+        "path": "root.children[42].children[3].children[2]",
+        "legacy": "root/43/4/3",
+        "name": "Nested_FFFFFF",
+        "instructions": 65
+      },
+      {
+        "path": "root.children[52]",
+        "legacy": "root/53",
+        "name": "onDamageMsg",
+        "instructions": 72
+      },
+      {
+        "path": "root.children[1]",
+        "legacy": "root/2",
+        "name": "GetStorageItemData",
+        "instructions": 77
       }
     ],
-    "draft_count_total": 59,
+    "draft_count_total": 70,
     "complete_static_reconstruction_count": 29,
     "runtime_verified_count": 0,
-    "note": "新增Nested_Button_setTitleText子原型首版草稿，接上上一批按钮点击回调。恢复前置调用结果/toggle保护、toggled取反写回、toggle为假时按name更新标题，以及按更新后toggled选择红/白标题颜色。PC1-PC9融合查找和两个GUI调用的准确实参映射仍待复核。"
+    "note": "新增三个短原型普通Lua候选；循环边界、vararg映射、捕获业务身份和容量算法待复核；不计入完整静态恢复。"
   },
   "corrections": [
     {
@@ -563,7 +575,7 @@
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   },
-  "draft_recovered_count": 15,
+  "draft_recovered_count": 70,
   "draft_recovered_functions": [
     {
       "path": "root.children[46]",
@@ -960,12 +972,65 @@
         "Schedule uses 0.5-second delay; parameter order and captured parent T[4] identity pending",
         "No runtime validation"
       ]
+    },
+    {
+      "path": "root.children[42].children[3].children[2]",
+      "legacy_path": "root/43/4/3",
+      "name": "Nested_FFFFFF",
+      "source_file": "04_源码候选/短函数草稿_第五十六批.lua",
+      "audit_file": "docs/audit/检查点80_Nested_FFFFFF_onDamageMsg_GetStorageItemData首版草稿.md",
+      "status": "first_pass_draft_pending_static_review_not_runtime_verified",
+      "physical_instructions": 65,
+      "constant_count": 17,
+      "child_count": 0,
+      "parent_path": "root.children[42].children[3]",
+      "captured_parent_registers": [
+        "T[5]",
+        "T[1]"
+      ],
+      "notes": [
+        "GUI Layout/Text cell creation recovered; loop bounds, vararg mapping, GUI arguments and capture identities pending."
+      ]
+    },
+    {
+      "path": "root.children[52]",
+      "legacy_path": "root/53",
+      "name": "onDamageMsg",
+      "source_file": "04_源码候选/短函数草稿_第五十六批.lua",
+      "audit_file": "docs/audit/检查点80_Nested_FFFFFF_onDamageMsg_GetStorageItemData首版草稿.md",
+      "status": "first_pass_draft_pending_static_review_not_runtime_verified",
+      "physical_instructions": 72,
+      "constant_count": 19,
+      "child_count": 1,
+      "captured_parent_registers": [
+        "root T[57]"
+      ],
+      "notes": [
+        "pcall JSON decode, self/attack ID filters, actor metadata and clone-name filter recovered; vararg mapping, metadata branch polarity and captured table identity pending."
+      ]
+    },
+    {
+      "path": "root.children[1]",
+      "legacy_path": "root/2",
+      "name": "GetStorageItemData",
+      "source_file": "04_源码候选/短函数草稿_第五十六批.lua",
+      "audit_file": "docs/audit/检查点80_Nested_FFFFFF_onDamageMsg_GetStorageItemData首版草稿.md",
+      "status": "first_pass_draft_pending_static_review_not_runtime_verified",
+      "physical_instructions": 77,
+      "constant_count": 16,
+      "child_count": 0,
+      "captured_parent_registers": [
+        "root T[4]"
+      ],
+      "notes": [
+        "Per-page NPC storage aggregation recovered; exact available-slot loop and callback identity pending."
+      ]
     }
   ],
-  "draft_function_count": 67,
-  "ordinary_lua_draft_functions": 67,
-  "last_checkpoint": 79,
-  "checkpoint": "79",
+  "draft_function_count": 70,
+  "ordinary_lua_draft_functions": 70,
+  "last_checkpoint": 80,
+  "checkpoint": "80",
   "drafts": 32,
   "next": "继续评估未开始的短函数LuaSendMsg（root.children[12]）和GetMapData2DPtr（root.children[22]）；优先恢复清楚的主体，保留未闭合参数/捕获名。",
   "recent_checkpoint": {
@@ -988,23 +1053,23 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "79",
+    "checkpoint": "80",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第五十五批.lua",
-    "audit_file": "docs/audit/检查点79_AccountIDValidation首版草稿.md",
-    "ordinary_lua_draft_functions": 67,
+    "source_file": "04_源码候选/短函数草稿_第五十六批.lua",
+    "audit_file": "docs/audit/检查点80_Nested_FFFFFF_onDamageMsg_GetStorageItemData首版草稿.md",
+    "ordinary_lua_draft_functions": 70,
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增AccountIDValidation首版普通Lua草稿；主捕获业务身份及调度契约待复审。"
+    "summary": "新增Nested_FFFFFF、onDamageMsg、GetStorageItemData三个首版普通Lua草稿；参数/循环/捕获身份及宿主API契约待复核。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)",
   "progress_reconciled": {
-    "source_of_counts": "检查点#73历史累计60；#74新增LuaSendMsg；#75新增GetMapData2DPtr；#76新增Nested_find/Nested_string；#77新增MoveTo；#78新增ClearBlacklistItems；#79新增AccountIDValidation。",
-    "ordinary_lua_draft_functions": 67,
+    "source_of_counts": "检查点#79累计67个普通Lua草稿；检查点#80新增Nested_FFFFFF、onDamageMsg、GetStorageItemData三个草稿。",
+    "ordinary_lua_draft_functions": 70,
     "complete_static_reconstruction_functions": 29,
     "runtime_verified_functions": 0,
-    "note": "本批仅新增1个普通Lua草稿；完整静态恢复及运行时验证数量不变。"
+    "note": "本批新增3个普通Lua草稿；完整静态恢复及运行时验证数量不变。"
   }
 }
