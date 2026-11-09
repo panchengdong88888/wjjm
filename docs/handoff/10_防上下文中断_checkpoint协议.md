@@ -771,3 +771,12 @@
 - 待复核：PC8-PC11过滤表构造/元素；捕获UPVALUE_0/1业务身份；PC42-PC66过滤分支完整语义；PC72-PC85 LuaSendMsg参数位置/数量；PC86后计数与实际成功请求的对应关系。请求实参仅为首版占位，不视为已验证协议。
 - 本批新增普通Lua草稿1个；累计71个。完整静态恢复仍29/110（26.4%）；运行时验证0。该函数不升级完整静态恢复。
 - 下一步优先评估`MoveItemToQuickUse`（`root.children[41]`，133条）与`Nested_Helper_3`（`root.children[42].children[3].children[3]`，168条），按主体/闭包/返回契约清晰度选择。
+
+
+## 检查点 #82（2026-11-09）：Nested_Helper_3 首版普通 Lua 草稿
+- 新增源码：04_源码候选/短函数草稿_第五十八批.lua；新增审计：docs/audit/检查点82_Nested_Helper_3首版草稿.md。
+- Nested_Helper_3：原型索引61，规范路径root.children[42].children[3].children[3]，legacy root/43/4/4，168条物理指令、31常量、无子原型、vararg_flag=0。父root/43/4 PC299创建闭包，捕获10个父寄存器。
+- 恢复窗口Win_IsNotNull(resWin)检查；窗口无效时对resTimer执行SL.UnSchedule并清空；pcall保护os.time及os.date("%Y-%m-%d %H:%M:%S", now)；当前时间文本；根据initTime计算小时/分钟历时；两组pairs迭代货币条目，调用GetMoneyIdByName/GetMoneyCountById，读取initSnapshot并更新Text_setString的控制流。
+- 待复核：10个捕获槽位业务身份；两组迭代表及key/value字段；initSnapshot嵌套键；两组文本控件和Text_setString参数；pcall多返回寄存器映射。草稿中initialCount=0是占位，不代表原始算法。
+- 本批新增普通Lua草稿1个；累计72个。完整静态恢复仍29/110（26.4%）；运行时验证0。本函数不升级完整静态恢复。
+- 下一步评估BlacklistPlayerDetection（root.children[47]，216条）与StorageItems（root.children[50]，224条），按主体可读性与闭包/返回契约选择。
