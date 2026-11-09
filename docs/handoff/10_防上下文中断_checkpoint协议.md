@@ -477,3 +477,14 @@
 - parent UP9、R20、R17 的原始业务名仍待追溯；未运行时验证。
 - CSV、机器状态 JSON 和本协议同步；源码、审计、CSV、机器状态和协议需复读验证。
 - 普通 Lua 草稿累计35；完整静态恢复27/110；运行时验证0；检查点51。
+
+
+## 检查点 #52（2026-11-09）：四个短函数普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第三十批.lua`；审计：`docs/audit/检查点52_四个短函数草稿.md`。
+- 新增 `Nested_Helper_8`（root.children[42].children[14].children[0]，原型76，34条）、`Nested_Helper_5`（root.children[42].children[11].children[0]，原型72，35条）、`FindBlacklistPlayer`（root.children[51]，原型100，35条）、`Nested_Helper_10`（root.children[42].children[18]，原型80，39条）。
+- Helper_8/5的校验、失败/成功通知、保存回调及按钮开关流程已形成草稿；捕获槽位的业务原名仍待逐项校对。
+- FindBlacklistPlayer的 `_blacklistData`、动态索引、`ACTOR_MASTER_ID` 与 `Name` 检查已写为草稿；对象类型和ID语义仍待校正。
+- Helper_10关闭分支明确：取消 `blacklistTimer`、写入 `{"unknown",2}`、清除 `isBlacklisting`；无timer时条件回调假值进入缺少距离输入分支，真值进入开启通知并传递距离值。
+- 本批未运行时验证，不计入完整静态恢复。
+- CSV、机器状态 JSON、本协议已更新；随后需复读五份文件。
+- 普通 Lua 草稿累计39；完整静态恢复27/110；运行时验证0；检查点52。
