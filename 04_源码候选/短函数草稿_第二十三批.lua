@@ -1,6 +1,6 @@
 -- MainLeftBottom(2).lua 普通 Lua 草稿
 -- 第二十三批：取物功能开关及定时器回调
--- 状态：首版普通 Lua 草稿；尚未运行时验证。
+-- 状态：完整静态恢复（未运行时验证）；检查点100已确认nil占位及父级捕获来源。
 -- 捕获值根据父级闭包创建点和子函数读写字段映射。
 
 -- 原型：root.children[42].children[19]
@@ -13,7 +13,7 @@ local function Nested_TakeItems()
     if UPVALUE_0.takeTimer then
         UPVALUE_1("关闭取物功能")
         SL:UnSchedule(UPVALUE_0.takeTimer)
-        UPVALUE_0.takeTimer = {"unknown", 2}
+        UPVALUE_0.takeTimer = nil
         UPVALUE_2.isTaking = false
     else
         UPVALUE_1("开启取物功能")
@@ -31,3 +31,7 @@ end
 -- 写入 {"unknown",2} 并清除 isTaking；开启分支 PC18-28 通知、
 -- 立即调用 TakeItems()，再以 (TakeItems,1.0) 调用捕获调度函数并保存句柄。
 -- 本函数只计入普通 Lua 草稿，不计入完整静态恢复。
+
+
+-- 检查点100：反汇编常量 ["unknown",2] 是 nil 的VM dump序列化占位，不是Lua表。
+-- 已将关闭分支的定时器字段赋值修正为 nil；捕获来源见检查点100审计。
