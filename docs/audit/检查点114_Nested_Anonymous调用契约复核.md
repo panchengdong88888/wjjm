@@ -44,18 +44,18 @@ Nested_Anonymous(promptText, callbackClosure)
 
 ## 4. 参数槽位与保留项
 
-Nested_str捕获顺序严格为T[0]、UP[0]、T[2]、T[1]。结合两个包装函数的调用实参及Nested_Anonymous的vararg_flag=2，草稿将T[0]作为initialText、T[1]作为onValid。T[2]被Nested_str作为errorContext使用，但两个已核实调用点都只传两个实参；其是否为缺省nil槽位或VM临时寄存器语义仍保留为待核验项，不将其业务含义命名为已确认事实。
+Nested_str捕获顺序严格为T[0]、UP[0]、T[2]、T[1]。结合两个包装函数的调用实参，草稿暂将T[0]作为initialText、T[1]作为onValid。Nested_str的后续闭包会把T[2]作为延迟错误提示回调调用；因此T[2]应为可调用值，但其在Nested_Anonymous帧中的生产位置尚未追出。两个已核实包装函数均只传两个显式实参，不能把T[2]擅自写成第三个包装参数或断言为nil。源码草稿以nil占位并明确标注未恢复，不能运行。
 
 Nested_str随后无参调用，因此其可选suffix在该调用路径上为nil。弹窗参数、数字校验及延迟提示主体沿用检查点112已完成的子原型恢复结果。
 
 ## 5. 状态结论
 
-- Nested_Anonymous的8条指令控制流、子闭包创建、捕获顺序和立即调用行为已闭合。
+- Nested_Anonymous的8条指令控制流、子闭包创建、捕获顺序和立即调用行为已闭合；T[2]生产者未闭合。
 - Nested_Helper_4 / Nested_Helper_7的调用目标、提示文字、回调闭包及双实参契约已交叉核验。
 - Nested_str / Nested_match / Nested_Helper_11沿用检查点112已完成静态恢复的主体。
 - T[2]业务身份仍待核验；没有运行时验证。
-- 本函数升级为“完整静态恢复（未运行时验证）”，但不表示宿主GUI行为或作者原始变量名已验证。
+- 本函数形成“首版普通Lua草稿（待静态复审/未运行时验证）”；由于T[2]生产者未追出，不升级完整静态恢复。
 
 ## 下一步
 
-继续整合Nested_FFFF00剩余父函数指令与Nested_Helper_3刷新闭包；优先恢复主体代码，GUI宿主参数保留未确认注释，不再重复已完成的Nested_FFFFFF与其他子原型。
+先追踪Nested_Anonymous的T[2]生产者并修正草稿；随后整合Nested_FFFF00剩余父函数指令与Nested_Helper_3刷新闭包。优先恢复主体代码，GUI宿主参数保留未确认注释，不重复已完成的Nested_FFFFFF与其他子原型。
