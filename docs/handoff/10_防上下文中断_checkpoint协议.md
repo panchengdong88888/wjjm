@@ -909,3 +909,10 @@
 - Nested_Helper_3的10项捕获准确为[moduleState,timerState,curTimeText,durTimeText,initState,MoneyProxy,moneyRows,formatNumber,itemRows,Nested_string]；其中moneyRows与itemRows分别是两次Nested_FFFFFF调用返回的文本节点表。
 - 第六十二批源码已改为保存两个返回表并捕获它们；审计和机器状态同步修正。
 - 计数不变：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
+
+
+### 检查点 #88 补充静态复核：资源行节点映射与刷新数据源
+- Nested_FFFFFF（child2）PC61将每个资源名称映射到对应Text节点，PC64返回该映射表；父PC286/291两次调用分别得到moneyRows与itemRows。
+- Nested_Helper_3捕获moneyRows/itemRows两张映射表：moneyRows由MoneyProxy按名称取ID/当前数量，并结合initSnapshot计算括号内差值后格式化更新Text节点；itemRows通过Nested_string从BAG_DATA按名称查找物品，读取绑定/叠加信息并更新Text节点。
+- 两张映射表与两条刷新数据源已在第六十二批草稿和检查点87审计中区分记录；具体绑定/非绑定资源分支和Nested_string多返回值仍待逐条复核。
+- 计数不变：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
