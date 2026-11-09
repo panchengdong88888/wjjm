@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "104"
+    "last_checkpoint": "105"
   },
   "static_recovered_functions": [
     {
@@ -1153,6 +1153,124 @@
         "Nested_Helper_8的7个捕获来自本函数UP[1..7]；子函数本体不随本父包装函数自动升级。",
         "12条指令闭合；未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[42].children[11].children[0]",
+      "legacy_path": "root/43/12/1",
+      "name": "Nested_Helper_5",
+      "physical_instructions": 35,
+      "constant_count": 6,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十批.lua",
+      "audit_file": "docs/audit/检查点105_Nested_Helper_5与Nested_Helper_8回调主体静态复核.md",
+      "parameters": [
+        "...（读取首参）"
+      ],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "Nested_Helper_4 UP[1] / root UP[10]",
+          "usage": "输入值校验回调"
+        },
+        {
+          "index": 1,
+          "source": "Nested_Helper_4 UP[2] / root UP[11]",
+          "usage": "通知回调"
+        },
+        {
+          "index": 2,
+          "source": "Nested_Helper_4 UP[3] / root T[0]",
+          "usage": "模板消息回调"
+        },
+        {
+          "index": 3,
+          "source": "Nested_Helper_4 UP[4] / root UP[12]",
+          "usage": "失败上下文解析回调"
+        },
+        {
+          "index": 4,
+          "source": "Nested_Helper_4 UP[5] / root UP[13]",
+          "usage": "失败上下文参数"
+        },
+        {
+          "index": 5,
+          "source": "Nested_Helper_4 UP[6] / root T[16]",
+          "usage": "距离保存回调"
+        },
+        {
+          "index": 6,
+          "source": "Nested_Helper_4 UP[7] / root T[15]",
+          "usage": "按钮状态回调"
+        }
+      ],
+      "notes": [
+        "校验truthy进入成功路径，false/nil进入失败路径。",
+        "失败上下文解析回调的多返回值经OP_392后通过开放参数调用模板消息回调。",
+        "成功路径通知并调用模板消息回调；保存回调(value)仅truthy返回时启用blacklistbut。",
+        "35条指令控制流、回调参数及按钮分支闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[14].children[0]",
+      "legacy_path": "root/43/15/1",
+      "name": "Nested_Helper_8",
+      "physical_instructions": 34,
+      "constant_count": 5,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十批.lua",
+      "audit_file": "docs/audit/检查点105_Nested_Helper_5与Nested_Helper_8回调主体静态复核.md",
+      "parameters": [
+        "...（读取首参）"
+      ],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "Nested_Helper_7 UP[1] / root UP[14]",
+          "usage": "输入值校验回调"
+        },
+        {
+          "index": 1,
+          "source": "Nested_Helper_7 UP[2] / root UP[11]",
+          "usage": "通知回调"
+        },
+        {
+          "index": 2,
+          "source": "Nested_Helper_7 UP[3] / root T[0]",
+          "usage": "模板消息回调"
+        },
+        {
+          "index": 3,
+          "source": "Nested_Helper_7 UP[4] / root UP[12]",
+          "usage": "失败上下文解析回调"
+        },
+        {
+          "index": 4,
+          "source": "Nested_Helper_7 UP[5] / root UP[15]",
+          "usage": "失败上下文参数"
+        },
+        {
+          "index": 5,
+          "source": "Nested_Helper_7 UP[6] / root T[17]",
+          "usage": "阈值保存回调"
+        },
+        {
+          "index": 6,
+          "source": "Nested_Helper_7 UP[7] / root T[15]",
+          "usage": "按钮状态回调"
+        }
+      ],
+      "notes": [
+        "校验truthy进入成功路径，false/nil进入失败路径。",
+        "失败上下文解析回调的多返回值经OP_392后通过开放参数调用模板消息回调。",
+        "成功路径通知并调用模板消息回调；保存回调(value)仅truthy返回时启用yinguaibut。",
+        "34条指令控制流、回调参数及按钮分支闭合；未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
@@ -1803,28 +1921,29 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "104",
+    "checkpoint": "105",
     "date": "2026-11-09",
     "function_group": [
-      "Nested_Helper_4",
-      "Nested_Helper_7"
+      "Nested_Helper_5",
+      "Nested_Helper_8"
     ],
-    "source_file": "04_源码候选/短函数草稿_第三十五批.lua",
-    "audit_file": "docs/audit/检查点104_两个输入弹窗包装函数复核.md",
+    "source_file": "04_源码候选/短函数草稿_第七十批.lua",
+    "audit_file": "docs/audit/检查点105_Nested_Helper_5与Nested_Helper_8回调主体静态复核.md",
     "findings": [
-      "两个12指令包装函数本体均只加载提示文本、创建7捕获子闭包并调用输入交互函数(提示文本,回调闭包)。",
-      "Nested_Helper_4父级PC250捕获来源及Nested_Helper_7父级PC259捕获来源已分别逐项核对。",
-      "子函数Nested_Helper_5/Nested_Helper_8仍独立保持普通Lua草稿状态，不随父包装函数自动升级。"
+      "两个回调均读取首个变参作为value，校验回调truthy走成功、false/nil走失败。",
+      "失败分支调用失败上下文解析回调，并通过OP_392多返回值与开放参数机制转发给模板消息回调。",
+      "成功分支分别发出黑名单距离/怪物阈值通知及模板消息。",
+      "保存回调接收原始value；仅返回truthy时调用按钮状态回调(key,true)。",
+      "两级捕获链由父级PC250/PC259及包装函数子闭包捕获顺序核对。"
     ],
     "unresolved": [
-      "两个输入交互函数的宿主API原始名称仍使用行为名。",
-      "子回调主体仍需单独复审。",
-      "未进行宿主运行时验证。"
+      "父级T[0]模板消息回调、UP[12]/UP[13]/UP[15]具体宿主业务实现仍需追踪。",
+      "无游戏客户端运行时验证。"
     ],
     "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 45,
+      "complete_static_reconstruction": 47,
       "runtime_verified": 0
     }
   },
@@ -1839,7 +1958,7 @@
   },
   "counts": {
     "ordinary_lua_drafts": 77,
-    "complete_static_reconstruction": 45,
+    "complete_static_reconstruction": 47,
     "runtime_verified": 0
   }
 }
