@@ -37,9 +37,10 @@
     "root.children[31]": "IsInWhitelistMap：28条；检查点166闭合SL:GetMetaValue(IN_SAFE_AREA) truthy快速返回true；否则读取MAP_NAME，以ipairs遍历唯一白名单“土城”，匹配返回true、耗尽返回false。PC28为不可达尾部return。无upvalue/子原型；完整静态恢复，未运行时验证。",
     "root.children[24]": "UseItemByIndex：33条；检查点167确认父root PC355/356捕获T[37]为UP0，源码改为make_UseItemByIndex(itemNameList)工厂闭包；ipairs遍历捕获列表，分别读取ITEM_INDEX_BY_NAME与ITEM_COUNT，tonumber(...) or 0归一；itemIndex truthy且数量>0时SL:UseItemByIndex(itemIndex)，返回当前itemName；耗尽无值返回。函数体完整静态恢复，捕获表业务来源仍未追踪，未运行时验证。",
     "root.children[55]": "AccountIDValidation：64条；检查点169逐PC闭合完整静态恢复（未运行时验证）。UP0=日志/普通提示回调，UP1=验证失败提示回调；PC38创建Nested_ID并捕获白名单/UP0/UP1；PC42-PC44调用并将布尔结果写入R4；PC45-PC54成功/失败提示分支；PC58创建Panel子闭包，PC59精确捕获R4=validationResult，PC60捕获父UP0；PC62调用SL:Schedule(callback,0.5)。Panel子闭包将validationResult传给SL:UnSchedule；该数据流已闭合，宿主语义未验证。",
-    "root.children[55].children[0]": "Nested_Panel_mini_chat：24条；检查点169父PC58/59/60捕获来源闭合，UP0=validationResult（Nested_ID布尔返回值），UP1=父UP0提示回调；满足MainProperty/_ui/Panel_mini_chat门槛时SL:UnSchedule(validationResult)并调用MainLeftBottom.doInit()；所有路径提示等待。完整静态恢复，未运行时验证。"
+    "root.children[55].children[0]": "Nested_Panel_mini_chat：24条；检查点169父PC58/59/60捕获来源闭合，UP0=validationResult（Nested_ID布尔返回值），UP1=父UP0提示回调；满足MainProperty/_ui/Panel_mini_chat门槛时SL:UnSchedule(validationResult)并调用MainLeftBottom.doInit()；所有路径提示等待。完整静态恢复，未运行时验证。",
+    "root.children[15].children[0]": "Nested_SL：13条；检查点170独立静态复审完成。父ClearBlacklistItems PC52创建闭包，PC53捕获R8=当前entryKey，PC54捕获R0=FriendProxy；子函数先SL:RequestOutBlacklist(entryKey)，再检查friendProxy._blacklistData并删除对应键。完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点169：root.children[55] AccountIDValidation与Nested_Panel_mini_chat捕获/返回/调度数据流已闭合，二者提升为完整静态恢复；Nested_ID维持完整静态恢复。明确保留SL:UnSchedule(validationResult)的宿主语义疑点，不改写为timerHandle。已补齐root.children[56] ClearTargetID_2与root.children[57] PlayerPos独立Lua源码候选。下一步继续批量筛选状态表中尚无可读源码文件的短函数，优先处理短小、无捕获或捕获链已闭合的原型。",
+  "next_action": "检查点170：Nested_SL（root.children[15].children[0]，13条）捕获来源与全部13条指令已闭合并提升为完整静态恢复。下一步优先继续复核剩余短草稿：Nested_removeFile（root.children[0].children[0]，5条）、Nested_UnSchedule（root.children[42].children[3].children[4]，20条）及其他小型闭包；随后再处理较长父函数。运行时验证仍为0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -112,7 +113,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "169"
+    "last_checkpoint": "170"
   },
   "static_recovered_functions": [
     {
@@ -2102,35 +2103,53 @@
         "Checks MainProperty/_ui/Panel_mini_chat; then SL:UnSchedule(validationResult), MainLeftBottom.doInit(); waiting notice runs on every path.",
         "Static capture/dataflow closed; UnSchedule argument semantics not runtime validated."
       ]
+    },
+    {
+      "path": "root.children[15].children[0]",
+      "legacy_path": "root/16/1",
+      "name": "Nested_SL",
+      "physical_instructions": 13,
+      "constant_count": 4,
+      "child_count": 0,
+      "parent_path": "root.children[15]",
+      "parent_create_pc": 52,
+      "capture_count": 2,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第十五批.lua",
+      "audit_file": "docs/audit/检查点170_Nested_SL完整静态复审.md",
+      "parameters": [],
+      "returns": [],
+      "notes": [
+        "UP0 captures current entryKey from parent R8 at PC53.",
+        "UP1 captures FriendProxy from parent R0 at PC54.",
+        "Calls SL:RequestOutBlacklist(entryKey), then conditionally deletes friendProxy._blacklistData[entryKey].",
+        "All 13 physical instructions reconciled; not runtime validated."
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "169",
+    "checkpoint": "170",
     "targets": [
-      "root.children[55]",
-      "root.children[55].children[0]",
-      "root.children[56]",
-      "root.children[57]"
+      "root.children[15].children[0]"
     ],
-    "status": "Closed AccountIDValidation parent and Panel child capture dataflow; promoted parent and Panel child to complete static reconstruction. Added standalone source for two adjacent statically recovered short functions.",
-    "audit_file": "docs/audit/检查点169_AccountIDValidation捕获闭合与短函数源码补齐.md",
+    "status": "Independently reviewed the 13-instruction Nested_SL child prototype, closed both capture producers and all active paths, and promoted it to complete static reconstruction.",
+    "audit_file": "docs/audit/检查点170_Nested_SL完整静态复审.md",
     "files": [
-      "04_源码候选/root55_children_drafts.lua",
-      "04_源码候选/root56_root57_short_functions.lua",
-      "docs/audit/检查点169_AccountIDValidation捕获闭合与短函数源码补齐.md",
+      "04_源码候选/短函数草稿_第十五批.lua",
+      "docs/audit/检查点170_Nested_SL完整静态复审.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "Parent PC59 captures R4, the boolean result returned by Nested_ID; PC60 captures parent UP0.",
-      "Panel child UP0 is exactly validationResult and UP1 is the parent's log/notice callback.",
-      "SL:UnSchedule(validationResult) is the exact static dataflow; runtime meaning remains unknown.",
-      "SL:Schedule receives the child callback and 0.5 seconds.",
-      "ClearTargetID_2 and PlayerPos now have standalone readable source; no count change for these already statically recovered functions."
+      "Parent ClearBlacklistItems PC52 creates the child closure.",
+      "PC53 captures R8, the current entryKey; PC54 captures R0, FriendProxy.",
+      "Child calls SL:RequestOutBlacklist(entryKey), then deletes friendProxy._blacklistData[entryKey] only when the table exists.",
+      "All 13 physical instructions, method receiver, capture order, conditional mutation and return path are reconciled; not runtime validated."
     ],
     "counts": {
-      "ordinary_lua_drafts": 82,
-      "complete_static_reconstruction": 91,
+      "ordinary_lua_drafts": 81,
+      "complete_static_reconstruction": 92,
       "runtime_verified": 0
     }
   },
@@ -2801,43 +2820,35 @@
       ]
     }
   ],
-  "draft_function_count": 82,
-  "ordinary_lua_draft_functions": 82,
-  "last_checkpoint": "169",
-  "checkpoint": {
-    "0": "1",
-    "1": "6",
-    "2": "9",
-    "last_checkpoint": "169",
-    "last_checkpoint_date": "2026-11-09"
-  },
+  "draft_function_count": 81,
+  "ordinary_lua_draft_functions": 81,
+  "last_checkpoint": "170",
+  "checkpoint": "170",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 169,
+    "number": 170,
     "date": "2026-11-09",
     "artifacts": [
-      "04_源码候选/root55_children_drafts.lua",
-      "04_源码候选/root56_root57_short_functions.lua",
-      "docs/audit/检查点169_AccountIDValidation捕获闭合与短函数源码补齐.md",
+      "04_源码候选/短函数草稿_第十五批.lua",
+      "docs/audit/检查点170_Nested_SL完整静态复审.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
-    "draft_prototypes_touched": 3,
-    "draft_prototype_total": 82,
-    "complete_static_reconstructions": 91,
+    "draft_prototypes_touched": 1,
+    "draft_prototype_total": 81,
+    "complete_static_reconstructions": 92,
     "runtime_verified": 0,
-    "notes": "AccountIDValidation父函数与Panel子闭包捕获数据流闭合并提升为完整静态恢复；另补齐ClearTargetID_2和PlayerPos源码候选。UnSchedule(validationResult)宿主语义未验证。"
+    "notes": "Nested_SL父级捕获entryKey/FriendProxy与子函数13条指令闭合，升级为完整静态恢复。"
   },
   "latest_checkpoint": {
-    "checkpoint": "169",
-    "summary": "AccountIDValidation父函数及Panel子闭包完整静态恢复；PC59确认捕获validationResult，PC60捕获父UP0。另补齐ClearTargetID_2与PlayerPos源码候选。",
-    "audit_file": "docs/audit/检查点169_AccountIDValidation捕获闭合与短函数源码补齐.md",
+    "checkpoint": "170",
+    "summary": "Nested_SL（13条）捕获来源、RequestOutBlacklist调用及条件删除均完整静态复审。",
+    "audit_file": "docs/audit/检查点170_Nested_SL完整静态复审.md",
     "unresolved": [
-      "SL:UnSchedule(validationResult)的宿主API语义及实际运行效果",
-      "所有函数尚未进行运行时验证"
+      "运行时宿主 API 效果尚未验证"
     ]
   },
-  "complete_static_reconstruction_count": 91,
+  "complete_static_reconstruction_count": 92,
   "complete_static_reconstruction": "89/110 (80.9%)",
   "progress_reconciled": {
     "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；机器状态中的static_recovered_functions是精选索引，不作为完整计数器。",
@@ -2845,14 +2856,14 @@
     "complete_static_reconstruction_functions": 88,
     "runtime_verified_functions": 0,
     "note": "检查点167将UseItemByIndex root.children[24]升级为完整静态恢复，并将UPVALUE_0=T[37]正确表达为工厂闭包捕获；列表业务来源仍未命名。运行时验证仍为0。",
-    "checkpoint": 169,
-    "ordinary_lua_drafts": 82,
-    "complete_static_reconstruction": 91,
+    "checkpoint": 170,
+    "ordinary_lua_drafts": 81,
+    "complete_static_reconstruction": 92,
     "runtime_verified": 0
   },
   "counts": {
-    "ordinary_lua_drafts": 82,
-    "complete_static_reconstruction": 91,
+    "ordinary_lua_drafts": 81,
+    "complete_static_reconstruction": 92,
     "runtime_verified": 0
   }
 }
