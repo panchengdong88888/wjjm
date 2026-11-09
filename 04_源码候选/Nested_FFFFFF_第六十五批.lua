@@ -5,75 +5,87 @@ legacy：root/43/4/3
 65条物理指令，17常量，无子原型，vararg_flag=3。
 父函数：Nested_FFFF00（root.children[42].children[3]）。
 
-当前级别：首版普通 Lua 草稿 / 静态复核中 / 未运行时验证。
+当前级别：普通 Lua 草稿 / PC循环与捕获来源已复核 / GUI完整调用协议仍未闭合 / 未运行时验证。
 
-闭合事实：
-- 创建一个结果映射表。
-- 由参数表长度和参数控制的数值循环生成单元格布局。
-- 单元格名使用 "_cell_" 前缀，文本节点名使用 "_text_" 前缀。
-- 每个有效资源名称创建一个Text节点，初始文本为 ":--"，字号参数15、行高/尺寸参数30、颜色"#FFFFFF"。
-- 对Text节点调用setAnchorPoint(0.5,0.5)。
-- 以资源名称为键、Text节点为值写入映射表。
-- 函数返回映射表。
+静态确认：
+- 父级PC265依次捕获父T[5]与父T[1]；回看父函数寄存器生命周期，分别是resList（ListView节点）和screenW*0.6。
+- 参数0为资源名称数组，参数1为布局列数；父级两次调用分别传入(moneyNames,2,"money")和(resourceNames,2,"item")。第三个及后续vararg在本函数可见路径中未被消费。
+- 外层数值循环：从1开始，到#resourceNames为止，步长layoutOption。
+- 内层数值循环：从1到layoutOption，步长1。
+- 每个资源索引为outerIndex + innerIndex - 1；超出数组长度或资源名称为假值时跳过节点创建。
+- 每组创建一个_layout cell；宽度来自捕获的screenW*0.6，高度常量35，起点x/y为0。
+- Text节点横向位置由捕获宽度*(innerIndex-0.5)计算；文本内容由resourceName与":--"拼接。
+- Text_Create参数寄存器中可确认字号/尺寸相关数值15、30及颜色"#FFFFFF"；创建后setAnchorPoint(0.5,0.5)。
+- 返回resourceName -> Text节点映射表。
 
-尚未完全闭合：
-- 两个父级捕获（父T[5]、父T[1]）的业务身份。
-- Layout_Create/Text_Create的所有位置参数及融合参数所对应的字段名。
-- 两层数值循环的边界变量映射（PC5-6、PC26-27及PC62-63的循环步进需进一步结合VM循环语义核验）。
-- vararg实际传入参数数量；父级调用点表明传入名称数组、数值2和类型标签，但本原型只将其中寄存器实际消费部分纳入草稿。
+仍未闭合：
+- GUI.Layout_Create与GUI.Text_Create调用栈中的融合参数/隐式空槽，不能据当前反汇编打印形式完整命名所有参数。
+- 节点名称的完整拼接表达式仍需结合融合载荷和宿主GUI签名核验；下方以可读占位名表达，不宣称逐字复原。
+- PC9的ceil(15/layoutOption)结果在本段寄存器追踪中未找到可靠的高层用途，不擅自将其编入布局行数逻辑。
 ]]
 
 local function Nested_FFFFFF(resourceNames, layoutOption, ...)
     local rowTextByName = {}
 
-    -- 父级闭包捕获。静态捕获槽顺序为0=父T[5]、1=父T[1]。
-    -- 当前不擅自将其命名为具体GUI父节点/布局对象。
-    local capturedParent5 = UPVALUE_0
-    local capturedParent1 = UPVALUE_1
+    -- 父级PC265的捕获槽位：UPVALUE_0=父T[5]，UPVALUE_1=父T[1]。
+    -- 父函数PC73-75、PC86-96及PC265-267的寄存器生命周期确认：
+    -- UPVALUE_0为resList；UPVALUE_1为screenW*0.6。
+    local listView = UPVALUE_0
+    local cellWidth = UPVALUE_1
 
     local gui = GUI
-    local columnCount = layoutOption
 
-    -- PC6-9：ceil(15 / layoutOption)，用于计算布局行/列数。
-    local layoutBandCount = math.ceil(15 / columnCount)
+    -- PC9计算ceil(15/layoutOption)；该值在现有静态寄存器追踪中
+    -- 尚未确认参与后续API实参，故保留为待解释值，不作为循环边界。
+    local unresolvedCeilValue = math.ceil(15 / layoutOption)
 
-    -- PC10-61：构造带 "_cell_" 前缀的单元格布局，并在单元格内创建资源文本。
-    -- 下面把可确认的资源名称映射、Text_Create及锚点行为写成普通Lua；
-    -- 单元格几何参数暂用注释标出，避免把融合寄存器误写成已确认字段。
-    local cellIndex = 0
-    for groupIndex = 1, layoutBandCount do
-        cellIndex = cellIndex + 1
+    -- PC5/PC63：外层数值for，起点1、终点#resourceNames、步长layoutOption。
+    for groupStart = 1, #resourceNames, layoutOption do
+        local cellName = "_cell_" .. tostring(groupStart)
 
-        local cellName = "_cell_" .. tostring(groupIndex)
+        -- PC10-22：父节点为resList，x/y为0，宽度取screenW*0.6，
+        -- 高度常量35。额外融合参数的完整宿主签名仍待核验。
         local cellLayout = gui:Layout_Create(
-            capturedParent5,
+            listView,
             cellName,
-            -- TODO(checkpoint91): 按PC10-61恢复单元格位置、宽高及布局参数。
-            0, 0, 0, 0
+            0, 0,
+            cellWidth,
+            35
         )
 
-        for itemIndex = 1, columnCount do
-            local resourceIndex = (groupIndex - 1) * columnCount + itemIndex
+        -- PC23-26/PC62：内层数值for，1..layoutOption，步长1。
+        for columnIndex = 1, layoutOption do
+            -- PC27-30：resourceIndex = groupStart + columnIndex - 1。
+            local resourceIndex = groupStart + columnIndex - 1
             local resourceName = resourceNames[resourceIndex]
+
             if resourceName then
-                local textName = "_text_" .. tostring(resourceName)
+                -- 节点名的寄存器拼接中含_text_前缀；精确后缀组合仍待融合载荷核验。
+                local textName = "_text_" .. tostring(resourceIndex)
+
+                -- PC32-35：x = cellWidth * (columnIndex - 0.5) / 1。
+                -- PC46-52：15、30、#FFFFFF，以及 resourceName .. ":--"。
+                local textX = cellWidth * (columnIndex - 0.5) / 1
                 local textNode = gui:Text_Create(
                     cellLayout,
                     textName,
-                    -- TODO(checkpoint91): 位置参数的寄存器来源仍需逐项校对。
-                    0, 0,
+                    textX,
                     15,
                     30,
                     "#FFFFFF",
-                    ":--"
+                    tostring(resourceName) .. ":--"
                 )
 
+                -- PC55-60：锚点(0.5,0.5)。
                 gui:setAnchorPoint(textNode, 0.5, 0.5)
+
+                -- PC61：以资源名称为键保存Text节点。
                 rowTextByName[resourceName] = textNode
             end
         end
     end
 
+    -- PC64：返回映射表。
     return rowTextByName
 end
 
