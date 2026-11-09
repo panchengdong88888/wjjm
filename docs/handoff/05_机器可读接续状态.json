@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续筛选剩余短函数。下一目标优先 root.children[42].children[12]（legacy root/43/13，Nested_04d_02d_02d，43条指令）；重点还原日期/时间阈值与消息发送条件。若该函数过于复杂，转向 root.children[42].children[9].children[0]（Nested_Button_setTitleText，48条指令）。不要重复已完成草稿或底层反汇编。",
+  "next_action": "继续筛选剩余短函数。优先检查 root.children[42].children[9].children[0]（legacy root/43/10/1，Nested_Button_setTitleText，48条指令）；追踪父级创建点、捕获值和所有调用点，确认是否为单纯按钮标题包装。若不是，转向 root.children[50].children[0]（Nested_isOutputted，52条指令）。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -461,23 +461,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 54,
-    "target": "Nested_ffffff 首版普通 Lua 草稿",
+    "checkpoint": 55,
+    "target": "Nested_04d_02d_02d 定时巡航触发草稿",
     "status": "draft_saved; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第三十二批.lua",
-    "audit_file": "docs/audit/检查点54_Nested_ffffff草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第三十三批.lua",
+    "audit_file": "docs/audit/检查点55_Nested_定时巡航触发草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[5]",
-        "legacy": "root/43/6",
-        "name": "Nested_ffffff",
-        "instructions": 41
+        "path": "root.children[42].children[12]",
+        "legacy": "root/43/13",
+        "name": "Nested_DailyCruiseTrigger",
+        "instructions": 43
       }
     ],
-    "draft_count_total": 41,
+    "draft_count_total": 42,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0,
-    "note": "按PC1-41恢复配置项key匹配、toggled写入、按钮双层索引查找、toggle/name标题选择和红白颜色切换；两个捕获对象的业务名仍待追踪。"
+    "note": "确认os.date日历时间、22:00:05–22:00:08秒数窗口、YYYYMMDD按日去重、LuaSendMsg七个参数和固定通知；捕获对象业务名待父级数据流复核。"
   },
   "corrections": [
     {
@@ -572,28 +572,28 @@
       "status": "first_pass_draft_pending_static_review_not_runtime_verified"
     }
   ],
-  "draft_function_count": 41,
-  "ordinary_lua_draft_functions": 41,
-  "last_checkpoint": "54",
-  "checkpoint": "54",
+  "draft_function_count": 42,
+  "ordinary_lua_draft_functions": 42,
+  "last_checkpoint": "55",
+  "checkpoint": "55",
   "drafts": 32,
-  "next": "继续筛选剩余短函数。下一目标优先 root.children[42].children[12]（legacy root/43/13，Nested_04d_02d_02d，43条指令）；重点还原日期/时间阈值与消息发送条件。若该函数过于复杂，转向 root.children[42].children[9].children[0]（Nested_Button_setTitleText，48条指令）。不要重复已完成草稿或底层反汇编。",
+  "next": "继续筛选剩余短函数。优先检查 root.children[42].children[9].children[0]（legacy root/43/10/1，Nested_Button_setTitleText，48条指令）；追踪父级创建点、捕获值和所有调用点，确认是否为单纯按钮标题包装。若不是，转向 root.children[50].children[0]（Nested_isOutputted，52条指令）。",
   "recent_checkpoint": {
-    "id": 54,
+    "id": 55,
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第三十二批.lua",
-    "audit_file": "docs/audit/检查点54_Nested_ffffff草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第三十三批.lua",
+    "audit_file": "docs/audit/检查点55_Nested_定时巡航触发草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[5]",
-        "legacy": "root/43/6",
-        "name": "Nested_ffffff",
-        "instructions": 41
+        "path": "root.children[42].children[12]",
+        "legacy": "root/43/13",
+        "name": "Nested_DailyCruiseTrigger",
+        "instructions": 43
       }
     ],
-    "draft_count_total": 41,
+    "draft_count_total": 42,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0,
-    "note": "新增Nested_ffffff草稿；按钮配置与查找表的业务身份待静态复审。"
+    "note": "新增定时巡航触发草稿；捕获对象名称仍待复核。"
   }
 }
