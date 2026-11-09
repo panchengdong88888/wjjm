@@ -1,59 +1,50 @@
--- 检查点 #76：Nested_find / Nested_string 两个相似短函数首版普通 Lua 草稿
--- 两个原型均 46 条物理指令、12 个常量、无子原型、vararg_flag=1。
--- 均无闭包捕获（capture_count=0）；所有外部依赖通过 ENV/全局表访问。
--- 关键分支仍需结合融合载荷复审；以下为首版可读候选，不是作者原始源码。
+-- 检查点 #116：Nested_find / Nested_string 普通 Lua 静态校正
+-- 两个原型均46条物理指令、12个常量、无子原型、无闭包捕获。
+-- 以下是可读重建，不是作者原始源码；没有宿主运行时验证。
 
 -- ============================================================
 -- Nested_find
 -- 规范路径：root.children[42].children[0]
 -- legacy：root/43/1
--- 创建点：父原型 root/42 PC17；capture_count=0
 -- ============================================================
 
 local function Nested_find(searchText, ...)
-    -- PC1-PC8：读取 SL:GetMetaValue("BAG_DATA")；
-    -- 不存在时返回数值 0。
     local bagData = SL:GetMetaValue("BAG_DATA")
     if not bagData then
         return 0
     end
 
-    -- PC9-PC13：初始化计数器并遍历背包数据 pairs。
     local matchedCount = 0
     for _, item in pairs(bagData) do
-        -- PC14-PC21：依次检查条目、Name、MakeIndex。
         if item and item.Name and item.MakeIndex then
-            -- PC22-PC30：string.find(item.Name, searchText, 1, true)
-            -- 第四参数由 R1 ~= 0 形成；R1 是已读取的 BAG_DATA，
-            -- 因此在通常表值情况下为 true（plain 模式）。
+            -- PC22-PC30：string.find(item.Name, searchText, 1, true)。
+            -- plain=true来自R1~=0；R1是前面已判定为truthy的BAG_DATA。
             local nameMatched = string.find(item.Name, searchText, 1, true)
-
             if nameMatched then
-                -- PC31-PC37：读取 ITEM_IS_BIND 元数据。
-                local isBound = SL:GetMetaValue("ITEM_IS_BIND", item.MakeIndex)
+                -- PC31-PC37：第二个显式参数是item对象本身，不是item.MakeIndex。
+                local isBound = SL:GetMetaValue("ITEM_IS_BIND", item)
 
-                -- PC38-PC40：读取 OverLap 字段并判断。
-                -- PC41-PC42：未被过滤的记录使计数器加 1。
-                if not isBound and not item.OverLap then
-                    matchedCount = matchedCount + 1
+                -- PC38-PC42：累加OverLap；字段为nil/false时按1计。
+                -- OverLap为0时仍是Lua truthy值，因此会加0而不是加1。
+                if not isBound then
+                    matchedCount = matchedCount + (item.OverLap or 1)
                 end
             end
         end
     end
 
-    -- PC43-PC46：迭代器继续/结束，最终返回计数器。
     return matchedCount
 end
+
 
 -- ============================================================
 -- Nested_string
 -- 规范路径：root.children[42].children[3].children[1]
 -- legacy：root/43/4/2
--- 创建点：父原型 root/42/3 PC291；capture_count=0
+-- 与Nested_find相似，但属于另一个父原型的独立子函数。
 -- ============================================================
 
 local function Nested_string(searchText, ...)
-    -- 与 Nested_find 相同的 BAG_DATA 读取和空值返回结构。
     local bagData = SL:GetMetaValue("BAG_DATA")
     if not bagData then
         return 0
@@ -64,9 +55,9 @@ local function Nested_string(searchText, ...)
         if item and item.Name and item.MakeIndex then
             local nameMatched = string.find(item.Name, searchText, 1, true)
             if nameMatched then
-                local isBound = SL:GetMetaValue("ITEM_IS_BIND", item.MakeIndex)
-                if not isBound and not item.OverLap then
-                    matchedCount = matchedCount + 1
+                local isBound = SL:GetMetaValue("ITEM_IS_BIND", item)
+                if not isBound then
+                    matchedCount = matchedCount + (item.OverLap or 1)
                 end
             end
         end
@@ -75,11 +66,9 @@ local function Nested_string(searchText, ...)
     return matchedCount
 end
 
--- 静态复审 TODO：
--- 1. vararg_flag=1 的确切含义，以及 searchText 是否确为第一个有效实参。
--- 2. PC14-PC21 中 pairs 的迭代变量是否为 item 本身，是否存在额外 nil/字段保护。
--- 3. PC22-PC30 string.find 的第四参数 true 是否确为 plain 标志（反汇编寄存器流支持，但需确认R1）。
--- 4. PC31-PC37 GetMetaValue("ITEM_IS_BIND", item.MakeIndex) 的返回值是否按 truthy 过滤。
--- 5. PC38-PC42 OverLap 的判断方向及计数器增量条件。
--- 6. 两个函数指令形状高度相似，但常量索引和创建父级不同；仍应分别保留，不推断二者源码文本完全相同。
--- 未在宿主环境运行；不计入完整静态恢复或运行时验证。
+-- 静态复核结论：
+-- 1. string.find第四参数true：PC27构造R12=(R1~=0)，而R1为已确认非nil的BAG_DATA。
+-- 2. ITEM_IS_BIND的实参为item对象：PC34将R7直接复制到R11，PC35调用时作为末参数。
+-- 3. 绑定判断truthy时跳过本条；false/nil才进入OverLap累加。
+-- 4. OverLap为truthy时按其数值累加；false/nil回退1；0不会回退。
+-- 5. 两函数的原型与父级不同，保留独立定义；没有运行时验证。
