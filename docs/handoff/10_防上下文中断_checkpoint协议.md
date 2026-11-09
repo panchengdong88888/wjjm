@@ -730,3 +730,14 @@
 - 待复核：vararg参数声明、range缺省分支、Facade self/实参布局、PlayerPos返回顺序、两轴比较的跳转极性和最终true/false含义。草稿中最终布尔表达式仅为临时候选。
 - 本批新增普通Lua草稿1个；累计按检查点口径65个。完整静态恢复仍29/110（26.4%）；运行时验证0。
 - 下一步优先处理`ClearBlacklistItems`（`root.children[15]`，63条指令），再评估`AccountIDValidation`（`root.children[55]`，64条）。
+
+
+## 检查点 #78（2026-11-09）：ClearBlacklistItems 首版普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第五十四批.lua`；新增审计：`docs/audit/检查点78_ClearBlacklistItems首版草稿.md`。
+- 函数：`ClearBlacklistItems`，原型索引18，规范路径`root.children[15]`，legacy`root/16`，63条物理指令、17个常量、1个子原型、`vararg_flag=0`。
+- 根函数PC383创建闭包，四个捕获源依次为root T[54]、T[4]、T[5]、T[41]。
+- 主体恢复代理获取、`_blacklistData`保护、pairs收集、空表提示、人数通知、ipairs遍历、按`(index-1)*0.01`调用`SL.ScheduleOnce`、清除lastAttacker。
+- 子原型捕获父R8与父R0；调用`SL.RequestOutBlacklist`，检查代理对象`_blacklistData`后删除捕获条目对应项。
+- 待复核：pairs收集key/value、子回调R8究竟是键/值/序号、UPVALUE_3对象身份、RequestOutBlacklist实参与删除索引，以及循环次数/延迟参数。未运行时验证。
+- 本批新增普通Lua草稿1个；累计按检查点口径66个。完整静态恢复仍29/110（26.4%）；运行时验证0。
+- 下一步继续`AccountIDValidation`（`root.children[55]`，64条指令），再评估其他未开始短函数。
