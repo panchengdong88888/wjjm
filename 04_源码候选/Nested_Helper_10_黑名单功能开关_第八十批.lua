@@ -5,8 +5,7 @@
 -- 物理指令：39；常量：9；子原型：0；vararg_flag=0
 -- 状态：完整静态恢复（未运行时验证）。
 --
--- 注意：UPVALUE_3/4/5按本函数中的调用方式命名为用途槽位，不代表作者原始变量名；
--- 它们的上游业务身份尚未从doInit_UI父寄存器中确认。
+-- UPVALUE_3/4/5的身份已于检查点121通过doInit_UI父寄存器及root闭包创建点闭合；
 
 local function Nested_Helper_10()
     -- 父doInit_UI PC299创建闭包，PC300-PC305捕获顺序：
