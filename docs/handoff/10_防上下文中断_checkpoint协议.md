@@ -576,3 +576,15 @@
 - 静态控制流闭合，升级为“完整静态恢复（未运行时验证）”；未宣称运行时验证。
 - 普通Lua草稿48个；完整静态恢复28/110（25.5%）；运行时验证0；最新检查点#61。
 - 下一目标：root.children[0] FileExistCheck_pcall_wrapper（32条）或root.children[6] InstallDamageHook（40条），优先确认闭包捕获参数。
+
+## 检查点 #62（2026-11-09）：FileExistCheck_pcall_wrapper 静态恢复
+- 新增普通 Lua 源码候选：`04_源码候选/短函数草稿_第三十八批.lua`。
+- 新增审计：`docs/audit/检查点62_FileExistCheck_pcall_wrapper静态恢复.md`。
+- 函数：`FileExistCheck_pcall_wrapper`，原型索引1，规范路径`root.children[0]`，legacy`root/1`，32条物理指令、5个常量、1个子原型。
+- 闭包追踪：本函数UPVALUE_0来自根原型R44，即`root.children[2]`（legacy `root/3`）路径拼接闭包；该闭包获取 writable path 并与输入路径拼接。
+- 子原型`root.children[0].children[0]`（legacy `root/1/1`）捕获父函数FileUtils实例和resolvedPath，调用`removeFile`；父函数通过`pcall`执行。
+- 控制流已恢复：首次文件存在则返回true和路径；首次不存在则pcall删除；pcall失败返回false和路径；成功后再次检查文件并返回逻辑非结果及路径。
+- 函数状态升级为“完整静态恢复（未运行时验证）”；vararg_flag=1保留在审计，主体未见额外varargs消费。运行时验证仍为0。
+- 普通Lua草稿49个；完整静态恢复29/110（26.4%）；运行时验证0；最新检查点#62。
+- 下一目标：`root.children[6]`（InstallDamageHook，40条指令），先核对消息类型过滤、幂等性字段及回调捕获。
+
