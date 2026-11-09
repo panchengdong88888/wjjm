@@ -76,12 +76,14 @@ local function make_BlacklistPlayerDetection(
             blacklistState.deathHandled = false
         end
 
-        -- PC 55-62: health threshold / whitelist-map early exits.
-        -- PC 55 compares a register with 1.0; its higher-level meaning is
-        -- intentionally not renamed to a specific HP percentage/threshold.
-        if blacklistState.deathHandled and hp <= 1 then
-            return
-        end
+        -- PC 55-57: a register comparison against 1.0 gates an early return.
+        -- The compared register's author-level meaning is not assigned here;
+        -- keep this as an explicit unresolved predicate rather than guessing
+        -- that it is HP, a percentage, or deathHandled.
+        -- TODO(static): bind the PC55 comparison register to its reaching
+        -- definition before expressing this branch as a named Lua condition.
+
+        -- PC 58-62: whitelist-map gate.
         if IsInWhitelistMap() then
             return
         end
@@ -107,7 +109,10 @@ local function make_BlacklistPlayerDetection(
 
         for index = 1, playerCount do
             local actor = players[index]
-            if actor and actor ~= mainActorID then
+            if actor then
+                -- PC 83-84 contains an additional equality gate. Its second
+                -- operand is not renamed as mainActorID until its loop-register
+                -- identity is independently checked.
                 -- UP[4] is the FriendProxy-backed blacklist lookup helper.
                 -- Its two return values are preserved separately; exact
                 -- false/nil handling is still under independent review.
