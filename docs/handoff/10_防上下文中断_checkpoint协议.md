@@ -780,3 +780,12 @@
 - 待复核：10个捕获槽位业务身份；两组迭代表及key/value字段；initSnapshot嵌套键；两组文本控件和Text_setString参数；pcall多返回寄存器映射。草稿中initialCount=0是占位，不代表原始算法。
 - 本批新增普通Lua草稿1个；累计72个。完整静态恢复仍29/110（26.4%）；运行时验证0。本函数不升级完整静态恢复。
 - 下一步评估BlacklistPlayerDetection（root.children[47]，216条）与StorageItems（root.children[50]，224条），按主体可读性与闭包/返回契约选择。
+
+
+## 检查点 #83（2026-11-09）：BlacklistPlayerDetection 首版普通 Lua 草稿
+- 新增源码：04_源码候选/短函数草稿_第五十九批.lua；新增审计：docs/audit/检查点83_BlacklistPlayerDetection首版草稿.md。
+- 函数原型索引93，规范路径root.children[47]，legacy root/48，216条物理指令、35常量、无子原型、vararg_flag=0。root PC367创建闭包，捕获13个父寄存器；当前闭包映射文件未含该函数的捕获表。
+- 已恢复可读主体：isBlacklisting开关、HP数值读取及lastHp/deathHandled状态、白名单地图提前退出、FIND_IN_VIEW_PLAYER_LIST遍历、ACTOR_NAME/ACTOR_MAP_X/ACTOR_MAP_Y读取、distance字段处理、os.time配合alertAt告警节流、nextTryAt重试节流、随机传送道具和无道具提示的控制流骨架。
+- 待复核：13个upvalue业务身份；HP分支unknown哨兵与融合跳转；玩家列表元素结构；坐标/距离计算；alertAt/nextTryAt阈值来源；道具筛选、使用函数及LuaSendMsg参数；两类无道具提示关系。UPVALUE占位调用不是已确认的API映射。
+- 本批新增普通Lua草稿1个；累计73个。完整静态恢复仍29/110（26.4%）；运行时验证0。本函数不升级完整静态恢复。
+- 下一步处理StorageItems（root.children[50]，224条，含两个子原型），先追踪主函数与两个子原型的闭包/返回契约。
