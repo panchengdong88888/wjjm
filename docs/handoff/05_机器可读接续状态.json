@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "转向尚未开始的短函数，优先 root.children[0]（FileExistCheck_pcall_wrapper，32条）或 root.children[6]（InstallDamageHook，40条）；先追踪闭包捕获来源与调用契约，必要时先写带UPVALUE占位的主体草稿。",
+  "next_action": "继续处理尚未开始的短函数；优先 root.children[6]（InstallDamageHook，40条指令），核对消息类型判断、hook幂等性及子回调捕获关系。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "60"
+    "last_checkpoint": "62"
   },
   "static_recovered_functions": [
     {
@@ -457,33 +457,53 @@
       "notes": [
         "依次调用 SL:GetMetaValue('X') 与 SL:GetMetaValue('Y')，返回两个值；不同于 GetPlayerPosition 的坐标表返回契约。"
       ]
+    },
+    {
+      "path": "root.children[0]",
+      "legacy_path": "root/1",
+      "name": "FileExistCheck_pcall_wrapper",
+      "physical_instructions": 32,
+      "constant_count": 5,
+      "child_count": 1,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第三十八批.lua",
+      "audit_file": "docs/audit/检查点62_FileExistCheck_pcall_wrapper静态恢复.md",
+      "parameters": [
+        "path"
+      ],
+      "returns": [
+        "boolean result",
+        "resolved writable path"
+      ],
+      "notes": [
+        "UPVALUE_0 is root.children[2] / legacy root/3, which concatenates FileUtils:getWritablePath() with the supplied path",
+        "Initial isFileExist true returns true,resolvedPath",
+        "If initially absent, pcall invokes captured FileUtils:removeFile(resolvedPath); pcall failure returns false,resolvedPath",
+        "After successful pcall, returns not FileUtils:isFileExist(resolvedPath),resolvedPath",
+        "Nested closure captures FileUtils instance and resolvedPath; no runtime validation"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 57,
-    "target": "Nested_Helper_4 与 Nested_Helper_7 输入包装函数草稿",
-    "status": "draft_saved; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第三十五批.lua",
-    "audit_file": "docs/audit/检查点57_Nested_Helper_4与7包装函数草稿.md",
+    "checkpoint": 62,
+    "target": "FileExistCheck_pcall_wrapper",
+    "status": "complete_static_reconstruction; no runtime validation",
+    "source_file": "04_源码候选/短函数草稿_第三十八批.lua",
+    "audit_file": "docs/audit/检查点62_FileExistCheck_pcall_wrapper静态恢复.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[11]",
-        "legacy": "root/43/12",
-        "name": "Nested_Helper_4",
-        "instructions": 12
-      },
-      {
-        "path": "root.children[42].children[14]",
-        "legacy": "root/43/15",
-        "name": "Nested_Helper_7",
-        "instructions": 12
+        "path": "root.children[0]",
+        "legacy": "root/1",
+        "name": "FileExistCheck_pcall_wrapper",
+        "instructions": 32
       }
     ],
-    "draft_count_total": 45,
-    "complete_static_reconstruction_count": 27,
+    "draft_count_total": 49,
+    "complete_static_reconstruction_count": 29,
     "runtime_verified_count": 0,
-    "note": "恢复两个输入包装函数：各自读取UP[0]输入交互函数、提示文本，创建捕获UP[1..7]的子回调闭包，并调用输入交互函数(提示文本,回调)。UP[0]真实业务名待上层确认。"
+    "note": "UPVALUE_0来自root/3路径拼接闭包；子闭包捕获FileUtils实例与resolvedPath，pcall调用removeFile；控制流及返回值静态闭合。"
   },
   "corrections": [
     {
@@ -578,39 +598,41 @@
       "status": "first_pass_draft_pending_static_review_not_runtime_verified"
     }
   ],
-  "draft_function_count": 48,
-  "ordinary_lua_draft_functions": 48,
-  "last_checkpoint": 61,
-  "checkpoint": "57",
+  "draft_function_count": 49,
+  "ordinary_lua_draft_functions": 49,
+  "last_checkpoint": 62,
+  "checkpoint": "62",
   "drafts": 32,
   "next": "继续筛选未开始的短函数。优先检查 root.children[42].children[22]（Nested_Anonymous，8条指令且有1个子原型）及 root.children[42].children[22].children[0]（Nested_str，27条）/其子函数，先闭合匿名包装函数的调用与捕获关系；再处理 root.children[42].children[9] / Nested_Button_setTitleText。不要重做Nested_Helper_4/7与其已完成回调主体。",
   "recent_checkpoint": {
-    "checkpoint": "59",
+    "checkpoint": "62",
     "date": "2026-11-09",
-    "summary": "新增 Nested_str 与 Nested_match 两个普通 Lua 草稿；Nested_Anonymous 8指令包装函数仍待父级调用消费/vararg关系复核。Nested_Helper_11 已有旧草稿，本批未重复计数。",
+    "summary": "新增FileExistCheck_pcall_wrapper静态恢复；闭合root/3路径拼接捕获、FileUtils实例与resolvedPath子闭包捕获、pcall删除及二次存在检查；未运行时验证。",
     "files": [
-      "04_源码候选/短函数草稿_第三十六批.lua",
-      "docs/audit/检查点59_Nested_str与Nested_match草稿.md"
+      "04_源码候选/短函数草稿_第三十八批.lua",
+      "docs/audit/检查点62_FileExistCheck_pcall_wrapper静态恢复.md",
+      "02_基础索引/03_函数状态清单.csv",
+      "docs/handoff/05_机器可读接续状态.json",
+      "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "added_draft_functions": [
-      "root.children[42].children[22].children[0]",
-      "root.children[42].children[22].children[0].children[0]"
+      "root.children[0]"
     ],
     "unchanged": {
-      "complete_static_reconstruction": 27,
       "runtime_verified": 0
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "61",
+    "checkpoint": "62",
     "date": "2026-11-09",
-    "audit_file": "docs/audit/检查点61_GetPlayerMapPosition静态恢复.md",
-    "ordinary_lua_draft_functions": 48,
-    "complete_static_reconstruction": 28,
-    "complete_static_reconstruction_ratio": "25.5%",
+    "audit_file": "docs/audit/检查点62_FileExistCheck_pcall_wrapper静态恢复.md",
+    "source_file": "04_源码候选/短函数草稿_第三十八批.lua",
+    "ordinary_lua_draft_functions": 49,
+    "complete_static_reconstruction": 29,
+    "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增GetPlayerMapPosition普通Lua恢复；假值actor返回nil，坐标假值默认0，返回{x,y}；静态控制流闭合，尚未运行时验证。"
+    "summary": "新增FileExistCheck_pcall_wrapper静态恢复；闭合root/3路径拼接捕获、FileUtils实例与resolvedPath子闭包捕获、pcall删除及二次存在检查；未运行时验证。"
   },
-  "complete_static_reconstruction_count": 28,
-  "complete_static_reconstruction": "28/110 (25.5%)"
+  "complete_static_reconstruction_count": 29,
+  "complete_static_reconstruction": "29/110 (26.4%)"
 }
