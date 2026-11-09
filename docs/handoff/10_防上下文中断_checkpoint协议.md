@@ -1685,3 +1685,15 @@
 - 新增`docs/audit/检查点157_MainLoop全CFG总账复核.md`；更新CSV、机器状态JSON和本协议。
 - 统计保持：普通Lua草稿82、完整静态恢复76/110、运行时验证0。
 - 下一步：追溯MainLoop剩余未命名upvalue槽位的父root T寄存器生产者，识别运行开关、状态对象/常量、日志、状态设置/重置、候选构造和玩家ID读取helper。
+
+ 
+## 检查点 #158（2026-11-09）：MainLoop 22槽捕获身份闭合与完整静态恢复
+
+- 依据父root PC214创建描述、22个捕获描述、函数状态清单和相关helper创建点，闭合MainLoop全部22个upvalue槽位。
+- 映射为：UP0运行标记；UP1当前状态单元；UP2状态常量表；UP3 PrintLog；UP4 FormatStateChange；UP5 ResetGatherMonsterData；UP6 GetMainPlayerID；UP7 FindMonsterCandidates；UP8目标ID数组；UP9 GetOwnerID；UP10扫描游标；UP11自己归属计数；UP12等待标志；UP13截止时间；UP14等待名称；UP15 FindMonsterInCurrViewField；UP16等待目标ID；UP17 GetOwnerIDText；UP18 IsDie；UP19 GetOwnerDescription；UP20 SetTargetID；UP21配置表。
+- UP0运行标记由InitGatherMonsters设true、StopGatherMonsters设false交叉确认；UP1状态单元由FormatStateChange捕获并在回调后更新；UP2状态表在root PC168-PC171建立。
+- 与检查点153-157合并后，MainLoop PC1-PC417活动状态机路径、状态写入、等待字段清理、两段数值循环、SetTargetID成功/失败分支及return路径闭合。CFG报告统计314个入口可达节点、103个静态不可达节点。
+- 修订`04_源码候选/root45_MainLoop.lua`顶部完整捕获映射；新增审计`docs/audit/检查点158_MainLoop_22槽捕获身份闭合与完整静态恢复.md`；CSV状态提升为完整静态恢复；机器状态JSON完整静态数76→77。
+- MainLoop状态：**完整静态恢复（未运行时验证）**。这不代表原作者源码逐字节还原，也不代表Lua宿主/游戏运行时验证。
+- 统计：普通Lua源码候选82；完整静态恢复77/110；运行时验证0。
+- 下一步：独立复审短helper root.children[35] SetTargetID、root.children[7] GetOwnerIDText、root.children[38] GetOwnerID。
