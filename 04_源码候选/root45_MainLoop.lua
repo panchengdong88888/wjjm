@@ -173,9 +173,16 @@ local function MainLoop()
 
                 else
                     allOwnersResolved = false
+
+                    -- PC264 stores the current index before attempting to lock;
+                    -- PC310-PC311 advance it after either the success or failure path.
+                    UPVALUE_10 = index
                     UPVALUE_3(string.format(
-                        "怪物 %s 归属未变更或已离开视野",
-                        monsterName
+                        "锁定怪物 %d: %s (ID: %s, 归属: %s)",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerDescription)
                     ))
 
                     -- Confirmed helper: SetTargetID(targetID). It returns false
