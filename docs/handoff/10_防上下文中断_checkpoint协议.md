@@ -1113,3 +1113,9 @@
 - 只有按钮对象、匹配配置、config.toggle均truthy时更新标题与颜色；标题按toggled选择config.toggle或config.name，颜色按toggled选择红#ff0000或白#ffffff。
 - 同步修正第35批包装函数源码注释与CSV备注：Nested_Helper_5/Nested_Helper_8主体已于检查点105完成静态恢复。
 - 统计更新：普通Lua草稿77；完整静态恢复54/110；运行时验证0。
+
+
+## 检查点 #107/#108 复核更正（2026-11-09）
+- Nested_shiquTimer开启分支仅执行`schedule(PickUpItems,0.01)`并保存返回句柄；没有立即调用`PickUpItems()`。第七十二批源码、审计和CSV说明均已修正。
+- 统计去重：Nested_InitGatherMonsters在检查点#99已完成；Nested_SL_3与Nested_shiquTimer在检查点#100已完成。本轮#107对它们做集中复审，不重复计入完成数。#107实际新增完整静态恢复仅Nested_blacklistTimer；#108新增Nested_ffffff。
+- 当前唯一口径：普通Lua草稿77；完整静态恢复51/110；运行时验证0。CSV与机器状态索引逐路径一致。
