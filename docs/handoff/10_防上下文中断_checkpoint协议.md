@@ -1220,3 +1220,14 @@
 - 不修改Nested_Anonymous草稿的nil占位，不升级函数状态。
 - 统计不变：普通Lua草稿78；完整静态恢复60/110；运行时验证0。
 - 下一步：寻找原始VM包装器/加载器/调用帧初始化逻辑；若无法取得证据，不猜测T槽映射，转向Nested_FFFF00剩余父级GUI/调度逻辑。
+
+
+## 检查点 #118（2026-11-09）：GUI窗口检查方法接收者校正
+
+- 新增审计：`docs/audit/检查点118_Nested_FFFF00窗口检查方法调用接收者校正.md`。
+- 修订`04_源码候选/短函数草稿_第六十二批.lua`中的Nested_FFFF00，以及`04_源码候选/资源统计刷新链_第六十四批.lua`中的Nested_Helper_3。
+- 反汇编两函数PC1-PC5都显示：取`GUI.Win_IsNotNull`方法时把GUI对象放入R1，resWin放入R2，调用范围`U(T,1,2)`传入两个值。因此源级调用应为`gui:Win_IsNotNull(moduleState.resWin)`，而不是`gui.Win_IsNotNull(moduleState.resWin)`。
+- CSV已记录两个函数的调用接收者修正。
+- 这是既有静态恢复函数的源码校正，不改变函数签名、捕获映射、控制流状态，不增加统计。
+- 统计保持：普通Lua草稿78；完整静态恢复60/110；运行时验证0。
+- 下一步：继续核对Nested_FFFF00 GUI构造调用剩余参数/宿主语义；同时保留Nested_Anonymous调用帧参数映射未决状态。
