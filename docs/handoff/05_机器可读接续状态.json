@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续筛选剩余未开始的短函数。优先分析 root.children[42].children[5]（legacy root/43/6，Nested_ffffff，41条指令）并追踪两个捕获值与调用点；复杂度过高则转向 root.children[42].children[12]（Nested_04d_02d_02d）。不要重复已完成草稿或底层反汇编。",
+  "next_action": "继续筛选剩余短函数。下一目标优先 root.children[42].children[12]（legacy root/43/13，Nested_04d_02d_02d，43条指令）；重点还原日期/时间阈值与消息发送条件。若该函数过于复杂，转向 root.children[42].children[9].children[0]（Nested_Button_setTitleText，48条指令）。不要重复已完成草稿或底层反汇编。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -461,23 +461,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 53,
-    "target": "UseItemByIndex 首版普通 Lua 草稿",
+    "checkpoint": 54,
+    "target": "Nested_ffffff 首版普通 Lua 草稿",
     "status": "draft_saved; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第三十一批.lua",
-    "audit_file": "docs/audit/检查点53_UseItemByIndex草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第三十二批.lua",
+    "audit_file": "docs/audit/检查点54_Nested_ffffff草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[24]",
-        "legacy": "root/25",
-        "name": "UseItemByIndex",
-        "instructions": 33
+        "path": "root.children[42].children[5]",
+        "legacy": "root/43/6",
+        "name": "Nested_ffffff",
+        "instructions": 41
       }
     ],
-    "draft_count_total": 40,
+    "draft_count_total": 41,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0,
-    "note": "按PC5-30恢复捕获表遍历、ITEM_INDEX_BY_NAME/ITEM_COUNT查询、数量门控、UseItemByIndex调用和成功返回当前迭代项；捕获表数据来源待追踪。"
+    "note": "按PC1-41恢复配置项key匹配、toggled写入、按钮双层索引查找、toggle/name标题选择和红白颜色切换；两个捕获对象的业务名仍待追踪。"
   },
   "corrections": [
     {
@@ -572,28 +572,28 @@
       "status": "first_pass_draft_pending_static_review_not_runtime_verified"
     }
   ],
-  "draft_function_count": 40,
-  "ordinary_lua_draft_functions": 40,
-  "last_checkpoint": "53",
-  "checkpoint": "53",
+  "draft_function_count": 41,
+  "ordinary_lua_draft_functions": 41,
+  "last_checkpoint": "54",
+  "checkpoint": "54",
   "drafts": 32,
-  "next": "继续筛选剩余未开始的短函数。优先分析 root.children[42].children[5]（legacy root/43/6，Nested_ffffff，41条指令）并追踪两个捕获值与调用点；复杂度过高则转向 root.children[42].children[12]（Nested_04d_02d_02d）。不要重复已完成草稿或底层反汇编。",
+  "next": "继续筛选剩余短函数。下一目标优先 root.children[42].children[12]（legacy root/43/13，Nested_04d_02d_02d，43条指令）；重点还原日期/时间阈值与消息发送条件。若该函数过于复杂，转向 root.children[42].children[9].children[0]（Nested_Button_setTitleText，48条指令）。不要重复已完成草稿或底层反汇编。",
   "recent_checkpoint": {
-    "id": 53,
+    "id": 54,
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第三十一批.lua",
-    "audit_file": "docs/audit/检查点53_UseItemByIndex草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第三十二批.lua",
+    "audit_file": "docs/audit/检查点54_Nested_ffffff草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[24]",
-        "legacy": "root/25",
-        "name": "UseItemByIndex",
-        "instructions": 33
+        "path": "root.children[42].children[5]",
+        "legacy": "root/43/6",
+        "name": "Nested_ffffff",
+        "instructions": 41
       }
     ],
-    "draft_count_total": 40,
+    "draft_count_total": 41,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0,
-    "note": "新增UseItemByIndex普通Lua草稿；捕获表来源及调用方填充仍待核验。"
+    "note": "新增Nested_ffffff草稿；按钮配置与查找表的业务身份待静态复审。"
   }
 }
