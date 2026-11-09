@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "Nested_Anonymous_2 仍保留阶段分析，不猜测融合算术；下一步优先从剩余未开始函数中筛选短函数，或追踪该匿名函数父级调用/捕获来源。Nested_StopGatherMonsters 已恢复为普通 Lua 草稿，捕获顺序已核实。",
+  "next_action": "优先继续筛选剩余未开始的短函数。UseItemByIndex（root.children[24]）存在循环/数量检查，先追踪参数寄存器与循环回边再恢复；不要重做已完成的底层反汇编或闭包映射。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "51"
+    "last_checkpoint": "52"
   },
   "static_recovered_functions": [
     {
@@ -461,30 +461,38 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 51,
-    "target": "Nested_StopGatherMonsters 普通 Lua 草稿",
+    "checkpoint": 52,
+    "target": "四个短函数普通 Lua 草稿",
     "status": "draft_saved; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第二十九批.lua",
-    "audit_file": "docs/audit/检查点51_Nested_StopGatherMonsters草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第三十批.lua",
+    "audit_file": "docs/audit/检查点52_四个短函数草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[6]",
-        "legacy": "root/43/7",
-        "name": "Nested_StopGatherMonsters",
-        "instructions": 31
+        "path": "root.children[42].children[14].children[0]",
+        "legacy": "root/43/15/1",
+        "name": "Nested_Helper_8",
+        "instructions": 34
+      },
+      {
+        "path": "root.children[42].children[11].children[0]",
+        "legacy": "root/43/12/1",
+        "name": "Nested_Helper_5",
+        "instructions": 35
+      },
+      {
+        "path": "root.children[51]",
+        "legacy": "root/52",
+        "name": "FindBlacklistPlayer",
+        "instructions": 35
+      },
+      {
+        "path": "root.children[42].children[18]",
+        "legacy": "root/43/19",
+        "name": "Nested_Helper_10",
+        "instructions": 39
       }
     ],
-    "verified": [
-      "父级 root/43 PC269 创建闭包，captures=6",
-      "child UP[0..5] 依次捕获 parent UP2、UP11、UP9、UP0、R20、R17",
-      "gatherTimer truthy 分支通知关闭、调用全局 StopGatherMonsters 并返回 true",
-      "条件检查 truthy 分支通知缺少怪物阈值、调用输入交互并返回 false",
-      "条件检查 false/nil 分支通知开启、将条件结果交给捕获回调并返回 true"
-    ],
-    "unresolved": [
-      "parent UP9、R20、R17 原始业务名称待追溯",
-      "未进行运行时验证"
-    ]
+    "note": "新增四个可读草稿；Helper_8/5的回调捕获原名仍待逐项核对；FindBlacklistPlayer对象/ID语义待校正；Helper_10已按条件分支方向修正输入提示与开启逻辑。"
   },
   "corrections": [
     {
@@ -579,28 +587,46 @@
       "status": "first_pass_draft_pending_static_review_not_runtime_verified"
     }
   ],
-  "draft_function_count": 35,
-  "ordinary_lua_draft_functions": 35,
+  "draft_function_count": 39,
+  "ordinary_lua_draft_functions": 39,
   "last_checkpoint": "51",
-  "checkpoint": "51",
+  "checkpoint": "52",
   "drafts": 32,
-  "next": "Nested_Anonymous_2 仍保留阶段分析，不猜测融合算术；下一步优先从剩余未开始函数中筛选短函数，或追踪该匿名函数父级调用/捕获来源。Nested_StopGatherMonsters 已恢复为普通 Lua 草稿，捕获顺序已核实。",
+  "next": "优先继续筛选剩余未开始的短函数。UseItemByIndex（root.children[24]）存在循环/数量检查，先追踪参数寄存器与循环回边再恢复；不要重做已完成的底层反汇编或闭包映射。",
   "recent_checkpoint": {
-    "id": 51,
+    "id": 52,
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第二十九批.lua",
-    "audit_file": "docs/audit/检查点51_Nested_StopGatherMonsters草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第三十批.lua",
+    "audit_file": "docs/audit/检查点52_四个短函数草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[6]",
-        "legacy": "root/43/7",
-        "name": "Nested_StopGatherMonsters",
-        "instructions": 31
+        "path": "root.children[42].children[14].children[0]",
+        "legacy": "root/43/15/1",
+        "name": "Nested_Helper_8",
+        "instructions": 34
+      },
+      {
+        "path": "root.children[42].children[11].children[0]",
+        "legacy": "root/43/12/1",
+        "name": "Nested_Helper_5",
+        "instructions": 35
+      },
+      {
+        "path": "root.children[51]",
+        "legacy": "root/52",
+        "name": "FindBlacklistPlayer",
+        "instructions": 35
+      },
+      {
+        "path": "root.children[42].children[18]",
+        "legacy": "root/43/19",
+        "name": "Nested_Helper_10",
+        "instructions": 39
       }
     ],
-    "draft_count_total": 35,
+    "draft_count_total": 39,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0,
-    "note": "恢复引怪开关函数的定时器关闭分支、条件检查、缺少阈值提示/输入交互分支及开启回调；六个闭包捕获来源已核实。"
+    "note": "新增Helper_8、Helper_5、FindBlacklistPlayer、Helper_10四个普通Lua草稿；Helper_10条件真值进入开启分支、假值进入缺少距离输入分支。"
   }
 }
