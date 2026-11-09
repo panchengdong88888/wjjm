@@ -1270,3 +1270,16 @@
 - 修改`04_源码候选/短函数草稿_第十六批.lua`、`04_源码候选/Nested_Helper_10_黑名单功能开关_第八十批.lua`和函数状态CSV。
 - 统计：普通Lua草稿78；完整静态恢复62/110；运行时验证0。新增完整静态恢复仅计AnonymousHelper_49一次；Nested_Helper_10只补充捕获身份，不重复计数。
 - 下一步：继续推进doInit_UI未完成父级逻辑或其他有完整证据的草稿函数；Nested_Anonymous的T槽映射仍等待VM帧初始化证据。
+
+
+## 检查点 #122（2026-11-09）：ScheduleOnce 与 Nested_JsonDecode 完整静态恢复
+
+- 修改源码：`04_源码候选/短函数草稿_第十七批.lua`，将ScheduleOnce从泛化vararg转发修正为两个显式参数callback、delay，并明确保留SL方法接收者。
+- 新增源码：`04_源码候选/Nested_JsonDecode_JSON解码包装器_第八十一批.lua`。
+- 新增审计：`docs/audit/检查点122_ScheduleOnce与Nested_JsonDecode完整静态恢复.md`。
+- ScheduleOnce（`root.children[53]` / `root/54`）7条指令：PC1-PC2取得SL.ScheduleOnce并保留接收者；PC3-PC4构造callback、delay两个实参；PC5调用并直接返回所有结果；PC6-PC7不可达。与仓库既有verified_helpers_batches_1_3.lua中root/54的独立候选一致。
+- Nested_JsonDecode（`root.children[52].children[0]` / `root/53/1`）6条指令：PC1-PC2取得SL.JsonDecode并保留接收者；PC3读取UP[0]；PC4调用并直接返回；PC5-PC6位于无条件return之后，不可达。
+- Nested_JsonDecode父函数onDamageMsg PC7创建闭包，紧随其后的捕获指令OP_387 B=1，故父帧捕获源为T[1]；CSV旧记录T[3]已更正。捕获值的业务含义仍由父级数据流决定，不在子包装器内猜测。
+- 函数状态CSV及机器状态JSON同步更新。
+- 统计：普通Lua草稿78；完整静态恢复64/110；运行时验证0。本批新增2个完整静态恢复函数，均未进行游戏客户端运行时验证。
+- 下一步：继续批量复核剩余草稿，优先选择短函数和可闭合调用契约；FindBlacklistPlayer的唯一捕获源及R0/vararg参数关系仍需核验，不能沿用旧草稿中未经证明的player解析器假设。Nested_Anonymous帧映射继续等待VM调用帧初始化证据。
