@@ -15,7 +15,7 @@ legacy路径：root/43/4
 - 四类货币/资源配置表；
 - MoneyProxy、Nested_FFFFFF、Nested_Helper_3 及 Schedule。
 
-父闭包捕获已由doInit_UI PC330-PC334闭合：UP[0]=MainLeftBottom模块表，UP[1]=PrintLog，UP[2]=独立计时器状态表，UP[3]=MainLeftBottom模块表（initTime/initSnapshot所在表）。
+父闭包捕获已按root闭包创建PC390-PC410、doInit_UI PC330-PC334及本函数实际UPvalue使用复核：Nested_FFFF00的UP[0]=doInit_UI UP[3]（MainLeftBottom UI状态表，含resWin/screenW/screenH），UP[1]=doInit_UI UP[0]（PrintLog），UP[2]=doInit_UI UP[2]（计时器状态表，doInit_UI中读取cruiseTimer，本函数写入resTimer），UP[3]=doInit_UI UP[1]（initTime/initTimeStr/initSnapshot状态表）。
 GUI构造函数的位置参数因融合指令尚未完全展开，保留TODO。
 ]]
 
@@ -23,11 +23,13 @@ local function Nested_FFFF00()
     local gui = GUI
     local sl = SL
 
-    -- doInit_UI PC330-PC334的捕获顺序已核实。
-    local moduleState = UP[0]       -- MainLeftBottom：resWin、screenW、screenH
-    local printLog = UP[1]          -- PrintLog函数
-    local timerState = UP[2]        -- 独立状态表：resTimer
-    local initState = UP[3]         -- MainLeftBottom：initTimeStr、initSnapshot
+    -- doInit_UI PC330-PC334的捕获描述依次为父UP[3],UP[0],UP[2],UP[1]。
+    -- 父UP[0]在PC1-PC3作为PrintLog调用；父UP[1]在PC19-PC58保存initTime/initTimeStr/initSnapshot；
+    -- 父UP[2]在PC152-PC166读取cruiseTimer；父UP[3]在PC379-PC414操作hidebut等UI状态。
+    local moduleState = UP[0]       -- doInit_UI UP[3]：MainLeftBottom UI状态表
+    local printLog = UP[1]          -- doInit_UI UP[0]：PrintLog函数
+    local timerState = UP[2]        -- doInit_UI UP[2]：计时器状态表（cruiseTimer/resTimer）
+    local initState = UP[3]         -- doInit_UI UP[1]：initTime/initTimeStr/initSnapshot状态表
 
     -- 已存在窗口：执行关闭路径。
     if gui.Win_IsNotNull(moduleState.resWin) then
@@ -63,8 +65,8 @@ local function Nested_FFFF00()
     )
 
     gui:setTouchEnabled(rootLayout, true)
-    -- child4（Nested_UnSchedule）捕获[printLog,timerState,moduleState]；
-    -- 点击空白时输出“点击空白,关闭资源信息窗口”，取消resTimer、清句柄并关闭resWin。
+    -- child4（Nested_UnSchedule）在父PC68-PC71依次捕获UP[1],UP[2],UP[0]，
+    -- 即[printLog,timerState,moduleState]；点击空白时通知、取消resTimer、清句柄并关闭resWin。
     gui:addOnClickEvent(rootLayout, Nested_UnSchedule)
 
     -- 列表容器。
