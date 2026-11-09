@@ -1256,3 +1256,17 @@
 - 函数状态CSV已将该函数升级为完整静态恢复。
 - 统计：普通Lua草稿78；完整静态恢复61/110；运行时验证0。
 - 下一步：继续批量恢复doInit_UI尚未完成的子原型，并保留Nested_Anonymous的VM调用帧映射问题，直到取得VM解释器/加载器证据。
+
+
+## 检查点 #121（2026-11-09）：Nested_Helper_10捕获身份闭合与AnonymousHelper_49恢复
+
+- 新增审计：`docs/audit/检查点121_Nested_Helper_10捕获回调身份闭合与AnonymousHelper_49恢复.md`。
+- 回溯doInit_UI PC239、PC250、PC299-PC305及root PC295、PC298-PC306，闭合Nested_Helper_10此前三个未命名捕获：
+  - UP[3] = AnonymousHelper_49，实际调用ReadNumericConfig(`blacklist_distance.txt`)。
+  - UP[4] = Nested_Helper_4，距离输入提示/对话框包装器。
+  - UP[5] = Nested_blacklistTimer，接收距离并启动黑名单处理。
+- Nested_Helper_10六项捕获全部具名；其源码已使用上述明确函数身份，不再保留三个泛化回调槽位。
+- AnonymousHelper_49（`root.children[49]` / `root/50`）5条指令、无常量/子原型。root PC304-PC306捕获ReadNumericConfig闭包及字符串`blacklist_distance.txt`；PC1-PC3调用并原样返回所有结果；PC4-PC5不可达。已从首版草稿升级为完整静态恢复。
+- 修改`04_源码候选/短函数草稿_第十六批.lua`、`04_源码候选/Nested_Helper_10_黑名单功能开关_第八十批.lua`和函数状态CSV。
+- 统计：普通Lua草稿78；完整静态恢复62/110；运行时验证0。新增完整静态恢复仅计AnonymousHelper_49一次；Nested_Helper_10只补充捕获身份，不重复计数。
+- 下一步：继续推进doInit_UI未完成父级逻辑或其他有完整证据的草稿函数；Nested_Anonymous的T槽映射仍等待VM帧初始化证据。
