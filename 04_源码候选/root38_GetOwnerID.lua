@@ -1,7 +1,7 @@
 -- root.children[38] / legacy root/39
 -- Reconstruction label: GetOwnerID
 -- 31 physical VM instructions; no captures; no child prototypes.
--- Status: first-pass ordinary Lua draft; not runtime-validated.
+-- Status: complete static reconstruction; not runtime-validated.
 --
 -- Static truth table from docs/audit/owner_id_helpers_阶段核验.md:
 --   nil / "" / -1       -> false
