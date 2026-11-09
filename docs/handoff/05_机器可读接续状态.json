@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "Nested_FFFF00的主要GUI构造参数已静态复核。下一步复审root.children[42]的剩余子原型清单，优先挑选尚未有普通Lua草稿、调用点清楚且指令量较短的子函数批量恢复；不要再重复底层VM提取或已闭合的资源面板捕获分析。",
+  "next_action": "继续批量静态复审root.children[42]已有草稿中的短函数，优先捕获/返回/调用点清楚者；已发现root和root.children[45] MainLoop是仅有的两个未开始原型，待短函数复审后再启动复杂主循环。不要将草稿数或静态完整数与运行时验证数混淆。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "97"
+    "last_checkpoint": "98"
   },
   "static_recovered_functions": [
     {
@@ -606,6 +606,46 @@
         "money snapshot keyed by moneyId; item snapshot keyed by itemName",
         "pcall protects os.time/os.date",
         "runtime GUI refresh not verified"
+      ]
+    },
+    {
+      "path": "root.children[42].children[2]",
+      "legacy_path": "root/43/3",
+      "name": "Nested_Helper",
+      "physical_instructions": 21,
+      "constant_count": 4,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第十七批.lua",
+      "audit_file": "docs/audit/检查点98_Nested_Helper与Nested_s格式回调复核.md",
+      "parameters": [],
+      "returns": [],
+      "notes": [
+        "UP[0](UP[1])返回success/detail；truthy分支决定成功/失败通知。",
+        "UP[2]接收固定单字符串通知；UP[3]为PrintLog，接收格式串与原始detail两个实参。",
+        "PrintLog会尝试string.format，但其当前字节码未调用SL.Print；不能把格式化路径描述成输出通知。",
+        "UP[0..2]业务身份保留槽位名；本函数21条指令控制流与调用实参均已闭合。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[20]",
+      "legacy_path": "root/43/21",
+      "name": "Nested_s",
+      "physical_instructions": 21,
+      "constant_count": 4,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第十七批.lua",
+      "audit_file": "docs/audit/检查点98_Nested_Helper与Nested_s格式回调复核.md",
+      "parameters": [],
+      "returns": [],
+      "notes": [
+        "UP[0](UP[1])返回success/detail；truthy分支决定成功/失败通知。",
+        "UP[2]接收固定单字符串通知；UP[3]为PrintLog，接收格式串与原始detail两个实参。",
+        "PrintLog会尝试string.format，但其当前字节码未调用SL.Print；不能把格式化路径描述成输出通知。",
+        "UP[0..2]业务身份保留槽位名；本函数21条指令控制流与调用实参均已闭合。"
       ]
     }
   ],
@@ -1257,26 +1297,29 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "97",
+    "checkpoint": "98",
     "date": "2026-11-09",
-    "function": "Nested_FFFF00",
-    "source_file": "04_源码候选/短函数草稿_第六十二批.lua",
-    "audit_file": "docs/audit/检查点97_Nested_FFFF00根布局与ListView参数复核.md",
+    "function_group": [
+      "Nested_Helper",
+      "Nested_s"
+    ],
+    "source_file": "04_源码候选/短函数草稿_第十七批.lua",
+    "audit_file": "docs/audit/检查点98_Nested_Helper与Nested_s格式回调复核.md",
     "findings": [
-      "rootLayout Layout_Create参数为resWin、closeResWin、0/0、screenW/screenH、true。",
-      "rootLayout启用触摸并绑定Nested_UnSchedule点击回调。",
-      "ListView位置=(screenW-1)/2,screenH/2；尺寸=screenW*0.6,screenH*0.6；尾参1.0。",
-      "ListView锚点0/0.5，背景类型1，颜色#CEB5F7，透明度255。",
-      "Win_Create在999前的显式nil槽已在检查点96修正。"
+      "两个21指令函数均调用UP0(UP1)接收success/detail，按success truthy分支。",
+      "UP2只接收固定单字符串通知。",
+      "UP3均为PrintLog，按格式字符串和原始detail两个独立实参调用。",
+      "PrintLog自身只执行string.format尝试及SL.Print存在性检查，没有实际SL.Print调用。",
+      "两个函数均无显式返回值，控制流与调用实参已闭合。"
     ],
     "unresolved": [
-      "GUI尾随标志和背景类型的宿主端枚举语义。",
-      "资源统计面板宿主运行时验证。"
+      "两个函数UP0/UP1/UP2的上游业务身份名称仍保留槽位。",
+      "没有游戏客户端运行时验证。"
     ],
-    "status": "ordinary_lua_draft_static_review_in_progress",
+    "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 32,
+      "complete_static_reconstruction": 34,
       "runtime_verified": 0
     }
   },
@@ -1288,5 +1331,10 @@
     "complete_static_reconstruction_functions": 29,
     "runtime_verified_functions": 0,
     "note": "本轮新增1个普通Lua草稿；完整静态恢复与运行时验证数量不变。 另已校正doInit_UI捕获槽位数为20，并记录root父寄存器映射。 PC102-PC130已根据物理指令改为四组slot/names道具配置，不再误写为按钮列表。 进一步回溯root初始化，识别了doInit_UI的10个捕获槽位业务身份/值。 已从root/43/17子原型反汇编确认ITEM_INDEX_BY_NAME→MoveItemToQuickUse→PrintLog调用链。 已确认按钮创建子闭包参数为配置记录/列索引/行偏移，x/y坐标公式与三组行偏移40/0/80。 ScheduleOnce调用顺序与延迟参数、ITEM_INDEX_BY_NAME回调的双返回值处理已由PC135-PC145及child16闭合。 Nested_FFFF00的4项父捕获和关键3个子闭包捕获/调用关系已静态闭合；不改变完整静态恢复数。 已根据PC311-PC319更正Schedule归属：由Nested_FFFF00父函数在立即调用刷新闭包后安排周期调度，而非刷新闭包自调度。 Nested_Helper_3捕获第10槽位已纠正为Nested_string；Nested_FFFF00返回契约为无返回值。 已依据PC286/291函数调用返回寄存器生命周期，确认刷新闭包捕获的是moneyRows/itemRows结果表。 moneyRows/itemRows映射表语义已确认，刷新函数的货币与背包物品两条数据更新路径已区分。"
+  },
+  "counts": {
+    "ordinary_lua_drafts": 77,
+    "complete_static_reconstruction": 34,
+    "runtime_verified": 0
   }
 }
