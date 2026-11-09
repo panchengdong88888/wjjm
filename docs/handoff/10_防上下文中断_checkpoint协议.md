@@ -1873,3 +1873,13 @@
 - 父 PC177-PC179零参数调用闭包并消费首个返回值：页码继续存仓，nil进入“仓库已满”提示/复位分支。
 - 源码候选 `04_源码候选/root50_Nested_Anonymous_2.lua` 更新为完整静态恢复说明；新增审计 `docs/audit/检查点173_Nested_Anonymous_2完整静态复审.md`。
 - 计数：普通草稿79；完整静态恢复94/110；运行时验证0。
+
+
+## 检查点 #174：Nested_isOutputted 完整静态复审
+
+- root.children[50].children[0] / Nested_isOutputted（52条）独立复核完成。父 StorageItems PC102创建 child[0]；PC103/PC104依次捕获父 UP[0]共享输出状态对象（`isOutputted`）及父 UP[1]输出回调。
+- 父 PC154-PC156建立 `ipairs(R8)` 迭代；PC158-PC166比较当前物品 Name 与迭代值，命中后 PC167-PC170按 `item=R19`、`itemText=R25` 调用子闭包，PC171消费布尔返回值。
+- 子函数52条指令闭合：纯文本查找“聚灵珠”；首次命中时置 `isOutputted=true`，回调输出物品记录和详情文本；随后检查 Dura/DuraMax 并返回布尔值。额外 vararg 未见读取。
+- 源码改为 `make_Nested_isOutputted(outputState, outputCallback)` 工厂闭包，避免把捕获值误当全局变量；更上层捕获业务原名保持未知。
+- 计数：普通草稿78；完整静态恢复95/110；运行时验证0。
+- 新增审计：`docs/audit/检查点174_Nested_isOutputted完整静态复审.md`。
