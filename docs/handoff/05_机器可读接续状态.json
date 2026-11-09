@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续恢复其他未开始函数；同时专项追踪Nested_Button_setTitleText的PC1-PC9融合查找、父函数PC46-PC48真实捕获来源及GUI.Button_setTitleText/Button_setTitleColor调用参数寄存器。",
+  "next_action": "继续恢复未开始函数；优先评估root.children[12] LuaSendMsg及root.children[22] GetMapData2DPtr的参数/返回契约，再推进DeathAutoBlacklist的UPVALUE业务身份追踪。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -563,7 +563,7 @@
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   },
-  "draft_recovered_count": 14,
+  "draft_recovered_count": 15,
   "draft_recovered_functions": [
     {
       "path": "root.children[46]",
@@ -799,27 +799,49 @@
         "PC36-PC47 obtains GUI.Button_setTitleColor; updated toggled selects red #ff0000 when true, white #ffffff when false; exact argument registers pending",
         "No child prototypes, no explicit return, no runtime validation"
       ]
+    },
+    {
+      "path": "root.children[25]",
+      "legacy_path": "root/26",
+      "name": "DeathAutoBlacklist",
+      "source_file": "04_源码候选/短函数草稿_第四十九批.lua",
+      "audit_file": "docs/audit/检查点73_DeathAutoBlacklist首版草稿.md",
+      "status": "first_pass_draft_upvalue_business_names_pending_not_runtime_verified",
+      "physical_instructions": 47,
+      "constant_count": 15,
+      "child_count": 1,
+      "vararg_flag": 0,
+      "notes": [
+        "Root PC363 creates closure with captures root R41, R4, R55, R5 in order; business identities remain pending",
+        "Reads UPVALUE_0.lastAttacker and clears it immediately",
+        "Missing attacker/name or empty name reports no recorded killer and returns",
+        "Calls UPVALUE_2(attacker.id); truthy result reports attacker already blacklisted and returns",
+        "Otherwise reports attacker kill and auto-blacklist, then calls UPVALUE_3 with '自动拉黑：' .. attacker.name",
+        "Numeric loop runs 0..5 with step 1; calls SL.ScheduleOnce(callback, index*0.5), six delays from 0 to 2.5 seconds",
+        "Child root/26/1 captures parent R0 (attacker object) and calls SL.RequestAddBlacklistByName(attacker.name)",
+        "No runtime validation"
+      ]
     }
   ],
-  "draft_function_count": 59,
-  "ordinary_lua_draft_functions": 59,
-  "last_checkpoint": 72,
-  "checkpoint": "72",
+  "draft_function_count": 60,
+  "ordinary_lua_draft_functions": 60,
+  "last_checkpoint": 73,
+  "checkpoint": "73",
   "drafts": 32,
-  "next": "继续筛选未开始的短函数。优先检查 root.children[42].children[22]（Nested_Anonymous，8条指令且有1个子原型）及 root.children[42].children[22].children[0]（Nested_str，27条）/其子函数，先闭合匿名包装函数的调用与捕获关系；再处理 root.children[42].children[9] / Nested_Button_setTitleText。不要重做Nested_Helper_4/7与其已完成回调主体。",
+  "next": "继续评估未开始的短函数LuaSendMsg（root.children[12]）和GetMapData2DPtr（root.children[22]）；优先恢复清楚的主体，保留未闭合参数/捕获名。",
   "recent_checkpoint": {
-    "checkpoint": "72",
+    "checkpoint": "73",
     "date": "2026-11-09",
-    "summary": "新增Nested_Button_setTitleText子原型首版草稿，接上上一批按钮点击回调。恢复前置调用结果/toggle保护、toggled取反写回、toggle为假时按name更新标题，以及按更新后toggled选择红/白标题颜色。PC1-PC9融合查找和两个GUI调用的准确实参映射仍待复核。",
+    "summary": "新增DeathAutoBlacklist首版普通Lua草稿。恢复lastAttacker读取/清空、凶手名称保护、黑名单查询分支、提示调用，以及0至5循环按0.5秒间隔执行六次ScheduleOnce；子回调捕获攻击者对象并调用RequestAddBlacklistByName。四个UPVALUE业务身份未全部闭合。",
     "files": [
-      "04_源码候选/短函数草稿_第四十八批.lua",
-      "docs/audit/检查点72_Nested_Button_setTitleText首版草稿.md",
+      "04_源码候选/短函数草稿_第四十九批.lua",
+      "docs/audit/检查点73_DeathAutoBlacklist首版草稿.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "added_draft_functions": [
-      "root.children[42].children[9].children[0]"
+      "root.children[25]"
     ],
     "unchanged": {
       "complete_static_reconstruction": 29,
@@ -827,15 +849,15 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "72",
+    "checkpoint": "73",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第四十八批.lua",
-    "audit_file": "docs/audit/检查点72_Nested_Button_setTitleText首版草稿.md",
-    "ordinary_lua_draft_functions": 59,
+    "source_file": "04_源码候选/短函数草稿_第四十九批.lua",
+    "audit_file": "docs/audit/检查点73_DeathAutoBlacklist首版草稿.md",
+    "ordinary_lua_draft_functions": 60,
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增Nested_Button_setTitleText子原型首版草稿，接上上一批按钮点击回调。恢复前置调用结果/toggle保护、toggled取反写回、toggle为假时按name更新标题，以及按更新后toggled选择红/白标题颜色。PC1-PC9融合查找和两个GUI调用的准确实参映射仍待复核。"
+    "summary": "新增DeathAutoBlacklist首版普通Lua草稿。恢复lastAttacker读取/清空、凶手名称保护、黑名单查询分支、提示调用，以及0至5循环按0.5秒间隔执行六次ScheduleOnce；子回调捕获攻击者对象并调用RequestAddBlacklistByName。四个UPVALUE业务身份未全部闭合。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)"
