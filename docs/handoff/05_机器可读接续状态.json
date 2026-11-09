@@ -13,9 +13,9 @@
   "major_targets": {
     "root.children[45]": "417-instruction MainLoop gather/attack state machine; legacy root/46; structural/CFG and captures mapped, high-level Lua still pending",
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
-    "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
+    "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "静态复核Nested_FFFF00的父级四个捕获来源、GUI融合参数和PC265/300子闭包契约；随后继续恢复doInit_UI（root.children[42]）尚未覆盖的419条指令主体，复用其已恢复子闭包而不重复编写。",
+  "next_action": "继续按PC顺序复核doInit_UI的父级捕获来源、按钮配置表、ScheduleOnce/GUI融合参数及23个子闭包实参；随后复核Nested_FFFF00的4个父捕获和刷新闭包契约。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -563,7 +563,7 @@
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   },
-  "draft_recovered_count": 15,
+  "draft_recovered_count": 77,
   "draft_recovered_functions": [
     {
       "path": "root.children[46]",
@@ -1088,14 +1088,31 @@
         "Storage isStoring guard/reset; NPCStorageProxy and available-page checks; max/open capacity and per-page reads; BAG_DATA; special-name filtering; item-use and storage-request flow; completion count notification.",
         "Three main upvalues, child1 arithmetic/return contract, child0 invocation/arguments, two filtering loops and LuaSendMsg protocol layout unresolved. child0 has prior independent draft; child1 remains analysis-only."
       ]
+    },
+    {
+      "path": "root.children[42]",
+      "legacy_path": "root/43",
+      "name": "doInit_UI",
+      "source_file": "04_源码候选/短函数草稿_第六十三批.lua",
+      "audit_file": "docs/audit/检查点88_doInit_UI首版草稿.md",
+      "status": "first_pass_draft_pending_parent_capture_gui_argument_and_child_closure_contract_review_not_runtime_verified",
+      "physical_instructions": 419,
+      "constant_count": 105,
+      "child_count": 23,
+      "notes": [
+        "PC1-PC3 plugin initialization notice; PC19-PC58 initTime/initTimeStr and pcall-protected os.time/os.date; PC59-PC99 MoneyProxy initial snapshot loops.",
+        "PC100 Builtsetting; PC102-PC145 button config and ScheduleOnce child closure; PC146-PC166 cruiseTimer replacement and 1.0-second Schedule; PC167-PC180 NPCStorageProxy RequestStorageData.",
+        "PC181-PC195 Attach_UITop and MainProperty._ui.Panel_mini_chat position/size reads; PC196-PC340 button configuration and child closure wiring; PC379-PC418 hide button creation and click callback.",
+        "Parent upvalue identities, exact nested table shape, ScheduleOnce/GUI argument stacks, child capture values and button layout formula remain provisional; no runtime validation."
+      ]
     }
   ],
-  "draft_function_count": 76,
-  "ordinary_lua_draft_functions": 76,
-  "last_checkpoint": 87,
-  "checkpoint": "87",
-  "drafts": 32,
-  "next": "静态复核Nested_FFFF00的父级四个捕获来源、GUI融合参数和PC265/300子闭包契约；随后继续恢复doInit_UI（root.children[42]）尚未覆盖的419条指令主体，复用其已恢复子闭包而不重复编写。",
+  "draft_function_count": 77,
+  "ordinary_lua_draft_functions": 77,
+  "last_checkpoint": 88,
+  "checkpoint": "88",
+  "drafts": 33,
+  "next": "继续按PC顺序复核doInit_UI的父级捕获来源、按钮配置表、ScheduleOnce/GUI融合参数及23个子闭包实参；随后复核Nested_FFFF00的4个父捕获和刷新闭包契约。",
   "recent_checkpoint": {
     "checkpoint": "79",
     "date": "2026-11-09",
@@ -1116,21 +1133,21 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "87",
+    "checkpoint": "88",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第六十二批.lua",
-    "audit_file": "docs/audit/检查点87_Nested_FFFF00首版草稿.md",
-    "ordinary_lua_draft_functions": 76,
+    "source_file": "04_源码候选/短函数草稿_第六十三批.lua",
+    "audit_file": "docs/audit/检查点88_doInit_UI首版草稿.md",
+    "ordinary_lua_draft_functions": 77,
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增Nested_FFFF00资源统计窗口首版草稿，覆盖窗口开关、UI区域创建、子闭包创建点及周期刷新主线；UI参数、闭包捕获与调度契约待复核。"
+    "summary": "新增doInit_UI首版普通Lua草稿，覆盖初始化提示、时间/资源快照、代理初始化、按钮配置与子闭包绑定、隐藏按钮创建；捕获身份、GUI融合参数和闭包契约待复核。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)",
   "progress_reconciled": {
-    "source_of_counts": "检查点#86累计75个普通Lua草稿；检查点#87新增Nested_FFFF00首版普通Lua草稿。",
-    "ordinary_lua_draft_functions": 76,
+    "source_of_counts": "检查点#87累计76个普通Lua草稿；检查点#88新增doInit_UI首版普通Lua草稿。",
+    "ordinary_lua_draft_functions": 77,
     "complete_static_reconstruction_functions": 29,
     "runtime_verified_functions": 0,
     "note": "本轮新增1个普通Lua草稿；完整静态恢复与运行时验证数量不变。"
