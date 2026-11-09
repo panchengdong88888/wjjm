@@ -902,3 +902,10 @@
 - Nested_FFFF00的PC320是无返回值return；第六十二批首版草稿中误加的返回值元组已删除。
 - 调度归属保持更正后的结论：父函数立即调用Nested_Helper_3后，再执行`SL:Schedule(refreshCallback,1.0)`并保存resTimer。
 - 计数不变：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
+
+
+### 检查点 #88 补充纠正：刷新闭包捕获的是两张资源行节点表
+- 根据PC286与PC291函数调用返回值写入目标寄存器的生命周期，PC282-PC291两次调用Nested_FFFFFF后，R20/R21已被各自返回值覆盖，不再是原函数引用。
+- Nested_Helper_3的10项捕获准确为[moduleState,timerState,curTimeText,durTimeText,initState,MoneyProxy,moneyRows,formatNumber,itemRows,Nested_string]；其中moneyRows与itemRows分别是两次Nested_FFFFFF调用返回的文本节点表。
+- 第六十二批源码已改为保存两个返回表并捕获它们；审计和机器状态同步修正。
+- 计数不变：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
