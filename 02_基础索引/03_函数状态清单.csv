@@ -40,7 +40,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 38,root/28/0,root.children[28].children[0],root/29/1,Nested_distance,8,1,0,完整静态恢复（未运行时验证）,04_源码候选/小型辅助函数_首批草稿.lua；table.sort 比较器完整还原为 a._distance < b._distance。
 39,root/29,root.children[29],root/30,IsDie,7,1,0,完整静态恢复（未运行时验证）,04_源码候选/小型辅助函数_首批草稿.lua；完整还原 actor and not actor:IsDie()，保留短路返回语义。
 40,root/30,root.children[30],root/31,GetMapName,9,4,0,完整静态恢复（未运行时验证）,04_源码候选/小型辅助函数_首批草稿.lua；完整还原 SL:GetMetaValue(""MAP_NAME"") or ""。
-41,root/31,root.children[31],root/32,IsInWhitelistMap,28,6,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十二批.lua；先检查IN_SAFE_AREA，再将MAP_NAME与单项白名单“土城”比较；检查点33。
+41,root/31,root.children[31],root/32,IsInWhitelistMap,28,6,0,完整静态恢复（未运行时验证）,检查点33/166：04_源码候选/短函数草稿_第十二批.lua；PC1-PC8调用SL:GetMetaValue("IN_SAFE_AREA")，truthy立即返回true；否则PC9-PC12调用SL:GetMetaValue("MAP_NAME")；PC13-PC15构造唯一元素白名单{"土城"}；PC16-PC25用ipairs遍历并比较mapName；匹配PC22-PC23返回true；耗尽PC26-PC27返回false；PC28为return后的不可达尾部。28条指令活动路径、SL receiver、常量和返回极性闭合；未运行时验证。
 42,root/33,root.children[32],root/33,AnonymousHelper_32,6,0,0,完整静态恢复（未运行时验证）,04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua；捕获 root T[46] 与 T[42]；返回 upvalue0(upvalue1, 第一个参数)。PC5 vararg return 位于无条件返回后，不可达。 审计见docs/audit/检查点30_PlayerPos与匿名转发闭包.md。
 43,root/34,root.children[33],root/34,AnonymousHelper_33,5,0,0,完整静态恢复（未运行时验证）,04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua；捕获 root T[45] 与 T[43]；返回 upvalue0(upvalue1)。PC4 的空 vararg return 位于无条件返回后，不可达。 审计见docs/audit/检查点30_PlayerPos与匿名转发闭包.md。
 45,root/35,root.children[35],root/36,SetTargetID,26,8,0,完整静态恢复（未运行时验证）,检查点153/159：04_源码候选/短函数草稿_第十二批.lua；Facade缺失或PlayerInputProxy缺失返回false；Facade:retrieveProxy保留Facade作为self；存在proxy时调用proxy:SetTargetID(targetID, global.MMO.SELETE_TARGET_TYPE_FIND)并返回true；vararg未读取。修正原草稿retrieveProxy点调用为冒号调用；26条指令receiver/参数/返回路径闭合，未运行时验证。
