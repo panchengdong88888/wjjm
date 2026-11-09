@@ -73,7 +73,8 @@ local function StorageItems()
         if item then
             local makeIndex = item.MakeIndex
             local bindState = SL.GetMetaValue("ITEM_IS_BIND", makeIndex)
-            if bindState then
+            -- PC120严格比较ITEM_IS_BIND返回值与数值1；不是一般truthy判断。
+            if bindState == 1 then
                 for _, specialName in ipairs(specialNames) do
                     if item.Name and string.find(item.Name, specialName, 1, true) then
                         local itemIndex = SL.GetMetaValue("ITEM_INDEX_BY_NAME", item.Name)
