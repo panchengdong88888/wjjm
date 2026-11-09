@@ -1444,3 +1444,11 @@
 - 本次仅修正已有首版草稿，不新增草稿、不升级完整静态恢复。
 - 统计：普通Lua草稿78；完整静态恢复76/110；运行时验证0。
 - 下一步：继续BlacklistPlayerDetection的状态/坐标/距离分支及StorageItems主体与子原型复核。
+
+
+## 检查点 #136（2026-11-09）：StorageItems 绑定状态严格比较校正
+- 复核 root.children[50] / legacy root/51，主函数224条物理指令、57常量、2个子原型。
+- PC113-PC119取得 SL:GetMetaValue("ITEM_IS_BIND", item)；PC120以数值常量 1.0 与返回值做相等比较。只有相等时才进入PC122起的特殊名称 ipairs 遍历；不相等则跳转PC151。因此草稿中的 if bindState then 不准确，已改为 if bindState == 1 then。
+- 修订源码：04_源码候选/短函数草稿_第六十批.lua；函数状态CSV同步记录。
+- 本次仅校正已有草稿，不新增普通Lua草稿、不升级完整静态恢复；统计仍为草稿78、完整静态恢复76/110、运行时验证0。
+- 仍待复核：StorageItems PC151-PC224、子原型0/1的捕获与调用实参/返回契约、页容量算术和LuaSendMsg完整参数；BlacklistPlayerDetection PC21-PC216的状态、坐标、距离、节流及随机传送分支。
