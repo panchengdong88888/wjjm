@@ -1,7 +1,7 @@
 -- 第六十批 / 检查点 #141
 -- StorageItems：root.children[50] / legacy root/51
 -- 224条物理指令、57常量、2个子原型、vararg_flag=0。
--- 子原型0 Nested_isOutputted已有独立草稿（第三十四批）；子原型1 Nested_Anonymous_2仍处阶段分析。
+-- 子原型0 Nested_isOutputted已有独立草稿（第三十四批）；子原型1容量页码算法已在检查点144闭合。
 -- 主函数首版保留未闭合的数据结构、捕获对象与消息协议，不把占位参数当成作者原始调用。
 
 local function StorageItems()
@@ -39,8 +39,7 @@ local function StorageItems()
         storedPageData[page] = pageData and #pageData or 0
     end
 
-    -- PC61-PC83分别构造R8/R9两张表；当前仅能确认它们被后续两段ipairs使用，
-    -- 尚未将常量和构造寄存器完整对应，故不把常量池内容猜成单一specialNames表。
+    -- PC61-PC80构造R8：18项特殊物品名称表；PC81-PC83构造R9：单项表{"待定"}。
 
     local bagData = SL.GetMetaValue("BAG_DATA")
     if not bagData then
