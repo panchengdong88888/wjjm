@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续评估剩余未开始函数；优先对BlacklistPlayerDetection（root.children[47]，216条）与StorageItems（root.children[50]，224条）做主体可读性评估，再选择更容易闭合的函数；同时可复核Nested_Helper_3十个upvalue与两组快照字段。",
+  "next_action": "继续处理StorageItems（root.children[50]，224条，含两个子原型）；先恢复主函数与两个子原型的闭包/返回契约，再决定是否首版草稿。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "82"
+    "last_checkpoint": "83"
   },
   "static_recovered_functions": [
     {
@@ -487,23 +487,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 82,
-    "target": "Nested_Helper_3",
+    "checkpoint": 83,
+    "target": "BlacklistPlayerDetection",
     "status": "first_pass_draft; static review pending; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第五十八批.lua",
-    "audit_file": "docs/audit/检查点82_Nested_Helper_3首版草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第五十九批.lua",
+    "audit_file": "docs/audit/检查点83_BlacklistPlayerDetection首版草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[3].children[3]",
-        "legacy": "root/43/4/4",
-        "name": "Nested_Helper_3",
-        "instructions": 168
+        "path": "root.children[47]",
+        "legacy": "root/48",
+        "name": "BlacklistPlayerDetection",
+        "instructions": 216
       }
     ],
-    "draft_count_total": 72,
+    "draft_count_total": 73,
     "complete_static_reconstruction_count": 29,
     "runtime_verified_count": 0,
-    "note": "恢复定时器清理、pcall时间获取/格式化、当前时间/历时UI和两组货币数量快照差值刷新结构；捕获身份与数据/控件字段待复核。"
+    "note": "新增黑名单检测与随机传送处理草稿；捕获身份、距离和道具协议未闭合。"
   },
   "corrections": [
     {
@@ -1052,12 +1052,30 @@
         "Window validity and timer unschedule/clear; protected os.time/os.date; current-time and elapsed-time UI; two pairs-based money/count snapshot-delta refresh loops.",
         "Ten capture identities, both iterator tables and entry fields, initSnapshot nested keys, and Text_setString target/argument mappings remain unresolved."
       ]
+    },
+    {
+      "path": "root.children[47]",
+      "legacy_path": "root/48",
+      "name": "BlacklistPlayerDetection",
+      "source_file": "04_源码候选/短函数草稿_第五十九批.lua",
+      "audit_file": "docs/audit/检查点83_BlacklistPlayerDetection首版草稿.md",
+      "status": "first_pass_draft_pending_static_review_not_runtime_verified",
+      "physical_instructions": 216,
+      "constant_count": 35,
+      "child_count": 0,
+      "parent_path": "root",
+      "parent_create_pc": 367,
+      "capture_count": 13,
+      "notes": [
+        "Blacklist flag; HP/deathHandled/lastHp state; whitelist-map early exit; view-player iteration; actor name and map-coordinate reads; alertAt and nextTryAt throttles; random-teleport item/warning flow.",
+        "Thirteen upvalue identities absent from current closure map; HP sentinel and transition branches, player-list element structure, distance computation, timer thresholds, item-selection/use and message arguments unresolved."
+      ]
     }
   ],
-  "draft_function_count": 72,
-  "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 82,
-  "checkpoint": "82",
+  "draft_function_count": 73,
+  "ordinary_lua_draft_functions": 73,
+  "last_checkpoint": 83,
+  "checkpoint": "83",
   "drafts": 32,
   "next": "继续评估未开始的短函数LuaSendMsg（root.children[12]）和GetMapData2DPtr（root.children[22]）；优先恢复清楚的主体，保留未闭合参数/捕获名。",
   "recent_checkpoint": {
@@ -1080,21 +1098,21 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "82",
+    "checkpoint": "83",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第五十八批.lua",
-    "audit_file": "docs/audit/检查点82_Nested_Helper_3首版草稿.md",
-    "ordinary_lua_draft_functions": 72,
+    "source_file": "04_源码候选/短函数草稿_第五十九批.lua",
+    "audit_file": "docs/audit/检查点83_BlacklistPlayerDetection首版草稿.md",
+    "ordinary_lua_draft_functions": 73,
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增Nested_Helper_3首版普通Lua草稿；窗口/计时/日期与两组货币UI刷新控制流已恢复，十个捕获身份及快照/控件参数待复核。"
+    "summary": "新增BlacklistPlayerDetection首版普通Lua草稿；黑名单开关、HP状态、白名单排除、视野玩家循环、告警/重试节流及随机传送提示主体已形成可读骨架，13个捕获身份和道具协议待复核。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)",
   "progress_reconciled": {
-    "source_of_counts": "检查点#81累计71个普通Lua草稿；检查点#82新增Nested_Helper_3。",
-    "ordinary_lua_draft_functions": 72,
+    "source_of_counts": "检查点#82累计72个普通Lua草稿；检查点#83新增BlacklistPlayerDetection。",
+    "ordinary_lua_draft_functions": 73,
     "complete_static_reconstruction_functions": 29,
     "runtime_verified_functions": 0,
     "note": "本批新增1个普通Lua草稿；完整静态恢复及运行时验证数量不变。"
