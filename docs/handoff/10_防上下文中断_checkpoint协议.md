@@ -1816,3 +1816,10 @@
 - 父函数 AccountIDValidation（root.children[55]）仍是首版草稿；其 Schedule 参数栈/调度捕获没有被本批擅自判定完成。
 - 统计：普通 Lua 草稿函数数 83；完整静态恢复 89/110；运行时验证 0。草稿数与完整静态恢复数分开统计。
 - 下一步：追溯 root.children[55] PC27-PC64，闭合 Panel 子闭包捕获来源与 Schedule 参数顺序；随后继续批量恢复未有可读草稿的短函数。
+
+### 检查点 #168 补充：父函数首版草稿
+- 同批新增 `root.children[55]` / AccountIDValidation（64条）第一层普通 Lua 草稿，位于 `04_源码候选/root55_children_drafts.lua`。
+- 已整理 GAME_ID 与 204208 比较、UID 读取、9 项字符串白名单、Nested_ID 调用、成功/失败提示及 `SL:Schedule(callback, 0.5)`。
+- 父 PC58 创建 Panel 子闭包时，第一个捕获值是验证结果寄存器；子闭包将其作为唯一显式参数传给 `SL:UnSchedule`。该数据流按字节码保留，不将它猜测成 timer handle。
+- 父函数仍为首版草稿，UP0/UP1 业务身份及上述 UnSchedule 参数语义未闭合，不计完整静态恢复。
+- 更新统计：普通 Lua 草稿 84；完整静态恢复 89/110；运行时验证 0。
