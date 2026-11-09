@@ -45,3 +45,15 @@
 - 运行时验证：0
 
 下一步：继续闭合PC174-PC192及随机传送道具实际使用契约；随后复核StorageItems PC151-PC224与两个子原型。
+
+
+## 检查点 #145 纠错补充（2026-11-09）
+此前本报告对UPVALUE_8、UPVALUE_9、UPVALUE_7、UPVALUE_10及UPVALUE_12的身份/用途有误，按PC164-PC213、父root闭包创建点和root/25辅助函数重新校正：
+- PC164-PC165零参数调用的是UPVALUE_8()，不是重试间隔函数。它对应root.children[24]（legacy root/25）辅助闭包。
+- 该辅助闭包遍历捕获的单项名称数组`{"随机传送石"}`，查询`SL.GetMetaValue("ITEM_INDEX_BY_NAME")`与`SL.GetMetaValue("ITEM_COUNT")`；有库存时调用`SL.UseItemByIndex`，并返回已使用道具名称；无库存则返回nil。因此随机传送物品选择与实际使用API确实存在，且本次已确认使用的是“随机传送石”。
+- PC166-PC167检查UPVALUE_8()返回值。真值路径PC168-PC173执行`state.nextTryAt = now + UPVALUE_9`，UPVALUE_9是直接数值0.01，并复位`noStoneWarned=false`；假值路径进入PC193。
+- PC174-PC183调用UPVALUE_10（root.children[20] / legacy root/21的本地通知包装器），格式化文本`"黑名单玩家：%s（%d格），飞随机"`的两个实参为UPVALUE_11（数值30.0）和`distanceResult or 0`。不将30.0擅自解释为玩家名。
+- PC184-PC191调用UPVALUE_7（root.children[16] / legacy root/17的日志包装器），实参为格式串、actorName、`distanceResult or 0`、UPVALUE_8()返回的已使用道具名称。
+- 无道具路径PC193-PC196执行`state.nextTryAt = now + UPVALUE_11`，UPVALUE_11为数值30.0；PC197-PC205按`noStoneWarned`进行一次性本地提示。
+- PC206-PC213调用UPVALUE_7记录诊断。PC210的UPVALUE_12是捕获数组本身，不是函数；根函数在闭包创建前将该数组构造为`{"随机传送石"}`。正确表达式是`table.concat(UPVALUE_12, "/")`，不是`table.concat(UPVALUE_12(), "/")`。
+- 由此撤销本报告中“UPVALUE_8为间隔函数”“UPVALUE_11为另一路间隔函数”“UPVALUE_7为通知回调”“UPVALUE_12()返回数组”等旧判断。UPVALUE_6仍是alertAt阈值数值（2.0），PC142-PC159调用UPVALUE_7实际是日志输出。
