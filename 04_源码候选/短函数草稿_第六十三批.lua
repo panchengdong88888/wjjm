@@ -114,8 +114,27 @@ local function doInit_UI()
     local miniChatRight = miniChatPosition.x + miniChatSize.width
     local miniChatY = miniChatPosition.y
 
-    -- PC196-PC235：配置数据主体；PC236-PC340创建回调闭包并写入按钮字段。
-    -- 下列名称依原型索引/既有草稿引用，捕获参数和真实字段映射仍待复核。
+    -- PC196-PC235：实际按钮配置是三组数组，结构由VM的表构造/数组写入指令确定。
+    local buttonGroups = {
+        {
+            {key="yinguaibut", name="开拉怪", toggle="关拉怪"},
+            {key="blacklistbut", name="开黑名单", toggle="关黑名单"},
+            {key="clearblacklistbut", name="清黑名单"},
+            {key="moneybut", name="资源统计"},
+        },
+        {
+            {key="shiqubut", name="开拾取", toggle="关拾取"},
+            {key="diuqibut", name="开丢物品", toggle="关丢物品"},
+            {key="xiaotuibut", name="快速小退"},
+        },
+        {
+            {key="clearmonsterbut", name="清怪物值"},
+            {key="cleardistancebut", name="清距离值"},
+            {key="rewardbut", name="开奖励", toggle="关奖励"},
+        },
+    }
+
+    -- PC236-PC337：创建各功能闭包并填充buttonHandlers[key]。
     local buttonHandlers = {
         yinguaibut = Nested_StopGatherMonsters, -- child6, PC269-PC276
         clearmonsterbut = Nested_Helper,        -- child2, PC277-PC282
@@ -130,16 +149,61 @@ local function doInit_UI()
         moneybut = Nested_FFFF00,               -- child3, PC330-PC335
         xiaotuibut = Nested_OnGameLeaveWorld,   -- child4, PC336-PC337
     }
-    for key, callback in pairs(buttonHandlers) do
-        -- 父级VM在此段构造对应闭包并写入按钮配置表；
-        -- 精确捕获实参与寄存器顺序仍需逐PC校正。
-        local _ = key, callback
+    -- PC338-PC345：建立按钮创建闭包。其三个参数为配置记录、列索引、行偏移；
+    -- 捕获xBase=miniChatRight-10、yBase=miniChatY+1、buttonMap=UPVALUE_4及buttonHandlers。
+    local xBase = miniChatRight - 10
+    local yBase = miniChatY + 1
+    local buttonMap = UPVALUE_4
+
+    local function createButton(config, columnIndex, rowOffset)
+        local x = xBase - 85 * columnIndex
+        local y = yBase + rowOffset
+        local button = GUI.Button_Create(
+            config.key, x, y, "res/public/fuzhu_btn.png"
+        )
+        if not button then
+            return
+        end
+
+        buttonMap[config.key] = button
+        GUI.Button_setTitleText(button, config.name)
+        GUI.Button_setTitleFontSize(button, 18.0)
+        GUI.Button_setTitleFontName(button, "res/public/kaiti2.ttf")
+        GUI.Button_setTitleColor(button, "#ffffff")
+
+        -- child0点击闭包读取buttonHandlers[config.key]并执行对应功能，
+        -- 更新config.toggled，再切换按钮文字与颜色（开启红色/关闭白色）。
+        if config.toggle then
+            config.toggled = false
+            GUI.addOnClickEvent(button, function()
+                local handler = buttonHandlers[config.key]
+                if handler then
+                    handler()
+                end
+                config.toggled = not config.toggled
+                GUI.Button_setTitleText(
+                    button,
+                    config.toggled and config.toggle or config.name
+                )
+                GUI.Button_setTitleColor(
+                    button,
+                    config.toggled and "#ff0000" or "#ffffff"
+                )
+            end)
+        end
     end
 
-    -- PC338-PC378：按钮位置/字号计算与列表遍历。
-    -- 可见常量包含10、1、40、0、80；融合参数含义未全部闭合。
-    local _layoutWidth = miniChatRight
-    local _layoutOriginY = miniChatY
+    -- PC346-PC378：依次遍历三组按钮，行偏移分别为40、0、80；
+    -- child9内部按xBase-85*列索引、yBase+行偏移计算坐标。
+    for columnIndex, config in ipairs(buttonGroups[1]) do
+        createButton(config, columnIndex, 40.0)
+    end
+    for columnIndex, config in ipairs(buttonGroups[2]) do
+        createButton(config, columnIndex, 0.0)
+    end
+    for columnIndex, config in ipairs(buttonGroups[3]) do
+        createButton(config, columnIndex, 80.0)
+    end
 
     -- PC379-PC418：创建“隐 藏”按钮，设置标题、字号、字体并绑定点击闭包。
     local hideButton = GUI.Button_Create(
