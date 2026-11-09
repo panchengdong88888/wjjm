@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "已确认doInit_UI在root PC390创建时捕获20个父级T寄存器，槽位顺序为[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。下一步回溯这些父寄存器在root初始化代码中的业务身份，并继续校正doInit_UI按钮表、ScheduleOnce/GUI参数和Nested_FFFF00捕获契约。",
+  "next_action": "doInit_UI的20个父级捕获及root T寄存器映射已确认；PC102-PC130已修正为四组传送道具slot/names配置，mini-chat右边界x+width已确认。下一步复核ScheduleOnce的精确参数栈、父root寄存器业务身份、按钮布局及Nested_FFFF00捕获契约。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -1141,7 +1141,7 @@
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增doInit_UI首版普通Lua草稿，覆盖初始化提示、时间/资源快照、代理初始化、按钮配置与子闭包绑定、隐藏按钮创建；捕获身份、GUI融合参数和闭包契约待复核。 已追加静态复核：root PC390-PC410证明doInit_UI有20个父级捕获，寄存器映射已写入草稿与审计。"
+    "summary": "新增doInit_UI首版普通Lua草稿，覆盖初始化提示、时间/资源快照、代理初始化、按钮配置与子闭包绑定、隐藏按钮创建；捕获身份、GUI融合参数和闭包契约待复核。 已追加静态复核：root PC390-PC410证明doInit_UI有20个父级捕获，寄存器映射已写入草稿与审计。 进一步校正PC102-PC130为四组传送道具slot/names配置，并确认mini-chat右边界x+width。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)",
@@ -1150,6 +1150,6 @@
     "ordinary_lua_draft_functions": 77,
     "complete_static_reconstruction_functions": 29,
     "runtime_verified_functions": 0,
-    "note": "本轮新增1个普通Lua草稿；完整静态恢复与运行时验证数量不变。 另已校正doInit_UI捕获槽位数为20，并记录root父寄存器映射。"
+    "note": "本轮新增1个普通Lua草稿；完整静态恢复与运行时验证数量不变。 另已校正doInit_UI捕获槽位数为20，并记录root父寄存器映射。 PC102-PC130已根据物理指令改为四组slot/names道具配置，不再误写为按钮列表。"
   }
 }
