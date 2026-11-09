@@ -2,10 +2,10 @@
 -- root.children[55].children[0]
 -- legacy root/56/1；Nested_Panel_mini_chat；24 条物理指令
 ----------------------------------------------------------------
-local function make_Nested_Panel_mini_chat(timerHandle, showWaitingNotice)
-    -- UP[0] 用于 SL:UnSchedule；UP[1] 为等待提示回调。
-    -- 两个捕获槽位在子函数内的用途明确；父级 PC58 的来源寄存器
-    -- 尚未完全追溯，因此工厂参数名仅表达用途，不代表原始局部变量名。
+local function make_Nested_Panel_mini_chat(validationResult, showWaitingNotice)
+    -- UP[0] 精确捕获父 AccountIDValidation 的局部 validationResult（Nested_ID 返回值）。
+    -- UP[1] 捕获父函数 UP[0] 的日志/提示回调。
+    -- 注意：字节码确实将 validationResult 传给 SL:UnSchedule；其宿主语义未验证。
     return function Nested_Panel_mini_chat()
         local mainProperty = MainProperty
 
@@ -13,7 +13,7 @@ local function make_Nested_Panel_mini_chat(timerHandle, showWaitingNotice)
             and mainProperty._ui
             and mainProperty._ui.Panel_mini_chat
         then
-            SL:UnSchedule(timerHandle)
+            SL:UnSchedule(validationResult)
             MainLeftBottom.doInit()
         end
 
@@ -51,15 +51,16 @@ end
 -- * 两条返回路径分别返回 true/false，且各自只调用对应的一参提示回调。
 -- * Nested_Panel_mini_chat 的三层存在性检查、UnSchedule receiver、doInit
 --   零参调用及无条件等待提示均由 PC1-24 覆盖。
--- * 两个函数均未做运行时验证；Panel 子闭包捕获值的父级生产者仍待核验。
+-- * Panel 子闭包的父级捕获生产者已闭合：UP[0]=validationResult，UP[1]=父 UP[0]。
+-- * validationResult 被传入 SL:UnSchedule 是字节码事实；参数为何如此使用仍待宿主运行时验证。
 
 ----------------------------------------------------------------
 -- root.children[55]
--- legacy root/56；AccountIDValidation；64 条物理指令；首版主体草稿
+-- legacy root/56；AccountIDValidation；64 条物理指令；完整静态恢复（未运行时验证）
 ----------------------------------------------------------------
 local function make_AccountIDValidation(logCallback, failureCallback)
-    -- UP[0] 在父函数中承担常规日志/成功提示回调。
-    -- UP[1] 用于账号验证失败提示。业务名称仍按调用用途命名。
+    -- UP[0]：日志/普通提示回调（游戏ID、账号ID、成功提示、等待提示）。
+    -- UP[1]：验证失败提示回调。
     return function AccountIDValidation()
         local gameID = SL:GetMetaValue("GAME_ID")
         logCallback("游戏id：" .. gameID)
@@ -97,9 +98,7 @@ local function make_AccountIDValidation(logCallback, failureCallback)
             failureCallback("[验证失败] 账号ID未在允许列表中")
         end
 
-        -- PC58 捕获当前 validationResult 与 UP[0]。
-        -- 子闭包将第一个捕获值传给 SL:UnSchedule；虽然其值来自验证结果，
-        -- 这里按字节码保留，不擅自解释为真实 timer handle。
+        -- PC58 创建子闭包：第一个捕获为当前 validationResult，第二个捕获为父 UP[0]。
         local scheduledCallback = make_Nested_Panel_mini_chat(
             validationResult,
             logCallback
@@ -109,7 +108,9 @@ local function make_AccountIDValidation(logCallback, failureCallback)
 end
 
 -- MainLeftBottom(2).lua 普通 Lua 恢复候选
--- 检查点 #168：root.children[55] 的两个子原型
+-- 检查点 #169：root.children[55] 父函数及两个子原型
 -- 说明：这是基于 corrected phase3 反汇编的可读重建，不是原始源码逐字节恢复。
 -- 未进行宿主运行时验证。
 
+
+-- 检查点 #169：父 PC58 的两项捕获已逐指令闭合；validationResult 的宿主含义仍未运行时验证。
