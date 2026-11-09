@@ -34,11 +34,11 @@ local function Nested_FFFF00()
         printLog("关闭资源信息窗口")
 
         if timerState.resTimer then
-            sl:UnSchedule(UPVALUE_2.resTimer)
-            UPVALUE_2.resTimer = nil
+            sl:UnSchedule(timerState.resTimer)
+            timerState.resTimer = nil
         end
 
-        gui:Win_Close(UPVALUE_0.resWin)
+        gui:Win_Close(moduleState.resWin)
         return
     end
 
@@ -51,7 +51,7 @@ local function Nested_FFFF00()
         false, true, true, true, true,
         999
     )
-    UPVALUE_0.resWin = resWin
+    moduleState.resWin = resWin
 
     local rootLayout = gui:Layout_Create(
         resWin,
@@ -144,16 +144,18 @@ local function Nested_FFFF00()
         global.ProxyTable.MoneyProxy
     )
 
-    -- 最后创建周期刷新闭包并保存调度句柄。
-    -- 1.0秒间隔由PC317常量确认；Schedule实参及返回句柄槽位仍待核验。
-    local timer = sl:Schedule(
-        1.0,
-        refreshResourceStatistics
-    )
-    UPVALUE_2.resTimer = timer
+    -- PC282-PC291：分别建立货币行与其他资源行，第二参数均为2。
+    updateResourceRows(moneyNames, 2, "money")
+    updateResourceRows(resourceNames, 2, "item")
+
+    -- PC300创建Nested_Helper_3刷新闭包；PC311-PC312立即调用一次。
+    -- 刷新闭包检查窗口有效性，更新当前时间/历时和资源文本，
+    -- 并在末尾自行执行SL:Schedule(self, 1.0)，将句柄写入timerState.resTimer。
+    -- 因此Schedule由刷新闭包自己调用，而不是由本父函数直接调用。
+    refreshResourceStatistics()
 
     return resWin, resList, moneyProxy, formatNumber,
-        updateResourceRows, moneyGroups, itemGroups
+        updateResourceRows, moneyNames, resourceNames
 end
 
 return Nested_FFFF00
