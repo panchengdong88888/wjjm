@@ -187,7 +187,7 @@ local function make_BlacklistPlayerDetection(
                 "黑名单玩家 %s，距离 %d 格，使用 %s 随机传送",
                 currentTargetName,
                 currentTargetDistance,
-                noStoneRetryDelay
+                usedTeleportItemName
             )
             return
         end
@@ -221,9 +221,9 @@ end
 --    limit, not an actor id).
 -- 5. UP[1] is invoked with zero explicit arguments at PC 4; its external
 --    side effects are not inferred here.
--- 6. UP[11] is 30.0 and is passed into the successful notification formatting
---    path as well as used for the failed retry delay; preserve the numeric
---    argument until the local-notice wrapper's formatter is audited.
+-- 6. UP[11] is 30.0 and is used as the failed-path retry delay only.
+--    The successful log's third %s operand is the item name returned by UP[8],
+--    not UP[11]. The PC184-PC191 call-site confirms this.
 -- 7. isBlacklisting is set true at entry; no clear operation appears in this
 --    prototype's visible 216-instruction body. Do not add a reset/finally.
 -- 8. Runtime behavior and all host API side effects remain unverified.
