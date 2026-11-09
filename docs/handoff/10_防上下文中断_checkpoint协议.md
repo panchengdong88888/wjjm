@@ -1662,3 +1662,14 @@
 - 新增审计：`docs/audit/检查点155_MainLoop_PC1-PC159前段控制流复核.md`；修订`04_源码候选/root45_MainLoop.lua`；更新函数状态CSV与机器状态JSON。
 - 状态仍为首版普通Lua草稿；普通Lua草稿82、完整静态恢复76/110、运行时验证0均不变。
 - 下一步：继续全量核对MainLoop PC160-PC417及CFG可达性/状态写入/return汇合。
+
+ 
+## 检查点 #156（2026-11-09）：MainLoop GATHERING未归属目标锁定路径校正
+
+- 对照MainLoop PC203-PC312及CFG，复核其他玩家归属、自己归属、未归属三个分支。
+- PC263将本轮R2归属状态标志清false；未归属分支PC264先把当前索引写入UPVALUE_10，再进入SetTargetID调用前日志。
+- PC265-PC276真实日志为“锁定怪物 %d: %s (ID: %s, 归属: %s)”，参数为索引、怪物名、targetID字符串、UPVALUE_19返回的归属描述。修正草稿此前误放在此处的“归属未变更或已离开视野”提示；该提示属于PC141-PC147等待结果分支。
+- PC277-PC280调用UPVALUE_20=SetTargetID(targetID)并判断truthy；成功分支写等待标志/截止时间/目标ID/名称并输出等待提示，失败分支输出“锁定怪物 %s 失败”并推进索引。成功/失败均汇合后继续数值循环，不return。
+- 修订`04_源码候选/root45_MainLoop.lua`，新增审计`docs/audit/检查点156_MainLoop_GATHERING未归属锁定路径校正.md`，更新CSV与机器状态JSON。
+- 本批不新增普通Lua草稿、不提升完整静态恢复、不增加运行时验证；统计保持82/76/110/0。
+- 下一步：独立总复核MainLoop PC1-PC417的314个可达节点与103个静态不可达节点，核对所有分支、状态写入、循环和return。
