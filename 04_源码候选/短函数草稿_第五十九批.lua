@@ -9,7 +9,14 @@ local function BlacklistPlayerDetection()
     UPVALUE_0.isBlacklisting = true
     UPVALUE_1()
 
-    -- 读取本角色HP。字节码先通过SL.GetMetaValue取HP，再tonumber转换。
+    -- PC5-PC11：先读取本机 MAIN_ACTOR_ID；缺失/假值时立即返回。
+    -- 这是HP读取之前的独立前置门槛，不能省略。
+    local mainActorID = SL.GetMetaValue("MAIN_ACTOR_ID")
+    if not mainActorID then
+        return
+    end
+
+    -- PC12-PC20：读取本角色HP。先通过SL.GetMetaValue取值，再tonumber转换。
     local hp = tonumber(SL.GetMetaValue("HP"))
     if not hp then
         return
