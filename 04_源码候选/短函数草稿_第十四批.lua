@@ -75,18 +75,19 @@ local function make_DestroyUI(uiState, timerState, buttonMap)
 end
 
 -- root.children[40] / legacy root/41 / ShowHideAllButtons
--- UP[0] is the shared state object; UP[1]/UP[2] are captured tables used for
--- the two visibility passes. Exact source identifiers remain unresolved.
-local function make_ShowHideAllButtons(uiState, buttonMap, secondaryButtonMap)
+-- Status: complete static reconstruction; not runtime-validated.
+-- Captures: UP[0]=root T[3] timer state; UP[1]=root T[1] button map;
+-- UP[2]=root T[0] UI state containing the single hidebut control.
+local function make_ShowHideAllButtons(timerState, buttonMap, uiState)
     return function()
-        if uiState.rewardTimer then
-            SL:UnSchedule(uiState.rewardTimer)
-            uiState.rewardTimer = nil
+        if timerState.rewardTimer then
+            SL:UnSchedule(timerState.rewardTimer)
+            timerState.rewardTimer = nil
         end
 
-        if uiState.cruiseTimer then
-            SL:UnSchedule(uiState.cruiseTimer)
-            uiState.cruiseTimer = nil
+        if timerState.cruiseTimer then
+            SL:UnSchedule(timerState.cruiseTimer)
+            timerState.cruiseTimer = nil
         end
 
         for key in pairs(buttonMap) do
@@ -94,9 +95,7 @@ local function make_ShowHideAllButtons(uiState, buttonMap, secondaryButtonMap)
         end
 
         if uiState.hidebut then
-            for key in pairs(secondaryButtonMap) do
-                GUI:setVisible(secondaryButtonMap[key], false)
-            end
+            GUI:setVisible(uiState.hidebut, false)
             uiState.hidebut = nil
         end
     end
