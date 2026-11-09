@@ -1452,3 +1452,10 @@
 - 修订源码：04_源码候选/短函数草稿_第六十批.lua；函数状态CSV同步记录。
 - 本次仅校正已有草稿，不新增普通Lua草稿、不升级完整静态恢复；统计仍为草稿78、完整静态恢复76/110、运行时验证0。
 - 仍待复核：StorageItems PC151-PC224、子原型0/1的捕获与调用实参/返回契约、页容量算术和LuaSendMsg完整参数；BlacklistPlayerDetection PC21-PC216的状态、坐标、距离、节流及随机传送分支。
+
+
+## 检查点 #137（2026-11-09）：BlacklistPlayerDetection nil哨兵校正
+- 复核 root.children[47] / legacy root/48 的PC21-PC26：PC23将状态对象的 lastHp 与常量池K[16]=['unknown',2]比较。该常量编码是nil序列化哨兵，不是字符串字面值 "unknown"。
+- 已将 04_源码候选/短函数草稿_第五十九批.lua 的首次HP状态判断从 previousHp == "unknown" 修正为 previousHp == nil。
+- 本次只修正已有草稿，不新增普通Lua草稿、不升级完整静态恢复；统计仍为草稿78、完整静态恢复76/110、运行时验证0。
+- 下一步：继续逐PC复核PC28-PC54的HP/deathHandled状态转移；再处理PC74-PC141玩家遍历/坐标/距离，以及PC142-PC216节流、随机传送和通知分支。StorageItems继续复核PC151-PC224及两个子原型调用契约。
