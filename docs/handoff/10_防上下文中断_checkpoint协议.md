@@ -972,3 +972,13 @@
 - 尾随数值1的宿主GUI语义未确认，保留原始实参，不作语义命名。
 - 统计保持：普通Lua草稿77；完整静态恢复32/110；运行时验证0。
 - 下一步：核对doInit_UI PC331-PC334捕获父T[3],T[0],T[2],T[1]的业务身份，再复核其他GUI参数和Schedule返回句柄。
+
+
+## 检查点 #95（2026-11-09）：Nested_FFFF00闭包捕获与调度句柄复核
+- 更新 `04_源码候选/短函数草稿_第六十二批.lua`；新增 `docs/audit/检查点95_Nested_FFFF00闭包捕获与调度句柄复核.md`。
+- doInit_UI PC330-PC334创建Nested_FFFF00，捕获来源依次为父UP[3],UP[0],UP[2],UP[1]。按父函数实际使用点核实：UP[0]=PrintLog；UP[1]=initTime/initTimeStr/initSnapshot状态表；UP[2]=计时器状态表（cruiseTimer）；UP[3]=MainLeftBottom UI状态表（hidebut等UI状态）。因此Nested_FFFF00自身UP[0..3]依次为[moduleState,PrintLog,timerState,initState]。
+- Nested_FFFF00 PC68-PC71创建Nested_UnSchedule，捕获父UP[1],UP[2],UP[0]，即[PrintLog,timerState,moduleState]；子函数内分别调用通知、取消resTimer并清nil、关闭resWin。
+- Nested_Helper_3的十项捕获顺序复核与源码草稿一致。
+- PC313-PC319确认SL:Schedule(refreshResourceStatistics,1.0)返回值写入timerState.resTimer。
+- 统计保持：普通Lua草稿77；完整静态恢复32/110；运行时验证0。
+- 下一步：复核Nested_FFFF00的Win_Create、rootLayout Layout_Create、ListView_Create GUI参数栈与融合参数；继续标注未确认宿主参数，不做猜测。
