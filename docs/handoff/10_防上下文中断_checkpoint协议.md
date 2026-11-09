@@ -1359,3 +1359,11 @@
 - 两项原型此前已计入普通Lua草稿78，本批仅拆分整理为独立文件，不重复增加草稿数量。
 - 统计：普通Lua草稿78；完整静态恢复69/110（62.7%）；运行时验证0。
 - 下一步：独立复核这两份草稿，随后批量恢复短函数；复杂BlacklistPlayerDetection与StorageItems先产出主体草稿，Nested_Anonymous的T槽映射继续挂起。
+
+
+## 检查点 #129（2026-11-09）：ReadNumericConfig 调用顺序校正
+
+- 独立复核 `04_源码候选/root9_ReadNumericConfig.lua` 时发现首版草稿中 FileUtils 单例创建与 GetWritablePath 调用顺序颠倒。
+- 已按反汇编 PC1-PC4、PC5-PC7 校正：先 `cc.FileUtils:getInstance()`，再调用捕获的 `GetWritablePath(fileName)`。
+- 同步补充检查点128审计和函数状态CSV；机器状态更新至检查点129。
+- 本次仅校正已有草稿，不增加普通Lua草稿、完整静态恢复或运行时验证计数。统计仍为草稿78、完整静态69/110、运行时验证0。
