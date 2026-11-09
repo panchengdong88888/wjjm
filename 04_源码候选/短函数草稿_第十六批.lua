@@ -26,8 +26,13 @@ local function AnonymousHelper_54(firstArg)
 end
 
 -- 原型：root.children[56]
--- legacy：root/57；物理指令：22
--- 先检查 Facade，再取 PlayerInputProxy；代理存在时设置查找类型的目标 ID 为 0。
+-- legacy：root/57；物理指令：22；无捕获、无子原型。
+-- 父root PC185创建本闭包，captures=0。
+-- PC1-PC5：检查global.Facade；不存在时直接返回。
+-- PC6-PC15：通过Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)取得代理；
+--      代理不存在时直接返回。
+-- PC16-PC22：保留proxy作为SetTargetID接收者，传入目标ID 0及
+--      global.MMO.SELETE_TARGET_TYPE_FIND；函数无显式返回值。
 local function ClearTargetID_2()
     local facade = global.Facade
     if not facade then
