@@ -131,7 +131,8 @@ local function Nested_FFFF00()
     local formatNumber = Nested_Helper_2
 
     -- 资源统计行创建子闭包：child2，PC265捕获[ListView, screenW*0.6]；
-    -- 两次调用分别返回moneyRows与itemRows，均为“资源名称 -> Text节点”的映射表。
+    -- 参数(rowNames,2,rowType)中的rowType分别为'money'/'item'，参与cell名称；
+    -- cell名后缀为ceil(15/2)，Text名按列索引生成；返回资源名称->Text节点映射表。
     local updateResourceRows = Nested_FFFFFF
 
     -- 时间/资源刷新子闭包：child3，PC300捕获10项，顺序为：
