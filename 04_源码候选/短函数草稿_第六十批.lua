@@ -64,52 +64,28 @@ local function StorageItems()
 
     local storedCount = 0
 
-    -- PC105-PC215实际上是一条pairs遍历的连续处理路径，不是先后两个独立的
-    -- ipairs(bagData)/pairs(bagData)循环。PC122-PC150先遍历R9并执行字符串匹配、
-    -- ITEM_INDEX_BY_NAME查询、UseItemByIndex及UPVALUE_2提示。
-    -- PC151-PC176再遍历R8；PC167-PC170调用子原型0，传入两个寄存器实参，
-    -- PC175据返回结果决定是否进入存仓容量检查。R8/R9表的精确业务名称和
-    -- 子原型0两个参数的业务身份仍待映射，故这里不伪造普通Lua过滤表达式。
+    -- PC105-PC215仍在恢复中：这里必须保持为单一pairs遍历体，不能拆成
+    -- ipairs(bagData)和第二次pairs(bagData)两个循环。
+    --
+    -- 已确认的局部契约：
+    -- * PC122-PC150：遍历R9，进行string.find；命中后查询ITEM_INDEX_BY_NAME，
+    --   调用SL.UseItemByIndex，并通过UPVALUE_2输出“使用: ”提示。
+    -- * PC151-PC176：另一个ipairs迭代遍历R8；PC167-PC170调用子原型0，
+    --   调用时传入两个实参；PC175根据返回值决定是否进入容量门控。
+    -- * PC177-PC178：零参数调用子原型1。返回假值则UPVALUE_2输出
+    --   “仓库已满,无法存仓”，UPVALUE_0.isStoring=false并return。
+    -- * 子原型1由PC54创建，捕获父函数R1/R2/R3/R4，依次对应
+    --   maxPage、pageCapacity、openSize、storedPageData。
+    -- * PC187-PC191：UPVALUE_2("存: " .. item.Name)。
+    -- * PC192-PC205：LuaSendMsg七个实参依次为
+    --   global.MsgType.MSG_CS_STORAGE_STORE_REQUEST,
+    --   999999999, item.MakeIndex, 子原型1返回值, 0, item.Name,
+    --   string.len(item.Name)。
+    -- * PC206-PC211包含存仓后的表/计数记账；PC214-PC215复位isStoring；
+    --   PC216-PC224仅在计数大于0时通过UPVALUE_2输出完成提示。
+    --
+    -- TODO：恢复R8/R9两张表的构造和业务含义、两层迭代边界、子原型0的
+    -- 两个实参身份、子原型1内部容量算术、第4个LuaSendMsg参数的协议含义，
+    -- 以及PC206-PC211记账的准确表达式。未闭合前不伪造可执行循环体。
 
-    -- PC177-PC180：零参数调用子原型1。返回假值时调用UPVALUE_2提示仓库已满，
-    -- 将UPVALUE_0.isStoring复位为false并立即return；返回真值才继续存仓。
-    -- 该返回值随后作为LuaSendMsg的第4个实参传入，具体协议字段含义仍待确认。
-    local canStore = Nested_Anonymous_2() -- TODO: 替换为PC54实际创建的闭包变量
-    if not canStore then
-        UPVALUE_2("仓库已满,无法存仓")
-        storageState.isStoring = false
-        return
-    end
-
-    -- PC187-PC205：先调用UPVALUE_2("存: " .. item.Name)，再调用LuaSendMsg。
-    -- 七个实参的顺序已按寄存器构造闭合：
-    -- 消息类型、999999999、item.MakeIndex、子原型1返回值、0、item.Name、string.len(item.Name)。
-    -- 注意：以下仍是协议参数结构草稿，子原型1返回值的字段语义未确认。
-    -- TODO: 把此段放回PC105-PC215的pairs循环体，并恢复R8/R9双层迭代及子原型0调用点。
-    storageState.isStoring = false
-        return
-    end
-
-    -- PC187-PC215：遍历候选物品并发送存仓请求。LuaSendMsg实参位置/协议字段待复核。
-    for _, item in pairs(bagData) do
-        if item and item.MakeIndex then
-            UPVALUE_3("存: " .. tostring(item.Name))
-            -- 以下仅标出协议构成元素；999999999、MakeIndex、绑定/名称/长度等
-            -- 在反汇编中确有寄存器构造，但参数次序和字段语义不能凭常量顺序推断。
-            LuaSendMsg(
-                global.MsgType.MSG_CS_STORAGE_STORE_REQUEST,
-                999999999,
-                item.MakeIndex
-                -- TODO: 其余数值、名称长度、绑定状态及尾随字段待精确恢复
-            )
-            storedCount = storedCount + 1
-        end
-    end
-
-    storageState.isStoring = false
-    -- 原字节码末尾按计数条件输出“存仓完成, 共存入 N 件物品”；
-    -- 是否只在正数时显示、计数口径与成功请求的关系待复核。
-    if storedCount > 0 then
-        UPVALUE_3("存仓完成, 共存入 " .. tostring(storedCount) .. " 件物品")
-    end
 end
