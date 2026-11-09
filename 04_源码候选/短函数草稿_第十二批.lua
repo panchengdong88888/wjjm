@@ -1,5 +1,5 @@
 -- MainLeftBottom(2).lua - short helper drafts, batch 12
--- Status: first-pass readable Lua drafts; static review pending; not runtime-validated.
+-- Contains mixed-status helper reconstructions; see each function's status comment. None are runtime-validated.
 -- Local names are reconstruction names, not claimed original identifiers.
 
 -- root.children[11] / legacy root/12 / DistanceCalculation
@@ -41,6 +41,7 @@ local function IsInWhitelistMap()
 end
 
 -- root.children[35] / legacy root/36 / SetTargetID
+-- Status: complete static reconstruction; not runtime-validated.
 -- Vararg flag is set, but only the first argument is read by the body.
 local function SetTargetID(targetID)
     if not global.Facade then
