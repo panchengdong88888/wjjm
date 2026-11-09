@@ -808,3 +808,12 @@
 - 四个捕获值的业务身份、融合算术的高层表达式、父函数消费返回值的位置/约定仍未闭合；因此只保存阶段分析，不新增普通Lua草稿，不升级完整静态恢复。
 - 累计普通Lua草稿74；完整静态恢复29/110（26.4%）；运行时验证0。
 - 下一步转向未开始短函数root.children[12]（LuaSendMsg）与root.children[22]（GetMapData2DPtr），择其控制流和返回契约较清晰者先恢复。
+
+
+## 检查点 #86（2026-11-09）：MoveItemToQuickUse 首版普通 Lua 草稿
+- 新增源码：04_源码候选/短函数草稿_第六十一批.lua；新增审计：docs/audit/检查点86_MoveItemToQuickUse首版草稿.md。
+- 原型索引51，规范路径root.children[41]，legacy root/42，133条物理指令、26常量、无子原型、vararg_flag=2；函数本身无父闭包捕获。
+- 已恢复Facade.retrieveProxy获取QuickUseProxy与Bag、快捷栏容量检查、GetQuickUseData遍历、通过Index定位已有物品、快捷栏交换路径、Bag:GetItemDataByItemIndex取物及从背包移入快捷栏路径。
+- 参数暂名itemIndex/targetPos；SetQuickUsePosData的参数布局/布尔含义、代理方法返回值、目标位有/无数据分支的精确更新顺序、消息输出入口仍待调用点与API契约复核。源码明确标注占位，不得视为最终可执行协议。
+- 本批新增普通Lua草稿1个；累计75个。完整静态恢复29/110（26.4%）；运行时验证0。
+- 下一步复核MoveItemToQuickUse调用点和代理方法参数；再拆分处理剩余未开始原型root.children[42]及其较短闭包。
