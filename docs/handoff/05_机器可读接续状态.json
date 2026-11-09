@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "继续批量静态复审root.children[42]已有草稿中的短函数，优先捕获/返回/调用点清楚者；已发现root和root.children[45] MainLoop是仅有的两个未开始原型，待短函数复审后再启动复杂主循环。不要将草稿数或静态完整数与运行时验证数混淆。",
+  "next_action": "继续批量复审root.children[42]已有短函数草稿，重点检查分支方向、truthy语义、返回值和回调实参。当前仅root模块体与root.children[45] MainLoop仍标为未开始；短函数复审后再攻复杂主原型。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "98"
+    "last_checkpoint": "99"
   },
   "static_recovered_functions": [
     {
@@ -646,6 +646,42 @@
         "UP[2]接收固定单字符串通知；UP[3]为PrintLog，接收格式串与原始detail两个实参。",
         "PrintLog会尝试string.format，但其当前字节码未调用SL.Print；不能把格式化路径描述成输出通知。",
         "UP[0..2]业务身份保留槽位名；本函数21条指令控制流与调用实参均已闭合。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[7]",
+      "legacy_path": "root/43/8",
+      "name": "Nested_InitGatherMonsters",
+      "physical_instructions": 17,
+      "constant_count": 2,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第二十一批.lua",
+      "audit_file": "docs/audit/检查点99_Nested_InitGatherMonsters分支方向校正.md",
+      "parameters": [
+        "refreshFlag"
+      ],
+      "returns": [
+        "阈值truthy时调用InitGatherMonsters并返回true；否则false"
+      ],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[8]",
+          "usage": "配置表，读写GATHER_THRESHOLD"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[9]",
+          "usage": "无参阈值获取回调"
+        }
+      ],
+      "notes": [
+        "refreshFlag为假时才调用UPVALUE_1()刷新GATHER_THRESHOLD。",
+        "GATHER_THRESHOLD truthy时调用全局InitGatherMonsters()并返回true；false/nil时返回false。",
+        "纠正首版草稿将阈值分支方向写反的问题。",
+        "17条物理指令控制流完整闭合；未运行时验证。"
       ]
     }
   ],
@@ -1297,29 +1333,25 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "98",
+    "checkpoint": "99",
     "date": "2026-11-09",
-    "function_group": [
-      "Nested_Helper",
-      "Nested_s"
-    ],
-    "source_file": "04_源码候选/短函数草稿_第十七批.lua",
-    "audit_file": "docs/audit/检查点98_Nested_Helper与Nested_s格式回调复核.md",
+    "function": "Nested_InitGatherMonsters",
+    "source_file": "04_源码候选/短函数草稿_第二十一批.lua",
+    "audit_file": "docs/audit/检查点99_Nested_InitGatherMonsters分支方向校正.md",
     "findings": [
-      "两个21指令函数均调用UP0(UP1)接收success/detail，按success truthy分支。",
-      "UP2只接收固定单字符串通知。",
-      "UP3均为PrintLog，按格式字符串和原始detail两个独立实参调用。",
-      "PrintLog自身只执行string.format尝试及SL.Print存在性检查，没有实际SL.Print调用。",
-      "两个函数均无显式返回值，控制流与调用实参已闭合。"
+      "refreshFlag为假时调用UP[1]()并写入UP[0].GATHER_THRESHOLD。",
+      "GATHER_THRESHOLD truthy时调用InitGatherMonsters()并返回true。",
+      "GATHER_THRESHOLD false/nil时直接返回false。",
+      "父级doInit_UI PC245-PC247确认两个捕获来源为UP[8]/UP[9]。"
     ],
     "unresolved": [
-      "两个函数UP0/UP1/UP2的上游业务身份名称仍保留槽位。",
-      "没有游戏客户端运行时验证。"
+      "UP[0]/UP[1]的原始业务局部变量名未恢复。",
+      "游戏客户端运行时验证。"
     ],
     "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 34,
+      "complete_static_reconstruction": 35,
       "runtime_verified": 0
     }
   },
@@ -1334,7 +1366,7 @@
   },
   "counts": {
     "ordinary_lua_drafts": 77,
-    "complete_static_reconstruction": 34,
+    "complete_static_reconstruction": 35,
     "runtime_verified": 0
   }
 }
