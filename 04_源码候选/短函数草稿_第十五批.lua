@@ -33,20 +33,19 @@ end
 -- 原型：root.children[42].children[3].children[4]
 -- legacy：root/43/4/5；物理指令：20；3项捕获。
 -- 父Nested_FFFF00 PC68-PC71捕获顺序为父UP[1]、父UP[2]、父UP[0]：
--- 本函数UP[0]=PrintLog/通知回调，UP[1]=timerState，UP[2]=moduleState。
-local function Nested_UnSchedule()
-    local notify = UPVALUE_0
-    local timerState = UPVALUE_1
-    local moduleState = UPVALUE_2
+-- 子UP[0]=PrintLog/通知回调，子UP[1]=timerState，子UP[2]=moduleState。
+-- PC13-PC14写入的常量在反汇编中标记为 ['unknown',2]；不将其擅自改成nil。
+local function make_Nested_UnSchedule(notify, timerState, moduleState)
+    return function Nested_UnSchedule()
+        notify("点击空白,关闭资源信息窗口")
 
-    notify("点击空白,关闭资源信息窗口")
+        if timerState.resTimer then
+            SL:UnSchedule(timerState.resTimer)
+            timerState.resTimer = UNKNOWN_VALUE_SENTINEL -- 原始值标记为 ['unknown',2]，具体宿主值待确认
+        end
 
-    if timerState.resTimer then
-        SL:UnSchedule(timerState.resTimer)
-        timerState.resTimer = nil
+        GUI:Win_Close(moduleState.resWin)
     end
-
-    GUI:Win_Close(moduleState.resWin)
 end
 
 -- 原型：root.children[42].children[22].children[0].children[0].children[0]
