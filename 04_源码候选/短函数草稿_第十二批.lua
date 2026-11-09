@@ -24,7 +24,9 @@ end
 -- and the precise SL method contract need a separate pass.
 
 -- root.children[31] / legacy root/32 / IsInWhitelistMap
--- 28 physical instructions; currently the explicit whitelist contains only 土城.
+-- Status: complete static reconstruction; not runtime-validated.
+-- 28 physical instruction records; PC1-PC27 active path, PC28 is a tail return after PC27.
+-- The explicit whitelist contains only 土城.
 local function IsInWhitelistMap()
     if SL:GetMetaValue("IN_SAFE_AREA") then
         return true
