@@ -1119,3 +1119,13 @@
 - Nested_shiquTimer开启分支仅执行`schedule(PickUpItems,0.01)`并保存返回句柄；没有立即调用`PickUpItems()`。第七十二批源码、审计和CSV说明均已修正。
 - 统计去重：Nested_InitGatherMonsters在检查点#99已完成；Nested_SL_3与Nested_shiquTimer在检查点#100已完成。本轮#107对它们做集中复审，不重复计入完成数。#107实际新增完整静态恢复仅Nested_blacklistTimer；#108新增Nested_ffffff。
 - 当前唯一口径：普通Lua草稿77；完整静态恢复51/110；运行时验证0。CSV与机器状态索引逐路径一致。
+
+
+## 检查点 #109（2026-11-09）：Nested_ITEM_INDEX_BY_NAME快捷栏物品解析
+- 新增源码：`04_源码候选/短函数草稿_第七十四批.lua`。
+- 新增审计：`docs/audit/检查点109_Nested_ITEM_INDEX_BY_NAME参数顺序与循环复核.md`。
+- doInit_UI PC137捕获父R9配置表及父UP[0]移动结果回调；调用点配置为`{slot=4,names={"免战回城石"}}`。
+- 遍历names，查询`SL:GetMetaValue("ITEM_INDEX_BY_NAME",name)`；命中后调用`MoveItemToQuickUse(itemIndex,config.slot)`并接收双返回值。
+- 第二返回值交给捕获回调；第一返回值truthy时跳出循环，false/nil时继续尝试下一个名称。
+- 纠正旧CSV草稿中slot与itemIndex实参顺序颠倒的问题。
+- 统计更新：普通Lua草稿77；完整静态恢复52/110；运行时验证0。
