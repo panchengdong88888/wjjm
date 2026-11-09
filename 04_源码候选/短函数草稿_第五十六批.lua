@@ -93,37 +93,58 @@ end
 
 -- 3) GetStorageItemData
 -- root.children[1] / legacy root/2；77条指令；16常量；无子原型；vararg_flag=0。
--- root PC70创建，捕获root T[4]；捕获值业务身份未证实。
-local function GetStorageItemData()
-    local storageItems = {}
-    if not NPCStorageProxy then
-        return storageItems
-    end
+-- root PC70创建，捕获root T[4]；捕获业务名未知，但其调用契约为接收一条提示文本的回调。
+local function make_GetStorageItemData(notify)
+    return function()
+        local storageItems = {}
+        local storageProxy = NPCStorageProxy
+        if not storageProxy then
+            return storageItems
+        end
 
-    local maxPage = NPCStorageProxy.GetMaxPage()
-    for page = 1, maxPage do
-        local pageData = NPCStorageProxy.GetStorageDataByPage(page)
-        if type(pageData) == "table" then
-            for _, item in ipairs(pageData) do
-                table.insert(storageItems, item)
+        local maxPage = storageProxy:GetMaxPage()
+        local availableSlots = 0
+
+        -- PC13-PC17初始化从第1页到maxPage的数值循环。
+        for page = 1, maxPage do
+            -- PC18-PC23：逐页读取；假值页数据跳过后续类型/遍历分支。
+            local pageData = storageProxy:GetStorageDataByPage(page)
+
+            -- PC24-PC41：只有table页数据才经ipairs逐项插入总列表。
+            if type(pageData) == "table" then
+                for _, item in ipairs(pageData) do
+                    table.insert(storageItems, item)
+                end
+            end
+
+            -- PC42-PC47：truthy页数据取长度；假值按0计。
+            local pageItemCount = 0
+            if pageData then
+                pageItemCount = #pageData
+            end
+
+            -- PC48-PC57：每轮读取单页容量配置及仓库已开放总格数。
+            local perPageMax = GUIDefine.STORAGE_PER_PAGE_MAX
+            if not perPageMax then
+                perPageMax = global.MMO.NPC_STORAGE_MAX_PAGE
+            end
+            local openSize = storageProxy:GetOpenSize()
+
+            -- PC58-PC67：当前页可用上限 = min(单页上限, 总开放格数 - 前面页容量)。
+            local pageLimit = openSize - (page - 1) * perPageMax
+            if pageLimit > perPageMax then
+                pageLimit = perPageMax
+            end
+            if pageLimit > 0 then
+                -- 保留字节码的原始算术：不额外把负数钳制为0。
+                availableSlots = availableSlots + (pageLimit - pageItemCount)
             end
         end
-    end
 
-    -- PC47-PC70容量计算的精确分支/循环仍待复核，以下仅为可读骨架。
-    local perPageMax = GUIDefine and GUIDefine.STORAGE_PER_PAGE_MAX
-    local maxStoragePage = global and global.MMO and global.MMO.NPC_STORAGE_MAX_PAGE
-    local openSize = NPCStorageProxy.GetOpenSize()
-    local availableSlots = 0
-    if perPageMax and maxStoragePage and openSize then
-        local usedPageCapacity = math.max(0, (maxPage - 1) * perPageMax)
-        local remaining = openSize - usedPageCapacity
-        if remaining > 0 then
-            availableSlots = availableSlots + remaining
-        end
-    end
+        -- PC71-PC75：捕获回调收到格式化后的仓库总可用格子提示。
+        notify("仓库总可用格子: " .. tostring(availableSlots))
 
-    -- TODO：UPVALUE_0通知回调身份及容量循环累计公式待复核。
-    UPVALUE_0("仓库总可用格子: " .. tostring(availableSlots))
-    return storageItems
+        -- PC76-PC77：返回累计的仓库物品数组。
+        return storageItems
+    end
 end
