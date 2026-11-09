@@ -102,14 +102,15 @@ local function Nested_Helper_10(blacklistState, notify, hasBlacklistDistance, no
         return true
     end
 
-    if hasBlacklistDistance() then
+    local distance = hasBlacklistDistance()
+    if not distance then
         notifyInput("路径中没有黑名单的距离格子，弹出输入框")
         openDistanceInput()
         return false
     end
 
-    notify(string.format("开启黑名单功能，距离格子：%d", hasBlacklistDistance()))
-    setBlacklistEnabled(blacklistState.isBlacklisting)
+    notify(string.format("开启黑名单功能，距离格子：%d", distance))
+    setBlacklistEnabled(distance)
     return true
 end
 
