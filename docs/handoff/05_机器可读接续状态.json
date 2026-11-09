@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "继续复审doInit_UI剩余子原型，优先Nested_Helper_5/Nested_Helper_8两个输入回调及Nested_Button_setTitleFontSize/Nested_Button_setTitleText，再处理Nested_ffffff、Nested_find等尚未完整的UI函数。每次先核对父级创建点与捕获顺序，再逐PC校正真假分支、格式回调和GUI调用实参。UI辅助函数收尾后，转向root模块体和417指令MainLoop；不重复已完成的底层VM提取。",
+  "next_action": "继续doInit_UI辅助函数：先复审Nested_ffffff、Nested_find、Nested_SL_3、Nested_InitGatherMonsters、Nested_shiquTimer、Nested_blacklistTimer等尚未完整的短函数；优先逐PC核实父级调用与闭包捕获，处理真假分支、计时器句柄、GUI/SL方法self及参数布局。之后回到Nested_FFFFFF及Nested_FFFF00整合，再推进root模块体和417指令MainLoop。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "105"
+    "last_checkpoint": "106"
   },
   "static_recovered_functions": [
     {
@@ -1271,6 +1271,99 @@
         "成功路径通知并调用模板消息回调；保存回调(value)仅truthy返回时启用yinguaibut。",
         "34条指令控制流、回调参数及按钮分支闭合；未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[42].children[9]",
+      "legacy_path": "root/43/10",
+      "name": "Nested_Button_setTitleFontSize",
+      "physical_instructions": 50,
+      "constant_count": 17,
+      "child_count": 1,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十一批.lua",
+      "audit_file": "docs/audit/检查点106_Nested_Button_setTitleFontSize与点击回调复核.md",
+      "parameters": [
+        "config",
+        "offsetX",
+        "offsetY"
+      ],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI T[6]",
+          "usage": "Button_Create父容器/首个参数"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI T[22]",
+          "usage": "横向基准值"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI T[23]",
+          "usage": "纵向基准值"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[4]",
+          "usage": "按钮对象注册表"
+        },
+        {
+          "index": 4,
+          "source": "doInit_UI T[21]",
+          "usage": "按key索引的点击状态门控表"
+        }
+      ],
+      "notes": [
+        "Button_Create调用参数含GUI self、父容器、config.key、baseX-85*offsetX、baseY+offsetY、贴图路径。",
+        "创建失败直接返回；成功后按key登记按钮。",
+        "初始化标题、字号18、字体kaiti2.ttf、白色；toggle假值时toggled=false。",
+        "点击回调捕获本函数UP[4]、config和button。",
+        "50条指令控制流与GUI调用参数闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[9].children[0]",
+      "legacy_path": "root/43/10/1",
+      "name": "Nested_Button_setTitleText",
+      "physical_instructions": 48,
+      "constant_count": 10,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第七十一批.lua",
+      "audit_file": "docs/audit/检查点106_Nested_Button_setTitleFontSize与点击回调复核.md",
+      "parameters": [
+        "config",
+        "button"
+      ],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "Nested_Button_setTitleFontSize UP[4] / doInit_UI T[21]",
+          "usage": "按按钮key索引的门控表"
+        },
+        {
+          "index": 1,
+          "source": "Nested_Button_setTitleFontSize R0",
+          "usage": "config对象"
+        },
+        {
+          "index": 2,
+          "source": "Nested_Button_setTitleFontSize R3",
+          "usage": "button对象"
+        }
+      ],
+      "notes": [
+        "gate=stateGateMap[config.key]；默认allowed=true；gate truthy时调用gate()。",
+        "config.toggle假值时返回；仅allowed严格等于false时返回，nil不会被拒绝。",
+        "config.toggled取反写回；GUI:Button_setTitleText(button,config.name)。",
+        "toggled truthy时颜色#ff0000，否则#ffffff；GUI:Button_setTitleColor(button,color)。",
+        "48条指令分支、捕获、方法self及显式参数闭合；未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
@@ -1921,29 +2014,31 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "105",
+    "checkpoint": "106",
     "date": "2026-11-09",
     "function_group": [
-      "Nested_Helper_5",
-      "Nested_Helper_8"
+      "Nested_Button_setTitleFontSize",
+      "Nested_Button_setTitleText"
     ],
-    "source_file": "04_源码候选/短函数草稿_第七十批.lua",
-    "audit_file": "docs/audit/检查点105_Nested_Helper_5与Nested_Helper_8回调主体静态复核.md",
+    "source_file": "04_源码候选/短函数草稿_第七十一批.lua",
+    "audit_file": "docs/audit/检查点106_Nested_Button_setTitleFontSize与点击回调复核.md",
     "findings": [
-      "两个回调均读取首个变参作为value，校验回调truthy走成功、false/nil走失败。",
-      "失败分支调用失败上下文解析回调，并通过OP_392多返回值与开放参数机制转发给模板消息回调。",
-      "成功分支分别发出黑名单距离/怪物阈值通知及模板消息。",
-      "保存回调接收原始value；仅返回truthy时调用按钮状态回调(key,true)。",
-      "两级捕获链由父级PC250/PC259及包装函数子闭包捕获顺序核对。"
+      "Nested_Button_setTitleFontSize父级doInit_UI PC340捕获root T6/T22/T23/UP4/T21。",
+      "按钮创建坐标按baseX-85*offsetX、baseY+offsetY计算；早期CSV中旧坐标备注已纠正。",
+      "按钮创建失败直接返回；成功按config.key登记并设置标题、字号18、字体kaiti2、白色。",
+      "点击闭包捕获门控表、config、button；门控回调不存在默认允许，存在时调用。",
+      "config.toggle假值退出；门控返回值仅严格false时退出，nil允许。",
+      "点击时toggled取反，更新标题；toggled真时红色，否则白色。",
+      "GUI self及显式参数根据寄存器布局复核。"
     ],
     "unresolved": [
-      "父级T[0]模板消息回调、UP[12]/UP[13]/UP[15]具体宿主业务实现仍需追踪。",
-      "无游戏客户端运行时验证。"
+      "doInit_UI T6/T22/T23/T21的原始业务命名尚未完全确认，保留语义临时名。",
+      "未进行游戏客户端运行时验证。"
     ],
     "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 47,
+      "complete_static_reconstruction": 49,
       "runtime_verified": 0
     }
   },
@@ -1958,7 +2053,7 @@
   },
   "counts": {
     "ordinary_lua_drafts": 77,
-    "complete_static_reconstruction": 47,
+    "complete_static_reconstruction": 49,
     "runtime_verified": 0
   }
 }
