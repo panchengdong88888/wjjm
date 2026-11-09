@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "继续复核Nested_FFFF00的Win_Create、rootLayout、ListView_Create参数栈和融合指令；优先查明各GUI构造函数的可见实参顺序与尾随布尔/数值标志。随后批量复审root.children[42]余下子原型及短函数状态，不重复已闭合的捕获映射。",
+  "next_action": "继续复核Nested_FFFF00的Win_Create/rootLayout/ListView构造调用参数及GUI宿主标志；Win_Create的nil槽已补齐。接下来重点审查Layout_Create、ListView_Create、ListView背景接口的实参栈和父子节点关系，再继续root.children[42]剩余子原型。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "95"
+    "last_checkpoint": "96"
   },
   "static_recovered_functions": [
     {
@@ -1257,22 +1257,21 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "95",
+    "checkpoint": "96",
     "date": "2026-11-09",
     "function": "Nested_FFFF00",
     "source_file": "04_源码候选/短函数草稿_第六十二批.lua",
-    "audit_file": "docs/audit/检查点95_Nested_FFFF00闭包捕获与调度句柄复核.md",
+    "audit_file": "docs/audit/检查点96_Win_Create空参数槽复核.md",
     "findings": [
-      "Nested_FFFF00创建点PC330-PC334依次捕获doInit_UI UP[3],UP[0],UP[2],UP[1]。",
-      "Nested_FFFF00 UP[0]=MainLeftBottom UI状态表；UP[1]=PrintLog；UP[2]=计时器状态表；UP[3]=initTime/initTimeStr/initSnapshot状态表。",
-      "Nested_UnSchedule创建点PC68-PC71依次捕获父UP[1],UP[2],UP[0]，即PrintLog/timerState/moduleState。",
-      "Nested_Helper_3十项捕获顺序复核一致。",
-      "SL:Schedule调用返回值在PC319写入timerState.resTimer。"
+      "Win_Create参数依次含窗口名、0/0、screenW/screenH、false,true,true,true,true、显式nil、999。",
+      "PC43 OP_125清空T[13]，确认999前有nil参数槽。",
+      "rootLayout Layout_Create尾参true；ListView_Create尾参1.0，位置/尺寸公式与草稿一致。",
+      "检查点95确认Nested_FFFF00四项闭包捕获、Nested_UnSchedule三项捕获及Schedule返回句柄写入resTimer。"
     ],
     "unresolved": [
-      "Win_Create、rootLayout Layout_Create、ListView_Create的完整GUI宿主参数语义。",
-      "Layout/Text调用尾随标志1的宿主语义。",
-      "宿主GUI运行时验证。"
+      "Win_Create各布尔/数字标志的宿主GUI语义。",
+      "Layout_Create/ListView_Create及背景设置接口的宿主端参数语义。",
+      "游戏客户端/宿主GUI运行时验证。"
     ],
     "status": "ordinary_lua_draft_static_review_in_progress",
     "counts": {
