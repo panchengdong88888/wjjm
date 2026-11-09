@@ -850,3 +850,9 @@
 - 第六十三批源码已将此前误写的buttonConfig修正为itemSlotConfig；PC131-PC145的ScheduleOnce完整实参仍待融合载荷/宿主签名核验。
 - PC181-PC195明确读取MainProperty._ui.Panel_mini_chat的位置与尺寸，并计算右边界x+width、读取y；Attach_UITop调用的参数布局尚未完全闭合。
 - 本补充不增加函数数或完整静态恢复数：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
+
+
+### 检查点 #88 补充静态复核：父级捕获业务身份
+- 回溯root初始化PC1-PC46及黑名单/配置对象构造，确认doInit_UI捕获槽位中的部分身份：UP[0]=PrintLog；UP[1]与UP[3]均为MainLeftBottom模块表；UP[2]为独立状态表（本函数使用其cruiseTimer字段）；UP[5]为MainLeftBottom.blacklist状态表；UP[8]为含GATHER_THRESHOLD/CHECK_INTERVAL/ATTACK_WAIT_TIME的配置表；UP[11]=ShowLocalNoticeByType闭包；UP[13]/UP[15]分别为黑名单距离/拉怪数量配置文件路径；UP[17]=math.floor；UP[19]=0.2。
+- 其余槽位尚未完成业务身份映射，仍按UP槽位编号引用，不猜名称。源码与审计已补注上述确认结果。
+- 本补充不增加函数数或完整静态恢复数：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
