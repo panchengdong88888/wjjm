@@ -11,7 +11,7 @@
   "verified_complete_functions_runtime": 0,
   "static_candidates": [],
   "major_targets": {
-    "root.children[45]": "MainLoop：417条；检查点152-157已形成普通Lua草稿并完成全CFG分区总账复核。CFG报告统计314个入口可达节点、103个静态不可达节点。检查点155复核PC1-PC159入口/白名单/IDLE/等待路径；检查点156校正PC264调用前索引写入及PC265-PC276锁定日志；检查点153/154分别闭合GATHERING与ATTACKING数值循环。状态写入、分支区段和返回路径已按PC1-PC417汇总。UPVALUE_9/15/17/18/19/20/21身份已确认；其他若干捕获身份仍待父root T寄存器生产者追溯。未运行时验证，不升级完整静态恢复。",
+    "root.children[45]": "MainLoop：417条；检查点152-158形成并完成完整静态恢复（未运行时验证）。CFG报告统计314个入口可达节点、103个静态不可达节点。全部22个upvalue父root T寄存器生产者已闭合：运行标记、当前状态/常量、PrintLog、FormatStateChange、ResetGatherMonsterData、GetMainPlayerID、FindMonsterCandidates、目标ID数组、GetOwnerID、扫描游标/自己归属计数、等待状态字段、FindMonsterInCurrViewField、GetOwnerIDText、IsDie、GetOwnerDescription、SetTargetID、配置表。检查点153/154闭合GATHERING/ATTACKING循环；155/156校正入口等待与未归属锁定路径；157完成全CFG分区总账。静态完整，未运行时验证。",
     "root.children[46]": "DiuItems：169条；普通Lua草稿已独立复审并标记完整静态恢复（未运行时验证）；源码04_源码候选/root46_DiuItems.lua；不计运行时验证。",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next.",
     "root.children[8]": "FormatStateChange：10条；检查点130独立复核PC1-PC10的格式化、回调调用和捕获状态更新时序；首版草稿保留，原始局部名未恢复，未运行时验证。",
@@ -29,7 +29,7 @@
     "root.children[7]": "GetOwnerIDText：检查点151新增04_源码候选/root7_GetOwnerIDText.lua。nil/空串/-1返回false；string分支ownerID==tostring(ownerID)；非string分支ownerID==第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
     "root.children[38]": "GetOwnerID：检查点151新增04_源码候选/root38_GetOwnerID.lua。nil/空串/-1返回false；string分支ownerID~=tostring(ownerID)；非string分支ownerID~=第二参数。首版普通Lua草稿，待静态复审，未运行时验证。"
   },
-  "next_action": "检查点157已完成MainLoop PC1-PC417 CFG分区总账复核；普通Lua草稿82、完整静态恢复76/110、运行时验证0。下一步追溯MainLoop剩余未命名upvalue槽位在父root创建闭包时的T寄存器生产者，优先确认运行开关、状态对象/状态常量、日志回调、状态设置/重置、候选构造、玩家ID读取等辅助闭包身份；不重复已确认的UPVALUE_9/15/17/18/19/20/21。",
+  "next_action": "检查点158已将MainLoop升级为完整静态恢复（未运行时验证）；普通Lua源码候选82、完整静态恢复77/110、运行时验证0。下一步独立静态复审MainLoop直接依赖的短helper：root.children[35] SetTargetID、root.children[7] GetOwnerIDText、root.children[38] GetOwnerID；先逐PC核对草稿和调用契约，能闭合则批量升级，再继续未恢复原型。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -102,7 +102,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "157"
+    "last_checkpoint": "158"
   },
   "static_recovered_functions": [
     {
@@ -1797,30 +1797,49 @@
       "notes": [
         "依次调用 SL:GetMetaValue('X') 与 SL:GetMetaValue('Y')，返回两个值；不同于 GetPlayerPosition 的坐标表返回契约。"
       ]
+    },
+    {
+      "path": "root.children[45]",
+      "legacy_path": "root/46",
+      "name": "MainLoop",
+      "physical_instructions": 417,
+      "constant_count": 41,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/root45_MainLoop.lua",
+      "audit_file": "docs/audit/检查点158_MainLoop_22槽捕获身份闭合与完整静态恢复.md",
+      "parameters": [],
+      "returns": [],
+      "notes": [
+        "All 22 upvalue identities mapped from parent root capture descriptors and producer functions.",
+        "CFG: 314 entry-reachable nodes, 103 statically unreachable nodes; entry, whitelist, IDLE, GATHERING, ATTACKING, loops, state writes and return paths reconciled.",
+        "UPVALUE_15=FindMonsterInCurrViewField; UPVALUE_20=SetTargetID; GATHERING PC166/313 and ATTACKING PC359/405 numeric loops closed.",
+        "Static reconstruction only; no Lua host or game runtime validation."
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "154",
+    "checkpoint": "158",
     "targets": [
       "root.children[45]"
     ],
-    "status": "Audited and annotated MainLoop ATTACKING numeric loop PC359-PC405.",
-    "audit_file": "docs/audit/检查点154_MainLoop_ATTACKING循环校正.md",
+    "status": "Closed all 22 MainLoop upvalue identities and promoted MainLoop to complete static reconstruction.",
+    "audit_file": "docs/audit/检查点158_MainLoop_22槽捕获身份闭合与完整静态恢复.md",
     "files": [
       "04_源码候选/root45_MainLoop.lua",
-      "docs/audit/检查点154_MainLoop_ATTACKING循环校正.md",
+      "docs/audit/检查点158_MainLoop_22槽捕获身份闭合与完整静态恢复.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "UP15=FindMonsterInCurrViewField returns actorID->actor map; UP20=SetTargetID.",
-      "PC359/405 numeric loop scans UP10..#UP8.",
-      "Missing/dead actors advance UP10; first living actor is logged, sent to SetTargetID, and returns immediately.",
-      "If the list is exhausted without a living actor, the function logs and resets to IDLE."
+      "All 22 upvalue capture identities mapped to parent root T-register producers.",
+      "314 reachable / 103 statically unreachable CFG nodes; active state-machine paths and both numeric loops reconciled.",
+      "MainLoop remains not runtime validated."
     ],
     "counts": {
       "ordinary_lua_drafts": 82,
-      "complete_static_reconstruction": 76,
+      "complete_static_reconstruction": 77,
       "runtime_verified": 0
     }
   },
@@ -2448,69 +2467,65 @@
       "legacy_path": "root/46",
       "name": "MainLoop",
       "source_file": "04_源码候选/root45_MainLoop.lua",
-      "audit_file": "docs/audit/检查点154_MainLoop_ATTACKING循环校正.md",
-      "status": "first_pass_draft_corrected_pending_static_review_not_runtime_verified",
+      "audit_file": "docs/audit/检查点158_MainLoop_22槽捕获身份闭合与完整静态恢复.md",
+      "status": "complete_static_reconstruction_not_runtime_verified",
       "physical_instructions": 417,
       "constant_count": 41,
       "child_count": 0,
       "capture_count": 22,
       "notes": [
-        "UPVALUE_15 is root.children[14] FindMonsterInCurrViewField; it returns a map keyed by actor ID. The gathering call passes UPVALUE_12 as an extra argument, which this zero-parameter helper does not read.",
-        "UPVALUE_20 is root.children[35] SetTargetID; it resolves global.Facade / PlayerInputProxy and invokes proxy:SetTargetID(targetID, global.MMO.SELETE_TARGET_TYPE_FIND); returns false if the required facade/proxy is absent, true after invoking the method.",
-        "PC166 prepares the numeric for-loop counter and PC313 OP_412 repeats at PC167; the loop visits UPVALUE_10 through #UPVALUE_8.",
-        "The per-pass R2 flag is initialized true at PC161 and cleared at PC263 on the unowned-target branch. Both SetTargetID success/failure paths advance UPVALUE_10 and continue the loop.",
-        "First-pass draft corrected; front-half CFG review remains pending. No runtime validation.",
-        "PC359/405 form the ATTACKING numeric for-loop over UPVALUE_10..#UPVALUE_8. Missing/dead actors log and advance the cursor; the first living actor is logged, passed to SetTargetID, then the function returns. Exhaustion resets IDLE and gather data."
+        "All 22 upvalue identities mapped to parent root T-register producers; see checkpoint 158 audit.",
+        "CFG reports 314 entry-reachable nodes and 103 statically unreachable nodes; all active state-machine paths and both numeric loops reconciled.",
+        "PC1-PC159 entry/whitelist/IDLE/wait logic reviewed; PC203-PC312 unowned lock path corrected; GATHERING and ATTACKING loops closed.",
+        "Complete static reconstruction only; not validated in Lua host or game runtime."
       ]
     }
   ],
   "draft_function_count": 82,
   "ordinary_lua_draft_functions": 82,
-  "last_checkpoint": "154",
-  "checkpoint": "154",
+  "last_checkpoint": "158",
+  "checkpoint": "158",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 154,
+    "number": 158,
     "date": "2026-11-09",
     "artifacts": [
       "04_源码候选/root45_MainLoop.lua",
-      "docs/audit/检查点154_MainLoop_ATTACKING循环校正.md"
+      "docs/audit/检查点158_MainLoop_22槽捕获身份闭合与完整静态恢复.md"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 82,
-    "complete_static_reconstructions": 76,
+    "complete_static_reconstructions": 77,
     "runtime_verified": 0,
-    "notes": "闭合MainLoop ATTACKING数值循环；不新增草稿数、不升级完整静态恢复。"
+    "notes": "闭合MainLoop全部22个upvalue身份，并基于完整CFG审计将其升级为完整静态恢复；未运行时验证。"
   },
   "latest_checkpoint": {
-    "checkpoint": "154",
+    "checkpoint": "158",
     "date": "2026-11-09",
-    "summary": "闭合MainLoop ATTACKING PC359-PC405数值循环与退出路径，确认首个存活目标SetTargetID后立即return，列表耗尽则IDLE并重置。",
-    "audit_file": "docs/audit/检查点154_MainLoop_ATTACKING循环校正.md",
+    "summary": "MainLoop全部22个upvalue捕获身份闭合，PC1-PC417状态机、两个数值循环、状态写入和返回路径完成静态总审；升级完整静态恢复。",
+    "audit_file": "docs/audit/检查点158_MainLoop_22槽捕获身份闭合与完整静态恢复.md",
     "unresolved": [
-      "MainLoop PC1-PC159入口/白名单/IDLE/GATHERING等待路径完整CFG复核",
-      "MainLoop全函数所有return与跳转独立闭合",
-      "运行时验证"
+      "Lua宿主/游戏运行时验证"
     ],
     "counts": {
       "ordinary_lua_drafts": 82,
-      "complete_static_reconstruction": 76,
+      "complete_static_reconstruction": 77,
       "runtime_verified": 0
     }
   },
-  "complete_static_reconstruction_count": 76,
-  "complete_static_reconstruction": "76/110 (69.1%)",
+  "complete_static_reconstruction_count": 77,
+  "complete_static_reconstruction": "77/110 (70.0%)",
   "progress_reconciled": {
-    "source_of_counts": "按02_基础索引/03_函数状态清单.csv逐项核对；草稿、完整静态恢复与运行时验证分别计数。",
+    "source_of_counts": "按02_基础索引/03_函数状态清单.csv逐项核对；普通Lua源码候选、完整静态恢复与运行时验证分别统计。",
     "ordinary_lua_draft_functions": 82,
-    "complete_static_reconstruction_functions": 76,
+    "complete_static_reconstruction_functions": 77,
     "runtime_verified_functions": 0,
-    "note": "检查点152新增MainLoop首版普通Lua草稿；检查点153/154仅校正其捕获身份与GATHERING/ATTACKING控制流，不增加草稿数或完整静态恢复数。"
+    "note": "检查点158将MainLoop root.children[45]由首版草稿升级为完整静态恢复；普通Lua源码候选总数不变，运行时验证仍为0。"
   },
   "counts": {
     "ordinary_lua_drafts": 82,
-    "complete_static_reconstruction": 76,
+    "complete_static_reconstruction": 77,
     "runtime_verified": 0
   }
 }
