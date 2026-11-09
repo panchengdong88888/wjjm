@@ -888,3 +888,10 @@
 - PC300创建child3（Nested_Helper_3），10项捕获依次为[moduleState,timerState,curTimeText,durTimeText,initState,MoneyProxy,updateResourceRows,formatNumber,updateResourceRows,2.0]。PC311-PC312立即调用一次；该刷新闭包检查窗口有效性、更新当前时间/历时及资源数据，并在内部执行`SL:Schedule(callback,1.0)`，将句柄写入timerState.resTimer。父函数本身不直接Schedule。
 - 第六十二批源码已同步捕获映射、两组资源数组/行创建调用和刷新闭包自调度关系。GUI参数及MoneyProxy刷新细节仍待进一步校正。
 - 计数不变：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
+
+
+### 检查点 #88 补充纠正：Nested_FFFF00 的 Schedule 调用归属
+- 复查PC300-PC320完整父函数尾段后，更正此前对调度归属的解释：PC311-PC312先立即调用刚创建的Nested_Helper_3刷新闭包；PC313-PC319随后仍在Nested_FFFF00父函数内执行`SL:Schedule(refreshCallback,1.0)`，并将返回句柄写入timerState.resTimer。
+- 刷新闭包本身不负责自调度；它只检查窗口有效性、更新时间/历时及资源文本。窗口无效时会取消既有resTimer、清空句柄并返回。
+- 第六十二批源码、检查点87审计和机器接续状态均已纠正，避免将定时调度责任错误放入子闭包。
+- 计数不变：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
