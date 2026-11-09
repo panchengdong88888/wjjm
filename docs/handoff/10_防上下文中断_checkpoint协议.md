@@ -1297,3 +1297,15 @@
 - 函数状态CSV升级为完整静态恢复；机器状态JSON同步更新。
 - 统计：普通Lua草稿78；完整静态恢复65/110（59.1%）；运行时验证0。本批只升级1个既有草稿，不新增普通草稿。
 - 下一步：继续其他短函数或doInit_UI父级未闭合逻辑；BlacklistPlayerDetection和StorageItems保留分阶段复核；Nested_Anonymous帧映射继续等待VM初始化证据。
+
+
+## 检查点 #124（2026-11-09）：Nested_removeFile捕获与返回语义完整静态恢复
+
+- 修改源码：`04_源码候选/短函数草稿_第十五批.lua`中的Nested_removeFile段落。
+- 新增审计：`docs/audit/检查点124_Nested_removeFile捕获与返回语义完整静态恢复.md`。
+- 原型：`root.children[0].children[0]` / `root/1/1`，5条物理指令、1常量、无子原型、无vararg。
+- 父级`root/1` PC17创建闭包，PC18-PC19依次捕获父R1和R2。父R1由PC1-PC4取得`cc.FileUtils:getInstance()`实例；父R2来自父函数UP[0]路径参数，且在PC8-PC10用于`FileUtils:isFileExist(path)`检查。
+- 子函数PC1-PC2读取UP[0].removeFile并保留FileUtils实例接收者；PC3读取UP[1]路径；PC4执行方法调用但不接收调用结果；PC5直接return。因此源码为`fileUtils:removeFile(path)`，无显式返回值。旧草稿错误的`return fileUtilsLikeObject:removeFile(...)`已更正。
+- 函数状态CSV与机器状态JSON同步更新。
+- 统计：普通Lua草稿78；完整静态恢复66/110（60.0%）；运行时验证0。本批只升级1个既有草稿，没有新增草稿。
+- 下一步：检查AnonymousHelper_54（6条指令、2项捕获）或GetWritablePath/FormatStateChange等短函数，继续按父级捕获和逐PC调用契约闭合；Nested_Anonymous T槽映射仍等待VM帧初始化证据。
