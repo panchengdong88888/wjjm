@@ -5,9 +5,17 @@
 本文件只恢复父函数骨架；23个子原型继续复用独立候选，不重复展开。
 ]]
 local function doInit_UI()
-    -- 上层捕获槽位的业务身份尚未核实。
-    local UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3 =
-        UP[0], UP[1], UP[2], UP[3]
+    -- PC390在root创建本闭包时明确捕获20个父级T寄存器。
+    -- 这里列出准确的槽位->父寄存器映射；业务变量身份不因寄存器编号而臆测。
+    -- UP[0..19]依次对应父root的T[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。
+    local UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALUE_4 =
+        UP[0], UP[1], UP[2], UP[3], UP[4]
+    local UPVALUE_5, UPVALUE_6, UPVALUE_7, UPVALUE_8, UPVALUE_9 =
+        UP[5], UP[6], UP[7], UP[8], UP[9]
+    local UPVALUE_10, UPVALUE_11, UPVALUE_12, UPVALUE_13, UPVALUE_14 =
+        UP[10], UP[11], UP[12], UP[13], UP[14]
+    local UPVALUE_15, UPVALUE_16, UPVALUE_17, UPVALUE_18, UPVALUE_19 =
+        UP[15], UP[16], UP[17], UP[18], UP[19]
 
     -- PC1-PC3：初始化完成通知。
     UPVALUE_0("插件初始化完成")
