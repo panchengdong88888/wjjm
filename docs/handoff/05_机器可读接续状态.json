@@ -38,9 +38,10 @@
     "root.children[24]": "UseItemByIndex：33条；检查点167确认父root PC355/356捕获T[37]为UP0，源码改为make_UseItemByIndex(itemNameList)工厂闭包；ipairs遍历捕获列表，分别读取ITEM_INDEX_BY_NAME与ITEM_COUNT，tonumber(...) or 0归一；itemIndex truthy且数量>0时SL:UseItemByIndex(itemIndex)，返回当前itemName；耗尽无值返回。函数体完整静态恢复，捕获表业务来源仍未追踪，未运行时验证。",
     "root.children[55]": "AccountIDValidation：64条；检查点169逐PC闭合完整静态恢复（未运行时验证）。UP0=日志/普通提示回调，UP1=验证失败提示回调；PC38创建Nested_ID并捕获白名单/UP0/UP1；PC42-PC44调用并将布尔结果写入R4；PC45-PC54成功/失败提示分支；PC58创建Panel子闭包，PC59精确捕获R4=validationResult，PC60捕获父UP0；PC62调用SL:Schedule(callback,0.5)。Panel子闭包将validationResult传给SL:UnSchedule；该数据流已闭合，宿主语义未验证。",
     "root.children[55].children[0]": "Nested_Panel_mini_chat：24条；检查点169父PC58/59/60捕获来源闭合，UP0=validationResult（Nested_ID布尔返回值），UP1=父UP0提示回调；满足MainProperty/_ui/Panel_mini_chat门槛时SL:UnSchedule(validationResult)并调用MainLeftBottom.doInit()；所有路径提示等待。完整静态恢复，未运行时验证。",
-    "root.children[15].children[0]": "Nested_SL：13条；检查点170独立静态复审完成。父ClearBlacklistItems PC52创建闭包，PC53捕获R8=当前entryKey，PC54捕获R0=FriendProxy；子函数先SL:RequestOutBlacklist(entryKey)，再检查friendProxy._blacklistData并删除对应键。完整静态恢复，未运行时验证。"
+    "root.children[15].children[0]": "Nested_SL：13条；检查点170独立静态复审完成。父ClearBlacklistItems PC52创建闭包，PC53捕获R8=当前entryKey，PC54捕获R0=FriendProxy；子函数先SL:RequestOutBlacklist(entryKey)，再检查friendProxy._blacklistData并删除对应键。完整静态恢复，未运行时验证。",
+    "root.children[0].children[0]": "Nested_removeFile：5条；检查点171独立静态复审完成。父root/1 PC17创建闭包，PC18捕获R1=cc.FileUtils:getInstance()实例，PC19捕获R2=路径参数；子函数调用fileUtils:removeFile(path)，不保留返回值。完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点170：Nested_SL（root.children[15].children[0]，13条）捕获来源与全部13条指令已闭合并提升为完整静态恢复。下一步优先继续复核剩余短草稿：Nested_removeFile（root.children[0].children[0]，5条）、Nested_UnSchedule（root.children[42].children[3].children[4]，20条）及其他小型闭包；随后再处理较长父函数。运行时验证仍为0。",
+  "next_action": "检查点171：Nested_removeFile（root.children[0].children[0]，5条）父级捕获生产者、receiver、参数和返回路径已闭合并提升为完整静态恢复。下一步继续复核短闭包 Nested_UnSchedule（root.children[42].children[3].children[4]，20条），然后批量筛选其他短草稿。运行时验证仍为0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -113,7 +114,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "170"
+    "last_checkpoint": "171"
   },
   "static_recovered_functions": [
     {
@@ -2126,30 +2127,52 @@
         "Calls SL:RequestOutBlacklist(entryKey), then conditionally deletes friendProxy._blacklistData[entryKey].",
         "All 13 physical instructions reconciled; not runtime validated."
       ]
+    },
+    {
+      "path": "root.children[0].children[0]",
+      "legacy_path": "root/1/1",
+      "name": "Nested_removeFile",
+      "physical_instructions": 5,
+      "constant_count": 1,
+      "child_count": 0,
+      "parent_path": "root.children[0]",
+      "parent_create_pc": 17,
+      "capture_count": 2,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第十五批.lua",
+      "audit_file": "docs/audit/检查点171_Nested_removeFile完整静态复审.md",
+      "parameters": [],
+      "returns": [],
+      "notes": [
+        "UP0 captures cc.FileUtils:getInstance() instance from parent R1.",
+        "UP1 captures parent path argument from R2.",
+        "Calls fileUtils:removeFile(path); no explicit return.",
+        "All five physical instructions reconciled; not runtime validated."
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "170",
+    "checkpoint": "171",
     "targets": [
-      "root.children[15].children[0]"
+      "root.children[0].children[0]"
     ],
-    "status": "Independently reviewed the 13-instruction Nested_SL child prototype, closed both capture producers and all active paths, and promoted it to complete static reconstruction.",
-    "audit_file": "docs/audit/检查点170_Nested_SL完整静态复审.md",
+    "status": "Independently reviewed all five Nested_removeFile instructions and both parent capture producers; promoted to complete static reconstruction.",
+    "audit_file": "docs/audit/检查点171_Nested_removeFile完整静态复审.md",
     "files": [
       "04_源码候选/短函数草稿_第十五批.lua",
-      "docs/audit/检查点170_Nested_SL完整静态复审.md",
+      "docs/audit/检查点171_Nested_removeFile完整静态复审.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "Parent ClearBlacklistItems PC52 creates the child closure.",
-      "PC53 captures R8, the current entryKey; PC54 captures R0, FriendProxy.",
-      "Child calls SL:RequestOutBlacklist(entryKey), then deletes friendProxy._blacklistData[entryKey] only when the table exists.",
-      "All 13 physical instructions, method receiver, capture order, conditional mutation and return path are reconciled; not runtime validated."
+      "Parent root/1 PC17 creates child closure; PC18 captures FileUtils singleton instance from R1; PC19 captures path from R2.",
+      "Child calls fileUtils:removeFile(path) with receiver preserved and no explicit return value.",
+      "All five physical instructions reconciled; not runtime validated."
     ],
     "counts": {
-      "ordinary_lua_drafts": 81,
-      "complete_static_reconstruction": 92,
+      "ordinary_lua_drafts": 80,
+      "complete_static_reconstruction": 93,
       "runtime_verified": 0
     }
   },
@@ -2820,35 +2843,35 @@
       ]
     }
   ],
-  "draft_function_count": 81,
-  "ordinary_lua_draft_functions": 81,
-  "last_checkpoint": "170",
-  "checkpoint": "170",
+  "draft_function_count": 80,
+  "ordinary_lua_draft_functions": 80,
+  "last_checkpoint": "171",
+  "checkpoint": "171",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 170,
+    "number": 171,
     "date": "2026-11-09",
     "artifacts": [
       "04_源码候选/短函数草稿_第十五批.lua",
-      "docs/audit/检查点170_Nested_SL完整静态复审.md",
+      "docs/audit/检查点171_Nested_removeFile完整静态复审.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "draft_prototypes_touched": 1,
-    "draft_prototype_total": 81,
-    "complete_static_reconstructions": 92,
+    "draft_prototype_total": 80,
+    "complete_static_reconstructions": 93,
     "runtime_verified": 0,
-    "notes": "Nested_SL父级捕获entryKey/FriendProxy与子函数13条指令闭合，升级为完整静态恢复。"
+    "notes": "Nested_removeFile的FileUtils实例与path捕获来源、方法receiver和返回路径全部闭合。"
   },
   "latest_checkpoint": {
-    "checkpoint": "170",
-    "summary": "Nested_SL（13条）捕获来源、RequestOutBlacklist调用及条件删除均完整静态复审。",
-    "audit_file": "docs/audit/检查点170_Nested_SL完整静态复审.md",
+    "checkpoint": "171",
+    "summary": "Nested_removeFile（5条）完整静态复审，FileUtils实例和path捕获来源已闭合。",
+    "audit_file": "docs/audit/检查点171_Nested_removeFile完整静态复审.md",
     "unresolved": [
-      "运行时宿主 API 效果尚未验证"
+      "宿主 FileUtils:removeFile 的运行时效果尚未验证"
     ]
   },
-  "complete_static_reconstruction_count": 92,
+  "complete_static_reconstruction_count": 93,
   "complete_static_reconstruction": "89/110 (80.9%)",
   "progress_reconciled": {
     "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；机器状态中的static_recovered_functions是精选索引，不作为完整计数器。",
@@ -2856,14 +2879,14 @@
     "complete_static_reconstruction_functions": 88,
     "runtime_verified_functions": 0,
     "note": "检查点167将UseItemByIndex root.children[24]升级为完整静态恢复，并将UPVALUE_0=T[37]正确表达为工厂闭包捕获；列表业务来源仍未命名。运行时验证仍为0。",
-    "checkpoint": 170,
-    "ordinary_lua_drafts": 81,
-    "complete_static_reconstruction": 92,
+    "checkpoint": 171,
+    "ordinary_lua_drafts": 80,
+    "complete_static_reconstruction": 93,
     "runtime_verified": 0
   },
   "counts": {
-    "ordinary_lua_drafts": 81,
-    "complete_static_reconstruction": 92,
+    "ordinary_lua_drafts": 80,
+    "complete_static_reconstruction": 93,
     "runtime_verified": 0
   }
 }
