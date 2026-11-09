@@ -762,3 +762,12 @@
 - `GetStorageItemData`：原型索引3，规范路径`root.children[1]`，legacy`root/2`，77条指令、16常量、无子原型、`vararg_flag=0`；root PC70创建，捕获root T[4]。恢复NPCStorageProxy按页读取、table/ipairs汇总、容量相关常量与GetOpenSize读取、通知回调及返回数组；PC47-PC70容量计算精确循环和UPVALUE_0身份待复核。
 - 本批新增普通Lua草稿3个；累计70个。完整静态恢复仍29/110（26.4%）；运行时验证0。三个函数均不升级完整静态恢复。
 - 下一步继续筛选尚未开始的短原型；本批参数/循环/捕获身份集中静态复核不阻塞其他短函数草稿推进。
+
+
+## 检查点 #81（2026-11-09）：TakeItems 首版普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第五十七批.lua`；新增审计：`docs/audit/检查点81_TakeItems首版草稿.md`。
+- 函数 `TakeItems`：原型索引7，规范路径`root.children[5]`，legacy`root/6`，99条物理指令、23常量、无子原型、`vararg_flag=0`。root PC79创建，捕获root T[2]、T[5]。
+- 恢复isTaking互斥保护、调用GetStorageItemData、空仓提示、ipairs遍历、Name/MakeIndex检查、string.trim、string.find过滤循环、LuaSendMsg仓库取出请求、取出日志及完成数量提示。
+- 待复核：PC8-PC11过滤表构造/元素；捕获UPVALUE_0/1业务身份；PC42-PC66过滤分支完整语义；PC72-PC85 LuaSendMsg参数位置/数量；PC86后计数与实际成功请求的对应关系。请求实参仅为首版占位，不视为已验证协议。
+- 本批新增普通Lua草稿1个；累计71个。完整静态恢复仍29/110（26.4%）；运行时验证0。该函数不升级完整静态恢复。
+- 下一步优先评估`MoveItemToQuickUse`（`root.children[41]`，133条）与`Nested_Helper_3`（`root.children[42].children[3].children[3]`，168条），按主体/闭包/返回契约清晰度选择。
