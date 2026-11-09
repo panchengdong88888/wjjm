@@ -1183,3 +1183,15 @@
 - Nested_str/Nested_match/Nested_Helper_11仍沿用检查点112已完成静态恢复的子原型结果，不重复计数。
 - 统计更新：普通Lua草稿78；完整静态恢复58/110；运行时验证0。
 - 下一步：核对Nested_Anonymous函数入口参数初始化与T[0]/T[1]/T[2]映射，追踪T[2]生产者；随后整合Nested_FFFF00剩余320条指令及Nested_Helper_3刷新闭包，继续复核doInit_UI其他未完成子原型。
+
+
+## 检查点 #115（2026-11-09）：Nested_Helper_3闭包捕获与入口参数校正
+
+- 修订源码：`04_源码候选/资源统计刷新链_第六十四批.lua`；新增审计：`docs/audit/检查点115_Nested_Helper_3闭包捕获与入口参数校正.md`。
+- 对象：`root.children[42].children[3].children[3]` / legacy `root/43/4/4`，168条指令、31常量、vararg_flag=0。
+- 纠正旧源码候选将10项UPVALUE写成Nested_Helper_3形参的问题：该函数本体无显式参数；父Nested_FFFF00 PC300捕获10项，PC311-PC312无参立即调用；PC313-PC319由父函数执行`SL:Schedule(refreshCallback,1.0)`并保存timerState.resTimer。
+- 10项捕获顺序：[moduleState,timerState,curTimeText,durTimeText,initState,MoneyProxy,moneyRows,formatNumber,itemRows,Nested_string]。
+- PC1-PC19窗口失效时取消resTimer、清nil并返回；PC20-PC38取时失败只跳过时间/历时更新，仍继续资源行刷新；PC39-PC94更新当前时间/历时；PC95-PC137刷新moneyRows，快照键moneyId；PC138-PC167刷新itemRows，调用Nested_string(name)，快照键itemName。
+- 函数在此前已计入完整静态恢复，本批只修订候选表达和机器记录，不增加草稿或完整静态恢复数量。
+- 统计保持：普通Lua草稿78；完整静态恢复58/110；运行时验证0。
+- 下一步：继续追踪Nested_Anonymous（`root.children[42].children[22]`）的VM帧入口与T[0]/T[1]/T[2]初始化及T[2]生产者；不要把两个调用包装器的实参顺序直接等同于T槽映射。
