@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续追踪 root.children[42].children[22]（Nested_Anonymous，8条）的父级调用消费点和 vararg 参数来源，独立复审 Nested_match 的 ScheduleOnce 参数列表；随后优先处理尚未开始的短函数。Nested_str 与 Nested_match 已有普通 Lua 草稿，不要重复恢复或计数。",
+  "next_action": "继续核对 root.children[42].children[22]（Nested_Anonymous）的 T[0..2] 与 root/43/12 两个实参之间的 VM 栈/寄存器映射；Nested_match 的 UPVALUE_2 已确认是错误提示回调捕获值，ScheduleOnce 只延迟执行错误提示闭包0.1秒。若 Nested_Anonymous 参数映射不能快速闭合，转向其他尚未开始的短函数。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "59"
+    "last_checkpoint": "60"
   },
   "static_recovered_functions": [
     {
@@ -600,5 +600,14 @@
       "complete_static_reconstruction": 27,
       "runtime_verified": 0
     }
+  },
+  "latest_checkpoint": {
+    "checkpoint": "60",
+    "date": "2026-11-09",
+    "audit_file": "docs/audit/检查点60_Nested_Anonymous与ScheduleOnce闭包复核.md",
+    "ordinary_lua_draft_functions": 47,
+    "complete_static_reconstruction": 27,
+    "runtime_verified": 0,
+    "summary": "定位 Nested_Anonymous 被 root/43/12 捕获并用于黑名单距离数字输入弹窗；确认 Nested_match.UPVALUE_2 被错误提示闭包捕获，传给 Nested_Helper_11，而非 ScheduleOnce 延迟参数。"
   }
 }
