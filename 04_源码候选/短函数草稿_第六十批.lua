@@ -1,4 +1,4 @@
--- 第六十批 / 检查点 #84
+-- 第六十批 / 检查点 #141
 -- StorageItems：root.children[50] / legacy root/51
 -- 224条物理指令、57常量、2个子原型、vararg_flag=0。
 -- 子原型0 Nested_isOutputted已有独立草稿（第三十四批）；子原型1 Nested_Anonymous_2仍处阶段分析。
@@ -56,63 +56,37 @@ local function StorageItems()
         return
     end
 
-    -- 子原型1在PC54创建，捕获父函数4个寄存器；它负责一段页/容量相关数值计算，
-    -- 具体公式、调用点实参与返回值含义尚未闭合，暂以占位变量记录。
-    local pageCalculation = Nested_Anonymous_2 -- TODO: 应由PC54创建的闭包实例替代
+    -- PC54创建子原型1（root.children[50].children[1]），捕获父函数R1/R2/R3/R4：
+    -- maxPage、pageCapacity、openSize、storedPageData。该闭包在PC177-PC178被零参数调用，
+    -- 返回值用于PC179-PC180容量门控；不能伪造成接收(maxPage,pageCapacity,openSize)的函数。
+    -- PC102创建子原型0（root.children[50].children[0]），捕获2个父级值；
+    -- PC167-PC170通过该闭包执行二参数调用，两个实参的业务身份仍待精确映射。
 
     local storedCount = 0
-    local outputState = { isOutputted = false }
-    local function outputCallback(value)
-        -- TODO: 此回调来自父函数捕获对象，具体输出目标待确认。
-        UPVALUE_2(value)
-    end
 
-    -- PC105-PC150：pairs遍历背包物品，读取MakeIndex、绑定状态及名称，
-    -- 对符合特殊条件的物品调用UseItemByIndex并输出“使用: ”提示。
-    for itemKey, item in pairs(bagData) do
-        if item then
-            local makeIndex = item.MakeIndex
-            local bindState = SL.GetMetaValue("ITEM_IS_BIND", makeIndex)
-            -- PC120严格比较ITEM_IS_BIND返回值与数值1；不是一般truthy判断。
-            if bindState == 1 then
-                for _, specialName in ipairs(specialNames) do
-                    if item.Name and string.find(item.Name, specialName, 1, true) then
-                        local itemIndex = SL.GetMetaValue("ITEM_INDEX_BY_NAME", item.Name)
-                        if itemIndex then
-                            SL.UseItemByIndex(itemIndex)
-                            UPVALUE_3("使用: " .. tostring(item.Name))
-                        end
-                    end
-                end
-            end
-        end
-    end
+    -- PC105-PC215实际上是一条pairs遍历的连续处理路径，不是先后两个独立的
+    -- ipairs(bagData)/pairs(bagData)循环。PC122-PC150先遍历R9并执行字符串匹配、
+    -- ITEM_INDEX_BY_NAME查询、UseItemByIndex及UPVALUE_2提示。
+    -- PC151-PC176再遍历R8；PC167-PC170调用子原型0，传入两个寄存器实参，
+    -- PC175据返回结果决定是否进入存仓容量检查。R8/R9表的精确业务名称和
+    -- 子原型0两个参数的业务身份仍待映射，故这里不伪造普通Lua过滤表达式。
 
-    -- 子原型0 Nested_isOutputted负责识别/记录“聚灵珠”并校验Dura/DuraMax；
-    -- 其真实闭包捕获及主函数调用实参仍需从PC102-PC124进一步核对。
-    -- PC151-PC176还有第二段ipairs/string.find筛选，过滤表与背包条目的对应关系未闭合。
-    for _, item in ipairs(bagData) do
-        if item and item.Name then
-            -- TODO: 调用已恢复的Nested_isOutputted闭包；当前不伪造参数顺序。
-            local eligible = true
-            for _, specialName in ipairs(specialNames) do
-                if string.find(item.Name, specialName, 1, true) then
-                    eligible = false
-                    break
-                end
-            end
-            if eligible then
-                -- TODO: 原字节码还有一段捕获函数/过滤逻辑，需恢复后才能确认此处条件。
-            end
-        end
-    end
-
-    -- PC177-PC186：检查页/容量计算结果；失败时提示仓库已满并复位isStoring。
-    -- 目前尚不能把Nested_Anonymous_2的数值结果解释为确定的剩余格数。
-    local pageLimit = pageCalculation and pageCalculation(maxPage, pageCapacity, openSize)
-    if pageLimit == false then
-        UPVALUE_1("仓库已满,无法存仓")
+    -- PC177-PC180：零参数调用子原型1。返回假值时调用UPVALUE_2提示仓库已满，
+    -- 将UPVALUE_0.isStoring复位为false并立即return；返回真值才继续存仓。
+    -- 该返回值随后作为LuaSendMsg的第4个实参传入，具体协议字段含义仍待确认。
+    local canStore = Nested_Anonymous_2() -- TODO: 替换为PC54实际创建的闭包变量
+    if not canStore then
+        UPVALUE_2("仓库已满,无法存仓")
         storageState.isStoring = false
+        return
+    end
+
+    -- PC187-PC205：先调用UPVALUE_2("存: " .. item.Name)，再调用LuaSendMsg。
+    -- 七个实参的顺序已按寄存器构造闭合：
+    -- 消息类型、999999999、item.MakeIndex、子原型1返回值、0、item.Name、string.len(item.Name)。
+    -- 注意：以下仍是协议参数结构草稿，子原型1返回值的字段语义未确认。
+    -- TODO: 把此段放回PC105-PC215的pairs循环体，并恢复R8/R9双层迭代及子原型0调用点。
+    storageState.isStoring = false
         return
     end
 
