@@ -1435,3 +1435,12 @@
 - 新增审计：`docs/audit/检查点134_TakeItems与Builtsetting完整静态恢复.md`。
 - 下一步：复核BlacklistPlayerDetection（root.children[47]）与StorageItems（root.children[50]）既有草稿。
 
+
+
+## 检查点 #135（2026-11-09）：BlacklistPlayerDetection MAIN_ACTOR_ID前置门槛校正
+
+- 独立逐PC复核发现原首版草稿漏掉PC5-PC11：先调用`SL.GetMetaValue("MAIN_ACTOR_ID")`，结果假值则直接return；HP读取从PC12才开始。
+- 已在`04_源码候选/短函数草稿_第五十九批.lua`补回前置检查，并同步函数状态CSV、机器状态JSON和本检查点审计。
+- 本次仅修正已有首版草稿，不新增草稿、不升级完整静态恢复。
+- 统计：普通Lua草稿78；完整静态恢复76/110；运行时验证0。
+- 下一步：继续BlacklistPlayerDetection的状态/坐标/距离分支及StorageItems主体与子原型复核。
