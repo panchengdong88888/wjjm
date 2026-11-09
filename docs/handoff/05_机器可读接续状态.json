@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续恢复未开始函数；优先评估root.children[12] LuaSendMsg及root.children[22] GetMapData2DPtr的参数/返回契约，再推进DeathAutoBlacklist的UPVALUE业务身份追踪。",
+  "next_action": "优先恢复root.children[12]（LuaSendMsg，92条指令）的普通Lua主体；先按PC1-25参数/消息表构造、PC28-62参数日志串、PC63-86 SendHookList拦截路径、PC87-92 networkCtl:SendMsg后备路径分段恢复，未闭合参数映射保留UPVALUE/临时槽位；随后评估root.children[22] GetMapData2DPtr。DeathAutoBlacklist首版草稿已在检查点#73提交，不重复处理。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "72"
+    "last_checkpoint": "73"
   },
   "static_recovered_functions": [
     {
@@ -860,5 +860,12 @@
     "summary": "新增DeathAutoBlacklist首版普通Lua草稿。恢复lastAttacker读取/清空、凶手名称保护、黑名单查询分支、提示调用，以及0至5循环按0.5秒间隔执行六次ScheduleOnce；子回调捕获攻击者对象并调用RequestAddBlacklistByName。四个UPVALUE业务身份未全部闭合。"
   },
   "complete_static_reconstruction_count": 29,
-  "complete_static_reconstruction": "29/110 (26.4%)"
+  "complete_static_reconstruction": "29/110 (26.4%)",
+  "progress_reconciled": {
+    "source_of_counts": "02_基础索引/03_函数状态清单.csv 按函数行状态逐行统计",
+    "ordinary_lua_draft_functions": 58,
+    "complete_static_reconstruction_functions": 29,
+    "runtime_verified_functions": 0,
+    "note": "检查点#73正文历史累计数写为60；与当前CSV逐行状态统计的58不一致。接续统计以CSV当前状态为准，待后续集中核对历史草稿计数口径。"
+  }
 }
