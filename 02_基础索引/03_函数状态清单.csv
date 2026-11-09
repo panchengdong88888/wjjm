@@ -5,7 +5,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 1,root/0,root.children[0],root/1,FileExistCheck_pcall_wrapper,32,5,1,完整静态恢复（未运行时验证）,检查点62；32条指令控制流闭合；UPVALUE_0为root/3路径拼接闭包；子闭包捕获FileUtils实例与resolvedPath并pcall执行removeFile；返回值及二次存在检查已核对；未运行时验证。
 2,root/0/0,root.children[0].children[0],root/1/1,Nested_removeFile,5,1,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十五批.lua；读取 UP[0].removeFile 并以 UP[0] 为 self、UP[1] 为路径调用；捕获业务名待确认；检查点36。
 3,root/1,root.children[1],root/2,GetStorageItemData,77,16,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-4,root/2,root.children[2],root/3,GetWritablePath,10,4,0,部分核验,cc.FileUtils/getInstance/getWritablePath 路径明确；vararg/拼接融合指令未完全还原。
+4,root/2,root.children[2],root/3,GetWritablePath,10,4,0,首版普通Lua草稿（待静态复审/未运行时验证）,检查点65；确认cc.FileUtils:getInstance():getWritablePath()调用链；PC8融合拼接为T[1]..R2，结合调用点暂恢复为writablePath..path；vararg_flag=1，首参槽位与拼接方向仍待静态复核。
 5,root/3,root.children[3],root/4,MoveTo,51,20,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 6,root/4,root.children[4],root/5,GetDroppedItems,8,3,0,完整静态恢复（未运行时验证）,04_源码候选/其他短辅助函数_第二批草稿.lua；PC1-8 完整还原为 global.dropItemManager:FindDropItemInCurrViewFieldAll() 并原样返回两个结果。
 7,root/5,root.children[5],root/6,TakeItems,99,23,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
