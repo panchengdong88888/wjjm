@@ -649,3 +649,13 @@
 - 新增普通Lua草稿1个；累计56个。完整静态恢复仍29/110（26.4%）；运行时验证0；最新检查点#69。
 - 下一步继续恢复其他未开始函数，优先短小且捕获/调用关系明确者；root R5身份留待上游注册链追踪。
 
+## 检查点 #70（2026-11-09）：Nested_SL_2 首版普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第四十六批.lua`；新增审计：`docs/audit/检查点70_Nested_SL_2首版草稿.md`。
+- 函数：`Nested_SL_2`，原型索引54，规范路径`root.children[42].children[1]`，legacy`root/43/2`，33条物理指令、8个常量、1个子原型、`vararg_flag=0`。
+- doInit_UI PC289创建本函数，五个捕获依次为doInit_UI.UPVALUE_2、UPVALUE_0、UPVALUE_17、UPVALUE_18、UPVALUE_19。
+- 主流程：rewardTimer存在则提示关闭、调用SL.UnSchedule、写入`['unknown',2]`并返回true；否则提示开启，调用SL.Schedule(0,回调,UPVALUE_4)，将返回值存入rewardTimer并返回true。
+- 子原型捕获本函数T[0]、UPVALUE_2、UPVALUE_3；先将T[0]加1并写回，再按`(T[0]-1)%UPVALUE_2+1`计算索引；若UPVALUE_3[index]不存在，则按反汇编参数顺序调用LuaSendMsg，消息号9002。
+- T[0]的调用方来源、外层捕获变量业务名称仍待追踪；Schedule/UnSchedule/LuaSendMsg未运行时验证。本批只计首版普通Lua草稿，不升级完整静态恢复。
+- 新增普通Lua草稿1个；累计57个。完整静态恢复仍29/110（26.4%）；运行时验证0；最新检查点#70。
+- 下一步继续恢复其他未开始函数；T[0]来源和捕获业务名留待调用/赋值链追踪，不阻塞推进。
+
