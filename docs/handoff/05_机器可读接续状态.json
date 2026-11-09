@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续批量恢复其他未开始函数；优先选择短小、闭包捕获关系明确、调用参数与返回契约可从反汇编直接恢复的目标。Builtsetting的root R5业务身份留待上游注册/赋值链追踪。",
+  "next_action": "继续批量恢复其他未开始的短函数或可读子原型；Nested_SL_2的T[0]调用方来源及root UPVALUE业务名留待doInit_UI调用/赋值链追踪。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "69"
+    "last_checkpoint": "70"
   },
   "static_recovered_functions": [
     {
@@ -487,23 +487,24 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 69,
-    "target": "Builtsetting",
-    "status": "first_pass_draft; UPVALUE_0 business semantics pending; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第四十五批.lua",
-    "audit_file": "docs/audit/检查点69_Builtsetting首版草稿.md",
+    "checkpoint": 70,
+    "target": "Nested_SL_2",
+    "status": "first_pass_draft; T0 origin and capture business names pending; no runtime validation",
+    "source_file": "04_源码候选/短函数草稿_第四十六批.lua",
+    "audit_file": "docs/audit/检查点70_Nested_SL_2首版草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[23]",
-        "legacy": "root/24",
-        "name": "Builtsetting",
-        "instructions": 55
+        "path": "root.children[42].children[1]",
+        "legacy": "root/43/2",
+        "name": "Nested_SL_2",
+        "instructions": 33,
+        "child_prototypes": 1
       }
     ],
-    "draft_count_total": 56,
+    "draft_count_total": 57,
     "complete_static_reconstruction_count": 29,
     "runtime_verified_count": 0,
-    "note": "新增Builtsetting首版普通Lua草稿。闭包捕获确认UPVALUE_0<-root R5；恢复6组CHANGE_SETTING编号/开关值与对应中文状态提示，函数无显式参数及返回值。R5业务语义仍待追踪，未运行时验证。"
+    "note": "新增Nested_SL_2及其定时回调子原型的首版普通Lua草稿。五个外层捕获来源和子原型三个捕获来源已核实；恢复rewardTimer开关、UnSchedule/Schedule及按周期索引检查后LuaSendMsg的流程。T[0]来源与捕获变量业务名仍待追踪。"
   },
   "corrections": [
     {
@@ -563,7 +564,7 @@
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   },
-  "draft_recovered_count": 11,
+  "draft_recovered_count": 12,
   "draft_recovered_functions": [
     {
       "path": "root.children[46]",
@@ -733,27 +734,49 @@
         "After each setting call UPVALUE_0 receives the corresponding Chinese status string",
         "Root R5 business identity remains unresolved; no runtime validation"
       ]
+    },
+    {
+      "path": "root.children[42].children[1]",
+      "legacy_path": "root/43/2",
+      "name": "Nested_SL_2",
+      "source_file": "04_源码候选/短函数草稿_第四十六批.lua",
+      "audit_file": "docs/audit/检查点70_Nested_SL_2首版草稿.md",
+      "status": "first_pass_draft_T0_origin_and_capture_business_names_pending_not_runtime_verified",
+      "physical_instructions": 33,
+      "constant_count": 8,
+      "child_count": 1,
+      "vararg_flag": 0,
+      "notes": [
+        "doInit_UI PC289 creates this closure; captures map to parent UP2, UP0, UP17, UP18, UP19 respectively",
+        "UPVALUE_0.rewardTimer controls enable/disable toggle",
+        "Existing timer path notifies close, calls SL.UnSchedule, writes {'unknown',2}, returns true",
+        "No timer path notifies open, schedules callback with (0, callback, UPVALUE_4), stores return as rewardTimer, returns true",
+        "Child callback captures parent T0, UP2, UP3",
+        "Child updates captured T0 by +1, indexes (T0-1)%UPVALUE_2+1, checks UPVALUE_3[index]",
+        "Missing entry sends LuaSendMsg with 9002 and captured table values",
+        "T0 caller source and business names of captures remain unresolved; no runtime validation"
+      ]
     }
   ],
-  "draft_function_count": 56,
-  "ordinary_lua_draft_functions": 56,
-  "last_checkpoint": 69,
-  "checkpoint": "69",
+  "draft_function_count": 57,
+  "ordinary_lua_draft_functions": 57,
+  "last_checkpoint": 70,
+  "checkpoint": "70",
   "drafts": 32,
   "next": "继续筛选未开始的短函数。优先检查 root.children[42].children[22]（Nested_Anonymous，8条指令且有1个子原型）及 root.children[42].children[22].children[0]（Nested_str，27条）/其子函数，先闭合匿名包装函数的调用与捕获关系；再处理 root.children[42].children[9] / Nested_Button_setTitleText。不要重做Nested_Helper_4/7与其已完成回调主体。",
   "recent_checkpoint": {
-    "checkpoint": "69",
+    "checkpoint": "70",
     "date": "2026-11-09",
-    "summary": "新增Builtsetting首版普通Lua草稿。闭包捕获确认UPVALUE_0<-root R5；恢复6组CHANGE_SETTING编号/开关值与对应中文状态提示，函数无显式参数及返回值。R5业务语义仍待追踪，未运行时验证。",
+    "summary": "新增Nested_SL_2及其定时回调子原型的首版普通Lua草稿。五个外层捕获来源和子原型三个捕获来源已核实；恢复rewardTimer开关、UnSchedule/Schedule及按周期索引检查后LuaSendMsg的流程。T[0]来源与捕获变量业务名仍待追踪。",
     "files": [
-      "04_源码候选/短函数草稿_第四十五批.lua",
-      "docs/audit/检查点69_Builtsetting首版草稿.md",
+      "04_源码候选/短函数草稿_第四十六批.lua",
+      "docs/audit/检查点70_Nested_SL_2首版草稿.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "added_draft_functions": [
-      "root.children[23]"
+      "root.children[42].children[1]"
     ],
     "unchanged": {
       "complete_static_reconstruction": 29,
@@ -761,15 +784,15 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "69",
+    "checkpoint": "70",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第四十五批.lua",
-    "audit_file": "docs/audit/检查点69_Builtsetting首版草稿.md",
-    "ordinary_lua_draft_functions": 56,
+    "source_file": "04_源码候选/短函数草稿_第四十六批.lua",
+    "audit_file": "docs/audit/检查点70_Nested_SL_2首版草稿.md",
+    "ordinary_lua_draft_functions": 57,
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增Builtsetting首版普通Lua草稿。闭包捕获确认UPVALUE_0<-root R5；恢复6组CHANGE_SETTING编号/开关值与对应中文状态提示，函数无显式参数及返回值。R5业务语义仍待追踪，未运行时验证。"
+    "summary": "新增Nested_SL_2及其定时回调子原型的首版普通Lua草稿。五个外层捕获来源和子原型三个捕获来源已核实；恢复rewardTimer开关、UnSchedule/Schedule及按周期索引检查后LuaSendMsg的流程。T[0]来源与捕获变量业务名仍待追踪。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)"
