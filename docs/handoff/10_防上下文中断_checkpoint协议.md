@@ -925,3 +925,11 @@
 - 正常/提前退出路径的显式isDiuing清理已闭合；无可见异常保护，外部调用抛错时标记可能遗留。
 - DiuItems状态提升为“完整静态恢复（未运行时验证）”。普通Lua草稿数量仍为77；完整静态恢复29→30/110；运行时验证仍为0。
 - 下一目标：继续root.children[42] doInit_UI资源刷新链，核对Nested_Helper_3的MoneyProxy分支、Nested_string多返回值及Nested_FFFFFF GUI构造参数；不重复DiuItems。
+
+
+### 检查点 #90（2026-11-09）：Nested_string 与 Nested_Helper_3 资源刷新链
+- 新增源码：`04_源码候选/资源统计刷新链_第六十四批.lua`；审计：`docs/audit/检查点90_资源统计刷新链静态恢复.md`。
+- Nested_string（root.children[42].children[3].children[1]，46条指令）已闭合：读取BAG_DATA；pairs遍历；Name/MakeIndex truthy；string.find(item.Name, searchName,1,true)纯文本匹配；ITEM_IS_BIND truthy排除；按OverLap or 1累计非绑定命中数量；无BAG_DATA返回0。
+- Nested_Helper_3（root.children[42].children[3].children[3]，168条指令）十项捕获顺序已核实；窗口失效时取消resTimer；pcall安全读取os.time/os.date；更新当前时间与历时；moneyRows通过MoneyProxy ID/数量及initSnapshot[id]计算差值；itemRows通过Nested_string(name)及initSnapshot[name]计算差值。
+- 两个函数状态升级为完整静态恢复（未运行时验证）。普通Lua草稿总数保持77；完整静态恢复30→32/110；运行时验证仍为0。
+- 下一步：核对Nested_FFFFFF（root.children[42].children[3].children[2]，65条指令）的GUI行构造参数与映射表返回契约，再回写Nested_FFFF00父函数草稿。
