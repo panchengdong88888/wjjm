@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "101"
+    "last_checkpoint": "102"
   },
   "static_recovered_functions": [
     {
@@ -919,6 +919,91 @@
         "false/nil结果才提示缺少阈值，调用UP[3]()、UP[4]()并返回false。",
         "31条物理指令控制流闭合；未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[42].children[1]",
+      "legacy_path": "root/43/2",
+      "name": "Nested_SL_2",
+      "physical_instructions": 33,
+      "constant_count": 8,
+      "child_count": 1,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第六十八批.lua",
+      "audit_file": "docs/audit/检查点102_Nested_SL_2奖励定时器与消息轮询复核.md",
+      "parameters": [],
+      "returns": [
+        "关闭奖励定时器时true；开启并安排轮询回调时true"
+      ],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "doInit_UI UP[2]",
+          "usage": "rewardTimer状态表"
+        },
+        {
+          "index": 1,
+          "source": "doInit_UI UP[0]",
+          "usage": "功能提示回调"
+        },
+        {
+          "index": 2,
+          "source": "doInit_UI UP[17]",
+          "usage": "轮询取模基数"
+        },
+        {
+          "index": 3,
+          "source": "doInit_UI UP[18]",
+          "usage": "消息条目表"
+        },
+        {
+          "index": 4,
+          "source": "doInit_UI UP[19]",
+          "usage": "Schedule附加上下文"
+        }
+      ],
+      "notes": [
+        "关闭分支UnSchedule并将rewardTimer置nil，返回true。",
+        "开启分支Schedule(0,callback,UP[4])并保存返回句柄，返回true。",
+        "子闭包捕获父T[0]/UP[2]/UP[3]。",
+        "33条指令闭合；未运行时验证。"
+      ]
+    },
+    {
+      "path": "root.children[42].children[1].children[0]",
+      "legacy_path": "root/43/2/1",
+      "name": "Nested_LuaSendMsg",
+      "physical_instructions": 22,
+      "constant_count": 5,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第六十八批.lua",
+      "audit_file": "docs/audit/检查点102_Nested_SL_2奖励定时器与消息轮询复核.md",
+      "parameters": [],
+      "returns": [],
+      "upvalues": [
+        {
+          "index": 0,
+          "source": "Nested_SL_2 T[0]",
+          "usage": "可写轮询计数器"
+        },
+        {
+          "index": 1,
+          "source": "Nested_SL_2 UP[2]",
+          "usage": "取模基数"
+        },
+        {
+          "index": 2,
+          "source": "Nested_SL_2 UP[3]",
+          "usage": "消息条目表"
+        }
+      ],
+      "notes": [
+        "计数器加1并写回；索引为(counter-1)%modulus+1。",
+        "条目假值时不发送；truthy时LuaSendMsg七参数为9002、entry[1]、1.0、2.0、3.0、entry[2]、entry[3]。",
+        "22条指令闭合；未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
@@ -1569,26 +1654,30 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "101",
+    "checkpoint": "102",
     "date": "2026-11-09",
-    "function": "Nested_StopGatherMonsters",
-    "source_file": "04_源码候选/短函数草稿_第六十七批.lua",
-    "audit_file": "docs/audit/检查点101_Nested_StopGatherMonsters分支与捕获复核.md",
+    "function_group": [
+      "Nested_SL_2",
+      "Nested_LuaSendMsg"
+    ],
+    "source_file": "04_源码候选/短函数草稿_第六十八批.lua",
+    "additional_source": "04_源码候选/短函数草稿_第二十二批.lua",
+    "audit_file": "docs/audit/检查点102_Nested_SL_2奖励定时器与消息轮询复核.md",
     "findings": [
-      "父级doInit_UI PC269-PC275确认6项捕获来源依次为UP2,UP11,UP9,UP0,R20,R17。",
-      "gatherTimer存在时通知关闭、调用StopGatherMonsters并返回true。",
-      "无timer时UP2() truthy才走开启分支，通知开启、UP5(ready)、返回true。",
-      "UP2() false/nil才提示缺少阈值、调用UP3()和UP4()、返回false。",
-      "纠正旧草稿摘要把ready真假分支写反的问题。"
+      "Nested_SL_2父级doInit_UI PC289-PC294捕获rewardTimer状态表、通知回调、取模基数、消息条目表、Schedule附加上下文。",
+      "关闭奖励时UnSchedule、rewardTimer=nil、返回true；开启时SL:Schedule(0,callback,UP[4])保存句柄并返回true。",
+      "Nested_LuaSendMsg捕获父T[0]计数器、UP[2]取模基数、UP[3]消息表。",
+      "轮询索引(counter-1)%modulus+1；缺条目跳过；命中时LuaSendMsg七参数顺序已核实。",
+      "[unknown,2]为nil占位，rewardTimer清理恢复为nil。"
     ],
     "unresolved": [
-      "UP3/UP4/UP5的原作者业务变量名未确认。",
+      "UP[2..4]原作者变量名与Schedule第三参数宿主含义未知，保留行为名。",
       "无游戏客户端运行时验证。"
     ],
     "status": "complete_static_reconstruction_not_runtime_verified",
     "counts": {
       "ordinary_lua_drafts": 77,
-      "complete_static_reconstruction": 40,
+      "complete_static_reconstruction": 42,
       "runtime_verified": 0
     }
   },
@@ -1603,7 +1692,7 @@
   },
   "counts": {
     "ordinary_lua_drafts": 77,
-    "complete_static_reconstruction": 40,
+    "complete_static_reconstruction": 42,
     "runtime_verified": 0
   }
 }
