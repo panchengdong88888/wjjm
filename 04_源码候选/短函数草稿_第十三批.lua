@@ -20,8 +20,9 @@ local function make_SetButtonVisibilityState(moduleState, buttonMap)
 end
 
 -- root.children[26] / legacy root/27 / ResetGatherMonsterData
+-- Status: complete static reconstruction; not runtime-validated.
 -- Captures (in slot order): root T[15], T[16], T[17], T[25], T[19],
--- T[20], T[21], T[22], T[4]. The source-level names of most cells are unknown.
+-- T[20], T[21], T[22], T[4]. T[4] is PrintLog; most state-cell names remain neutral.
 local function make_ResetGatherMonsterData(
     resetTableCell,
     zeroCell1,
@@ -31,7 +32,7 @@ local function make_ResetGatherMonsterData(
     zeroCell4,
     zeroCell5,
     emptyStringCell,
-    notify
+    printLog
 )
     return function()
         -- PC 1-2: replace the captured table with a fresh table.
@@ -50,7 +51,7 @@ local function make_ResetGatherMonsterData(
         emptyStringCell = ""
 
         -- PC 18-20: report completion.
-        notify("数据已重置")
+        printLog("数据已重置")
     end
 end
 
