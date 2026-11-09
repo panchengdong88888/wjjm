@@ -68,7 +68,6 @@ local function Nested_shiquTimer()
     end
 
     notify("开启拾取物品")
-    PickUpItems()
     timerState.shiquTimer = schedule(PickUpItems, 0.01)
 end
 
