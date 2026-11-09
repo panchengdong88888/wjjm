@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next."
   },
-  "next_action": "继续恢复doInit_UI尚未完成的子原型，或核对Nested_FFFF00周边调用方中有完整反汇编和闭包捕获证据的目标；Nested_Anonymous的T槽映射保持未决，除非取得VM解释器/加载器/调用帧初始化实现；GUI宿主标志语义不臆测。",
+  "next_action": "继续批量恢复doInit_UI尚未完成的子原型；优先检查Nested_Helper_10相邻的doInit_UI父级调用/捕获链及剩余草稿函数，或继续推进父函数中尚未闭合的GUI/API参数。Nested_Anonymous的T槽映射仍需VM解释器/加载器/调用帧初始化实现，当前仓库没有该实现，不猜测。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "115"
+    "last_checkpoint": "120"
   },
   "static_recovered_functions": [
     {
@@ -1787,27 +1787,28 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 119,
+    "checkpoint": "120",
     "targets": [
-      "root.children[42].children[3]"
+      "root.children[42].children[18]"
     ],
-    "status": "cross-checked 29 object-method call sites in Nested_FFFF00; all source candidates preserve receiver arguments; repository scan found no VM interpreter/loader/frame-init implementation",
-    "audit_file": "docs/audit/检查点119_Nested_FFFF00方法接收者与VM实现资料边界复核.md",
+    "status": "promoted Nested_Helper_10 from first draft to complete static reconstruction; all 39 physical instructions mapped; no runtime verification",
+    "audit_file": "docs/audit/检查点120_Nested_Helper_10黑名单开关静态恢复.md",
     "files": [
-      "04_源码候选/短函数草稿_第六十二批.lua",
-      "docs/audit/检查点119_Nested_FFFF00方法接收者与VM实现资料边界复核.md",
+      "04_源码候选/Nested_Helper_10_黑名单功能开关_第八十批.lua",
+      "docs/audit/检查点120_Nested_Helper_10黑名单开关静态恢复.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "Nested_FFFF00 has 29 object-method calls in the current source candidate; all use colon syntax and match receiver-inclusive argument ranges in corrected disassembly.",
-      "Cross-checked window checks/close, timer cancel/schedule, GUI creation and widget setup, Facade.retrieveProxy, and all five Layout/Text groups.",
-      "Repository recursive tree has 233 paths; VM-related source implementation candidates are limited to dump, early opcode reference, corrected disassembly and non-author-source devirtualized listing; no interpreter, loader, parser or frame initialization source was found.",
-      "No evidence to resolve Nested_Anonymous T[0]/T[1]/T[2] call-frame mapping or the exact vararg field encoding; do not guess.",
-      "GUI host flag and trailing Layout argument semantics remain unknown without host SDK documentation or implementation."
+      "Parent doInit_UI PC299-PC305 creates Nested_Helper_10 with six captures: parent UP[2], UP[0], UP[1], UP[6], T[19], T[16].",
+      "Nested_Helper_10 UP[0] is timerState; UP[1] is notification callback; UP[2] is module state table with isBlacklisting.",
+      "UP[3] is called with no arguments and its returned distance value drives the positive-distance branch; UP[4] is a no-argument callback on the no-positive-distance path; UP[5] receives the distance value.",
+      "Timer-present path notifies, calls SL:UnSchedule, clears blacklistTimer to nil, writes moduleState.isBlacklisting=false, and returns true.",
+      "Positive-distance path formats the notification, calls UP[5](distance), returns true; no-positive-distance path notifies, calls UP[4](), returns false.",
+      "The business identities of UP[3..5] remain unknown and are represented by usage labels, not invented source names."
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 60,
+      "complete_static_reconstruction": 61,
       "runtime_verified": 0
     }
   },
@@ -2378,58 +2379,54 @@
   ],
   "draft_function_count": 78,
   "ordinary_lua_draft_functions": 78,
-  "last_checkpoint": "119",
-  "checkpoint": "119",
+  "last_checkpoint": "120",
+  "checkpoint": "120",
   "drafts": 33,
-  "next": "继续恢复doInit_UI尚未完成的子原型，或核对Nested_FFFF00周边调用方中有完整反汇编和闭包捕获证据的目标；Nested_Anonymous的T槽映射保持未决，除非取得VM解释器/加载器/调用帧初始化实现；GUI宿主标志语义不臆测。",
+  "next": "继续批量恢复doInit_UI尚未完成的子原型；优先检查Nested_Helper_10相邻的doInit_UI父级调用/捕获链及剩余草稿函数，或继续推进父函数中尚未闭合的GUI/API参数。Nested_Anonymous的T槽映射仍需VM解释器/加载器/调用帧初始化实现，当前仓库没有该实现，不猜测。",
   "recent_checkpoint": {
-    "checkpoint": "116",
+    "checkpoint": "120",
     "date": "2026-11-09",
-    "summary": "完成Nested_find和Nested_UnSchedule两个既有草稿的静态复核并校正。Nested_find修正ITEM_IS_BIND参数为item对象、绑定truthy跳过、未绑定按OverLap or 1累计；Nested_UnSchedule修正UPVALUE映射，UP[1]=timerState、UP[2]=moduleState，并记录unknown哨兵语义未验证。完整静态恢复由58提升至60，运行时验证仍为0。",
+    "summary": "Nested_Helper_10从首版草稿提升为完整静态恢复，39条物理指令闭合，六项捕获来源映射到doInit_UI UP[2]/UP[0]/UP[1]/UP[6]/T[19]/T[16]；三个回调的业务身份保持未命名用途槽位。",
     "files": [
-      "04_源码候选/短函数草稿_第五十二批.lua",
-      "04_源码候选/短函数草稿_第十五批.lua",
-      "docs/audit/检查点116_Nested_find与Nested_UnSchedule静态复核.md",
-      "02_基础索引/03_函数状态清单.csv",
-      "docs/handoff/05_机器可读接续状态.json",
-      "docs/handoff/10_防上下文中断_checkpoint协议.md"
-    ],
-    "unchanged": {
-      "ordinary_lua_drafts": 78,
-      "runtime_verified": 0
-    },
-    "updated": {
-      "complete_static_reconstruction": 60
-    }
-  },
-  "latest_checkpoint": {
-    "checkpoint": "119",
-    "date": "2026-11-09",
-    "summary": "完成Nested_FFFF00全部29处对象方法调用的接收者/实参布局交叉核对，均保留接收者；扫描GitHub仓库233个路径未发现VM解释器、加载器或调用帧初始化源码，Nested_Anonymous T槽映射继续保持未决。",
-    "audit_file": "docs/audit/检查点119_Nested_FFFF00方法接收者与VM实现资料边界复核.md",
-    "unresolved": [
-      "GUI宿主标志和Layout尾参1的具体语义",
-      "Nested_Anonymous的VM帧初始化和T槽映射",
-      "Nested_UnSchedule unknown哨兵运行时语义"
+      "04_源码候选/Nested_Helper_10_黑名单功能开关_第八十批.lua",
+      "docs/audit/检查点120_Nested_Helper_10黑名单开关静态恢复.md",
+      "02_基础索引/03_函数状态清单.csv"
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 60,
+      "complete_static_reconstruction": 61,
       "runtime_verified": 0
     }
   },
-  "complete_static_reconstruction_count": 60,
-  "complete_static_reconstruction": "60/110 (54.5%)",
+  "latest_checkpoint": {
+    "checkpoint": "120",
+    "date": "2026-11-09",
+    "summary": "Nested_Helper_10（root.children[42].children[18]）39条指令完成静态恢复；父doInit_UI PC299-PC305六项捕获来源闭合；定时器关闭、正距离启用和无正距离输入回调三条路径及返回值已映射。UP[3..5]上游业务身份仍以用途槽位表示，不臆测。",
+    "audit_file": "docs/audit/检查点120_Nested_Helper_10黑名单开关静态恢复.md",
+    "unresolved": [
+      "UP[3..5]三个捕获回调的上游业务身份",
+      "Nested_Helper_10 nil哨兵运行时语义",
+      "GUI宿主标志和Layout尾参1的具体语义",
+      "Nested_Anonymous的VM帧初始化和T槽映射"
+    ],
+    "counts": {
+      "ordinary_lua_drafts": 78,
+      "complete_static_reconstruction": 61,
+      "runtime_verified": 0
+    }
+  },
+  "complete_static_reconstruction_count": 61,
+  "complete_static_reconstruction": "61/110 (55.5%)",
   "progress_reconciled": {
-    "source_of_counts": "GitHub 03_函数状态清单.csv 与机器状态草稿/静态恢复索引逐项核对（检查点114）",
+    "source_of_counts": "GitHub 02_基础索引/03_函数状态清单.csv 与静态恢复候选索引逐项核对",
     "ordinary_lua_draft_functions": 78,
-    "complete_static_reconstruction_functions": 58,
+    "complete_static_reconstruction_functions": 61,
     "runtime_verified_functions": 0,
-    "note": "检查点118仅修正已静态恢复源码中的GUI方法接收者实参，不新增草稿或完整静态恢复计数。"
+    "note": "检查点120将Nested_Helper_10从首版草稿提升为完整静态恢复；普通Lua草稿总量按现有统计口径保持78，完整静态恢复增加至61/110；运行时验证仍为0。"
   },
   "counts": {
     "ordinary_lua_drafts": 78,
-    "complete_static_reconstruction": 60,
+    "complete_static_reconstruction": 61,
     "runtime_verified": 0
   }
 }
