@@ -5,7 +5,7 @@ legacy：root/43/4/3
 65条物理指令、17常量、无子原型、vararg_flag=3。
 父函数：Nested_FFFF00（root.children[42].children[3]）。
 
-当前级别：普通 Lua 草稿 / 双层循环、闭包捕获、节点命名及可见实参已复核 / 未运行时验证。
+当前级别：完整静态恢复（未运行时验证）。65条物理指令的参数、循环、捕获、GUI实参、节点命名、返回映射均已闭合；Layout_Create尾参1保留原值，宿主端语义未知。
 
 已确认：
 - 参数：resourceNames、layoutOption、rowType；父级两次调用分别传入(moneyNames,2,"money")与(resourceNames,2,"item")。
@@ -37,7 +37,7 @@ local function Nested_FFFFFF(resourceNames, layoutOption, rowType, ...)
     -- PC2-PC5及PC63：外层数值for，起点1、终点#resourceNames、步长layoutOption。
     for groupStart = 1, #resourceNames, layoutOption do
         -- PC12-PC16：rowType .. "_cell_" .. cellNameSuffix。
-        local cellName = tostring(rowType) .. "_cell_" .. tostring(cellNameSuffix)
+        local cellName = rowType .. "_cell_" .. cellNameSuffix
 
         -- PC17-PC22：父resList，x/y=0，宽度为捕获宽度，高度35，尾随实参1。
         -- 最后一个实参的GUI宿主语义尚未确认，故不命名。
@@ -59,7 +59,7 @@ local function Nested_FFFFFF(resourceNames, layoutOption, rowType, ...)
             if resourceName then
                 -- PC39-PC44：固定前缀2_text_0.5_再拼接列索引。
                 -- 该节点名按列编号，不使用resourceIndex或rowType。
-                local textName = "2_text_0.5_" .. tostring(columnIndex)
+                local textName = "2_text_0.5_" .. columnIndex
 
                 -- PC32-PC35：cellWidth*(columnIndex-0.5)/1。
                 -- PC46-PC51：15、30、#FFFFFF、resourceName..":--"。
@@ -71,7 +71,7 @@ local function Nested_FFFFFF(resourceNames, layoutOption, rowType, ...)
                     15,
                     30,
                     "#FFFFFF",
-                    tostring(resourceName) .. ":--"
+                    resourceName .. ":--"
                 )
 
                 -- PC55-PC60：锚点(0.5,0.5)。
@@ -88,3 +88,17 @@ local function Nested_FFFFFF(resourceNames, layoutOption, rowType, ...)
 end
 
 return Nested_FFFFFF
+
+
+-- 检查点113：逐PC复核完成。
+-- PC1创建返回映射表；PC2-PC5设置外层数值循环(1..#resourceNames，步长layoutOption)。
+-- PC6-PC9计算ceil(15/layoutOption)；PC10-PC22创建rowType.."_cell_"..ceil结果
+-- 的Layout，实参依次为GUI self、resList、cellName、0、0、cellWidth、35、1。
+-- PC23-PC26设置内层循环(1..layoutOption，步长1)；PC27-PC31计算
+-- resourceIndex=groupStart+columnIndex-1，并在资源名假值时跳过本格。
+-- PC32-PC35计算x=cellWidth*(columnIndex-0.5)/1。
+-- PC36-PC52创建Text：GUI self、cellLayout、"2_text_0.5_"..columnIndex、
+-- x、15、30、"#FFFFFF"、resourceName..":--"。
+-- PC53-PC60检查Text创建结果并设置锚点(0.5,0.5)；PC61按resourceName为键
+-- 写入映射表；PC62/63为内外层数值循环回跳；PC64返回映射表；PC65返回。
+-- Layout_Create最后的数值1明确保留，宿主GUI语义未知；未运行时验证。
