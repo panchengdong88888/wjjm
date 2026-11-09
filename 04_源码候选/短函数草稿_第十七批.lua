@@ -1,13 +1,15 @@
 -- MainLeftBottom(2).lua 普通 Lua 恢复
 -- 第十七批：ScheduleOnce 与两个清理结果通知闭包
--- 状态：Nested_Helper / Nested_s 已完成静态控制流恢复；未运行时验证。
+-- 状态：ScheduleOnce 已完成静态恢复；Nested_Helper / Nested_s 已完成静态控制流恢复；未运行时验证。
 -- 未确认的上游业务捕获继续保留 UPVALUE_n 名称，不臆造函数名。
 
 -- 原型：root.children[53]
 -- legacy：root/54；物理指令：7；vararg_flag=2
--- PC1-5：将所有参数转发给 SL.ScheduleOnce；PC6-7 位于实际返回之后，不改变返回值。
-local function ScheduleOnce(...)
-    return SL.ScheduleOnce(...)
+-- PC1-PC5：取得SL.ScheduleOnce方法，按方法调用约定传入接收者SL、
+-- callback与delay两个显式参数，并原样返回ScheduleOnce的全部返回值。
+-- PC6-PC7位于PC5无条件return之后，不可达。
+local function ScheduleOnce(callback, delay)
+    return SL:ScheduleOnce(callback, delay)
 end
 
 -- 原型：root.children[42].children[2]
