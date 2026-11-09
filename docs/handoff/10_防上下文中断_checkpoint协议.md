@@ -1020,3 +1020,16 @@
 - 纠正首版草稿把阈值truthy分支写反的关键错误。
 - 17条指令控制流及返回已闭合，升级完整静态恢复；UP[0]/UP[1]业务名仍保留槽位。
 - 统计更新：普通Lua草稿77；完整静态恢复35/110；运行时验证0。
+
+
+## 检查点 #100（2026-11-09）：四个定时器回调静态闭合与nil占位纠正
+- 更新源码：`04_源码候选/短函数草稿_第十九批.lua`、`第二十批.lua`、`第二十三批.lua`；新增`短函数草稿_第六十六批.lua`。
+- 新增审计：`docs/audit/检查点100_四个定时器回调与nil占位复核.md`。
+- 纠正关键序列化问题：VM dump中的`["unknown",2]`是nil占位，不是Lua表。Nested_shiquTimer、Nested_dropTimer、Nested_TakeItems、Nested_SL_3关闭分支均已改为对应timer字段赋nil。
+- doInit_UI创建点确认捕获来源：Nested_SL_3 PC307捕获parent UP[2]/UP[0]/UP[1]/UP[7]；Nested_TakeItems PC313、Nested_shiquTimer PC319、Nested_dropTimer PC324捕获顺序均已逐项核对。
+- Nested_SL_3：关闭时UnSchedule并清nil、isStoring=false；开启时立即StorageItems，再schedule(StorageItems,1.0)。
+- Nested_shiquTimer：关闭时UnSchedule并清nil；开启时只schedule(PickUpItems,0.01)，没有立即调用PickUpItems。
+- Nested_dropTimer：关闭时UnSchedule并清nil、isDiuing=false；开启时先DiuItems，再schedule(DiuItems,1.0)。
+- Nested_TakeItems：关闭时UnSchedule并清nil、isTaking=false；开启时先TakeItems，再schedule(TakeItems,1.0)。
+- 四函数控制流、通知、参数、句柄保存及无返回结尾已闭合，升级完整静态恢复。
+- 统计更新：普通Lua草稿77；完整静态恢复39/110；运行时验证0。
