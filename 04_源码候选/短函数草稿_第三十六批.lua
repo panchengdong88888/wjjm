@@ -1,6 +1,6 @@
 -- MainLeftBottom(2).lua 普通 Lua 草稿
 -- 第三十六批：Nested_str / Nested_match
--- 状态：首版普通 Lua 草稿；尚未运行时验证。
+-- 状态：Nested_str / Nested_match已于检查点112完成静态恢复（未运行时验证）；父包装函数Nested_Anonymous仍为草稿。
 -- UPVALUE_n 为闭包槽位占位名，不代表作者原始变量名。
 
 -- 原型：root.children[42].children[22].children[0]
@@ -43,11 +43,7 @@ local function Nested_match(status, result)
     if status ~= 1 then
         return
     end
-    if not result then
-        return
-    end
-
-    local editStr = result.editStr or ""
+    local editStr = result and result.editStr or ""
     local normalized = tostring(editStr):gsub("%s", "")
     local isDigits = string.match(normalized, "^%d+$")
 
@@ -74,3 +70,6 @@ end
 -- UPVALUE_0("参数格式不对，请输入数字")
 -- 本批不将父包装函数 Nested_Anonymous 计为已恢复，其调用参数/vararg
 -- 消费关系仍需结合父级调用点复核。
+
+
+-- 检查点112更正：result或result.editStr缺失时回退空串并继续校验；不得在not result时提前return。完整逐PC映射见第七十七批源码与检查点112审计。Nested_Anonymous仍未完成。
