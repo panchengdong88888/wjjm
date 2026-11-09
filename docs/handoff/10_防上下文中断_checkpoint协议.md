@@ -710,3 +710,13 @@
 - 本函数关键返回值、阈值分支方向、vararg参数映射、UPVALUE_0表结构、isObstacle参数/真值、二维扁平索引和循环内部更新条件尚未闭合。草稿明确保留骨架，不将未确认逻辑写成确定行为。
 - 本批新增普通Lua保守草稿1个；累计按检查点口径62个。完整静态恢复仍29/110（26.4%）；运行时验证0。
 - 下一步从函数状态清单中选择未开始且物理指令较短、参数/返回契约较明确的函数继续批量恢复；GetMapData2DPtr留待专项静态复审。
+
+
+## 检查点 #76（2026-11-09）：Nested_find 与 Nested_string 两个相似短函数草稿
+- 新增源码：`04_源码候选/短函数草稿_第五十二批.lua`；新增审计：`docs/audit/检查点76_Nested_find与Nested_string首版草稿.md`。
+- 新增函数一：`Nested_find`，原型索引53，规范路径`root.children[42].children[0]`，legacy`root/43/1`，46条物理指令、12个常量、无子原型、`vararg_flag=1`；创建于父`root/42` PC17，捕获数0。
+- 新增函数二：`Nested_string`，原型索引59，规范路径`root.children[42].children[3].children[1]`，legacy`root/43/4/2`，46条物理指令、12个常量、无子原型、`vararg_flag=1`；创建于父`root/42/3` PC291，捕获数0。
+- 两函数均恢复出：读取`SL:GetMetaValue("BAG_DATA")`，空值返回0；pairs遍历条目；检查Name/MakeIndex；通过string.find匹配名称；查询ITEM_IS_BIND；检查OverLap；符合过滤条件时计数并返回。
+- 待复核：vararg参数映射、string.find第四参数true的plain语义、ITEM_IS_BIND返回值过滤方向、OverLap过滤方向，以及两个不同父级上下文下的细微差异。
+- 本批新增普通Lua草稿2个；累计按检查点口径64个。完整静态恢复仍29/110（26.4%）；运行时验证0。
+- 下一步优先处理未开始短函数`MoveTo`（`root.children[3]`，51条指令），再评估`ClearBlacklistItems`（63条）和`AccountIDValidation`（64条）。
