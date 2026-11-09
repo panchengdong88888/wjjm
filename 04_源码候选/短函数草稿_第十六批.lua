@@ -1,14 +1,18 @@
 -- MainLeftBottom(2).lua 普通 Lua 草稿
 -- 第十六批：3 个短包装/转发函数
--- 状态：首版普通 Lua 草稿；尚未运行时验证。
--- UPVALUE_n 为闭包槽位占位名。
+-- 状态：AnonymousHelper_49 已完成静态恢复；其余两个函数仍为首版草稿；均未运行时验证。
 
 -- 原型：root.children[49]
 -- legacy：root/50；物理指令：5
--- PC1-3：调用 UP[0](UP[1]) 并原样返回调用结果。
--- PC4-5 位于无条件 return 之后，不可达。
+-- root PC304创建本闭包，捕获顺序：
+-- UP[0] <- root R45：root.children[9] ReadNumericConfig闭包（自身捕获GetWritablePath）。
+-- UP[1] <- root R42：字符串"blacklist_distance.txt"。
+-- PC1-PC3调用ReadNumericConfig("blacklist_distance.txt")并原样返回其所有返回值；
+-- PC4-PC5位于无条件return之后，不可达。
 local function AnonymousHelper_49()
-    return UPVALUE_0(UPVALUE_1)
+    local readNumericConfig = UPVALUE_0
+    local configFileName = UPVALUE_1
+    return readNumericConfig(configFileName)
 end
 
 -- 原型：root.children[54]
