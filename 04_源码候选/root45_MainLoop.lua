@@ -38,7 +38,7 @@ local function MainLoop()
         UPVALUE_3("扫描怪物中")
 
         local candidates = UPVALUE_7()
-        if not candidates or #candidates == 0 then
+        if #candidates == 0 then
             UPVALUE_3("视野内没有可攻击怪物")
             return
         end
@@ -86,7 +86,10 @@ local function MainLoop()
             -- Confirmed helper: FindMonsterInCurrViewField has no formal
             -- parameters and returns an ID-keyed actor map. This call site passes
             -- UPVALUE_12 as an extra argument; the helper does not read it.
-            local actorMap = UPVALUE_15(UPVALUE_12)
+            -- The VM call site supplies two register slots here; their values are not
+            -- semantically consumed by the zero-parameter helper. Keep the
+            -- recovered helper invocation itself argument-free in this draft.
+            local actorMap = UPVALUE_15()
             local actor = actorMap and actorMap[UPVALUE_16]
             local mainPlayerID = UPVALUE_6()
 
@@ -109,7 +112,9 @@ local function MainLoop()
             UPVALUE_10 = UPVALUE_10 + 1
         end
 
-        local actorMap = UPVALUE_15()
+        -- PC159-PC160 passes UPVALUE_12 as one extra argument. The helper has
+        -- no formal parameters and ignores it, but retain the call-site value.
+        local actorMap = UPVALUE_15(UPVALUE_12)
         local mainPlayerID = UPVALUE_6()
         local allOwnersResolved = true -- PC161; PC263 clears this on an unowned target.
 
