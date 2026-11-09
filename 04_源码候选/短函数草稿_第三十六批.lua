@@ -56,10 +56,10 @@ local function Nested_match(status, result)
         -- 该捕获函数的具体业务名称尚未从父级调用点完全确认。
         UPVALUE_0("%s：参数格式不对（%s）", UPVALUE_1, tostring(editStr))
 
-        -- 原型创建 Nested_Helper_11 并调度固定错误提示；UPVALUE_2
-        -- 在 ScheduleOnce 参数列表中的精确角色仍待独立复审。
+        -- UPVALUE_2 被错误提示闭包捕获，作为提示回调传给 Nested_Helper_11。
+        -- ScheduleOnce 本身只接收该闭包与 0.1 秒延迟（另含 SL 接收者）。
         SL:ScheduleOnce(function()
-            Nested_Helper_11()
+            Nested_Helper_11(UPVALUE_2)
         end, 0.1)
         return
     end
