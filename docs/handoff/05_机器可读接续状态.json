@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续筛选未开始短函数，优先选择物理指令较少且参数/返回路径可闭合的原型；本批三个函数的循环、vararg与捕获身份可集中复核，但不阻塞其他草稿推进。",
+  "next_action": "继续筛选未开始短原型；优先评估root.children[41]（MoveItemToQuickUse，133条）与root.children[42].children[3].children[3]（Nested_Helper_3，168条），以主体清晰度和闭包/返回契约为准；TakeItems过滤表与LuaSendMsg参数可集中复核。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "80"
+    "last_checkpoint": "81"
   },
   "static_recovered_functions": [
     {
@@ -487,35 +487,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 80,
-    "target": "Nested_FFFFFF; onDamageMsg; GetStorageItemData",
-    "status": "first_pass_drafts; static review pending; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第五十六批.lua",
-    "audit_file": "docs/audit/检查点80_Nested_FFFFFF_onDamageMsg_GetStorageItemData首版草稿.md",
+    "checkpoint": 81,
+    "target": "TakeItems",
+    "status": "first_pass_draft; static review pending; no runtime validation",
+    "source_file": "04_源码候选/短函数草稿_第五十七批.lua",
+    "audit_file": "docs/audit/检查点81_TakeItems首版草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[3].children[2]",
-        "legacy": "root/43/4/3",
-        "name": "Nested_FFFFFF",
-        "instructions": 65
-      },
-      {
-        "path": "root.children[52]",
-        "legacy": "root/53",
-        "name": "onDamageMsg",
-        "instructions": 72
-      },
-      {
-        "path": "root.children[1]",
-        "legacy": "root/2",
-        "name": "GetStorageItemData",
-        "instructions": 77
+        "path": "root.children[5]",
+        "legacy": "root/6",
+        "name": "TakeItems",
+        "instructions": 99
       }
     ],
-    "draft_count_total": 70,
+    "draft_count_total": 71,
     "complete_static_reconstruction_count": 29,
     "runtime_verified_count": 0,
-    "note": "新增三个短原型普通Lua候选；循环边界、vararg映射、捕获业务身份和容量算法待复核；不计入完整静态恢复。"
+    "note": "恢复取仓库物品主流程、状态互斥、物品检查/过滤、请求发送和完成提示；过滤表内容及发送参数映射仍待复核。"
   },
   "corrections": [
     {
@@ -1025,12 +1013,33 @@
       "notes": [
         "Per-page NPC storage aggregation recovered; exact available-slot loop and callback identity pending."
       ]
+    },
+    {
+      "path": "root.children[5]",
+      "legacy_path": "root/6",
+      "name": "TakeItems",
+      "source_file": "04_源码候选/短函数草稿_第五十七批.lua",
+      "audit_file": "docs/audit/检查点81_TakeItems首版草稿.md",
+      "status": "first_pass_draft_pending_static_review_not_runtime_verified",
+      "physical_instructions": 99,
+      "constant_count": 23,
+      "child_count": 0,
+      "parent_path": "root",
+      "parent_create_pc": 79,
+      "captured_parent_T_registers": [
+        2,
+        5
+      ],
+      "notes": [
+        "isTaking mutual exclusion, storage enumeration, empty-state message, item validation/trim, string.find filter loop, storage pickup request and completion message recovered at control-flow level.",
+        "Filter table population and contents are unresolved; LuaSendMsg exact argument order/count remains provisional; capture identities and count semantics pending."
+      ]
     }
   ],
-  "draft_function_count": 70,
-  "ordinary_lua_draft_functions": 70,
-  "last_checkpoint": 80,
-  "checkpoint": "80",
+  "draft_function_count": 71,
+  "ordinary_lua_draft_functions": 71,
+  "last_checkpoint": 81,
+  "checkpoint": "81",
   "drafts": 32,
   "next": "继续评估未开始的短函数LuaSendMsg（root.children[12]）和GetMapData2DPtr（root.children[22]）；优先恢复清楚的主体，保留未闭合参数/捕获名。",
   "recent_checkpoint": {
@@ -1053,23 +1062,23 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "80",
+    "checkpoint": "81",
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第五十六批.lua",
-    "audit_file": "docs/audit/检查点80_Nested_FFFFFF_onDamageMsg_GetStorageItemData首版草稿.md",
-    "ordinary_lua_draft_functions": 70,
+    "source_file": "04_源码候选/短函数草稿_第五十七批.lua",
+    "audit_file": "docs/audit/检查点81_TakeItems首版草稿.md",
+    "ordinary_lua_draft_functions": 71,
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增Nested_FFFFFF、onDamageMsg、GetStorageItemData三个首版普通Lua草稿；参数/循环/捕获身份及宿主API契约待复核。"
+    "summary": "新增TakeItems首版普通Lua草稿；过滤表内容、LuaSendMsg参数窗口、捕获对象身份及计数语义待复核。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)",
   "progress_reconciled": {
-    "source_of_counts": "检查点#79累计67个普通Lua草稿；检查点#80新增Nested_FFFFFF、onDamageMsg、GetStorageItemData三个草稿。",
-    "ordinary_lua_draft_functions": 70,
+    "source_of_counts": "检查点#80累计70个普通Lua草稿；检查点#81新增TakeItems。",
+    "ordinary_lua_draft_functions": 71,
     "complete_static_reconstruction_functions": 29,
     "runtime_verified_functions": 0,
-    "note": "本批新增3个普通Lua草稿；完整静态恢复及运行时验证数量不变。"
+    "note": "本批新增1个普通Lua草稿；完整静态恢复及运行时验证数量不变。"
   }
 }
