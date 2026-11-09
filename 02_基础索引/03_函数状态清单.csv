@@ -32,7 +32,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 28,root/21/0,root.children[21].children[0],root/22/1,Nested_dist,19,2,0,完整静态恢复（未运行时验证）,04_源码候选/PickUpItems_距离比较闭包_第九批.lua；按kIdx升序比较，相等时按dist升序比较。审计见docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md。
 29,root/21/1,root.children[21].children[1],root/22/2,Nested_dist_2,8,1,0,完整静态恢复（未运行时验证）,04_源码候选/PickUpItems_距离比较闭包_第九批.lua；按dist升序比较。审计见docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md。
 30,root/22,root.children[22],root/23,GetMapData2DPtr,144,15,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-31,root/23,root.children[23],root/24,Builtsetting,55,15,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+31,root/23,root.children[23],root/24,Builtsetting,55,15,0,首版普通Lua草稿（UPVALUE_0业务语义待追踪；未运行时验证）,检查点69；根PC256创建闭包并捕获R5；依次6次调用CHANGE_SETTING(编号,{0/1})，随后调用UPVALUE_0传入对应中文提示；无显式参数/返回。
 32,root/24,root.children[24],root/25,UseItemByIndex,33,8,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第三十一批.lua；遍历捕获表，按 ITEM_INDEX_BY_NAME 与 ITEM_COUNT 查询；数量大于0且索引存在时调用 SL:UseItemByIndex，并返回当前名称；捕获表来源/填充和运行时语义待复审；检查点53。
 33,root/25,root.children[25],root/26,DeathAutoBlacklist,47,15,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 34,root/25/0,root.children[25].children[0],root/26/1,Nested_RequestAddBlacklistByName,6,3,0,完整静态恢复（未运行时验证）,04_源码候选/短闭包辅助函数_第三批草稿.lua；捕获对象.name 作为参数，调用 SL:RequestAddBlacklistByName(name)。
