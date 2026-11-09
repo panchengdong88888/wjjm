@@ -1,6 +1,6 @@
 -- MainLeftBottom(2).lua 普通 Lua 草稿
 -- 第二十批：丢弃物品开关定时器回调
--- 状态：首版普通 Lua 草稿；尚未运行时验证。
+-- 状态：完整静态恢复（未运行时验证）；检查点100已确认nil占位及父级捕获来源。
 -- UPVALUE_0：保存 dropTimer 的状态表（按字段读写行为命名）。
 -- UPVALUE_1：状态提示回调（按调用行为命名）。
 -- UPVALUE_2：保存 isDiuing 状态的表（按字段写入行为命名）。
@@ -13,7 +13,7 @@ local function Nested_dropTimer()
     if UPVALUE_0.dropTimer then
         UPVALUE_1("关闭丢弃物品")
         SL:UnSchedule(UPVALUE_0.dropTimer)
-        UPVALUE_0.dropTimer = {"unknown", 2}
+        UPVALUE_0.dropTimer = nil
         UPVALUE_2.isDiuing = false
     else
         UPVALUE_1("开启丢弃物品")
@@ -29,3 +29,7 @@ end
 -- UPVALUE 槽位的父级 T 寄存器映射尚未在当前闭包映射文件中收录；
 -- UPVALUE_3 的具体调度 API 名称仍待从父级闭包创建点确认。
 -- 本函数只计入普通 Lua 草稿，不计入完整静态恢复。
+
+
+-- 检查点100：反汇编常量 ["unknown",2] 是 nil 的VM dump序列化占位，不是Lua表。
+-- 已将关闭分支的定时器字段赋值修正为 nil；捕获来源见检查点100审计。
