@@ -1348,3 +1348,14 @@
 - 更新函数状态CSV与机器状态JSON。
 - 统计：普通Lua草稿78；完整静态恢复69/110（62.7%）；运行时验证0。本批新增1个完整静态恢复函数，不新增普通草稿。
 - 下一步：复核FormatStateChange（root.children[8]）的T栈参数边界与形参映射；再检查ReadNumericConfig的vararg声明和返回路径。
+
+
+## 检查点 #128（2026-11-09）：FormatStateChange 与 ReadNumericConfig 普通 Lua 草稿整理
+
+- 新增源码：`04_源码候选/root8_FormatStateChange.lua`、`04_源码候选/root9_ReadNumericConfig.lua`。
+- 新增审计：`docs/audit/检查点128_FormatStateChange与ReadNumericConfig草稿整理.md`。
+- FormatStateChange（root.children[8]，10条）：将string.format状态切换文本、捕获回调调用、捕获状态更新整理为普通Lua；父root PC181捕获来源R4/R14已知，但形参/T栈边界仍待独立复核。
+- ReadNumericConfig（root.children[9]，45条）：整理GetWritablePath、文件存在检查、文件读取、非字符串原样返回、去除%s空白、纯数字tonumber转换主体；vararg标志保留，额外变参未见读取；失败返回与多返回值接收细节待独立复核。
+- 两项原型此前已计入普通Lua草稿78，本批仅拆分整理为独立文件，不重复增加草稿数量。
+- 统计：普通Lua草稿78；完整静态恢复69/110（62.7%）；运行时验证0。
+- 下一步：独立复核这两份草稿，随后批量恢复短函数；复杂BlacklistPlayerDetection与StorageItems先产出主体草稿，Nested_Anonymous的T槽映射继续挂起。
