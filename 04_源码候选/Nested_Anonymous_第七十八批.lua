@@ -10,12 +10,12 @@
 -- observed call site; keep it explicit as an unresolved optional context slot.
 local function make_Nested_Anonymous(PrintLog)
     return function Nested_Anonymous(initialText, onValid, capturedT2)
-        local errorContext = capturedT2 -- Nested_Anonymous T[2]; business meaning unresolved.
+        local delayedErrorNotice = capturedT2 -- Nested_Anonymous T[2]; invoked by Nested_Helper_11.
 
         -- Child root.children[42].children[22].children[0] is created with:
         -- UP[0] <- parent T[0] (initialText)
         -- UP[1] <- parent UP[0] (PrintLog)
-        -- UP[2] <- parent T[2] (errorContext)
+        -- UP[2] <- parent T[2] (delayedErrorNotice callback)
         -- UP[3] <- parent T[1] (onValid)
         local function Nested_str(...)
             local optionalSuffix = ...
@@ -56,7 +56,7 @@ local function make_Nested_Anonymous(PrintLog)
 
                 PrintLog(
                     "%s：参数格式不对（%s）",
-                    errorContext,
+                    initialText,
                     tostring(editStr)
                 )
 
