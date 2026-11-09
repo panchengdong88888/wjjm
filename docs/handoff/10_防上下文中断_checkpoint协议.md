@@ -1093,3 +1093,14 @@
 - Nested_Button_setTitleText（48条）捕获门控表、config、button；门控回调不存在时默认允许，存在时调用；config.toggle假值退出；门控结果严格等于false才退出，nil允许；随后toggled取反，更新标题及颜色（toggled真红色，否则白色）。
 - 纠正早期CSV坐标备注，并明确GUI self隐式传入与点击回调方法显式参数。
 - 统计更新：普通Lua草稿77；完整静态恢复49/110；运行时验证0。
+
+
+## 检查点 #107（2026-11-09）：四个UI定时器与引怪阈值函数
+- 新增源码：`04_源码候选/短函数草稿_第七十二批.lua`。
+- 新增审计：`docs/audit/检查点107_四个UI定时器与引怪阈值函数复核.md`。
+- Nested_InitGatherMonsters：首参false/nil走getter，写入GATHER_THRESHOLD；字段false/nil返回false，truthy时调用全局InitGatherMonsters()并返回true。分支方向按PC9-PC16纠正。
+- Nested_SL_3：存仓timer存在时通知关闭、UnSchedule、句柄nil、isStoring=false；否则通知开启、立即StorageItems()、再schedule(StorageItems,1.0)并保存句柄。
+- Nested_shiquTimer：拾取timer存在时通知关闭、UnSchedule、句柄nil；否则通知开启、立即PickUpItems()、再schedule(PickUpItems,0.01)并保存句柄。
+- Nested_blacklistTimer：首参false/nil走distance getter；distance缺失返回false；有效时立即BlacklistItems()、schedule(BlacklistItems,0.1)、保存句柄、发送模板提示并返回true；原型没有关闭分支。
+- 四函数捕获来源均按doInit_UI对应创建点核对。
+- 统计更新：普通Lua草稿77；完整静态恢复53/110；运行时验证0。
