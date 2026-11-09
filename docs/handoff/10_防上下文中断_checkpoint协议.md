@@ -863,3 +863,11 @@
 - 该闭包遍历捕获配置的`names`；每个名称调用`SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)`，取得索引后调用`MoveItemToQuickUse(itemIndex, slotConfig.slot)`，再把返回值交给捕获的`PrintLog`函数。
 - 父函数PC137创建该闭包时捕获当前slot配置与父UP[0]（PrintLog）；PC140的延迟量为循环索引乘0.1。PC141的ScheduleOnce完整多寄存器实参栈尚待核验。
 - 本补充不增加函数数或完整静态恢复数：普通Lua草稿77，完整静态恢复29/110，运行时验证0。
+
+
+### 检查点 #88 补充静态复核：doInit_UI 按钮创建与布局闭合
+- PC196-PC235确定三组按钮配置数组：第一组4项（yinguaibut/blacklistbut/clearblacklistbut/moneybut），第二组3项（shiqubut/diuqibut/xiaotuibut），第三组3项（clearmonsterbut/cleardistancebut/rewardbut）。key/name/toggle字段由常量和表写入指令直接确认。
+- PC236-PC337各功能闭包创建后写入buttonHandlers，映射已按闭包child索引与字段写入PC逐一核对。
+- child9（Nested_Button_setTitleFontSize）是按钮创建闭包，三个实参为配置记录、列索引、行偏移；捕获buttonMap与buttonHandlers。其按钮位置公式为`x=(miniChat.x+miniChat.width-10)-85*columnIndex`、`y=(miniChat.y+1)+rowOffset`。
+- PC346-PC378三组循环的行偏移依次为40、0、80。按钮创建后写入buttonMap[key]，设置name、字号18、字体res/public/kaiti2.ttf、初始白色；有toggle字段的配置会绑定点击闭包，按key分派功能回调并更新toggled文字/颜色。
+- 以上是静态指令契约，尚未在宿主GUI运行验证。普通Lua草稿77，完整静态恢复29/110，运行时验证0。
