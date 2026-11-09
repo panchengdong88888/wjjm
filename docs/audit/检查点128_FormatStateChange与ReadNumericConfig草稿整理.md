@@ -59,3 +59,41 @@ vararg 标志保留为 `function(fileName, ...)`；当前指令体只读取首�
 3. PC8-PC10：以 FileUtils 实例为接收者调用 isFileExist(fullPath)。
 
 这次修正保留字节码中的可观察调用顺序；不改变后续存在性判断、读取、清理和数字转换逻辑。源码已重新写入 GitHub，仍为首版草稿、未运行时验证。
+
+
+## 检查点 #130：两函数独立复核与 ReadNumericConfig 返回路径校正
+
+### FormatStateChange 复核结果
+
+复核 `root.children[8]` 的10条物理指令：
+- PC1 读取 UP[0]（回调）并准备调用链。
+- PC2-PC3 取得 `string.format`。
+- PC4 准备格式串 `状态切换: %s -> %s`。
+- PC5 读取 UP[1]（旧状态捕获单元）。
+- PC6 读取 R0；该函数首个显式参数用于新状态。
+- PC7 调用 string.format，并将其返回值写入 T[2] 起始的调用参数区。
+- PC8 以 UP[0] 为目标，使用从 T[2] 开始的开放参数区发起调用；结合 PC7 的返回值落栈，草稿将格式化消息作为回调实参。
+- PC9 将 R0 写回 UP[1]，发生在回调调用之后。
+- PC10 return。
+
+因此，草稿中的先格式化、再回调、最后更新捕获状态的顺序得到物理PC支持。捕获来源仍为父root PC181处的R4/R14；原始局部变量名及业务语义不臆造。vararg标志为1，额外变参未见被主体读取。状态保持首版草稿，未运行时验证。
+
+### ReadNumericConfig 复核与修正
+
+复核 `root.children[9]` 全部45条物理指令，发现首版草稿的三个返回分支表达错误，已修正源码 `04_源码候选/root9_ReadNumericConfig.lua`：
+
+1. 文件不存在：PC11在条件不成立时跳过PC12；PC13清理T[3]，PC14返回清理后的T[3]，即nil，而不是false。
+2. 文件读取结果不是string：PC21跳过PC22；PC23清理T[4]，PC24返回清理后的T[4]，即nil，而不是原始非字符串结果。
+3. 去空白后不匹配 `^%d+$`：PC37跳过PC38；PC39清理T[4]，PC40返回清理后的T[4]，即nil，而不是归一化字符串。
+4. 仅当模式匹配时，PC41-PC43调用tonumber并直接返回其结果。
+5. 文件存在路径顺序保持：PC1-PC4先取得FileUtils单例；PC5-PC7调用UP[0] GetWritablePath；PC8-PC10调用isFileExist。
+6. string.gsub的首个返回值被后续string.match使用；替换计数不参与结果。
+
+以上按反汇编提供的OP_248清理与OP_220返回语义还原。尚未运行时验证；若宿主VM的T栈辅助函数实现与反汇编语义存在差异，需在完整解释器证据或运行时验证阶段再确认。
+
+## 统计与接续
+
+- 普通Lua草稿：78（本批复核既有原型，不新增计数）。
+- 完整静态恢复：69/110（62.7%），不变。
+- 运行时验证：0，不变。
+- 下一步：批量复核/整理已有短函数草稿；随后对BlacklistPlayerDetection（root.children[47]）与StorageItems（root.children[50]）优先产出主体草稿，不因局部疑难停滞。
