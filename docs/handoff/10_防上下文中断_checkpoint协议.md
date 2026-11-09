@@ -1207,3 +1207,16 @@
 - 状态 JSON 与 CSV 已同步，修改前读取SHA，更新后需重新读取核验。
 - 统计：普通Lua草稿78；完整静态恢复60/110；运行时验证0。
 - 下一步：继续追踪Nested_Anonymous帧入口/vararg布局及T[0]/T[1]/T[2]来源，特别是T[2]延迟错误提示回调生产者；随后继续Nested_FFFF00父函数剩余部分。
+
+
+## 检查点 #117（2026-11-09）：Nested_Anonymous调用帧元数据复核
+
+- 新增审计：`docs/audit/检查点117_Nested_Anonymous原型参数元数据与调用帧复核.md`。
+- 重新核对Nested_Helper_4（`root/43/12`）PC11：`OP_187 A=0 B=2`，以及Nested_Helper_7（`root/43/15`）PC11：`OP_358 A=0 B=2`；两个调用均由`U(T,1,2)`构造两项实参。
+- Nested_Anonymous的dump字段vararg=2；相关样本Nested_str=1、Nested_match=2、Nested_Helper_11=0、Nested_Helper_3=0、Nested_FFFFFF=3。该字段与可见参数形态相关，但尚不能确定是固定参数数、Lua vararg flags或VM自定义元数据，不据此修改函数签名。
+- Nested_Anonymous只有8条物理指令，没有显式写入T[0]/T[1]/T[2]；这三个槽的来源必须由VM入口/调用帧初始化机制解释。
+- 当前仓库未找到`M(I,U,S)`、`U(T,A+1,B)`的解释器实现或callee frame setup源码。两调用点传入两个值，不足以直接证明它们到三个T槽的映射。
+- Nested_str捕获顺序保持T[0]、UP[0]、T[2]、T[1]；下游用途确认T[0]是提示文本值、T[1]是数值成功回调、T[2]是延迟错误提示回调，但T[2]生产者仍未识别。
+- 不修改Nested_Anonymous草稿的nil占位，不升级函数状态。
+- 统计不变：普通Lua草稿78；完整静态恢复60/110；运行时验证0。
+- 下一步：寻找原始VM包装器/加载器/调用帧初始化逻辑；若无法取得证据，不猜测T槽映射，转向Nested_FFFF00剩余父级GUI/调度逻辑。
