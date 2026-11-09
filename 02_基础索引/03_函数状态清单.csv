@@ -3,7 +3,7 @@ TAB NAME: 03_函数状态清单.csv>
 index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,物理指令数,常量数,子原型数,状态,已核实内容/待办
 0,root,root,root,MainLeftBottom_Module,412,109,58,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 1,root/0,root.children[0],root/1,FileExistCheck_pcall_wrapper,32,5,1,完整静态恢复（未运行时验证）,检查点62；32条指令控制流闭合；UPVALUE_0为root/3路径拼接闭包；子闭包捕获FileUtils实例与resolvedPath并pcall执行removeFile；返回值及二次存在检查已核对；未运行时验证。
-2,root/0/0,root.children[0].children[0],root/1/1,Nested_removeFile,5,1,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十五批.lua；读取 UP[0].removeFile 并以 UP[0] 为 self、UP[1] 为路径调用；捕获业务名待确认；检查点36。
+2,root/0/0,root.children[0].children[0],root/1/1,Nested_removeFile,5,1,0,完整静态恢复（未运行时验证）,检查点124：父root/1 PC17创建闭包；PC18捕获R1（PC1-PC4取得cc.FileUtils:getInstance()实例）为UP[0]，PC19捕获R2（父函数路径参数，且PC8-PC10用于FileUtils:isFileExist检查）为UP[1]。子函数PC1-PC2取得UP[0].removeFile方法并保留接收者，PC3读取UP[1]路径，PC4调用removeFile(path)但不接收调用结果，PC5无显式返回；正确源码为fileUtils:removeFile(path)，不能return方法结果。
 3,root/1,root.children[1],root/2,GetStorageItemData,77,16,0,首版普通Lua草稿（待静态复审/未运行时验证）,检查点80；按页读取NPCStorageProxy.GetStorageDataByPage，table结果经ipairs汇总；读取STORAGE_PER_PAGE_MAX、NPC_STORAGE_MAX_PAGE、GetOpenSize并通知仓库总可用格子；容量循环精确公式及UPVALUE_0回调身份待复核。
 4,root/2,root.children[2],root/3,GetWritablePath,10,4,0,首版普通Lua草稿（待静态复审/未运行时验证）,检查点65；确认cc.FileUtils:getInstance():getWritablePath()调用链；PC8融合拼接为T[1]..R2，结合调用点暂恢复为writablePath..path；vararg_flag=1，首参槽位与拼接方向仍待静态复核。
 5,root/3,root.children[3],root/4,MoveTo,51,20,0,首版普通Lua草稿（移动通知主体已恢复；距离返回极性待复核；未运行时验证）,检查点77；无闭包捕获；构造mapID/x/y/type/range移动通知数据并调用Facade.sendNotification(NoticeTable.InputMove,...)；调用PlayerPos获取坐标，计算两轴绝对差并与range比较，存在true/false返回；参数声明、range缺省判断、Facade self/实参布局、坐标顺序及返回极性待复核。
