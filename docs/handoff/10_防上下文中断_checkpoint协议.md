@@ -1170,3 +1170,16 @@
 - 按resourceName写入Text节点映射表并返回；父函数两次调用分别建立moneyRows/itemRows。
 - Layout_Create尾随数值1的宿主端语义未知，但原始实参与位置已确认，不阻碍静态源码恢复；未进行运行时验证。
 - 统计更新：普通Lua草稿77；完整静态恢复58/110；运行时验证0。
+
+
+## 检查点 #114（2026-11-09）：Nested_Anonymous调用链首版草稿
+
+- 新增源码：`04_源码候选/Nested_Anonymous_第七十八批.lua`。
+- 新增审计：`docs/audit/检查点114_Nested_Anonymous调用契约复核.md`。
+- 对照doInit_UI PC248-PC249确认Nested_Anonymous创建点及唯一父捕获：父UP[0]；该槽按检查点95的父闭包使用身份为PrintLog。
+- Nested_Anonymous PC1创建Nested_str，四项捕获顺序为父T[0]、父UP[0]、父T[2]、父T[1]；PC6-PC7立即无参调用Nested_str，PC8返回。
+- 对照Nested_Helper_4与Nested_Helper_7：二者UP[0]均来自父R18（Nested_Anonymous）；分别以固定提示文字和七捕获回调闭包调用UP[0]，实参契约均为`Nested_Anonymous(promptText, callbackClosure)`。
+- T[0]/T[1]暂按initialText/onValid恢复；T[2]沿子闭包链被Nested_Helper_11作为延迟错误提示函数调用，但其生产者在Nested_Anonymous帧中的来源尚未追出。源码保留明确nil占位，不将该函数冒充完整静态恢复。
+- Nested_str/Nested_match/Nested_Helper_11仍沿用检查点112已完成静态恢复的子原型结果，不重复计数。
+- 统计更新：普通Lua草稿78；完整静态恢复58/110；运行时验证0。
+- 下一步：追踪Nested_Anonymous T[2]生产者；随后整合Nested_FFFF00剩余320条指令及Nested_Helper_3刷新闭包，继续复核doInit_UI其他未完成子原型。
