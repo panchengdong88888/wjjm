@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft added at checkpoint #88; parent capture identities, GUI argument stacks and child closure contracts pending"
   },
-  "next_action": "Nested_FFFF00已确认：父捕获[MainLeftBottom,PrintLog,timerState,MainLeftBottom]；child4/child2/child3捕获关系已核对。child3第10个捕获不是2.0，而是PC292创建的Nested_string（BAG_DATA物品名称/索引查询辅助闭包）；PC320无返回值。父函数PC311-PC312立即调用刷新闭包，随后PC313-PC319由父函数执行SL:Schedule(callback,1.0)并保存resTimer。下一步继续校正GUI构造参数、MoneyProxy资源差值/行刷新及Nested_string在刷新函数中的用途。",
+  "next_action": "Nested_FFFF00刷新闭包的10项捕获已精确修正： [moduleState,timerState,curTimeText,durTimeText,initState,MoneyProxy,moneyRows,formatNumber,itemRows,Nested_string]。PC282-PC291两次调用Nested_FFFFFF的返回值分别是moneyRows和itemRows节点表，PC300将两张表捕获进Nested_Helper_3；不是重复捕获同一个函数。Nested_string是PC292创建的BAG_DATA物品查询辅助闭包。下一步继续还原刷新闭包对moneyRows/itemRows的更新规则及Nested_string的实际查询返回契约。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -1141,7 +1141,7 @@
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "新增doInit_UI首版普通Lua草稿，覆盖初始化提示、时间/资源快照、代理初始化、按钮配置与子闭包绑定、隐藏按钮创建；捕获身份、GUI融合参数和闭包契约待复核。 已追加静态复核：root PC390-PC410证明doInit_UI有20个父级捕获，寄存器映射已写入草稿与审计。 进一步校正PC102-PC130为四组传送道具slot/names配置，并确认mini-chat右边界x+width。 已进一步识别UP[0]/[1]/[2]/[3]/[5]/[8]/[11]/[13]/[15]/[17]/[19]的父级值或对象身份。 已确认Nested_ITEM_INDEX_BY_NAME闭包行为及MoveItemToQuickUse/PrintLog调用关系，父循环延迟量为循环索引×0.1。 已还原三组按钮数组、功能回调映射、按钮创建/点击切换逻辑及坐标公式。 已闭合SL:ScheduleOnce(callback, slotIndex*0.1)实参顺序，并确认MoveItemToQuickUse双返回值处理及成功提前返回路径。 已复核Nested_FFFF00父级四捕获、PC68/265/300子闭包捕获契约、两组资源行调用，以及刷新闭包内部自调度SL:Schedule(callback,1.0)。 更正调度归属：刷新闭包先被父函数立即调用，随后父函数自身执行SL:Schedule(refreshCallback,1.0)并保存resTimer。 更正Nested_Helper_3第10个捕获为Nested_string（PC292创建的BAG_DATA查询辅助闭包），并确认Nested_FFFF00 PC320无返回值。"
+    "summary": "新增doInit_UI首版普通Lua草稿，覆盖初始化提示、时间/资源快照、代理初始化、按钮配置与子闭包绑定、隐藏按钮创建；捕获身份、GUI融合参数和闭包契约待复核。 已追加静态复核：root PC390-PC410证明doInit_UI有20个父级捕获，寄存器映射已写入草稿与审计。 进一步校正PC102-PC130为四组传送道具slot/names配置，并确认mini-chat右边界x+width。 已进一步识别UP[0]/[1]/[2]/[3]/[5]/[8]/[11]/[13]/[15]/[17]/[19]的父级值或对象身份。 已确认Nested_ITEM_INDEX_BY_NAME闭包行为及MoveItemToQuickUse/PrintLog调用关系，父循环延迟量为循环索引×0.1。 已还原三组按钮数组、功能回调映射、按钮创建/点击切换逻辑及坐标公式。 已闭合SL:ScheduleOnce(callback, slotIndex*0.1)实参顺序，并确认MoveItemToQuickUse双返回值处理及成功提前返回路径。 已复核Nested_FFFF00父级四捕获、PC68/265/300子闭包捕获契约、两组资源行调用，以及刷新闭包内部自调度SL:Schedule(callback,1.0)。 更正调度归属：刷新闭包先被父函数立即调用，随后父函数自身执行SL:Schedule(refreshCallback,1.0)并保存resTimer。 更正Nested_Helper_3第10个捕获为Nested_string（PC292创建的BAG_DATA查询辅助闭包），并确认Nested_FFFF00 PC320无返回值。 更正Nested_Helper_3第7/9捕获分别为moneyRows/itemRows两张节点表（由Nested_FFFFFF两次调用返回），不再误标为重复函数引用。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)",
@@ -1150,6 +1150,6 @@
     "ordinary_lua_draft_functions": 77,
     "complete_static_reconstruction_functions": 29,
     "runtime_verified_functions": 0,
-    "note": "本轮新增1个普通Lua草稿；完整静态恢复与运行时验证数量不变。 另已校正doInit_UI捕获槽位数为20，并记录root父寄存器映射。 PC102-PC130已根据物理指令改为四组slot/names道具配置，不再误写为按钮列表。 进一步回溯root初始化，识别了doInit_UI的10个捕获槽位业务身份/值。 已从root/43/17子原型反汇编确认ITEM_INDEX_BY_NAME→MoveItemToQuickUse→PrintLog调用链。 已确认按钮创建子闭包参数为配置记录/列索引/行偏移，x/y坐标公式与三组行偏移40/0/80。 ScheduleOnce调用顺序与延迟参数、ITEM_INDEX_BY_NAME回调的双返回值处理已由PC135-PC145及child16闭合。 Nested_FFFF00的4项父捕获和关键3个子闭包捕获/调用关系已静态闭合；不改变完整静态恢复数。 已根据PC311-PC319更正Schedule归属：由Nested_FFFF00父函数在立即调用刷新闭包后安排周期调度，而非刷新闭包自调度。 Nested_Helper_3捕获第10槽位已纠正为Nested_string；Nested_FFFF00返回契约为无返回值。"
+    "note": "本轮新增1个普通Lua草稿；完整静态恢复与运行时验证数量不变。 另已校正doInit_UI捕获槽位数为20，并记录root父寄存器映射。 PC102-PC130已根据物理指令改为四组slot/names道具配置，不再误写为按钮列表。 进一步回溯root初始化，识别了doInit_UI的10个捕获槽位业务身份/值。 已从root/43/17子原型反汇编确认ITEM_INDEX_BY_NAME→MoveItemToQuickUse→PrintLog调用链。 已确认按钮创建子闭包参数为配置记录/列索引/行偏移，x/y坐标公式与三组行偏移40/0/80。 ScheduleOnce调用顺序与延迟参数、ITEM_INDEX_BY_NAME回调的双返回值处理已由PC135-PC145及child16闭合。 Nested_FFFF00的4项父捕获和关键3个子闭包捕获/调用关系已静态闭合；不改变完整静态恢复数。 已根据PC311-PC319更正Schedule归属：由Nested_FFFF00父函数在立即调用刷新闭包后安排周期调度，而非刷新闭包自调度。 Nested_Helper_3捕获第10槽位已纠正为Nested_string；Nested_FFFF00返回契约为无返回值。 已依据PC286/291函数调用返回寄存器生命周期，确认刷新闭包捕获的是moneyRows/itemRows结果表。"
   }
 }
