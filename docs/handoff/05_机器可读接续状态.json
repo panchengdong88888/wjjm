@@ -27,9 +27,10 @@
     "root.children[50]": "StorageItems：检查点144闭合子原型1（root/51/2）逐页容量算法：普通页上限pageCapacity，末页上限min(pageCapacity,openSize-(maxPage-1)*pageCapacity)，读取storedPageData[page]，返回首个未满页码；PC37-PC53建立每页物品数量表（#pageData，不存在记0）。PC206-PC211融合链闭合：R12[MakeIndex]=true（已处理索引集合），storedPageData[targetPage]递增，R13成功发送计数递增。LuaSendMsg第4参数在调用点承载目标仓库页码，服务端协议正式字段名仍待接收端验证。",
     "root.children[50].children[1]": "Nested_Anonymous_2：检查点150新增04_源码候选/root50_Nested_Anonymous_2.lua。4个捕获为maxPage/pageCapacity/openSize/storedPageData；数字遍历页码，末页容量min(pageCapacity,openSize-(maxPage-1)*pageCapacity)，返回首个未满页码或nil。首版草稿，待独立静态复审，未运行时验证。",
     "root.children[7]": "GetOwnerIDText：检查点151新增04_源码候选/root7_GetOwnerIDText.lua。nil/空串/-1返回false；string分支ownerID==tostring(ownerID)；非string分支ownerID==第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
-    "root.children[38]": "GetOwnerID：检查点151新增04_源码候选/root38_GetOwnerID.lua。nil/空串/-1返回false；string分支ownerID~=tostring(ownerID)；非string分支ownerID~=第二参数。首版普通Lua草稿，待静态复审，未运行时验证。"
+    "root.children[38]": "GetOwnerID：检查点151新增04_源码候选/root38_GetOwnerID.lua。nil/空串/-1返回false；string分支ownerID~=tostring(ownerID)；非string分支ownerID~=第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
+    "root.children[11]": "DistanceCalculation：25条；检查点160逐PC复审PC1-PC23活动路径，任一坐标表false/nil返回99999，否则返回max(abs(dx),abs(dy))；PC24-PC25为return后的不可达尾部。无upvalue/子原型。完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点159已完成MainLoop及三个直接依赖短helper的静态恢复；普通Lua源码候选82、完整静态恢复80/110、运行时验证0。下一步从函数状态CSV筛选尚未独立静态恢复的短函数/辅助闭包，优先完成可快速闭合的原型，继续提高完整静态覆盖率；不重复已经完成的VM dump、反汇编和闭包映射基础工作。",
+  "next_action": "检查点160已完成DistanceCalculation完整静态恢复；普通Lua源码候选82、完整静态恢复81/110、运行时验证0。下一步优先复审root.children[10] SetButtonVisibilityState（15条）与root.children[26] ResetGatherMonsterData（20条），重点确认pairs遍历、GUI:setVisible接收者及Reset闭包捕获单元的共享状态写入语义。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -102,7 +103,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "159"
+    "last_checkpoint": "160"
   },
   "static_recovered_functions": [
     {
@@ -1865,33 +1866,54 @@
         "PC-level branch, argument, receiver and return contract statically closed at checkpoint 159.",
         "Not runtime validated."
       ]
+    },
+    {
+      "path": "root.children[11]",
+      "legacy_path": "root/12",
+      "name": "DistanceCalculation",
+      "physical_instructions": 25,
+      "constant_count": 6,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第十二批.lua",
+      "audit_file": "docs/audit/检查点160_DistanceCalculation完整静态复审.md",
+      "parameters": [
+        "pointA",
+        "pointB"
+      ],
+      "returns": [
+        "99999 when either coordinate table is false/nil",
+        "max(abs(pointA.x-pointB.x),abs(pointA.y-pointB.y))"
+      ],
+      "notes": [
+        "PC1-PC23 active path fully mapped; PC24-PC25 unreachable after PC23 return.",
+        "No upvalues or child prototypes.",
+        "Not runtime validated."
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "159",
+    "checkpoint": "160",
     "targets": [
-      "root.children[35]",
-      "root.children[7]",
-      "root.children[38]"
+      "root.children[11]"
     ],
-    "status": "Independently reviewed and promoted SetTargetID, GetOwnerIDText, and GetOwnerID to complete static reconstruction.",
-    "audit_file": "docs/audit/检查点159_MainLoop依赖短helper静态复审.md",
+    "status": "Independently reviewed all 25 physical instruction records; promoted DistanceCalculation to complete static reconstruction.",
+    "audit_file": "docs/audit/检查点160_DistanceCalculation完整静态复审.md",
     "files": [
       "04_源码候选/短函数草稿_第十二批.lua",
-      "04_源码候选/root7_GetOwnerIDText.lua",
-      "04_源码候选/root38_GetOwnerID.lua",
-      "docs/audit/检查点159_MainLoop依赖短helper静态复审.md",
+      "docs/audit/检查点160_DistanceCalculation完整静态复审.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "SetTargetID must call Facade:retrieveProxy(...) with Facade as self; corrected dot-call bug.",
-      "GetOwnerIDText special-value and string/non-string equality branches closed.",
-      "GetOwnerID special-value and string/non-string inequality branches closed."
+      "Both coordinate arguments have false/nil sentinel paths returning 99999.",
+      "X/Y absolute differences are computed separately and math.max(dx,dy) is returned.",
+      "PC24-PC25 are unreachable tail returns after PC23."
     ],
     "counts": {
       "ordinary_lua_drafts": 82,
-      "complete_static_reconstruction": 80,
+      "complete_static_reconstruction": 81,
       "runtime_verified": 0
     }
   },
@@ -1968,8 +1990,13 @@
       "legacy_path": "root/12",
       "name": "DistanceCalculation",
       "source_file": "04_源码候选/短函数草稿_第十二批.lua",
-      "audit_file": "docs/audit/检查点33_DiuItems复审与短函数草稿.md",
-      "status": "first_pass_draft_pending_static_review_not_runtime_verified"
+      "audit_file": "docs/audit/检查点160_DistanceCalculation完整静态复审.md",
+      "status": "complete_static_reconstruction_not_runtime_verified",
+      "notes": [
+        "PC1-PC23 active path mapped: two coordinate-table truthiness gates, 99999 sentinel, x/y absolute differences, math.max return.",
+        "PC24-PC25 are unreachable tail returns after PC23.",
+        "No upvalues or child prototypes; static only, not runtime validated."
+      ]
     },
     {
       "path": "root.children[31]",
@@ -2535,51 +2562,49 @@
   ],
   "draft_function_count": 82,
   "ordinary_lua_draft_functions": 82,
-  "last_checkpoint": "159",
-  "checkpoint": "159",
+  "last_checkpoint": "160",
+  "checkpoint": "160",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 159,
+    "number": 160,
     "date": "2026-11-09",
     "artifacts": [
       "04_源码候选/短函数草稿_第十二批.lua",
-      "04_源码候选/root7_GetOwnerIDText.lua",
-      "04_源码候选/root38_GetOwnerID.lua",
-      "docs/audit/检查点159_MainLoop依赖短helper静态复审.md"
+      "docs/audit/检查点160_DistanceCalculation完整静态复审.md"
     ],
-    "draft_prototypes_touched": 3,
+    "draft_prototypes_touched": 1,
     "draft_prototype_total": 82,
-    "complete_static_reconstructions": 80,
+    "complete_static_reconstructions": 81,
     "runtime_verified": 0,
-    "notes": "独立静态复审MainLoop依赖的三个短helper；SetTargetID receiver点调用已修正。"
+    "notes": "DistanceCalculation的25条指令逐PC复审完成，升级完整静态恢复；运行时未验证。"
   },
   "latest_checkpoint": {
-    "checkpoint": "159",
+    "checkpoint": "160",
     "date": "2026-11-09",
-    "summary": "完成SetTargetID、GetOwnerIDText、GetOwnerID三个短helper的独立静态复审；SetTargetID的Facade:retrieveProxy receiver修正。",
-    "audit_file": "docs/audit/检查点159_MainLoop依赖短helper静态复审.md",
+    "summary": "DistanceCalculation PC1-PC23活动路径、两个坐标缺失分支、x/y绝对差和math.max返回闭合；PC24-PC25为不可达尾部。",
+    "audit_file": "docs/audit/检查点160_DistanceCalculation完整静态复审.md",
     "unresolved": [
       "Lua宿主/游戏运行时验证"
     ],
     "counts": {
       "ordinary_lua_drafts": 82,
-      "complete_static_reconstruction": 80,
+      "complete_static_reconstruction": 81,
       "runtime_verified": 0
     }
   },
-  "complete_static_reconstruction_count": 80,
-  "complete_static_reconstruction": "80/110 (72.7%)",
+  "complete_static_reconstruction_count": 81,
+  "complete_static_reconstruction": "81/110 (73.6%)",
   "progress_reconciled": {
-    "source_of_counts": "按02_基础索引/03_函数状态清单.csv逐项核对；普通Lua源码候选、完整静态恢复与运行时验证分别统计。",
+    "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；机器状态中的static_recovered_functions是精选索引，不作为完整计数器。",
     "ordinary_lua_draft_functions": 82,
-    "complete_static_reconstruction_functions": 80,
+    "complete_static_reconstruction_functions": 81,
     "runtime_verified_functions": 0,
-    "note": "检查点158完成MainLoop静态恢复；检查点159完成SetTargetID、GetOwnerIDText、GetOwnerID三个直接依赖helper的独立静态复审。运行时验证仍为0。"
+    "note": "检查点160将DistanceCalculation root.children[11]由首版草稿升级为完整静态恢复；CSV完整静态恢复条目由80增至81，运行时验证仍为0。"
   },
   "counts": {
     "ordinary_lua_drafts": 82,
-    "complete_static_reconstruction": 80,
+    "complete_static_reconstruction": 81,
     "runtime_verified": 0
   }
 }
