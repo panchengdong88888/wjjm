@@ -1,5 +1,5 @@
 -- MainLeftBottom(2).lua 普通 Lua 草稿
--- 第五十九批 / 检查点 #83
+-- 第五十九批 / 检查点 #140
 -- BlacklistPlayerDetection：root.children[47] / legacy root/48
 -- 216条物理指令、35常量、无子原型、vararg_flag=0；root PC367创建闭包，捕获13个父寄存器。
 -- 捕获映射尚未给出本函数13个upvalue对应的父寄存器；统一保留UPVALUE_0..12。
@@ -79,52 +79,35 @@ local function BlacklistPlayerDetection()
 
                     -- PC136-PC141将nil作为无效距离哨兵；非nil结果才继续处理。
                     if distanceResult ~= nil then
+                            -- PC142-PC159：读取os.time()；UPVALUE_6是直接阈值数值，
+                            -- 与(now - state.alertAt)比较。达到阈值才更新alertAt并通知。
                             local now = os.time()
                             if now - state.alertAt >= (UPVALUE_6 or 0) then
                                 state.alertAt = now
-                                local alertText = string.format(
+                                UPVALUE_7(string.format(
                                     "野外观测到黑名单玩家：%s（%d格）",
                                     actorName,
                                     distanceResult
-                                )
-                                UPVALUE_7(alertText)
+                                ))
                             end
 
-                            -- nextTryAt控制随机传送尝试频率。
-                            if now >= (state.nextTryAt or 0) then
-                                state.nextTryAt = now + (UPVALUE_8 or 0)
+                            -- PC160-PC173：只有state.nextTryAt <= now才进入尝试窗口；
+                            -- UPVALUE_8在PC164-PC165作为零参数函数调用，返回下一次尝试间隔。
+                            -- 随后写入state.nextTryAt=now+间隔，并将noStoneWarned复位为false。
+                            if state.nextTryAt <= now then
+                                state.nextTryAt = now + UPVALUE_8()
                                 state.noStoneWarned = false
 
-                                -- 尝试通过捕获函数/对象选择随机传送道具。
-                                -- 物品选择、使用API及返回值尚未从寄存器/捕获映射完全闭合。
-                                local itemResult = UPVALUE_9(actorName, distanceResult)
-                                if itemResult then
-                                    UPVALUE_10(string.format(
-                                        "黑名单玩家：%s（%d格），飞随机",
-                                        actorName,
-                                        distanceResult
-                                    ))
-                                    local detail = string.format(
-                                        "黑名单玩家 %s，距离 %d 格，使用 %s 随机传送",
-                                        actorName,
-                                        distanceResult,
-                                        tostring(itemResult)
-                                    )
-                                    UPVALUE_11(detail)
-                                else
-                                    if not state.noStoneWarned then
-                                        state.noStoneWarned = true
-                                        UPVALUE_10("没有随机传送石，黑名单玩家传送暂停")
-                                    end
-                                    -- 无可用道具时还会构造“没有可用的随机传送道具（%s）”提示；
-                                    -- table.concat与GetMetaValue("os"/路径)相关调用参数仍待精确映射。
-                                    local unavailable = string.format(
-                                        "没有可用的随机传送道具（%s）",
-                                        tostring(itemResult or "")
-                                    )
-                                    UPVALUE_12(unavailable)
-                                end
+                                -- PC174-PC192：确认构造“飞随机”提示并调用捕获回调；
+                                -- 但寄存器复用和UPVALUE_10/UPVALUE_7的业务身份仍需继续映射。
+                                -- 不再把未经证实的UPVALUE_9(actorName,distanceResult)当作道具选择API。
+                                -- TODO：确认随机传送道具筛选、实际使用调用及其成功/失败分支。
                             end
+
+                            -- PC193-PC213：另一路径使用UPVALUE_11作为时间间隔，
+                            -- 更新nextTryAt；noStoneWarned为false时置true并发送一次“无随机传送石”提示。
+                            -- 随后调用table.concat(UPVALUE_12(), "/")构造路径文本，
+                            -- 再把该文本交给捕获的格式化/通知回调。具体业务身份待映射。
                         end
                     end
                 end
