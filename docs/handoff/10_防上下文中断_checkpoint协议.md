@@ -1538,3 +1538,11 @@
 - UPVALUE_7=日志包装器root.children[16]；UPVALUE_10=本地通知包装器root.children[20]；UPVALUE_8=随机传送辅助闭包root.children[24]。UPVALUE_9=0.01；UPVALUE_11=30.0；UPVALUE_12=随机传送道具名称数组。
 - 纠正检查点140旧表述：UPVALUE_8并非间隔函数；UPVALUE_11不是通用第二间隔函数（只在失败重试路径加到now）；UPVALUE_7不是本地通知回调；UPVALUE_12不应加括号调用。
 - 函数保持首版普通Lua草稿状态，仍需确认其余前置upvalue身份及UPVALUE_11在成功通知格式中的业务意图。统计：普通Lua草稿78、完整静态恢复76/110、运行时验证0。
+
+
+## 检查点 #146（2026-11-09）：BlacklistPlayerDetection 13槽闭包捕获映射
+- 父root PC368创建`root.children[47]`（legacy root/48），捕获13个父T寄存器：`[2,57,41,58,55,53,38,4,56,39,5,40,37]`；已将完整capture descriptor写入`docs/handoff/04_闭包捕获映射.json`的root47节点。
+- 映射：UP[0]=主模块状态表R2；UP[1]=root/53回调（挂到R41.onDamageMsg）；UP[2]=黑名单玩家状态表R41；UP[3]=root/26死亡后自动拉黑处理闭包；UP[4]=root/52黑名单actor查询辅助闭包（基于_blacklistData与ACTOR_MASTER_ID，返回匹配状态及名称）；UP[5]=root/23距离计算闭包；UP[6]=2.0阈值；UP[7]=root/17日志包装器；UP[8]=root/25随机传送石查找/使用闭包；UP[9]=0.01成功后短重试延迟；UP[10]=root/21本地通知包装器；UP[11]=30.0无可用道具重试延迟（同时作为成功通知%s实参）；UP[12]=`{"随机传送石"}`数组。
+- 捕获槽位由root PC369-PC381逐项与被捕获寄存器定义交叉确认；本映射只证明捕获关系及已核实的闭包契约，不代替全函数逐PC复审。
+- 统计仍为普通Lua草稿78、完整静态恢复76/110、运行时验证0。
+- 下一步：逐PC复审BlacklistPlayerDetection全216条指令，重点检查UPVALUE_4双返回值、UPVALUE_1零参数调用和UPVALUE_11成功通知格式实参。
