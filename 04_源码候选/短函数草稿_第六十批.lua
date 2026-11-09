@@ -31,15 +31,12 @@ local function StorageItems()
     end
     local openSize = storageProxy:GetOpenSize()
 
-    -- PC37-PC53：按页读取仓库数据并汇总。页数/容量边界及汇总字段仍需结合子原型1复核。
+    -- PC37-PC53：逐页读取仓库物品数组，只记录每页当前物品数量。
+    -- pageData存在时取#pageData；不存在时记0。storedPageData[page]不是合并后的物品表。
     local storedPageData = {}
     for page = 1, maxPage do
         local pageData = storageProxy:GetStorageDataByPage(page)
-        if pageData then
-            for key, value in pairs(pageData) do
-                storedPageData[key] = value
-            end
-        end
+        storedPageData[page] = pageData and #pageData or 0
     end
 
     -- PC61-PC83分别构造R8/R9两张表；当前仅能确认它们被后续两段ipairs使用，
@@ -53,10 +50,9 @@ local function StorageItems()
     end
 
     -- PC54创建子原型1（root.children[50].children[1]），捕获父函数R1/R2/R3/R4：
-    -- maxPage、pageCapacity、openSize、storedPageData。该闭包在PC177-PC178被零参数调用，
-    -- 返回值用于PC179-PC180容量门控；不能伪造成接收(maxPage,pageCapacity,openSize)的函数。
+    -- maxPage、pageCapacity、openSize、storedPageData。它是零参数闭包，PC177-PC178调用，
+    -- 返回第一个仍有空位的目标页码；nil表示所有页均满。精确容量算法见下方复原说明。
     -- PC102创建子原型0（root.children[50].children[0]），捕获2个父级值；
-    -- PC167-PC170通过该闭包执行二参数调用，两个实参的业务身份仍待精确映射。
 
     local storedCount = 0
 
@@ -87,24 +83,28 @@ local function StorageItems()
     --   调用时传入两个实参；PC175根据返回值决定是否进入容量门控。
     -- * PC177-PC178：零参数调用子原型1。返回假值则UPVALUE_2输出
     --   “仓库已满,无法存仓”，UPVALUE_0.isStoring=false并return。
-    -- * 子原型1由PC54创建，捕获父函数R1/R2/R3/R4，依次对应
-    --   maxPage、pageCapacity、openSize、storedPageData。
+    -- * 子原型1精确算法：for page=1,maxPage；普通页容量上限为pageCapacity；
+    --   最后一页上限为min(pageCapacity, openSize-(maxPage-1)*pageCapacity)。
+    --   读取storedPageData[page]，若当前数量小于该页上限则返回page；否则继续；
+    --   全部页满则无显式返回值。PC24是数值for循环步进，PC25清理循环槽。
     -- * PC187-PC191：UPVALUE_2("存: " .. item.Name)。
     -- * PC192-PC205：LuaSendMsg七个实参依次为
     --   global.MsgType.MSG_CS_STORAGE_STORE_REQUEST,
-    --   999999999, item.MakeIndex, 子原型1返回值, 0, item.Name,
-    --   string.len(item.Name)。
-    -- * PC206-PC211包含存仓后的表/计数记账；PC214-PC215复位isStoring；
+    --   999999999, item.MakeIndex, 子原型1返回的目标页码, 0, item.Name,
+    --   string.len(item.Name)。第4实参的调用点业务含义为目标仓库页码；
+    --   服务端协议字段的正式名称/编码仍未从接收端证实。
+    -- * PC206-PC211融合链：R22=item.MakeIndex；R12[R22]=true；
+    --   R22=storedPageData[targetPage]；R22=R22+1；
+    --   storedPageData[targetPage]=R22；R13=R13+1。
+    --   R12在PC100初始化为空表，PC109-PC112按MakeIndex查重，
+    --   因此它是本轮已处理/已发送物品索引集合；R4(storedPageData)按页记账。
+    --   PC214-PC215复位isStoring；
     --   PC216-PC224仅在计数大于0时通过UPVALUE_2输出完成提示。
     --
-    -- 检查点143补充：PC167-PC170的子原型0调用实参已闭合：
-    -- 第一个实参是当前BAG_DATA物品记录（父R19），第二个实参是当前R8特殊名称
-    -- ipairs迭代项（父R25）。因此子原型0只在当前物品与当前特殊名称匹配时
-    -- 被调用；其第二参数用于判断该名称是否包含“聚灵珠”。
-    -- PC211明确执行R13=R13+1，即每次完成一次存仓发送后，成功存入计数加一。
-    -- PC206-PC210仍包含对表/槽位的连续记账写入，融合载荷中的完整寄存器
-    -- 操作数尚未被现有校正反汇编逐项展开，暂不猜测具体键值表达式。
-    -- TODO：子原型1容量算术、PC206-PC210准确记账表达式、第4个LuaSendMsg参数
-    -- 的协议字段语义。未闭合前不伪造可执行循环体。
+    -- 检查点143：PC167-PC170子原型0实参为当前BAG_DATA物品记录R19、
+    -- R8特殊名称迭代项R25；PC211为发送后的成功计数递增。
+    -- 检查点144：子原型1容量算法及PC206-PC211记账链已逐条闭合，见审计报告。
+    -- 尚未确认的只有LuaSendMsg第4字段在服务端协议中的正式字段名称/编码；
+    -- 从调用点数据流可确认它承载子原型1返回的目标仓库页码。
 
 end
