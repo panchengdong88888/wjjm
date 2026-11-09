@@ -517,3 +517,13 @@
 - 捕获变量的作者原名和父级初始化路径仍待复核；未进行运行时验证。
 - 新增普通Lua草稿1个；累计42个。完整静态恢复仍27/110（24.5%）；运行时验证仍0。
 - 本批仅计入草稿，不计入完整静态恢复。下一目标优先 `root.children[42].children[9].children[0]`（Nested_Button_setTitleText，48条指令），追踪调用点与捕获值。
+
+
+## 检查点 #56（2026-11-09）：Nested_isOutputted 首版普通 Lua 草稿
+- 对象：`root.children[50].children[0]`（legacy `root/51/1`），原型索引98，52条物理指令，无子原型。
+- 源码：`04_源码候选/短函数草稿_第三十四批.lua`；审计：`docs/audit/检查点56_Nested_isOutputted草稿.md`。
+- 父级 `root/51` PC102 创建闭包，两个捕获分别来自父级 UP[0]、UP[1]。子函数通过UP[0].isOutputted读取/写入共享标记；UP[1]接收物品对象和信息字符串两次调用。
+- 已恢复：`string.find(itemText,"聚灵珠",1,true)` 纯文本查找；不匹配直接返回true；首次命中时先设置isOutputted=true，再回调物品对象及由Name、StdMode、Dura、DuraMax拼成的信息；随后要求Dura、DuraMax均存在且Dura<=DuraMax才返回true。
+- 参数位置和捕获对象的作者原名尚待父级调用链复核；未运行时验证。
+- 新增普通Lua草稿1个；累计43个。完整静态恢复仍27/110（24.5%）；运行时验证仍0。
+- 本批仅计入草稿，不计入完整静态恢复。下一步继续追踪Nested_Button_setTitleText的三个捕获对象和PC8–10调用返回，或分析Nested_Helper_7及其子函数。
