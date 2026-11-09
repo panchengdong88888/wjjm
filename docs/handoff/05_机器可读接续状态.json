@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next."
   },
-  "next_action": "继续推进doInit_UI尚未完成的父级逻辑或其他有完整证据的草稿函数；Nested_Anonymous的T槽映射仍需VM帧初始化实现，当前仓库没有VM解释器/加载器源码，不猜测。",
+  "next_action": "继续批量静态复核剩余普通Lua草稿，优先选择指令数较少、调用契约和捕获来源可闭合的函数；FindBlacklistPlayer（root.children[51]）的唯一捕获源和R0/vararg参数关系仍需核验，不直接沿用旧草稿中的player解析器假设。复杂的BlacklistPlayerDetection与StorageItems保留分阶段复核；Nested_Anonymous的T槽映射仍等待VM调用帧初始化实现。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -88,7 +88,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "121"
+    "last_checkpoint": "122"
   },
   "static_recovered_functions": [
     {
@@ -1787,30 +1787,28 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "121",
+    "checkpoint": "122",
     "targets": [
-      "root.children[42].children[18]",
-      "root.children[49]"
+      "root.children[53]",
+      "root.children[52].children[0]"
     ],
-    "status": "resolved all six Nested_Helper_10 capture identities and promoted AnonymousHelper_49 from draft to complete static reconstruction; no runtime verification",
-    "audit_file": "docs/audit/检查点121_Nested_Helper_10捕获回调身份闭合与AnonymousHelper_49恢复.md",
+    "status": "promoted ScheduleOnce and Nested_JsonDecode to complete static reconstruction; no runtime verification",
+    "audit_file": "docs/audit/检查点122_ScheduleOnce与Nested_JsonDecode完整静态恢复.md",
     "files": [
-      "04_源码候选/Nested_Helper_10_黑名单功能开关_第八十批.lua",
-      "04_源码候选/短函数草稿_第十六批.lua",
-      "docs/audit/检查点121_Nested_Helper_10捕获回调身份闭合与AnonymousHelper_49恢复.md",
+      "04_源码候选/短函数草稿_第十七批.lua",
+      "04_源码候选/Nested_JsonDecode_JSON解码包装器_第八十一批.lua",
+      "docs/audit/检查点122_ScheduleOnce与Nested_JsonDecode完整静态恢复.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "Nested_Helper_10 UP[3] is AnonymousHelper_49, a wrapper calling ReadNumericConfig('blacklist_distance.txt').",
-      "Nested_Helper_10 UP[4] is Nested_Helper_4, the distance-input prompt wrapper.",
-      "Nested_Helper_10 UP[5] is Nested_blacklistTimer, called with the positive distance value.",
-      "All six Nested_Helper_10 captures are now identified, including timerState, notification callback, module state table, distance reader, input wrapper, and timer-start wrapper.",
-      "AnonymousHelper_49 root.children[49] captures root R45=ReadNumericConfig closure and root R42='blacklist_distance.txt'; its five instructions are fully mapped and it returns all results of the wrapper call.",
-      "AnonymousHelper_49 is newly upgraded to complete static reconstruction; Nested_Helper_10 capture-name refinement does not increment function count a second time."
+      "ScheduleOnce root.children[53] uses SL.ScheduleOnce with the SL method receiver and two explicit parameters callback and delay; PC5 directly returns all call results; PC6-PC7 are unreachable.",
+      "Nested_JsonDecode root.children[52].children[0] obtains SL.JsonDecode, reads UP[0], calls SL:JsonDecode(UP[0]), and directly returns all results; PC5-PC6 are unreachable after PC4's unconditional return.",
+      "The Nested_JsonDecode closure capture at onDamageMsg PC7 is followed by OP_387 with B=1, so the parent capture source is T[1]; the old ledger entry T[3] was corrected.",
+      "The dump vararg metadata was not used alone to infer fixed argument count; ScheduleOnce's two explicit arguments are supported by its call construction and the existing independent helper candidate."
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 62,
+      "complete_static_reconstruction": 64,
       "runtime_verified": 0
     }
   },
@@ -2381,54 +2379,55 @@
   ],
   "draft_function_count": 78,
   "ordinary_lua_draft_functions": 78,
-  "last_checkpoint": "121",
-  "checkpoint": "121",
+  "last_checkpoint": "122",
+  "checkpoint": "122",
   "drafts": 33,
-  "next": "继续推进doInit_UI尚未完成的父级逻辑或其他有完整证据的草稿函数；Nested_Anonymous的T槽映射仍需VM帧初始化实现，当前仓库没有VM解释器/加载器源码，不猜测。",
+  "next": "继续批量静态复核剩余普通Lua草稿，优先选择指令数较少、调用契约和捕获来源可闭合的函数；FindBlacklistPlayer（root.children[51]）的唯一捕获源和R0/vararg参数关系仍需核验，不直接沿用旧草稿中的player解析器假设。复杂的BlacklistPlayerDetection与StorageItems保留分阶段复核；Nested_Anonymous的T槽映射仍等待VM调用帧初始化实现。",
   "recent_checkpoint": {
-    "checkpoint": "121",
+    "checkpoint": "122",
     "date": "2026-11-09",
-    "summary": "Nested_Helper_10六项捕获全部具名；AnonymousHelper_49捕获ReadNumericConfig闭包与blacklist_distance.txt，5条指令完成静态恢复。完整静态恢复升至62/110，运行时验证0。",
+    "summary": "新增2个完整静态恢复：ScheduleOnce与Nested_JsonDecode；纠正Nested_JsonDecode父闭包捕获源为T[1]，其备用return路径不可达。",
     "files": [
-      "04_源码候选/Nested_Helper_10_黑名单功能开关_第八十批.lua",
-      "04_源码候选/短函数草稿_第十六批.lua",
-      "docs/audit/检查点121_Nested_Helper_10捕获回调身份闭合与AnonymousHelper_49恢复.md",
+      "04_源码候选/短函数草稿_第十七批.lua",
+      "04_源码候选/Nested_JsonDecode_JSON解码包装器_第八十一批.lua",
+      "docs/audit/检查点122_ScheduleOnce与Nested_JsonDecode完整静态恢复.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 62,
+      "complete_static_reconstruction": 64,
       "runtime_verified": 0
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "121",
+    "checkpoint": "122",
     "date": "2026-11-09",
-    "summary": "闭合Nested_Helper_10六项捕获身份：UP[3]=AnonymousHelper_49（ReadNumericConfig('blacklist_distance.txt')）、UP[4]=Nested_Helper_4、UP[5]=Nested_blacklistTimer；并将AnonymousHelper_49（5条指令）从首版草稿升级为完整静态恢复。",
-    "audit_file": "docs/audit/检查点121_Nested_Helper_10捕获回调身份闭合与AnonymousHelper_49恢复.md",
+    "summary": "ScheduleOnce（7条指令）与Nested_JsonDecode（6条指令）升级为完整静态恢复。ScheduleOnce按SL:ScheduleOnce(callback,delay)转发并原样返回；Nested_JsonDecode调用SL:JsonDecode(UP[0])并原样返回。两个函数PC5/6后的备用return均不可达；修正Nested_JsonDecode父捕获源为T[1]。",
+    "audit_file": "docs/audit/检查点122_ScheduleOnce与Nested_JsonDecode完整静态恢复.md",
     "unresolved": [
-      "Nested_Helper_10 nil哨兵运行时语义",
-      "GUI宿主标志和Layout尾参1的具体语义",
+      "Nested_JsonDecode捕获值的父级业务语义",
+      "FindBlacklistPlayer唯一捕获源及参数映射",
+      "GUI宿主标志和Layout尾参1语义",
       "Nested_Anonymous的VM帧初始化和T槽映射"
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 62,
+      "complete_static_reconstruction": 64,
       "runtime_verified": 0
     }
   },
-  "complete_static_reconstruction_count": 62,
-  "complete_static_reconstruction": "62/110 (56.4%)",
+  "complete_static_reconstruction_count": 64,
+  "complete_static_reconstruction": "64/110 (58.2%)",
   "progress_reconciled": {
     "source_of_counts": "GitHub 02_基础索引/03_函数状态清单.csv 与静态恢复候选索引逐项核对",
     "ordinary_lua_draft_functions": 78,
-    "complete_static_reconstruction_functions": 62,
+    "complete_static_reconstruction_functions": 64,
     "runtime_verified_functions": 0,
-    "note": "检查点120恢复Nested_Helper_10；检查点121将AnonymousHelper_49从草稿升级为完整静态恢复，并补齐Nested_Helper_10捕获身份。统计更新至62/110，运行时验证仍为0。"
+    "note": "检查点122新增ScheduleOnce与Nested_JsonDecode两个完整静态恢复函数；统计由62/110升至64/110，运行时验证仍为0。"
   },
   "counts": {
     "ordinary_lua_drafts": 78,
-    "complete_static_reconstruction": 62,
+    "complete_static_reconstruction": 64,
     "runtime_verified": 0
   }
 }
