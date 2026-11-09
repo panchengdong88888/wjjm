@@ -1459,3 +1459,15 @@
 - 已将 04_源码候选/短函数草稿_第五十九批.lua 的首次HP状态判断从 previousHp == "unknown" 修正为 previousHp == nil。
 - 本次只修正已有草稿，不新增普通Lua草稿、不升级完整静态恢复；统计仍为草稿78、完整静态恢复76/110、运行时验证0。
 - 下一步：继续逐PC复核PC28-PC54的HP/deathHandled状态转移；再处理PC74-PC141玩家遍历/坐标/距离，以及PC142-PC216节流、随机传送和通知分支。StorageItems继续复核PC151-PC224及两个子原型调用契约。
+
+
+## 检查点 #138（2026-11-09）：BlacklistPlayerDetection HP/deathHandled 状态机闭合
+- 对照 corrected phase3 反汇编 PC21-PC54，并结合 OP_271/OP_215/OP_216/OP_140/OP_082/OP_338/OP_364/OP_342 的条件与跳转语义，确认状态转移：
+  1. previousHp == nil：state.lastHp=hp；state.deathHandled=(hp<=0)。
+  2. previousHp 非 nil 且 hp>0：state.lastHp=hp；state.deathHandled=false。
+  3. hp<=0、previousHp>0 且 not state.deathHandled：state.deathHandled=true；state.lastHp=0；调用UPVALUE_3()。
+  4. 其余情况不改动该状态、不重复触发死亡回调。
+- 已修正 04_源码候选/短函数草稿_第五十九批.lua 中原先错误的 hp<=0 / previousHp<=0 分支。
+- PC23的 K[16]=['unknown',2] 为nil序列化哨兵；不应作为字符串比较。
+- 本次仅修正已有草稿，不增加草稿计数，不升级完整静态恢复。统计：草稿78、完整静态恢复76/110、运行时验证0。
+- 下一步复核PC74-PC141玩家遍历/actor信息/坐标/距离，以及PC142-PC216节流、随机传送和通知分支。
