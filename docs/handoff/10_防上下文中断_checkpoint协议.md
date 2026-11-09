@@ -1391,3 +1391,14 @@
 - 27条物理指令全部映射，升级为完整静态恢复；未运行时验证。
 - 统计：普通Lua草稿78；完整静态恢复70/110（63.6%）；运行时验证0。
 - 下一步：复核GetStorageItemData、MoveTo、InstallDamageHook、ClearBlacklistItems等已有短函数草稿。
+
+
+## 检查点 #132（2026-11-09）：GetStorageItemData 与 MoveTo 完整静态恢复
+
+- GetStorageItemData（root.children[1]，77条）：修正所有NPCStorageProxy方法调用的self；恢复1..maxPage分页、table页数据ipairs/table.insert合并、每页容量公式、GUIDefine假值回退、GetOpenSize、捕获通知回调及返回数组。
+- 容量公式：`pageLimit=min(perPageMax, openSize-(page-1)*perPageMax)`；仅pageLimit>0时累计`pageLimit-pageItemCount`，不擅自钳制差值。
+- MoveTo（root.children[3]，51条）：确认x/y/range参数、range假值默认0、Facade作为self发送InputMove通知、PlayerPos的X/Y顺序；两轴差值均需满足`<=range`，否则false。
+- 两函数源码位于既有批次文件，已校正并保留其余原型内容；新增审计`docs/audit/检查点132_GetStorageItemData与MoveTo静态复核.md`。
+- 两函数均升级为完整静态恢复；未运行时验证。
+- 统计：普通Lua草稿78；完整静态恢复72/110（65.5%）；运行时验证0。
+- 下一步：复核InstallDamageHook与ClearBlacklistItems。
