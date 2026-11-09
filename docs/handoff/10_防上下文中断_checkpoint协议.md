@@ -1518,3 +1518,13 @@
 - 子原型1（`root/51/2`）容量算术尚未完成逐寄存器化简；LuaSendMsg第4参数已知来自该子原型返回值，但协议字段语义未映射。
 - 统计不变：普通Lua草稿78；完整静态恢复76/110；运行时验证0。
 - 下一步：继续还原子原型1循环/容量表达式，随后解析PC206-PC210融合载荷；再回到BlacklistPlayerDetection PC174-PC192。
+
+
+## 检查点 #144（2026-11-09）：StorageItems 容量页码算法与发送后记账闭合
+- 子原型1 `root/51/2` 捕获父R1/R2/R3/R4，依次为maxPage、pageCapacity、openSize、storedPageData。
+- 父PC37-PC53构造每页数量表：`storedPageData[page] = pageData and #pageData or 0`，不是合并后的物品明细表。
+- 子原型1遍历page=1..maxPage；普通页上限pageCapacity，最后一页上限`min(pageCapacity, openSize-(maxPage-1)*pageCapacity)`；比较当前页数量，返回首个未满页码；无可用页时返回nil。
+- PC206-PC211融合链：`item.MakeIndex`；`R12[MakeIndex]=true`；读取`storedPageData[targetPage]`；加1并写回；最后`R13=R13+1`。R12由PC100初始化，PC109-PC112用于MakeIndex查重，因此是本轮已处理索引集合。
+- LuaSendMsg第4实参来自子原型1返回值，调用点业务身份为目标仓库页码；服务端协议字段正式名称/编码仍未由接收端验证。
+- 主函数仍不升级完整静态恢复：消息协议字段未闭合。统计：普通Lua草稿78、完整静态恢复76/110、运行时验证0。
+- 下一步转回`BlacklistPlayerDetection`（`root.children[47]`）PC174-PC192，核查通知回调参数及随机传送物品路径是否真实存在。
