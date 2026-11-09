@@ -982,3 +982,12 @@
 - PC313-PC319确认SL:Schedule(refreshResourceStatistics,1.0)返回值写入timerState.resTimer。
 - 统计保持：普通Lua草稿77；完整静态恢复32/110；运行时验证0。
 - 下一步：复核Nested_FFFF00的Win_Create、rootLayout Layout_Create、ListView_Create GUI参数栈与融合参数；继续标注未确认宿主参数，不做猜测。
+
+
+## 检查点 #96（2026-11-09）：Win_Create显式nil参数槽复核
+- 更新 `04_源码候选/短函数草稿_第六十二批.lua`；新增 `docs/audit/检查点96_Win_Create空参数槽复核.md`。
+- Nested_FFFF00 PC38-PC42准备五个布尔实参：false,true,true,true,true；PC43执行OP_125清空T[13]，确认Win_Create最后的999之前存在一个显式nil参数槽；PC44准备999，PC45调用。
+- 源码已改为在999前显式传nil，避免参数位置前移。
+- 相邻调用复核：rootLayout Layout_Create尾随true；ListView_Create尾随1.0，x=(screenW-1)/2、y=screenH/2、宽高分别screenW*0.6/screenH*0.6。
+- GUI标志的宿主含义仍未知，未进行运行时验证。
+- 统计保持：普通Lua草稿77；完整静态恢复32/110；运行时验证0。
