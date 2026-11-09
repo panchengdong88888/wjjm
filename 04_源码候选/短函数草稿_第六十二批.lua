@@ -51,7 +51,7 @@ local function Nested_FFFF00()
         moduleState.screenW,
         moduleState.screenH,
         false, true, true, true, true,
-        999
+        nil, 999
     )
     moduleState.resWin = resWin
 
@@ -180,3 +180,8 @@ PC125/153/187/215/243等Layout_Create实参序列均包含末尾数值1，原草
 ]]
 
 return Nested_FFFF00
+
+
+--[[
+检查点96补充：Nested_FFFF00 PC38-PC44准备Win_Create实参时，五个布尔值依次为false,true,true,true,true；PC43的OP_125明确清空T[13]，即在最后的999参数前保留一个nil实参槽。故Win_Create调用显式补入nil，不把空槽丢弃。
+]]
