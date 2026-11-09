@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "继续批量恢复未开始短函数，优先检查 Nested_Anonymous_2（root.children[50].children[1]，27条）、Nested_ID（root.children[55].children[1]，27条）和 Nested_SL_3（root.children[42].children[8]，29条）；随后集中静态复审第十二至二十五批，重点闭合 GetAvailableStoragePage PC22–50、Nested_dropTimer/Nested_shiquTimer 捕获映射及 Nested_blacklistTimer 通知格式化融合载荷。",
+  "next_action": "继续复核 Nested_Anonymous_2（root.children[50].children[1]，27条）中的融合算术与数值for循环，确认捕获值和参数来源后形成草稿；随后筛选下一组未开始短函数。完成短函数初轮草稿后，集中静态复审第十二至二十六批，重点闭合 GetAvailableStoragePage PC22–50、Nested_dropTimer/Nested_shiquTimer 捕获映射及 Nested_blacklistTimer 通知格式化载荷。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "46"
+    "last_checkpoint": "47"
   },
   "static_recovered_functions": [
     {
@@ -461,22 +461,34 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 46,
-    "target": "Nested_ITEM_INDEX_BY_NAME 普通 Lua 草稿；DiuItems 再次独立复核",
-    "status": "draft_saved_and_verified; DiuItems remains draft-level; complete_static_reconstruction and runtime_verified unchanged",
-    "source_file": "04_源码候选/短函数草稿_第二十五批.lua",
-    "audit_file": "docs/audit/检查点46_短函数草稿与DiuItems复核.md",
+    "checkpoint": 47,
+    "target": "Nested_ID 与 Nested_SL_3 普通 Lua 草稿",
+    "status": "drafts_saved; complete_static_reconstruction and runtime_verified unchanged",
+    "source_file": "04_源码候选/短函数草稿_第二十六批.lua",
+    "audit_file": "docs/audit/检查点47_ID与存仓开关草稿.md",
+    "added_drafts": [
+      {
+        "path": "root.children[55].children[1]",
+        "legacy": "root/56/2",
+        "name": "Nested_ID",
+        "instructions": 27
+      },
+      {
+        "path": "root.children[42].children[8]",
+        "legacy": "root/43/9",
+        "name": "Nested_SL_3",
+        "instructions": 29
+      }
+    ],
     "verified": [
-      "Nested_ITEM_INDEX_BY_NAME 26条物理指令恢复为 ipairs(names) 查询与快捷使用循环",
-      "父级 root/43 PC125–129 确认配置表 slot=4、names={\"免战回城石\"}",
-      "父级 PC137 捕获来源确认 child UP[0]=parent T[9]、child UP[1]=parent UP[0]",
-      "MoveItemToQuickUse truthy 返回结束函数，false/nil 返回继续遍历；第二捕获回调在移动调用后无条件执行",
-      "DiuItems 活动路径再次独立复核，未发现需修改的控制流或参数错误；因省略PC36–68构造段仍保留草稿级"
+      "Nested_ID parent root/56 PC38 captures parent T[2], parent UP[0], parent UP[1] into child UP[0..2]",
+      "Nested_ID iterates allowed IDs, compares tostring values, sends separate allowed/restricted notifications and returns true/false",
+      "Nested_SL_3 parent root/43 PC307 captures parent UP2, UP0, UP1, UP7 into child UP[0..3]",
+      "Nested_SL_3 timer toggle, UnSchedule, state reset, immediate StorageItems and 1.0 scheduling paths reconstructed"
     ],
     "unresolved": [
-      "Nested_ITEM_INDEX_BY_NAME 第二捕获回调业务身份待确认",
-      "MoveItemToQuickUse 外部副作用未运行时验证",
-      "DiuItems 未升级完整静态恢复；未进行运行时验证"
+      "通知回调及调度函数的更上层业务名称未确认",
+      "运行时验证未进行"
     ]
   },
   "corrections": [
@@ -572,32 +584,38 @@
       "status": "first_pass_draft_pending_static_review_not_runtime_verified"
     }
   ],
-  "draft_function_count": 30,
-  "ordinary_lua_draft_functions": 30,
-  "last_checkpoint": "46",
-  "checkpoint": "46",
-  "drafts": 30,
-  "next": "继续批量恢复未开始短函数，优先检查 Nested_Anonymous_2（root.children[50].children[1]，27条）、Nested_ID（root.children[55].children[1]，27条）和 Nested_SL_3（root.children[42].children[8]，29条）；随后集中静态复审第十二至二十五批，重点闭合 GetAvailableStoragePage PC22–50、Nested_dropTimer/Nested_shiquTimer 捕获映射及 Nested_blacklistTimer 通知格式化融合载荷。",
+  "draft_function_count": 32,
+  "ordinary_lua_draft_functions": 32,
+  "last_checkpoint": "47",
+  "checkpoint": "47",
+  "drafts": 32,
+  "next": "继续复核 Nested_Anonymous_2（root.children[50].children[1]，27条）中的融合算术与数值for循环，确认捕获值和参数来源后形成草稿；随后筛选下一组未开始短函数。完成短函数初轮草稿后，集中静态复审第十二至二十六批，重点闭合 GetAvailableStoragePage PC22–50、Nested_dropTimer/Nested_shiquTimer 捕获映射及 Nested_blacklistTimer 通知格式化载荷。",
   "recent_checkpoint": {
-    "id": 46,
+    "id": 47,
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第二十五批.lua",
-    "audit_file": "docs/audit/检查点46_短函数草稿与DiuItems复核.md",
+    "source_file": "04_源码候选/短函数草稿_第二十六批.lua",
+    "audit_file": "docs/audit/检查点47_ID与存仓开关草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[16]",
-        "legacy": "root/43/17",
-        "name": "Nested_ITEM_INDEX_BY_NAME",
-        "instructions": 26
+        "path": "root.children[55].children[1]",
+        "legacy": "root/56/2",
+        "name": "Nested_ID",
+        "instructions": 27
+      },
+      {
+        "path": "root.children[42].children[8]",
+        "legacy": "root/43/9",
+        "name": "Nested_SL_3",
+        "instructions": 29
       }
     ],
-    "draft_count_total": 30,
+    "draft_count_total": 32,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0,
     "notes": [
-      "父级 PC125–129 构造 config={slot=4,names={\"免战回城石\"}}。",
-      "循环查询 ITEM_INDEX_BY_NAME；命中后调用 MoveItemToQuickUse 与第二捕获回调；成功则 return，失败继续。",
-      "DiuItems 再次独立复核，活动路径草稿保持不变，完整静态恢复统计不变。"
+      "Nested_ID 的允许列表和两个提示回调由父级 PC38 捕获来源确认。",
+      "Nested_SL_3 的 timerState、notify、featureState、schedule 由父级 PC307 的四个捕获槽位和子函数访问顺序确认。",
+      "均为普通 Lua 草稿，未运行时验证。"
     ]
   }
 }
