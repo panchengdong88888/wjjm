@@ -140,7 +140,7 @@ local function Nested_FFFF00()
     -- 资源统计行创建子闭包：child2，PC265捕获[ListView, screenW*0.6]；
     -- 参数(rowNames,2,rowType)中的rowType分别为'money'/'item'，参与cell名称；
     -- cell名后缀为ceil(15/2)，Text名按列索引生成；返回资源名称->Text节点映射表。
-    local updateResourceRows = Nested_FFFFFF
+    local updateResourceRows = Nested_FFFFFF -- child2：65条指令已于检查点113完成静态恢复；返回resourceName->Text节点映射表
 
     -- 时间/资源刷新子闭包：child3，PC300捕获10项，顺序为：
     -- [moduleState,timerState,curTimeText,durTimeText,initState,MoneyProxy,
