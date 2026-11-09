@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "转向未开始的短函数root.children[12]（LuaSendMsg）与root.children[22]（GetMapData2DPtr），优先选择控制流及返回契约更清晰者；同时保留StorageItems的LuaSendMsg消息字段待核。",
+  "next_action": "继续复核MoveItemToQuickUse的调用点与SetQuickUsePosData参数契约；随后处理剩余未开始原型，优先从root.children[42]（doInit_UI）与root.children[42].children[3]（Nested_FFFF00）中拆分可独立恢复的短闭包。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "85"
+    "last_checkpoint": "86"
   },
   "static_recovered_functions": [
     {
@@ -487,16 +487,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 85,
-    "target": "StorageItems / Nested_Anonymous_2",
-    "status": "stage analysis reviewed; not promoted to ordinary Lua draft",
-    "source_file": "03_静态反汇编/MainLeftBottom_vm_disassembly_corrected_phase3.txt",
-    "audit_file": "docs/audit/检查点85_StorageItems_Nested_Anonymous_2复核.md",
-    "added_drafts": [],
-    "draft_count_total": 74,
+    "checkpoint": 86,
+    "target": "MoveItemToQuickUse",
+    "status": "first-pass ordinary Lua draft; static review pending; no runtime validation",
+    "source_file": "04_源码候选/短函数草稿_第六十一批.lua",
+    "audit_file": "docs/audit/检查点86_MoveItemToQuickUse首版草稿.md",
+    "added_drafts": [
+      {
+        "path": "root.children[41]",
+        "legacy": "root/42",
+        "name": "MoveItemToQuickUse",
+        "instructions": 133
+      }
+    ],
+    "draft_count_total": 75,
     "complete_static_reconstruction_count": 29,
     "runtime_verified_count": 0,
-    "note": "确认child1的数值循环、捕获值比较、融合算术、动态表键和多返回值分支；由于四个捕获身份、算术表达式及父级消费契约未闭合，不臆造普通Lua草稿。"
+    "note": "恢复QuickUseProxy/Bag代理、容量校验、已有快捷栏物品交换与背包物品移入两条主路径；参数名、SetQuickUsePosData参数布局、返回契约和提示发送入口待调用点复核。"
   },
   "corrections": [
     {
@@ -1083,12 +1090,12 @@
       ]
     }
   ],
-  "draft_function_count": 74,
-  "ordinary_lua_draft_functions": 74,
-  "last_checkpoint": 85,
-  "checkpoint": "85",
+  "draft_function_count": 75,
+  "ordinary_lua_draft_functions": 75,
+  "last_checkpoint": 86,
+  "checkpoint": "86",
   "drafts": 32,
-  "next": "转向未开始的短函数root.children[12]（LuaSendMsg）与root.children[22]（GetMapData2DPtr），优先选择控制流及返回契约更清晰者；同时保留StorageItems的LuaSendMsg消息字段待核。",
+  "next": "继续复核MoveItemToQuickUse的调用点与SetQuickUsePosData参数契约；随后处理剩余未开始原型，优先从root.children[42]（doInit_UI）与root.children[42].children[3]（Nested_FFFF00）中拆分可独立恢复的短闭包。",
   "recent_checkpoint": {
     "checkpoint": "79",
     "date": "2026-11-09",
@@ -1109,22 +1116,23 @@
     }
   },
   "latest_checkpoint": {
-    "checkpoint": "85",
+    "checkpoint": "86",
     "date": "2026-11-09",
-    "audit_file": "docs/audit/检查点85_StorageItems_Nested_Anonymous_2复核.md",
-    "ordinary_lua_draft_functions": 74,
+    "source_file": "04_源码候选/短函数草稿_第六十一批.lua",
+    "audit_file": "docs/audit/检查点86_MoveItemToQuickUse首版草稿.md",
+    "ordinary_lua_draft_functions": 75,
     "complete_static_reconstruction": 29,
     "complete_static_reconstruction_ratio": "26.4%",
     "runtime_verified": 0,
-    "summary": "复核StorageItems的Nested_Anonymous_2：确认循环/比较/算术/动态索引/多返回结构，但捕获身份和父级消费契约未闭合，不新增草稿、不升级完整静态恢复。"
+    "summary": "新增MoveItemToQuickUse首版普通Lua草稿，覆盖代理取得、快捷栏范围检查、已有物品交换及背包物品移入主路径；参数和代理方法契约待复核。"
   },
   "complete_static_reconstruction_count": 29,
   "complete_static_reconstruction": "29/110 (26.4%)",
   "progress_reconciled": {
-    "source_of_counts": "检查点#84累计74个普通Lua草稿；检查点#85仅复核StorageItems子原型，不新增普通Lua草稿。",
-    "ordinary_lua_draft_functions": 74,
+    "source_of_counts": "检查点#84累计74个普通Lua草稿；检查点#85仅复核子原型；检查点#86新增MoveItemToQuickUse。",
+    "ordinary_lua_draft_functions": 75,
     "complete_static_reconstruction_functions": 29,
     "runtime_verified_functions": 0,
-    "note": "本轮未新增普通Lua草稿；完整静态恢复与运行时验证数量不变。"
+    "note": "本轮新增1个普通Lua草稿；完整静态恢复及运行时验证数量不变。"
   }
 }
