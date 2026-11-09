@@ -1367,3 +1367,12 @@
 - 已按反汇编 PC1-PC4、PC5-PC7 校正：先 `cc.FileUtils:getInstance()`，再调用捕获的 `GetWritablePath(fileName)`。
 - 同步补充检查点128审计和函数状态CSV；机器状态更新至检查点129。
 - 本次仅校正已有草稿，不增加普通Lua草稿、完整静态恢复或运行时验证计数。统计仍为草稿78、完整静态69/110、运行时验证0。
+
+
+## 检查点 #130（2026-11-09）：FormatStateChange / ReadNumericConfig 独立复核
+
+- 复核 FormatStateChange（root.children[8]）10条指令：PC7格式化结果写入T调用参数区，PC8调用UP[0]，PC9再将R0写回UP[1]；维持草稿状态，未运行时验证。
+- 复核 ReadNumericConfig（root.children[9]）45条指令，修正三处草稿错误：文件不存在、读取结果非string、清理后不匹配纯数字正则，均走OP_248清理返回槽后由OP_220返回nil；只有匹配`^%d+$`时调用tonumber并返回。
+- ReadNumericConfig源码已更新并回读验证；同步更新函数状态CSV、机器状态JSON及本审计。
+- 统计仍为普通Lua草稿78、完整静态恢复69/110、运行时验证0。本批仅复核既有草稿，不增加任何统计。
+- 下一步：批量整理/复核短函数草稿；随后先产出BlacklistPlayerDetection和StorageItems主体草稿。
