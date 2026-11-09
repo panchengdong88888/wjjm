@@ -741,3 +741,15 @@
 - 待复核：pairs收集key/value、子回调R8究竟是键/值/序号、UPVALUE_3对象身份、RequestOutBlacklist实参与删除索引，以及循环次数/延迟参数。未运行时验证。
 - 本批新增普通Lua草稿1个；累计按检查点口径66个。完整静态恢复仍29/110（26.4%）；运行时验证0。
 - 下一步继续`AccountIDValidation`（`root.children[55]`，64条指令），再评估其他未开始短函数。
+
+
+## 检查点 #79（2026-11-09）：AccountIDValidation 首版普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第五十五批.lua`；新增审计：`docs/audit/检查点79_AccountIDValidation首版草稿.md`。
+- 函数：`AccountIDValidation`，原型索引105，规范路径`root.children[55]`，legacy`root/56`，64条物理指令、21个常量、2个子原型、`vararg_flag=0`。
+- 根函数PC276创建闭包，捕获root T[4]、root T[5]。
+- 主体恢复GAME_ID读取及与204208比较、UID读取、9项字符串允许列表、Nested_ID账号白名单比较及命中/未命中提示、父函数验证结果提示，以及0.5秒后界面初始化检查调度。
+- 子原型Nested_ID捕获父R2（允许列表）、父UPVALUE_0、父UPVALUE_1；遍历列表并比较UID，输出相应提示后返回布尔值。
+- 子原型Nested_Panel_mini_chat捕获父T[4]与父UPVALUE_0；检查MainProperty/_ui/Panel_mini_chat，满足时调用SL.UnSchedule及MainLeftBottom.doInit，否则输出等待提示。
+- 待复核：主捕获T[4]/T[5]业务身份、Nested_Panel_mini_chat的T[4]是否调度句柄、SL.Schedule参数顺序和返回契约。未运行时验证。
+- 本批新增普通Lua草稿1个；累计按检查点口径67个。完整静态恢复仍29/110（26.4%）；运行时验证0。
+- 下一步从函数状态清单筛选尚未开始且短小的原型继续推进。
