@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "Nested_Anonymous_2（root.children[50].children[1]）继续保留阶段分析状态，不猜测融合算术；下一步追踪 root/51 中 child closure 的调用/消费点和四个捕获来源。若短期无法闭合，则从 CSV 中剩余未开始函数筛选其他可恢复目标；Nested_Helper_9 已完成普通 Lua 草稿。",
+  "next_action": "Nested_Anonymous_2（root.children[50].children[1]）仍保留阶段分析，不猜测融合算术；后续若继续该函数，追踪父级 root/51 的闭包调用/消费点及四个捕获来源。优先从剩余未开始、无子原型的短函数中选择可恢复目标；Nested_Helper_2 已完成普通 Lua 草稿。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "49"
+    "last_checkpoint": "50"
   },
   "static_recovered_functions": [
     {
@@ -461,27 +461,30 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 49,
-    "target": "Nested_Helper_9 普通 Lua 草稿",
-    "status": "draft_saved; complete_static_reconstruction and runtime_verified unchanged",
-    "source_file": "04_源码候选/短函数草稿_第二十七批.lua",
-    "audit_file": "docs/audit/检查点49_Nested_Helper_9草稿.md",
+    "checkpoint": 50,
+    "target": "Nested_Helper_2 普通 Lua 草稿",
+    "status": "draft_saved; no runtime validation",
+    "source_file": "04_源码候选/短函数草稿_第二十八批.lua",
+    "audit_file": "docs/audit/检查点50_Nested_Helper_2草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[15]",
-        "legacy": "root/43/16",
-        "name": "Nested_Helper_9",
-        "instructions": 30
+        "path": "root.children[42].children[3].children[0]",
+        "legacy": "root/43/4/1",
+        "name": "Nested_Helper_2",
+        "instructions": 35
       }
     ],
     "verified": [
-      "父级 root/43 PC415 创建闭包，child UP[0]捕获 parent UP[3]，child UP[1]捕获 parent UP[0]",
-      "child UP[0]读取 isHidden、hidebut 并调用 hide/show",
-      "隐藏分支提示隐藏并设置 GUI.setOpacity(hidebut,0)，显示分支提示显示并设置 opacity=255"
+      "vararg_flag=1，函数主体读取第一个参数",
+      "nil/false分支替换为0",
+      "低于100000直接tostring返回",
+      "100000至100000000分支除以10000、floor、追加万",
+      "大于等于100000000分支除以1e8、乘10、floor、除10，按%.1f亿格式化",
+      "父级 root/43/4 PC118 创建零捕获闭包"
     ],
     "unresolved": [
-      "notify 回调外部实现未追溯",
-      "GUI.setOpacity 运行时效果未测试"
+      "UI节点中的具体回调绑定点未完全追踪",
+      "未进行运行时验证"
     ]
   },
   "corrections": [
@@ -577,28 +580,28 @@
       "status": "first_pass_draft_pending_static_review_not_runtime_verified"
     }
   ],
-  "draft_function_count": 33,
-  "ordinary_lua_draft_functions": 33,
-  "last_checkpoint": "49",
-  "checkpoint": "49",
+  "draft_function_count": 34,
+  "ordinary_lua_draft_functions": 34,
+  "last_checkpoint": "50",
+  "checkpoint": "50",
   "drafts": 32,
-  "next": "Nested_Anonymous_2（root.children[50].children[1]）继续保留阶段分析状态，不猜测融合算术；下一步追踪 root/51 中 child closure 的调用/消费点和四个捕获来源。若短期无法闭合，则从 CSV 中剩余未开始函数筛选其他可恢复目标；Nested_Helper_9 已完成普通 Lua 草稿。",
+  "next": "Nested_Anonymous_2（root.children[50].children[1]）仍保留阶段分析，不猜测融合算术；后续若继续该函数，追踪父级 root/51 的闭包调用/消费点及四个捕获来源。优先从剩余未开始、无子原型的短函数中选择可恢复目标；Nested_Helper_2 已完成普通 Lua 草稿。",
   "recent_checkpoint": {
-    "id": 49,
+    "id": 50,
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第二十七批.lua",
-    "audit_file": "docs/audit/检查点49_Nested_Helper_9草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第二十八批.lua",
+    "audit_file": "docs/audit/检查点50_Nested_Helper_2草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[15]",
-        "legacy": "root/43/16",
-        "name": "Nested_Helper_9",
-        "instructions": 30
+        "path": "root.children[42].children[3].children[0]",
+        "legacy": "root/43/4/1",
+        "name": "Nested_Helper_2",
+        "instructions": 35
       }
     ],
-    "draft_count_total": 33,
+    "draft_count_total": 34,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0,
-    "note": "恢复 isHidden 两分支的提示、hide/show调用和透明度0/255；闭包捕获来源已核实。"
+    "note": "恢复数字缩写格式化的阈值、万/亿转换与字符串格式化；父级PC118创建零捕获闭包。"
   }
 }
