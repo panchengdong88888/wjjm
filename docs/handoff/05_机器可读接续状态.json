@@ -29,7 +29,7 @@
     "root.children[7]": "GetOwnerIDText：检查点151新增04_源码候选/root7_GetOwnerIDText.lua。nil/空串/-1返回false；string分支ownerID==tostring(ownerID)；非string分支ownerID==第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
     "root.children[38]": "GetOwnerID：检查点151新增04_源码候选/root38_GetOwnerID.lua。nil/空串/-1返回false；string分支ownerID~=tostring(ownerID)；非string分支ownerID~=第二参数。首版普通Lua草稿，待静态复审，未运行时验证。"
   },
-  "next_action": "检查点158已将MainLoop升级为完整静态恢复（未运行时验证）；普通Lua源码候选82、完整静态恢复77/110、运行时验证0。下一步独立静态复审MainLoop直接依赖的短helper：root.children[35] SetTargetID、root.children[7] GetOwnerIDText、root.children[38] GetOwnerID；先逐PC核对草稿和调用契约，能闭合则批量升级，再继续未恢复原型。",
+  "next_action": "检查点159已完成MainLoop及三个直接依赖短helper的静态恢复；普通Lua源码候选82、完整静态恢复80/110、运行时验证0。下一步从函数状态CSV筛选尚未独立静态恢复的短函数/辅助闭包，优先完成可快速闭合的原型，继续提高完整静态覆盖率；不重复已经完成的VM dump、反汇编和闭包映射基础工作。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -102,7 +102,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "158"
+    "last_checkpoint": "159"
   },
   "static_recovered_functions": [
     {
@@ -1817,29 +1817,81 @@
         "UPVALUE_15=FindMonsterInCurrViewField; UPVALUE_20=SetTargetID; GATHERING PC166/313 and ATTACKING PC359/405 numeric loops closed.",
         "Static reconstruction only; no Lua host or game runtime validation."
       ]
+    },
+    {
+      "path": "root.children[35]",
+      "legacy_path": "root/36",
+      "name": "SetTargetID",
+      "physical_instructions": 26,
+      "constant_count": 8,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/短函数草稿_第十二批.lua",
+      "audit_file": "docs/audit/检查点159_MainLoop依赖短helper静态复审.md",
+      "notes": [
+        "PC-level branch, argument, receiver and return contract statically closed at checkpoint 159.",
+        "Not runtime validated."
+      ]
+    },
+    {
+      "path": "root.children[7]",
+      "legacy_path": "root/8",
+      "name": "GetOwnerIDText",
+      "physical_instructions": 31,
+      "constant_count": 7,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/root7_GetOwnerIDText.lua",
+      "audit_file": "docs/audit/检查点159_MainLoop依赖短helper静态复审.md",
+      "notes": [
+        "PC-level branch, argument, receiver and return contract statically closed at checkpoint 159.",
+        "Not runtime validated."
+      ]
+    },
+    {
+      "path": "root.children[38]",
+      "legacy_path": "root/39",
+      "name": "GetOwnerID",
+      "physical_instructions": 31,
+      "constant_count": 7,
+      "child_count": 0,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/root38_GetOwnerID.lua",
+      "audit_file": "docs/audit/检查点159_MainLoop依赖短helper静态复审.md",
+      "notes": [
+        "PC-level branch, argument, receiver and return contract statically closed at checkpoint 159.",
+        "Not runtime validated."
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "158",
+    "checkpoint": "159",
     "targets": [
-      "root.children[45]"
+      "root.children[35]",
+      "root.children[7]",
+      "root.children[38]"
     ],
-    "status": "Closed all 22 MainLoop upvalue identities and promoted MainLoop to complete static reconstruction.",
-    "audit_file": "docs/audit/检查点158_MainLoop_22槽捕获身份闭合与完整静态恢复.md",
+    "status": "Independently reviewed and promoted SetTargetID, GetOwnerIDText, and GetOwnerID to complete static reconstruction.",
+    "audit_file": "docs/audit/检查点159_MainLoop依赖短helper静态复审.md",
     "files": [
-      "04_源码候选/root45_MainLoop.lua",
-      "docs/audit/检查点158_MainLoop_22槽捕获身份闭合与完整静态恢复.md",
+      "04_源码候选/短函数草稿_第十二批.lua",
+      "04_源码候选/root7_GetOwnerIDText.lua",
+      "04_源码候选/root38_GetOwnerID.lua",
+      "docs/audit/检查点159_MainLoop依赖短helper静态复审.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "All 22 upvalue capture identities mapped to parent root T-register producers.",
-      "314 reachable / 103 statically unreachable CFG nodes; active state-machine paths and both numeric loops reconciled.",
-      "MainLoop remains not runtime validated."
+      "SetTargetID must call Facade:retrieveProxy(...) with Facade as self; corrected dot-call bug.",
+      "GetOwnerIDText special-value and string/non-string equality branches closed.",
+      "GetOwnerID special-value and string/non-string inequality branches closed."
     ],
     "counts": {
       "ordinary_lua_drafts": 82,
-      "complete_static_reconstruction": 77,
+      "complete_static_reconstruction": 80,
       "runtime_verified": 0
     }
   },
@@ -1932,8 +1984,8 @@
       "legacy_path": "root/36",
       "name": "SetTargetID",
       "source_file": "04_源码候选/短函数草稿_第十二批.lua",
-      "audit_file": "docs/audit/检查点33_DiuItems复审与短函数草稿.md",
-      "status": "first_pass_draft_pending_static_review_not_runtime_verified"
+      "audit_file": "docs/audit/检查点159_MainLoop依赖短helper静态复审.md",
+      "status": "complete_static_reconstruction_not_runtime_verified"
     },
     {
       "path": "root.children[6]",
@@ -2431,8 +2483,8 @@
       "legacy_path": "root/8",
       "name": "GetOwnerIDText",
       "source_file": "04_源码候选/root7_GetOwnerIDText.lua",
-      "audit_file": "docs/audit/检查点151_OwnerID辅助函数双草稿恢复.md",
-      "status": "first_pass_draft_pending_static_review_not_runtime_verified",
+      "audit_file": "docs/audit/检查点159_MainLoop依赖短helper静态复审.md",
+      "status": "complete_static_reconstruction_not_runtime_verified",
       "physical_instructions": 31,
       "constant_count": 7,
       "child_count": 0,
@@ -2449,8 +2501,8 @@
       "legacy_path": "root/39",
       "name": "GetOwnerID",
       "source_file": "04_源码候选/root38_GetOwnerID.lua",
-      "audit_file": "docs/audit/检查点151_OwnerID辅助函数双草稿恢复.md",
-      "status": "first_pass_draft_pending_static_review_not_runtime_verified",
+      "audit_file": "docs/audit/检查点159_MainLoop依赖短helper静态复审.md",
+      "status": "complete_static_reconstruction_not_runtime_verified",
       "physical_instructions": 31,
       "constant_count": 7,
       "child_count": 0,
@@ -2483,49 +2535,51 @@
   ],
   "draft_function_count": 82,
   "ordinary_lua_draft_functions": 82,
-  "last_checkpoint": "158",
-  "checkpoint": "158",
+  "last_checkpoint": "159",
+  "checkpoint": "159",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 158,
+    "number": 159,
     "date": "2026-11-09",
     "artifacts": [
-      "04_源码候选/root45_MainLoop.lua",
-      "docs/audit/检查点158_MainLoop_22槽捕获身份闭合与完整静态恢复.md"
+      "04_源码候选/短函数草稿_第十二批.lua",
+      "04_源码候选/root7_GetOwnerIDText.lua",
+      "04_源码候选/root38_GetOwnerID.lua",
+      "docs/audit/检查点159_MainLoop依赖短helper静态复审.md"
     ],
-    "draft_prototypes_touched": 1,
+    "draft_prototypes_touched": 3,
     "draft_prototype_total": 82,
-    "complete_static_reconstructions": 77,
+    "complete_static_reconstructions": 80,
     "runtime_verified": 0,
-    "notes": "闭合MainLoop全部22个upvalue身份，并基于完整CFG审计将其升级为完整静态恢复；未运行时验证。"
+    "notes": "独立静态复审MainLoop依赖的三个短helper；SetTargetID receiver点调用已修正。"
   },
   "latest_checkpoint": {
-    "checkpoint": "158",
+    "checkpoint": "159",
     "date": "2026-11-09",
-    "summary": "MainLoop全部22个upvalue捕获身份闭合，PC1-PC417状态机、两个数值循环、状态写入和返回路径完成静态总审；升级完整静态恢复。",
-    "audit_file": "docs/audit/检查点158_MainLoop_22槽捕获身份闭合与完整静态恢复.md",
+    "summary": "完成SetTargetID、GetOwnerIDText、GetOwnerID三个短helper的独立静态复审；SetTargetID的Facade:retrieveProxy receiver修正。",
+    "audit_file": "docs/audit/检查点159_MainLoop依赖短helper静态复审.md",
     "unresolved": [
       "Lua宿主/游戏运行时验证"
     ],
     "counts": {
       "ordinary_lua_drafts": 82,
-      "complete_static_reconstruction": 77,
+      "complete_static_reconstruction": 80,
       "runtime_verified": 0
     }
   },
-  "complete_static_reconstruction_count": 77,
-  "complete_static_reconstruction": "77/110 (70.0%)",
+  "complete_static_reconstruction_count": 80,
+  "complete_static_reconstruction": "80/110 (72.7%)",
   "progress_reconciled": {
     "source_of_counts": "按02_基础索引/03_函数状态清单.csv逐项核对；普通Lua源码候选、完整静态恢复与运行时验证分别统计。",
     "ordinary_lua_draft_functions": 82,
-    "complete_static_reconstruction_functions": 77,
+    "complete_static_reconstruction_functions": 80,
     "runtime_verified_functions": 0,
-    "note": "检查点158将MainLoop root.children[45]由首版草稿升级为完整静态恢复；普通Lua源码候选总数不变，运行时验证仍为0。"
+    "note": "检查点158完成MainLoop静态恢复；检查点159完成SetTargetID、GetOwnerIDText、GetOwnerID三个直接依赖helper的独立静态复审。运行时验证仍为0。"
   },
   "counts": {
     "ordinary_lua_drafts": 82,
-    "complete_static_reconstruction": 77,
+    "complete_static_reconstruction": 80,
     "runtime_verified": 0
   }
 }
