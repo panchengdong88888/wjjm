@@ -23,10 +23,10 @@
     "root.children[15]": "ClearBlacklistItems：63条父指令+13条子指令；检查点133确认pairs首返回值key、子回调捕获entryKey/friendProxy、异步删除索引及ScheduleOnce延迟；完整静态恢复，未运行时验证。",
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
     "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。",
-    "root.children[47]": "BlacklistPlayerDetection：检查点148校正HP nil回退0、lastHp/deathHandled状态机、hp<=0提前返回、UP[4] true/Name或false/nil及ACTOR_NAME回退、UP[5]坐标+state.distance五实参、成功日志第三%s参数为UP[8]返回道具名。仍待UP[1]零参回调契约、root/23地图/障碍完整审计与全CFG复核；首版普通Lua草稿，未升级完整静态恢复，未运行时验证。",
+    "root.children[47]": "BlacklistPlayerDetection：检查点148已校正HP状态机、hp<=0门槛、UP[4] true/Name或false/nil与ACTOR_NAME回退、UP[5]坐标+state.distance五实参、成功日志第三%s参数为UP[8]返回道具名。检查点149确认UP[1]=root/53，零参调用触发PC1-PC5入口return，不会执行后续pcall/lastAttacker路径。仍待root/23地图/障碍校验与全CFG独立复核；首版普通Lua草稿，不计完整静态恢复，未运行时验证。",
     "root.children[50]": "StorageItems：检查点144闭合子原型1（root/51/2）逐页容量算法：普通页上限pageCapacity，末页上限min(pageCapacity,openSize-(maxPage-1)*pageCapacity)，读取storedPageData[page]，返回首个未满页码；PC37-PC53建立每页物品数量表（#pageData，不存在记0）。PC206-PC211融合链闭合：R12[MakeIndex]=true（已处理索引集合），storedPageData[targetPage]递增，R13成功发送计数递增。LuaSendMsg第4参数在调用点承载目标仓库页码，服务端协议正式字段名仍待接收端验证。"
   },
-  "next_action": "检查点148已校正BlacklistPlayerDetection的HP nil回退、lastHp/deathHandled状态机、hp<=0提前返回、UP[4]返回值/名称回退、UP[5]五实参距离上限及成功日志道具名参数。仍不升级完整静态恢复。下一步核验UP[1]（root/53）零参回调契约和root/23剩余地图/障碍检查；随后优先批量恢复其他尚无草稿的短函数，避免root/47少量疑点阻塞第一层草稿产出。统计：普通Lua草稿78、完整静态恢复76/110、运行时验证0。",
+  "next_action": "检查点149确认UP[1]=root.children[53]，BlacklistPlayerDetection在PC4零参调用使其第二形参为nil，root/53 PC1-PC5立即返回，后续pcall/lastAttacker逻辑不执行。root/47剩余主要待核验root/23地图边界/障碍检查和全CFG独立复核；按新策略不再让该复杂函数阻塞草稿产出，下一步从函数状态CSV中挑选尚无草稿、指令短、闭包/参数简单的函数，批量恢复普通Lua草稿。统计保持：普通Lua草稿78、完整静态恢复76/110、运行时验证0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -99,7 +99,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "148"
+    "last_checkpoint": "149"
   },
   "static_recovered_functions": [
     {
@@ -1798,23 +1798,22 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": "148",
+    "checkpoint": "149",
     "targets": [
-      "root.children[47]"
+      "root.children[47]",
+      "root.children[53] call-site"
     ],
-    "status": "Corrected HP state machine, early return, blacklist-name fallback, distance call and success log arguments; static review still incomplete; not runtime-validated",
-    "audit_file": "docs/audit/检查点148_BlacklistPlayerDetection状态机与距离调用校正.md",
+    "status": "Verified zero-argument callback call-site takes root/53 entry early return; no static-complete or runtime-validation promotion",
+    "audit_file": "docs/audit/检查点149_onDamageMsg零参数调用路径核验.md",
     "files": [
       "04_源码候选/root47_BlacklistPlayerDetection.lua",
-      "docs/audit/检查点148_BlacklistPlayerDetection状态机与距离调用校正.md",
+      "docs/audit/检查点149_onDamageMsg零参数调用路径核验.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "tonumber(HP) nil/false falls back to 0.0; PC21-PC54 transition structure reconciled.",
-      "PC55 returns when HP <= 0.",
-      "UP[4] returns true/Name or false/nil; second return is the display name before ACTOR_NAME fallback.",
-      "UP[5] arguments are mainX, mainY, candidateX, candidateY, blacklistState.distance.",
-      "Successful log third %s argument is the actual item name returned by UP[8], not UP[11]=30.0."
+      "root/47 PC4 invokes UP[1] with zero explicit arguments.",
+      "UP[1] maps to root/53; root/53 PC1-PC5 returns when its second formal argument is nil/false.",
+      "Thus this specific call does not reach root/53's pcall/lastAttacker payload."
     ],
     "counts": {
       "ordinary_lua_drafts": 78,
@@ -2389,30 +2388,29 @@
   ],
   "draft_function_count": 78,
   "ordinary_lua_draft_functions": 78,
-  "last_checkpoint": "148",
-  "checkpoint": "148",
+  "last_checkpoint": "149",
+  "checkpoint": "149",
   "drafts": 33,
-  "next": "检查点148已校正BlacklistPlayerDetection的HP nil回退、lastHp/deathHandled状态机、hp<=0提前返回、UP[4]返回值/名称回退、UP[5]五实参距离上限及成功日志道具名参数。仍不升级完整静态恢复。下一步核验UP[1]（root/53）零参回调契约和root/23剩余地图/障碍检查；随后优先批量恢复其他尚无草稿的短函数，避免root/47少量疑点阻塞第一层草稿产出。统计：普通Lua草稿78、完整静态恢复76/110、运行时验证0。",
+  "next": "检查点149确认UP[1]=root.children[53]，BlacklistPlayerDetection在PC4零参调用使其第二形参为nil，root/53 PC1-PC5立即返回，后续pcall/lastAttacker逻辑不执行。root/47剩余主要待核验root/23地图边界/障碍检查和全CFG独立复核；按新策略不再让该复杂函数阻塞草稿产出，下一步从函数状态CSV中挑选尚无草稿、指令短、闭包/参数简单的函数，批量恢复普通Lua草稿。统计保持：普通Lua草稿78、完整静态恢复76/110、运行时验证0。",
   "recent_checkpoint": {
-    "number": 148,
+    "number": 149,
     "date": "2026-11-09",
     "artifacts": [
       "04_源码候选/root47_BlacklistPlayerDetection.lua",
-      "docs/audit/检查点148_BlacklistPlayerDetection状态机与距离调用校正.md"
+      "docs/audit/检查点149_onDamageMsg零参数调用路径核验.md"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 78,
     "complete_static_reconstructions": 76,
     "runtime_verified": 0,
-    "notes": "校正已有root.children[47]草稿；草稿数、完整静态恢复数和运行时验证数均不增加。"
+    "notes": "确认UP[1]零参调用必经root/53入口return；未新增草稿、未升级完整静态恢复。"
   },
   "latest_checkpoint": {
-    "checkpoint": "148",
+    "checkpoint": "149",
     "date": "2026-11-09",
-    "summary": "BlacklistPlayerDetection的HP状态机、hp<=0门槛、UP[4]名称回退、UP[5]距离上限实参及成功日志道具名参数完成校正；仍待UP[1]回调和root/23地图/障碍分支复核。",
-    "audit_file": "docs/audit/检查点148_BlacklistPlayerDetection状态机与距离调用校正.md",
+    "summary": "BlacklistPlayerDetection调用UP[1]零参路径已闭合：root/53入口检查第二形参，零参调用必定在PC1-PC5提前返回。",
+    "audit_file": "docs/audit/检查点149_onDamageMsg零参数调用路径核验.md",
     "unresolved": [
-      "UP[1] root/53零显式参数调用的内部契约",
       "root/23距离辅助函数剩余地图边界/障碍检查",
       "root/47全216条指令的独立CFG复核"
     ],
