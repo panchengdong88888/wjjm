@@ -93,7 +93,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 90,root/45,root.children[45],root/46,MainLoop,417,41,0,结构与部分调用点已核验，源码未恢复,417 条指令引怪状态机；22 个 upvalue 映射已复核；upvalue[9]/[17] 分别为 GetOwnerID/GetOwnerIDText，PC49-60 与 PC124-147 为对应调用及分支；完整 CFG/source 未完成。
 91,root/46,root.children[46],root/47,DiuItems,169,64,1,首版普通 Lua 草稿（已独立复审/未运行时验证）,源码候选 04_源码候选/root46_DiuItems.lua；检查点33已独立复审；检查点58再次核对源码与阶段审计防重入、数量边界、BAG_DATA筛选、候选字段、LuaSendMsg参数顺序、计数和状态清理；关键词matcher调用点在活动路径不可达，构造省略并保留注释；仍不计入完整静态恢复。
 92,root/46/0,root.children[46].children[0],root/47/1,Nested_string_2,20,4,0,完整静态恢复（未运行时验证）,04_源码候选/小型辅助函数_首批草稿.lua；捕获关键词数组，ipairs 遍历并 string.find(text, keyword, 1, true) 纯文本查找。
-93,root/47,root.children[47],root/48,BlacklistPlayerDetection,216,35,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+93,root/47,root.children[47],root/48,BlacklistPlayerDetection,216,35,0,首版普通Lua草稿（待静态复审/未运行时验证）,检查点83；root PC367创建闭包捕获13值；恢复黑名单开关、HP/死亡状态标记、白名单地图排除、视野玩家遍历、名称/坐标/距离处理、alertAt与nextTryAt节流及随机传送提示主体；捕获身份、距离计算和道具使用协议待复核。
 94,root/48,root.children[48],root/49,PCallHelper_2,10,1,1,完整静态恢复（未运行时验证）,04_源码候选/代理与回调短函数_第四批.lua；pcall 执行无参子闭包 Nested_FriendProxy；失败或结果 false/nil 时返回 nil，否则返回代理对象。
 95,root/48/0,root.children[48].children[0],root/49/1,Nested_FriendProxy,9,5,0,完整静态恢复（未运行时验证）,04_源码候选/代理与回调短函数_第四批.lua；无参数/无捕获，返回 global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)。
 96,root/49,root.children[49],root/50,AnonymousHelper_49,5,0,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十六批.lua；调用UP[0](UP[1])并原样返回结果；后续return不可达；捕获槽位名待确认；检查点37。
