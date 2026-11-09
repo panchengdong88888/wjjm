@@ -1129,3 +1129,11 @@
 - 第二返回值交给捕获回调；第一返回值truthy时跳出循环，false/nil时继续尝试下一个名称。
 - 纠正旧CSV草稿中slot与itemIndex实参顺序颠倒的问题。
 - 统计更新：普通Lua草稿77；完整静态恢复52/110；运行时验证0。
+
+
+## 检查点 #110（2026-11-09）：Nested_Helper_9显示/隐藏全部按钮
+- 新增源码：`04_源码候选/短函数草稿_第七十五批.lua`。
+- 新增审计：`docs/audit/检查点110_Nested_Helper_9显示隐藏按钮复核.md`。
+- Nested_Helper_9（30条）捕获UI状态对象及通知回调；isHidden truthy时通知隐藏、调用hide()、将hidebut透明度设为0；false/nil时通知显示、调用show()、将透明度设为255。
+- GUI self与hidebut/opacity显式参数已核对；函数无显式返回值。
+- 统计更新：普通Lua草稿77；完整静态恢复53/110；运行时验证0。
