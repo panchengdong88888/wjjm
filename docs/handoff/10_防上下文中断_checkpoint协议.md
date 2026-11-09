@@ -1746,3 +1746,14 @@
 - 新增审计`docs/audit/检查点162_ResetGatherMonsterData完整静态复审.md`；更新`04_源码候选/短函数草稿_第十三批.lua`、函数状态CSV和机器状态JSON。
 - 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复83/110；运行时验证0。
 - 下一步：复审StopGatherMonsters（root.children[27]，25条），核对running标记、gatherTimer、预停止回调、IDLE切换、Reset helper与PrintLog顺序。
+
+ 
+## 检查点 #163（2026-11-09）：StopGatherMonsters 完整静态复审
+
+- 对象：`root.children[27]`（legacy root/28），25条物理指令，6个常量，无子原型。
+- 七个捕获槽：UP0=root T[18]运行标记；UP1=root T[3]定时器状态对象；UP2=root T[25]预停止回调；UP3=FormatStateChange；UP4状态常量表；UP5=ResetGatherMonsterData；UP6=root T[4]=PrintLog。
+- 执行顺序：running=false；若gatherTimer存在则`SL:UnSchedule(timer)`并将字段清nil；调用UP2零参回调；调用FormatStateChange(IDLE)；调用ResetGatherMonsterData；调用PrintLog("引怪功能已停止")；return。
+- UP2具体业务身份不猜测，但零参调用契约及其在定时器清理后、IDLE切换前执行的顺序已闭合。
+- 新增审计`docs/audit/检查点163_StopGatherMonsters完整静态复审.md`；更新源码候选、函数状态CSV、机器状态JSON。
+- 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复84/110；运行时验证0。
+- 下一步：复审DestroyUI（root.children[37]，31条）与ShowHideAllButtons（root.children[40]，47条）。
