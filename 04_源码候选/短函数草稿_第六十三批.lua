@@ -79,13 +79,16 @@ local function doInit_UI()
         {slot=4, names={"免战回城石"}},
     }
 
-    -- PC131-PC145：ipairs遍历四组槽位配置，取出SL.ScheduleOnce，
-    -- 创建Nested_ITEM_INDEX_BY_NAME闭包，并以0.1秒相关值安排延迟处理。
-    -- PC141的调用参数栈涉及多个寄存器；在确认宿主ScheduleOnce签名前不伪造实参列表。
-    local itemIndexCallback = Nested_ITEM_INDEX_BY_NAME
-    for _, slotConfig in ipairs(itemSlotConfig) do
-        -- slotConfig及UP[0]被捕获进child16；延迟值由VM寄存器计算。
-        local _ = slotConfig, itemIndexCallback
+    -- PC131-PC145：ipairs遍历四组槽位配置，创建child16（Nested_ITEM_INDEX_BY_NAME）。
+    -- child16的两项捕获已由子原型本身闭合：UP[0]=当前slotConfig，UP[1]=父函数UP[0]（PrintLog）。
+    -- 子闭包遍历slotConfig.names，对每个名称调用SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)，
+    -- 若取得索引则调用MoveItemToQuickUse(itemIndex, slotConfig.slot)，并将返回结果交给PrintLog。
+    -- 父函数PC140按循环索引乘0.1计算延迟量；PC141确实调用SL.ScheduleOnce，
+    -- 但其多寄存器实参栈尚未完全还原，故不写成猜测的ScheduleOnce签名。
+    for slotIndex, slotConfig in ipairs(itemSlotConfig) do
+        local delay = slotIndex * 0.1
+        local _callback = Nested_ITEM_INDEX_BY_NAME
+        local _ = delay, slotConfig, _callback
     end
 
     -- PC146-PC166：替换cruiseTimer并建立周期任务。
