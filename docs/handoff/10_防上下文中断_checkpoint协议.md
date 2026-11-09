@@ -588,3 +588,12 @@
 - 普通Lua草稿49个；完整静态恢复29/110（26.4%）；运行时验证0；最新检查点#62。
 - 下一目标：`root.children[6]`（InstallDamageHook，40条指令），先核对消息类型过滤、幂等性字段及回调捕获。
 
+## 检查点 #63（2026-11-09）：InstallDamageHook 首版普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第三十九批.lua`；新增审计：`docs/audit/检查点63_InstallDamageHook首版草稿.md`。
+- 函数：`InstallDamageHook`，原型索引8，规范路径`root.children[6]`，legacy`root/7`，40条物理指令、9个常量、1个子原型。
+- 主体首版恢复：检查`global.gameMapController`、`mNetMsgHandle`表类型、`global.MsgType`、`MSG_SC_DAMAGE_HP`及当前处理器；通过`__ylwHookedOrigin`与当前处理器比较执行幂等保护；创建回调并替换对应消息处理器。
+- 子原型`root.children[6].children[0]`（legacy `root/7/1`）捕获父函数R0与R2：如果捕获对象的`onDamageMsg`是函数，则pcall调用它并传递两个参数；随后调用捕获的原始处理器并直接返回其返回值。
+- 父函数PC31-PC36的对象赋值链尚未闭合，草稿已保留待核验注释；不升级完整静态恢复。
+- 新增普通Lua草稿1个；累计50个。完整静态恢复仍29/110（26.4%）；运行时验证0；最新检查点#63。
+- 下一步：优先恢复其他尚未开始的短函数；并追踪root顶层T[6]/T[2]及InstallDamageHook PC31-PC36的对象别名。
+
