@@ -556,3 +556,13 @@
 - 函数状态 CSV 索引85、86更新为“首版普通 Lua 草稿（待静态复审/未运行时验证）”。
 - 普通 Lua 草稿数量45→47；完整静态恢复27/110不变；运行时验证0不变；最新检查点#59。
 - 下一步：继续闭合 Nested_Anonymous 的父级调用消费/vararg 关系及 Nested_match 的 ScheduleOnce 参数，再优先处理尚未开始的短函数。
+
+
+## 检查点 #60（2026-11-09）：Nested_Anonymous 调用链与 ScheduleOnce 闭包复核
+- 新增审计：`docs/audit/检查点60_Nested_Anonymous与ScheduleOnce闭包复核.md`。
+- 定位 Nested_Anonymous 父级使用点：root/43 PC248创建并存入R18；root/43 PC251将R18捕获为 root/43/12 的UPVALUE_0；root/43/12随后以固定黑名单距离提示文本和回调闭包调用该函数。
+- 确认 Nested_match PC42创建的错误提示闭包在PC43捕获本函数UPVALUE_2；子函数调用该捕获回调并传入“参数格式不对，请输入数字”。
+- 因此UPVALUE_2是错误提示回调，不是ScheduleOnce延迟参数；ScheduleOnce延迟常量为0.1秒。已修订第三十六批草稿及CSV索引86备注。
+- Nested_Anonymous的T[0..2]与调用实参的精确寄存器映射仍未闭合，暂不新增其普通Lua草稿。
+- 普通Lua草稿47个（不变）；完整静态恢复27/110（24.5%，不变）；运行时验证0；最新检查点#60。
+- 下一步：继续核对Nested_Anonymous参数映射；若不能快速闭合，转向其他尚未开始的短函数。
