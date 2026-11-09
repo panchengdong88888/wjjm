@@ -690,3 +690,13 @@
 - 本批新增普通Lua草稿1个；累计60个。完整静态恢复仍29/110（26.4%）；运行时验证0。
 - 未闭合事项：四个捕获寄存器的业务身份、外部调度及请求API的宿主行为；本批不升级完整静态恢复。
 - 下一步：优先评估未开始的`LuaSendMsg`（`root.children[12]`）与`GetMapData2DPtr`（`root.children[22]`），恢复可确认的主体后继续批量推进。
+
+
+## 检查点 #74（2026-11-09）：LuaSendMsg 首版普通 Lua 草稿
+- 新增源码：`04_源码候选/短函数草稿_第五十批.lua`；新增审计：`docs/audit/检查点74_LuaSendMsg首版草稿.md`。
+- 函数：`LuaSendMsg`，原型索引15，规范路径`root.children[12]`，legacy`root/13`，92条物理指令、34个常量、无子原型、`vararg_flag=0`。
+- 根函数PC48创建闭包，两个捕获依次为root T[0]、root T[4]；仅确认寄存器来源，业务身份未闭合。
+- 已形成普通Lua主体候选：PC1-PC27消息记录字段与Blocklist/tonumber路径；PC28-PC62 ipairs/table.insert参数迭代、string类型分支、tostring及table.concat日志文本、捕获函数调用；PC63-PC86 SendHookList索引、function判断、pcall及布尔分支；PC87-PC92 global.networkCtl.SendMsg后备调用。
+- 参数字段精确映射、Blocklist判断与跳转、PC28-PC62真实参数源及闭包调用契约、hook索引键/参数/pcall返回值、SendMsg实参布局均待静态复审。草稿中的arg1..arg6和示例实参是明确标注的临时占位，不能视为已证实源码。
+- 本批新增普通Lua草稿1个；累计按既有检查点口径61个。完整静态恢复仍29/110（26.4%）；运行时验证0。
+- 下一步评估`GetMapData2DPtr`（`root.children[22]`，144条指令），优先形成可读主体；LuaSendMsg参数/捕获/hook契约留待集中静态复审。
