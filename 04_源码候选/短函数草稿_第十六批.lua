@@ -40,4 +40,4 @@ local function ClearTargetID_2()
     proxy:SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)
 end
 
--- 本批均为普通 Lua 草稿，不代表完整作者级静态恢复或运行时验证。
+-- AnonymousHelper_49已完成静态恢复；AnonymousHelper_54与ClearTargetID_2仍为普通Lua草稿，整批均未运行时验证。
