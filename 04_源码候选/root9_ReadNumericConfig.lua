@@ -7,9 +7,11 @@
 
 local function make_ReadNumericConfig(GetWritablePath)
     return function(fileName, ...)
-        -- PC 1-7: resolve the supplied path and test whether the file exists.
-        local fullPath = GetWritablePath(fileName)
+        -- PC 1-4: acquire the FileUtils singleton before resolving the path.
         local fileUtils = cc.FileUtils:getInstance()
+
+        -- PC 5-7: resolve the supplied path through the captured helper.
+        local fullPath = GetWritablePath(fileName)
 
         if not fileUtils:isFileExist(fullPath) then
             -- The failed existence check is returned as-is (normally false).
