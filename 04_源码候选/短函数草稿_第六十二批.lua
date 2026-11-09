@@ -160,8 +160,7 @@ local function Nested_FFFF00()
     refreshResourceStatistics()
     timerState.resTimer = sl:Schedule(refreshResourceStatistics, 1.0)
 
-    return resWin, resList, moneyProxy, formatNumber,
-        updateResourceRows, moneyNames, resourceNames
+    return
 end
 
 return Nested_FFFF00
