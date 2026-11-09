@@ -18,9 +18,10 @@
 -- 参数槽位：函数体从 R0 读取首个调用参数；vararg_flag=1 的精确含义
 -- 仍待解释器参数初始化规则复核，因此首版用 fileName 表示该值。
 
-local function ReadNumericConfig(fileName)
-    local fileUtils = cc.FileUtils:getInstance()
-    local fullPath = UPVALUE_0(fileName)
+local function MakeReadNumericConfig(getWritablePath)
+    return function ReadNumericConfig(fileName)
+        local fileUtils = cc.FileUtils:getInstance()
+        local fullPath = getWritablePath(fileName)
 
     local exists = fileUtils:isFileExist(fullPath)
     if not exists then
@@ -38,8 +39,9 @@ local function ReadNumericConfig(fileName)
         return value
     end
 
-    return tonumber(value)
+        return tonumber(value)
+    end
 end
 
--- UPVALUE_0 对应 GetWritablePath；实际源码中它是闭包捕获，
--- 此处以占位名呈现，不代表作者源码中的全局变量。
+-- MakeReadNumericConfig(GetWritablePath) 对应 VM 的闭包捕获关系：
+-- GetWritablePath 被保存为 ReadNumericConfig 的 UPVALUE_0。
