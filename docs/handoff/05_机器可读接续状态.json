@@ -15,7 +15,7 @@
     "root.children[46]": "169-instruction DiuItems; first-pass ordinary Lua draft independently reviewed, still not counted as complete static reconstruction; see checkpoint #33",
     "root.children[42]": "large UI initialization prototype with 23 children; legacy root/43; high-level Lua reconstruction pending"
   },
-  "next_action": "Nested_Anonymous_2（root.children[50].children[1]）仍保留阶段分析，不猜测融合算术；后续若继续该函数，追踪父级 root/51 的闭包调用/消费点及四个捕获来源。优先从剩余未开始、无子原型的短函数中选择可恢复目标；Nested_Helper_2 已完成普通 Lua 草稿。",
+  "next_action": "Nested_Anonymous_2 仍保留阶段分析，不猜测融合算术；下一步优先从剩余未开始函数中筛选短函数，或追踪该匿名函数父级调用/捕获来源。Nested_StopGatherMonsters 已恢复为普通 Lua 草稿，捕获顺序已核实。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -90,7 +90,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "50"
+    "last_checkpoint": "51"
   },
   "static_recovered_functions": [
     {
@@ -461,29 +461,28 @@
   ],
   "latest_batch": {
     "date": "2026-11-09",
-    "checkpoint": 50,
-    "target": "Nested_Helper_2 普通 Lua 草稿",
+    "checkpoint": 51,
+    "target": "Nested_StopGatherMonsters 普通 Lua 草稿",
     "status": "draft_saved; no runtime validation",
-    "source_file": "04_源码候选/短函数草稿_第二十八批.lua",
-    "audit_file": "docs/audit/检查点50_Nested_Helper_2草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第二十九批.lua",
+    "audit_file": "docs/audit/检查点51_Nested_StopGatherMonsters草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[3].children[0]",
-        "legacy": "root/43/4/1",
-        "name": "Nested_Helper_2",
-        "instructions": 35
+        "path": "root.children[42].children[6]",
+        "legacy": "root/43/7",
+        "name": "Nested_StopGatherMonsters",
+        "instructions": 31
       }
     ],
     "verified": [
-      "vararg_flag=1，函数主体读取第一个参数",
-      "nil/false分支替换为0",
-      "低于100000直接tostring返回",
-      "100000至100000000分支除以10000、floor、追加万",
-      "大于等于100000000分支除以1e8、乘10、floor、除10，按%.1f亿格式化",
-      "父级 root/43/4 PC118 创建零捕获闭包"
+      "父级 root/43 PC269 创建闭包，captures=6",
+      "child UP[0..5] 依次捕获 parent UP2、UP11、UP9、UP0、R20、R17",
+      "gatherTimer truthy 分支通知关闭、调用全局 StopGatherMonsters 并返回 true",
+      "条件检查 truthy 分支通知缺少怪物阈值、调用输入交互并返回 false",
+      "条件检查 false/nil 分支通知开启、将条件结果交给捕获回调并返回 true"
     ],
     "unresolved": [
-      "UI节点中的具体回调绑定点未完全追踪",
+      "parent UP9、R20、R17 原始业务名称待追溯",
       "未进行运行时验证"
     ]
   },
@@ -580,28 +579,28 @@
       "status": "first_pass_draft_pending_static_review_not_runtime_verified"
     }
   ],
-  "draft_function_count": 34,
-  "ordinary_lua_draft_functions": 34,
-  "last_checkpoint": "50",
-  "checkpoint": "50",
+  "draft_function_count": 35,
+  "ordinary_lua_draft_functions": 35,
+  "last_checkpoint": "51",
+  "checkpoint": "51",
   "drafts": 32,
-  "next": "Nested_Anonymous_2（root.children[50].children[1]）仍保留阶段分析，不猜测融合算术；后续若继续该函数，追踪父级 root/51 的闭包调用/消费点及四个捕获来源。优先从剩余未开始、无子原型的短函数中选择可恢复目标；Nested_Helper_2 已完成普通 Lua 草稿。",
+  "next": "Nested_Anonymous_2 仍保留阶段分析，不猜测融合算术；下一步优先从剩余未开始函数中筛选短函数，或追踪该匿名函数父级调用/捕获来源。Nested_StopGatherMonsters 已恢复为普通 Lua 草稿，捕获顺序已核实。",
   "recent_checkpoint": {
-    "id": 50,
+    "id": 51,
     "date": "2026-11-09",
-    "source_file": "04_源码候选/短函数草稿_第二十八批.lua",
-    "audit_file": "docs/audit/检查点50_Nested_Helper_2草稿.md",
+    "source_file": "04_源码候选/短函数草稿_第二十九批.lua",
+    "audit_file": "docs/audit/检查点51_Nested_StopGatherMonsters草稿.md",
     "added_drafts": [
       {
-        "path": "root.children[42].children[3].children[0]",
-        "legacy": "root/43/4/1",
-        "name": "Nested_Helper_2",
-        "instructions": 35
+        "path": "root.children[42].children[6]",
+        "legacy": "root/43/7",
+        "name": "Nested_StopGatherMonsters",
+        "instructions": 31
       }
     ],
-    "draft_count_total": 34,
+    "draft_count_total": 35,
     "complete_static_reconstruction_count": 27,
     "runtime_verified_count": 0,
-    "note": "恢复数字缩写格式化的阈值、万/亿转换与字符串格式化；父级PC118创建零捕获闭包。"
+    "note": "恢复引怪开关函数的定时器关闭分支、条件检查、缺少阈值提示/输入交互分支及开启回调；六个闭包捕获来源已核实。"
   }
 }
