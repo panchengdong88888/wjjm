@@ -16,7 +16,7 @@ index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,
 12,root/9,root.children[9],root/10,ReadNumericConfig,45,13,0,首版普通Lua草稿（vararg声明待复核；未运行时验证）,检查点68；UPVALUE_0明确捕获root R44（PC297创建的GetWritablePath）；检查文件存在，不存在返回检查结果；读取文本后去除%s空白；纯数字转tonumber，否则返回清理文本；非字符串原样返回。
 13,root/10,root.children[10],root/11,SetButtonVisibilityState,15,5,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十三批.lua；UP[0].isHidden=true；pairs(UP[1]) 遍历并调用 GUI:setVisible(映射值,true)；捕获名暂用占位名；检查点34。
 14,root/11,root.children[11],root/12,DistanceCalculation,25,6,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十二批.lua；缺少任一坐标表返回99999，否则返回max(abs(dx),abs(dy))；检查点33。
-15,root/12,root.children[12],root/13,LuaSendMsg,92,34,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+15,root/12,root.children[12],root/13,LuaSendMsg,92,34,0,首版普通 Lua 草稿（参数槽位/闭包业务身份/hook契约待复核；未运行时验证）,检查点74；PC1-27消息记录与Blocklist主体、PC28-62参数迭代/日志文本、PC63-86 SendHookList/pcall拦截路径、PC87-92 global.networkCtl.SendMsg后备路径已形成普通Lua候选；UPVALUE_0<-root T[0]、UPVALUE_1<-root T[4]；参数字段映射、Blocklist分支、hook键/实参/返回契约及SendMsg实参布局待复核。
 16,root/13,root.children[13],root/14,GetMapId,9,4,0,完整静态恢复（未运行时验证）,04_源码候选/小型辅助函数_首批草稿.lua；PC1-9 完整还原为 SL:GetMetaValue(""MAP_ID"") or 0。
 17,root/14,root.children[14],root/15,FindMonsterInCurrViewField,27,4,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十三批.lua；调用 SL:FindMonsterInCurrViewField(true,true)，使用捕获的 IsDie 过滤存活 actor，再按 actor:GetID() 构造映射表；检查点34。
 18,root/15,root.children[15],root/16,ClearBlacklistItems,63,17,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
