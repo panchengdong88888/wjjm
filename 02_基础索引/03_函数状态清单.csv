@@ -2,7 +2,7 @@
 TAB NAME: 03_函数状态清单.csv>
 index,原型路径,JSON规范路径,旧报告一基标签,指令级重建名称,物理指令数,常量数,子原型数,状态,已核实内容/待办
 0,root,root,root,MainLeftBottom_Module,412,109,58,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
-1,root/0,root.children[0],root/1,FileExistCheck_pcall_wrapper,32,5,1,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
+1,root/0,root.children[0],root/1,FileExistCheck_pcall_wrapper,32,5,1,完整静态恢复（未运行时验证）,检查点62；32条指令控制流闭合；UPVALUE_0为root/3路径拼接闭包；子闭包捕获FileUtils实例与resolvedPath并pcall执行removeFile；返回值及二次存在检查已核对；未运行时验证。
 2,root/0/0,root.children[0].children[0],root/1/1,Nested_removeFile,5,1,0,首版普通 Lua 草稿（待静态复审/未运行时验证）,源码候选 04_源码候选/短函数草稿_第十五批.lua；读取 UP[0].removeFile 并以 UP[0] 为 self、UP[1] 为路径调用；捕获业务名待确认；检查点36。
 3,root/1,root.children[1],root/2,GetStorageItemData,77,16,0,未开始/未核验,尚无可靠的函数级源码恢复记录；先读原始指令与闭包创建点，不要假定已完成。
 4,root/2,root.children[2],root/3,GetWritablePath,10,4,0,部分核验,cc.FileUtils/getInstance/getWritablePath 路径明确；vararg/拼接融合指令未完全还原。
