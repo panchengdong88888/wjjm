@@ -1,6 +1,6 @@
 -- MainLeftBottom(2).lua 普通 Lua 草稿
 -- 第十五批：4 个短闭包
--- 状态：首版普通 Lua 草稿；尚未运行时验证。
+-- Nested_Helper_11已于检查点112完成静态恢复（未运行时验证）；本文件其他函数仍按各自状态管理。
 -- 说明：UPVALUE_n 是闭包捕获槽位占位名，不代表已确认的业务变量名。
 
 -- 原型：root.children[0].children[0]
@@ -50,4 +50,4 @@ local function Nested_Helper_11()
     UPVALUE_0("参数格式不对，请输入数字")
 end
 
--- 本批均为可读草稿，不代表已完成作者级静态恢复或运行时验证。
+-- Nested_Helper_11的4条指令、唯一捕获和固定提示文本已逐PC核闭；其他函数不因本项完成而自动升级。
