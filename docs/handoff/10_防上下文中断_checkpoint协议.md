@@ -545,3 +545,14 @@
 - 修正机器状态 JSON 落后于协议的问题：原 `last_checkpoint=56`，协议已记录 #57；现机器状态与协议统一为 #58。函数状态 CSV 第91行备注同步记录本次复核。
 - 当前累计普通 Lua 草稿45个；完整静态恢复27/110（24.5%）；运行时验证0；最新检查点#58。
 - 下一目标：`root.children[42].children[22]`（Nested_Anonymous，8条）及其子原型 Nested_str（27条），追踪四个捕获来源和回调调用关系；不重做已完成底层工作。
+
+
+## 检查点 #59（2026-11-09）：Nested_str / Nested_match 草稿
+- 新增普通 Lua 草稿：`04_源码候选/短函数草稿_第三十六批.lua`，包含 `root.children[42].children[22].children[0]`（Nested_str）与其子函数 `root.children[42].children[22].children[0].children[0]`（Nested_match）。
+- 新增审计：`docs/audit/检查点59_Nested_str与Nested_match草稿.md`。
+- Nested_str 恢复弹窗参数、可选文本追加、callback 及 `SL:OpenCommonTipsPop` 调用；Nested_match 恢复状态码入口、editStr 读取、空白清理、纯数字匹配、tonumber、成功回调及非法输入提示路径。
+- Nested_str 的4个捕获来源和 Nested_match 的4个捕获次序按闭包创建描述登记，业务名称仍保留UPVALUE占位名。
+- `Nested_Helper_11` 已在第十五批存在草稿，本批不重复计数。父包装 `Nested_Anonymous`（8条）尚未计入草稿，调用参数/vararg 消费关系仍需复核；Nested_match 的 ScheduleOnce 参数精确角色也待独立复审。
+- 函数状态 CSV 索引85、86更新为“首版普通 Lua 草稿（待静态复审/未运行时验证）”。
+- 普通 Lua 草稿数量45→47；完整静态恢复27/110不变；运行时验证0不变；最新检查点#59。
+- 下一步：继续闭合 Nested_Anonymous 的父级调用消费/vararg 关系及 Nested_match 的 ScheduleOnce 参数，再优先处理尚未开始的短函数。
