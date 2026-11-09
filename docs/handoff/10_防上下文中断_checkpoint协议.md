@@ -1757,3 +1757,15 @@
 - 新增审计`docs/audit/检查点163_StopGatherMonsters完整静态复审.md`；更新源码候选、函数状态CSV、机器状态JSON。
 - 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复84/110；运行时验证0。
 - 下一步：复审DestroyUI（root.children[37]，31条）与ShowHideAllButtons（root.children[40]，47条）。
+
+ 
+## 检查点 #164（2026-11-09）：DestroyUI 完整静态复审与捕获映射修正
+
+- 对象：`root.children[37]`（legacy root/38），31条物理指令，11个常量，无子原型。
+- 父root PC261的三个捕获描述依次为T[0]、T[3]、T[1]：UP0 UI状态对象（isHidden/resWin）；UP1定时器状态对象（resTimer）；UP2按钮映射表。
+- 旧草稿错误地只使用两个工厂参数，并把resTimer/resWin放在同一状态对象。本批修正为`make_DestroyUI(uiState, timerState, buttonMap)`。
+- 执行顺序：UP0.isHidden=false；若UP1.resTimer存在则`SL:UnSchedule(timer)`并清nil；UP0.resWin=nil；`GUI:Win_CloseAll()`；pairs遍历UP2并调用`GUI:setVisible(UP2[key],true)`；return。
+- SL/GUI方法调用均保留接收者；31条指令、三个捕获身份、循环和返回路径闭合。
+- 新增审计`docs/audit/检查点164_DestroyUI完整静态复审与捕获映射修正.md`；更新短函数草稿第十四批、CSV、机器状态JSON。
+- 状态升级为完整静态恢复（未运行时验证）。统计：普通Lua源码候选82；完整静态恢复85/110；运行时验证0。
+- 下一步：复审ShowHideAllButtons（root.children[40]，47条）；其UP2.hidebut是单个控件，字节码直接调用GUI:setVisible(hidebut,false)，不是第二张pairs表。
