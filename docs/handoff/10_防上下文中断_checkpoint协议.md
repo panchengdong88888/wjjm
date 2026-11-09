@@ -1424,3 +1424,14 @@
 - 两项升级完整静态恢复，未运行时验证。
 - 统计：普通Lua草稿78；完整静态恢复76/110（69.1%）；运行时验证0。
 - 下一步：优先推进BlacklistPlayerDetection与StorageItems主体草稿，再处理GetMapData2DPtr。
+
+
+## 检查点 #134（2026-11-09）：TakeItems 与 Builtsetting 完整静态恢复
+
+- TakeItems（root.children[5]，99条）：UP[0]=root T[2]状态对象，UP[1]=root T[5]文本回调；PC42-PC64过滤循环不可达；确认LuaSendMsg七项参数及顺序、发送后计数、isTaking复位和完成提示。源码：`04_源码候选/短函数草稿_第五十七批.lua`。
+- Builtsetting（root.children[23]，55条）：捕获root R5为UP[0]；六组CHANGE_SETTING参数依次为27:{0}、52:{0}、1002:{0}、57:{1}、58:{1}、2005:{0}，每组后调用对应中文提示回调。UP[0]业务名称未知。源码：`04_源码候选/短函数草稿_第四十五批.lua`。
+- 两函数全部物理指令映射，均升级为完整静态恢复；未运行时验证。
+- 统计：普通Lua草稿78；完整静态恢复76/110（69.1%）；运行时验证0。
+- 新增审计：`docs/audit/检查点134_TakeItems与Builtsetting完整静态恢复.md`。
+- 下一步：复核BlacklistPlayerDetection（root.children[47]）与StorageItems（root.children[50]）既有草稿。
+
