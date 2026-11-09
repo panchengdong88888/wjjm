@@ -13,15 +13,16 @@ local function Nested_Helper_10()
     -- UP[0] <- doInit_UI UP[2]：定时器状态表（blacklistTimer）
     -- UP[1] <- doInit_UI UP[0]：通知回调（PrintLog）
     -- UP[2] <- doInit_UI UP[1]：MainLeftBottom模块状态表（isBlacklisting）
-    -- UP[3] <- doInit_UI UP[6]：零参数距离读取回调，返回距离值
-    -- UP[4] <- doInit_UI T[19]：零参数回调（无正距离时调用）
-    -- UP[5] <- doInit_UI T[16]：接收距离值的回调
+    -- UP[3] <- doInit_UI UP[6]：root.children[49] AnonymousHelper_49，
+    --          其内部调用ReadNumericConfig("blacklist_distance.txt")。
+    -- UP[4] <- doInit_UI T[19]：Nested_Helper_4，打开距离输入提示/对话框。
+    -- UP[5] <- doInit_UI T[16]：Nested_blacklistTimer，接收距离并启动黑名单处理。
     local timerState = UPVALUE_0
     local notify = UPVALUE_1
     local moduleState = UPVALUE_2
-    local getDistance = UPVALUE_3
-    local openDistanceInput = UPVALUE_4
-    local onDistanceAvailable = UPVALUE_5
+    local readBlacklistDistance = UPVALUE_3
+    local openBlacklistDistanceInput = UPVALUE_4
+    local startBlacklistTimer = UPVALUE_5
 
     -- 已存在黑名单定时器：关闭功能。
     if timerState.blacklistTimer then
@@ -33,16 +34,16 @@ local function Nested_Helper_10()
     end
 
     -- 未开启时读取距离；仅正数进入开启路径。
-    local distance = getDistance()
+    local distance = readBlacklistDistance()
     if distance > 0 then
         notify(string.format("开启黑名单功能，距离格子：%d", distance))
-        onDistanceAvailable(distance)
+        startBlacklistTimer(distance)
         return true
     end
 
     -- 无正距离：提示并调用无参数输入/交互回调。
     notify("路径中没有黑名单的距离格子，弹出输入框")
-    openDistanceInput()
+    openBlacklistDistanceInput()
     return false
 end
 
