@@ -3,7 +3,9 @@
 -- Local names are reconstruction names, not claimed original identifiers.
 
 -- root.children[11] / legacy root/12 / DistanceCalculation
--- 25 physical instructions; returns a large sentinel when either point is absent.
+-- Status: complete static reconstruction; not runtime-validated.
+-- 25 physical instruction records; PC1-PC23 active path is fully mapped, PC24-PC25 are unreachable tail returns.
+-- Returns a large sentinel when either point is absent.
 local function DistanceCalculation(pointA, pointB)
     if not pointA then
         return 99999
