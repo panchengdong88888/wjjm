@@ -11,7 +11,7 @@
 - 子原型：5
 - vararg_flag：0
 - 父函数：`doInit_UI`（`root.children[42]`）
-- 父级PC330创建本闭包，捕获4个父寄存器；具体业务身份尚未全部可靠映射。
+- 父级PC330创建本闭包，捕获doInit_UI的UP槽位`[3,0,2,1]`；映射为`[MainLeftBottom模块表, PrintLog, 独立timer状态表, MainLeftBottom模块表]`。其中UP[0]用于resWin/screenW/screenH，UP[2].resTimer用于调度句柄，UP[3].initTimeStr/initSnapshot用于初始状态。
 
 ## 恢复主体
 1. 窗口存在性检查：`GUI.Win_IsNotNull(resWin)`。
@@ -19,14 +19,14 @@
 3. 不存在时调用`GUI.Win_Create`创建资源窗口。
 4. 创建根Layout及点击回调，创建ListView并设置锚点、背景类型、背景颜色`#CEB5F7`和透明度255。
 5. 创建标题、初始时间、当前时间、历时、备注五个布局/文本区域；常量可确认标题“资源统计”、初始时间前缀“初始时间:”、当前时间默认文本“当前时间:--”、历时默认文本“历时:--”及备注“（括号内数量为非绑定资源的收益）”。
-6. 创建5个子原型的顺序为：child4在PC68、child0在PC118、child2在PC265、child1在PC292、child3在PC300。对应部分子函数已有独立草稿。
-7. 后半段出现资源名称配置表、`Facade:retrieveProxy(ProxyTable.MoneyProxy)`，最后以1.0秒间隔创建刷新调度并保存`resTimer`。
+6. 创建5个子原型的顺序为：child4在PC68、child0在PC118、child2在PC265、child1在PC292、child3在PC300。child4捕获[PrintLog,timerState,moduleState]，点击空白时提示并取消resTimer、关闭窗口。child2捕获ListView对象及screenW*0.6宽度参数。child3捕获10项：[moduleState,timerState,curTimeText,durTimeText,initState,MoneyProxy,updateResourceRows,formatNumber,updateResourceRows,2.0]。
+7. PC268-PC281构造两组资源名称数组：money=[元宝、绑定元宝、灵符、绑定灵符]，item=[声望卷、悟道茶、洗髓丹、转生水晶、恶魔令牌、血龙宝珠]。PC282-PC291分别以`updateResourceRows(names,2,"money"/"item")`建立列表行。PC293-PC299获取MoneyProxy。PC300创建刷新闭包，PC311-PC312立即调用；刷新闭包内部检查窗口有效性、更新当前时间/历时及资源统计，并自行调用`SL:Schedule(callback,1.0)`、保存`timerState.resTimer`。
 
 ## 草稿限制
 - 本轮以窗口状态分支、UI区域和资源刷新流程为骨架；大量GUI构造调用存在融合载荷，具体参数位置/含义未全部展开。草稿中TODO与临时返回结构仅为阅读骨架，不等同作者原始Lua。
-- 四个父闭包捕获仍用UPVALUE_0..3占位，捕获来源寄存器已知但业务对象映射未闭合。
+- 四个父闭包捕获业务身份已闭合并写入源码；PC300刷新闭包的10项捕获顺序也已核实。
 - child0/child1/child2/child3/child4各自的已有草稿不能自动证明其在本父函数中的全部参数契约；尤其PC265和PC300创建点后的捕获寄存器/闭包传参还需复核。
-- `Schedule`参数与返回句柄寄存器、MoneyProxy后续调用参数、资源配置表的准确嵌套结构尚未闭合。
+- `SL:Schedule(callback,1.0)`参数顺序及timerState.resTimer句柄写入已闭合；MoneyProxy各资源ID/数量读取与差值显示的细节仍需继续校正。
 - 当前草稿不计入完整静态恢复，未做运行时验证。
 
 ## 计数
@@ -37,4 +37,4 @@
 - 检查点：#87。
 
 ## 下一步
-复核本函数父级PC330的四个捕获寄存器与UI/状态对象映射；静态校正本函数PC28–320的GUI实参与资源刷新闭包捕获；再处理父级doInit_UI尚未恢复的主体。
+父级PC330四个捕获及PC68/265/300三个关键子闭包的捕获契约、资源组调用和自调度关系已完成静态复核。下一步继续逐项校正GUI构造参数、MoneyProxy快照差值/资源行刷新以及PC292子闭包的消费位置。
