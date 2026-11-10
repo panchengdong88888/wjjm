@@ -10,7 +10,7 @@
 - root PC297创建 root.children[2] / GetWritablePath，捕获数为0，结果进入父级R44。
 - root PC298创建 root.children[9] / ReadNumericConfig，捕获数为1。
 - 紧随其后的root PC299捕获父级R44，因此ReadNumericConfig的UP[0]精确指向刚创建的GetWritablePath闭包。
-- ReadNumericConfig PC5-PC7以首个显式参数fileName调用UP[0]，并将其单个结果作为fullPath；随后同一路径用于FileUtils:isFileExist和FileUtils:getStringFromFile。GetWritablePath本体的拼接参数方向仍是独立待核事项，不影响此处闭包身份和调用数据流。
+- ReadNumericConfig PC5-PC7以首个显式参数fileName调用UP[0]，并将其单个结果作为fullPath；随后同一路径用于FileUtils:isFileExist和FileUtils:getStringFromFile。GetWritablePath本体已在检查点127独立完成静态复核：PC7读取首个路径参数，PC8按writablePath .. path顺序拼接，PC9返回；此处调用结果语义与既有复核一致。
 
 ## 上层配置读取包装器
 
