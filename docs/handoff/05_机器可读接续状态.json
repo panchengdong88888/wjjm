@@ -24,7 +24,7 @@
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
     "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。",
     "root.children[47]": "BlacklistPlayerDetection：216条，检查点186完成全部CFG与13项父捕获闭合，升级完整静态恢复（未运行时验证）。PC1-PC73入口/HP状态机/白名单/双返回玩家列表；PC74-PC141玩家循环/UP4双返回值/距离配置门槛；PC142-PC216日志节流、nextTryAt、随机传送成功失败及循环尾部全部闭合。第一个通过距离门槛的黑名单玩家进入处理后退出本次回调；距离配置false/nil绕过helper并以0显示，helper nil继续下一玩家。",
-    "root.children[50]": "StorageItems：检查点144闭合子原型1（root/51/2）逐页容量算法：普通页上限pageCapacity，末页上限min(pageCapacity,openSize-(maxPage-1)*pageCapacity)，读取storedPageData[page]，返回首个未满页码；PC37-PC53建立每页物品数量表（#pageData，不存在记0）。PC206-PC211融合链闭合：R12[MakeIndex]=true（已处理索引集合），storedPageData[targetPage]递增，R13成功发送计数递增。LuaSendMsg第4参数在调用点承载目标仓库页码，服务端协议正式字段名仍待接收端验证。",
+    "root.children[50]": "StorageItems（224条）检查点189已从注释骨架恢复普通Lua主体：互斥/仓库检查、分页占用表、特殊名称过滤、MakeIndex去重、绑定过滤、两组ipairs匹配、Nested_isOutputted门控、目标页查找、七项LuaSendMsg和本地记账/完成提示。三个UPVALUE按用途临时命名；服务端协议字段/999999999含义和宿主API未验证；仍为草稿。",
     "root.children[50].children[1]": "Nested_Anonymous_2：27条；检查点173独立静态复审完成。父StorageItems PC54-PC58捕获maxPage/pageCapacity/openSize/storedPageData；父PC37-PC53逐页构建计数表（#pageData或0）；子函数升序遍历，末页容量按openSize剩余空间裁剪，返回首个可用页码或nil；父PC177-PC179零参调用并消费页码/nil。完整静态恢复，未运行时验证。",
     "root.children[7]": "GetOwnerIDText：检查点151新增04_源码候选/root7_GetOwnerIDText.lua。nil/空串/-1返回false；string分支ownerID==tostring(ownerID)；非string分支ownerID==第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
     "root.children[38]": "GetOwnerID：检查点151新增04_源码候选/root38_GetOwnerID.lua。nil/空串/-1返回false；string分支ownerID~=tostring(ownerID)；非string分支ownerID~=第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
@@ -47,7 +47,7 @@
     "root.children[25]": "DeathAutoBlacklist：47条+子原型6条；检查点181闭合UP0=root T[41]黑名单状态表、UP1=T[4] PrintLog、UP2=T[55] FindBlacklistPlayer、UP3=T[5] ShowLocalNoticeByType。取出lastAttacker后清空共享字段；检查记录/name及黑名单命中；未命中时输出日志/本地通知，并按0..5循环以0.5*index安排6次ScheduleOnce，子闭包捕获记录表并调用RequestAddBlacklistByName(record.name)。完整静态恢复，未运行时验证。",
     "root.children[22]": "GetMapData2DPtr（144条，UP0捕获root T[52]但活动路径不读取）：检查点184确认PC1-PC37是唯一可达路径；检查五实参、相同坐标返回0、maxDistance<=0返回nil、计算Chebyshev max(abs(dx),abs(dy))、超限返回nil否则返回距离；PC37无条件return，PC38-PC144不可达死尾部。完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点188已完成root.children[42].children[3] Nested_FFFF00父函数普通Lua草稿的捕获工厂/子闭包调用契约校正，并把Nested_FFFFFF的65条完整静态恢复源码改为显式捕获工厂；Nested_Helper_3已完整静态恢复。下一批转向root.children[50] StorageItems（224条）现有首版普通Lua草稿，批量复核父函数未闭合的记账表达式、页容量/过滤循环和LuaSendMsg协议参数；复用已完成的Nested_isOutputted与Nested_Anonymous_2，不重复分析。",
+  "next_action": "检查点189已将root.children[50] StorageItems（224条）从注释骨架恢复为完整普通Lua主体草稿；三个UPVALUE按实际用途临时命名，复用已完成的Nested_isOutputted与Nested_Anonymous_2。下一批转向root.children[22] GetMapData2DPtr（144条）已有首版草稿，优先批量恢复可读主体；vararg映射、障碍物契约、循环细节和最终返回值保留TODO，不阻止第一层产出。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -120,7 +120,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "188"
+    "last_checkpoint": "189"
   },
   "static_recovered_functions": [
     {
@@ -2214,26 +2214,24 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "188",
+    "checkpoint": "189",
     "targets": [
-      "root.children[42].children[3]",
-      "root.children[42].children[3].children[2]"
+      "root.children[50]"
     ],
-    "status": "Rewrote Nested_FFFF00 as a four-upvalue factory and made all five child closure creation/capture contracts explicit; replaced the stale Nested_FFFFFF placeholder body with a captured factory; documented the cross-function money snapshot key discrepancy without altering either bytecode-derived access.",
-    "audit_file": "docs/audit/检查点188_Nested_FFFF00捕获工厂与资源刷新链调用契约校正.md",
+    "status": "Converted StorageItems from a comment-only skeleton into an ordinary Lua body draft covering all major control-flow paths, filters, child closure calls, storage request parameters and local bookkeeping.",
+    "audit_file": "docs/audit/检查点189_StorageItems普通Lua主体批量恢复.md",
     "files": [
-      "04_源码候选/短函数草稿_第六十二批.lua",
-      "04_源码候选/短函数草稿_第五十六批.lua",
-      "04_源码候选/资源统计刷新链_第六十四批.lua",
-      "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点188_Nested_FFFF00捕获工厂与资源刷新链调用契约校正.md"
+      "04_源码候选/短函数草稿_第六十批.lua",
+      "docs/audit/检查点189_StorageItems普通Lua主体批量恢复.md",
+      "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "Parent captures map to moduleState,PrintLog,timerState,initState and are now factory parameters instead of undefined UP[] placeholders.",
-      "child4, child2 and child3 are instantiated with their verified capture values; child0/child1 remain no-capture helpers.",
-      "Nested_FFFF00 and Nested_UnSchedule write the dump's unknown sentinel after UnSchedule, not nil.",
-      "Nested_FFFFFF captures resList and screenW*0.6; row/column index and text naming are expressed in ordinary Lua.",
-      "doInit_UI writes initSnapshot[name] for money rows while Nested_Helper_3 reads initSnapshot[moneyId]; keep both bytecode expressions pending MoneyProxy API semantics."
+      "UP0/UP1/UP2 expressed as provisional role parameters: state table, precheck/child0 callback, process-output callback.",
+      "Page occupancy and child1 factory use verified maxPage/pageCapacity/openSize/storedPageData capture mapping.",
+      "Single pairs loop retains MakeIndex dedupe, ITEM_IS_BIND(item), one-item filter list and 18-item special-name loop.",
+      "Nested_isOutputted truthy branch continues to storage; false/nil skips current item.",
+      "LuaSendMsg has seven call-site arguments in verified order; server field semantics and 999999999 meaning remain unknown.",
+      "PC211 increments after the LuaSendMsg call returns; count is request queue count, not server-confirmed storage success."
     ]
   },
   "corrections": [
@@ -2761,8 +2759,8 @@
       "legacy_path": "root/51",
       "name": "StorageItems",
       "source_file": "04_源码候选/短函数草稿_第六十批.lua",
-      "audit_file": "docs/audit/检查点84_StorageItems首版草稿.md",
-      "status": "first_pass_draft_pending_static_review_not_runtime_verified",
+      "audit_file": "docs/audit/检查点189_StorageItems普通Lua主体批量恢复.md",
+      "status": "first_pass_ordinary_lua_body_draft_recovered_checkpoint_189_pending_parent_capture_names_and_server_protocol_semantics_not_runtime_verified",
       "physical_instructions": 224,
       "constant_count": 57,
       "child_count": 2,
@@ -2770,8 +2768,10 @@
       "parent_create_pc": 73,
       "capture_count": 3,
       "notes": [
-        "Storage isStoring guard/reset; NPCStorageProxy and available-page checks; max/open capacity and per-page reads; BAG_DATA; special-name filtering; item-use and storage-request flow; completion count notification.",
-        "Three main upvalues, child1 arithmetic/return contract, child0 invocation/arguments, two filtering loops and LuaSendMsg protocol layout unresolved. child0 has prior independent draft; child1 remains analysis-only."
+        "已恢复224条主体代码：状态互斥、仓库页检查/页占用、特殊名称表、背包读取、MakeIndex去重、绑定过滤、两组名称筛选、child0门控、child1目标页、LuaSendMsg七项参数、发送后本地记账及完成提示。",
+        "三个父UPVALUE按用途临时命名为状态表/前置提示回调/过程输出回调；原始业务名称待根捕获生产者映射。",
+        "第4消息字段调用点为目标仓库页码；服务端正式字段名与999999999含义未知；请求计数不代表服务端确认成功。",
+        "未运行时验证。"
       ]
     },
     {
@@ -2905,37 +2905,33 @@
   ],
   "draft_function_count": 71,
   "ordinary_lua_draft_functions": 71,
-  "last_checkpoint": "188",
-  "checkpoint": "188",
+  "last_checkpoint": "189",
+  "checkpoint": "189",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 188,
+    "number": 189,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/短函数草稿_第六十二批.lua",
-      "04_源码候选/短函数草稿_第五十六批.lua",
-      "04_源码候选/资源统计刷新链_第六十四批.lua",
-      "docs/audit/检查点188_Nested_FFFF00捕获工厂与资源刷新链调用契约校正.md",
+      "04_源码候选/短函数草稿_第六十批.lua",
+      "docs/audit/检查点189_StorageItems普通Lua主体批量恢复.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 71,
     "complete_static_reconstructions": 102,
     "runtime_verified": 0,
-    "notes": "重构Nested_FFFF00父捕获/子闭包工厂并修正unknown哨兵；Nested_FFFFFF候选表达改为显式捕获工厂。草稿总数71、完整静态102、运行时0均不变。"
+    "notes": "StorageItems 224条函数从注释骨架恢复为普通Lua主体草稿；不增加草稿数量、不升级完整静态恢复。"
   },
   "latest_checkpoint": {
-    "checkpoint": "188",
-    "summary": "Nested_FFFF00普通Lua草稿改为显式四项父捕获工厂，修正child4/child2/child3闭包实例化及unknown哨兵；Nested_FFFFFF源码候选改为显式捕获工厂；记录MoneyProxy快照键跨函数差异，不推断API语义。",
-    "audit_file": "docs/audit/检查点188_Nested_FFFF00捕获工厂与资源刷新链调用契约校正.md",
+    "checkpoint": "189",
+    "summary": "StorageItems普通Lua主体草稿恢复完成：224条控制流、两子闭包调用、过滤/去重、页容量、LuaSendMsg七项参数及本地记账均以可读代码表达；UP槽原名、服务端协议字段和运行时语义保留未决。",
+    "audit_file": "docs/audit/检查点189_StorageItems普通Lua主体批量恢复.md",
     "unresolved": [
-      "GUI宿主布尔标志/背景类型/Layout尾参语义",
-      "MoneyProxy:GetMoneyIdByName返回值与initSnapshot键差异",
-      "unknown哨兵的宿主值",
-      "doInit_UI部分UPVALUE与Attach_UITop七实参",
-      "Nested_Anonymous T[0]/T[1]/T[2]入口帧映射",
-      "StorageItems父函数剩余记账/协议参数静态复核",
+      "StorageItems三个父UPVALUE的更上层业务原名",
+      "LuaSendMsg第4字段服务端正式名称/编码",
+      "999999999常量业务含义",
+      "LuaSendMsg调用后请求计数不等同服务端确认数",
       "宿主运行时验证"
     ]
   },
@@ -2946,8 +2942,8 @@
     "ordinary_lua_draft_functions": 71,
     "complete_static_reconstruction_functions": 102,
     "runtime_verified_functions": 0,
-    "checkpoint": 188,
-    "note": "检查点188修订Nested_FFFF00既有草稿的父捕获工厂/子闭包调用契约，并修订Nested_FFFFFF完整静态恢复候选的捕获工厂表达；未新增草稿函数，不改变完整静态恢复数量，运行时验证仍为0。",
+    "checkpoint": 189,
+    "note": "检查点189将StorageItems现有注释骨架改为224条函数的普通Lua主体草稿；不新增草稿函数，不升级完整静态恢复，运行时验证仍为0。",
     "ordinary_lua_drafts": 71,
     "complete_static_reconstruction": 102,
     "runtime_verified": 0
