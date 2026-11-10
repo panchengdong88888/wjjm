@@ -655,3 +655,21 @@ end
 -- PC286-PC294：创建blacklistState并初始化lastAttacker=nil、lastHp=nil、deathHandled=false、alertAt=0、nextTryAt=0、noStoneWarned=false、distance=nil；同一表写入MainLeftBottom.blacklist。
 -- T54：PC318临时数值/表构造用途在PC349前结束；PC352最终写入PCallHelper_2；PC354与PC384分别被FindBlacklistPlayer UP0和ClearBlacklistItems UP0捕获。两次捕获均取到PCallHelper_2，之后T54无再写入。
 -- 该段为父模块创建/捕获/赋值账本，不替代子原型主体；PC341-PC412仍待对账。
+
+
+-- 检查点244：root PC341-PC412最终闭包、模块字段与全局导出账本。
+-- PC341-PC349按原始构造顺序建立T[52]八元素数值表：{ {1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1} }。其业务用途仍未知，不命名为方向表或寻路表。
+-- PC350-PC351：root.children[22] GetMapData2DPtr捕获T[52]；已恢复的可达路径不读取该UPVALUE。
+-- PC352：创建无捕获PCallHelper_2。
+-- PC353-PC354：FindBlacklistPlayer UP[0]=T[54]=PCallHelper_2。
+-- PC355-PC356：UseItemByIndex UP[0]=T[37]=randomTeleportItemNames。
+-- PC357-PC359：onDamageMsg UP[0]=T[41]=blacklistState；PC359写入MainLeftBottom.onDamageMsg。
+-- PC360-PC362：InstallDamageHook UP[0]=T[0]模块表、UP[1]=T[4] PrintLog；PC360覆写T[57]，后续BlacklistPlayerDetection捕获该闭包。
+-- PC363-PC367：DeathAutoBlacklist捕获[T41 blacklistState,T4 PrintLog,T55 FindBlacklistPlayer,T5 ShowLocalNoticeByType]。
+-- PC368-PC381：BlacklistPlayerDetection捕获13项[T2模块表,T57 InstallDamageHook,T41 blacklistState,T58 DeathAutoBlacklist,T55 FindBlacklistPlayer,T53 GetMapData2DPtr,T38=2.0,T4 PrintLog,T56 UseItemByIndex,T39=0.01,T5 ShowLocalNoticeByType,T40=30.0,T37随机传送道具名表]。
+-- PC382：全局导出BlacklistItems=BlacklistPlayerDetection。
+-- PC383-PC387：ClearBlacklistItems捕获[T54 PCallHelper_2,T4 PrintLog,T5 ShowLocalNoticeByType,T41 blacklistState]。
+-- PC388：全局导出ClearBlacklistItems。
+-- PC389-PC410：doInit_UI捕获20项，顺序为[T4,T2,T3,T0,T1,T41,T48,T7,T8,T50,T49,T5,T44,T42,T51,T43,T47,T11,T12,T9]；具体身份见12_根模块闭包装配表.json。
+-- PC411：MainLeftBottom.doInit=doInit_UI；PC412：return根模块表。
+-- 至此PC341-PC412的根级创建/捕获/模块字段/全局导出时序已对账；这不代表所有子函数均已达到完整静态恢复，也不代表根模块整体源码已装配完成。
