@@ -8647,7 +8647,10 @@ do
         )
     end
     rootPrototypes.doInit_UI = requireRecoveredClosure("doInit_UI", rootPrototypes.doInit_UI)
+    -- PC411：将doInit_UI闭包写入原模块字段MainLeftBottom.doInit。
     rootModule.doInit = rootPrototypes.doInit_UI
+    assert(rootModule.doInit == rootPrototypes.doInit_UI,
+        "PC411 MainLeftBottom.doInit attachment failed")
 
     -- 根级全局导出已在各自PC创建点写入；不在模块尾部重复赋值。
     MainLeftBottomRecovered.root_module = rootModule
