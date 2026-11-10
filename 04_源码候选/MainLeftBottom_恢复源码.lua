@@ -8187,6 +8187,50 @@ do
             makeFileExistCheck(rootPrototypes.GetWritablePath)
     end
 
+    -- 检查点253：黑名单前置闭包按root PC顺序装配。
+    local makeAnonymousHelper49 = sourceFunction(
+        "04_源码候选/root49_AnonymousHelper_49.lua", "make_AnonymousHelper_49"
+    )
+    if makeAnonymousHelper49 and rootPrototypes.ReadNumericConfig then
+        rootPrototypes.AnonymousHelper_49 = makeAnonymousHelper49(
+            rootPrototypes.ReadNumericConfig,
+            rootSource.blacklistDistanceConfigFile
+        )
+    end
+
+-- 检查点254：两个匿名转发器按规范root.children[32]/[33]工厂装配。
+    local makeAnonymousHelper32 = sourceFunction(
+        "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
+        "make_AnonymousHelper_32"
+    )
+    if makeAnonymousHelper32 and rootPrototypes.PCallHelper then
+        rootPrototypes.AnonymousHelper_32 = makeAnonymousHelper32(
+            rootPrototypes.PCallHelper,
+            rootSource.blacklistDistanceConfigFile
+        )
+    end
+
+    local makeAnonymousHelper33 = sourceFunction(
+        "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
+        "make_AnonymousHelper_33"
+    )
+    if makeAnonymousHelper33 and rootPrototypes.ReadNumericConfig then
+        rootPrototypes.AnonymousHelper_33 = makeAnonymousHelper33(
+            rootPrototypes.ReadNumericConfig,
+            rootSource.gatherMonsterCountConfigFile
+        )
+    end
+
+        local makeAnonymousHelper54 = sourceFunction(
+        "root/55_AnonymousHelper_54.lua", "make_AnonymousHelper_54"
+    )
+    if makeAnonymousHelper54 and rootPrototypes.PCallHelper then
+        rootPrototypes.AnonymousHelper_54 = makeAnonymousHelper54(
+            rootPrototypes.PCallHelper,
+            rootSource.gatherMonsterCountConfigFile
+        )
+    end
+
     -- root.children[22]捕获T[52]；静态可达路径不读取此表，但保留真实捕获注入。
     local makeGetMapData2DPtr = sourceFunction(
         "04_源码候选/root22_GetMapData2DPtr.lua", "make_GetMapData2DPtr"
