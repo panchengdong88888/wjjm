@@ -1,28 +1,33 @@
 -- root.children[8] / legacy root/9
 -- Reconstruction name: FormatStateChange
--- 10 physical instructions; first-pass readable Lua draft.
--- Captures: UP[0] = callback; UP[1] = previous state value.
--- Capture identities are represented by factory parameters; original local names unknown.
+-- 10 physical instructions; complete static reconstruction, not runtime-validated.
+-- Captures: UP[0] = PrintLog (root.children[16], root T[4]);
+--           UP[1] = shared current-state cell (root T[14], initialized to IDLE).
 
-local function make_FormatStateChange(onStateChange, previousState)
+local function make_FormatStateChange(printLog, currentState)
     return function(newState, ...)
-        -- PC 1-7: format the captured old state and the incoming first argument.
-        local message = string.format("状态切换: %s -> %s", previousState, newState)
+        -- PC 1-7: format the old state and the first explicit argument.
+        local message = string.format("状态切换: %s -> %s", currentState, newState)
 
-        -- PC 8: pass the formatted message to the captured callback.
-        onStateChange(message)
+        -- PC 8: invoke PrintLog with exactly one explicit message argument.
+        printLog(message)
 
-        -- PC 9: update the captured state cell only after callback invocation.
-        previousState = newState
+        -- PC 9: mutate the shared current-state cell after normal callback return.
+        currentState = newState
     end
 end
 
--- Static notes:
--- * UP[0] is invoked with the formatted string.
--- * UP[1] is read as the old-state value and overwritten with the first explicit
---   argument after the callback returns.
--- * Prototype metadata marks the function vararg-capable. The visible body only
---   consumes the first explicit argument; extra varargs have no visible use.
--- * Root closure creation records R4 and R14 as the two capture sources, but
---   their original business identifiers and the host callback contract are not
---   asserted here. No runtime validation.
+-- Static reconstruction notes:
+-- * The root initializes the state-constants table and assigns its IDLE value
+--   to the captured T[14] cell before creating this closure.
+-- * MainLoop captures the same T[14] cell as its current-state upvalue and
+--   compares it against IDLE/GATHERING/ATTACKING. MainLoop calls this helper
+--   with those state constants when transitioning.
+-- * T[4] is the PrintLog closure (root.children[16]); the call contract here is
+--   one formatted string. PrintLog's own static body stringifies this argument;
+--   its SL.Print branch contains no call instruction, so no visible-output
+--   behavior is asserted.
+-- * PC 9 is reached only if the callback returns normally. No pcall/finally
+--   behavior is added.
+-- * The prototype is vararg-capable, but extra varargs are not read.
+-- * Complete static reconstruction only; no target-runtime validation.
