@@ -2807,3 +2807,8 @@ Nested_match：
 - FindBlacklistPlayer逻辑：安全取得FriendProxy；检查_blacklistData和首个vararg targetId；先按targetId查，再按ACTOR_MASTER_ID查主人ID；命中返回true与entry.Name，否则false。
 - 完整静态恢复仍108/110，运行时验证0。本批只是把已完成静态恢复的简单函数实际集中到主文件，不增加原型完成数。
 - 下一批继续筛选短函数和短闭包，优先root.children[33] AnonymousHelper_33、root.children[56]/[57]及其他简单原型；中大型函数和根级闭包装配继续后置。
+
+
+### 检查点230补充校正：FindBlacklistPlayer参数形式
+
+复核原型索引中的 `vararg_flag=1` 后，将 `FindBlacklistPlayer` 的内层函数签名从固定形参写法改为 `function(...) local targetId = ...`，准确保留“零固定参数、从首个可变参数读取targetId”的原型形式。同步主恢复源码与独立候选；不改变业务分支，也不增加恢复统计。另在主文件prototype_index中登记其9条指令的Nested_FriendProxy子原型。
