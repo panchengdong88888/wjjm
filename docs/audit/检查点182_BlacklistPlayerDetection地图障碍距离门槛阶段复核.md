@@ -46,3 +46,6 @@
 - 运行时验证仍为0。
 - 源码候选已更新：04_源码候选/root47_BlacklistPlayerDetection.lua。
 - 下一步：独立完成root.children[22] PC72-PC141障碍采样循环复核，再将其完整语义回填root.children[47]并检查PC74-PC141玩家循环全部控制流。
+
+
+> **纠错声明（检查点183，2026-11-10）：** 本报告中关于PC38-PC144执行地图/障碍检查、路径采样的结论已撤销。root.children[22]在PC37无条件return，PC38-PC144从入口不可达。实际可达行为仅为Chebyshev距离计算及最大距离门槛。详见docs/audit/检查点183_DistanceCalculation不可达尾部纠错.md。
