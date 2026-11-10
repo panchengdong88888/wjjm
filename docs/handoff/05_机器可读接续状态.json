@@ -47,9 +47,10 @@
     "root.children[25]": "DeathAutoBlacklist：47条+子原型6条；检查点181闭合UP0=root T[41]黑名单状态表、UP1=T[4] PrintLog、UP2=T[55] FindBlacklistPlayer、UP3=T[5] ShowLocalNoticeByType。取出lastAttacker后清空共享字段；检查记录/name及黑名单命中；未命中时输出日志/本地通知，并按0..5循环以0.5*index安排6次ScheduleOnce，子闭包捕获记录表并调用RequestAddBlacklistByName(record.name)。完整静态恢复，未运行时验证。",
     "root.children[22]": "GetMapData2DPtr（144条，UP0捕获root T[52]但活动路径不读取）：检查点184确认PC1-PC37是唯一可达路径；检查五实参、相同坐标返回0、maxDistance<=0返回nil、计算Chebyshev max(abs(dx),abs(dy))、超限返回nil否则返回距离；PC37无条件return，PC38-PC144不可达死尾部。完整静态恢复，未运行时验证。",
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
-    "root.children[12]": "LuaSendMsg（92条）检查点190修订普通Lua草稿：固定六参，arg1为Blocklist/SendHookList键，arg2..5为param1..4，arg6为msgId；table.find命中只跳过日志；SendHookList函数经pcall(hook,arg1,arg6,message)，成功且返回true才拦截；否则networkCtl:SendMsg原六参转发。捕获root T[0]/T[4]业务原名与宿主语义待验证。"
+    "root.children[12]": "LuaSendMsg（92条）检查点190修订普通Lua草稿：固定六参，arg1为Blocklist/SendHookList键，arg2..5为param1..4，arg6为msgId；table.find命中只跳过日志；SendHookList函数经pcall(hook,arg1,arg6,message)，成功且返回true才拦截；否则networkCtl:SendMsg原六参转发。捕获root T[0]/T[4]业务原名与宿主语义待验证。",
+    "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。"
   },
-  "next_action": "检查点190已完成root.children[36] GetAvailableStoragePage（51条）逐PC完整静态恢复，并修订root.children[12] LuaSendMsg（92条）六参数映射、Blocklist日志门控、SendHookList pcall拦截及原六参网络转发。下一批优先恢复root.children[41] MoveItemToQuickUse（133条）普通Lua主体；先形成可读草稿，再集中复核代理方法实参和返回契约。",
+  "next_action": "检查点191已完成root.children[41] MoveItemToQuickUse（133条）普通Lua主体草稿复原，并通过doInit_UI PC131-PC145闭合两个参数及success/message调用契约。下一批依据最新函数清单筛选尚未形成普通Lua主体的短函数/相似函数批量恢复；优先新增可读草稿，不因SetQuickUsePosData布尔语义或宿主代理实现未知而阻断第一层产出。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -122,7 +123,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "190"
+    "last_checkpoint": "191"
   },
   "static_recovered_functions": [
     {
@@ -2236,25 +2237,25 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "190",
+    "checkpoint": "191",
     "targets": [
-      "root.children[36]",
-      "root.children[12]"
+      "root.children[41]"
     ],
-    "status": "Completed static reconstruction of GetAvailableStoragePage and corrected LuaSendMsg's six-argument mapping, Blocklist logging gate, SendHookList pcall interception and exact fallback forwarding.",
-    "audit_file": "docs/audit/检查点190_GetAvailableStoragePage与LuaSendMsg批量恢复.md",
+    "status": "Expanded the checkpoint-86 skeleton into a readable ordinary Lua body and closed the two argument meanings through the doInit_UI caller. Preserved all SetQuickUsePosData arguments and booleans exactly; host semantics remain unknown.",
+    "audit_file": "docs/audit/检查点191_MoveItemToQuickUse普通Lua主体复原与调用点校正.md",
     "files": [
-      "04_源码候选/短函数草稿_第十四批.lua",
-      "04_源码候选/短函数草稿_第五十批.lua",
+      "04_源码候选/短函数草稿_第六十一批.lua",
       "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点190_GetAvailableStoragePage与LuaSendMsg批量恢复.md"
+      "docs/audit/检查点191_MoveItemToQuickUse普通Lua主体复原与调用点校正.md"
     ],
     "findings": [
-      "GetAvailableStoragePage returns the first page whose min(pageCapacity,openSize-(page-1)*pageCapacity) exceeds current occupancy, with positive pageLimit; no page returns nil.",
-      "GUIDefine.STORAGE_PER_PAGE_MAX fallback global.MMO.NPC_STORAGE_MAX_PAGE is single-page capacity, not a max-page truncation.",
-      "LuaSendMsg arg1 is the blocklist/hook key; arg2..5 map param1..4; arg6 maps msgId; recog=0.",
-      "Blocklist hit suppresses only log creation; hook and fallback send continue.",
-      "A function hook is pcalled with (arg1,arg6,message); only successful strict true intercepts; otherwise the original six arguments go to networkCtl:SendMsg."
+      "doInit_UI caller PC131-PC145 passes ITEM_INDEX_BY_NAME result as arg1 and slotConfig.slot as arg2.",
+      "Caller consumes success,message; PrintLog(message); truthy success ends the per-group retry loop.",
+      "Quick-use existing-item branch preserves the initial SetQuickUsePosData(position,entry,true) before target occupancy branch.",
+      "Occupied target swaps both positions with false flags; empty target uses true flag.",
+      "Bag lookup result is tested with next(); actual item passed downstream is itemDataList[1].",
+      "When target occupied, targetEntry is written and returned to Bag; common path deletes itemDataList[1] then sets target position with false flag.",
+      "All return pairs and fixed notices preserved; no proxy method return value is treated as confirmed success."
     ]
   },
   "corrections": [
@@ -2921,39 +2922,58 @@
         "Schedules Nested_Panel_mini_chat with 0.5-second delay.",
         "PC58 first child capture is the validation-result register, passed by child to SL:UnSchedule; semantic identity is intentionally unresolved."
       ]
+    },
+    {
+      "path": "root.children[41]",
+      "legacy_path": "root/42",
+      "name": "MoveItemToQuickUse",
+      "source_file": "04_源码候选/短函数草稿_第六十一批.lua",
+      "audit_file": "docs/audit/检查点191_MoveItemToQuickUse普通Lua主体复原与调用点校正.md",
+      "status": "first_pass_ordinary_lua_body_draft_recovered_checkpoint_191_caller_arguments_closed_proxy_boolean_semantics_host_runtime_pending",
+      "physical_instructions": 133,
+      "constant_count": 26,
+      "child_count": 0,
+      "capture_count": 0,
+      "notes": [
+        "调用点doInit_UI PC131-PC145确认arg1为ITEM_INDEX_BY_NAME结果itemIndex，arg2为slotConfig.slot；调用方消费success,message并PrintLog(message)。",
+        "PC1-PC30代理取得与范围校验；PC31-PC90快捷栏条目Index查找、已在目标位置拒绝、目标位占用交换/空位移动。",
+        "PC50-PC54先行SetQuickUsePosData(position,entry,true)保留；占用目标时再以false双位置写入，空位时以true写目标位置。",
+        "PC89-PC103 Bag列表通过next非空检查；PC104-PC116占位目标条目回退Bag；PC117-PC125操作itemDataList[1]并写目标位。",
+        "PC126-PC132返回true及格式化提示；失败路径返回false及固定提示。",
+        "SetQuickUsePosData布尔语义、Bag返回表[1]业务身份和宿主运行时行为未知；不升级完整静态恢复。"
+      ]
     }
   ],
   "draft_function_count": 71,
   "ordinary_lua_draft_functions": 71,
-  "last_checkpoint": "190",
-  "checkpoint": "190",
+  "last_checkpoint": "191",
+  "checkpoint": "191",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 190,
+    "number": 191,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/短函数草稿_第十四批.lua",
-      "04_源码候选/短函数草稿_第五十批.lua",
-      "docs/audit/检查点190_GetAvailableStoragePage与LuaSendMsg批量恢复.md",
+      "04_源码候选/短函数草稿_第六十一批.lua",
+      "docs/audit/检查点191_MoveItemToQuickUse普通Lua主体复原与调用点校正.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 71,
     "complete_static_reconstructions": 103,
     "runtime_verified": 0,
-    "notes": "GetAvailableStoragePage 51条完整静态恢复；LuaSendMsg既有草稿参数/钩子路径修订。完整静态数量+1，运行时验证仍0。"
+    "notes": "MoveItemToQuickUse检查点86首版升级为完整普通Lua主体草稿；参数顺序由doInit_UI调用点确认；统计不增加草稿函数、不升级完整静态恢复。"
   },
   "latest_checkpoint": {
-    "checkpoint": "190",
-    "summary": "GetAvailableStoragePage逐PC完整静态恢复并修正旧近似算法；LuaSendMsg普通Lua草稿修正六参映射、Blocklist仅抑制日志、SendHookList pcall严格true拦截及原六参网络转发。",
-    "audit_file": "docs/audit/检查点190_GetAvailableStoragePage与LuaSendMsg批量恢复.md",
+    "checkpoint": "191",
+    "summary": "MoveItemToQuickUse 133条指令主体草稿恢复完成；调用点确认(itemIndex,slot)及(success,message)返回消费；精确保留SetQuickUsePosData所有实参/布尔值、Bag列表next检查、itemDataList[1]路径和提示返回。",
+    "audit_file": "docs/audit/检查点191_MoveItemToQuickUse普通Lua主体复原与调用点校正.md",
     "unresolved": [
-      "LuaSendMsg捕获root T[0]/T[4]的作者级业务身份",
-      "table.find及SendHookList/Blocklist宿主实现语义",
-      "LuaSendMsg与networkCtl运行时行为",
-      "MoveItemToQuickUse父级代理实参与返回契约",
-      "运行时验证"
+      "SetQuickUsePosData第三参数true/false的宿主业务语义",
+      "Bag:GetItemDataByItemIndex返回表的结构与[1]项业务身份",
+      "QuickUseProxy/Bag方法的副作用、持久化与返回契约",
+      "vararg_flag=2的编译器含义（活动路径未见vararg读取）",
+      "游戏客户端运行时验证"
     ]
   },
   "complete_static_reconstruction_count": 103,
@@ -2963,8 +2983,8 @@
     "ordinary_lua_draft_functions": 71,
     "complete_static_reconstruction_functions": 103,
     "runtime_verified_functions": 0,
-    "checkpoint": 190,
-    "note": "检查点190将GetAvailableStoragePage升级为完整静态恢复，并修订LuaSendMsg既有普通Lua草稿；草稿总数不变，完整静态恢复增加1，运行时验证仍为0。",
+    "checkpoint": 191,
+    "note": "检查点191修订既有MoveItemToQuickUse普通Lua草稿，不增加草稿函数数量、不升级完整静态恢复，运行时验证仍为0。",
     "ordinary_lua_drafts": 71,
     "complete_static_reconstruction": 103,
     "runtime_verified": 0
