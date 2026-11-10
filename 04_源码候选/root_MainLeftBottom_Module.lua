@@ -34,6 +34,9 @@ MainLeftBottom.z = {
     isOutputted = false
 }
 
+-- PC42：创建供各定时器闭包共享的空状态表（T[3]）。
+local timerState = {}
+
 -- PC42-PC412已按检查点193-198分段整理。
 -- 本文件不是完整、可直接运行的原始Lua文件。
 
