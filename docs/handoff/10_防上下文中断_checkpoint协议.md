@@ -2698,3 +2698,16 @@ Nested_match：
 - PC63-PC70对`SendHookList[hookKey]`执行两次索引：第一次truthy存在性门控，第二次读取hook并进行type检查；候选源码已按此修正。
 - 对function类型hook执行`pcall(hook,hookKey,messageId,message)`；只有pcall成功且第二返回值严格为true才提前拦截，否则通过`global.networkCtl:SendMsg`原六参数转发。
 - 92条指令完整静态恢复；完整静态数量更新为103/110（93.6%）；运行时验证仍为0。
+
+
+## 检查点 #222（2026-11-10）：MoveItemToQuickUse 133指令完整静态恢复
+
+- 原型：`root.children[41]`（legacy `root/42`），133条物理指令、26常量、无子原型、零捕获、两个固定参数。
+- 参数：`itemIndex,targetPos`；调用点以ITEM_INDEX_BY_NAME查询结果和slotConfig.slot传入。
+- PC1-PC14取得QuickUseProxy与Bag代理；PC15-PC21代理缺失时返回false和“参数无效”。
+- PC22-PC30校验目标位置范围；PC31-PC35取得快捷栏数据并遍历。
+- PC36-PC88处理快捷栏内已有物品：同位置返回false；目标槽占用则按原顺序交换；目标槽空则移动并返回提示。
+- PC89-PC103查背包物品，既检查返回值truthy，也调用next确认非空。
+- PC104-PC116将目标槽原有物品退回背包；PC117-PC125取itemDataList[1]删除并写入目标快捷栏位置；PC126-PC133返回成功提示。
+- SetQuickUsePosData所有true/false实参及调用顺序按字节码保留；不推断外部代理方法内部语义。
+- 完整静态恢复数更新为104/110（94.5%）；运行时验证仍为0。
