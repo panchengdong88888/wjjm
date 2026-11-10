@@ -2314,7 +2314,11 @@ local function make_Nested_ffffff(buttonConfigs, buttonByKey)
     end
 end
 
-local function doInit_UI()
+local function make_doInit_UI(UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALUE_4, UPVALUE_5, UPVALUE_6, UPVALUE_7, UPVALUE_8, UPVALUE_9, UPVALUE_10, UPVALUE_11, UPVALUE_12, UPVALUE_13, UPVALUE_14, UPVALUE_15, UPVALUE_16, UPVALUE_17, UPVALUE_18, UPVALUE_19)
+    -- 装配适配层：按root闭包捕获顺序接收20个值，构造0基UP槽位表。
+    -- 该表只是恢复代码的显式依赖容器，不是声称原作者使用了此表。
+    local UP = { [0] = UPVALUE_0, [1] = UPVALUE_1, [2] = UPVALUE_2, [3] = UPVALUE_3, [4] = UPVALUE_4, [5] = UPVALUE_5, [6] = UPVALUE_6, [7] = UPVALUE_7, [8] = UPVALUE_8, [9] = UPVALUE_9, [10] = UPVALUE_10, [11] = UPVALUE_11, [12] = UPVALUE_12, [13] = UPVALUE_13, [14] = UPVALUE_14, [15] = UPVALUE_15, [16] = UPVALUE_16, [17] = UPVALUE_17, [18] = UPVALUE_18, [19] = UPVALUE_19 }
+    return function doInit_UI()
     -- PC390在root创建本闭包时明确捕获20个父级T寄存器。
     -- UP[0..19]依次对应父root的T[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。
     -- 可直接确认的身份：UP[0]=PrintLog函数；UP[1]与UP[3]均引用MainLeftBottom模块表；
@@ -2687,7 +2691,7 @@ end
   if make_Nested_InitGatherMonsters ~= nil then __exports["make_Nested_InitGatherMonsters"] = make_Nested_InitGatherMonsters end
   if make_Nested_04d_02d_02d ~= nil then __exports["make_Nested_04d_02d_02d"] = make_Nested_04d_02d_02d end
   if make_Nested_ffffff ~= nil then __exports["make_Nested_ffffff"] = make_Nested_ffffff end
-  if doInit_UI ~= nil then __exports["doInit_UI"] = doInit_UI end
+  if make_doInit_UI ~= nil then __exports["make_doInit_UI"] = make_doInit_UI end
   MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第六十三批.lua"] = __exports
 end
 
