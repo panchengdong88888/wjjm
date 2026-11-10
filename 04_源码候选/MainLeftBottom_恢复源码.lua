@@ -129,7 +129,7 @@ MainLeftBottomRecovered.prototype_index = {
   ["root"] = { name="MainLeftBottom_Module", status="partial_ordinary_lua_draft", source_file="04_源码候选/root_MainLeftBottom_Module.lua", instructions=412, runtime_verified=false },
   ["root.children[6].children[0]"] = { name="Nested_onDamageMsg", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第三十九批.lua", instructions=18, runtime_verified=false },
   ["root.children[14]"] = { name="FindMonsterInCurrViewField", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第十三批.lua", instructions=27, runtime_verified=false },
-  ["root.children[34]"] = { name="AnonymousHelper_33", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua", instructions=7, runtime_verified=false },
+  ["root.children[34]"] = { name="AnonymousHelper_33", status="complete_static_reconstruction", source_file="04_源码候选/root35_AnonymousHelper_33_ScheduleWrapper.lua", audit_file="docs/audit/检查点227_AnonymousHelper_33_Schedule包装函数.md", instructions=7, runtime_verified=false },
   ["root.children[42].children[3]"] = { name="Nested_FFFF00", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=320, runtime_verified=false },
   ["root.children[42].children[18]"] = { name="Nested_Helper_10", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=39, runtime_verified=false },
   ["root.children[49]"] = { name="AnonymousHelper_49", status="complete_static_reconstruction_not_runtime_verified", source_file="", instructions=5, runtime_verified=false },
@@ -5050,4 +5050,23 @@ end
 
   local __exports = { MoveItemToQuickUse = MoveItemToQuickUse }
   MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第六十一批.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/root35_AnonymousHelper_33_ScheduleWrapper.lua
+-- root.children[34]的7指令SL:Schedule转发包装函数。
+-- ============================================================================
+do
+-- root.children[34] / legacy root/35 / AnonymousHelper_33
+-- 7条物理指令；2个显式参数；无Upvalue捕获、无子原型。
+-- PC1-PC2读取SL.Schedule并保留SL作为self；
+-- PC3-PC4将两个实参放入调用区；PC5返回SL:Schedule的全部返回值。
+-- SL:Schedule(callback,time)签名由新框架3_40_xx/SL.md确认。
+
+local function AnonymousHelper_33_Schedule(callback, interval)
+    return SL:Schedule(callback, interval)
+end
+
+  MainLeftBottomRecovered.sources["04_源码候选/root35_AnonymousHelper_33_ScheduleWrapper.lua"] = { AnonymousHelper_33_Schedule = AnonymousHelper_33_Schedule }
 end
