@@ -27,3 +27,6 @@
 
 本批是对检查点182的必要纠错，不提升BlacklistPlayerDetection状态。普通Lua草稿73；完整静态恢复100/110；运行时验证0。
 下一步：逐条复核root.children[47] PC74-PC141玩家扫描循环CFG，包括actor/self筛选、UP[4]双返回值消费、距离结果门槛和多目标覆盖。
+
+
+> **后续检查点184补充：** 已独立复核调用者root.children[47] PC74-PC141。UP[2].distance为false/nil时跳过UP[5]调用；truthy时以mainX/mainY/actorX/actorY/distance五参调用root.children[22]。helper返回nil时继续下一玩家；非nil时进入循环体内的日志/重试/传送分支。见docs/audit/检查点184_距离辅助函数与BlacklistPlayerDetection玩家循环CFG闭合.md。
