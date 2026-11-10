@@ -3355,3 +3355,16 @@ Nested_match：
 - 新建`docs/audit/检查点271_MainLoop共享cell版本与root22注册去重.md`。
 - 本批未改MainLoop业务逻辑，未提升静态完成数；运行时验证0。
 - 下一步检查点272：全量扫描所有sources注册键及sourceFunction调用，排除其他同名覆盖；再推进根模块连续源码收敛。
+
+
+## 检查点 #272（2026-11-10）：源码注册表唯一性与闭包工厂来源核对
+
+- 对主恢复文件全部`MainLeftBottomRecovered.sources["path"] = ...`赋值做全量扫描，覆盖`= __exports`和直接table赋值两种形式。
+- 共53条注册赋值、53个唯一路径，重复注册键0、同路径后写覆盖0。
+- 主装配区37处字面`sourceFunction(path,symbol)`调用，涉及31个路径；路径未注册0、来源块内符号缺失0。
+- 另有22处`bindDirect(prototypeName,path,symbol)`调用，来源路径/符号未命中0。
+- 单一来源块内显式`__exports["symbol"]`重复赋值0。不同来源do/end词法块出现同名局部函数不构成覆盖，调用端按path和symbol精确取值。
+- 更正扫描口径：只统计`sources[path] = __exports`会漏掉TakeItems、PickUpItems、FindMonsterCandidates、AnonymousHelper_54、FindBlacklistPlayer等直接table注册；本批确认它们的来源键与符号均存在，不需要改写。
+- 新建`docs/audit/检查点272_源码注册表唯一性与闭包工厂来源核对.md`；更新主恢复稿注册审计元数据、机器状态、函数状态CSV。
+- 本批没有删除或改写业务函数体，不增加静态恢复数量；109/110完整静态恢复、72个普通Lua草稿、58/58根直接闭包源码层绑定、运行时验证0。未执行Lua解释器/luac。
+- 下一步检查点273：回到root PC1-PC412连续可读源码收敛。先核对PC1-PC42初始化与主装配入口的对象身份和词法作用域，再逐段把可确认语句纳入恢复适配执行体；保留PC275`_ENV.MainLeftBottom`及PC389 T[59]重读，不把OP_387捕获描述写成业务语句。
