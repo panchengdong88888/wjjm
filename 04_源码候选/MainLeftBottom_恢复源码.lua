@@ -7959,6 +7959,32 @@ do
     end
     _G.PickUpItems = rootPrototypes.PickUpItems
 
+    -- 检查点250：OP_387共享live-cell适配层。
+    -- 每个父root T寄存器仅创建一个cell；捕获同一寄存器的闭包复用同一对象。
+    -- {value=...}是恢复适配表示，不声称原作者源码采用此数据结构。
+    local function newLiveCell(value)
+        return { value = value }
+    end
+    local rootCells = {
+        [14] = newLiveCell(rootSource.currentState),
+        [15] = newLiveCell(rootSource.resettableTable),
+        [16] = newLiveCell(rootSource.resetSlot16),
+        [17] = newLiveCell(rootSource.resetSlot17),
+        [18] = newLiveCell(rootSource.isGatherRunning),
+        [19] = newLiveCell(rootSource.resetSlot19),
+        [20] = newLiveCell(rootSource.resetSlot20),
+        [21] = newLiveCell(rootSource.resetSlot21),
+        [22] = newLiveCell(rootSource.resetSlot22)
+    }
+
+    local makeFormatStateChange = sourceFunction(
+        "04_源码候选/root8_FormatStateChange.lua", "make_FormatStateChange"
+    )
+    if makeFormatStateChange then
+        rootPrototypes.FormatStateChange =
+            makeFormatStateChange(rootPrototypes.PrintLog, rootCells[14])
+    end
+
     -- PC86之后才创建的无捕获函数，在各自PC区间前完成绑定。
     bindDirect("SetTargetID", "04_源码候选/短函数草稿_第十二批.lua", "SetTargetID")
     bindDirect("ClearTargetID_2", "04_源码候选/root56_root57_short_functions.lua", "ClearTargetID_2")
@@ -7986,72 +8012,6 @@ do
             rootPrototypes.DistanceCalculation,
             rootSource.gatherConfig
         )
-    end
-
-    -- Builtsetting：UP[0]=root T[5]=ShowLocalNoticeByType；PC258导出全局。
-    local makeBuiltsetting = sourceFunction(
-        "04_源码候选/短函数草稿_第四十五批.lua",
-        "make_Builtsetting"
-    )
-    if makeBuiltsetting and rootPrototypes.ShowLocalNoticeByType then
-        rootPrototypes.Builtsetting =
-            makeBuiltsetting(rootPrototypes.ShowLocalNoticeByType)
-    end
-    if rootPrototypes.Builtsetting then
-        _G.Builtsetting = rootPrototypes.Builtsetting
-    end
-
-    -- AccountIDValidation：UP[0]=root T[4]=PrintLog，UP[1]=root T[5]=ShowLocalNoticeByType。
-    -- 内部Nested_ID与Nested_Panel_mini_chat工厂保留在同一来源词法块。
-    local makeAccountIDValidation = sourceFunction(
-        "04_源码候选/root55_children_drafts.lua",
-        "make_AccountIDValidation"
-    )
-    if makeAccountIDValidation and rootPrototypes.ShowLocalNoticeByType then
-        rootPrototypes.AccountIDValidation = makeAccountIDValidation(
-            rootPrototypes.PrintLog,
-            rootPrototypes.ShowLocalNoticeByType
-        )
-        rootModule.main = rootPrototypes.AccountIDValidation
-    end
-
-    -- InstallDamageHook：UP[0]=root T[0]=MainLeftBottom.a，UP[1]=root T[4]=PrintLog。
-    -- 该闭包供后续BlacklistPlayerDetection捕获，不是全局导出。
-    local makeInstallDamageHook = sourceFunction(
-        "04_源码候选/短函数草稿_第三十九批.lua",
-        "make_InstallDamageHook"
-    )
-    if makeInstallDamageHook then
-        rootPrototypes.InstallDamageHook = makeInstallDamageHook(
-            rootModule.a,
-            rootPrototypes.PrintLog
-        )
-    end
-
-    -- 检查点250：OP_387共享live-cell适配层。
-    -- 每个父root T寄存器仅创建一个cell；捕获同一寄存器的闭包复用同一对象。
-    -- {value=...}是恢复适配表示，不声称原作者源码采用此数据结构。
-    local function newLiveCell(value)
-        return { value = value }
-    end
-    local rootCells = {
-        [14] = newLiveCell(rootSource.currentState),
-        [15] = newLiveCell(rootSource.resettableTable),
-        [16] = newLiveCell(rootSource.resetSlot16),
-        [17] = newLiveCell(rootSource.resetSlot17),
-        [18] = newLiveCell(rootSource.isGatherRunning),
-        [19] = newLiveCell(rootSource.resetSlot19),
-        [20] = newLiveCell(rootSource.resetSlot20),
-        [21] = newLiveCell(rootSource.resetSlot21),
-        [22] = newLiveCell(rootSource.resetSlot22)
-    }
-
-    local makeFormatStateChange = sourceFunction(
-        "04_源码候选/root8_FormatStateChange.lua", "make_FormatStateChange"
-    )
-    if makeFormatStateChange then
-        rootPrototypes.FormatStateChange =
-            makeFormatStateChange(rootPrototypes.PrintLog, rootCells[14])
     end
 
     local makeResetGather = sourceFunction(
@@ -8127,6 +8087,19 @@ do
         _G.StopGatherMonsters = rootPrototypes.StopGatherMonsters
     end
 
+    -- Builtsetting：UP[0]=root T[5]=ShowLocalNoticeByType；PC258导出全局。
+    local makeBuiltsetting = sourceFunction(
+        "04_源码候选/短函数草稿_第四十五批.lua",
+        "make_Builtsetting"
+    )
+    if makeBuiltsetting and rootPrototypes.ShowLocalNoticeByType then
+        rootPrototypes.Builtsetting =
+            makeBuiltsetting(rootPrototypes.ShowLocalNoticeByType)
+    end
+    if rootPrototypes.Builtsetting then
+        _G.Builtsetting = rootPrototypes.Builtsetting
+    end
+
     -- root PC259-PC260：创建无捕获MoveItemToQuickUse；PC260导出全局。
     bindDirect("MoveItemToQuickUse",
         "04_源码候选/root_MainLeftBottom_Module.lua", "MoveItemToQuickUse")
@@ -8163,6 +8136,20 @@ do
             rootSource.timerState, rootSource.buttonMap, rootSource.uiState
         )
         rootModule.destroy = rootPrototypes.ShowHideAllButtons
+    end
+
+    -- AccountIDValidation：UP[0]=root T[4]=PrintLog，UP[1]=root T[5]=ShowLocalNoticeByType。
+    -- 内部Nested_ID与Nested_Panel_mini_chat工厂保留在同一来源词法块。
+    local makeAccountIDValidation = sourceFunction(
+        "04_源码候选/root55_children_drafts.lua",
+        "make_AccountIDValidation"
+    )
+    if makeAccountIDValidation and rootPrototypes.ShowLocalNoticeByType then
+        rootPrototypes.AccountIDValidation = makeAccountIDValidation(
+            rootPrototypes.PrintLog,
+            rootPrototypes.ShowLocalNoticeByType
+        )
+        rootModule.main = rootPrototypes.AccountIDValidation
     end
 
     -- 检查点252：T[44] GetWritablePath是同一个稳定函数引用，供三个闭包共享。
