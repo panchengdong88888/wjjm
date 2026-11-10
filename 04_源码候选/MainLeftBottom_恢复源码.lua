@@ -6215,7 +6215,8 @@ do
     )
     rootModule.destroy = rootPrototypes.ShowHideAllButtons
 
-    -- PC275：按字节码重新读取_ENV.MainLeftBottom；PC276-PC278创建AccountIDValidation。
+    -- PC275：OP_137按全局名MainLeftBottom重新读取当前chunk环境中的模块表。
+    -- 适配器暂以_G.MainLeftBottom表达；只有_ENV与_G指向同一环境表时才严格等价，宿主环境身份尚未验证。
     local accountValidationModule = _G.MainLeftBottom
     assert(type(accountValidationModule) == "table",
         "PC275 _ENV.MainLeftBottom is not a table")
@@ -6541,7 +6542,8 @@ do
     assert(_G.ClearBlacklistItems == rootPrototypes.ClearBlacklistItems,
         "PC388 ClearBlacklistItems global export mismatch")
 
-    -- PC389：原始OP_137将_ENV.MainLeftBottom读取到独立临时寄存器T[59]。
+    -- PC389：原始OP_137按全局名MainLeftBottom读取当前chunk环境，并写入独立临时寄存器T[59]。
+    -- 适配器暂以_G.MainLeftBottom表达；_ENV与_G是否为同一对象尚未由宿主证据验证，不冒充逐字原文。
     -- T[2]/T[0]不被覆写；PC392/PC394仍分别捕获MainLeftBottom.z/a。
     local doInitModule = _G.MainLeftBottom
     assert(type(doInitModule) == "table",
