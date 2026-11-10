@@ -602,3 +602,22 @@ end
 -- PC390 doInit_UI捕获：UP[6]=T48、UP[9]=T50、UP[10]=T49、UP[12]=T44、
 -- UP[14]=T51、UP[16]=T47。注意root.children[33]的恢复名是AnonymousHelper_33；
 -- legacy root/34是路径标签，不是函数名。完整寄存器时间线见12_根模块闭包装配表。
+
+
+-- 检查点241：root PC1-PC85模块字段与全局导出逐PC对账。
+-- 模块根表：PC1创建，PC2写入_G.MainLeftBottom；PC3复用T0创建a表，
+-- PC5挂入MainLeftBottom.a。a.version="10000"；screenW/screenH分别来自
+-- SL:GetMetaValue("SCREEN_WIDTH"/"SCREEN_HEIGHT")；Blocklist={1.0,9.0,10.0,60000.0}；
+-- SendHookList/RecvHookList为空表；isHidden=true、hidebut=nil；
+-- PC51将LuaSendMsg闭包写入MainLeftBottom.a.LuaSendMsg。
+-- PC30-PC32创建并挂入MainLeftBottom.b空表；PC33-PC35创建MainLeftBottom.z；
+-- z的isPaused/isRunning/isStoring/isTaking/isDiuing/isOutputted均初始化false。
+--
+-- PC43-PC85闭包导出：PrintLog->_G.log(PC45)；GetMapId->_G.GetMapId(PC55)；
+-- GetMapName->_G.GetMapName(PC57)；PlayerPos->_G.PlayerPos(PC59)；
+-- GetDroppedItems->_G.GetDroppedItems(PC61)；MoveTo->_G.MoveTo(PC63)；
+-- DiuItems->_G.DiuItems(PC67)；GetAvailableStoragePage->_G.GetAvailableStoragePage(PC70)；
+-- GetStorageItemData->_G.GetStorageItemData(PC73)；StorageItems->_G.StorageItems(PC78)；
+-- TakeItems->_G.TakeItems(PC82)；PickUpItems->_G.PickUpItems(PC85)。
+-- LuaSendMsg在PC51进入MainLeftBottom.a字段；ShowLocalNoticeByType、ScheduleOnce、
+-- Schedule在本区间创建但没有全局导出。逐PC账本见检查点241审计和12_根模块闭包装配表。
