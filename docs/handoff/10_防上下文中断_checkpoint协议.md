@@ -3208,3 +3208,17 @@ Nested_match：
 - 已同步`04_源码候选/root_MainLeftBottom_Module.lua`与`04_源码候选/MainLeftBottom_恢复源码.lua`中的内嵌root段。新建审计`docs/audit/检查点262_PC1-PC42根模块初始化顺序恢复.md`。
 - 结构树110/110；完整静态恢复109/110；普通Lua草稿72；根直接闭包58/58源码层绑定；运行时验证0。未执行Lua解释器/luac，未进行游戏宿主运行验证。
 - 下一步检查点263：将PC43-PC85闭包创建、OP_387捕获、寄存器复用、全局导出和a.LuaSendMsg字段写入转为连续恢复适配语句，重点按时间线核对T[4]/T[5]/T[6]/T[8]复用；不重复反汇编子函数主体。
+
+
+## 检查点 #263（2026-11-10）：PC43-PC85父寄存器复用与闭包导出恢复
+
+- 主恢复文件`04_源码候选/MainLeftBottom_恢复源码.lua`新增`rootRegisters`影子表，明确模拟PC1-PC42结束后的T[0..3]值，并按PC43-PC85逐步设置T[4..8]。
+- PC43创建PrintLog写入T[4]；PC44/45令T[5]=_G并完成`_G.log=T[4]`；PC46创建ShowLocalNoticeByType捕获T[0]后覆写T[5]。
+- PC48创建LuaSendMsg捕获T[0]/T[4]；PC51先写入`MainLeftBottom.a.LuaSendMsg`；PC52才将T[6]覆写为ScheduleOnce。PC53创建Schedule写入T[7]。
+- T[8]按PC54/56/58/60/62/64/68/71/74/79/83依次复用为GetMapId、GetMapName、PlayerPos、GetDroppedItems、MoveTo、DiuItems、GetAvailableStoragePage、GetStorageItemData、StorageItems、TakeItems、PickUpItems；各全局导出均紧跟对应闭包创建，先于T[8]下一次覆写。
+- 捕获工厂按字节码身份读取T[0]/T[2]/T[4]/T[5]；GetStorageItemData通过独立注册键`短函数草稿_第五十六批.lua#GetStorageItemData`获取工厂。
+- 新增`requireRecoveredClosure`适配保护：必需子原型来源缺失时立即报错，防止将T[8]上一次的函数错误导出为下一个全局函数，或将PC44的_G临时值误当通知回调。
+- `rootRegisters`只是恢复适配层的父寄存器影子表，不宣称为作者原始源码中的table。所有子函数体仍在各自候选来源中。
+- 新建`docs/audit/检查点263_PC43-PC85父寄存器复用与闭包导出恢复.md`；更新根候选注释、主恢复文件、机器状态、闭包装配表、函数状态CSV和原型结构树。
+- 完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或目标游戏运行验证。
+- 下一步检查点264：按PC顺序整合PC86-PC211采集状态与采集闭包创建捕获，维护T[14..22]共享cell唯一性；不重复恢复子函数主体。
