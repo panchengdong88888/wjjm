@@ -180,6 +180,9 @@ MainLeftBottom.z = {
     isOutputted = false
 }
 
+-- PC42：创建供各定时器闭包共享的空状态表（T[3]）。
+local timerState = {}
+
 -- PC42-PC412已按检查点193-198分段整理。
 -- 本文件不是完整、可直接运行的原始Lua文件。
 
@@ -687,12 +690,342 @@ end
   if AttachRecoveredPrototypes ~= nil then __exports["AttachRecoveredPrototypes"] = AttachRecoveredPrototypes end
   if MainLeftBottom ~= nil then __exports["MainLeftBottom"] = MainLeftBottom end
   if gatherConfig ~= nil then __exports["gatherConfig"] = gatherConfig end
+  -- Checkpoint250: initial values for shared OP_387 parent-register cells.
+  __exports["currentState"] = currentState
+  __exports["resettableTable"] = resettableTable
+  __exports["resetSlot16"] = resetSlot16
+  __exports["resetSlot17"] = resetSlot17
+  __exports["isGatherRunning"] = isGatherRunning
+  __exports["resetSlot19"] = resetSlot19
+  __exports["resetSlot20"] = resetSlot20
+  __exports["resetSlot21"] = resetSlot21
+  __exports["resetSlot22"] = resetSlot22
+  __exports["timerState"] = timerState
   MainLeftBottomRecovered.sources["04_源码候选/root_MainLeftBottom_Module.lua"] = __exports
 end
 
 -- ============================================================================
 -- 来源文件：04_源码候选/root45_MainLoop.lua
--- 独立词法块；保留原候选函数和内部闭包，不在此处伪造跨原型捕获绑定。
+-- MainLoop工厂按捕获顺序注入；可变父寄存器统一访问共享cell.value。
+-- ============================================================================
+do
+-- MainLeftBottom(2).lua VM recovery candidate
+-- Prototype: root.children[45] (legacy root/46)
+-- 417 physical VM instructions; 41 constants; no child prototypes.
+--
+-- STATUS: first-pass ordinary Lua draft. This is NOT original author source,
+-- NOT a complete CFG proof, and NOT runtime validated.
+-- Confirmed parent-capture mapping (zero-based UPVALUE slots):
+--   UPVALUE_0  = running flag (root T[18], InitGatherMonsters sets true,
+--                StopGatherMonsters sets false)
+--   UPVALUE_1  = current state cell (root T[14], initially stateConstants.IDLE)
+--   UPVALUE_2  = state constants table (root T[13]: IDLE/GATHERING/ATTACKING)
+--   UPVALUE_3  = PrintLog (root.children[16], root T[4])
+--   UPVALUE_4  = FormatStateChange (root.children[8], root T[23])
+--   UPVALUE_5  = ResetGatherMonsterData (root.children[26], root T[35])
+--   UPVALUE_6  = GetMainPlayerID (root.children[39], root T[26])
+--   UPVALUE_7  = FindMonsterCandidates (root.children[28], root T[34])
+--   UPVALUE_8  = mutable target-ID array (root T[15], initially {})
+--   UPVALUE_9  = GetOwnerID (root.children[38], root T[32])
+--   UPVALUE_10 = current target-list cursor (root T[17], initially 0)
+--   UPVALUE_11 = self-owned target counter (root T[16], initially 0)
+--   UPVALUE_12 = pending owner-change flag (root T[19], initially false)
+--   UPVALUE_13 = owner-change deadline (root T[20], initially 0)
+--   UPVALUE_14 = pending monster name (root T[22], initially "")
+--   UPVALUE_15 = FindMonsterInCurrViewField (root.children[14], root T[36])
+--   UPVALUE_16 = pending target ID (root T[21], initially nil)
+--   UPVALUE_17 = GetOwnerIDText (root.children[7], root T[31])
+--   UPVALUE_18 = IsDie/alive wrapper (root.children[29], root T[30])
+--   UPVALUE_19 = GetOwnerDescription (root.children[43], root T[33])
+--   UPVALUE_20 = SetTargetID (root.children[35], root T[24])
+--   UPVALUE_21 = configuration table (root T[8]: GATHER_THRESHOLD,
+--                CHECK_INTERVAL, ATTACK_WAIT_TIME)
+--
+-- The 22 captured parent T-registers are ordered:
+--   18,14,13,4,23,35,26,34,15,32,17,16,19,20,22,36,21,31,30,33,24,8.
+-- The identities above are grounded in root closure descriptors, helper creation
+-- sites, function-state records, and the root/19 + root/27 state-helper captures.
+
+-- Checkpoint250 adapter: captured mutable parent registers are shared cell objects.
+local function make_MainLoop(UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALUE_4, UPVALUE_5, UPVALUE_6, UPVALUE_7, UPVALUE_8, UPVALUE_9, UPVALUE_10, UPVALUE_11, UPVALUE_12, UPVALUE_13, UPVALUE_14, UPVALUE_15, UPVALUE_16, UPVALUE_17, UPVALUE_18, UPVALUE_19, UPVALUE_20, UPVALUE_21)
+    return function MainLoop()
+    if not UPVALUE_0 then
+        return
+    end
+
+    -- White-list map: leave the gather state machine and reset its data.
+    if IsInWhitelistMap() then
+        if UPVALUE_1 ~= UPVALUE_2.IDLE then
+            UPVALUE_3("在白名单地图, 停止引怪")
+            UPVALUE_4(UPVALUE_2.IDLE)
+            UPVALUE_5()
+        end
+        return
+    end
+
+    --------------------------------------------------------------------------
+    -- IDLE: collect candidate monster IDs.
+    --------------------------------------------------------------------------
+    if UPVALUE_1 == UPVALUE_2.IDLE then
+        UPVALUE_3("扫描怪物中")
+
+        local candidates = UPVALUE_7()
+        if #candidates == 0 then
+            UPVALUE_3("视野内没有可攻击怪物")
+            return
+        end
+
+        UPVALUE_8 = {}
+        local mainPlayerID = UPVALUE_6()
+
+        for _, actor in ipairs(candidates) do
+            -- Preserve the captured GetOwnerID predicate and its truth value.
+            if not UPVALUE_9(actor, mainPlayerID) then
+                table.insert(UPVALUE_8, actor:GetID())
+            end
+        end
+
+        if #UPVALUE_8 == 0 then
+            UPVALUE_3("没有可攻击的怪物")
+            return
+        end
+
+        UPVALUE_10 = 1
+        UPVALUE_11 = 0
+        UPVALUE_3(string.format("开始引怪，目标数量: %d", #UPVALUE_8))
+        UPVALUE_4(UPVALUE_2.GATHERING)
+        return
+    end
+
+    --------------------------------------------------------------------------
+    -- GATHERING: resume a pending owner wait, then scan the target list.
+    --------------------------------------------------------------------------
+    if UPVALUE_1 == UPVALUE_2.GATHERING then
+        UPVALUE_3("引怪中")
+
+        if UPVALUE_12 then
+            local now = os.time()
+
+            if now < UPVALUE_13 then
+                UPVALUE_3(string.format(
+                    "等待归属变更中: %s (还剩 %d 秒)",
+                    UPVALUE_14,
+                    UPVALUE_13 - now
+                ))
+                return
+            end
+
+            -- Confirmed helper: FindMonsterInCurrViewField has no formal
+            -- parameters and returns an ID-keyed actor map. This call site passes
+            -- UPVALUE_12 as an extra argument; the helper does not read it.
+            -- The VM call site supplies two register slots here; their values are not
+            -- semantically consumed by the zero-parameter helper. Keep the
+            -- recovered helper invocation itself argument-free in this draft.
+            local actorMap = UPVALUE_15()
+            local actor = actorMap and actorMap[UPVALUE_16]
+            local mainPlayerID = UPVALUE_6()
+
+            if actor and UPVALUE_17(actor, mainPlayerID) then
+                UPVALUE_3(string.format(
+                    "怪物 %s 归属已变更为自己",
+                    UPVALUE_14
+                ))
+            else
+                UPVALUE_3(string.format(
+                    "怪物 %s 归属未变更或已离开视野",
+                    UPVALUE_14
+                ))
+            end
+
+            UPVALUE_12 = false
+            UPVALUE_13 = 0
+            UPVALUE_16 = 0
+            UPVALUE_14 = ""
+            UPVALUE_10 = UPVALUE_10 + 1
+        end
+
+        -- PC159-PC160 passes UPVALUE_12 as one extra argument. The helper has
+        -- no formal parameters and ignores it, but retain the call-site value.
+        local actorMap = UPVALUE_15(UPVALUE_12)
+        local mainPlayerID = UPVALUE_6()
+        local allOwnersResolved = true -- PC161; PC263 clears this on an unowned target.
+
+        for index = UPVALUE_10, #UPVALUE_8 do
+            local targetID = UPVALUE_8[index]
+            local actor = actorMap and actorMap[targetID]
+
+            if not actor then
+                UPVALUE_3(string.format(
+                    "怪物 %d (ID: %s) 不在视野内，跳过",
+                    index,
+                    tostring(targetID)
+                ))
+                UPVALUE_10 = index + 1
+
+            elseif not UPVALUE_18(actor) then
+                -- This wrapper is truthy for a living actor in this call path.
+                UPVALUE_3(string.format(
+                    "怪物 %d (ID: %s) 已死亡，跳过",
+                    index,
+                    tostring(targetID)
+                ))
+                UPVALUE_10 = index + 1
+
+            else
+                local monsterName = actor:GetName()
+                if not monsterName then
+                    monsterName = "未知怪物"
+                end
+
+                local ownerID, ownerDescription =
+                    UPVALUE_19(actor, mainPlayerID)
+
+                if UPVALUE_9(actor, mainPlayerID) then
+                    UPVALUE_3(string.format(
+                        "怪物 %d (%s, ID: %s) 归属属于其他玩家(归属ID: %s, %s)，跳过",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerID),
+                        tostring(ownerDescription)
+                    ))
+                    UPVALUE_10 = index + 1
+
+                elseif UPVALUE_17(actor, mainPlayerID) then
+                    UPVALUE_3(string.format(
+                        "怪物 %d (%s, ID: %s) 归属已属于自己(归属ID: %s, %s)，跳过",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerID),
+                        tostring(ownerDescription)
+                    ))
+                    UPVALUE_11 = UPVALUE_11 + 1
+                    UPVALUE_10 = index + 1
+
+                else
+                    allOwnersResolved = false
+
+                    -- PC264 stores the current index before attempting to lock;
+                    -- PC310-PC311 advance it after either the success or failure path.
+                    UPVALUE_10 = index
+                    UPVALUE_3(string.format(
+                        "锁定怪物 %d: %s (ID: %s, 归属: %s)",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerDescription)
+                    ))
+
+                    -- Confirmed helper: SetTargetID(targetID). It returns false
+                    -- when Facade/PlayerInputProxy is unavailable; on success it
+                    -- calls proxy:SetTargetID(targetID, global.MMO.SELETE_TARGET_TYPE_FIND).
+                    local accepted = UPVALUE_20(targetID)
+
+                    if accepted then
+                        UPVALUE_12 = true
+                        UPVALUE_13 = os.time()
+                            + UPVALUE_21.ATTACK_WAIT_TIME
+                        UPVALUE_16 = targetID
+                        UPVALUE_14 = monsterName
+
+                        UPVALUE_3(string.format(
+                            "开始等待 %s 归属变更 (等待 %d 秒)",
+                            monsterName,
+                            UPVALUE_21.ATTACK_WAIT_TIME
+                        ))
+                    else
+                        UPVALUE_3(string.format(
+                            "锁定怪物 %s 失败",
+                            monsterName
+                        ))
+                    end
+
+                    -- Both SetTargetID outcomes advance the cursor and let the
+                    -- numeric for-loop continue; neither branch returns here.
+                    UPVALUE_10 = index + 1
+                end
+            end
+        end
+
+        -- PC166 prepares the numeric loop counter (UPVALUE_10 - 1); PC313
+        -- increments/tests it and repeats at PC167. The loop therefore visits
+        -- UPVALUE_10..#UPVALUE_8. The R2 flag starts true at PC161 and is cleared
+        -- at PC263 when an unowned target is encountered.
+        if allOwnersResolved then
+            if UPVALUE_10 > #UPVALUE_8 then
+                UPVALUE_3("所有怪物归属已获取，切换到攻击状态")
+                UPVALUE_10 = 1
+                UPVALUE_4(UPVALUE_2.ATTACKING)
+                return
+            end
+        elseif UPVALUE_10 > #UPVALUE_8 then
+            UPVALUE_3("怪物列表处理完毕但未全部获取归属，重新扫描")
+            UPVALUE_4(UPVALUE_2.IDLE)
+            UPVALUE_5()
+            return
+        end
+
+        return
+    end
+
+    --------------------------------------------------------------------------
+    -- ATTACKING: locate the next surviving actor by its stored target ID.
+    --------------------------------------------------------------------------
+    if UPVALUE_1 == UPVALUE_2.ATTACKING then
+        UPVALUE_3("攻击中")
+
+        local actorMap = UPVALUE_15()
+        -- PC354 initializes the no-living-target flag; PC359/405 form the
+        -- numeric for-loop over UPVALUE_10..#UPVALUE_8.
+
+        for index = UPVALUE_10, #UPVALUE_8 do
+            local targetID = UPVALUE_8[index]
+            local actor = actorMap and actorMap[targetID]
+
+            if actor and UPVALUE_18(actor) then
+                local monsterName = actor:GetName()
+                if not monsterName then
+                    monsterName = "未知怪物"
+                end
+
+                UPVALUE_3(string.format(
+                    "攻击怪物 %d: %s (ID: %s)",
+                    index,
+                    monsterName,
+                    tostring(targetID)
+                ))
+
+                -- Confirmed SetTargetID(targetID); this branch ignores its
+                -- boolean result and returns immediately after the call.
+                UPVALUE_20(targetID)
+                return
+            end
+
+            UPVALUE_3(string.format(
+                "怪物 %d (ID: %s) 已死亡或离开视野",
+                index,
+                tostring(targetID)
+            ))
+            UPVALUE_10 = index + 1
+        end
+
+        UPVALUE_3("所有目标怪物已死亡或离开视野，切换到空闲状态")
+        UPVALUE_4(UPVALUE_2.IDLE)
+        UPVALUE_5()
+        return
+    end
+end
+
+    end
+end
+
+return make_MainLoop
+
+  local __exports = {}
+  if make_MainLoop ~= nil then __exports["make_MainLoop"] = make_MainLoop end
+  MainLeftBottomRecovered.sources["04_源码候选/root45_MainLoop.lua"] = __exports
+end
 -- ============================================================================
 do
 -- MainLeftBottom(2).lua VM recovery candidate
@@ -2956,12 +3289,15 @@ end
 -- root.children[8] / legacy root/9：FormatStateChange。
 -- UPVALUE[0]=PrintLog；UPVALUE[1]=currentState共享单元。
 -- 此工厂是单原型恢复表达；最终根模块装配时必须让它与MainLoop绑定同一状态cell。
-local function make_FormatStateChange(logger, initialState)
-    local currentState = initialState
+local function make_FormatStateChange(logger, currentStateCell)
     return function(newState, ...)
-        local message = string.format("状态切换: %s -> %s", currentState, newState)
+        local message = string.format(
+            "状态切换: %s -> %s",
+            currentStateCell.value,
+            newState
+        )
         logger(message)
-        currentState = newState
+        currentStateCell.value = newState
     end
 end
 local __makeRoot9 = make_FormatStateChange
@@ -3416,19 +3752,19 @@ local function make_ResetGatherMonsterData(
 )
     return function()
         -- PC 1-2: replace the captured table with a fresh table.
-        resetTableCell = {}
+        resetTableCell.value = {}
 
         -- PC 3-6 and PC 10-17: clear captured numeric/string cells.
-        zeroCell1 = 0
-        zeroCell2 = 0
+        zeroCell1.value = 0
+        zeroCell2.value = 0
 
         -- PC 7-8: invoke the captured no-argument reset action.
         resetAction()
 
-        zeroCell3 = 0
-        zeroCell4 = 0
-        zeroCell5 = 0
-        emptyStringCell = ""
+        zeroCell3.value = 0
+        zeroCell4.value = 0
+        zeroCell5.value = 0
+        emptyStringCell.value = ""
 
         -- PC 18-20: report completion.
         printLog("数据已重置")
@@ -3449,7 +3785,7 @@ local function make_StopGatherMonsters(
 )
     return function()
         -- PC 1-2: clear the captured running flag.
-        runningFlag = false
+        runningFlag.value = false
 
         -- PC 3-13: cancel and clear the gather timer if one exists.
         local timer = timerState.gatherTimer
@@ -4686,7 +5022,7 @@ local function make_InitGatherMonsters(
         end
 
         -- PC12-13: update the captured running flag.
-        isGathering = true
+        isGathering.value = true
 
         -- PC14-19: transition to IDLE, then reset gather-monster data.
         FormatStateChange(stateConstants.IDLE)
@@ -5716,6 +6052,90 @@ do
         )
     end
 
+    -- 检查点250：OP_387共享live-cell适配层。
+    -- 每个父root T寄存器仅创建一个cell；捕获同一寄存器的闭包复用同一对象。
+    -- {value=...}是恢复适配表示，不声称原作者源码采用此数据结构。
+    local function newLiveCell(value)
+        return { value = value }
+    end
+    local rootCells = {
+        [14] = newLiveCell(rootSource.currentState),
+        [15] = newLiveCell(rootSource.resettableTable),
+        [16] = newLiveCell(rootSource.resetSlot16),
+        [17] = newLiveCell(rootSource.resetSlot17),
+        [18] = newLiveCell(rootSource.isGatherRunning),
+        [19] = newLiveCell(rootSource.resetSlot19),
+        [20] = newLiveCell(rootSource.resetSlot20),
+        [21] = newLiveCell(rootSource.resetSlot21),
+        [22] = newLiveCell(rootSource.resetSlot22)
+    }
+
+    local makeFormatStateChange = sourceFunction(
+        "04_源码候选/root8_FormatStateChange.lua", "make_FormatStateChange"
+    )
+    if makeFormatStateChange then
+        rootPrototypes.FormatStateChange =
+            makeFormatStateChange(rootPrototypes.PrintLog, rootCells[14])
+    end
+
+    local makeResetGather = sourceFunction(
+        "04_源码候选/短函数草稿_第十三批.lua", "make_ResetGatherMonsterData"
+    )
+    if makeResetGather then
+        rootPrototypes.ResetGatherMonsterData = makeResetGather(
+            rootCells[15], rootCells[16], rootCells[17],
+            rootPrototypes.ClearTargetID_2,
+            rootCells[19], rootCells[20], rootCells[21], rootCells[22],
+            rootPrototypes.PrintLog
+        )
+    end
+
+    local makeMainLoop = sourceFunction(
+        "04_源码候选/root45_MainLoop.lua", "make_MainLoop"
+    )
+    if makeMainLoop then
+        rootPrototypes.MainLoop = makeMainLoop(
+            rootCells[18], rootCells[14], gatherStatusText,
+            rootPrototypes.PrintLog, rootPrototypes.FormatStateChange,
+            rootPrototypes.ResetGatherMonsterData,
+            rootPrototypes.GetMainPlayerID, rootPrototypes.FindMonsterCandidates,
+            rootCells[15], rootPrototypes.GetOwnerID, rootCells[17],
+            rootCells[16], rootCells[19], rootCells[20], rootCells[22],
+            rootPrototypes.FindMonsterInCurrViewField, rootCells[21],
+            rootPrototypes.GetOwnerIDText, rootPrototypes.IsDie,
+            rootPrototypes.GetOwnerDescription, rootPrototypes.SetTargetID,
+            rootSource.gatherConfig
+        )
+        _G.MainLoop = rootPrototypes.MainLoop
+    end
+
+    local makeInitGather = sourceFunction(
+        "04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua",
+        "make_InitGatherMonsters"
+    )
+    if makeInitGather then
+        rootPrototypes.InitGatherMonsters = makeInitGather(
+            rootSource.timerState, rootCells[18],
+            rootPrototypes.FormatStateChange, gatherStatusText,
+            rootPrototypes.ResetGatherMonsterData, rootSource.gatherConfig,
+            rootPrototypes.PrintLog
+        )
+        _G.InitGatherMonsters = rootPrototypes.InitGatherMonsters
+    end
+
+    local makeStopGather = sourceFunction(
+        "04_源码候选/短函数草稿_第十三批.lua", "make_StopGatherMonsters"
+    )
+    if makeStopGather then
+        rootPrototypes.StopGatherMonsters = makeStopGather(
+            rootCells[18], rootSource.timerState,
+            rootPrototypes.ClearTargetID_2, rootPrototypes.FormatStateChange,
+            gatherStatusText, rootPrototypes.ResetGatherMonsterData,
+            rootPrototypes.PrintLog
+        )
+        _G.StopGatherMonsters = rootPrototypes.StopGatherMonsters
+    end
+
     -- 仅导出字节码明确写入_ENV的全局入口；其他辅助闭包留在rootPrototypes。
     local globalExports = {
         log = "PrintLog",
@@ -5744,21 +6164,23 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 249,
+        checkpoint = 250,
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
         missing = missing,
         captured_factory_closures_expected = 36,
-        captured_factory_closures_bound = 12,
-        captured_factory_closures_pending = 24,
+        captured_factory_closures_bound = 17,
+        captured_factory_closures_pending = 19,
         captured_factory_names_bound = {
             "ShowLocalNoticeByType", "DiuItems", "FindMonsterCandidates",
             "LuaSendMsg", "GetAvailableStoragePage", "GetStorageItemData",
             "TakeItems", "PickUpItems", "StorageItems", "Builtsetting",
-            "AccountIDValidation", "InstallDamageHook"
+            "AccountIDValidation", "InstallDamageHook", "FormatStateChange",
+            "ResetGatherMonsterData", "MainLoop", "InitGatherMonsters",
+            "StopGatherMonsters"
         },
         runtime_verified = false,
-        capture_semantics = "OP_387 live shared cell; only confirmed stable table/function captures are bound; scalar shared cells remain pending"
+        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; all five gather closures reuse identical cell objects"
     }
 end
 
