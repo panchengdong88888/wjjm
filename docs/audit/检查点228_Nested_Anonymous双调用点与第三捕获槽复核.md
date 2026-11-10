@@ -45,3 +45,8 @@
 - 完整静态恢复：108/110（98.2%），本批不增加完成数
 - 运行时验证：0
 - 下一步转入根模块 `MainLeftBottom_Module` 的根级闭包装配与共享Upvalue cell接线；Nested_Anonymous的帧槽问题保留为独立未决项，后续有新证据再闭合。
+
+
+## 检查点235最终结论：T[2]已证明为nil
+
+从01_原始资料/MainLeftBottom(2).lua直接恢复VM调用帧初始化函数M()：每次调用新建T={}；原型tuple[3]为固定参数数V；前V个实参复制到T[0..V-1]，额外实参进入独立X表。Nested_Anonymous的V=2，因此T[0]=promptText、T[1]=successCallback，T[2]保持nil。即使调用者传入第三个及更多参数，它们也进入X，不会写入T[2]。Nested_str捕获顺序最终确定为T[0]、PrintLog、nil、T[1]。无效数字路径调用T[2]会尝试调用nil；保留原始字节码行为，不补造回调或保护分支。
