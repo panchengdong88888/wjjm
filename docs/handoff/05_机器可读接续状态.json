@@ -3542,17 +3542,17 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 264,
-  "checkpoint": 264,
+  "last_checkpoint": 265,
+  "checkpoint": 265,
   "drafts": 33,
-  "next": "检查点265：继续PC212-PC296，按字节码创建顺序校验IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、MoveItemToQuickUse、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons、AccountIDValidation及blacklistState；为捕获型工厂补齐requireRecoveredClosure保护，确保hide/show/destroy/main/blacklist字段只在对应PC挂接。",
+  "next": "检查点266：继续PC297-PC340配置文件读写包装及二维数值表构造。核对GetWritablePath、ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper、AnonymousHelper_49/32/33/54的来源符号和工厂参数；逐项确认T[44..51]捕获身份与doInit_UI后续捕获。PC316-PC349数值表按字节码原值保留，不推测其业务用途。",
   "recent_checkpoint": {
-    "number": 264,
+    "number": 265,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "04_源码候选/root_MainLeftBottom_Module.lua",
-      "docs/audit/检查点264_PC86-PC211采集闭包与共享cell恢复.md",
+      "docs/audit/检查点265_PC212-PC296模块字段与UI闭包挂接恢复.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
@@ -3564,7 +3564,7 @@
     "runtime_verified": 0,
     "root_direct_closures_source_bound": 58,
     "root_direct_closures_expected": 58,
-    "notes": "PC86-PC211父级闭包按PC顺序装配；T[14..22]独立cell唯一性通过静态断言保护；所有必需工厂缺失时中止，避免静默错位捕获。修正MainLeftBottom汇总稿中PC210旧注释：PC210为FindMonsterInCurrViewField，ClearBlacklistItems在PC383。未执行Lua编译或游戏运行验证。"
+    "notes": "PC212-PC296 UI闭包工厂和模块字段挂接顺序按PC证据核对；requireRecoveredClosure保护防止缺失工厂静默跳过。PC275显式重读_ENV.MainLeftBottom并将AccountIDValidation写入重读目标；PC280-PC296对象/常量初值通过静态断言核对。未执行Lua编译或游戏运行验证。"
   },
   "latest_checkpoint": 261,
   "complete_static_reconstruction_count": 109,
@@ -3575,7 +3575,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 265,
+  "next_checkpoint": 266,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3734,12 +3734,13 @@
     "checkpoint261_scope_review": "passed_static_after_fix",
     "root_pc1_pc42_order": "static_pc_timeline_aligned",
     "root_pc43_pc85_register_order": "static_pc_timeline_aligned",
-    "root_pc86_pc211_capture_order": "static_pc_timeline_aligned"
+    "root_pc86_pc211_capture_order": "static_pc_timeline_aligned",
+    "root_pc212_pc296_module_fields": "static_pc_timeline_aligned"
   },
   "latest": {
-    "checkpoint": "264",
-    "summary": "PC86-PC211采集闭包及共享cell装配已加强：T[14..22]每个父寄存器分配独立cell并增加唯一性断言；FormatStateChange、PC184-PC193十个辅助闭包、FindMonsterCandidates、ResetGatherMonsterData、FindMonsterInCurrViewField按PC顺序装配；MainLoop/InitGatherMonsters/StopGatherMonsters捕获顺序与字节码一致。所有必需工厂结果加入requireRecoveredClosure保护，缺失时中止而非静默跳过。修正主恢复稿中旧PC210注释误标ClearBlacklistItems，确认其实际为FindMonsterInCurrViewField；ClearBlacklistItems在PC383创建。",
-    "audit_file": "docs/audit/检查点264_PC86-PC211采集闭包与共享cell恢复.md",
+    "checkpoint": "265",
+    "summary": "PC212-PC296模块字段与UI闭包挂接已补齐必需函数校验。Builtsetting、MoveItemToQuickUse、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons、AccountIDValidation缺失时中止装配；hide/show/destroy/main按PC265/269/274/279挂接。保留PC275重新读取_ENV.MainLeftBottom后再写入accountValidationModule.main。对UI捕获对象身份、blacklistState七个初值、随机传送物品名、黑名单阈值/延迟和配置文件名增加静态断言。完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0。",
+    "audit_file": "docs/audit/检查点265_PC212-PC296模块字段与UI闭包挂接恢复.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3799,8 +3800,9 @@
     "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。",
     "checkpoint261_gather_status_scope_fixed": true
   },
-  "root_assembly_checkpoint": 264,
+  "root_assembly_checkpoint": 265,
   "root_pc1_pc42_sequential_source_restored": true,
   "root_pc43_pc85_register_ordered": true,
-  "root_pc86_pc211_cells_capture_ordered": true
+  "root_pc86_pc211_cells_capture_ordered": true,
+  "root_pc212_pc296_module_fields_guarded": true
 }
