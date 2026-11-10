@@ -4,10 +4,10 @@
 -- Generic upvalue parameter names are deliberate where closure slots are not fully named.
 
 -- root.children[36] / legacy root/37 / GetAvailableStoragePage
--- The VM body queries NPCStorageProxy:GetMaxPage(), scans page data, and uses
--- GUIDefine.STORAGE_PER_PAGE_MAX / MMO.NPC_STORAGE_MAX_PAGE as fallback bounds.
+-- 51条指令；1项捕获：root PC68捕获父root T[4]，此处按用途命名为notify。
+-- 检查点190：PC1-PC51完整静态复核；未运行时验证。
 local function make_GetAvailableStoragePage(notify)
-    return function()
+    return function GetAvailableStoragePage()
         local storageProxy = NPCStorageProxy
         if not storageProxy then
             notify("仓库代理未初始化")
@@ -15,39 +15,40 @@ local function make_GetAvailableStoragePage(notify)
         end
 
         local maxPage = storageProxy:GetMaxPage()
-        local page = 1
-        local emptyPages = 0
 
-        -- Draft interpretation of the VM numeric loop:
-        -- query pages in order and count empty page payloads.
-        while page <= maxPage do
+        -- PC15-PC48：升序扫描每一页，返回第一个仍有可用格子的页码。
+        for page = 1, maxPage do
             local pageData = storageProxy:GetStorageDataByPage(page)
-            if not pageData or #pageData == 0 then
-                emptyPages = emptyPages + 1
+            local currentCount = 0
+            if pageData then
+                currentCount = #pageData
             end
 
-            -- The bytecode also checks configured per-page capacity and the
-            -- MMO maximum-page setting before deciding the returned page bound.
-            page = page + 1
+            -- 每轮均读取配置容量；配置为假值时回退MMO的单页容量常量。
+            local pageCapacity = GUIDefine.STORAGE_PER_PAGE_MAX
+            if not pageCapacity then
+                pageCapacity = global.MMO.NPC_STORAGE_MAX_PAGE
+            end
+
+            local openSize = storageProxy:GetOpenSize()
+            local remainingOpenSize =
+                openSize - (page - 1) * pageCapacity
+
+            -- PC39-PC41：单页上限=min(单页配置容量, 尚余开放格数)。
+            local pageLimit = remainingOpenSize
+            if pageCapacity < remainingOpenSize then
+                pageLimit = pageCapacity
+            end
+
+            -- PC42-PC47：页上限必须大于0，且必须大于当前占用数；
+            -- 命中后立即返回当前页码。
+            if pageLimit > 0 and pageLimit > currentCount then
+                return page
+            end
         end
 
-        local perPageMax = GUIDefine and GUIDefine.STORAGE_PER_PAGE_MAX
-        local npcMaxPage = global and global.MMO and global.MMO.NPC_STORAGE_MAX_PAGE
-        local openSize = storageProxy:GetOpenSize()
-
-        -- Approximate capacity-derived bound. The exact branch/return selection
-        -- around PC22-PC50 remains flagged for static review.
-        if perPageMax and npcMaxPage and openSize then
-            local capacityPages = math.floor((openSize - 1) / perPageMax) + 1
-            if capacityPages < maxPage then
-                maxPage = capacityPages
-            end
-            if maxPage > npcMaxPage then
-                maxPage = npcMaxPage
-            end
-        end
-
-        return maxPage
+        -- PC49-PC51：遍历耗尽时无显式返回值（nil）。
+        return
     end
 end
 
@@ -102,13 +103,11 @@ local function make_ShowHideAllButtons(timerState, buttonMap, uiState)
 end
 
 -- Review notes:
--- * GetAvailableStoragePage's branch structure is not fully resolved here. The
---   loop/capacity expression is a readable provisional model, not a proven
---   source-equivalent algorithm. Do not count it as statically complete.
+-- * GetAvailableStoragePage在检查点190已逐PC闭合：逐页取#pageData或0，按min(pageCapacity,openSize-(page-1)*pageCapacity)计算页上限，首个pageLimit>currentCount且pageLimit>0的页码立即返回；无可用页返回nil。
 -- * DestroyUI's instruction order is clear: clear isHidden; cancel resTimer if
 --   present; nil resTimer/resWin; GUI:Win_CloseAll(); iterate UP[1] and set
 --   each mapped control visible.
 -- * ShowHideAllButtons cancels rewardTimer and cruiseTimer independently,
 --   restores the UP[1] control map, then conditionally hides controls in UP[2]
 --   when hidebut is truthy and clears hidebut.
--- * These three functions are draft-only and have not been runtime-tested.
+-- * DestroyUI与ShowHideAllButtons保持各自原有静态状态；GetAvailableStoragePage在检查点190升级为完整静态恢复。三者均未运行时验证。
