@@ -8259,6 +8259,28 @@ do
         )
     end
 
+    local makeOnDamageMsg = sourceFunction(
+        "04_源码候选/root52_onDamageMsg.lua", "make_onDamageMsg"
+    )
+    if makeOnDamageMsg then
+        rootPrototypes.onDamageMsg = makeOnDamageMsg(rootSource.blacklistState)
+        rootModule.onDamageMsg = rootPrototypes.onDamageMsg
+    end
+
+    -- root PC360-PC362：InstallDamageHook捕获T[0]=MainLeftBottom.a、T[4]=PrintLog。
+    -- PC360写入T[57]；后续BlacklistPlayerDetection捕获同一个live cell。
+    local makeInstallDamageHook = sourceFunction(
+        "04_源码候选/短函数草稿_第三十九批.lua",
+        "make_InstallDamageHook"
+    )
+    if makeInstallDamageHook then
+        rootPrototypes.InstallDamageHook = makeInstallDamageHook(
+            rootModule.a,
+            rootPrototypes.PrintLog
+        )
+    end
+    rootCells[57] = newLiveCell(rootPrototypes.InstallDamageHook)
+
     local makeDeathAutoBlacklist = sourceFunction(
         "04_源码候选/root25_DeathAutoBlacklist.lua", "make_DeathAutoBlacklist"
     )
@@ -8269,29 +8291,6 @@ do
             rootPrototypes.FindBlacklistPlayer,
             rootPrototypes.ShowLocalNoticeByType
         )
-    end
-
-    local makeOnDamageMsg = sourceFunction(
-        "04_源码候选/root52_onDamageMsg.lua", "make_onDamageMsg"
-    )
-    if makeOnDamageMsg then
-        rootPrototypes.onDamageMsg = makeOnDamageMsg(rootSource.blacklistState)
-        rootModule.onDamageMsg = rootPrototypes.onDamageMsg
-    end
-
-    local makeClearBlacklistItems = sourceFunction(
-        "04_源码候选/短函数草稿_第五十四批.lua", "make_ClearBlacklistItems"
-    )
-    if makeClearBlacklistItems then
-        rootPrototypes.ClearBlacklistItems = makeClearBlacklistItems(
-            rootPrototypes.PCallHelper_2,
-            rootPrototypes.PrintLog,
-            rootPrototypes.ShowLocalNoticeByType,
-            rootSource.blacklistState
-        )
-    end
-    if rootPrototypes.ClearBlacklistItems then
-        _G.ClearBlacklistItems = rootPrototypes.ClearBlacklistItems
     end
 
     -- 检查点255：BlacklistPlayerDetection的13项捕获按root PC368顺序注入。
@@ -8321,6 +8320,21 @@ do
             rootSource.randomTeleportItemNames
         )
         _G.BlacklistItems = rootPrototypes.BlacklistPlayerDetection
+    end
+
+    local makeClearBlacklistItems = sourceFunction(
+        "04_源码候选/短函数草稿_第五十四批.lua", "make_ClearBlacklistItems"
+    )
+    if makeClearBlacklistItems then
+        rootPrototypes.ClearBlacklistItems = makeClearBlacklistItems(
+            rootPrototypes.PCallHelper_2,
+            rootPrototypes.PrintLog,
+            rootPrototypes.ShowLocalNoticeByType,
+            rootSource.blacklistState
+        )
+    end
+    if rootPrototypes.ClearBlacklistItems then
+        _G.ClearBlacklistItems = rootPrototypes.ClearBlacklistItems
     end
 
     -- 检查点256：最后一个root.children[42]工厂，20项捕获严格按PC390-PC410顺序注入。
