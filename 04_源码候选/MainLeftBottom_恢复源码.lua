@@ -7856,34 +7856,9 @@ do
     local rootPrototypes = {}
     local missing = {}
 
-    local directBindings = {
-        {"PrintLog", "04_源码候选/PrintLog_日志辅助函数_第七批.lua", "PrintLog"},
-        {"ScheduleOnce", "root/54_ScheduleOnce.lua", "ScheduleOnce"},
-        {"Schedule", "04_源码候选/root35_AnonymousHelper_33_ScheduleWrapper.lua", "AnonymousHelper_33_Schedule"},
-        {"GetMapId", "04_源码候选/verified_helpers_batches_1_3.lua", "GetMapId"},
-        {"GetMapName", "04_源码候选/verified_helpers_batches_1_3.lua", "GetMapName"},
-        {"PlayerPos", "04_源码候选/verified_helpers_batches_1_3.lua", "PlayerPos"},
-        {"GetDroppedItems", "04_源码候选/verified_helpers_batches_1_3.lua", "GetDroppedItems"},
-        {"MoveTo", "04_源码候选/短函数草稿_第五十三批.lua", "MoveTo"},
-        {"SetTargetID", "04_源码候选/短函数草稿_第十二批.lua", "SetTargetID"},
-        {"ClearTargetID_2", "04_源码候选/root56_root57_short_functions.lua", "ClearTargetID_2"},
-        {"GetMainPlayerID", "04_源码候选/verified_helpers_batches_1_3.lua", "GetMainPlayerID"},
-        {"GetPlayerPosition", "04_源码候选/位置读取函数_第五批草稿.lua", "GetPlayerPosition"},
-        {"GetPlayerMapPosition", "04_源码候选/短函数草稿_第三十七批.lua", "GetPlayerMapPosition"},
-        {"DistanceCalculation", "04_源码候选/短函数草稿_第十二批.lua", "DistanceCalculation"},
-        {"IsDie", "04_源码候选/小型辅助函数_首批草稿.lua", "IsDie"},
-        {"GetOwnerIDText", "04_源码候选/root7_GetOwnerIDText.lua", "GetOwnerIDText"},
-        {"GetOwnerID", "04_源码候选/root38_GetOwnerID.lua", "GetOwnerID"},
-        {"GetOwnerDescription", "04_源码候选/verified_helpers_batches_1_3.lua", "GetOwnerDescription"},
-        {"IsInWhitelistMap", "04_源码候选/短函数草稿_第十二批.lua", "IsInWhitelistMap"},
-        {"MoveItemToQuickUse", "04_源码候选/root_MainLeftBottom_Module.lua", "MoveItemToQuickUse"},
-        {"GetWritablePath", "04_源码候选/verified_helpers_batches_1_3.lua", "GetWritablePath"},
-        {"PCallHelper_2", "04_源码候选/代理与回调短函数_第四批.lua", "PCallHelper_2"}
-    }
-
-    for _, binding in ipairs(directBindings) do
-        local prototypeName, sourcePath, symbol =
-            binding[1], binding[2], binding[3]
+    -- root PC43-PC85：按原始VM创建/捕获/导出时序绑定首批辅助闭包。
+    -- 这里只把字节码中确实创建的函数接入rootPrototypes；不提前装配PC184之后的函数。
+    local function bindDirect(prototypeName, sourcePath, symbol)
         local fn = sourceFunction(sourcePath, symbol)
         if fn then
             rootPrototypes[prototypeName] = fn
@@ -7891,22 +7866,13 @@ do
             missing[#missing + 1] = prototypeName .. " <- " ..
                 sourcePath .. ":" .. symbol
         end
+        return fn
     end
 
-    -- root PC52/PC53：两个无捕获调度包装器，按已恢复函数体原样表达。
-    if rootPrototypes.ScheduleOnce == nil then
-        rootPrototypes.ScheduleOnce = function(callback, delay)
-            return SL:ScheduleOnce(callback, delay)
-        end
-    end
-    if rootPrototypes.Schedule == nil then
-        rootPrototypes.Schedule = function(callback, interval)
-            return SL:Schedule(callback, interval)
-        end
-    end
+    -- PC43-PC45：PrintLog创建并写入T[4]，PC45导出_G.log。
+    bindDirect("PrintLog", "04_源码候选/PrintLog_日志辅助函数_第七批.lua", "PrintLog")
 
-    -- 检查点247：两个稳定捕获工厂按父root寄存器身份实例化。
-    -- ShowLocalNoticeByType捕获root T[0]=MainLeftBottom.a（screenH所在表）。
+    -- PC46-PC47：ShowLocalNoticeByType捕获T[0]=MainLeftBottom.a。
     local makeShowNotice = sourceFunction(
         "04_源码候选/其他短辅助函数_第二批草稿.lua",
         "make_ShowLocalNoticeByType"
@@ -7915,18 +7881,98 @@ do
         rootPrototypes.ShowLocalNoticeByType = makeShowNotice(rootModule.a)
     end
 
-    -- DiuItems：UP[0]=root T[2]=MainLeftBottom.z（isDiuing状态表）；
-    -- UP[1]=root T[5]=ShowLocalNoticeByType。
-    local makeDiuItems = sourceFunction(
-        "04_源码候选/root46_DiuItems.lua",
-        "make_DiuItems"
+    -- PC48-PC51：LuaSendMsg捕获T[0]=a表、T[4]=PrintLog；PC51写入a.LuaSendMsg。
+    local makeLuaSendMsg = sourceFunction(
+        "04_源码候选/短函数草稿_第五十批.lua", "make_LuaSendMsg"
     )
+    if makeLuaSendMsg then
+        rootPrototypes.LuaSendMsg = makeLuaSendMsg(rootModule.a, rootPrototypes.PrintLog)
+        rootModule.a.LuaSendMsg = rootPrototypes.LuaSendMsg
+    end
+
+    -- PC52-PC53：两个无捕获调度包装器。
+    bindDirect("ScheduleOnce", "root/54_ScheduleOnce.lua", "ScheduleOnce")
+    bindDirect("Schedule", "04_源码候选/root35_AnonymousHelper_33_ScheduleWrapper.lua", "AnonymousHelper_33_Schedule")
+
+    -- PC54-PC63：依序创建并在对应PC立即写入全局环境。
+    bindDirect("GetMapId", "04_源码候选/verified_helpers_batches_1_3.lua", "GetMapId")
+    _G.GetMapId = rootPrototypes.GetMapId
+    bindDirect("GetMapName", "04_源码候选/verified_helpers_batches_1_3.lua", "GetMapName")
+    _G.GetMapName = rootPrototypes.GetMapName
+    bindDirect("PlayerPos", "04_源码候选/verified_helpers_batches_1_3.lua", "PlayerPos")
+    _G.PlayerPos = rootPrototypes.PlayerPos
+    bindDirect("GetDroppedItems", "04_源码候选/verified_helpers_batches_1_3.lua", "GetDroppedItems")
+    _G.GetDroppedItems = rootPrototypes.GetDroppedItems
+    bindDirect("MoveTo", "04_源码候选/短函数草稿_第五十三批.lua", "MoveTo")
+    _G.MoveTo = rootPrototypes.MoveTo
+
+    -- PC64-PC67：DiuItems捕获T[2]=MainLeftBottom.z、T[5]=ShowLocalNoticeByType。
+    local makeDiuItems = sourceFunction("04_源码候选/root46_DiuItems.lua", "make_DiuItems")
     if makeDiuItems and rootPrototypes.ShowLocalNoticeByType then
-        rootPrototypes.DiuItems = makeDiuItems(
-            rootModule.z,
-            rootPrototypes.ShowLocalNoticeByType
+        rootPrototypes.DiuItems = makeDiuItems(rootModule.z, rootPrototypes.ShowLocalNoticeByType)
+    end
+    _G.DiuItems = rootPrototypes.DiuItems
+
+    -- PC68-PC70：GetAvailableStoragePage捕获T[4]=PrintLog。
+    local makeGetAvailableStoragePage = sourceFunction(
+        "04_源码候选/短函数草稿_第十四批.lua", "make_GetAvailableStoragePage"
+    )
+    if makeGetAvailableStoragePage then
+        rootPrototypes.GetAvailableStoragePage = makeGetAvailableStoragePage(rootPrototypes.PrintLog)
+    end
+    _G.GetAvailableStoragePage = rootPrototypes.GetAvailableStoragePage
+
+    -- PC71-PC73：GetStorageItemData捕获T[4]=PrintLog。
+    local getStorageItemSource = sources["04_源码候选/短函数草稿_第五十六批.lua#GetStorageItemData"]
+    local makeGetStorageItemData = getStorageItemSource and getStorageItemSource.make_GetStorageItemData
+    if type(makeGetStorageItemData) == "function" then
+        rootPrototypes.GetStorageItemData = makeGetStorageItemData(rootPrototypes.PrintLog)
+    end
+    _G.GetStorageItemData = rootPrototypes.GetStorageItemData
+
+    -- PC74-PC78：StorageItems捕获[T[2],T[4],T[5]]；嵌套工厂参数仅为恢复适配。
+    local makeStorageItems = sourceFunction("04_源码候选/短函数草稿_第六十批.lua", "make_StorageItems")
+    local makeNestedIsOutputted = sourceFunction("04_源码候选/短函数草稿_第三十四批.lua", "make_Nested_isOutputted")
+    local makeFindAvailablePage = sourceFunction(
+        "04_源码候选/root50_Nested_Anonymous_2.lua", "make_FindAvailableStoragePage"
+    )
+    if makeStorageItems and makeNestedIsOutputted and makeFindAvailablePage then
+        rootPrototypes.StorageItems = makeStorageItems(
+            rootModule.z, rootPrototypes.PrintLog, rootPrototypes.ShowLocalNoticeByType,
+            makeNestedIsOutputted, makeFindAvailablePage
         )
     end
+    _G.StorageItems = rootPrototypes.StorageItems
+
+    -- PC79-PC82：TakeItems捕获[T[2],T[5]]。
+    local makeTakeItems = sourceFunction("04_源码候选/短函数草稿_第五十七批.lua", "make_TakeItems")
+    if makeTakeItems and rootPrototypes.ShowLocalNoticeByType then
+        rootPrototypes.TakeItems = makeTakeItems(rootModule.z, rootPrototypes.ShowLocalNoticeByType)
+    end
+    _G.TakeItems = rootPrototypes.TakeItems
+
+    -- PC83-PC85：PickUpItems捕获T[5]=ShowLocalNoticeByType。
+    local makePickUpItems = sourceFunction("04_源码候选/PickUpItems_拾取流程_第十批.lua", "make_PickUpItems")
+    if makePickUpItems and rootPrototypes.ShowLocalNoticeByType then
+        rootPrototypes.PickUpItems = makePickUpItems(rootPrototypes.ShowLocalNoticeByType)
+    end
+    _G.PickUpItems = rootPrototypes.PickUpItems
+
+    -- PC86之后才创建的无捕获函数，在各自PC区间前完成绑定。
+    bindDirect("SetTargetID", "04_源码候选/短函数草稿_第十二批.lua", "SetTargetID")
+    bindDirect("ClearTargetID_2", "04_源码候选/root56_root57_short_functions.lua", "ClearTargetID_2")
+    bindDirect("GetMainPlayerID", "04_源码候选/verified_helpers_batches_1_3.lua", "GetMainPlayerID")
+    bindDirect("GetPlayerPosition", "04_源码候选/位置读取函数_第五批草稿.lua", "GetPlayerPosition")
+    bindDirect("GetPlayerMapPosition", "04_源码候选/短函数草稿_第三十七批.lua", "GetPlayerMapPosition")
+    bindDirect("DistanceCalculation", "04_源码候选/短函数草稿_第十二批.lua", "DistanceCalculation")
+    bindDirect("IsDie", "04_源码候选/小型辅助函数_首批草稿.lua", "IsDie")
+    bindDirect("GetOwnerIDText", "04_源码候选/root7_GetOwnerIDText.lua", "GetOwnerIDText")
+    bindDirect("GetOwnerID", "04_源码候选/root38_GetOwnerID.lua", "GetOwnerID")
+    bindDirect("GetOwnerDescription", "04_源码候选/verified_helpers_batches_1_3.lua", "GetOwnerDescription")
+    bindDirect("IsInWhitelistMap", "04_源码候选/短函数草稿_第十二批.lua", "IsInWhitelistMap")
+    bindDirect("MoveItemToQuickUse", "04_源码候选/root_MainLeftBottom_Module.lua", "MoveItemToQuickUse")
+    bindDirect("GetWritablePath", "04_源码候选/verified_helpers_batches_1_3.lua", "GetWritablePath")
+    bindDirect("PCallHelper_2", "04_源码候选/代理与回调短函数_第四批.lua", "PCallHelper_2")
 
     -- FindMonsterCandidates：UP[0..4]依次为GetPlayerPosition、IsDie、
     -- GetPlayerMapPosition、DistanceCalculation、gatherConfig。五项均为
@@ -7942,51 +7988,6 @@ do
             rootPrototypes.GetPlayerMapPosition,
             rootPrototypes.DistanceCalculation,
             rootSource.gatherConfig
-        )
-    end
-
-    -- LuaSendMsg：UP[0]=MainLeftBottom.a，UP[1]=PrintLog；写回a.LuaSendMsg。
-    local makeLuaSendMsg = sourceFunction("04_源码候选/短函数草稿_第五十批.lua", "make_LuaSendMsg")
-    if makeLuaSendMsg then
-        rootPrototypes.LuaSendMsg = makeLuaSendMsg(rootModule.a, rootPrototypes.PrintLog)
-        rootModule.a.LuaSendMsg = rootPrototypes.LuaSendMsg
-    end
-
-    -- 两个仓库查询函数均捕获root T[4]=PrintLog。
-    local makeGetAvailableStoragePage = sourceFunction("04_源码候选/短函数草稿_第十四批.lua", "make_GetAvailableStoragePage")
-    if makeGetAvailableStoragePage then
-        rootPrototypes.GetAvailableStoragePage = makeGetAvailableStoragePage(rootPrototypes.PrintLog)
-    end
-    local getStorageItemSource = sources["04_源码候选/短函数草稿_第五十六批.lua#GetStorageItemData"]
-    local makeGetStorageItemData = getStorageItemSource and getStorageItemSource.make_GetStorageItemData
-    if type(makeGetStorageItemData) == "function" then
-        rootPrototypes.GetStorageItemData = makeGetStorageItemData(rootPrototypes.PrintLog)
-    end
-
-    -- TakeItems：UP[0]=MainLeftBottom.z状态表，UP[1]=ShowLocalNoticeByType。
-    local makeTakeItems = sourceFunction("04_源码候选/短函数草稿_第五十七批.lua", "make_TakeItems")
-    if makeTakeItems and rootPrototypes.ShowLocalNoticeByType then
-        rootPrototypes.TakeItems = makeTakeItems(rootModule.z, rootPrototypes.ShowLocalNoticeByType)
-    end
-
-    -- PickUpItems：UP[0]=ShowLocalNoticeByType；两个比较器子闭包在父函数体内创建。
-    local makePickUpItems = sourceFunction("04_源码候选/PickUpItems_拾取流程_第十批.lua", "make_PickUpItems")
-    if makePickUpItems and rootPrototypes.ShowLocalNoticeByType then
-        rootPrototypes.PickUpItems = makePickUpItems(rootPrototypes.ShowLocalNoticeByType)
-    end
-
-    -- StorageItems：UP[0..2]=[状态表,PrintLog,ShowLocalNoticeByType]。
-    -- 两个子原型工厂作为装配适配参数注入，不计入StorageItems真实Upvalue数量。
-    local makeStorageItems = sourceFunction("04_源码候选/短函数草稿_第六十批.lua", "make_StorageItems")
-    local makeNestedIsOutputted = sourceFunction("04_源码候选/短函数草稿_第三十四批.lua", "make_Nested_isOutputted")
-    local makeFindAvailablePage = sourceFunction("04_源码候选/root50_Nested_Anonymous_2.lua", "make_FindAvailableStoragePage")
-    if makeStorageItems and makeNestedIsOutputted and makeFindAvailablePage then
-        rootPrototypes.StorageItems = makeStorageItems(
-            rootModule.z,
-            rootPrototypes.PrintLog,
-            rootPrototypes.ShowLocalNoticeByType,
-            makeNestedIsOutputted,
-            makeFindAvailablePage
         )
     end
 
