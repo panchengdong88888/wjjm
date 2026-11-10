@@ -708,6 +708,9 @@ end
   -- Checkpoint252: stable root captures for map-distance and blacklist helpers.
   __exports["opaquePairTable"] = opaquePairTable
   __exports["randomTeleportItemNames"] = randomTeleportItemNames
+  __exports["blacklistState"] = blacklistState
+  __exports["blacklistDistanceConfigFile"] = blacklistDistanceConfigFile
+  __exports["gatherMonsterCountConfigFile"] = gatherMonsterCountConfigFile
   MainLeftBottomRecovered.sources["04_源码候选/root_MainLeftBottom_Module.lua"] = __exports
 end
 
@@ -4306,6 +4309,233 @@ end
 
 
 -- ============================================================================
+-- 来源文件：04_源码候选/root25_DeathAutoBlacklist.lua
+-- 检查点253：保留独立工厂词法作用域，由根装配区按捕获顺序实例化。
+-- ============================================================================
+do
+-- root.children[25] / legacy root/26 / DeathAutoBlacklist
+-- 47 physical instructions; complete static reconstruction, not runtime-validated.
+-- Captures, in order:
+--   UP[0] = blacklistState (root T[41])
+--   UP[1] = PrintLog (root T[4])
+--   UP[2] = FindBlacklistPlayer (root T[55])
+--   UP[3] = ShowLocalNoticeByType (root T[5])
+
+local function make_DeathAutoBlacklist(
+    blacklistState,
+    printLog,
+    findBlacklistPlayer,
+    showLocalNotice
+)
+    return function()
+        -- PC 1-4: take the current record, then clear the shared field immediately.
+        local lastAttacker = blacklistState.lastAttacker
+        blacklistState.lastAttacker = nil
+
+        -- PC 5-16: missing record/name produces one log message and returns.
+        if not lastAttacker or not lastAttacker.name or lastAttacker.name == "" then
+            printLog("本次死亡没记录到凶手，跳过自动拉黑")
+            return
+        end
+
+        -- PC 17-26: an existing blacklist entry is logged and stops this path.
+        if findBlacklistPlayer(lastAttacker.id) then
+            printLog("凶手已在黑名单中：%s", lastAttacker.name)
+            return
+        end
+
+        -- PC 27-35: log the attacker and show the local notice.
+        printLog("被 %s 击杀，自动加入黑名单", lastAttacker.name)
+        showLocalNotice("自动拉黑：" .. lastAttacker.name)
+
+        -- PC 36-47: schedule six attempts, at 0.5-second intervals from 0 to 2.5.
+        for retryIndex = 0, 5 do
+            SL:ScheduleOnce(function()
+                SL:RequestAddBlacklistByName(lastAttacker.name)
+            end, 0.5 * retryIndex)
+        end
+    end
+end
+
+-- Static reconstruction notes:
+-- * lastAttacker is copied to a local before the shared state field is cleared.
+-- * FindBlacklistPlayer receives lastAttacker.id; only its first return value
+--   controls the already-blacklisted branch.
+-- * Each scheduled child closure captures the lastAttacker record table and
+--   reads its .name when the callback runs.
+-- * The function does not return the ScheduleOnce handles or wait for attempts.
+-- * No target-runtime validation.
+
+  local __exports = {}
+  if make_DeathAutoBlacklist ~= nil then __exports["make_DeathAutoBlacklist"] = make_DeathAutoBlacklist end
+  MainLeftBottomRecovered.sources["04_源码候选/root25_DeathAutoBlacklist.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/root52_onDamageMsg.lua
+-- 检查点253：保留独立工厂词法作用域，由根装配区按捕获顺序实例化。
+-- ============================================================================
+do
+-- root.children[52] / legacy root/53 / onDamageMsg
+-- 72 physical instructions; complete static reconstruction, not runtime-validated.
+-- UP[0] = blacklistState (root T[41]); the same table is exposed as MainLeftBottom.blacklist.
+
+local function make_onDamageMsg(blacklistState)
+    return function(arg1, messageJson)
+        -- fixed_param_count=2; PC1/PC3 gate on the second fixed parameter.
+        if not messageJson or messageJson == "" then
+            return
+        end
+
+        -- PC 6-16: decode the JSON under pcall; require a table result.
+        local decodeInput = arg1
+        local function decodeMessage()
+            local jsonDecode = SL.JsonDecode
+            return jsonDecode(decodeInput)
+        end
+        -- OP_387 captured the parent T[0] cell; PC8 then overwrites T[0] with T[1].
+        decodeInput = messageJson
+
+        local decodeOk, message = pcall(decodeMessage)
+        if not decodeOk or type(message) ~= "table" then
+            return
+        end
+
+        -- PC 18-27: require a truthy main actor ID and ignore messages from self.
+        local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
+        if not mainActorID then
+            return
+        end
+
+        if message.UserID == mainActorID then
+            return
+        end
+
+        -- PC 28-33: require an attacker ID different from the main actor ID.
+        local attackerID = message.AttackUserID
+        if not attackerID or attackerID == mainActorID then
+            return
+        end
+
+        -- PC 34-47: for hero actors, prefer a truthy master actor ID.
+        local isHero = SL:GetMetaValue("ACTOR_IS_HERO", attackerID)
+        if isHero then
+            local masterActorID = SL:GetMetaValue("ACTOR_MASTER_ID", attackerID)
+            if masterActorID then
+                attackerID = masterActorID
+            end
+        end
+
+        -- PC 48-56: obtain a non-false, non-empty actor name.
+        local attackerName = SL:GetMetaValue("ACTOR_NAME", attackerID)
+        if not attackerName or attackerName == "" then
+            return
+        end
+
+        -- PC 57-66: reject names containing the literal substring "分身".
+        if string.find(attackerName, "分身", 1, true) then
+            return
+        end
+
+        -- PC 67-72: record the effective attacker identity.
+        blacklistState.lastAttacker = {
+            id = attackerID,
+            name = attackerName
+        }
+    end
+end
+
+-- Static reconstruction boundaries:
+-- * fixed_param_count=2; PC1/PC3 check the second parameter for truthy/non-empty.
+-- * Nested_JsonDecode captures the parent T[0] cell; PC8 writes T[1] into that cell
+--   before pcall, so the child decodes the second fixed parameter messageJson.
+-- * The callback stores only blacklistState.lastAttacker; it does not itself
+--   request blacklist insertion or schedule any action.
+-- * No runtime validation; SL metadata and JSON decoder behavior are host-dependent.
+
+  local __exports = {}
+  if make_onDamageMsg ~= nil then __exports["make_onDamageMsg"] = make_onDamageMsg end
+  MainLeftBottomRecovered.sources["04_源码候选/root52_onDamageMsg.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/短函数草稿_第五十四批.lua
+-- 检查点253：保留独立工厂词法作用域，由根装配区按捕获顺序实例化。
+-- ============================================================================
+do
+-- 检查点 #78 / #133：ClearBlacklistItems 完整静态恢复
+-- root.children[15] / legacy root/16；63条父指令；17常量；1个子原型。
+-- 捕获顺序：UP[0]=好友代理getter；UP[1]/UP[2]=两路提示回调；
+-- UP[3]=含lastAttacker字段的状态对象。原始局部变量名未知，按调用契约命名。
+
+local function make_ClearBlacklistItems(
+    getFriendProxy,
+    notifyPrimary,
+    notifySecondary,
+    attackerState
+)
+    return function()
+        -- PC1-PC7：取得代理并确认_blacklistData存在。
+        local friendProxy = getFriendProxy()
+        if not friendProxy or not friendProxy._blacklistData then
+            notifyPrimary("取不到好友代理，清空失败")
+            notifySecondary("清空黑名单失败")
+            return
+        end
+
+        local blacklistData = friendProxy._blacklistData
+
+        -- PC15-PC24：pairs迭代的第一个返回值（key）被追加到entries。
+        local entries = {}
+        for key, _value in pairs(blacklistData) do
+            entries[#entries + 1] = key
+        end
+
+        -- PC25-PC34：空列表时两路提示后返回。
+        if #entries == 0 then
+            notifyPrimary("黑名单本来就是空的")
+            notifySecondary("黑名单为空")
+            return
+        end
+
+        -- PC35-PC44：通知开始清理及条目数量。
+        notifyPrimary(string.format("开始清空黑名单，共 %d 人", #entries))
+        notifySecondary("清空黑名单 " .. #entries .. " 人")
+
+        -- PC45-PC60：每个key按(index-1)*0.01秒调度异步移除。
+        for index, entryKey in ipairs(entries) do
+            local delay = (index - 1) * 0.01
+            SL:ScheduleOnce(function()
+                -- 子原型root.children[15].children[0]捕获entryKey与friendProxy。
+                SL:RequestOutBlacklist(entryKey)
+                if friendProxy and friendProxy._blacklistData then
+                    friendProxy._blacklistData[entryKey] = nil
+                end
+            end, delay)
+        end
+
+        -- PC61-PC63：清空lastAttacker字段并返回。
+        attackerState.lastAttacker = nil
+    end
+end
+
+-- 静态复核：
+-- * pairs循环收集的是第一个迭代返回值，即key，不是value。
+-- * 子闭包UP[0]为当前entryKey，UP[1]为friendProxy。
+-- * RequestOutBlacklist保留SL接收者；随后删除friendProxy._blacklistData[entryKey]。
+-- * ScheduleOnce保留SL接收者，delay=(index-1)*0.01。
+-- * UP[3].lastAttacker在调度循环之后写nil。
+-- * 63条父指令与13条子指令均已映射；未运行时验证。
+
+  local __exports = {}
+  if make_ClearBlacklistItems ~= nil then __exports["make_ClearBlacklistItems"] = make_ClearBlacklistItems end
+  MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第五十四批.lua"] = __exports
+end
+
+
+-- ============================================================================
 -- 来源文件：04_源码候选/root22_GetMapData2DPtr.lua
 -- root.children[22]捕获T[52]；活动路径不读取捕获值，仍按捕获顺序传入。
 -- ============================================================================
@@ -6609,6 +6839,59 @@ do
             makeUseItemByIndex(rootSource.randomTeleportItemNames)
     end
 
+    -- 检查点253：黑名单前置闭包按root PC顺序装配。
+    local makeAnonymousHelper49 = sourceFunction(
+        "04_源码候选/root49_AnonymousHelper_49.lua", "make_AnonymousHelper_49"
+    )
+    if makeAnonymousHelper49 and rootPrototypes.ReadNumericConfig then
+        rootPrototypes.AnonymousHelper_49 = makeAnonymousHelper49(
+            rootPrototypes.ReadNumericConfig,
+            rootSource.blacklistDistanceConfigFile
+        )
+    end
+
+    local makeAnonymousHelper54 = sourceFunction(
+        "root/55_AnonymousHelper_54.lua", "make_AnonymousHelper_54"
+    )
+    if makeAnonymousHelper54 and rootPrototypes.PCallHelper then
+        rootPrototypes.AnonymousHelper_54 = makeAnonymousHelper54(
+            rootPrototypes.PCallHelper,
+            rootSource.gatherMonsterCountConfigFile
+        )
+    end
+
+    local makeDeathAutoBlacklist = sourceFunction(
+        "04_源码候选/root25_DeathAutoBlacklist.lua", "make_DeathAutoBlacklist"
+    )
+    if makeDeathAutoBlacklist then
+        rootPrototypes.DeathAutoBlacklist = makeDeathAutoBlacklist(
+            rootSource.blacklistState,
+            rootPrototypes.PrintLog,
+            rootPrototypes.FindBlacklistPlayer,
+            rootPrototypes.ShowLocalNoticeByType
+        )
+    end
+
+    local makeOnDamageMsg = sourceFunction(
+        "04_源码候选/root52_onDamageMsg.lua", "make_onDamageMsg"
+    )
+    if makeOnDamageMsg then
+        rootPrototypes.onDamageMsg = makeOnDamageMsg(rootSource.blacklistState)
+        rootModule.onDamageMsg = rootPrototypes.onDamageMsg
+    end
+
+    local makeClearBlacklistItems = sourceFunction(
+        "04_源码候选/短函数草稿_第五十四批.lua", "make_ClearBlacklistItems"
+    )
+    if makeClearBlacklistItems then
+        rootPrototypes.ClearBlacklistItems = makeClearBlacklistItems(
+            rootPrototypes.PCallHelper_2,
+            rootPrototypes.PrintLog,
+            rootPrototypes.ShowLocalNoticeByType,
+            rootSource.blacklistState
+        )
+    end
+
     -- 仅导出字节码明确写入_ENV的全局入口；其他辅助闭包留在rootPrototypes。
     local globalExports = {
         log = "PrintLog",
@@ -6625,7 +6908,8 @@ do
         GetDroppedItems = "GetDroppedItems",
         MoveTo = "MoveTo",
         IsInWhitelistMap = "IsInWhitelistMap",
-        MoveItemToQuickUse = "MoveItemToQuickUse"
+        MoveItemToQuickUse = "MoveItemToQuickUse",
+        ClearBlacklistItems = "ClearBlacklistItems"
     }
     for globalName, prototypeName in pairs(globalExports) do
         local fn = rootPrototypes[prototypeName]
@@ -6637,13 +6921,13 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 252,
+        checkpoint = 253,
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
         missing = missing,
         captured_factory_closures_expected = 36,
-        captured_factory_closures_bound = 27,
-        captured_factory_closures_pending = 9,
+        captured_factory_closures_bound = 32,
+        captured_factory_closures_pending = 4,
         captured_factory_names_bound = {
             "ShowLocalNoticeByType", "DiuItems", "FindMonsterCandidates",
             "LuaSendMsg", "GetAvailableStoragePage", "GetStorageItemData",
@@ -6653,10 +6937,12 @@ do
             "StopGatherMonsters", "FindMonsterInCurrViewField", "DestroyUI",
             "SetButtonVisibilityState", "ShowHideAllButtons", "ReadNumericConfig",
             "PCallHelper", "FileExistCheck_pcall_wrapper", "GetMapData2DPtr",
-            "FindBlacklistPlayer", "UseItemByIndex"
+            "FindBlacklistPlayer", "UseItemByIndex", "AnonymousHelper_49",
+            "AnonymousHelper_54", "DeathAutoBlacklist", "onDamageMsg",
+            "ClearBlacklistItems"
         },
         runtime_verified = false,
-        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; gather live cells and UI shared tables are passed by identity; T[44] GetWritablePath is shared by three helpers; T[52] and T[37] captures are injected"
+        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; gather live cells and UI shared tables are passed by identity; T[44] GetWritablePath is shared by three helpers; T[52] and T[37] captures are injected; blacklistState and config filename captures are shared"
     }
 end
 
