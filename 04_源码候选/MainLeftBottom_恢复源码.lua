@@ -7871,6 +7871,7 @@ do
 
     -- PC43-PC45：PrintLog创建并写入T[4]，PC45导出_G.log。
     bindDirect("PrintLog", "04_源码候选/PrintLog_日志辅助函数_第七批.lua", "PrintLog")
+    _G.log = rootPrototypes.PrintLog
 
     -- PC46-PC47：ShowLocalNoticeByType捕获T[0]=MainLeftBottom.a。
     local makeShowNotice = sourceFunction(
@@ -7969,10 +7970,6 @@ do
     bindDirect("GetOwnerIDText", "04_源码候选/root7_GetOwnerIDText.lua", "GetOwnerIDText")
     bindDirect("GetOwnerID", "04_源码候选/root38_GetOwnerID.lua", "GetOwnerID")
     bindDirect("GetOwnerDescription", "04_源码候选/verified_helpers_batches_1_3.lua", "GetOwnerDescription")
-    bindDirect("IsInWhitelistMap", "04_源码候选/短函数草稿_第十二批.lua", "IsInWhitelistMap")
-    bindDirect("MoveItemToQuickUse", "04_源码候选/root_MainLeftBottom_Module.lua", "MoveItemToQuickUse")
-    bindDirect("GetWritablePath", "04_源码候选/verified_helpers_batches_1_3.lua", "GetWritablePath")
-    bindDirect("PCallHelper_2", "04_源码候选/代理与回调短函数_第四批.lua", "PCallHelper_2")
 
     -- FindMonsterCandidates：UP[0..4]依次为GetPlayerPosition、IsDie、
     -- GetPlayerMapPosition、DistanceCalculation、gatherConfig。五项均为
@@ -8076,6 +8073,11 @@ do
             makeFindInView(rootPrototypes.IsDie)
     end
 
+    -- root PC212-PC213：创建并导出IsInWhitelistMap。
+    bindDirect("IsInWhitelistMap",
+        "04_源码候选/短函数草稿_第十二批.lua", "IsInWhitelistMap")
+    _G.IsInWhitelistMap = rootPrototypes.IsInWhitelistMap
+
     local makeMainLoop = sourceFunction(
         "04_源码候选/root45_MainLoop.lua", "make_MainLoop"
     )
@@ -8122,6 +8124,11 @@ do
         _G.StopGatherMonsters = rootPrototypes.StopGatherMonsters
     end
 
+    -- root PC259-PC260：创建无捕获MoveItemToQuickUse；PC260导出全局。
+    bindDirect("MoveItemToQuickUse",
+        "04_源码候选/root_MainLeftBottom_Module.lua", "MoveItemToQuickUse")
+    _G.MoveItemToQuickUse = rootPrototypes.MoveItemToQuickUse
+
     -- 检查点251：UI闭包按父root寄存器T[0]/T[1]/T[3]捕获顺序注入。
     -- T[0]=MainLeftBottom.a（UI状态对象），T[1]=MainLeftBottom.b（按钮映射），
     -- T[3]=timerState；三者均为共享表引用，不作值复制。
@@ -8156,6 +8163,10 @@ do
     end
 
     -- 检查点252：T[44] GetWritablePath是同一个稳定函数引用，供三个闭包共享。
+    -- root PC297：创建无捕获GetWritablePath，供PC298/301/303闭包捕获。
+    bindDirect("GetWritablePath",
+        "04_源码候选/verified_helpers_batches_1_3.lua", "GetWritablePath")
+
     local makeReadNumericConfig = sourceFunction(
         "04_源码候选/root9_ReadNumericConfig.lua", "make_ReadNumericConfig"
     )
@@ -8192,6 +8203,10 @@ do
     end
 
     -- root.children[51] UP[0]=root.children[48] PCallHelper_2。
+    -- root PC352：创建无捕获PCallHelper_2，PC353由FindBlacklistPlayer捕获。
+    bindDirect("PCallHelper_2",
+        "04_源码候选/代理与回调短函数_第四批.lua", "PCallHelper_2")
+
     local makeFindBlacklistPlayer = sourceFunction(
         "04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua",
         "make_FindBlacklistPlayer"
