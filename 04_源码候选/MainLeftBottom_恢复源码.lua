@@ -1,8 +1,8 @@
 --[[
 MainLeftBottom(2).lua 明文恢复整合稿（静态候选）
-生成：2026-11-10 | GitHub checkpoint 258
+生成：2026-11-10 | GitHub checkpoint 259
 用途：按110原型索引和PC级证据整合普通Lua候选、根模块状态及58个直接子闭包。
-当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配。
+当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配；PC43-PC85首批闭包已按VM创建顺序整合。
 重要：
 - 根模块初始化与闭包创建仍采用明确标注的恢复适配结构，不冒充原作者逐字源码。
 - 所有函数体仍按原型路径保留；根装配按OP_387捕获顺序绑定共享cell和状态表。
@@ -8390,7 +8390,9 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 256,
+        checkpoint = 259,
+        root_prefix_pc43_pc85_ordered = true,
+        root_late_direct_bindings_at_pc = { IsInWhitelistMap = 212, MoveItemToQuickUse = 259, GetWritablePath = 297, PCallHelper_2 = 352 },
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
         missing = missing,
