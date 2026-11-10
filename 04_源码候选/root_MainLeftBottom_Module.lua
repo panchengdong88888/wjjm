@@ -197,6 +197,9 @@ local resetSlot22 = ""
 
 -- PC210：创建root.children[14] / FindMonsterInCurrViewField，捕获数1；
 -- PC211：捕获父帧T[30]（IsDie闭包）。ClearBlacklistItems实际是root.children[15]，在PC383创建。
+-- 检查点264：主恢复装配段为T[14..22]各建立唯一共享cell，并按PC181、
+-- PC184-PC193、PC194、PC200、PC210的顺序实例化对应闭包；工厂来源缺失时
+-- requireRecoveredClosure会中止装配，避免nil/错位捕获被静默传入。
 
 -- PC212-PC213：创建root.children[31] / IsInWhitelistMap（无捕获），
 -- 并将闭包导出为全局IsInWhitelistMap。
