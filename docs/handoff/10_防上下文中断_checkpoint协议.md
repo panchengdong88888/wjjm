@@ -2898,3 +2898,10 @@ Nested_match：
 - 逐PC证据与语义边界见docs/audit/检查点238_root_T8_T42_T43_T44寄存器生命周期闭合.md及docs/handoff/12_根模块闭包装配表.json。
 - 累计13个寄存器生命周期已闭合；完整静态恢复109/110；运行时验证0。
 - 下一步检查T[50]/T[55]/T[56]/T[58]及T[38..40]/T[47..53]，再完成导出对账和根模块普通Lua装配。
+
+
+## 检查点 #239（2026-11-10）：root黑名单/配置闭包捕获值
+- 闭合T38=2.0、T39=0.01、T40=30.0；T50=ReadNumericConfig('gather_monster_count.txt')包装闭包；T52=PC349构造的8元素表（GetMapData2DPtr可达路径不读取）；T53=GetMapData2DPtr；T55=FindBlacklistPlayer；T56=UseItemByIndex；T58=DeathAutoBlacklist。
+- BlacklistPlayerDetection UP3/4/5/6/8/9/11与上述闭包/常量逐项对齐；详细见docs/audit/检查点239_root_T38_T39_T40_T50_T52_T53_T55_T56_T58寄存器生命周期闭合.md。
+- 累计22个具体父寄存器生命周期已闭合；完整静态恢复109/110；运行时验证0。
+- 下一步检查T47/T48/T49/T51及T45/T46匿名包装链，然后开始模块字段/全局导出对账。
