@@ -108,7 +108,7 @@ MainLeftBottomRecovered.prototype_index = {
   ["root.children[50].children[0]"] = { name="Nested_isOutputted", status="complete_static_reconstruction", source_file="04_源码候选/短函数草稿_第三十四批.lua", instructions=52, runtime_verified=false },
   ["root.children[36]"] = { name="GetAvailableStoragePage", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第十四批.lua", instructions=51, runtime_verified=false },
   ["root.children[6]"] = { name="InstallDamageHook", status="first_pass_draft_pending_static_review_not_runtime_verified", source_file="04_源码候选/短函数草稿_第三十九批.lua", instructions=40, runtime_verified=false },
-  ["root.children[52].children[0]"] = { name="Nested_JsonDecode", status="first_pass_draft_pending_static_review_not_runtime_verified", source_file="04_源码候选/短函数草稿_第四十批.lua", instructions=6, runtime_verified=false },
+  ["root.children[52].children[0]"] = { name="Nested_JsonDecode", status="complete_static_reconstruction", source_file="04_源码候选/短函数草稿_第四十批.lua", audit_file="docs/audit/检查点214_Nested_JsonDecode完整静态复审.md", instructions=6, runtime_verified=false },
   ["root.children[2]"] = { name="GetWritablePath", status="first_pass_draft_pending_static_review_not_runtime_verified", source_file="04_源码候选/短函数草稿_第四十一批.lua", instructions=10, runtime_verified=false },
   ["root.children[42].children[22]"] = { name="Nested_Anonymous", status="first_pass_draft_pending_VM_T_slot_mapping_and_T2_producer_not_runtime_verified", source_file="04_源码候选/Nested_Anonymous_第七十八批.lua", instructions=8, runtime_verified=false },
   ["root.children[8]"] = { name="FormatStateChange", status="conservative_first_pass_draft_argument_slots_pending_not_runtime_verified", source_file="04_源码候选/短函数草稿_第四十三批.lua", instructions=10, runtime_verified=false },
@@ -1425,10 +1425,8 @@ local function make_onDamageMsg(blacklistState)
         end
 
         -- PC 6-16: decode the JSON under pcall; require a table result.
-        local function decodeMessage()
-            return SL:JsonDecode(messageJson)
-        end
-
+        -- root.children[52].children[0]：父级捕获messageJson后调用Nested_JsonDecode。
+        local decodeMessage = make_Nested_JsonDecode(messageJson)
         local decodeOk, message = pcall(decodeMessage)
         if not decodeOk or type(message) ~= "table" then
             return
@@ -3060,9 +3058,19 @@ local function __root55(upvalueFunction, upvalueFirstArg, ...)
     return upvalueFunction(upvalueFirstArg, ...)
 end
 
--- root/53/1：调用 SL.JsonDecode 解码捕获的 JSON 字符串。
+-- root.children[52].children[0] / legacy root/53/1：
+-- 工厂参数代表子原型捕获的父级T[3]；字节码PC1-PC4明确为SL.JsonDecode(jsonText)点调用。
+local function make_Nested_JsonDecode(jsonText)
+    return function Nested_JsonDecode()
+        local jsonDecode = SL.JsonDecode
+        return jsonDecode(jsonText)
+    end
+end
+
+-- 独立调用适配器；保留同一字节码确认的点调用形式。
 local function __root53_1(jsonText)
-    return SL:JsonDecode(jsonText)
+    local jsonDecode = SL.JsonDecode
+    return jsonDecode(jsonText)
 end
 
 -- root/54：一次性调度封装。
@@ -3142,6 +3150,7 @@ end
   if __root50 ~= nil then __exports["__root50"] = __root50 end
   if __root55 ~= nil then __exports["__root55"] = __root55 end
   if __root53_1 ~= nil then __exports["__root53_1"] = __root53_1 end
+  if make_Nested_JsonDecode ~= nil then __exports["make_Nested_JsonDecode"] = make_Nested_JsonDecode end
   if __root54 ~= nil then __exports["__root54"] = __root54 end
   if PlayerPos ~= nil then __exports["PlayerPos"] = PlayerPos end
   if GetMainPlayerID ~= nil then __exports["GetMainPlayerID"] = GetMainPlayerID end
