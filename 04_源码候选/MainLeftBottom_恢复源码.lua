@@ -714,6 +714,9 @@ end
   __exports["blacklistState"] = blacklistState
   __exports["blacklistDistanceConfigFile"] = blacklistDistanceConfigFile
   __exports["gatherMonsterCountConfigFile"] = gatherMonsterCountConfigFile
+  __exports["blacklistAlertThreshold"] = blacklistAlertThreshold
+  __exports["blacklistShortRetryDelay"] = blacklistShortRetryDelay
+  __exports["blacklistNoItemRetryDelay"] = blacklistNoItemRetryDelay
   MainLeftBottomRecovered.sources["04_源码候选/root_MainLeftBottom_Module.lua"] = __exports
 end
 
@@ -2044,6 +2047,228 @@ end
   if make_AnonymousHelper_32 ~= nil then __exports["make_AnonymousHelper_32"] = make_AnonymousHelper_32 end
   if make_AnonymousHelper_33 ~= nil then __exports["make_AnonymousHelper_33"] = make_AnonymousHelper_33 end
   MainLeftBottomRecovered.sources["04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/root47_BlacklistPlayerDetection.lua
+-- 检查点255：UP1接入root T[57]共享live-cell；PC360写入InstallDamageHook后PC368捕获。
+-- ============================================================================
+do
+-- root.children[47] / legacy root/48
+-- Reconstruction name: BlacklistPlayerDetection
+-- 216 physical VM instructions; no child prototypes.
+-- Status: complete static reconstruction (checkpoint 186); NOT runtime-validated.
+-- Local names are reconstruction labels, not recovered original identifiers.
+--
+-- Captures (checkpoint 146):
+--   UP[0]  module feature state (isBlacklisting)
+--   UP[1]  root T[57] live cell; PC360 writes InstallDamageHook before PC368 captures it
+--   UP[2]  blacklist-player state table
+--   UP[3]  death -> auto-blacklist callback
+--   UP[4]  blacklist actor lookup helper (returns match flag and display name)
+--   UP[5]  root.children[22] helper (VM index label GetMapData2DPtr);
+--          reachable PC1-PC37 computes a Chebyshev distance with maxDistance
+--   UP[6]  2.0 second alert threshold
+--   UP[7]  PrintLog wrapper
+--   UP[8]  random-teleport item lookup/use helper
+--   UP[9]  0.01 second retry delay after successful teleport
+--   UP[10] local notice wrapper
+--   UP[11] 30.0 second retry delay when no usable teleport item exists
+--   UP[12] { "随机传送石" }
+--
+-- Important: the VM dump's ["unknown",2] is a serialized nil sentinel, not
+-- a literal string. This draft uses nil in the corresponding comparisons.
+-- The complete 216-PC control flow and 13 parent captures were reconciled
+-- at checkpoint 186. Local identifiers remain reconstruction labels, not
+-- recovered author-original names. Do not treat this as runtime-validated.
+
+local function make_BlacklistPlayerDetection(
+    featureState,
+    installDamageHookCell,
+    blacklistState,
+    onDeathAutoBlacklist,
+    findBlacklistActor,
+    distanceCalculation,
+    alertInterval,
+    PrintLog,
+    findAndUseRandomTeleport,
+    successRetryDelay,
+    ShowLocalNotice,
+    noStoneRetryDelay,
+    randomTeleportNames
+)
+    local function BlacklistPlayerDetection()
+        featureState.isBlacklisting = true
+        -- Dereference the same parent T[57] cell captured at PC368.
+        installDamageHookCell.value()
+
+        local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
+        if not mainActorID then
+            return
+        end
+
+        local hp = tonumber(SL:GetMetaValue("HP")) or 0.0
+        local previousHP = blacklistState.lastHp
+
+        if previousHP == nil then
+            blacklistState.lastHp = hp
+            blacklistState.deathHandled = (hp <= 0)
+        elseif hp > 0 then
+            blacklistState.lastHp = hp
+            blacklistState.deathHandled = false
+        elseif previousHP > 0 and not blacklistState.deathHandled then
+            blacklistState.deathHandled = true
+            blacklistState.lastHp = 0.0
+            onDeathAutoBlacklist()
+        end
+
+        if hp <= 0 then
+            return
+        end
+
+        if IsInWhitelistMap() then
+            return
+        end
+
+        -- The VM call captures two return values: player list and count.
+        local players, playerCount = SL:GetMetaValue("FIND_IN_VIEW_PLAYER_LIST")
+        if not players then
+            return
+        end
+        if not playerCount then
+            return
+        end
+        if playerCount <= 0 then
+            return
+        end
+
+        -- PC74-PC77 initializes a numeric 1..playerCount loop.
+        -- The action path is inside this loop, not after it.
+        for index = 1, playerCount do
+            local actorID = players[index]
+
+            if actorID and actorID ~= mainActorID then
+                local isBlacklisted, blacklistDisplayName = findBlacklistActor(actorID)
+
+                if isBlacklisted then
+                    local actorName = blacklistDisplayName
+                    if not actorName then
+                        actorName = SL:GetMetaValue("ACTOR_NAME", actorID)
+                    end
+                    if not actorName then
+                        actorName = "黑名单玩家"
+                    end
+
+                    -- A false/nil configured distance bypasses coordinate
+                    -- reads and the helper call; the later log formats it as 0.
+                    local distance
+                    local distanceAccepted = true
+                    local configuredDistance = blacklistState.distance
+
+                    if configuredDistance then
+                        local mainX = SL:GetMetaValue("ACTOR_MAP_X", mainActorID)
+                        local mainY = SL:GetMetaValue("ACTOR_MAP_Y", mainActorID)
+                        local actorX = SL:GetMetaValue("ACTOR_MAP_X", actorID)
+                        local actorY = SL:GetMetaValue("ACTOR_MAP_Y", actorID)
+
+                        distance = distanceCalculation(
+                            mainX, mainY, actorX, actorY, configuredDistance
+                        )
+                        distanceAccepted = (distance ~= nil)
+                    end
+
+                    -- PC136-PC141: nil from the helper skips this actor and
+                    -- reaches the numeric-loop tail; a non-nil result enters
+                    -- the alert/retry/teleport path below.
+                    if distanceAccepted then
+                        local now = os.time()
+                        local lastAlertAt = blacklistState.alertAt or 0
+                        local elapsed = now - lastAlertAt
+
+                        if alertInterval <= elapsed then
+                            blacklistState.alertAt = now
+                            PrintLog(
+                                "野外观测到黑名单玩家：%s（%d格）",
+                                actorName,
+                                distance or 0.0
+                            )
+                        end
+
+                        -- PC160-PC163: a pending retry deadline exits the
+                        -- entire callback, not merely this loop iteration.
+                        if (blacklistState.nextTryAt or 0) > now then
+                            return
+                        end
+
+                        local usedTeleportItemName = findAndUseRandomTeleport()
+                        if usedTeleportItemName then
+                            blacklistState.nextTryAt = now + successRetryDelay
+                            blacklistState.noStoneWarned = false
+
+                            ShowLocalNotice(string.format(
+                                "黑名单玩家：%s（%d格），飞随机",
+                                actorName,
+                                distance or 0.0
+                            ))
+
+                            PrintLog(
+                                "黑名单玩家 %s，距离 %d 格，使用 %s 随机传送",
+                                actorName,
+                                distance or 0.0,
+                                usedTeleportItemName
+                            )
+                        else
+                            blacklistState.nextTryAt = now + noStoneRetryDelay
+
+                            if not blacklistState.noStoneWarned then
+                                blacklistState.noStoneWarned = true
+                                ShowLocalNotice("没有随机传送石，黑名单玩家传送暂停")
+                                PrintLog(
+                                    "没有可用的随机传送道具（%s）",
+                                    table.concat(randomTeleportNames, "/")
+                                )
+                            end
+                        end
+
+                        -- Success and failure paths both leave via PC216.
+                        return
+                    end
+                end
+            end
+        end
+    end
+    return BlacklistPlayerDetection
+end
+
+
+-- Review notes (checkpoint 186):
+-- * PC63-PC73 captures both returns from FIND_IN_VIEW_PLAYER_LIST: the player list and its explicit count; PC74-PC77 loops from 1 through that returned count.
+-- * Nil actors and actorID == mainActorID are skipped.
+-- * UP[4](actorID) supplies (isBlacklisted, displayName); only the first
+--   return controls entry. displayName falls back to ACTOR_NAME, then the
+--   literal 黑名单玩家.
+-- * If blacklistState.distance is truthy, four map coordinates are read and
+--   UP[5] is called with mainX, mainY, actorX, actorY, configuredDistance.
+--   A nil result skips this actor and loops; a false/nil configured distance
+--   bypasses coordinate reads/helper and the displayed distance defaults to 0.
+-- * The alert/retry/teleport logic is inside the numeric loop. The first
+--   blacklisted actor that passes the configured-distance gate is processed.
+--   A pending nextTryAt exits the callback. Both teleport success and failure
+--   also exit the callback; they do not continue scanning later actors.
+-- * Only actors rejected by the distance helper continue to the next loop
+--   iteration. There is no post-loop aggregation/currentTarget cache.
+-- * UP[5] points to root.children[22], whose reachable PC1-PC37 path computes
+--   Chebyshev distance and applies maxDistance; its PC38-PC144 tail is dead.
+-- * All 216 physical PCs and the 13 parent captures have been reconciled.
+-- * This is complete static reconstruction, not runtime-validated; host
+--   contracts and full-project integration remain untested.
+
+  local __exports = {}
+  if make_BlacklistPlayerDetection ~= nil then
+    __exports["make_BlacklistPlayerDetection"] = make_BlacklistPlayerDetection
+  end
+  MainLeftBottomRecovered.sources["04_源码候选/root47_BlacklistPlayerDetection.lua"] = __exports
 end
 
 
@@ -6955,6 +7180,33 @@ do
         )
     end
 
+    -- 检查点255：BlacklistPlayerDetection的13项捕获按root PC368顺序注入。
+    -- T[57]是PC360刚写入的InstallDamageHook闭包；以唯一cell包装后传入UP1，
+    -- 不得将旧候选注释中的onDamageMsg误接到此槽。
+    rootCells[57] = newLiveCell(rootPrototypes.InstallDamageHook)
+    local makeBlacklistPlayerDetection = sourceFunction(
+        "04_源码候选/root47_BlacklistPlayerDetection.lua",
+        "make_BlacklistPlayerDetection"
+    )
+    if makeBlacklistPlayerDetection then
+        rootPrototypes.BlacklistPlayerDetection = makeBlacklistPlayerDetection(
+            rootModule,
+            rootCells[57],
+            rootSource.blacklistState,
+            rootPrototypes.DeathAutoBlacklist,
+            rootPrototypes.FindBlacklistPlayer,
+            rootPrototypes.GetMapData2DPtr,
+            rootSource.blacklistAlertThreshold,
+            rootPrototypes.PrintLog,
+            rootPrototypes.UseItemByIndex,
+            rootSource.blacklistShortRetryDelay,
+            rootPrototypes.ShowLocalNoticeByType,
+            rootSource.blacklistNoItemRetryDelay,
+            rootSource.randomTeleportItemNames
+        )
+        _G.BlacklistItems = rootPrototypes.BlacklistPlayerDetection
+    end
+
     -- 仅导出字节码明确写入_ENV的全局入口；其他辅助闭包留在rootPrototypes。
     local globalExports = {
         log = "PrintLog",
@@ -6972,7 +7224,8 @@ do
         MoveTo = "MoveTo",
         IsInWhitelistMap = "IsInWhitelistMap",
         MoveItemToQuickUse = "MoveItemToQuickUse",
-        ClearBlacklistItems = "ClearBlacklistItems"
+        ClearBlacklistItems = "ClearBlacklistItems",
+        BlacklistItems = "BlacklistPlayerDetection"
     }
     for globalName, prototypeName in pairs(globalExports) do
         local fn = rootPrototypes[prototypeName]
@@ -6984,13 +7237,13 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 254,
+        checkpoint = 255,
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
         missing = missing,
         captured_factory_closures_expected = 36,
-        captured_factory_closures_bound = 34,
-        captured_factory_closures_pending = 2,
+        captured_factory_closures_bound = 35,
+        captured_factory_closures_pending = 1,
         captured_factory_names_bound = {
             "ShowLocalNoticeByType", "DiuItems", "FindMonsterCandidates",
             "LuaSendMsg", "GetAvailableStoragePage", "GetStorageItemData",
@@ -7002,10 +7255,11 @@ do
             "PCallHelper", "FileExistCheck_pcall_wrapper", "GetMapData2DPtr",
             "FindBlacklistPlayer", "UseItemByIndex", "AnonymousHelper_49",
             "AnonymousHelper_54", "DeathAutoBlacklist", "onDamageMsg",
-            "ClearBlacklistItems", "AnonymousHelper_32", "AnonymousHelper_33"
+            "ClearBlacklistItems", "AnonymousHelper_32", "AnonymousHelper_33",
+            "BlacklistPlayerDetection"
         },
         runtime_verified = false,
-        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; gather live cells and UI shared tables are passed by identity; T[44] GetWritablePath is shared by three helpers; T[52] and T[37] captures are injected; blacklistState and config filename captures are shared; root.children[32]/[33] anonymous wrappers are bound"
+        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; gather live cells and UI shared tables are passed by identity; T[44] GetWritablePath is shared by three helpers; T[52] and T[37] captures are injected; blacklistState and config filename captures are shared; root.children[32]/[33] anonymous wrappers are bound; T[57] cell wraps InstallDamageHook for BlacklistPlayerDetection"
     }
 end
 
