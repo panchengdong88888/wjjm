@@ -134,6 +134,7 @@ MainLeftBottomRecovered.prototype_index = {
   ["root.children[42].children[18]"] = { name="Nested_Helper_10", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=39, runtime_verified=false },
   ["root.children[49]"] = { name="PCallHelper_2 / AnonymousHelper_49", status="complete_static_reconstruction_not_runtime_verified_integrated_checkpoint230", source_file="04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua", instructions=5, runtime_verified=false },
   ["root.children[51]"] = { name="FindBlacklistPlayer", status="complete_static_reconstruction_not_runtime_verified_integrated_checkpoint230", source_file="04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua", instructions=35, runtime_verified=false },
+  ["root.children[49].children[0]"] = { name="Nested_FriendProxy", status="complete_static_reconstruction_not_runtime_verified_integrated_checkpoint230", source_file="04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua", instructions=9, runtime_verified=false },
   ["root.children[53]"] = { name="ScheduleOnce", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/verified_helpers_batches_1_3.lua", instructions=7, runtime_verified=false },
   ["root.children[54]"] = { name="AnonymousHelper_54", status="complete_static_reconstruction_not_runtime_verified", source_file="", instructions=6, runtime_verified=false },
   ["root.children[56]"] = { name="ClearTargetID_2", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/root56_root57_short_functions.lua", instructions=22, runtime_verified=false },
@@ -5247,7 +5248,8 @@ do
     -- root.children[51] / legacy root/52 / FindBlacklistPlayer
     -- 35条指令，UP[0]为上面的PCallHelper_2闭包；读取首个vararg作为targetId。
     local function make_FindBlacklistPlayer(getFriendProxySafely)
-        return function(targetId, ...)
+        return function(...)
+            local targetId = ...
             local friendProxy = getFriendProxySafely()
             if not friendProxy then
                 return false
