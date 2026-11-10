@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点246：以58个直接子原型为清单，核对已恢复工厂函数的源码位置、捕获参数顺序和root实例化点；优先将无捕获及简单捕获闭包接入根模块普通Lua候选，再逐步处理共享cell与嵌套闭包。",
+  "next_action": "检查点247：回读root_assembly_checkpoint.missing，修复真实源码注册缺口；建立捕获工厂的live-cell共享绑定层，优先装配稳定函数/表捕获，之后处理可变标量cell。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -3540,7 +3540,7 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 245,
+  "last_checkpoint": 246,
   "checkpoint": 245,
   "drafts": 33,
   "next": "检查点243：继续root PC212-PC340，复核并结构化IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、界面控制闭包、账号验证闭包及黑名单状态初始化的模块字段/全局导出；同时复核唯一剩余T54（PCallHelper_2）生产者和捕获时值。",
@@ -3627,7 +3627,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 246,
+  "next_checkpoint": 247,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3799,5 +3799,13 @@
     "correct_meaning": "fixed_param_count",
     "evidence": "01_原始资料/MainLeftBottom(2).lua: F()写C[3]=D(); M()读取W[3]作为V，创建T={}与X={}，将索引<V的实参写入T[index]，其余写入X[index-V]。",
     "capture_semantics": "OP_387 stores a live cell reference {parent_T_table, register_index}; the upvalue proxy __index/__newindex reads/writes the parent T register dynamically. Later parent writes are visible to closures."
+  },
+  "root_assembly": {
+    "checkpoint": 246,
+    "direct_child_closures_expected": 22,
+    "bound_at_source_level": 22,
+    "runtime_verified": false,
+    "captured_factory_closures_pending": 36,
+    "note": "22个无捕获直接子原型已在主恢复源码增加实际绑定区段；源码注册缺失项由root_assembly_checkpoint.missing记录，调度包装器按已恢复函数体内联。此项不增加完整静态恢复数量。"
   }
 }
