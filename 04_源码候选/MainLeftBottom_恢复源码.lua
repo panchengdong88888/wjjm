@@ -2011,6 +2011,43 @@ end
 end
 
 -- ============================================================================
+-- 来源文件：04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua
+-- 检查点254：仅整合root.children[32]/[33]两个短闭包工厂，按根寄存器映射注入。
+-- ============================================================================
+do
+-- root.children[57] / legacy root/58 / PlayerPos
+-- Complete static reconstruction; not runtime-validated.
+local function PlayerPos()
+    local x = SL:GetMetaValue("X")
+    local y = SL:GetMetaValue("Y")
+    return x, y
+end
+
+-- root.children[32] / legacy root/33 / anonymous forwarding wrapper.
+-- UP[0] captures root T[46]; UP[1] captures root T[42].
+-- The bytecode forwards exactly the first vararg after the captured argument.
+local function make_AnonymousHelper_32(upvalue0, upvalue1)
+    return function(arg1)
+        return upvalue0(upvalue1, arg1)
+    end
+end
+
+-- root.children[33] / legacy root/34 / anonymous forwarding wrapper.
+-- UP[0] captures root T[45]; UP[1] captures root T[43].
+local function make_AnonymousHelper_33(upvalue0, upvalue1)
+    return function()
+        return upvalue0(upvalue1)
+    end
+end
+
+  local __exports = {}
+  if make_AnonymousHelper_32 ~= nil then __exports["make_AnonymousHelper_32"] = make_AnonymousHelper_32 end
+  if make_AnonymousHelper_33 ~= nil then __exports["make_AnonymousHelper_33"] = make_AnonymousHelper_33 end
+  MainLeftBottomRecovered.sources["04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua"] = __exports
+end
+
+
+-- ============================================================================
 -- 来源文件：04_源码候选/root25_DeathAutoBlacklist.lua
 -- 独立词法块；保留原候选函数和内部闭包，不在此处伪造跨原型捕获绑定。
 -- ============================================================================
@@ -6842,6 +6879,29 @@ do
             makeUseItemByIndex(rootSource.randomTeleportItemNames)
     end
 
+    -- 检查点254：两个匿名转发器按规范root.children[32]/[33]工厂装配。
+    local makeAnonymousHelper32 = sourceFunction(
+        "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
+        "make_AnonymousHelper_32"
+    )
+    if makeAnonymousHelper32 and rootPrototypes.PCallHelper then
+        rootPrototypes.AnonymousHelper_32 = makeAnonymousHelper32(
+            rootPrototypes.PCallHelper,
+            rootSource.blacklistDistanceConfigFile
+        )
+    end
+
+    local makeAnonymousHelper33 = sourceFunction(
+        "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
+        "make_AnonymousHelper_33"
+    )
+    if makeAnonymousHelper33 and rootPrototypes.ReadNumericConfig then
+        rootPrototypes.AnonymousHelper_33 = makeAnonymousHelper33(
+            rootPrototypes.ReadNumericConfig,
+            rootSource.gatherMonsterCountConfigFile
+        )
+    end
+
     -- 检查点253：黑名单前置闭包按root PC顺序装配。
     local makeAnonymousHelper49 = sourceFunction(
         "04_源码候选/root49_AnonymousHelper_49.lua", "make_AnonymousHelper_49"
@@ -6924,13 +6984,13 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 253,
+        checkpoint = 254,
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
         missing = missing,
         captured_factory_closures_expected = 36,
-        captured_factory_closures_bound = 32,
-        captured_factory_closures_pending = 4,
+        captured_factory_closures_bound = 34,
+        captured_factory_closures_pending = 2,
         captured_factory_names_bound = {
             "ShowLocalNoticeByType", "DiuItems", "FindMonsterCandidates",
             "LuaSendMsg", "GetAvailableStoragePage", "GetStorageItemData",
@@ -6942,10 +7002,10 @@ do
             "PCallHelper", "FileExistCheck_pcall_wrapper", "GetMapData2DPtr",
             "FindBlacklistPlayer", "UseItemByIndex", "AnonymousHelper_49",
             "AnonymousHelper_54", "DeathAutoBlacklist", "onDamageMsg",
-            "ClearBlacklistItems"
+            "ClearBlacklistItems", "AnonymousHelper_32", "AnonymousHelper_33"
         },
         runtime_verified = false,
-        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; gather live cells and UI shared tables are passed by identity; T[44] GetWritablePath is shared by three helpers; T[52] and T[37] captures are injected; blacklistState and config filename captures are shared"
+        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; gather live cells and UI shared tables are passed by identity; T[44] GetWritablePath is shared by three helpers; T[52] and T[37] captures are injected; blacklistState and config filename captures are shared; root.children[32]/[33] anonymous wrappers are bound"
     }
 end
 
