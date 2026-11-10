@@ -2079,3 +2079,18 @@
 - LuaSendMsg捕获root T[0]/T[4]业务原名及宿主实现仍未知；未运行时验证。
 - 统计：普通Lua草稿71；完整静态恢复103/110（93.6%）；运行时验证0。
 - 下一步：恢复`root.children[41]` MoveItemToQuickUse（133条）普通Lua主体，保留代理调用实参/返回契约疑问。
+
+
+## 检查点 #191（2026-11-10）：MoveItemToQuickUse普通Lua主体复原
+
+- 对象：`root.children[41]` / legacy `root/42`，133条物理指令、26常量、0子原型、vararg_flag=2。
+- 更新`04_源码候选/短函数草稿_第六十一批.lua`，新增审计`docs/audit/检查点191_MoveItemToQuickUse普通Lua主体复原与调用点校正.md`，同步函数CSV与机器状态JSON。
+- 调用点复核：父`doInit_UI` PC131-PC145先由`SL:GetMetaValue("ITEM_INDEX_BY_NAME",name)`得到itemIndex，再调用`MoveItemToQuickUse(itemIndex,slotConfig.slot)`。父调用接收`success,message`，将message交PrintLog，success truthy时结束本组名称尝试。因此参数顺序与返回双值消费已闭合。
+- PC1-PC14获取QuickUseProxy与Bag；PC15-PC21代理缺失返回false/参数无效；PC22-PC30校验targetPos在1..GetQuickUseSize。
+- PC31-PC90 pairs遍历快捷栏Index；已在目标位置返回false/物品已在目标位置。其他位置先调用SetQuickUsePosData(position,entry,true)；目标位有条目时再按PC57-PC66以false写入两个位置并返回交换提示；目标位无条目时PC76-PC80以true写目标位置并返回移动提示。
+- PC89-PC103查询Bag:GetItemDataByItemIndex，并通过next(itemDataList)确认列表非空；空/缺失返回false/物品不存在。
+- PC104-PC116目标位有条目时调用SetQuickUsePosData(targetPos,targetEntry,true)，随后Bag:addItemData(targetEntry)。
+- PC117-PC125共同路径读取itemDataList[1]，先QuickUseProxy:DelItemData(itemEntry)，再SetQuickUsePosData(targetPos,itemEntry,false)。PC126-PC132返回true及背包移入提示。
+- 本批把原检查点86结构占位草稿升级为完整普通Lua主体草稿，但不升级完整静态恢复等级。SetQuickUsePosData布尔值业务语义、Bag返回表[1]业务身份、宿主代理副作用未验证。
+- 统计：普通Lua草稿71；完整静态恢复103/110（93.6%）；运行时验证0。
+- 下一批：依据最新CSV筛选尚未形成普通Lua主体的短函数/相似函数批量恢复。
