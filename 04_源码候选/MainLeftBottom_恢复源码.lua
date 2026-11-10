@@ -8398,4 +8398,10 @@ do
     }
 end
 
-return MainLeftBottomRecovered
+-- root PC412：原模块的最终返回值是MainLeftBottom表。
+-- 本恢复稿内部使用MainLeftBottomRecovered.sources保存工厂注册信息，
+-- 该注册容器属于恢复适配层，不是原模块导出对象。
+local recoveredRootModule = MainLeftBottomRecovered.root_module
+assert(type(recoveredRootModule) == "table",
+    "recovered MainLeftBottom root module was not assembled")
+return recoveredRootModule
