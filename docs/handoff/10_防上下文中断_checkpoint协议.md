@@ -2874,3 +2874,20 @@ Nested_match：
 - 纠正T[57]复用：PC357创建onDamageMsg并于PC359写入MainLeftBottom.onDamageMsg；PC360覆盖同一T[57]为InstallDamageHook；PC368创建BlacklistPlayerDetection并捕获T[57] live cell，因此UP[1]=InstallDamageHook。已修正主源码工厂参数名、root47捕获映射、检查点146/186和CSV。
 - 本批只闭合创建点/捕获寄存器与一个关键寄存器复用，不代表根模块源码装配完成。静态恢复109/110，运行时验证0。
 - 下一批按fanout从高到低建立root T[0..60]寄存器值生命周期表，特别核对T[4]/T[5]/T[0]/T[2]/T[3]/T[41]/T[57]/T[37]，再装配模块字段和全局导出。
+
+
+## 检查点 #237（2026-11-10）：根模块高复用寄存器值生命周期
+
+- 按root register fanout和corrected phase3反汇编，闭合T[0]/T[1]/T[2]/T[3]/T[4]/T[5]/T[37]/T[41]/T[57]九个寄存器的写入时间线与捕获时值。
+- T[0]：PC1/2建立并导出MainLeftBottom模块表；PC3覆写寄存器为a配置表，后续捕获的是a表。
+- T[1]：先后用于Blocklist、SendHookList、RecvHookList，PC30最终变成MainLeftBottom.b；捕获均发生在PC30之后。
+- T[2]：PC18的1.0先用于Blocklist，PC33覆写为z状态表并于PC35赋给MainLeftBottom.z；五处捕获均取得z表。
+- T[3]：PC19的9.0先用于Blocklist，PC42覆写为timer-state表；后续捕获均在PC42之后。
+- T[4]：PC20的10.0先用于Blocklist，PC43创建PrintLog并写入T[4]；PC72 GetStorageItemData捕获T[4]，故其提示回调确定为PrintLog。主恢复源码及第五十六批候选已将工厂参数改名printLog。
+- T[5]：PC21的60000.0先用于Blocklist，PC44临时为_G，PC46覆写为ShowLocalNoticeByType；后续捕获取得该通知闭包。
+- T[37]：PC212-PC270反复作为临时闭包寄存器；PC275写入MainLeftBottom，PC280重置，PC281-PC282构造{"随机传送石"}；PC356与PC381捕获的都是该数组。
+- T[41]：PC286创建并初始化黑名单状态表，PC294赋给MainLeftBottom.blacklist；五个捕获点共享同一表cell。
+- T[57]：PC327-PC349先作为八向数值表的{1,1}子表；PC357写入onDamageMsg并于PC359存入MainLeftBottom.onDamageMsg；PC360覆写为InstallDamageHook；PC370捕获的是InstallDamageHook。
+- 所有捕获时值均按OP_387 live-cell规则取创建闭包时寄存器的当前值，不使用最初写入值或过期临时值。
+- 完整静态恢复保持109/110，运行时验证0；本批闭合的是根模块数据流，不代表完整根模块装配完成。
+- 下一批继续T[7]/T[8]/T[50]/T[55]/T[56]/T[58]等剩余寄存器生命周期，再完成全寄存器捕获映射和root PC1-PC412装配。
