@@ -7662,7 +7662,7 @@
     "binding_policy": "Only capture_count=0 direct children; captured factories remain pending until shared live-cell bindings are implemented.",
     "runtime_verified": false
   },
-  "next_action": "检查点268：从02_基础索引/03_函数状态清单.csv筛选尚未完整静态恢复的普通Lua原型，优先恢复短小、无子原型、控制流简单且有完整反汇编证据的业务函数；确认109/110中唯一未完整项的真实路径后再处理，避免凭统计猜测。",
+  "next_action": "检查点268：核对PC390-PC412的doInit_UI 20项父捕获、PC411写入MainLeftBottom.doInit、PC412返回根模块表，并复核21项全局导出/10项模块字段的PC位置。",
   "root_assembly_checkpoint_247": {
     "direct_child_closures_expected": 22,
     "direct_child_closures_source_bound": 22,
@@ -11456,6 +11456,7 @@
     "date": "2026-11-10",
     "root_pc_range": "350-388",
     "source_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
+    "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
     "closures": [
       {
         "pc": 350,
@@ -11464,15 +11465,14 @@
         "captures": [
           52
         ],
-        "source": "04_源码候选/root22_GetMapData2DPtr.lua",
-        "note": "UP0捕获T52；可达PC1-PC37不读取该Upvalue"
+        "factory": "make_GetMapData2DPtr"
       },
       {
         "pc": 352,
         "name": "PCallHelper_2",
         "prototype": "root.children[48]",
         "captures": [],
-        "source": "04_源码候选/代理与回调短函数_第四批.lua"
+        "direct": true
       },
       {
         "pc": 353,
@@ -11481,7 +11481,7 @@
         "captures": [
           54
         ],
-        "source": "04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua"
+        "factory": "make_FindBlacklistPlayer"
       },
       {
         "pc": 355,
@@ -11490,7 +11490,7 @@
         "captures": [
           37
         ],
-        "source": "04_源码候选/短函数草稿_第三十一批.lua"
+        "factory": "make_UseItemByIndex"
       },
       {
         "pc": 357,
@@ -11502,8 +11502,7 @@
         "module_field": {
           "pc": 359,
           "target": "MainLeftBottom.onDamageMsg"
-        },
-        "source": "04_源码候选/root52_onDamageMsg.lua"
+        }
       },
       {
         "pc": 360,
@@ -11513,11 +11512,10 @@
           0,
           4
         ],
-        "register": {
-          "pc": 360,
-          "target": "T57 live cell"
-        },
-        "source": "04_源码候选/短函数草稿_第三十九批.lua"
+        "live_cell": {
+          "register": 57,
+          "cell": "rootCells[57]"
+        }
       },
       {
         "pc": 363,
@@ -11529,7 +11527,7 @@
           55,
           5
         ],
-        "source": "04_源码候选/root25_DeathAutoBlacklist.lua"
+        "factory": "make_DeathAutoBlacklist"
       },
       {
         "pc": 368,
@@ -11550,11 +11548,10 @@
           40,
           37
         ],
-        "global_export": {
+        "export": {
           "pc": 382,
           "target": "_G.BlacklistItems"
-        },
-        "source": "04_源码候选/root47_BlacklistPlayerDetection.lua"
+        }
       },
       {
         "pc": 383,
@@ -11566,25 +11563,90 @@
           5,
           41
         ],
-        "global_export": {
+        "export": {
           "pc": 388,
           "target": "_G.ClearBlacklistItems"
-        },
-        "source": "04_源码候选/短函数草稿_第五十四批.lua"
+        }
       }
     ],
-    "critical_identity_guards": [
-      "MainLeftBottom.blacklist === rootSource.blacklistState",
-      "MainLeftBottom.onDamageMsg === rootPrototypes.onDamageMsg",
-      "rootCells[57].value === rootPrototypes.InstallDamageHook",
-      "rootCells[57].value !== rootPrototypes.onDamageMsg",
-      "_G.BlacklistItems === rootPrototypes.BlacklistPlayerDetection",
-      "_G.ClearBlacklistItems === rootPrototypes.ClearBlacklistItems"
+    "distinct_function_identities": {
+      "PC357": "onDamageMsg message-handler closure; module field only",
+      "PC360": "InstallDamageHook installer closure; parent T[57] value",
+      "PC368_UP1": "captures rootCells[57] live cell containing InstallDamageHook, not onDamageMsg"
+    },
+    "live_cells": {
+      "T[57]": {
+        "created_from": "InstallDamageHook at PC360-PC362",
+        "adapter": "rootCells[57] = newLiveCell(InstallDamageHook)",
+        "uniqueness_checked_against": "rootCells[14..22]",
+        "consumed_by": "BlacklistPlayerDetection UP[1]",
+        "value_assertion": "rootCells[57].value == rootPrototypes.InstallDamageHook and ~= rootPrototypes.onDamageMsg"
+      }
+    },
+    "T52_validation": {
+      "source": "rootSource.opaquePairTable",
+      "constructed_pc_range": "316-349",
+      "expected": [
+        [
+          1,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          -1
+        ]
+      ],
+      "validation": "outer length 8; each pair table and both numeric members compared exactly",
+      "business_semantics": "unknown; do not label as direction/pathfinding data"
+    },
+    "guards": [
+      "GetMapData2DPtr",
+      "PCallHelper_2",
+      "FindBlacklistPlayer",
+      "UseItemByIndex",
+      "onDamageMsg",
+      "InstallDamageHook",
+      "DeathAutoBlacklist",
+      "BlacklistPlayerDetection",
+      "ClearBlacklistItems",
+      "doInit_UI"
     ],
-    "capture_correction": "PC357 onDamageMsg captures T41 and is stored in MainLeftBottom.onDamageMsg at PC359. PC360 InstallDamageHook captures T0/T4 and overwrites parent T57. PC368 BlacklistPlayerDetection UP1 captures the T57 live cell, whose current value is InstallDamageHook. The two closures are not interchangeable.",
+    "identity_assertions": [
+      "rootModule.blacklist == rootSource.blacklistState",
+      "rootModule.onDamageMsg == rootPrototypes.onDamageMsg",
+      "rootCells[57].value == rootPrototypes.InstallDamageHook",
+      "rootCells[57].value ~= rootPrototypes.onDamageMsg",
+      "_G.BlacklistItems == rootPrototypes.BlacklistPlayerDetection",
+      "_G.ClearBlacklistItems == rootPrototypes.ClearBlacklistItems"
+    ],
     "caveats": [
-      "All new identity assertions are recovery-adapter safeguards, not original source statements.",
-      "Child function bodies remain static reconstructions; no target runtime validation performed."
+      "rootCells[57] is a live-cell recovery adapter, not claimed to be the author's original data structure.",
+      "T[52] is preserved as raw numeric pairs; its business semantics remain unknown.",
+      "No Lua compiler or target-game runtime validation has been performed."
     ],
     "runtime_verified": false
   }
