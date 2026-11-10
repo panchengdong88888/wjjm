@@ -32,7 +32,7 @@
 
 ## 共享对象核对
 
-- UP[0]接收rootModule，即MainLeftBottom模块表。
+- UP[0]接收rootModule.z，即MainLeftBottom.z功能状态表（DiuItems等同一T[2]寄存器）。
 - UP[2]接收rootSource.blacklistState，与MainLeftBottom.blacklist、onDamageMsg、DeathAutoBlacklist及ClearBlacklistItems共享同一表对象。
 - UP[3..12]分别复用前序已静态实例化的工厂、直接绑定函数、配置数值和原始捕获表。
 - 该工厂不在此处创建新的blacklistState副本，也不重新构造随机传送物品名称数组。
