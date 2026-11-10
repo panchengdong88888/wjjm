@@ -3309,3 +3309,15 @@ Nested_match：
 - 新建`docs/audit/检查点268_PC390-PC412最终UI入口导出账本与根模块返回校验.md`；更新主恢复稿、root候选、机器状态、闭包装配表、CSV和结构树。
 - 完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或游戏运行。
 - 下一步检查点269：对主恢复文件做结构/语法层静态审计，检查词法块、do/end、注册表边界、重复字段/导出、过时PC注释和适配变量；探测可用Lua/luac工具。
+
+
+## 检查点 #268（2026-11-10）：PC389 T[59]模块表重读与doInit捕获校正
+
+- 回查原始`02_基础索引/MainLeftBottom_vm_dump.json`的root.ins PC389-PC412，不仅依赖既有注释。
+- PC389原始指令`[82,137,59,"MainLeftBottom",null]`将`_ENV.MainLeftBottom`读入独立临时寄存器T[59]。
+- PC390创建doInit_UI；PC392/393/394分别捕获T[2]/T[3]/T[0]。根据既有寄存器时间线，值仍分别是MainLeftBottom.z、timerState、MainLeftBottom.a。PC389没有覆写这三个寄存器。
+- PC411原始指令`[144,268,59,"doInit",60]`将T[60]闭包写入T[59].doInit。
+- 主恢复稿在PC389位置读取`local doInitModule = _G.MainLeftBottom`，并在PC411写入`doInitModule.doInit`；UP1/UP2/UP3仍注入z/timerState/a，不作错误更改。
+- 修正`docs/handoff/12_根模块闭包装配表.json`中doInit_UI的UP1/UP2/UP3 value旧错误，并新增T[59]原始事件记录；新建`docs/audit/检查点268_PC389-T59模块表重读与doInit捕获校正.md`。
+- 静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或游戏运行。
+- 下一步检查点269：将root PC389-PC412全部20项捕获与register_value_timeline逐槽对账，并确认PC411/PC412返回链；不能把适配器静态校验标成运行时验证。
