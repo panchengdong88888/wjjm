@@ -1420,19 +1420,21 @@ do
 local make_Nested_JsonDecode
 
 local function make_onDamageMsg(blacklistState)
-    return function(messageJson)
-        -- fixed_param_count=1; additional arguments are not read.
-        -- PC 1-5: reject a false/nil or empty first argument.
+    return function(arg1, messageJson)
+        -- fixed_param_count=2; PC1/PC3 gate on the second fixed parameter.
         if not messageJson or messageJson == "" then
             return
         end
 
         -- PC 6-16: decode the JSON under pcall; require a table result.
-        -- root.children[52].children[0]：捕获messageJson；PC1-PC4使用SL.JsonDecode点调用。
+        -- root.children[52].children[0]：捕获父帧T[0] cell；父PC8随后将T[0]改写为第二固定参数messageJson。
+        local decodeInput = arg1
         local function decodeMessage()
             local jsonDecode = SL.JsonDecode
-            return jsonDecode(messageJson)
+            return jsonDecode(decodeInput)
         end
+        -- OP_387 captured the parent T[0] cell; PC8 then overwrites T[0] with T[1].
+        decodeInput = messageJson
         local decodeOk, message = pcall(decodeMessage)
         if not decodeOk or type(message) ~= "table" then
             return
