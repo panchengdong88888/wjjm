@@ -2,7 +2,7 @@
 -- 原型：root / MainLeftBottom_Module
 -- 规范路径：root
 -- 规模：412条物理指令、109常量、58个直接子原型
--- 检查点192-198、262-268：根模块分段普通Lua草稿，PC1-PC412均已建立分段记录；非作者原文逐字恢复，未运行时验证。
+-- 检查点192-198、262-269：根模块分段普通Lua草稿，PC1-PC412均已建立分段记录；非作者原文逐字恢复，未运行时验证。
 -- 状态：不是完整根模块源码，尚未运行时验证。
 -- 检查点236：58个直接子原型闭包创建点与135个OP_387 live-cell捕获已建表，见docs/handoff/12_根模块闭包装配表.json。
 
@@ -357,6 +357,7 @@ local opaquePairTable = {
 -- PC392/PC393/PC394仍分别捕获T[2]=MainLeftBottom.z、T[3]=timerState、T[0]=MainLeftBottom.a；
 -- PC389不覆盖这三个寄存器。
 -- PC390-PC410：创建root.children[42] / doInit_UI，捕获20项父root寄存器：
+-- 其中UP[8]=T[8]=gatherConfig（PC86-PC89构造后未再覆写），传入Nested_InitGatherMonsters的config形参；不是FindMonsterInCurrViewField。
 -- [T[4], T[2], T[3], T[0], T[1], T[41], T[48], T[7], T[8], T[50],
 --  T[49], T[5], T[44], T[42], T[51], T[43], T[47], T[11], T[12], T[9]]。
 -- 20项槽位身份已由检查点256逐项闭合；完整顺序与装配值见docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md。
@@ -754,3 +755,9 @@ end
 -- 检查点268：PC389/PC411原始指令核对。
 -- PC389把_ENV.MainLeftBottom读入T[59]；PC392/393/394捕获的T[2]/T[3]/T[0]
 -- 仍分别是z/timerState/a。PC411向T[59].doInit写入doInit_UI；详见检查点268审计。
+
+
+-- 检查点269：PC390-PC410 doInit_UI二十项捕获逐槽对账。
+-- UP[8]捕获T[8]=gatherConfig；Nested_InitGatherMonsters(config,getThreshold)会写config.GATHER_THRESHOLD。
+-- 主恢复稿已将UP[8]注入rootSource.gatherConfig，并断言三个配置字段10/0.5/1。
+-- 完整20槽映射见docs/audit/检查点269_doInit_UI二十项捕获逐槽对账与T8配置表修正.md。
