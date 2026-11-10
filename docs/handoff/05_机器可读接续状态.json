@@ -45,9 +45,11 @@
     "root.children[6].children[0]": "Nested_onDamageMsg：18条；检查点179闭合父InstallDamageHook捕获：UP0=MainLeftBottom模块表（root T[0]），UP1=原始MSG_SC_DAMAGE_HP处理函数（父R2）。若模块表.onDamageMsg为function则pcall(callback,arg1,arg2)但丢弃结果；所有路径随后均调用原处理器并转发其多返回值；回调异常由pcall保护，不阻断原处理器。PC17-PC18不可达，额外vararg不读取。完整静态恢复，未运行时验证。",
     "root.children[52]": "onDamageMsg：72条；检查点180闭合UP0=root T[41]黑名单状态表、Nested_JsonDecode捕获首个JSON参数T[1]、pcall/表类型门槛、MAIN_ACTOR_ID/UserID/AttackUserID过滤、ACTOR_IS_HERO/MASTER_ID/NAME查询及分身纯文本过滤；最终写入blacklistState.lastAttacker={id,name}。完整静态恢复，未运行时验证；仅记录攻击者，不直接执行加黑请求。",
     "root.children[25]": "DeathAutoBlacklist：47条+子原型6条；检查点181闭合UP0=root T[41]黑名单状态表、UP1=T[4] PrintLog、UP2=T[55] FindBlacklistPlayer、UP3=T[5] ShowLocalNoticeByType。取出lastAttacker后清空共享字段；检查记录/name及黑名单命中；未命中时输出日志/本地通知，并按0..5循环以0.5*index安排6次ScheduleOnce，子闭包捕获记录表并调用RequestAddBlacklistByName(record.name)。完整静态恢复，未运行时验证。",
-    "root.children[22]": "GetMapData2DPtr（144条，UP0捕获root T[52]但活动路径不读取）：检查点184确认PC1-PC37是唯一可达路径；检查五实参、相同坐标返回0、maxDistance<=0返回nil、计算Chebyshev max(abs(dx),abs(dy))、超限返回nil否则返回距离；PC37无条件return，PC38-PC144不可达死尾部。完整静态恢复，未运行时验证。"
+    "root.children[22]": "GetMapData2DPtr（144条，UP0捕获root T[52]但活动路径不读取）：检查点184确认PC1-PC37是唯一可达路径；检查五实参、相同坐标返回0、maxDistance<=0返回nil、计算Chebyshev max(abs(dx),abs(dy))、超限返回nil否则返回距离；PC37无条件return，PC38-PC144不可达死尾部。完整静态恢复，未运行时验证。",
+    "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
+    "root.children[12]": "LuaSendMsg（92条）检查点190修订普通Lua草稿：固定六参，arg1为Blocklist/SendHookList键，arg2..5为param1..4，arg6为msgId；table.find命中只跳过日志；SendHookList函数经pcall(hook,arg1,arg6,message)，成功且返回true才拦截；否则networkCtl:SendMsg原六参转发。捕获root T[0]/T[4]业务原名与宿主语义待验证。"
   },
-  "next_action": "检查点189已将root.children[50] StorageItems（224条）从注释骨架恢复为完整普通Lua主体草稿；三个UPVALUE按实际用途临时命名，复用已完成的Nested_isOutputted与Nested_Anonymous_2。下一批转向root.children[22] GetMapData2DPtr（144条）已有首版草稿，优先批量恢复可读主体；vararg映射、障碍物契约、循环细节和最终返回值保留TODO，不阻止第一层产出。",
+  "next_action": "检查点190已完成root.children[36] GetAvailableStoragePage（51条）逐PC完整静态恢复，并修订root.children[12] LuaSendMsg（92条）六参数映射、Blocklist日志门控、SendHookList pcall拦截及原六参网络转发。下一批优先恢复root.children[41] MoveItemToQuickUse（133条）普通Lua主体；先形成可读草稿，再集中复核代理方法实参和返回契约。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -120,7 +122,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "189"
+    "last_checkpoint": "190"
   },
   "static_recovered_functions": [
     {
@@ -2210,28 +2212,49 @@
         "Validates Dura and DuraMax and returns boolean.",
         "All 52 instructions reconciled; upper-level capture identities unresolved; not runtime validated."
       ]
+    },
+    {
+      "path": "root.children[36]",
+      "legacy_path": "root/37",
+      "name": "GetAvailableStoragePage",
+      "source_file": "04_源码候选/短函数草稿_第十四批.lua",
+      "audit_file": "docs/audit/检查点190_GetAvailableStoragePage与LuaSendMsg批量恢复.md",
+      "status": "complete_static_reconstruction_not_runtime_verified",
+      "physical_instructions": 51,
+      "constant_count": 12,
+      "child_count": 0,
+      "parent_path": "root",
+      "parent_create_pc": 68,
+      "capture_count": 1,
+      "notes": [
+        "51条指令逐PC闭合；root PC68创建闭包，PC69捕获root T[4]作为仓库代理未初始化提示回调。",
+        "NPCStorageProxy缺失时提示并返回nil；否则逐页读取#pageData或0，按min(pageCapacity,openSize-(page-1)*pageCapacity)计算页上限。",
+        "返回首个pageLimit>0且pageLimit>currentCount的页码；遍历耗尽返回nil。",
+        "完整静态恢复，不代表宿主运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "189",
+    "checkpoint": "190",
     "targets": [
-      "root.children[50]"
+      "root.children[36]",
+      "root.children[12]"
     ],
-    "status": "Converted StorageItems from a comment-only skeleton into an ordinary Lua body draft covering all major control-flow paths, filters, child closure calls, storage request parameters and local bookkeeping.",
-    "audit_file": "docs/audit/检查点189_StorageItems普通Lua主体批量恢复.md",
+    "status": "Completed static reconstruction of GetAvailableStoragePage and corrected LuaSendMsg's six-argument mapping, Blocklist logging gate, SendHookList pcall interception and exact fallback forwarding.",
+    "audit_file": "docs/audit/检查点190_GetAvailableStoragePage与LuaSendMsg批量恢复.md",
     "files": [
-      "04_源码候选/短函数草稿_第六十批.lua",
-      "docs/audit/检查点189_StorageItems普通Lua主体批量恢复.md",
-      "02_基础索引/03_函数状态清单.csv"
+      "04_源码候选/短函数草稿_第十四批.lua",
+      "04_源码候选/短函数草稿_第五十批.lua",
+      "02_基础索引/03_函数状态清单.csv",
+      "docs/audit/检查点190_GetAvailableStoragePage与LuaSendMsg批量恢复.md"
     ],
     "findings": [
-      "UP0/UP1/UP2 expressed as provisional role parameters: state table, precheck/child0 callback, process-output callback.",
-      "Page occupancy and child1 factory use verified maxPage/pageCapacity/openSize/storedPageData capture mapping.",
-      "Single pairs loop retains MakeIndex dedupe, ITEM_IS_BIND(item), one-item filter list and 18-item special-name loop.",
-      "Nested_isOutputted truthy branch continues to storage; false/nil skips current item.",
-      "LuaSendMsg has seven call-site arguments in verified order; server field semantics and 999999999 meaning remain unknown.",
-      "PC211 increments after the LuaSendMsg call returns; count is request queue count, not server-confirmed storage success."
+      "GetAvailableStoragePage returns the first page whose min(pageCapacity,openSize-(page-1)*pageCapacity) exceeds current occupancy, with positive pageLimit; no page returns nil.",
+      "GUIDefine.STORAGE_PER_PAGE_MAX fallback global.MMO.NPC_STORAGE_MAX_PAGE is single-page capacity, not a max-page truncation.",
+      "LuaSendMsg arg1 is the blocklist/hook key; arg2..5 map param1..4; arg6 maps msgId; recog=0.",
+      "Blocklist hit suppresses only log creation; hook and fallback send continue.",
+      "A function hook is pcalled with (arg1,arg6,message); only successful strict true intercepts; otherwise the original six arguments go to networkCtl:SendMsg."
     ]
   },
   "corrections": [
@@ -2567,19 +2590,16 @@
       "legacy_path": "root/13",
       "name": "LuaSendMsg",
       "source_file": "04_源码候选/短函数草稿_第五十批.lua",
-      "audit_file": "docs/audit/检查点74_LuaSendMsg首版草稿.md",
-      "status": "first_pass_draft_parameter_slots_upvalue_identities_hook_contract_pending_not_runtime_verified",
+      "audit_file": "docs/audit/检查点190_GetAvailableStoragePage与LuaSendMsg批量恢复.md",
+      "status": "first_pass_draft_revised_checkpoint_190_parameter_mapping_blocklist_hook_flow_pending_capture_names_host_runtime_not_runtime_verified",
       "physical_instructions": 92,
       "constant_count": 34,
       "child_count": 0,
       "notes": [
-        "Root PC48 creates closure with UPVALUE_0 <- root T[0], UPVALUE_1 <- root T[4]; business identities unresolved",
-        "PC1-PC27 builds a message record with recog/msgId/param1..param4 fields and follows Blocklist/tonumber path",
-        "PC28-PC62 uses ipairs/table.insert/type/tostring/table.concat to build LuaSendMsg(...) text and invokes a captured callable",
-        "PC63-PC86 accesses SendHookList, checks function type, invokes pcall and branches on boolean results",
-        "PC87-PC92 invokes global.networkCtl.SendMsg as fallback",
-        "Parameter-to-field mapping, Blocklist condition, captured callable contract, hook key/arguments/return behavior, and SendMsg argument stack remain pending",
-        "No runtime validation"
+        "六参映射：arg1为Blocklist/SendHookList键，arg2..5为param1..4，arg6为msgId，recog=0。",
+        "Blocklist通过table.find(Blocklist,tonumber(arg1))命中时仅跳过日志；不阻断hook/发送。",
+        "SendHookList[arg1]若为function，则pcall(hook,arg1,arg6,message)，成功且返回严格true才拦截；否则原六参转发networkCtl:SendMsg。",
+        "root T[0]/T[4]捕获业务原名及宿主运行时语义未知。"
       ]
     },
     {
@@ -2905,52 +2925,53 @@
   ],
   "draft_function_count": 71,
   "ordinary_lua_draft_functions": 71,
-  "last_checkpoint": "189",
-  "checkpoint": "189",
+  "last_checkpoint": "190",
+  "checkpoint": "190",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 189,
+    "number": 190,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/短函数草稿_第六十批.lua",
-      "docs/audit/检查点189_StorageItems普通Lua主体批量恢复.md",
+      "04_源码候选/短函数草稿_第十四批.lua",
+      "04_源码候选/短函数草稿_第五十批.lua",
+      "docs/audit/检查点190_GetAvailableStoragePage与LuaSendMsg批量恢复.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 71,
-    "complete_static_reconstructions": 102,
+    "complete_static_reconstructions": 103,
     "runtime_verified": 0,
-    "notes": "StorageItems 224条函数从注释骨架恢复为普通Lua主体草稿；不增加草稿数量、不升级完整静态恢复。"
+    "notes": "GetAvailableStoragePage 51条完整静态恢复；LuaSendMsg既有草稿参数/钩子路径修订。完整静态数量+1，运行时验证仍0。"
   },
   "latest_checkpoint": {
-    "checkpoint": "189",
-    "summary": "StorageItems普通Lua主体草稿恢复完成：224条控制流、两子闭包调用、过滤/去重、页容量、LuaSendMsg七项参数及本地记账均以可读代码表达；UP槽原名、服务端协议字段和运行时语义保留未决。",
-    "audit_file": "docs/audit/检查点189_StorageItems普通Lua主体批量恢复.md",
+    "checkpoint": "190",
+    "summary": "GetAvailableStoragePage逐PC完整静态恢复并修正旧近似算法；LuaSendMsg普通Lua草稿修正六参映射、Blocklist仅抑制日志、SendHookList pcall严格true拦截及原六参网络转发。",
+    "audit_file": "docs/audit/检查点190_GetAvailableStoragePage与LuaSendMsg批量恢复.md",
     "unresolved": [
-      "StorageItems三个父UPVALUE的更上层业务原名",
-      "LuaSendMsg第4字段服务端正式名称/编码",
-      "999999999常量业务含义",
-      "LuaSendMsg调用后请求计数不等同服务端确认数",
-      "宿主运行时验证"
+      "LuaSendMsg捕获root T[0]/T[4]的作者级业务身份",
+      "table.find及SendHookList/Blocklist宿主实现语义",
+      "LuaSendMsg与networkCtl运行时行为",
+      "MoveItemToQuickUse父级代理实参与返回契约",
+      "运行时验证"
     ]
   },
-  "complete_static_reconstruction_count": 102,
-  "complete_static_reconstruction": "102/110 (92.7%)",
+  "complete_static_reconstruction_count": 103,
+  "complete_static_reconstruction": "103/110 (93.6%)",
   "progress_reconciled": {
     "source_of_counts": "以02_基础索引/03_函数状态清单.csv函数状态列为统计依据。",
     "ordinary_lua_draft_functions": 71,
-    "complete_static_reconstruction_functions": 102,
+    "complete_static_reconstruction_functions": 103,
     "runtime_verified_functions": 0,
-    "checkpoint": 189,
-    "note": "检查点189将StorageItems现有注释骨架改为224条函数的普通Lua主体草稿；不新增草稿函数，不升级完整静态恢复，运行时验证仍为0。",
+    "checkpoint": 190,
+    "note": "检查点190将GetAvailableStoragePage升级为完整静态恢复，并修订LuaSendMsg既有普通Lua草稿；草稿总数不变，完整静态恢复增加1，运行时验证仍为0。",
     "ordinary_lua_drafts": 71,
-    "complete_static_reconstruction": 102,
+    "complete_static_reconstruction": 103,
     "runtime_verified": 0
   },
   "counts": {
     "ordinary_lua_drafts": 71,
-    "complete_static_reconstruction": 102,
+    "complete_static_reconstruction": 103,
     "runtime_verified": 0
   }
 }
