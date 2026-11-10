@@ -2318,7 +2318,7 @@ local function make_doInit_UI(UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALU
     -- 装配适配层：按root闭包捕获顺序接收20个值，构造0基UP槽位表。
     -- 该表只是恢复代码的显式依赖容器，不是声称原作者使用了此表。
     local UP = { [0] = UPVALUE_0, [1] = UPVALUE_1, [2] = UPVALUE_2, [3] = UPVALUE_3, [4] = UPVALUE_4, [5] = UPVALUE_5, [6] = UPVALUE_6, [7] = UPVALUE_7, [8] = UPVALUE_8, [9] = UPVALUE_9, [10] = UPVALUE_10, [11] = UPVALUE_11, [12] = UPVALUE_12, [13] = UPVALUE_13, [14] = UPVALUE_14, [15] = UPVALUE_15, [16] = UPVALUE_16, [17] = UPVALUE_17, [18] = UPVALUE_18, [19] = UPVALUE_19 }
-    return function doInit_UI()
+    local function doInit_UI()
     -- PC390在root创建本闭包时明确捕获20个父级T寄存器。
     -- UP[0..19]依次对应父root的T[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。
     -- 可直接确认的身份：UP[0]=PrintLog函数；UP[1]与UP[3]均引用MainLeftBottom模块表；
@@ -2661,6 +2661,7 @@ end
 -- If ENV.ipairs has standard Lua semantics and the call completes, its third return is 0;
 -- the concrete host/runtime value is not promoted to verified without confirming ENV.ipairs.
 
+    return doInit_UI
 end -- make_doInit_UI factory
   local __exports = {}
   if Nested_find ~= nil then __exports["Nested_find"] = Nested_find end
