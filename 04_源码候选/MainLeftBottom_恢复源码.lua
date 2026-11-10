@@ -5812,6 +5812,8 @@ do
     -- PC44-PC45：T[5]暂存_G；PC45执行_G.log=T[4]。
     rootRegisters[5] = _G
     rootRegisters[5].log = rootRegisters[4]
+    assert(_G.log == rootPrototypes.PrintLog,
+        "PC45 _G.log export identity mismatch")
 
     -- PC46-PC47：创建ShowLocalNoticeByType，捕获T[0]=a表，随后覆写T[5]。
     local makeShowNotice = sourceFunction(
@@ -5835,6 +5837,9 @@ do
         rootRegisters[6] = requireRecoveredClosure("LuaSendMsg", rootPrototypes.LuaSendMsg)
         rootRegisters[0].LuaSendMsg = rootRegisters[6]
     end
+    rootPrototypes.LuaSendMsg = requireRecoveredClosure(
+        "LuaSendMsg", rootPrototypes.LuaSendMsg
+    )
     assert(rootRegisters[0].LuaSendMsg == rootPrototypes.LuaSendMsg,
         "PC51 LuaSendMsg module-field attachment failed")
 
@@ -5927,6 +5932,30 @@ do
     end
     rootRegisters[8] = requireRecoveredClosure("PickUpItems", rootPrototypes.PickUpItems)
     _G.PickUpItems = rootRegisters[8]
+
+    -- 检查点274：核对PC43-PC85的即时导出与寄存器最终身份。
+    assert(rootRegisters[4] == rootPrototypes.PrintLog
+        and _G.log == rootPrototypes.PrintLog,
+        "PC43-PC45 PrintLog/T[4]/_G.log identity mismatch")
+    assert(rootRegisters[5] == rootPrototypes.ShowLocalNoticeByType,
+        "PC46-PC47 T[5] closure identity mismatch")
+    assert(rootRegisters[6] == rootPrototypes.ScheduleOnce
+        and rootRegisters[7] == rootPrototypes.Schedule,
+        "PC52-PC53 T[6]/T[7] closure identity mismatch")
+    assert(rootRegisters[8] == rootPrototypes.PickUpItems
+        and _G.PickUpItems == rootPrototypes.PickUpItems,
+        "PC83-PC85 final T[8]/PickUpItems identity mismatch")
+    assert(_G.GetMapId == rootPrototypes.GetMapId
+        and _G.GetMapName == rootPrototypes.GetMapName
+        and _G.PlayerPos == rootPrototypes.PlayerPos
+        and _G.GetDroppedItems == rootPrototypes.GetDroppedItems
+        and _G.MoveTo == rootPrototypes.MoveTo
+        and _G.DiuItems == rootPrototypes.DiuItems
+        and _G.GetAvailableStoragePage == rootPrototypes.GetAvailableStoragePage
+        and _G.GetStorageItemData == rootPrototypes.GetStorageItemData
+        and _G.StorageItems == rootPrototypes.StorageItems
+        and _G.TakeItems == rootPrototypes.TakeItems,
+        "PC54-PC82 T[8] sequential global export identity mismatch")
 
     -- 检查点261：gatherStatusText在root source候选的独立词法块内声明，
     -- 通过__exports导出为rootSource.gatherStatusText；不能在本装配词法块
@@ -6558,7 +6587,7 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 273,
+        checkpoint = 274,
         root_pc86_pc211_ordered = true,
         root_pc181_pc258_ordered = true,
         root_pc297_pc357_ordered = true,
@@ -6582,6 +6611,7 @@ do
         checkpoint272_source_function_references_resolved = true,
         checkpoint272_bind_direct_references_resolved = true,
         checkpoint273_root_initial_table_identity_checked = true,
+        checkpoint274_pc43_pc85_register_export_identity_checked = true,
         source_registry_registration_count = 53,
         source_registry_unique_key_count = 53,
         source_function_literal_reference_count = 37,
