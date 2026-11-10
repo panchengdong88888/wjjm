@@ -1,8 +1,8 @@
 --[[
 MainLeftBottom(2).lua 明文恢复整合稿（静态候选）
-生成：2026-11-10 | GitHub checkpoint 260
+生成：2026-11-10 | GitHub checkpoint 261
 用途：按110原型索引和PC级证据整合普通Lua候选、根模块状态及58个直接子闭包。
-当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配；PC43-PC85及PC181-PC258闭包已按VM创建顺序整合，PC357-PC388黑名单闭包顺序已校正。
+当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配；PC43-PC85、PC181-PC258及PC297-PC388闭包已按VM创建顺序整合；检查点261修正采集状态表的跨词法块引用。
 重要：
 - 根模块初始化与闭包创建仍采用明确标注的恢复适配结构，不冒充原作者逐字源码。
 - 所有函数体仍按原型路径保留；根装配按OP_387捕获顺序绑定共享cell和状态表。
@@ -7959,6 +7959,9 @@ do
     end
     _G.PickUpItems = rootPrototypes.PickUpItems
 
+    -- 检查点261：gatherStatusText在root source候选的独立词法块内声明，
+    -- 通过__exports导出为rootSource.gatherStatusText；不能在本装配词法块
+    -- 直接引用同名局部变量，否则会读到全局nil。
     -- root PC86-PC180：配置、奖励记录和采集状态值已在root source候选中按PC顺序建立：
     -- PC86-PC89 gatherConfig；PC90-PC95 rootRegister11=18000；
     -- PC96-PC167 loginAndOnlineRewardEntries；PC168-PC172 gatherStatusText/currentState；
@@ -8374,12 +8377,13 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 260,
+        checkpoint = 261,
         root_pc86_pc211_ordered = true,
         root_pc181_pc258_ordered = true,
         root_pc297_pc357_ordered = true,
         root_pc357_pc388_ordered = true,
         root_prefix_pc43_pc85_ordered = true,
+        checkpoint261_gather_status_scope_fixed = true,
         root_late_direct_bindings_at_pc = { IsInWhitelistMap = 212, MoveItemToQuickUse = 259, GetWritablePath = 297, PCallHelper_2 = 352 },
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
