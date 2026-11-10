@@ -3050,3 +3050,14 @@ Nested_match：
 - 有捕获工厂累计18/36，剩余18；无捕获直接子原型22/22；完整静态恢复109、普通Lua草稿72、运行时验证0。此批只完成装配，不增加完整静态函数计数。
 - 静态检查确认MainLoop工厂中九个可变捕获槽均经`.value`读写，独立MainLoop候选与汇总源码保持同步；未声称Lua编译或目标运行时通过。
 - 下一步检查点251：优先装配剩余稳定函数/表捕获闭包；任何新增可变标量捕获必须先建立同一父寄存器唯一cell，不允许按值快照。
+
+
+## 检查点 #251（2026-11-10）：UI闭包共享模块表装配
+
+- 已将root.children[37] DestroyUI、root.children[10] SetButtonVisibilityState、root.children[40] ShowHideAllButtons三个已完成静态恢复的工厂实际接入根模块装配器。
+- 捕获顺序严格按父root T寄存器：DestroyUI=[T[0],T[3],T[1]]；SetButtonVisibilityState=[T[0],T[1]]；ShowHideAllButtons=[T[3],T[1],T[0]]。
+- T[0]统一绑定根模块MainLeftBottom.a（含isHidden/hidebut/resWin等UI状态字段）；T[1]统一绑定MainLeftBottom.b按钮映射表；T[3]统一绑定根模块timerState。三个对象按引用共享，不做值复制。
+- 按根模块字节码字段写入点，DestroyUI挂接MainLeftBottom.hide，SetButtonVisibilityState挂接MainLeftBottom.show，ShowHideAllButtons挂接MainLeftBottom.destroy；不是全局导出。
+- 有捕获工厂累计21/36，剩余15；无捕获直接子原型22/22。完整静态恢复109、普通Lua草稿72、运行时验证0，本批不增加函数完成计数。
+- 尚未运行目标Lua宿主，不能宣称UI实际行为验证通过。
+- 下一步检查点252：优先处理剩余稳定函数/表捕获短闭包；重点核对T[44] GetWritablePath在root.children[9]/[17]/[0]创建前是否已有确定的生产者与同一引用。
