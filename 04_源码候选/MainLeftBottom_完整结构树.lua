@@ -1,0 +1,562 @@
+-- MainLeftBottom(2).lua：完整原型结构树（基于仓库既有静态索引生成）
+-- 目的：先恢复全文件模块/函数层级，供后续逐函数审阅；本文件不是可运行源码。
+-- 权威来源：02_基础索引/02_原型总索引.json、03_函数状态清单.csv、04_闭包捕获映射.json、05_机器可读接续状态.json
+-- 总量：110 prototypes / 5,580 physical instructions；root 为 412 条，58 个直接子原型。
+-- 路径：统一采用 JSON 零基 root.children[n]；legacy root/n 为旧报告一基标签，不能混用。
+-- 参数说明：索引没有可靠的固定参数个数；不从 vararg_flag 猜参数数。vararg_flag 原值照录。
+-- upvalue：优先使用 closure_creation_sites.capture_count；缺少创建点时标为 unknown。
+-- 状态：来自函数状态清单；细节仅截取摘要，完整审计仍以原文件为准。
+
+-- MODULE: MainLeftBottom_Module [root]
+  -- [STATIC-COMPLETE] FileExistCheck_pcall_wrapper
+  -- root.children[0] | legacy=root/1 | proto_id=1
+  -- instructions=32 | constants=5 | children=1 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=1
+  -- closure_site=root PC301
+  -- status=完整静态恢复（未运行时验证） | 检查点62；32条指令控制流闭合；UPVALUE_0为root/3路径拼接闭包；子闭包捕获FileUtils实例与resolvedPath并pcall执行removeFile；返回值及二次存在检查已核对；未运行时验证。
+    -- [STATIC-COMPLETE] Nested_removeFile
+    -- root.children[0].children[0] | legacy=root/1/1 | proto_id=2
+    -- instructions=5 | constants=1 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=2
+    -- closure_site=root/0 PC16
+    -- status=完整静态恢复（未运行时验证） | 检查点124：父root/1 PC17创建闭包；PC18捕获R1（PC1-PC4取得cc.FileUtils:getInstance()实例）为UP[0]，PC19捕获R2（父函数路径参数，且PC8-PC10用于FileUtils:isFileExist检查）为UP[1]。子函数PC1-PC2取得UP[0].removeFile方法并保留接收者，PC3...
+  -- [STATIC-COMPLETE] GetStorageItemData
+  -- root.children[1] | legacy=root/2 | proto_id=3
+  -- instructions=77 | constants=16 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=1
+  -- closure_site=root PC70
+  -- status=完整静态恢复（未运行时验证） | 检查点132：04_源码候选/短函数草稿_第五十六批.lua；PC1-PC6缺代理返回空数组；PC7-PC17初始化1..maxPage循环；每页GetStorageDataByPage(self
+  -- [STATIC-COMPLETE] GetWritablePath
+  -- root.children[2] | legacy=root/3 | proto_id=4
+  -- instructions=10 | constants=4 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC296
+  -- status=完整静态恢复（未运行时验证） | 检查点127：父root PC297创建零捕获闭包。PC1-PC4调用cc.FileUtils:getInstance()；PC5-PC6以实例为接收者调用getWritablePath；PC7读取第一个显式路径参数；PC8按可写目录前缀..路径参数顺序拼接；PC9返回拼接结果，PC10不可达。ReadNumericConfig root/10 PC5...
+  -- [STATIC-COMPLETE] MoveTo
+  -- root.children[3] | legacy=root/4 | proto_id=5
+  -- instructions=51 | constants=20 | children=0 | vararg_flag=3 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC61
+  -- status=完整静态恢复（未运行时验证） | 检查点132：04_源码候选/短函数草稿_第五十三批.lua；R0/R1/R2为x/y/range；x/y经tonumber；range假值时0；Facade作为self调用sendNotification(InputMove
+  -- [STATIC-COMPLETE] GetDroppedItems
+  -- root.children[4] | legacy=root/5 | proto_id=6
+  -- instructions=8 | constants=3 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC59
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/其他短辅助函数_第二批草稿.lua；PC1-8 完整还原为 global.dropItemManager:FindDropItemInCurrViewFieldAll() 并原样返回两个结果。
+  -- [STATIC-COMPLETE] TakeItems
+  -- root.children[5] | legacy=root/6 | proto_id=7
+  -- instructions=99 | constants=23 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=2
+  -- closure_site=root PC78
+  -- status=完整静态恢复（未运行时验证） | 检查点134：04_源码候选/短函数草稿_第五十七批.lua；UP0状态对象、UP1文本回调；isTaking互斥及空仓路径；PC42-PC47常量分支绕过PC48-PC64过滤死分支；可达路径校验item/Name/MakeIndex，trim名称；LuaSendMsg七项参数为消息类型、999999999、MakeIndex、0、0、名称、名称长度...
+  -- [STATIC-COMPLETE] InstallDamageHook
+  -- root.children[6] | legacy=root/7 | proto_id=8
+  -- instructions=40 | constants=9 | children=1 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=2
+  -- closure_site=root PC359
+  -- status=完整静态恢复（未运行时验证） | 检查点133：04_源码候选/短函数草稿_第三十九批.lua；父PC1-PC28保护及幂等判断；PC30子闭包捕获gameMapController/originalHandler，onDamageMsg可选pcall后原处理器结果返回；PC31 UP0读后被PC32覆盖；PC33写入控制器处理器表；PC34-PC36从originalHandler....
+    -- [STATIC-COMPLETE] Nested_onDamageMsg
+    -- root.children[6].children[0] | legacy=root/7/1 | proto_id=9
+    -- instructions=18 | constants=4 | children=0 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=2
+    -- closure_site=root/6 PC29
+    -- status=完整静态恢复（未运行时验证） | 检查点42/179：父InstallDamageHook PC30创建闭包，PC31捕获父UP0=MainLeftBottom模块表（root T[0]），PC32捕获父R2=原始MSG_SC_DAMAGE_HP处理函数；父PC22取得原处理器，PC33将新闭包安装到mNetMsgHandle对应消息键。子PC1-PC4读取模块表.onDamageMs...
+  -- [STATIC-COMPLETE] GetOwnerIDText
+  -- root.children[7] | legacy=root/8 | proto_id=10
+  -- instructions=31 | constants=7 | children=0 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC190
+  -- status=完整静态恢复（未运行时验证） | 检查点151/159：04_源码候选/root7_GetOwnerIDText.lua；PC1-PC2调用actor:GetOwnerID()；nil/空串/-1均false；string分支ownerID==tostring(ownerID)，非string分支ownerID==第二参数；MainLoop PC124-PC129 truthy表示归属...
+  -- [STATIC-COMPLETE] FormatStateChange
+  -- root.children[8] | legacy=root/9 | proto_id=11
+  -- instructions=10 | constants=3 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=2
+  -- closure_site=root PC180
+  -- status=完整静态恢复（未运行时验证） | 检查点128/130/176/177：10条指令逐条复核；父root PC181依次捕获T[4]/T[14]；交叉MainLoop捕获映射确认UP0=PrintLog（root.children[16]），UP1=共享currentState单元（初值为状态表IDLE，MainLoop同槽读取并比较状态）；MainLoop/InitGatherMons...
+  -- [STATIC-COMPLETE] ReadNumericConfig
+  -- root.children[9] | legacy=root/10 | proto_id=12
+  -- instructions=45 | constants=13 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=1
+  -- closure_site=root PC297
+  -- status=完整静态恢复（未运行时验证） | 检查点128-130/178：45条指令活动路径闭合；父root PC298创建闭包、PC299捕获root.children[2] GetWritablePath（父R44）为UP0；PC5-PC7以首个文件名参数调用该闭包，返回路径复用于isFileExist/getStringFromFile。root PC295文件名blacklist_dis...
+  -- [STATIC-COMPLETE] SetButtonVisibilityState
+  -- root.children[10] | legacy=root/11 | proto_id=13
+  -- instructions=15 | constants=5 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=2
+  -- closure_site=root PC265
+  -- status=完整静态恢复（未运行时验证） | 检查点34/161：04_源码候选/短函数草稿_第十三批.lua；UP0=root T[0]共享状态对象，PC1-PC2写isHidden=true；UP1=root T[1]按钮映射表；PC3-PC6建立pairs泛型迭代器，PC7-PC12按buttonMap[key]调用GUI:setVisible(buttonMap[key]
+  -- [STATIC-COMPLETE] DistanceCalculation
+  -- root.children[11] | legacy=root/12 | proto_id=14
+  -- instructions=25 | constants=6 | children=0 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC188
+  -- status=完整静态恢复（未运行时验证） | 检查点33/160：04_源码候选/短函数草稿_第十二批.lua；PC1-PC6检查两个坐标表，任一false/nil返回99999；PC7-PC12计算abs(pointA.x-pointB.x)；PC13-PC18计算abs(pointA.y-pointB.y)；PC19-PC23返回math.max(dx
+  -- [DRAFT] LuaSendMsg
+  -- root.children[12] | legacy=root/13 | proto_id=15
+  -- instructions=92 | constants=34 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=2
+  -- closure_site=root PC47
+  -- status=首版普通Lua草稿（检查点190、205：PC1-PC92独立静态复审通过；六参映射、Blocklist日志门控、SendHookList严格true拦截及原参转发闭合；UPVALUE原名与宿主语义待验证；未运行时验证） | 源码候选04_源码候选/短函数草稿_第五十批.lua；检查点205逐段复审PC1-PC92；root PC48捕获root T[0]/T[4]，UP0按用途为hookState（Blocklist/SendHookList），UP1为logCallback；固定六参数：arg1为Blocklist/SendHookList键，arg2..5映射mess...
+  -- [STATIC-COMPLETE] GetMapId
+  -- root.children[13] | legacy=root/14 | proto_id=16
+  -- instructions=9 | constants=4 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC53
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/小型辅助函数_首批草稿.lua；PC1-9 完整还原为 SL:GetMetaValue(MAP_ID) or 0。
+  -- [STATIC-COMPLETE] FindMonsterInCurrViewField
+  -- root.children[14] | legacy=root/15 | proto_id=17
+  -- instructions=27 | constants=4 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=1
+  -- closure_site=root PC209
+  -- status=完整静态恢复（未运行时验证） | 检查点131：04_源码候选/短函数草稿_第十三批.lua；PC1-PC8调用SL:FindMonsterInCurrViewField(true
+  -- [STATIC-COMPLETE] ClearBlacklistItems
+  -- root.children[15] | legacy=root/16 | proto_id=18
+  -- instructions=63 | constants=17 | children=1 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=4
+  -- closure_site=root PC382
+  -- status=完整静态恢复（未运行时验证） | 检查点133：04_源码候选/短函数草稿_第五十四批.lua；UP0代理getter，UP1/UP2提示回调，UP3含lastAttacker状态对象；pairs首返回值key追加entries；空表/非空提示顺序确认；ipairs按(index-1)*0.01调用SL:ScheduleOnce；子闭包捕获entryKey与friendProxy，调用...
+    -- [STATIC-COMPLETE] Nested_SL
+    -- root.children[15].children[0] | legacy=root/16/1 | proto_id=19
+    -- instructions=13 | constants=4 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=2
+    -- closure_site=root/15 PC51
+    -- status=完整静态恢复（未运行时验证） | 检查点170：父ClearBlacklistItems PC52创建闭包，PC53捕获R8=当前entryKey，PC54捕获R0=FriendProxy；子函数先SL:RequestOutBlacklist(entryKey)，再在friendProxy._blacklistData存在时删除[entryKey]。13条指令、receiver、捕获顺...
+  -- [STATIC-COMPLETE] PrintLog
+  -- root.children[16] | legacy=root/17 | proto_id=20
+  -- instructions=38 | constants=13 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC42
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/PrintLog_日志辅助函数_第七批.lua；table 输入调用 SL.dump(value
+  -- [STATIC-COMPLETE] PCallHelper
+  -- root.children[17] | legacy=root/18 | proto_id=21
+  -- instructions=14 | constants=2 | children=1 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=1
+  -- closure_site=root PC299
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua；pcall失败或子闭包结果严格为false时返回false，否则true；子闭包调用 capturedOuter(arg0)，并将其全部返回值转发给 FileUtils:writeStringToFile。审计见docs/audit/检查点26_PCallHelper与PickU...
+    -- [STATIC-COMPLETE] Nested_tostring
+    -- root.children[17].children[0] | legacy=root/18/1 | proto_id=22
+    -- instructions=14 | constants=5 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=3
+    -- closure_site=root/17 PC1
+    -- status=完整静态恢复（未运行时验证） | 04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua；cc.FileUtils:getInstance()，tostring(UP[0])，调用UP[1](UP[2])并将多返回值转发给writeStringToFile。审计见docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md。
+  -- [STATIC-COMPLETE] GetPlayerPosition
+  -- root.children[18] | legacy=root/19 | proto_id=23
+  -- instructions=19 | constants=7 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC186
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/位置读取函数_第五批草稿.lua；PC1-4读取X，PC5-7 false/nil回退0；PC8-11读取Y，PC12-14 false/nil回退0；PC15-18构造并返回{x=x
+  -- [STATIC-COMPLETE] InitGatherMonsters
+  -- root.children[19] | legacy=root/20 | proto_id=24
+  -- instructions=36 | constants=11 | children=1 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=7
+  -- closure_site=root PC237
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua；UP[2]=FormatStateChange、UP[3]=IDLE/GATHERING/ATTACKING状态表、UP[4]=ResetGatherMonsterData；先取消旧定时器，再切换IDLE/重置数据/Schedule MainLoop/发送阈值提示；S...
+    -- [STATIC-COMPLETE] Nested_MainLoop
+    -- root.children[19].children[0] | legacy=root/20/1 | proto_id=25
+    -- instructions=3 | constants=1 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=0
+    -- closure_site=root/19 PC22
+    -- status=完整静态恢复（未运行时验证） | 04_源码候选/短闭包辅助函数_第三批草稿.lua；无参数调用全局 MainLoop()。
+  -- [STATIC-COMPLETE] ShowLocalNoticeByType
+  -- root.children[20] | legacy=root/21 | proto_id=26
+  -- instructions=15 | constants=14 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=1
+  -- closure_site=root PC45
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/其他短辅助函数_第二批草稿.lua；root PC46 创建闭包、PC47 捕获 parent T[0]；通知表 Type=10/Msg/FColor=249/BColor=0/X=5/Y=screenH-50，调用 SL.ShowLocalNoticeByType(notice)。
+  -- [STATIC-COMPLETE] PickUpItems
+  -- root.children[21] | legacy=root/22 | proto_id=27
+  -- instructions=172 | constants=34 | children=2 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=1
+  -- closure_site=root PC82
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/PickUpItems_拾取流程_第十批.lua；获取掉落物和玩家坐标，兼容名称/坐标字段回退，计算曼哈顿距离，按两个比较器排序并合并，移动到首个候选并在一格范围内调用拾取方法；局部nameRules表始终为空，普通列表分支承接所有有效物品。审计见docs/audit/检查点29_PickUpItems完整静态恢复.md。
+    -- [STATIC-COMPLETE] Nested_dist
+    -- root.children[21].children[0] | legacy=root/22/1 | proto_id=28
+    -- instructions=19 | constants=2 | children=0 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=0
+    -- closure_site=root/21 PC103
+    -- status=完整静态恢复（未运行时验证） | 04_源码候选/PickUpItems_距离比较闭包_第九批.lua；按kIdx升序比较，相等时按dist升序比较。审计见docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md。
+    -- [STATIC-COMPLETE] Nested_dist_2
+    -- root.children[21].children[1] | legacy=root/22/2 | proto_id=29
+    -- instructions=8 | constants=1 | children=0 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=0
+    -- closure_site=root/21 PC112
+    -- status=完整静态恢复（未运行时验证） | 04_源码候选/PickUpItems_距离比较闭包_第九批.lua；按dist升序比较。审计见docs/audit/检查点26_PCallHelper与PickUpItems比较闭包.md。
+  -- [STATIC-COMPLETE] GetMapData2DPtr
+  -- root.children[22] | legacy=root/23 | proto_id=30
+  -- instructions=144 | constants=15 | children=0 | vararg_flag=5 | fixed_params=UNKNOWN | upvalues=1
+  -- closure_site=root PC349
+  -- status=完整静态恢复（未运行时验证） | 检查点75/183/184：父root PC350创建并捕获T[52]为UP0；可达CFG仅PC1-PC37：检查x1/y1/x2/y2/maxDistance truthy；相同坐标返回0.0；maxDistance<=0返回nil；计算Chebyshev max(abs(x2-x1)
+  -- [STATIC-COMPLETE] Builtsetting
+  -- root.children[23] | legacy=root/24 | proto_id=31
+  -- instructions=55 | constants=15 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=1
+  -- closure_site=root PC255
+  -- status=完整静态恢复（未运行时验证） | 检查点134：04_源码候选/短函数草稿_第四十五批.lua；UP0捕获root R5，作为文本回调；六组CHANGE_SETTING及单元素数组参数依次为27:{0}、52:{0}、1002:{0}、57:{1}、58:{1}、2005:{0}，每组后调用对应中文提示；PC55返回。55条指令全部映射。
+  -- [STATIC-COMPLETE] UseItemByIndex
+  -- root.children[24] | legacy=root/25 | proto_id=32
+  -- instructions=33 | constants=8 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=1
+  -- closure_site=root PC354
+  -- status=完整静态恢复（未运行时验证） | 检查点53/167：04_源码候选/短函数草稿_第三十一批.lua；父root PC355/356创建闭包并捕获T[37]为UP0，源码改为make_UseItemByIndex(itemNameList)工厂闭包。ipairs遍历捕获列表；SL:GetMetaValue(ITEM_INDEX_BY_NAME
+  -- [STATIC-COMPLETE] DeathAutoBlacklist
+  -- root.children[25] | legacy=root/26 | proto_id=33
+  -- instructions=47 | constants=15 | children=1 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=4
+  -- closure_site=root PC362
+  -- status=完整静态恢复（未运行时验证） | 检查点73/181：父root PC363创建闭包，PC364-PC367依次捕获T[41]黑名单状态表、T[4] PrintLog、T[55] FindBlacklistPlayer、T[5] ShowLocalNoticeByType。先取lastAttacker再立即清空共享字段；记录/name缺失或空串时提示并返回；FindBlacklistP...
+    -- [STATIC-COMPLETE] Nested_RequestAddBlacklistByName
+    -- root.children[25].children[0] | legacy=root/26/1 | proto_id=34
+    -- instructions=6 | constants=3 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=1
+    -- closure_site=root/25 PC41
+    -- status=完整静态恢复（未运行时验证） | 04_源码候选/短闭包辅助函数_第三批草稿.lua；捕获对象.name 作为参数，调用 SL:RequestAddBlacklistByName(name)。
+  -- [STATIC-COMPLETE] ResetGatherMonsterData
+  -- root.children[26] | legacy=root/27 | proto_id=35
+  -- instructions=20 | constants=3 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=9
+  -- closure_site=root PC199
+  -- status=完整静态恢复（未运行时验证） | 检查点34/162：04_源码候选/短函数草稿_第十三批.lua；父root PC200捕获T[15]
+  -- [STATIC-COMPLETE] StopGatherMonsters
+  -- root.children[27] | legacy=root/28 | proto_id=36
+  -- instructions=25 | constants=6 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=7
+  -- closure_site=root PC246
+  -- status=完整静态恢复（未运行时验证） | 检查点34/163：04_源码候选/短函数草稿_第十三批.lua；UP0=root T[18]运行标记设false；UP1=root T[3]定时器状态对象，若gatherTimer存在则SL:UnSchedule(timer)并置nil；UP2=root T[25]预停止回调零参调用（身份保留中性名）；UP3=FormatStateChange，UP...
+  -- [STATIC-COMPLETE] FindMonsterCandidates
+  -- root.children[28] | legacy=root/29 | proto_id=37
+  -- instructions=102 | constants=19 | children=1 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=5
+  -- closure_site=root PC193
+  -- status=完整静态恢复（未运行时验证） | 视野怪物候选→读取忽略设置第1项的true键→排除死亡/忽略怪物→计算_distance→升序排序→按GATHER_THRESHOLD截取；源码候选04_源码候选/root28_FindMonsterCandidates.lua，审计docs/audit/root28_FindMonsterCandidates_阶段分析.md。
+    -- [STATIC-COMPLETE] Nested_distance
+    -- root.children[28].children[0] | legacy=root/29/1 | proto_id=38
+    -- instructions=8 | constants=1 | children=0 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=0
+    -- closure_site=root/28 PC81
+    -- status=完整静态恢复（未运行时验证） | 04_源码候选/小型辅助函数_首批草稿.lua；table.sort 比较器完整还原为 a._distance < b._distance。
+  -- [STATIC-COMPLETE] IsDie
+  -- root.children[29] | legacy=root/30 | proto_id=39
+  -- instructions=7 | constants=1 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC189
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/小型辅助函数_首批草稿.lua；完整还原 actor and not actor:IsDie()，保留短路返回语义。
+  -- [STATIC-COMPLETE] GetMapName
+  -- root.children[30] | legacy=root/31 | proto_id=40
+  -- instructions=9 | constants=4 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC55
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/小型辅助函数_首批草稿.lua；完整还原 SL:GetMetaValue(MAP_NAME) or 。
+  -- [STATIC-COMPLETE] IsInWhitelistMap
+  -- root.children[31] | legacy=root/32 | proto_id=41
+  -- instructions=28 | constants=6 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC211
+  -- status=完整静态恢复（未运行时验证） | 检查点33/166：04_源码候选/短函数草稿_第十二批.lua；PC1-PC8调用SL:GetMetaValue(IN_SAFE_AREA)，truthy立即返回true；否则PC9-PC12调用SL:GetMetaValue(MAP_NAME)；PC13-PC15构造唯一元素白名单{土城}；PC16-PC25用ipairs遍历并比较mapName；...
+  -- [STATUS-REVIEW] AnonymousHelper_32
+  -- root.children[32] | legacy=root/33 | proto_id=42
+  -- instructions=6 | constants=0 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=2
+  -- closure_site=root PC306
+  -- status=未在函数状态CSV中单独标注
+  -- [STATIC-COMPLETE] AnonymousHelper_32
+  -- root.children[33] | legacy=root/34 | proto_id=43
+  -- instructions=5 | constants=0 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=2
+  -- closure_site=root PC309
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua；捕获 root T[46] 与 T[42]；返回 upvalue0(upvalue1
+  -- [STATIC-COMPLETE] AnonymousHelper_33
+  -- root.children[34] | legacy=root/35 | proto_id=44
+  -- instructions=7 | constants=2 | children=0 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC52
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua；捕获 root T[45] 与 T[43]；返回 upvalue0(upvalue1)。PC4 的空 vararg return 位于无条件返回后，不可达。 审计见docs/audit/检查点30_PlayerPos与匿名转发闭包.md。
+  -- [STATIC-COMPLETE] SetTargetID
+  -- root.children[35] | legacy=root/36 | proto_id=45
+  -- instructions=26 | constants=8 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC183
+  -- status=完整静态恢复（未运行时验证） | 检查点153/159：04_源码候选/短函数草稿_第十二批.lua；Facade缺失或PlayerInputProxy缺失返回false；Facade:retrieveProxy保留Facade作为self；存在proxy时调用proxy:SetTargetID(targetID
+  -- [STATIC-COMPLETE] GetAvailableStoragePage
+  -- root.children[36] | legacy=root/37 | proto_id=46
+  -- instructions=51 | constants=12 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=1
+  -- closure_site=root PC67
+  -- status=完整静态恢复（检查点190逐PC闭合；未运行时验证） | 源码候选04_源码候选/短函数草稿_第十四批.lua；root PC68创建闭包并捕获root T[4]提示回调；PC1-PC8代理缺失时提示并返回nil；PC9-PC15获取maxPage并建立页循环；PC16-PC25逐页读取#pageData或0；PC26-PC32单页容量配置/假值回退global.MMO.NPC_STORAGE_MAX_PAG...
+  -- [STATIC-COMPLETE] DestroyUI
+  -- root.children[37] | legacy=root/38 | proto_id=47
+  -- instructions=31 | constants=11 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=3
+  -- closure_site=root PC260
+  -- status=完整静态恢复（未运行时验证） | 检查点35/164：04_源码候选/短函数草稿_第十四批.lua；父root PC261按序捕获T[0]/T[3]/T[1]：UP0 UI状态对象（isHidden/resWin）、UP1定时器状态对象（resTimer）、UP2按钮映射表。修正旧草稿错误的两参数捕获映射；PC1-PC2 isHidden=false；PC3-PC13有timer时SL...
+  -- [STATIC-COMPLETE] GetOwnerID
+  -- root.children[38] | legacy=root/39 | proto_id=48
+  -- instructions=31 | constants=7 | children=0 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC191
+  -- status=完整静态恢复（未运行时验证） | 检查点151/159：04_源码候选/root38_GetOwnerID.lua；PC1-PC2调用actor:GetOwnerID()；nil/空串/-1均false；string分支ownerID~=tostring(ownerID)，非string分支ownerID~=第二参数；MainLoop PC49-PC54 truthy路径跳过目标ID插...
+  -- [STATIC-COMPLETE] GetMainPlayerID
+  -- root.children[39] | legacy=root/40 | proto_id=49
+  -- instructions=6 | constants=3 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC185
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/小型辅助函数_首批草稿.lua；完整还原 global.gamePlayerController:GetMainPlayerID()。
+  -- [STATIC-COMPLETE] ShowHideAllButtons
+  -- root.children[40] | legacy=root/41 | proto_id=50
+  -- instructions=47 | constants=9 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=3
+  -- closure_site=root PC269
+  -- status=完整静态恢复（未运行时验证） | 检查点35/165：04_源码候选/短函数草稿_第十四批.lua；父root PC270按序捕获T[3]/T[1]/T[0]：UP0定时器状态对象（rewardTimer/cruiseTimer）、UP1按钮映射表、UP2 UI状态对象（hidebut单控件）。修正旧草稿捕获顺序；PC1-PC22分别检查并取消两个定时器、清nil；PC23-PC34 ...
+  -- [DRAFT] MoveItemToQuickUse
+  -- root.children[41] | legacy=root/42 | proto_id=51
+  -- instructions=133 | constants=26 | children=0 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC258
+  -- status=普通Lua主体草稿（检查点191按133条PC恢复；参数调用点已确认；代理方法布尔语义/宿主副作用未验证） | 检查点86/191；第1参itemIndex由doInit_UI PC131-PC145的ITEM_INDEX_BY_NAME返回，第2参为slotConfig.slot；调用方消费(success
+  -- [DRAFT] doInit_UI
+  -- root.children[42] | legacy=root/43 | proto_id=52
+  -- instructions=419 | constants=105 | children=23 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=20
+  -- closure_site=root PC389
+  -- status=普通Lua主体草稿（检查点187/199/200/201/203/204/208；复审PC1-PC419；PC180 RequestStorageData与PC183 Attach_UITop均只传T[7]一个显式实参，旧草稿的无参/七参写法已纠正；T[7]来自PC133 ipairs(T[6])第三返回值，宿主值待验证；Nested_Anonymous T槽、unknown哨兵、GUI宿主尾参/布尔值仍未闭合；未运行时验证） | 检查点88/187/199/200/201/203/204/208；PC1-PC419复审；419条主体草稿持续扩展。PC66-PC99资源快照分支/false-nil归一/Nested_find已复审。PC158-PC166每日巡航回调主体并入并闭合日期去重/时间窗口/发送顺序。PC236-PC337按钮回调闭包工厂、Helper_4/7包装器及其子...
+    -- [STATIC-COMPLETE] Nested_find
+    -- root.children[42].children[0] | legacy=root/43/1 | proto_id=53
+    -- instructions=46 | constants=12 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=0
+    -- closure_site=root/42 PC17
+    -- status=完整静态恢复（未运行时验证） | 检查点76/116；无捕获；BAG_DATA缺失返回0；pairs遍历并检查item/Name/MakeIndex；string.find(item.Name
+    -- [STATIC-COMPLETE] Nested_SL_2
+    -- root.children[42].children[1] | legacy=root/43/2 | proto_id=54
+    -- instructions=33 | constants=8 | children=1 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=5
+    -- closure_site=root/42 PC288
+    -- status=完整静态恢复（未运行时验证） | 检查点102：父doInit_UI PC289捕获UP[2]/UP[0]/UP[17]/UP[18]/UP[19]，依次为rewardTimer状态表、通知回调、轮询取模基数、消息条目表、Schedule附加上下文。存在timer则通知关闭、UnSchedule、置nil、返回true；不存在则通知开启，Schedule(0
+      -- [STATIC-COMPLETE] Nested_LuaSendMsg
+      -- root.children[42].children[1].children[0] | legacy=root/43/2/1 | proto_id=55
+      -- instructions=22 | constants=5 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=3
+      -- closure_site=root/42/1 PC23
+      -- status=完整静态恢复（未运行时验证） | 检查点102：捕获父T[0]可写计数器、UP[2]取模基数、UP[3]消息条目表；counter递增，按(counter-1)%modulus+1取条目；缺失则不发送，存在则LuaSendMsg(9002
+    -- [STATIC-COMPLETE] Nested_Helper
+    -- root.children[42].children[2] | legacy=root/43/3 | proto_id=56
+    -- instructions=21 | constants=4 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=4
+    -- closure_site=root/42 PC276
+    -- status=完整静态恢复（未运行时验证） | 检查点98：21条指令全部闭合；UP[0](UP[1])返回success/detail；按success truthy分支；UP[2]发送固定通知；UP[3]=PrintLog，按formatString与原始detail两个实参调用；无显式返回。UP[0..2]业务名保留槽位。
+    -- [DRAFT] Nested_FFFF00
+    -- root.children[42].children[3] | legacy=root/43/4 | proto_id=57
+    -- instructions=320 | constants=72 | children=5 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=4
+    -- closure_site=root/42 PC329
+    -- status=普通Lua草稿（检查点188/201/207；PC1-PC320逐条复审；修正五处Text_Create返回值门控；unknown哨兵宿主语义、GUI尾参/标志和MoneyProxy键差异仍待验证；未运行时验证） | 检查点87/93/94/95/96/97/118/119/188/201/207；PC1-PC320逐条复审；父函数make_Nested_FFFF00(moduleState
+      -- [STATIC-COMPLETE] Nested_Helper_2
+      -- root.children[42].children[3].children[0] | legacy=root/43/4/1 | proto_id=58
+      -- instructions=35 | constants=12 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=0
+      -- closure_site=root/42/3 PC117
+      -- status=完整静态恢复（未运行时验证） | 检查点103：无捕获，35条指令闭合；首参false/nil回退0；<100000直接tostring；[100000
+      -- [STATIC-COMPLETE] Nested_string
+      -- root.children[42].children[3].children[1] | legacy=root/43/4/2 | proto_id=59
+      -- instructions=46 | constants=12 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=0
+      -- closure_site=root/42/3 PC291
+      -- status=完整静态恢复（未运行时验证） | 源码候选 04_源码候选/资源统计刷新链_第六十四批.lua；检查点90确认vararg首参为资源名称；BAG_DATA pairs遍历，检查Name/MakeIndex，string.find(item.Name
+      -- [STATIC-COMPLETE] Nested_FFFFFF
+      -- root.children[42].children[3].children[2] | legacy=root/43/4/3 | proto_id=60
+      -- instructions=65 | constants=17 | children=0 | vararg_flag=3 | fixed_params=UNKNOWN | upvalues=2
+      -- closure_site=root/42/3 PC264
+      -- status=完整静态恢复（未运行时验证） | 检查点93/188：65条指令；工厂捕获父T[5]=resList、父T[1]=screenW*0.6；参数(resourceNames
+      -- [STATIC-COMPLETE] Nested_Helper_3
+      -- root.children[42].children[3].children[3] | legacy=root/43/4/4 | proto_id=61
+      -- instructions=168 | constants=31 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=10
+      -- closure_site=root/42/3 PC299
+      -- status=完整静态恢复（未运行时验证） | 源码候选04_源码候选/资源统计刷新链_第六十四批.lua；检查点90/115/118/188：168条指令闭合；PC300十项均为闭包UPVALUE，回调本体无显式参数，PC311-PC312立即无参调用；GUI:Win_IsNotNull(moduleState.resWin)按方法调用传入GUI接收者；窗口失效时取消resTimer；pcall(...
+      -- [STATIC-COMPLETE] Nested_UnSchedule
+      -- root.children[42].children[3].children[4] | legacy=root/43/4/5 | proto_id=62
+      -- instructions=20 | constants=8 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=3
+      -- closure_site=root/42/3 PC67
+      -- status=完整静态恢复（未运行时验证；unknown哨兵宿主语义保留） | 检查点116/172：父Nested_FFFF00 PC68-PC71捕获顺序为父UP[1]/UP[2]/UP[0]，子UP[0]=PrintLog通知、UP[1]=timerState、UP[2]=moduleState；先通知固定文本，若resTimer存在则SL:UnSchedule并将反汇编标记['unknown'
+    -- [STATIC-COMPLETE] Nested_OnGameLeaveWorld
+    -- root.children[42].children[4] | legacy=root/43/5 | proto_id=63
+    -- instructions=5 | constants=3 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=0
+    -- closure_site=root/42 PC335
+    -- status=完整静态恢复（未运行时验证） | 04_源码候选/短闭包辅助函数_第三批草稿.lua；调用 global.gameWorldController:OnGameLeaveWorld()。
+    -- [STATIC-COMPLETE] Nested_ffffff
+    -- root.children[42].children[5] | legacy=root/43/6 | proto_id=64
+    -- instructions=41 | constants=10 | children=0 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=2
+    -- closure_site=root/42 PC235
+    -- status=完整静态恢复（未运行时验证） | 检查点108：41条指令，捕获按钮配置数组与key→按钮注册表；遍历所有配置，匹配key时写toggled（不提前break，最后匹配项用于GUI更新）；按钮、匹配配置、toggle字段均需truthy；按toggled及config.toggle更新标题，按toggled选择红#ff0000/白#ffffff。
+    -- [STATIC-COMPLETE] Nested_StopGatherMonsters
+    -- root.children[42].children[6] | legacy=root/43/7 | proto_id=65
+    -- instructions=31 | constants=5 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=6
+    -- closure_site=root/42 PC268
+    -- status=完整静态恢复（未运行时验证） | 检查点101纠正真假分支方向：gatherTimer存在时通知、StopGatherMonsters()、返回true；无timer时调用UP[2]()；结果truthy则提示开启、UP[5](ready)、返回true；false/nil才提示缺少阈值、调用UP[3]()及UP[4]()、返回false。PC269-PC275捕获来源已逐项核对；31...
+    -- [STATIC-COMPLETE] Nested_InitGatherMonsters
+    -- root.children[42].children[7] | legacy=root/43/8 | proto_id=66
+    -- instructions=17 | constants=2 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=2
+    -- closure_site=root/42 PC244
+    -- status=完整静态恢复（未运行时验证） | 检查点107：17条指令，捕获GATHER_THRESHOLD配置表与阈值读取回调；首参false/nil时调用getter，写入配置字段；字段false/nil返回false，字段truthy时调用全局InitGatherMonsters()并返回true。分支方向已逐PC纠正。
+    -- [STATIC-COMPLETE] Nested_SL_3
+    -- root.children[42].children[8] | legacy=root/43/9 | proto_id=67
+    -- instructions=29 | constants=10 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=4
+    -- closure_site=root/42 PC306
+    -- status=完整静态恢复（未运行时验证） | 检查点107：29条指令，捕获storageTimer状态表、通知回调、isStoring状态表、schedule回调；timer存在则通知关闭、SL.UnSchedule、句柄nil、isStoring=false；否则通知开启、立即StorageItems()、schedule(StorageItems
+    -- [STATIC-COMPLETE] Nested_Button_setTitleFontSize
+    -- root.children[42].children[9] | legacy=root/43/10 | proto_id=68
+    -- instructions=50 | constants=17 | children=1 | vararg_flag=3 | fixed_params=UNKNOWN | upvalues=5
+    -- closure_site=root/42 PC339
+    -- status=完整静态恢复（未运行时验证） | 检查点106：50条指令；父doInit_UI PC340捕获T6/T22/T23/UP4/T21；Button_Create实参GUI self、UP0、config.key、UP1-85*arg1、UP2+arg2、贴图；失败返回；成功登记buttonByKey[key]；设置标题button.name、字号18、字体kaiti2、白色；toggl...
+      -- [STATIC-COMPLETE] Nested_Button_setTitleText
+      -- root.children[42].children[9].children[0] | legacy=root/43/10/1 | proto_id=69
+      -- instructions=48 | constants=10 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=3
+      -- closure_site=root/42/9 PC44
+      -- status=完整静态恢复（未运行时验证） | 检查点106：48条指令；捕获状态门控表、config、button；gate存在才调用gate()，默认allowed=true；toggle假值退出；严格allowed==false才退出（nil允许）；toggled取反；通过GUI方法更新标题和颜色，toggled真为红#ff0000否则白#ffffff。GUI self隐式传入，显式参数but...
+    -- [STATIC-COMPLETE] Nested_shiquTimer
+    -- root.children[42].children[10] | legacy=root/43/11 | proto_id=70
+    -- instructions=25 | constants=8 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=3
+    -- closure_site=root/42 PC318
+    -- status=完整静态恢复（未运行时验证） | 检查点107复核：timer存在时通知关闭、SL.UnSchedule并置nil；不存在时通知开启，只schedule(PickUpItems
+    -- [STATIC-COMPLETE] Nested_Helper_4
+    -- root.children[42].children[11] | legacy=root/43/12 | proto_id=71
+    -- instructions=12 | constants=1 | children=1 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=8
+    -- closure_site=root/42 PC249
+    -- status=完整静态恢复（未运行时验证） | 检查点104包装函数本体完整；创建Nested_Helper_5并传入黑名单距离提示。Nested_Helper_5主体已于检查点105完成静态恢复。
+      -- [STATIC-COMPLETE] Nested_Helper_5
+      -- root.children[42].children[11].children[0] | legacy=root/43/12/1 | proto_id=72
+      -- instructions=35 | constants=6 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=7
+      -- closure_site=root/42/11 PC2
+      -- status=完整静态恢复（未运行时验证） | 检查点105：35条指令，首参校验truthy走成功、false/nil走失败；失败路径解析回调的多返回值通过开放参数传入模板消息回调；成功路径通知、模板消息、调用距离保存回调(value)，仅保存返回truthy时启用blacklistbut。捕获来自Nested_Helper_4 UP[1..7]；两级捕获来源已核对。
+    -- [STATIC-COMPLETE] Nested_04d_02d_02d
+    -- root.children[42].children[12] | legacy=root/43/13 | proto_id=73
+    -- instructions=43 | constants=25 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=3
+    -- closure_site=root/42 PC159
+    -- status=完整静态恢复（未运行时验证） | 检查点111：43条指令；捕获父R5日期标记、父UP3发送对象、父UP0通知回调；os.date('*t')，22:00:05至22:00:08含边界，YYYYMMDD同日去重；发送前更新日期标记；LuaSendMsg(9002
+    -- [STATIC-COMPLETE] Nested_Helper_6
+    -- root.children[42].children[13] | legacy=root/43/14 | proto_id=74
+    -- instructions=6 | constants=2 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=1
+    -- closure_site=root/42 PC295
+    -- status=完整静态恢复（未运行时验证） | 04_源码候选/短闭包辅助函数_第三批草稿.lua；先调用捕获通知函数显示“清空黑名单”，再调用 ClearBlacklistItems()。
+    -- [STATIC-COMPLETE] Nested_Helper_7
+    -- root.children[42].children[14] | legacy=root/43/15 | proto_id=75
+    -- instructions=12 | constants=1 | children=1 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=8
+    -- closure_site=root/42 PC258
+    -- status=完整静态恢复（未运行时验证） | 检查点104包装函数本体完整；创建Nested_Helper_8并传入怪物阈值提示。Nested_Helper_8主体已于检查点105完成静态恢复。
+      -- [STATIC-COMPLETE] Nested_Helper_8
+      -- root.children[42].children[14].children[0] | legacy=root/43/15/1 | proto_id=76
+      -- instructions=34 | constants=5 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=7
+      -- closure_site=root/42/14 PC2
+      -- status=完整静态恢复（未运行时验证） | 检查点105：34条指令，首参校验truthy走成功、false/nil走失败；失败路径解析回调的多返回值通过开放参数传入模板消息回调；成功路径通知、模板消息、调用阈值保存回调(value)，仅保存返回truthy时启用yinguaibut。捕获来自Nested_Helper_7 UP[1..7]；两级捕获来源已核对。
+    -- [STATIC-COMPLETE] Nested_Helper_9
+    -- root.children[42].children[15] | legacy=root/43/16 | proto_id=77
+    -- instructions=30 | constants=10 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=2
+    -- closure_site=root/42 PC414
+    -- status=完整静态恢复（未运行时验证） | 检查点110：30条指令；捕获UI状态对象与通知回调；isHidden truthy时通知隐藏、调用hide()、hidebut透明度设0；false/nil时通知显示、调用show()、透明度设255；无显式返回。
+    -- [STATIC-COMPLETE] Nested_ITEM_INDEX_BY_NAME
+    -- root.children[42].children[16] | legacy=root/43/17 | proto_id=78
+    -- instructions=26 | constants=7 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=2
+    -- closure_site=root/42 PC136
+    -- status=完整静态恢复（未运行时验证） | 检查点109：26条指令；父级PC137捕获config(R9)与移动结果回调(UP0)，调用点config={slot=4
+    -- [STATIC-COMPLETE] Nested_blacklistTimer
+    -- root.children[42].children[17] | legacy=root/43/18 | proto_id=79
+    -- instructions=28 | constants=5 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=5
+    -- closure_site=root/42 PC238
+    -- status=完整静态恢复（未运行时验证） | 检查点107：28条指令，捕获距离配置表、getter、timer状态表、schedule回调、模板通知回调；首参false/nil走getter；写入distance，缺失返回false；否则立即BlacklistItems()，schedule(BlacklistItems
+    -- [STATIC-COMPLETE] Nested_Helper_10
+    -- root.children[42].children[18] | legacy=root/43/19 | proto_id=80
+    -- instructions=39 | constants=9 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=6
+    -- closure_site=root/42 PC298
+    -- status=完整静态恢复（未运行时验证；六项捕获业务身份已闭合） | 检查点120/121：39条指令闭合；父doInit_UI PC299-PC305捕获6项：UP[0]=doInit_UI UP[2] timerState；UP[1]=UP[0] PrintLog；UP[2]=UP[1] MainLeftBottom模块状态表；UP[3]=UP[6] AnonymousHelper_49（ReadNumericCon...
+    -- [STATIC-COMPLETE] Nested_TakeItems
+    -- root.children[42].children[19] | legacy=root/43/20 | proto_id=81
+    -- instructions=29 | constants=10 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=4
+    -- closure_site=root/42 PC312
+    -- status=完整静态恢复（未运行时验证） | 检查点100：父doInit_UI PC313捕获[parent UP2
+    -- [STATIC-COMPLETE] Nested_s
+    -- root.children[42].children[20] | legacy=root/43/21 | proto_id=82
+    -- instructions=21 | constants=4 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=4
+    -- closure_site=root/42 PC282
+    -- status=完整静态恢复（未运行时验证） | 检查点98：21条指令全部闭合；UP[0](UP[1])返回success/detail；按success truthy分支；UP[2]发送固定通知；UP[3]=PrintLog，按formatString与原始detail两个实参调用；无显式返回。UP[0..2]业务名保留槽位。
+    -- [STATIC-COMPLETE] Nested_dropTimer
+    -- root.children[42].children[21] | legacy=root/43/22 | proto_id=83
+    -- instructions=29 | constants=10 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=4
+    -- closure_site=root/42 PC323
+    -- status=完整静态恢复（未运行时验证） | 检查点100：父doInit_UI PC324捕获[parent UP2
+    -- [DRAFT] Nested_Anonymous
+    -- root.children[42].children[22] | legacy=root/43/23 | proto_id=84
+    -- instructions=8 | constants=0 | children=1 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=1
+    -- closure_site=root/42 PC247
+    -- status=普通Lua草稿（检查点201/209；父原型8条、Nested_str 27条、Nested_match 50条及Nested_Helper_11 4条已逐段复审；T[0]/T[1]用途可由读写位置判定，调用端传两参；T[2]被错误提示回调读取但未找到第三实参生产者，仍未闭合；未运行时验证） | 检查点114/175/201/209：8条父原型指令独立复核；PC1创建Nested_str并依次捕获T[0]/UP[0]/T[2]/T[1]；PC6-PC7零参调用子闭包，PC8返回。UP[0]=PrintLog已由父root创建点闭合。Nested_Anonymous、Nested_str、Nested_match和Nested_Helper_11...
+      -- [STATIC-COMPLETE] Nested_str
+      -- root.children[42].children[22].children[0] | legacy=root/43/23/1 | proto_id=85
+      -- instructions=27 | constants=13 | children=1 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=4
+      -- closure_site=root/42/22 PC0
+      -- status=完整静态恢复（未运行时验证） | 检查点112：27条指令；构造btnType=2/showEdit=true/editParams(inputMode=2
+        -- [STATIC-COMPLETE] Nested_match
+        -- root.children[42].children[22].children[0].children[0] | legacy=root/43/23/1/1 | proto_id=86
+        -- instructions=50 | constants=14 | children=1 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=4
+        -- closure_site=root/42/22/0 PC16
+        -- status=完整静态恢复（未运行时验证） | 检查点112：50条指令；status严格等于1才继续；result/editStr缺失回退空串；tostring后gsub删除空白，再按^%d+$校验；非数字时模板错误回调并ScheduleOnce 0.1秒提示；数字成功时UP3(numericValue)。
+          -- [STATIC-COMPLETE] Nested_Helper_11
+          -- root.children[42].children[22].children[0].children[0].children[0] | legacy=root/43/23/1/1/1 | proto_id=87
+          -- instructions=4 | constants=1 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=1
+          -- closure_site=root/42/22/0/0 PC41
+          -- status=完整静态恢复（未运行时验证） | 检查点112：4条指令；唯一捕获为Nested_match UP2错误提示回调；调用其传入固定文本“参数格式不对，请输入数字”。
+  -- [STATIC-COMPLETE] GetOwnerDescription
+  -- root.children[43] | legacy=root/44 | proto_id=88
+  -- instructions=20 | constants=7 | children=0 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC192
+  -- status=完整静态恢复（未运行时验证） | 调用 actor:GetOwnerID；VM 的 [unknown
+  -- [STATIC-COMPLETE] GetPlayerMapPosition
+  -- root.children[44] | legacy=root/45 | proto_id=89
+  -- instructions=17 | constants=5 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC187
+  -- status=完整静态恢复（未运行时验证） | 源码候选 04_源码候选/短函数草稿_第三十七批.lua；检查点61；actor假值返回nil；读取mCurrMapX/mCurrMapY，假值坐标默认0，返回{x
+  -- [STATIC-COMPLETE] MainLoop
+  -- root.children[45] | legacy=root/46 | proto_id=90
+  -- instructions=417 | constants=41 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=22
+  -- closure_site=root PC213
+  -- capture_map=[18,14,13,4,23,35,26,34,15,32,17,16,19,20,22,36,21,31,30,33,24,8] | 22 个 upvalue 槽位依次捕获父 root 的 T 寄存器 18,14,13,4,23,35,26,34,15,32,17,16,19,20,22,36,21,31,30,33,24,8。此处只证明寄存器捕获，不证明业务变量名称。
+  -- status=完整静态恢复（未运行时验证） | 检查点152-158：04_源码候选/root45_MainLoop.lua。检查点158闭合全部22个upvalue父root T寄存器生产者：UP0运行标记、UP1当前状态单元、UP2状态常量、UP3 PrintLog、UP4 FormatStateChange、UP5 ResetGatherMonsterData、UP6 GetMainPlaye...
+  -- [STATIC-COMPLETE] DiuItems
+  -- root.children[46] | legacy=root/47 | proto_id=91
+  -- instructions=169 | constants=64 | children=1 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=2
+  -- closure_site=root PC63
+  -- capture_map=[2,5] | root/46 两个 upvalue 槽位分别捕获父 root 的 T[2] 与 T[5]。不要与 root/45 的 22 槽位状态机映射混用。
+  -- status=完整静态恢复（未运行时验证） | 源码候选 04_源码候选/root46_DiuItems.lua；检查点33/58既有复审基础上，检查点89独立对照169条指令、父级捕获、pairs/ipairs迭代器、ITEM_IS_BIND分支、恒真死分支、候选字段、35件上限、LuaSendMsg七项参数及全部显式状态清理路径；未做宿主运行时验证。
+    -- [STATIC-COMPLETE] Nested_string_2
+    -- root.children[46].children[0] | legacy=root/47/1 | proto_id=92
+    -- instructions=20 | constants=4 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=1
+    -- closure_site=root/46 PC66
+    -- capture_map=[5] | root/46/0 的 upvalue[0] 捕获 root/46 的 T[5]；该寄存器在创建闭包前由 OP_402 构造关键词表。
+    -- status=完整静态恢复（未运行时验证） | 04_源码候选/小型辅助函数_首批草稿.lua；捕获关键词数组，ipairs 遍历并 string.find(text
+  -- [STATIC-COMPLETE] BlacklistPlayerDetection
+  -- root.children[47] | legacy=root/48 | proto_id=93
+  -- instructions=216 | constants=35 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=13
+  -- closure_site=root PC367
+  -- capture_map=[2,57,41,58,55,53,38,4,56,39,5,40,37] | 13个upvalue槽位按序捕获父root的T寄存器。UP[0]=R2主模块状态表；UP[1]=R57，root/53回调并挂到R41.onDamageMsg；UP[2]=R41黑名单玩家状态表（lastAttacker/lastHp/deathHandled/alertAt/nextTryAt/noStoneWarned/distance）；UP[3]=R58，root/26死亡后自动拉黑处理闭包；UP[4]=R55，root/52黑名单actor查询辅助闭包（基于_blacklistData与ACTOR_MASTER_ID，返回匹配状态及名称）；UP[5]=R53，root/23距离计算闭包；UP[6]=R38数值2.0（alertAt节流阈值）；UP[7]=R4，root/17日志格式化包装器；UP[8]=R56，root/25随机传送石查找/使用闭包；UP[9]=R39数值0.01（成功使用后的短重试延迟）；UP[10]=R5，root/21本地通知包装器；UP[11]=R40数值30.0（无可用道具时重试延迟，且在成功通知模板中作为%s实参）；UP[12]=R37数组{"随机传送石"}。捕获值及其创建点均由root PC368-PC381与相应父寄存器定义交叉确认。
+  -- status=完整静态恢复（未运行时验证） | 检查点83/135/137/138/139/140/145/146/148/149/182/183/184/185/186：父root PC367-PC381的13项捕获闭合。PC1-PC73完成功能标记、零参onDamageMsg、MAIN_ACTOR_ID/HP转换、lastHp/deathHandled死亡状态机、hp<=0/白名单门槛及FIND...
+  -- [STATIC-COMPLETE] PCallHelper_2
+  -- root.children[48] | legacy=root/49 | proto_id=94
+  -- instructions=10 | constants=1 | children=1 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC351
+  -- status=完整静态恢复（未运行时验证） | 04_源码候选/代理与回调短函数_第四批.lua；pcall 执行无参子闭包 Nested_FriendProxy；失败或结果 false/nil 时返回 nil，否则返回代理对象。
+    -- [STATIC-COMPLETE] Nested_FriendProxy
+    -- root.children[48].children[0] | legacy=root/49/1 | proto_id=95
+    -- instructions=9 | constants=5 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=0
+    -- closure_site=root/48 PC1
+    -- status=完整静态恢复（未运行时验证） | 04_源码候选/代理与回调短函数_第四批.lua；无参数/无捕获，返回 global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)。
+  -- [STATIC-COMPLETE] AnonymousHelper_49
+  -- root.children[49] | legacy=root/50 | proto_id=96
+  -- instructions=5 | constants=0 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=2
+  -- closure_site=root PC303
+  -- status=完整静态恢复（未运行时验证） | 检查点121：root PC304创建闭包，捕获UP[0]=root R45（ReadNumericConfig闭包）、UP[1]=root R42字符串'blacklist_distance.txt'；PC1-PC3调用ReadNumericConfig('blacklist_distance.txt')并原样返回所有结果；PC4-PC5位于无条件r...
+  -- [DRAFT] StorageItems
+  -- root.children[50] | legacy=root/51 | proto_id=97
+  -- instructions=224 | constants=57 | children=2 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=3
+  -- closure_site=root PC73
+  -- status=普通Lua主体草稿（检查点189、206：PC1-PC224主体复审；修正PC151-PC176多名称匹配时任一Nested_isOutputted假值立即跳过当前物品的短路语义；三项捕获临时命名；999999999/服务端字段及宿主API语义待验证；未运行时验证） | 检查点84/136/141/142/143/144/189；PC1-PC7互斥isStoring；PC14-PC23前置GetAvailableStoragePage失败提示/复位；PC24-PC36仓库代理页数/容量/openSize；PC37-PC53逐页占用计数；PC54 child1捕获maxPage/pageCapacity/openSize...
+    -- [STATIC-COMPLETE] Nested_isOutputted
+    -- root.children[50].children[0] | legacy=root/51/1 | proto_id=98
+    -- instructions=52 | constants=15 | children=0 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=2
+    -- closure_site=root/50 PC101
+    -- status=完整静态恢复（未运行时验证；上层捕获业务原名未知） | 检查点174：父StorageItems PC102创建child0，PC103/PC104依次捕获父UP0共享输出状态对象（读取/设置isOutputted）及父UP1输出回调；父PC154-PC156遍历ipairs(R8)，PC158-PC166匹配当前物品Name与迭代值，命中后PC167-PC170按item=R19、itemText=R25...
+    -- [STATIC-COMPLETE] Nested_Anonymous_2
+    -- root.children[50].children[1] | legacy=root/51/2 | proto_id=99
+    -- instructions=27 | constants=1 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=4
+    -- closure_site=root/50 PC53
+    -- status=完整静态恢复（未运行时验证） | 检查点173：父StorageItems PC54创建child1，PC55-PC58依次捕获R1-R4=maxPage/pageCapacity/openSize/storedPageData；父PC37-PC53逐页调用GetStorageDataByPage并存储#pageData或0。子函数27条指令逐PC闭合：升序遍历页码，末页容量取min(...
+  -- [STATIC-COMPLETE] FindBlacklistPlayer
+  -- root.children[51] | legacy=root/52 | proto_id=100
+  -- instructions=35 | constants=5 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=1
+  -- closure_site=root PC352
+  -- status=完整静态恢复（未运行时验证） | 检查点123：父root PC353创建闭包，PC354 OP_387 B=54，UP[0]=root R54=PCallHelper_2；该辅助函数通过pcall调用Nested_FriendProxy安全取得FriendProxy。函数读取首个vararg targetId；代理/_blacklistData缺失或targetId假值时返回fals...
+  -- [STATIC-COMPLETE] onDamageMsg
+  -- root.children[52] | legacy=root/53 | proto_id=101
+  -- instructions=72 | constants=19 | children=1 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=1
+  -- closure_site=root PC356
+  -- status=完整静态恢复（未运行时验证） | 检查点80/122/180：父root PC357创建闭包、PC358捕获T[41]黑名单状态表为UP0；root PC294将同表挂到MainLeftBottom.blacklist，PC359将本函数挂到MainLeftBottom.onDamageMsg。PC7创建Nested_JsonDecode，PC8捕获父T[1]首个JSON文本参数；pc...
+    -- [STATUS-REVIEW] Nested_JsonDecode
+    -- root.children[52].children[0] | legacy=root/53/1 | proto_id=102
+    -- instructions=6 | constants=2 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=1
+    -- closure_site=root/52 PC6
+    -- status=未在函数状态CSV中单独标注
+  -- [STATIC-COMPLETE] ScheduleOnce
+  -- root.children[53] | legacy=root/54 | proto_id=103
+  -- instructions=7 | constants=2 | children=0 | vararg_flag=2 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC51
+  -- status=完整静态恢复（未运行时验证） | 检查点122：PC1-PC2取得SL.ScheduleOnce方法并保留SL接收者；PC3-PC4构造两个显式参数callback与delay；PC5调用并原样返回全部结果；PC6-PC7位于无条件return之后不可达；普通Lua为SL:ScheduleOnce(callback
+  -- [STATIC-COMPLETE] AnonymousHelper_54
+  -- root.children[54] | legacy=root/55 | proto_id=104
+  -- instructions=6 | constants=0 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=2
+  -- closure_site=root PC312
+  -- status=完整静态恢复（未运行时验证） | 检查点125：父root PC313创建闭包；PC314捕获R46（root.children[17] PCallHelper闭包）为UP[0]，PC315捕获R43（字符串gather_monster_count.txt）为UP[1]。子函数PC1-PC3依次取得PCallHelper、文件名、第一个显式参数；PC4调用PCallHelper(文件名
+  -- [STATIC-COMPLETE] AccountIDValidation
+  -- root.children[55] | legacy=root/56 | proto_id=105
+  -- instructions=64 | constants=21 | children=2 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=2
+  -- closure_site=root PC275
+  -- status=完整静态恢复（未运行时验证） | 源码候选 04_源码候选/root55_children_drafts.lua；检查点169逐PC闭合64条指令：GAME_ID/204208比较、UID读取、9项字符串白名单、Nested_ID调用及布尔分支、UP0/UP1提示回调、Panel闭包捕获和SL:Schedule(callback
+    -- [STATIC-COMPLETE] Nested_Panel_mini_chat
+    -- root.children[55].children[0] | legacy=root/56/1 | proto_id=106
+    -- instructions=24 | constants=8 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=2
+    -- closure_site=root/55 PC57
+    -- status=完整静态恢复（未运行时验证） | 源码候选 04_源码候选/root55_children_drafts.lua；检查点169闭合父PC58捕获：UP0=父函数Nested_ID返回的validationResult（PC59捕获R4），UP1=父UP0提示回调（PC60捕获UP0）。检查MainProperty/_ui/Panel_mini_chat；满足时SL:UnSchedule...
+    -- [STATIC-COMPLETE] Nested_ID
+    -- root.children[55].children[1] | legacy=root/56/2 | proto_id=107
+    -- instructions=27 | constants=4 | children=0 | vararg_flag=1 | fixed_params=UNKNOWN | upvalues=3
+    -- closure_site=root/55 PC37
+    -- status=完整静态恢复（未运行时验证） | 源码候选 04_源码候选/root55_children_drafts.lua；PC1-3 ipairs(UP0允许列表)；第一个参数与每个allowedID分别tostring后比较；命中调用UP1成功提示并返回true；未命中调用UP2失败提示并返回false；只读取首个显式参数，额外变参未使用；父PC38捕获顺序已核对；检查点168。
+  -- [STATIC-COMPLETE] ClearTargetID_2
+  -- root.children[56] | legacy=root/57 | proto_id=108
+  -- instructions=22 | constants=9 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC184
+  -- status=完整静态恢复（未运行时验证） | 检查点126：父root PC185创建闭包，captures=0。PC1-PC5检查global.Facade并在假值时return；PC6-PC15通过Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)取代理，代理假值时return；PC16-PC22保留proxy作为SetTarget...
+  -- [STATUS-REVIEW] PlayerPos
+  -- root.children[57] | legacy=root/58 | proto_id=109
+  -- instructions=10 | constants=4 | children=0 | vararg_flag=0 | fixed_params=UNKNOWN | upvalues=0
+  -- closure_site=root PC57
+  -- status=未在函数状态CSV中单独标注
+
+-- END STRUCTURE TREE
+-- Integrity: indexed prototypes=110; indexed physical instructions=5580; direct root children=58.
