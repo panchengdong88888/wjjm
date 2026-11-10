@@ -11896,5 +11896,48 @@
     "root_direct_closures_source_bound": 58,
     "runtime_verified": 0,
     "next_action": "检查点273：核对root PC1-PC42初始化与主装配入口的对象身份和词法作用域，再继续将PC1-PC412可确认语句收敛为连续恢复适配执行体。"
+  },
+  "root_assembly_checkpoint_273": {
+    "date": "2026-11-10",
+    "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
+    "main_recovery_blob_sha": "66144c9935ee79c4cac86cb996a115e76ae4f51c",
+    "audit_file": "docs/audit/检查点273_PC1-PC42根表初始化与跨词法块身份核对.md",
+    "pc1_pc42_order": [
+      "PC1-PC2 create MainLeftBottom and assign _G.MainLeftBottom",
+      "PC3-PC5 create a and assign MainLeftBottom.a",
+      "PC6 a.version",
+      "PC7-PC11 a.screenW",
+      "PC12-PC16 a.screenH",
+      "PC17-PC23 a.Blocklist",
+      "PC24-PC25 a.SendHookList",
+      "PC26-PC27 a.RecvHookList",
+      "PC28-PC29 a.isHidden/hidebut",
+      "PC30-PC32 create b; reread _G.MainLeftBottom; assign b",
+      "PC33-PC35 create z and assign MainLeftBottom.z",
+      "PC36-PC41 initialize z flags",
+      "PC42 create timerState"
+    ],
+    "source_block_exports": [
+      "MainLeftBottom",
+      "uiState",
+      "buttonMap",
+      "timerState"
+    ],
+    "adapter_assertions": [
+      "_G.MainLeftBottom == rootModule",
+      "rootSource.uiState == rootModule.a",
+      "rootSource.buttonMap == rootModule.b",
+      "rootModule.z is a table",
+      "rootSource.timerState is a table",
+      "a/b/z/timerState are pairwise distinct tables"
+    ],
+    "preserved_semantics": [
+      "PC30-PC32 _G.MainLeftBottom reread",
+      "PC275 _ENV.MainLeftBottom reread",
+      "PC389 T[59] module reread",
+      "PC412 return MainLeftBottom"
+    ],
+    "runtime_verified": 0,
+    "notes": "新增身份断言尚未执行；本检查点为静态源码核对，不增加函数恢复计数。"
   }
 }
