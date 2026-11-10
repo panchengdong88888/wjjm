@@ -154,3 +154,50 @@ local resetSlot22 = ""
 -- [4]=T[19]初值false；[5]=T[20]初值0；[6]=T[21]初值nil；
 -- [7]=T[22]初值空字符串；[8]=T[4] PrintLog。
 -- 该子原型的复位写入顺序和回调调用契约已在检查点162独立闭合。
+
+
+-- 检查点196：PC201-PC270，采集/主循环/界面控制闭包注册与捕获。
+-- PC201-PC209：ResetGatherMonsterData的九项捕获描述，见检查点195/162；
+-- 此处不将捕获描述误写成业务语句。
+
+-- PC210：创建root.children[14] / ClearBlacklistItems，捕获数1；
+-- PC211：捕获父帧T[30]（IsDie闭包）。子函数主体已独立恢复，不在根模块重复转写。
+
+-- PC212-PC213：创建root.children[31] / IsInWhitelistMap（无捕获），
+-- 并将闭包导出为全局IsInWhitelistMap。
+
+-- PC214-PC236：创建root.children[45] / MainLoop，捕获数22。
+-- 按字节码顺序捕获的父root T寄存器为：
+-- [18,14,13,4,23,35,26,34,15,32,17,16,19,20,22,36,21,31,30,33,24,8]。
+-- 与检查点158已闭合的MainLoop 22项upvalue语义顺序一致：
+-- 运行标记、currentState、状态常量、PrintLog、FormatStateChange、
+-- ResetGatherMonsterData、GetMainPlayerID、FindMonsterCandidates、
+-- 目标ID数组、GetOwnerID、扫描游标、自己归属计数、等待标志、
+-- 截止时间、等待名称、FindMonsterInCurrViewField、等待目标ID、
+-- GetOwnerIDText、IsDie、GetOwnerDescription、SetTargetID、gatherConfig。
+-- PC237将闭包导出为全局MainLoop；不重复转写其已完整静态恢复的函数体。
+
+-- PC238-PC245：创建root.children[19] / InitGatherMonsters，捕获数7；
+-- 按顺序捕获父root T[3],T[18],T[23],T[13],T[35],T[8],T[4]。
+-- PC246将闭包导出为全局InitGatherMonsters。
+-- PC247-PC254：创建root.children[27] / StopGatherMonsters，捕获数7；
+-- 按顺序捕获父root T[18],T[3],T[25],T[23],T[13],T[35],T[4]。
+-- PC255将闭包导出为全局StopGatherMonsters。
+-- 两个子函数主体已在既有检查点独立静态恢复；此处仅记录父级捕获和导出。
+
+-- PC256-PC257：创建root.children[23] / Builtsetting，捕获父root T[5]；
+-- PC258将闭包导出为全局Builtsetting。
+
+-- PC259-PC260：创建无捕获root.children[41] / MoveItemToQuickUse，
+-- 并导出为全局MoveItemToQuickUse。函数体普通Lua草稿见检查点191。
+
+-- PC261-PC264：创建root.children[37] / DestroyUI，捕获顺序为
+-- [T[0],T[3],T[1]]，即UI状态对象、定时器状态对象、按钮映射表。
+-- 此捕获映射与检查点164修正结果一致。
+
+-- PC265：将闭包R37写入当前模块表的hide字段。
+-- PC266：创建root.children[10] / SetButtonVisibilityState，捕获顺序为[T[0],T[1]]；
+-- PC267-PC268为两项捕获描述。函数体已在检查点161完整静态恢复。
+-- PC269：将闭包R37写入当前模块表的show字段。
+-- PC270：创建root.children[40] / ShowHideAllButtons，捕获数3；
+-- 后续捕获描述跨出本批范围，留待下一检查点继续核对（PC271起）。
