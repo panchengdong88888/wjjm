@@ -14,7 +14,7 @@
     "root.children[45]": "MainLoop：417条；检查点152-158形成并完成完整静态恢复（未运行时验证）。CFG报告统计314个入口可达节点、103个静态不可达节点。全部22个upvalue父root T寄存器生产者已闭合：运行标记、当前状态/常量、PrintLog、FormatStateChange、ResetGatherMonsterData、GetMainPlayerID、FindMonsterCandidates、目标ID数组、GetOwnerID、扫描游标/自己归属计数、等待状态字段、FindMonsterInCurrViewField、GetOwnerIDText、IsDie、GetOwnerDescription、SetTargetID、配置表。检查点153/154闭合GATHERING/ATTACKING循环；155/156校正入口等待与未归属锁定路径；157完成全CFG分区总账。静态完整，未运行时验证。",
     "root.children[46]": "DiuItems：169条；普通Lua草稿已独立复审并标记完整静态恢复（未运行时验证）；源码04_源码候选/root46_DiuItems.lua；不计运行时验证。",
     "root.children[42]": "doInit_UI（419条）检查点187/199/200/201/203/204/208：PC1-PC419主体已逐段复审；检查点208纠正PC180 RequestStorageData与PC183 GUI.Attach_UITop均只传T[7]一个显式实参（旧草稿无参/七参写法错误），T[7]由PC133 ipairs(T[6])第三返回值写入；T[6]运行时值/ENV.ipairs宿主语义仍未验证。PC184-PC195 mini-chat定位与坐标已映射；PC196-PC235三组按钮配置；PC236-PC337闭包工厂；PC338-PC418按钮创建/隐藏按钮设置。GUI尾参/布尔值、MoneyProxy快照写name/读moneyId差异、Nested_Anonymous T[0]/T[1]/T[2]来源、unknown哨兵仍未闭合；保持普通Lua草稿，不升级完整静态恢复，未运行时验证。审计docs/audit/检查点208_doInit_UI_PC1-PC419调用参数与GUI入口复审.md。",
-    "root.children[8]": "FormatStateChange：10条；检查点176逐指令闭合格式化、单参回调及回调后状态写回；检查点177交叉root初始化、MainLoop捕获映射/调用点及PrintLog本体，确认UP0=PrintLog（root T[4]），UP1=MainLoop共享currentState单元（root T[14]，初值IDLE）。完整静态恢复，未运行时验证；PrintLog的SL.Print分支无调用指令，不推断可见输出。",
+    "root.children[8]": "FormatStateChange：10条；检查点177闭合UP0=PrintLog、UP1=MainLoop共享currentState cell、格式参数和回写时序；完整静态恢复，未运行时验证。根级工厂实例化仍待整合。",
     "root.children[9]": "ReadNumericConfig：45条；检查点130闭合三类失败分支均清理返回槽后返回nil，纯数字字符串才tonumber；检查点178闭合UP0=GetWritablePath（root.children[2]）及root/50 AnonymousHelper_49以blacklist_distance.txt调用并转发返回值。完整静态恢复，未运行时验证；GetWritablePath拼接顺序已由检查点127独立闭合。",
     "root.children[14]": "FindMonsterInCurrViewField：27条；检查点131完成27条PC映射，确认捕获root.children[29] IsDie包装器对存活actor返回truthy，完成静态恢复，未运行时验证。",
     "root.children[1]": "GetStorageItemData：77条；检查点132完成分页合并、逐页容量计算、proxy方法self、通知回调及返回数组静态恢复；未运行时验证。",
@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点216：继续处理短小、少捕获、重复调用结构的剩余函数；优先复核FormatStateChange与ReadNumericConfig等已有独立审计的短函数，随后处理其他简单首版草稿。复杂UI、资源刷新链和状态机留到最后。",
+  "next_action": "检查点217：继续挑选短小、少捕获、控制流简单的剩余函数，优先完成无子原型函数；同步将已有完整静态源码整合进集中稿。复杂UI初始化、资源刷新链和状态机主体留到最后。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -128,7 +128,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "215"
+    "last_checkpoint": "216"
   },
   "static_recovered_functions": [
     {
@@ -2296,29 +2296,48 @@
         "六组CHANGE_SETTING编号/单元素数组依次为27:{0}、52:{0}、1002:{0}、57:{1}、58:{1}、2005:{0}；每组后调用捕获回调输出对应提示。",
         "55条指令全部映射，无显式参数、无子原型；完整静态恢复，未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[8]",
+      "legacy_path": "root/9",
+      "name": "FormatStateChange",
+      "source_file": "04_源码候选/root8_FormatStateChange.lua",
+      "audit_file": "docs/audit/检查点177_FormatStateChange父级捕获身份与状态共享链闭合.md",
+      "status": "complete_static_reconstruction",
+      "physical_instructions": 10,
+      "constant_count": 3,
+      "child_count": 0,
+      "capture_count": 2,
+      "vararg_flag": 1,
+      "runtime_verified": false,
+      "notes": [
+        "UPVALUE[0]=PrintLog（root.children[16]）；UPVALUE[1]=root T[14]共享currentState单元，初值为IDLE。",
+        "固定格式“状态切换: %s -> %s”，旧状态与首个显式参数按序格式化；只向PrintLog传入一个消息。",
+        "PrintLog正常返回后，将首个显式参数写回共享状态cell；额外vararg不读取。",
+        "10条指令完整静态恢复；单独工厂表达尚未与MainLoop根级共享cell完成最终装配；未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "215",
+    "checkpoint": "216",
     "targets": [
-      "root.children[23] Builtsetting（55条、无子原型、1项捕获）"
+      "root.children[8] FormatStateChange（10条、2项捕获、无子原型）"
     ],
-    "status": "完成六组设置逻辑的完整静态恢复；捕获回调以中性名称表示，未猜测业务身份。",
-    "audit_file": "docs/audit/检查点215_Builtsetting完整静态复审.md",
+    "status": "根据检查点177完整静态审计升级状态并整合源码工厂；保留共享状态cell的根级装配要求。",
+    "audit_file": "docs/audit/检查点177_FormatStateChange父级捕获身份与状态共享链闭合.md",
     "files": [
-      "04_源码候选/短函数草稿_第四十五批.lua",
+      "04_源码候选/root8_FormatStateChange.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点215_Builtsetting完整静态复审.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "findings": [
-      "六组CHANGE_SETTING调用的ID与数组值按PC顺序闭合。",
-      "每组设置后调用唯一UPVALUE回调，传入对应中文提示文本。",
-      "原始回调业务名称未知，使用onSettingMessage中性名称；不影响函数体控制流恢复。",
-      "完整静态恢复数更新为105/110（95.5%）；运行时验证仍为0。"
+      "UPVALUE[0]为PrintLog；UPVALUE[1]为MainLoop共享currentState cell。",
+      "固定格式字符串、旧状态/新状态参数顺序、PrintLog单参调用及回调后状态写回均已闭合。",
+      "独立工厂已加入集中源码；最终根模块装配必须保证MainLoop与FormatStateChange使用同一状态cell。",
+      "完整静态恢复数更新为106/110（96.4%）；运行时验证仍为0。"
     ]
   },
   "corrections": [
@@ -2507,20 +2526,21 @@
       "path": "root.children[8]",
       "legacy_path": "root/9",
       "name": "FormatStateChange",
-      "source_file": "04_源码候选/短函数草稿_第四十三批.lua",
-      "audit_file": "docs/audit/检查点67_FormatStateChange保守草稿.md",
-      "status": "conservative_first_pass_draft_argument_slots_pending_not_runtime_verified",
+      "source_file": "04_源码候选/root8_FormatStateChange.lua",
+      "audit_file": "docs/audit/检查点177_FormatStateChange父级捕获身份与状态共享链闭合.md",
+      "status": "complete_static_reconstruction",
       "physical_instructions": 10,
       "constant_count": 3,
       "child_count": 0,
       "vararg_flag": 1,
       "notes": [
-        "Confirmed string.format with format text 状态切换: %s -> %s",
-        "PC8 calls captured UPVALUE_0; PC9 writes R0 into UPVALUE_1",
-        "Root PC181 creates closure; captures root R4 then R14",
-        "VM T-stack fixed/vararg argument mapping and capture business names remain unresolved",
-        "No runtime validation"
-      ]
+        "UPVALUE[0]=PrintLog（root.children[16]）；UPVALUE[1]=root T[14]共享currentState单元，初值为IDLE。",
+        "固定格式“状态切换: %s -> %s”，旧状态与首个显式参数按序格式化；只向PrintLog传入一个消息。",
+        "PrintLog正常返回后，将首个显式参数写回共享状态cell；额外vararg不读取。",
+        "10条指令完整静态恢复；单独工厂表达尚未与MainLoop根级共享cell完成最终装配；未运行时验证。"
+      ],
+      "capture_count": 2,
+      "runtime_verified": false
     },
     {
       "path": "root.children[9]",
@@ -3024,64 +3044,64 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 215,
+  "last_checkpoint": 216,
   "checkpoint": {
-    "number": 215,
+    "number": 216,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/短函数草稿_第四十五批.lua",
+      "04_源码候选/root8_FormatStateChange.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点215_Builtsetting完整静态复审.md",
+      "docs/audit/检查点177_FormatStateChange父级捕获身份与状态共享链闭合.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 72,
-    "complete_static_reconstructions": 105,
+    "complete_static_reconstructions": 106,
     "runtime_verified": 0,
-    "notes": "Builtsetting（root.children[23]）55条指令完成静态恢复。六组CHANGE_SETTING编号、数组值、顺序、提示文本及唯一捕获回调调用契约均已闭合。回调原始业务名称未知，保留中性参数名。更新集中源码和状态清单；未运行时验证。"
+    "notes": "FormatStateChange（root.children[8]）10条指令按检查点177完整静态审计升级。闭合PrintLog捕获、共享currentState cell、格式参数、回调及写回顺序。源码工厂已整合；最终根级实例化仍需保证MainLoop与此函数使用同一状态cell。未运行时验证。"
   },
   "drafts": 33,
   "next": "检查点213：继续把剩余源码候选逐批纳入MainLeftBottom_恢复源码.lua；优先补齐目前只有索引/审计、尚未进入集中源码的原型。随后继续把根模块PC42-PC412的闭包创建、捕获和导出从注释转成普通Lua；按新框架API对照复核接收者形式与参数数量。未闭合处保留TODO，不虚构实现。",
   "recent_checkpoint": {
-    "number": 215,
+    "number": 216,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/短函数草稿_第四十五批.lua",
+      "04_源码候选/root8_FormatStateChange.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点215_Builtsetting完整静态复审.md",
+      "docs/audit/检查点177_FormatStateChange父级捕获身份与状态共享链闭合.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 72,
-    "complete_static_reconstructions": 105,
+    "complete_static_reconstructions": 106,
     "runtime_verified": 0,
-    "notes": "Builtsetting（root.children[23]）55条指令完成静态恢复。六组CHANGE_SETTING编号、数组值、顺序、提示文本及唯一捕获回调调用契约均已闭合。回调原始业务名称未知，保留中性参数名。更新集中源码和状态清单；未运行时验证。"
+    "notes": "FormatStateChange（root.children[8]）10条指令按检查点177完整静态审计升级。闭合PrintLog捕获、共享currentState cell、格式参数、回调及写回顺序。源码工厂已整合；最终根级实例化仍需保证MainLoop与此函数使用同一状态cell。未运行时验证。"
   },
   "latest_checkpoint": {
-    "checkpoint": "215",
-    "summary": "完成Builtsetting 55指令完整静态恢复，闭合六组设置调用及提示回调顺序，并整合进集中源码。",
-    "audit_file": "docs/audit/检查点215_Builtsetting完整静态复审.md",
+    "checkpoint": "216",
+    "summary": "根据检查点177审计将FormatStateChange升级为完整静态恢复，并将工厂源码整合到集中稿；明确最终装配必须共享MainLoop的currentState cell。",
+    "audit_file": "docs/audit/检查点177_FormatStateChange父级捕获身份与状态共享链闭合.md",
     "unresolved": [
-      "原UPVALUE[0]提示回调的业务名称未知",
-      "onDamageMsg父函数剩余参数/元数据分支仍有未决项",
+      "FormatStateChange与MainLoop尚未在根模块实例化为共享同一cell的闭包",
+      "onDamageMsg父函数其余参数/元数据分支仍有未决项",
       "根模块PC42-PC412仍需从分段注释转为普通Lua闭包创建/捕获/导出",
       "复杂UI与状态机主体仍需后续恢复",
       "未进行Lua解释器语法检查或目标游戏运行时验证"
     ]
   },
-  "complete_static_reconstruction_count": 105,
-  "complete_static_reconstruction": "105/110 (95.5%)",
+  "complete_static_reconstruction_count": 106,
+  "complete_static_reconstruction": "106/110 (96.4%)",
   "progress_reconciled": true,
   "counts": {
     "ordinary_lua_drafts": 72,
-    "complete_static_reconstruction": 105,
+    "complete_static_reconstruction": 106,
     "runtime_verified": 0
   },
-  "next_checkpoint": 216,
+  "next_checkpoint": 217,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3141,7 +3161,8 @@
       "04_源码候选/root28_FindMonsterCandidates.lua",
       "04_源码候选/root2_GetWritablePath.lua",
       "04_源码候选/短函数草稿_第四十批.lua",
-      "04_源码候选/短函数草稿_第四十五批.lua"
+      "04_源码候选/短函数草稿_第四十五批.lua",
+      "04_源码候选/root8_FormatStateChange.lua"
     ],
     "lexical_block_balance": "passed",
     "full_lua_compiler_available": false,
