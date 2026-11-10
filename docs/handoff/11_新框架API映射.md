@@ -97,3 +97,23 @@
 ## 检查点214补充：Nested_JsonDecode 的实际调用形式
 
 开发包中 `SL:JsonDecode(jsonStr, isfilter)` 是通用文档写法；但 `root.children[52].children[0]` 的 corrected phase3 字节码 PC1-PC4 明确读取 `SL.JsonDecode` 后，仅传入捕获的JSON文本，不传入SL作为self。因此该子原型及其父函数中的解码闭包必须保留点调用形式 `SL.JsonDecode(jsonText)`。这是具体原型的字节码证据优先于通用文档示例的情况，不应将所有SL方法统一改为冒号调用。
+
+
+## 检查点225补充：Nested_FFFF00 使用到的GUI文档签名
+
+从用户提供的`新框架(3_40_xx).zip`（43份文档）核对以下GUI接口；本项目`root.children[42].children[3]`的调用参数数量、顺序与这些签名一致：
+
+- `GUI:Win_Create(ID,x,y,width,height,hideMain,hideLast,needVoice,escClose,isRevmsg,npcID,param)`
+- `GUI:Win_IsNotNull(widget)`、`GUI:Win_Close(widget)`
+- `GUI:Layout_Create(parent,ID,x,y,width,height,isClip)`
+- `GUI:ListView_Create(parent,ID,x,y,width,height,direction)`；direction=1为垂直、2为水平。
+- `GUI:ListView_setBackGroundColorType(widget,value)`、`ListView_setBackGroundColor(widget,value)`、`ListView_setBackGroundColorOpacity(widget,value)`
+- `GUI:Text_Create(parent,ID,x,y,fontSize,fontColor,str)`、`GUI:Text_setString(widget,value)`
+- `GUI:Button_Create(parent,ID,x,y,nimg)`、`Button_setTitleText(widget,value)`、`Button_setTitleColor(widget,value)`、`Button_setTitleFontSize(widget,value)`、`Button_setTitleFontName(widget,value)`
+- `GUI:setAnchorPoint(widget,x,y)`、`GUI:setTouchEnabled(widget,value)`、`GUI:addOnClickEvent(widget,func)`
+
+注意：开发文档中`Win_Create`列出的参数顺序含hideMain/hideLast/needVoice/escClose/isRevmsg/npcID/param；恢复时按实际字节码实参顺序保留，不按文档示例的省略参数版本擅自删减。
+
+### VM dump的unknown标记
+
+检查点102已确认常量`["unknown",2]`是VM dump对nil的序列化占位，不是运行时业务哨兵。检查点225据此修正Nested_FFFF00的resTimer清理和doInit_UI的cruiseTimer清理为nil。该规则适用于同一dump格式中的相同标记，不能将其他不同来源的unknown值一概替换。
