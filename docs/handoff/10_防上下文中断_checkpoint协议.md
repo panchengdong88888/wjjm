@@ -2168,3 +2168,21 @@
 - 状态：根模块仍为分段普通 Lua 草稿；本批不增加完整静态恢复数量或运行时验证数量。
 - 下一步：PC341-PC349，随后 PC350-PC412。
 - 持久化验证：源码、CSV、机器状态 JSON 均在各自更新后重新 fetch，确认新 SHA 和内容可读。
+
+
+## 检查点 #198（2026-11-10）：根模块 PC341-PC412
+
+- 复核范围：root / MainLeftBottom_Module，继续使用 corrected phase3 反汇编物理PC；未重复任何底层提取或opcode研究。
+- PC341-PC349：R52二维数值表最后两项及八项外层组装完成。八项依序为{1,0}、{-1,0}、{0,1}、{0,-1}、{1,1}、{1,-1}、{-1,1}、{-1,-1}。业务含义未证实，保留中性变量名。
+- PC350-PC351：创建root.children[22] GetMapData2DPtr并捕获R52；检查点184已确认该UPVALUE在函数活动路径不读取。
+- PC352-PC354：创建无捕获PCallHelper_2，以及捕获它的FindBlacklistPlayer。
+- PC355-PC356：创建UseItemByIndex，捕获PC280-PC282构造的随机传送石名称数组。
+- PC357-PC359：创建onDamageMsg，捕获共享blacklistState，并写MainLeftBottom.onDamageMsg。
+- PC360-PC362：创建InstallDamageHook，捕获父T[0]/T[4]。
+- PC363-PC367：创建DeathAutoBlacklist，捕获[T[41],T[4],T[55],T[5]]。
+- PC368-PC381：创建BlacklistPlayerDetection，按序捕获[T[2],T[57],T[41],T[58],T[55],T[53],T[38],T[4],T[56],T[39],T[5],T[40],T[37]]；PC382导出全局BlacklistItems。
+- PC383-PC387：创建ClearBlacklistItems，捕获[T[54],T[4],T[5],T[41]]；PC388导出全局ClearBlacklistItems。
+- PC389：读取全局MainLeftBottom；PC390-PC410创建doInit_UI，捕获20项[T[4],T[2],T[3],T[0],T[1],T[41],T[48],T[7],T[8],T[50],T[49],T[5],T[44],T[42],T[51],T[43],T[47],T[11],T[12],T[9]]；PC411写MainLeftBottom.doInit；PC412返回。
+- 根模块PC1-PC412现均有分段源码记录；不等于作者级完整源码恢复。根函数仍不计入完整静态恢复新增数量，也不增加运行时验证数量。
+- 更新后已重新fetch验证源码、函数状态CSV、机器状态JSON；本协议随后追加本记录并重新fetch验证。
+- 下一步：转向root.children[42] doInit_UI（419条）首版普通Lua草稿扩展，重点利用既有检查点187、102、106、107、108、110、115、118等，不重复已完成的子函数体。
