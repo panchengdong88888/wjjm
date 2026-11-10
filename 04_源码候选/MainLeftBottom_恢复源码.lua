@@ -8244,6 +8244,10 @@ do
     -- 检查点251：UI闭包按父root寄存器T[0]/T[1]/T[3]捕获顺序注入。
     -- T[0]=MainLeftBottom.a（UI状态对象），T[1]=MainLeftBottom.b（按钮映射），
     -- T[3]=timerState；三者均为共享表引用，不作值复制。
+    assert(rootSource.uiState == rootModule.a
+        and rootSource.buttonMap == rootModule.b
+        and type(rootSource.timerState) == "table",
+        "PC261-PC274 UI capture object identity mismatch")
     local makeDestroyUI = sourceFunction(
         "04_源码候选/短函数草稿_第十四批.lua", "make_DestroyUI"
     )
@@ -8310,15 +8314,22 @@ do
         and rootSource.randomTeleportItemNames[1] == "随机传送石",
         "PC280-PC282 randomTeleportItemNames reconstruction mismatch")
     assert(type(rootSource.blacklistState) == "table"
-        and rootModule.blacklist == rootSource.blacklistState,
-        "PC286-PC294 blacklistState identity mismatch")
+        and rootModule.blacklist == rootSource.blacklistState
+        and rootSource.blacklistState.lastAttacker == nil
+        and rootSource.blacklistState.lastHp == nil
+        and rootSource.blacklistState.deathHandled == false
+        and rootSource.blacklistState.alertAt == 0
+        and rootSource.blacklistState.nextTryAt == 0
+        and rootSource.blacklistState.noStoneWarned == false
+        and rootSource.blacklistState.distance == nil,
+        "PC286-PC294 blacklistState identity/initial values mismatch")
     assert(rootSource.blacklistAlertThreshold == 2.0
         and rootSource.blacklistShortRetryDelay == 0.01
         and rootSource.blacklistNoItemRetryDelay == 30.0,
         "PC283-PC285 blacklist timing constants mismatch")
-    assert(type(rootSource.blacklistDistanceConfigFile) == "string"
-        and type(rootSource.gatherMonsterCountConfigFile) == "string",
-        "PC295-PC296 configuration file names missing")
+    assert(rootSource.blacklistDistanceConfigFile == "blacklist_distance.txt"
+        and rootSource.gatherMonsterCountConfigFile == "gather_monster_count.txt",
+        "PC295-PC296 configuration file names mismatch")
 
     -- 检查点252：T[44] GetWritablePath是同一个稳定函数引用，供三个闭包共享。
     -- root PC297：创建无捕获GetWritablePath，供PC298/301/303闭包捕获。
