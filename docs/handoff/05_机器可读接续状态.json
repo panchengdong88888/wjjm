@@ -24,7 +24,7 @@
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
     "root.children[23]": "Builtsetting：55条；检查点215闭合六组CHANGE_SETTING参数、顺序、中文提示及单一捕获回调契约；原回调业务名称未知但不影响函数体静态恢复。完整静态恢复，未运行时验证。",
     "root.children[47]": "BlacklistPlayerDetection的UP[1]捕获root T[57] live cell。PC357创建root.children[52] onDamageMsg并于PC359写入MainLeftBottom.onDamageMsg；PC360覆盖T[57]为root.children[6] InstallDamageHook；PC368才创建BlacklistPlayerDetection捕获T[57]。因此入口零参调用UP[1]()实际安装伤害钩子。已同步主源码参数名installDamageHook及检查点146/186/236。",
-    "root.children[50]": "StorageItems（224条）检查点189、206：普通Lua主体草稿位于04_源码候选/短函数草稿_第六十批.lua；PC1-PC224复审，互斥/仓库可用页检查/分页占用快照/18项特殊名称/待定过滤项/BAG_DATA/MakeIndex去重/ITEM_IS_BIND过滤/两组ipairs匹配/UseItemByIndex/child0门控/child1找页/七项LuaSendMsg/本地记账/复位提示均已映射。检查点206修正PC151-PC176：每次特殊名称匹配后立即检查Nested_isOutputted返回值，任一false/nil立即跳过当前物品；无匹配也不存仓。三个UPVALUE仅按用途临时命名；999999999协议含义、服务端第四字段定义、宿主API未验证。仍为普通Lua草稿，不升级完整静态恢复，未运行时验证。审计docs/audit/检查点206_StorageItems普通Lua草稿复审与控制流修正.md。",
+    "root.children[50]": "StorageItems（224条）检查点189、206、223：父函数PC1-PC224与两个子原型均完成静态恢复；UP[0..2]按storageState/notify/output中性命名；检查点248已按T[2]/T[4]/T[5]装配状态表、PrintLog、ShowLocalNoticeByType，并显式注入两个子原型工厂；完整静态恢复，未运行时验证。",
     "root.children[50].children[1]": "Nested_Anonymous_2：27条；检查点173独立静态复审完成。父StorageItems PC54-PC58捕获maxPage/pageCapacity/openSize/storedPageData；父PC37-PC53逐页构建计数表（#pageData或0）；子函数升序遍历，末页容量按openSize剩余空间裁剪，返回首个可用页码或nil；父PC177-PC179零参调用并消费页码/nil。完整静态恢复，未运行时验证。",
     "root.children[7]": "GetOwnerIDText：检查点151新增04_源码候选/root7_GetOwnerIDText.lua。nil/空串/-1返回false；string分支ownerID==tostring(ownerID)；非string分支ownerID==第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
     "root.children[38]": "GetOwnerID：检查点151新增04_源码候选/root38_GetOwnerID.lua。nil/空串/-1返回false；string分支ownerID~=tostring(ownerID)；非string分支ownerID~=第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点249：继续装配剩余稳定捕获工厂。优先处理root.children[23] Builtsetting（T[5]=ShowLocalNoticeByType）、root.children[8] FormatStateChange（PrintLog+currentState live cell需特殊处理）、root.children[26] ResetGatherMonsterData（9个捕获，含多个共享标量cell）。在进入MainLoop/doInit_UI前，先实现并验证通用live-cell适配接口。",
+  "next_action": "检查点250：建立并核对共享live-cell适配层，重点处理root T[14]=currentState以及T[15..22]采集状态字段；随后装配FormatStateChange、ResetGatherMonsterData、InitGatherMonsters、StopGatherMonsters与MainLoop。必须确保多个闭包读写同一个cell对象，不得用各自的值副本。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2806,24 +2806,19 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "248",
+    "checkpoint": "249",
     "targets": [
-      "root.children[12] LuaSendMsg",
-      "root.children[36] GetAvailableStoragePage",
-      "root.children[1] GetStorageItemData",
-      "root.children[5] TakeItems",
-      "root.children[21] PickUpItems",
-      "root.children[50] StorageItems"
+      "root.children[23] Builtsetting",
+      "root.children[55] AccountIDValidation",
+      "root.children[6] InstallDamageHook"
     ],
-    "status": "新增6个稳定捕获工厂静态实例化；修正StorageItems嵌套工厂跨词法块引用；修正PickUpItems两个比较器子闭包作用域及匿名函数表达式。捕获工厂累计9/36，尚余27；运行时验证0。",
-    "audit_file": "docs/audit/检查点248_物品与仓库稳定捕获工厂装配.md",
+    "status": "新增3个稳定捕获工厂静态实例化：Builtsetting、AccountIDValidation、InstallDamageHook。累计12/36个有捕获工厂静态装配，尚余24；运行时验证0。",
+    "audit_file": "docs/audit/检查点249_设置账号验证与伤害钩子工厂装配.md",
     "findings": [
-      "LuaSendMsg捕获MainLeftBottom.a与PrintLog，写入MainLeftBottom.a.LuaSendMsg，不导出为全局。",
-      "GetAvailableStoragePage与GetStorageItemData均捕获PrintLog并按字节码PC70/73导出。",
-      "TakeItems捕获MainLeftBottom.z与ShowLocalNoticeByType；PickUpItems捕获ShowLocalNoticeByType。",
-      "StorageItems捕获MainLeftBottom.z、PrintLog、ShowLocalNoticeByType；其两个嵌套原型工厂改为显式参数注入。",
-      "纠正检查点247捕获工厂统计遗漏：ShowLocalNoticeByType本身也计入，故检查点247时应为3/36，而不是2/36。",
-      "PickUpItems两个比较器局部闭包移动至父函数体内，避免Nested_dist在定义前被解析为全局。"
+      "Builtsetting UP[0]=root T[5]=ShowLocalNoticeByType，按PC258导出全局。",
+      "AccountIDValidation UP[0]=PrintLog、UP[1]=ShowLocalNoticeByType，写入MainLeftBottom.main；其两个嵌套子闭包保持在同一来源词法块。",
+      "InstallDamageHook UP[0]=MainLeftBottom.a、UP[1]=PrintLog，静态实例写入rootPrototypes.InstallDamageHook，供BlacklistPlayerDetection后续捕获。",
+      "更正StorageItems状态：检查点223已将父原型完成静态恢复，检查点248的嵌套工厂参数是词法装配适配，不改变其完整静态恢复状态。"
     ]
   },
   "corrections": [
@@ -3546,32 +3541,32 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 248,
-  "checkpoint": 248,
+  "last_checkpoint": 249,
+  "checkpoint": 249,
   "drafts": 33,
-  "next": "检查点249：先核对root.children[23] Builtsetting的单一T[5]捕获并接入；再评估root.children[8] FormatStateChange、root.children[26] ResetGatherMonsterData及root.children[19]/[27]采集启停闭包。所有捕获必须按OP_387共享cell语义，不能把currentState、计数器、标志等可变标量复制成普通值。",
+  "next": "检查点250：先读取docs/handoff/12_根模块闭包装配表.json中T[14]、T[15]、T[16]、T[17]、T[18]、T[19]、T[20]、T[21]、T[22]生命周期；设计显式cell读写适配，并至少用FormatStateChange与MainLoop的currentState捕获验证共享身份。不要急于装配22捕获MainLoop，先闭合cell机制。",
   "recent_checkpoint": {
-    "number": 248,
+    "number": 249,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "04_源码候选/短函数草稿_第六十批.lua",
-      "04_源码候选/PickUpItems_拾取流程_第十批.lua",
-      "04_源码候选/短函数草稿_第五十七批.lua",
+      "04_源码候选/短函数草稿_第四十五批.lua",
+      "04_源码候选/root55_children_drafts.lua",
+      "04_源码候选/短函数草稿_第三十九批.lua",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
-      "docs/audit/检查点248_物品与仓库稳定捕获工厂装配.md"
+      "docs/audit/检查点249_设置账号验证与伤害钩子工厂装配.md"
     ],
     "complete_static_reconstructions": 109,
     "ordinary_lua_drafts": 72,
     "runtime_verified": 0,
-    "captured_factory_bindings": 9,
-    "captured_factory_pending": 27,
-    "notes": "本批新增6个捕获工厂实例；ShowLocalNoticeByType计入捕获工厂总数，修正检查点247统计为3/36。"
+    "captured_factory_bindings": 12,
+    "captured_factory_pending": 24,
+    "notes": "本批新增Builtsetting、AccountIDValidation、InstallDamageHook三个稳定捕获工厂；StorageItems完整静态恢复状态以检查点223为准。"
   },
-  "latest_checkpoint": 248,
+  "latest_checkpoint": 249,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3580,7 +3575,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 249,
+  "next_checkpoint": 250,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3738,13 +3733,12 @@
     "runtime_verified": false
   },
   "latest": {
-    "checkpoint": "248",
-    "summary": "在根模块22个无捕获直接子原型绑定基础上，累计静态实例化9/36个有捕获工厂：ShowLocalNoticeByType、DiuItems、FindMonsterCandidates、LuaSendMsg、GetAvailableStoragePage、GetStorageItemData、TakeItems、PickUpItems、StorageItems。修正StorageItems嵌套工厂词法引用及PickUpItems比较器作用域。运行时验证0。",
-    "audit_file": "docs/audit/检查点248_物品与仓库稳定捕获工厂装配.md",
+    "checkpoint": "249",
+    "summary": "累计静态实例化12/36个有捕获工厂：ShowLocalNoticeByType、DiuItems、FindMonsterCandidates、LuaSendMsg、GetAvailableStoragePage、GetStorageItemData、TakeItems、PickUpItems、StorageItems、Builtsetting、AccountIDValidation、InstallDamageHook。运行时验证0。",
+    "audit_file": "docs/audit/检查点249_设置账号验证与伤害钩子工厂装配.md",
     "unresolved": [
-      "27个有捕获直接子原型尚未装配",
+      "24个有捕获直接子原型尚未装配",
       "含可变标量cell的闭包需要live-cell读写适配",
-      "StorageItems仍为普通Lua草稿等级",
       "完整根模块仍非作者原文逐字恢复",
       "运行时验证为0"
     ]
@@ -3757,13 +3751,13 @@
     "capture_semantics": "OP_387 stores a live cell reference {parent_T_table, register_index}; the upvalue proxy __index/__newindex reads/writes the parent T register dynamically. Later parent writes are visible to closures."
   },
   "root_assembly": {
-    "checkpoint": 248,
+    "checkpoint": 249,
     "direct_child_closures_expected": 22,
     "bound_at_source_level": 22,
     "runtime_verified": false,
     "captured_factory_closures_expected": 36,
-    "captured_factory_closures_bound": 9,
-    "captured_factory_closures_pending": 27,
+    "captured_factory_closures_bound": 12,
+    "captured_factory_closures_pending": 24,
     "bound_factory_names": [
       "ShowLocalNoticeByType",
       "DiuItems",
@@ -3773,8 +3767,11 @@
       "GetStorageItemData",
       "TakeItems",
       "PickUpItems",
-      "StorageItems"
+      "StorageItems",
+      "Builtsetting",
+      "AccountIDValidation",
+      "InstallDamageHook"
     ],
-    "note": "22个无捕获直接子原型已接入；9个有捕获直接子原型工厂已按OP_387顺序静态实例化，尚余27个。所有绑定均未运行时验证。"
+    "note": "22个无捕获直接子原型已接入；12个有捕获直接子原型工厂已按OP_387顺序静态实例化，尚余24个。所有绑定均未运行时验证。"
   }
 }
