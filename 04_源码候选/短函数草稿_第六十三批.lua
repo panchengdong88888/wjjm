@@ -205,6 +205,301 @@ local function make_Nested_Anonymous(PrintLog)
     end
 end
 
+
+-- ---------------------------------------------------------------------------
+-- root.children[42].children[3] / Nested_FFFF00资源统计窗口及完整静态子依赖
+-- 来源：第六十二批父函数、第六十四批刷新链、第六十五批资源行构造。
+-- 各函数均为静态恢复草稿，GUI宿主语义及unknown哨兵仍需运行时确认。
+-- ---------------------------------------------------------------------------
+
+-- child0 Nested_Helper_2：35条，无捕获；资源数值缩写格式化。
+local function Nested_Helper_2(value)
+    if not value then
+        return 0.0
+    end
+
+    if value < 100000.0 then
+        return tostring(value)
+    end
+
+    if value < 100000000.0 then
+        return tostring(math.floor(value / 10000.0)) .. "万"
+    end
+
+    local rounded = math.floor((value / 100000000.0) * 10.0) / 10.0
+    return string.format("%.1f亿", rounded)
+end
+
+-- child1 Nested_string：46条，无捕获。
+local function Nested_string(...)
+    local searchName = ...
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then return 0 end
+
+    local totalCount = 0
+    for _, item in pairs(bagData) do
+        if item and item.Name and item.MakeIndex then
+            if string.find(item.Name, searchName, 1, true) then
+                if not SL:GetMetaValue("ITEM_IS_BIND", item) then
+                    totalCount = totalCount + (item.OverLap or 1)
+                end
+            end
+        end
+    end
+    return totalCount
+end
+
+-- child4 Nested_UnSchedule：20条，捕获[printLog,timerState,moduleState]。
+local function make_Nested_UnSchedule(printLog, timerState, moduleState)
+    return function Nested_UnSchedule()
+        printLog("点击空白,关闭资源信息窗口")
+
+        if timerState.resTimer then
+            SL:UnSchedule(timerState.resTimer)
+            -- VM dump中的['unknown',2]尚未确认等价nil；保留占位。
+            timerState.resTimer = UNKNOWN_VALUE_SENTINEL
+        end
+
+        GUI:Win_Close(moduleState.resWin)
+    end
+end
+
+-- child2 Nested_FFFFFF：65条，捕获[resList,screenW*0.6]。
+local function make_Nested_FFFFFF(listView, cellWidth)
+    return function Nested_FFFFFF(resourceNames, layoutOption, rowType)
+        local rowTextByName = {}
+        local gui = GUI
+        local cellNameSuffix = math.ceil(15 / layoutOption)
+
+        for groupStart = 1, #resourceNames, layoutOption do
+            local cellName = rowType .. "_cell_" .. cellNameSuffix
+            local cellLayout = gui:Layout_Create(
+                listView, cellName, 0, 0, cellWidth, 35, 1
+            )
+
+            for columnIndex = 1, layoutOption do
+                local resourceIndex = groupStart + columnIndex - 1
+                local resourceName = resourceNames[resourceIndex]
+
+                if resourceName then
+                    local textName = "2_text_0.5_" .. columnIndex
+                    local textX = cellWidth * (columnIndex - 0.5) / 1
+                    local textNode = gui:Text_Create(
+                        cellLayout, textName, textX, 15, 30,
+                        "#FFFFFF", resourceName .. ":--"
+                    )
+
+                    if textNode then
+                        gui:setAnchorPoint(textNode, 0.5, 0.5)
+                        rowTextByName[resourceName] = textNode
+                    end
+                end
+            end
+        end
+
+        return rowTextByName
+    end
+end
+
+-- child3 Nested_Helper_3：168条，捕获10项。
+local function make_Nested_Helper_3(
+    moduleState, timerState, curTimeText, durTimeText, initState,
+    moneyProxy, moneyRows, formatNumber, itemRows, getItemCount
+)
+    return function Nested_Helper_3()
+        local gui = GUI
+
+        -- PC1-PC19：窗口无效时取消已有定时器、清空句柄并退出。
+        if not gui:Win_IsNotNull(moduleState.resWin) then
+            if timerState.resTimer then
+                SL:UnSchedule(timerState.resTimer)
+                timerState.resTimer = nil
+            end
+            return
+        end
+
+        -- PC20-PC38：取时失败会跳过时间显示，但仍继续刷新资源行。
+        local now
+        if os and os.time then
+            local timeOK, timeValue = pcall(os.time)
+            if timeOK and timeValue then now = timeValue end
+        end
+
+        if now then
+            -- PC39-PC58：日期格式化失败时显示“--”。
+            local dateText
+            if os and os.date then
+                local dateOK, value = pcall(os.date, "%Y-%m-%d %H:%M:%S", now)
+                if dateOK then dateText = value end
+            end
+            gui:Text_setString(curTimeText, "当前时间:" .. (dateText or "--"))
+
+            -- PC59-PC94：初始时间大于0时更新历时。
+            local initTime = initState.initTime
+            if initTime and initTime > 0 then
+                local elapsed = now - initTime
+                local hours = math.floor(elapsed / 3600)
+                local minutes = math.floor((elapsed % 3600) / 60)
+                gui:Text_setString(
+                    durTimeText,
+                    "历时:" .. formatNumber(hours) .. "小时"
+                        .. formatNumber(minutes) .. "分钟"
+                )
+            end
+        end
+
+        -- 跨函数键值对照：doInit_UI PC85将初始货币数量写入initSnapshot[name]；
+        -- 本回调PC106读取initSnapshot[moneyId]。两端键表达式确实不同。
+        -- MoneyProxy:GetMoneyIdByName的宿主返回语义未在仓库实现中定义，
+        -- 因此保留字节码两端各自的访问方式，不擅自改写为同一键。
+        -- PC95-PC137：moneyRows以资源名称为键；快照以moneyId为键。
+        for moneyName, textNode in pairs(moneyRows) do
+            local moneyId = moneyProxy:GetMoneyIdByName(moneyName)
+            if moneyId then
+                local currentCount = moneyProxy:GetMoneyCountById(moneyId) or 0
+                local initialCount = initState.initSnapshot[moneyId] or 0
+                gui:Text_setString(
+                    textNode,
+                    formatNumber(currentCount) .. ":"
+                        .. formatNumber(currentCount - initialCount)
+                )
+            end
+        end
+
+        -- PC138-PC167：itemRows以资源名称为键；快照以物品名称为键。
+        for itemName, textNode in pairs(itemRows) do
+            local currentCount = getItemCount(itemName)
+            local initialCount = initState.initSnapshot[itemName] or 0
+            gui:Text_setString(
+                textNode,
+                formatNumber(currentCount) .. ":"
+                    .. formatNumber(currentCount - initialCount)
+            )
+        end
+    end
+
+-- 父原型Nested_FFFF00：320条，捕获[moduleState,printLog,timerState,initState]。
+local function make_Nested_FFFF00(moduleState, printLog, timerState, initState)
+    return function Nested_FFFF00()
+        local gui = GUI
+        local sl = SL
+
+        -- PC1-PC27：窗口已存在则关闭；resTimer取消后写入unknown哨兵而非nil。
+        if gui:Win_IsNotNull(moduleState.resWin) then
+            printLog("关闭资源信息窗口")
+            if timerState.resTimer then
+                sl:UnSchedule(timerState.resTimer)
+                timerState.resTimer = UNKNOWN_VALUE_SENTINEL
+            end
+            gui:Win_Close(moduleState.resWin)
+            return
+        end
+
+        -- PC28-PC46：Win_Create显式保留nil参数槽及最后的999。
+        local resWin = gui:Win_Create(
+            "resWin",
+            0, 0,
+            moduleState.screenW, moduleState.screenH,
+            false, true, true, true, true,
+            nil, 999
+        )
+        moduleState.resWin = resWin
+
+        -- PC47-PC72：根Layout和空白点击关闭回调。
+        local rootLayout = gui:Layout_Create(
+            resWin, "closeResWin", 0, 0,
+            moduleState.screenW, moduleState.screenH, true
+        )
+        gui:setTouchEnabled(rootLayout, true)
+
+        -- child4在父PC68-PC71捕获[printLog,timerState,moduleState]。
+        local closeCallback =
+            make_Nested_UnSchedule(printLog, timerState, moduleState)
+        gui:addOnClickEvent(rootLayout, closeCallback)
+
+        -- PC73-PC117：ListView几何、锚点及背景参数。
+        local screenW = moduleState.screenW
+        local screenH = moduleState.screenH
+        local listWidth = screenW * 0.6
+        local resList = gui:ListView_Create(
+            resWin, "resList",
+            (screenW - 1) / 2, screenH / 2,
+            listWidth, screenH * 0.6, 1.0
+        )
+        gui:setAnchorPoint(resList, 0, 0.5)
+        gui:ListView_setBackGroundColorType(resList, 1)
+        gui:ListView_setBackGroundColor(resList, "#CEB5F7")
+        gui:ListView_setBackGroundColorOpacity(resList, 255)
+
+        -- PC118-PC264：标题、初始时间、当前时间、历时、备注五组区域。
+        local titleCell = gui:Layout_Create(resList, "titleCell", 0, 0, 1, 30, 1)
+        local titleText = gui:Text_Create(
+            titleCell, "titleText", 0.5, 15, 20, "#FF0000", "资源统计"
+        )
+        gui:setAnchorPoint(titleText, 0.5, 0.5)
+
+        local initTimeCell = gui:Layout_Create(resList, "initTimeCell", 0, 0, 1, 30, 1)
+        local initTimeText = gui:Text_Create(
+            initTimeCell, "initTimeText", 0.5, 15, 20, "#00FF00",
+            "初始时间:" .. tostring(initState.initTimeStr or "--")
+        )
+        gui:setAnchorPoint(initTimeText, 0.5, 0.5)
+
+        local curTimeCell = gui:Layout_Create(resList, "curTimeCell", 0, 0, 1, 30, 1)
+        local curTimeText = gui:Text_Create(
+            curTimeCell, "curTimeText", 0.5, 15, 20, "#00FF00", "当前时间:--"
+        )
+        gui:setAnchorPoint(curTimeText, 0.5, 0.5)
+
+        local durTimeCell = gui:Layout_Create(resList, "durTimeCell", 0, 0, 1, 30, 1)
+        local durTimeText = gui:Text_Create(
+            durTimeCell, "durTimeText", 0.5, 15, 20, "#00FF00", "历时:--"
+        )
+        gui:setAnchorPoint(durTimeText, 0.5, 0.5)
+
+        local noteCell = gui:Layout_Create(resList, "noteCell", 0, 0, 1, 30, 1)
+        local noteText = gui:Text_Create(
+            noteCell, "noteText", 0.5, 15, 20, "#FFFF00",
+            "（括号内数量为非绑定资源的收益）"
+        )
+        gui:setAnchorPoint(noteText, 0.5, 0.5)
+
+        -- PC265-PC267创建child2：捕获resList与listWidth。
+        local updateResourceRows = make_Nested_FFFFFF(resList, listWidth)
+
+        -- PC268-PC281：两组资源名称。
+        local moneyNames = {"元宝", "绑定元宝", "灵符", "绑定灵符"}
+        local resourceNames = {
+            "声望卷", "悟道茶", "洗髓丹", "转生水晶", "恶魔令牌", "血龙宝珠"
+        }
+
+        -- PC282-PC291：child2两次调用，实参为(names,2,"money"/"item")。
+        local moneyRows = updateResourceRows(moneyNames, 2, "money")
+        local itemRows = updateResourceRows(resourceNames, 2, "item")
+
+        -- PC292：child1 Nested_string无捕获；PC293-PC299随后获取MoneyProxy。
+        local getItemCount = Nested_string
+        local moneyProxy = global.Facade:retrieveProxy(
+            global.ProxyTable.MoneyProxy
+        )
+
+        -- PC300-PC310创建child3，10项捕获顺序按闭包描述显式传入。
+        local formatNumber = Nested_Helper_2
+        local refreshResourceStatistics = make_Nested_Helper_3(
+            moduleState, timerState, curTimeText, durTimeText, initState,
+            moneyProxy, moneyRows, formatNumber, itemRows, getItemCount
+        )
+
+        -- PC311-PC312先立即刷新一次；PC313-PC319再安排1秒周期并保存句柄。
+        refreshResourceStatistics()
+        timerState.resTimer = sl:Schedule(refreshResourceStatistics, 1.0)
+
+        -- PC320：无显式返回值。
+        return
+    end
+end
+
+
 local function make_Nested_StopGatherMonsters(
     timerState, notify, canStartGather, logNotice,
     openThresholdInput, applyGatherState
@@ -676,7 +971,7 @@ local function doInit_UI()
         takebut = takeCallback,
         shiqubut = pickupCallback,
         diuqibut = dropCallback,
-        moneybut = make_Nested_FFFF00(UPVALUE_3, UPVALUE_0, UPVALUE_2, UPVALUE_1), -- child3；工厂主体仍在第六十二批
+        moneybut = make_Nested_FFFF00(UPVALUE_3, UPVALUE_0, UPVALUE_2, UPVALUE_1), -- child3；父工厂及刷新/行构造依赖已并入本文件
         xiaotuibut = Nested_OnGameLeaveWorld,
     }
     -- PC338-PC345：创建child9工厂闭包，捕获顺序为：
