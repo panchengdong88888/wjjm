@@ -49,13 +49,13 @@
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
     "root.children[12]": "LuaSendMsg（92条）检查点190、205：普通Lua草稿PC1-PC92已独立静态复审；固定六参/message字段、Blocklist仅抑制日志、SendHookList按第1参取hook、pcall(hook,arg1,arg6,message)且仅严格true拦截、否则networkCtl:SendMsg原六参转发均与corrected反汇编一致。草稿仍保留UP0/UP1临时名；作者原名与宿主API语义未证实；未运行时验证。源码04_源码候选/短函数草稿_第五十批.lua；审计docs/audit/检查点205_LuaSendMsg普通Lua草稿独立复审.md。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
-    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：PC1-PC412已有分段源码草稿；完整结构树已在04_源码候选/MainLeftBottom_完整结构树.lua（110原型含root、5,580条指令、父子层级/PC范围/upvalue/状态）。检查点236闭合58/58闭包创建点与135捕获描述符；检查点237闭合T0/T1/T2/T3/T4/T5/T37/T41/T57；检查点238闭合T8/T42/T43/T44。仍需完成其余父寄存器值生命周期、模块字段/全局导出对账和root整体普通Lua装配。",
+    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：PC1-PC412已有分段源码草稿；结构树110原型/5,580条指令。检查点236闭合58/58闭包创建点与135个OP_387捕获描述符；检查点237-240累计闭合28/57个具体父T寄存器生命周期。检查点240确认T45=ReadNumericConfig、T46=PCallHelper、T47=FileExistCheck_pcall_wrapper、T48=AnonymousHelper_49、T49=AnonymousHelper_32、T50=AnonymousHelper_33、T51=AnonymousHelper_54，并闭合doInit_UI UP6/9/10/12/14/16。仍需剩余29个寄存器生命周期、模块字段/全局导出逐PC对账及根模块整体普通Lua装配；运行时验证0。",
     "root.children[42].children[3]": "Nested_FFFF00（320条父指令、72常量、5个子原型、4项捕获）：检查点225已完成PC1-PC320及5个子原型静态恢复；捕获顺序moduleState/printLog/timerState/initState。Win_Create等GUI调用参数已与新框架43份文档核对；五组Text_Create结果均先做truthy门控。K[28]=['unknown',2]已确认是nil的VM dump序列化占位，resTimer清理写nil。MoneyProxy方法未文档化，保留原调用，不反汇编其内部。完整静态恢复，未运行时验证。",
     "root.children[42].children[22]": "Nested_Anonymous（8条父指令；Nested_str 27条、Nested_match 50条、Nested_Helper_11 4条）已完整静态恢复。原始VM M()每次新建T={}和X={}；fixed_param_count=2；两实参写入T[0]/T[1]；额外实参进入X；T[2]无写入保持nil。Nested_str捕获T[0]/PrintLog/T[2]/T[1]；无效数字路径按原字节码调用nil，保留attempt-to-call-nil行为。未运行时验证。",
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点240：优先核对PC302-PC315创建的T47/T48/T49/T51及T45/T46生产者，按子原型捕获描述和已有短函数源码确定doInit_UI UP[6]/UP[10]/UP[12]/UP[14]的实际包装函数；再继续剩余寄存器生命周期，并开始MainLeftBottom模块字段与全局导出逐PC对账。",
+  "next_action": "检查点241：从root PC1-PC85开始逐PC建立MainLeftBottom模块字段赋值与全局导出账本，核对每个字段/导出目标对应的当前T寄存器值及函数原型；随后继续剩余29个root父寄存器生命周期，再完成root PC1-PC412普通Lua装配。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -128,7 +128,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "239"
+    "last_checkpoint": "240"
   },
   "static_recovered_functions": [
     {
@@ -2804,23 +2804,27 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "239",
+    "checkpoint": "240",
     "targets": [
-      "MainLeftBottom_Module root blacklist/config closure bindings"
+      "MainLeftBottom_Module root T45/T46 producers and PC302-PC315 wrappers",
+      "doInit_UI PC390 capture binding"
     ],
-    "status": "完成T38/T39/T40/T50/T52/T53/T55/T56/T58生命周期闭合，核对BlacklistPlayerDetection多项UPVALUE真实身份与常量；未增加静态完整函数数或运行时验证数。",
-    "audit_file": "docs/audit/检查点239_root_T38_T39_T40_T50_T52_T53_T55_T56_T58寄存器生命周期闭合.md",
+    "status": "已闭合6个新增寄存器生命周期；确认ReadNumericConfig/PCallHelper/GetWritablePath/FileExistCheck包装链和doInit_UI关键UPVALUE绑定；未增加函数静态完成数或运行时验证数。",
+    "audit_file": "docs/audit/检查点240_root_T45_T46_T47_T48_T49_T51与doInit_UI捕获绑定闭合.md",
     "files": [
       "docs/handoff/12_根模块闭包装配表.json",
       "04_源码候选/root_MainLeftBottom_Module.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "02_基础索引/03_函数状态清单.csv"
+      "02_基础索引/03_函数状态清单.csv",
+      "docs/handoff/10_防上下文中断_checkpoint协议.md",
+      "docs/audit/检查点240_root_T45_T46_T47_T48_T49_T51与doInit_UI捕获绑定闭合.md"
     ],
     "findings": [
-      "T55=FindBlacklistPlayer，T56=UseItemByIndex，T58=DeathAutoBlacklist，T53=GetMapData2DPtr。",
-      "T38/T39/T40分别为2.0/0.01/30.0并对应BlacklistPlayerDetection告警及重试时间。",
-      "T50为ReadNumericConfig('gather_monster_count.txt')固定参数包装闭包。",
-      "T52为PC349先构造的8元素表，GetMapData2DPtr捕获但可达路径不读取。"
+      "T45=ReadNumericConfig(GetWritablePath)，T46=PCallHelper(GetWritablePath)。",
+      "T47=FileExistCheck_pcall_wrapper；T48=AnonymousHelper_49(ReadNumericConfig, blacklist_distance.txt)。",
+      "T49=AnonymousHelper_32(PCallHelper, blacklist_distance.txt)；T51=AnonymousHelper_54(PCallHelper, gather_monster_count.txt)。",
+      "T50原型真实恢复名为AnonymousHelper_33（canonical root.children[33]，legacy root/34），读取gather_monster_count.txt。",
+      "doInit_UI UP6=T48、UP9=T50、UP10=T49、UP12=T44、UP14=T51、UP16=T47。"
     ]
   },
   "corrections": [
@@ -3543,18 +3547,18 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 239,
+  "last_checkpoint": 240,
   "checkpoint": {
-    "number": 239,
+    "number": 240,
     "date": "2026-11-10",
     "artifacts": [
+      "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/12_根模块闭包装配表.json",
       "04_源码候选/root_MainLeftBottom_Module.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点239_root_T38_T39_T40_T50_T52_T53_T55_T56_T58寄存器生命周期闭合.md",
-      "docs/handoff/05_机器可读接续状态.json",
-      "docs/handoff/10_防上下文中断_checkpoint协议.md"
+      "docs/handoff/10_防上下文中断_checkpoint协议.md",
+      "docs/audit/检查点240_root_T45_T46_T47_T48_T49_T51与doInit_UI捕获绑定闭合.md"
     ],
     "complete_static_reconstructions": 109,
     "runtime_verified": 0,
@@ -3574,7 +3578,13 @@
       42,
       43,
       44,
+      45,
+      46,
+      47,
+      48,
+      49,
       50,
+      51,
       52,
       53,
       55,
@@ -3582,21 +3592,21 @@
       57,
       58
     ],
-    "notes": "闭合T38=2.0、T39=0.01、T40=30.0；T50=ReadNumericConfig('gather_monster_count.txt')固定参数包装闭包；T52=PC349构造的8元素未使用捕获表；T53=GetMapData2DPtr；T55=FindBlacklistPlayer；T56=UseItemByIndex；T58=DeathAutoBlacklist。静态109/110，运行时0。"
+    "notes": "闭合T45=ReadNumericConfig、T46=PCallHelper、T47=FileExistCheck_pcall_wrapper、T48=AnonymousHelper_49、T49=AnonymousHelper_32、T50=AnonymousHelper_33、T51=AnonymousHelper_54的创建/捕获生命周期；逐项对齐doInit_UI UP6/UP9/UP10/UP12/UP14/UP16。累计28/57个具体父寄存器生命周期闭合。静态109/110，运行时0。"
   },
   "drafts": 33,
-  "next": "检查点237：按docs/handoff/12_根模块闭包装配表.json的寄存器fanout从高到低，建立root T[0..60]寄存器数据流/值生命周期表；先闭合T[0..5]、T[14..23]、T[37..60]等共享cell及写入PC，再逐项核对模块字段/全局导出。特别保留T[57]时间线：PC357 onDamageMsg→PC359写模块字段→PC360覆盖T[57]=InstallDamageHook→PC368 BlacklistPlayerDetection捕获该live cell。",
+  "next": "检查点241：从root PC1-PC85开始逐PC建立MainLeftBottom模块字段赋值与全局导出账本，核对每个字段/导出目标对应的当前T寄存器值及函数原型；随后继续剩余29个root父寄存器生命周期，再完成root PC1-PC412普通Lua装配。",
   "recent_checkpoint": {
-    "number": 239,
+    "number": 240,
     "date": "2026-11-10",
     "artifacts": [
+      "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/12_根模块闭包装配表.json",
       "04_源码候选/root_MainLeftBottom_Module.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点239_root_T38_T39_T40_T50_T52_T53_T55_T56_T58寄存器生命周期闭合.md",
-      "docs/handoff/05_机器可读接续状态.json",
-      "docs/handoff/10_防上下文中断_checkpoint协议.md"
+      "docs/handoff/10_防上下文中断_checkpoint协议.md",
+      "docs/audit/检查点240_root_T45_T46_T47_T48_T49_T51与doInit_UI捕获绑定闭合.md"
     ],
     "complete_static_reconstructions": 109,
     "runtime_verified": 0,
@@ -3616,7 +3626,13 @@
       42,
       43,
       44,
+      45,
+      46,
+      47,
+      48,
+      49,
       50,
+      51,
       52,
       53,
       55,
@@ -3624,16 +3640,15 @@
       57,
       58
     ],
-    "notes": "闭合T38=2.0、T39=0.01、T40=30.0；T50=ReadNumericConfig('gather_monster_count.txt')固定参数包装闭包；T52=PC349构造的8元素未使用捕获表；T53=GetMapData2DPtr；T55=FindBlacklistPlayer；T56=UseItemByIndex；T58=DeathAutoBlacklist。静态109/110，运行时0。"
+    "notes": "闭合T45=ReadNumericConfig、T46=PCallHelper、T47=FileExistCheck_pcall_wrapper、T48=AnonymousHelper_49、T49=AnonymousHelper_32、T50=AnonymousHelper_33、T51=AnonymousHelper_54的创建/捕获生命周期；逐项对齐doInit_UI UP6/UP9/UP10/UP12/UP14/UP16。累计28/57个具体父寄存器生命周期闭合。静态109/110，运行时0。"
   },
   "latest_checkpoint": {
-    "checkpoint": "239",
-    "summary": "完成黑名单检测相关闭包与常量寄存器生命周期核对，确认BlacklistPlayerDetection UP3/4/5/6/8/9/11身份；doInit_UI捕获T50为引怪数量配置读取包装器；GetMapData2DPtr捕获的T52为PC349先构造的八元素表且可达路径未读取。",
-    "audit_file": "docs/audit/检查点239_root_T38_T39_T40_T50_T52_T53_T55_T56_T58寄存器生命周期闭合.md",
+    "checkpoint": "240",
+    "summary": "完成root T45/T46生产者及T47/T48/T49/T51包装闭包的PC级生命周期核对；确认doInit_UI UP6=T48、UP9=T50、UP10=T49、UP12=T44、UP14=T51、UP16=T47。",
+    "audit_file": "docs/audit/检查点240_root_T45_T46_T47_T48_T49_T51与doInit_UI捕获绑定闭合.md",
     "unresolved": [
-      "T47/T48/T49/T51及T45/T46匿名包装链仍待闭合",
-      "剩余root父寄存器值生命周期仍待闭合",
-      "根模块PC1-PC412完整普通Lua装配及模块字段/全局导出仍未完成",
+      "尚余29个具体root父寄存器生命周期待闭合",
+      "根模块PC1-PC412完整普通Lua装配及模块字段/全局导出逐PC对账未完成",
       "运行时验证为0"
     ]
   },
@@ -3645,7 +3660,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 240,
+  "next_checkpoint": 241,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
