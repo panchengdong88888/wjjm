@@ -115,13 +115,13 @@ local currentState = gatherStatusText.IDLE
 -- PC173-PC180：根模块共享状态单元的初始值。
 -- 仅将后续已闭合用途的槽位命名；其余保持中性名称，避免猜测业务字段。
 local resettableTable = {}
-local resetCounterA = 0
-local resetCounterB = 0
+local resetSlot16 = 0
+local resetSlot17 = 0
 local isGatherRunning = false
-local resetCounterC = false
-local resetCounterD = 0
-local resetOptionalValue = nil
-local resetTextValue = ""
+local resetSlot19 = false
+local resetSlot20 = 0
+local resetSlot21 = nil
+local resetSlot22 = ""
 
 -- PC181：创建root.children[8] / FormatStateChange闭包。
 -- UPVALUE[0]捕获root T[4]=PrintLog；UPVALUE[1]捕获root T[14]=currentState共享单元。
