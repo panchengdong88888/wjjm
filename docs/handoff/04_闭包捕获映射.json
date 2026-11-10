@@ -384,7 +384,7 @@
       40,
       37
     ],
-    "interpretation": "13个upvalue槽位按序捕获父root的T寄存器。UP[0]=R2主模块状态表；UP[1]=R57，root/53回调并挂到R41.onDamageMsg；UP[2]=R41黑名单玩家状态表（lastAttacker/lastHp/deathHandled/alertAt/nextTryAt/noStoneWarned/distance）；UP[3]=R58，root/26死亡后自动拉黑处理闭包；UP[4]=R55，root/52黑名单actor查询辅助闭包（基于_blacklistData与ACTOR_MASTER_ID，返回匹配状态及名称）；UP[5]=R53，root/23距离计算闭包；UP[6]=R38数值2.0（alertAt节流阈值）；UP[7]=R4，root/17日志格式化包装器；UP[8]=R56，root/25随机传送石查找/使用闭包；UP[9]=R39数值0.01（成功使用后的短重试延迟）；UP[10]=R5，root/21本地通知包装器；UP[11]=R40数值30.0（无可用道具时重试延迟，且在成功通知模板中作为%s实参）；UP[12]=R37数组{\"随机传送石\"}。捕获值及其创建点均由root PC368-PC381与相应父寄存器定义交叉确认。",
+    "interpretation": "13个upvalue槽位按序捕获父root的T寄存器。UP[0]=R2 MainLeftBottom.b模块状态表；UP[1]=R57在PC360被root.children[6] InstallDamageHook写入的闭包（注意PC357先将root.children[52] onDamageMsg消息处理器写入MainLeftBottom.onDamageMsg，PC360随后覆盖同一T[57]寄存器；PC368的OP_387捕获live cell，因此UP[1]不是消息处理器本身，而是InstallDamageHook安装器）；UP[2]=R41黑名单玩家状态表；UP[3]=R58 DeathAutoBlacklist；UP[4]=R55 FindBlacklistPlayer；UP[5]=R53 GetMapData2DPtr；UP[6]=R38数值2.0；UP[7]=R4 PrintLog；UP[8]=R56 UseItemByIndex；UP[9]=R39数值0.01；UP[10]=R5 ShowLocalNoticeByType；UP[11]=R40数值30.0；UP[12]=R37数组{\"随机传送石\"}。捕获顺序由root PC368-PC381确认；T57的最终值由PC357-PC360写入时间线确认。",
     "canonical_json_path": "root.children[47]",
     "legacy_one_based_label": "root/48",
     "legacy_pc_one_based": 368
