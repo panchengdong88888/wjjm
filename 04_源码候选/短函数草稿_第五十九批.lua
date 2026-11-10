@@ -2,10 +2,10 @@
 -- 第五十九批 / 检查点 #140
 -- BlacklistPlayerDetection：root.children[47] / legacy root/48
 -- 216条物理指令、35常量、无子原型、vararg_flag=0；root PC367创建闭包，捕获13个父寄存器。
--- 检查点146已闭合13槽捕获映射：UP0主模块状态；UP1=root/53 onDamageMsg回调；UP2=黑名单玩家状态；UP3=root/26死亡自动拉黑回调；UP4=root/52黑名单actor查询；UP5=root/23距离计算；UP6=2.0；UP7=root/17日志；UP8=root/25随机传送石查找/使用；UP9=0.01；UP10=root/21本地通知；UP11=30.0；UP12={"随机传送石"}。
+-- 检查点236按root寄存器cell时间线校正13槽捕获映射：UP0主模块状态；UP1=root/7 InstallDamageHook闭包（PC360写入T[57]后被PC368捕获）；UP2=黑名单玩家状态；UP3=root/26死亡自动拉黑回调；UP4=root/52黑名单actor查询；UP5=root/23距离计算；UP6=2.0；UP7=root/17日志；UP8=root/25随机传送石查找/使用；UP9=0.01；UP10=root/21本地通知；UP11=30.0；UP12={"随机传送石"}。
 
 local function BlacklistPlayerDetection()
-    -- 开启黑名单检测状态，并调用一个捕获的启动/通知函数（具体业务身份待映射）。
+    -- 开启黑名单检测状态，并调用捕获的InstallDamageHook闭包安装/确认伤害消息处理器。
     UPVALUE_0.isBlacklisting = true
     UPVALUE_1()
 
