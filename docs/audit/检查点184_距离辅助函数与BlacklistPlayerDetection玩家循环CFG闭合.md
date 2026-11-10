@@ -41,3 +41,6 @@
 - 新增源码：04_源码候选/root22_GetMapData2DPtr.lua；更新源码：04_源码候选/root47_BlacklistPlayerDetection.lua。
 - 统计：普通Lua草稿72；完整静态恢复101/110；运行时验证0。
 - 下一步：对root.children[47] PC1-PC73入口/HP状态机、PC142-PC216通知/重试分支与前述循环CFG做全函数合并复审。
+
+
+> **检查点185纠错补充：** 本审计中PC63-PC73玩家列表读取后使用#players的表达已被撤销。PC66 OP_233明确收集两个返回值players与playerCount，PC69/71检查第二返回值，PC74-PC77直接使用该值作为数字循环上界。详见检查点185审计。
