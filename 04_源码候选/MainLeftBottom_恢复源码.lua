@@ -1,8 +1,8 @@
 --[[
 MainLeftBottom(2).lua 明文恢复整合稿（静态候选）
-生成：2026-11-10 | GitHub checkpoint 266
+生成：2026-11-10 | GitHub checkpoint 267
 用途：按110原型索引和PC级证据整合普通Lua候选、根模块状态及58个直接子闭包。
-当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配；PC43-PC85、PC181-PC258及PC297-PC388闭包已按VM创建顺序整合；检查点261修正采集状态表跨词法块引用；检查点262按寄存器生命周期重建PC1-PC42初始化；检查点263显式恢复PC43-PC85的T[4..8]创建、覆写、捕获及导出顺序；检查点264恢复PC86-PC211采集闭包及T[14..22]共享cell注入；检查点265补齐PC212-PC296 UI闭包校验、模块字段身份及PC275全局模块表重读；检查点266按T[44..51]恢复PC297-PC315配置包装链并用于doInit_UI捕获注入。
+当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配；PC43-PC85、PC181-PC258及PC297-PC388闭包已按VM创建顺序整合；检查点261修正采集状态表跨词法块引用；检查点262按寄存器生命周期重建PC1-PC42初始化；检查点263显式恢复PC43-PC85的T[4..8]创建、覆写、捕获及导出顺序；检查点264恢复PC86-PC211采集闭包及T[14..22]共享cell注入；检查点265补齐PC212-PC296 UI闭包校验、模块字段身份及PC275全局模块表重读；检查点266按T[44..51]恢复PC297-PC315配置包装链并用于doInit_UI捕获注入；检查点267复核PC350-PC388黑名单闭包对象身份、T[57] live cell及全局导出落点。
 重要：
 - 根模块初始化与闭包创建仍采用明确标注的恢复适配结构，不冒充原作者逐字源码。
 - 所有函数体仍按原型路径保留；根装配按OP_387捕获顺序绑定共享cell和状态表。
@@ -8503,7 +8503,7 @@ do
         "UseItemByIndex", rootPrototypes.UseItemByIndex
     )
 
-        local makeOnDamageMsg = sourceFunction(
+    local makeOnDamageMsg = sourceFunction(
         "04_源码候选/root52_onDamageMsg.lua", "make_onDamageMsg"
     )
     if makeOnDamageMsg then
@@ -8602,6 +8602,20 @@ do
     )
     _G.ClearBlacklistItems = rootPrototypes.ClearBlacklistItems
 
+    -- 检查点267：PC350-PC388黑名单闭包链的对象身份与导出落点复核。
+    assert(rootModule.blacklist == rootSource.blacklistState,
+        "PC294/357/363/368/383 blacklistState identity mismatch")
+    assert(rootModule.onDamageMsg == rootPrototypes.onDamageMsg,
+        "PC359 onDamageMsg module field mismatch")
+    assert(rootCells[57] and rootCells[57].value == rootPrototypes.InstallDamageHook,
+        "PC360/368 T[57] live-cell value mismatch")
+    assert(rootCells[57].value ~= rootPrototypes.onDamageMsg,
+        "PC357 onDamageMsg must not replace PC360 InstallDamageHook in T[57]")
+    assert(_G.BlacklistItems == rootPrototypes.BlacklistPlayerDetection,
+        "PC382 BlacklistItems global export mismatch")
+    assert(_G.ClearBlacklistItems == rootPrototypes.ClearBlacklistItems,
+        "PC388 ClearBlacklistItems global export mismatch")
+
     -- 检查点256：最后一个root.children[42]工厂，20项捕获严格按PC390-PC410顺序注入。
     local makeDoInitUI = sourceFunction(
         "04_源码候选/短函数草稿_第六十三批.lua", "make_doInit_UI"
@@ -8637,7 +8651,7 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 266,
+        checkpoint = 267,
         root_pc86_pc211_ordered = true,
         root_pc181_pc258_ordered = true,
         root_pc297_pc357_ordered = true,
@@ -8649,6 +8663,7 @@ do
         checkpoint264_root_pc86_pc211_cells_capture_ordered = true,
         checkpoint265_root_pc212_pc296_module_fields_guarded = true,
         checkpoint266_root_pc297_pc315_config_registers_ordered = true,
+        checkpoint267_root_pc350_pc388_blacklist_chain_guarded = true,
         root_late_direct_bindings_at_pc = { IsInWhitelistMap = 212, MoveItemToQuickUse = 259, GetWritablePath = 297, PCallHelper_2 = 352 },
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
