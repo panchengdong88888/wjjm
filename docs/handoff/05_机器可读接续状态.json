@@ -2819,7 +2819,9 @@
       "AccountIDValidation UP[0]=PrintLog、UP[1]=ShowLocalNoticeByType，写入MainLeftBottom.main；其两个嵌套子闭包保持在同一来源词法块。",
       "InstallDamageHook UP[0]=MainLeftBottom.a、UP[1]=PrintLog，静态实例写入rootPrototypes.InstallDamageHook，供BlacklistPlayerDetection后续捕获。",
       "更正StorageItems状态：检查点223已将父原型完成静态恢复，检查点248的嵌套工厂参数是词法装配适配，不改变其完整静态恢复状态。"
-    ]
+    ],
+    "source_commit_sha": "f1c9625549c3edbaf2e01a7a753cdfa459dac76e",
+    "last_audit_correction_commit_sha": "fa82029a441c0c61f27a8a027b165b3b37d1a902"
   },
   "corrections": [
     {
@@ -3564,7 +3566,9 @@
     "runtime_verified": 0,
     "captured_factory_bindings": 12,
     "captured_factory_pending": 24,
-    "notes": "本批新增Builtsetting、AccountIDValidation、InstallDamageHook三个稳定捕获工厂；StorageItems完整静态恢复状态以检查点223为准。"
+    "notes": "本批新增Builtsetting、AccountIDValidation、InstallDamageHook三个稳定捕获工厂；StorageItems完整静态恢复状态以检查点223为准。",
+    "source_commit_sha": "f1c9625549c3edbaf2e01a7a753cdfa459dac76e",
+    "last_audit_correction_commit_sha": "fa82029a441c0c61f27a8a027b165b3b37d1a902"
   },
   "latest_checkpoint": 249,
   "complete_static_reconstruction_count": 109,
