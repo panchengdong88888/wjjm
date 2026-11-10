@@ -2998,3 +2998,16 @@ Nested_match：
 - 仅接入无捕获闭包；36个有捕获闭包待后续装配。OP_387仍按父T寄存器共享live-cell处理，不能按值快照绑定。
 - 本批不增加完整静态恢复数量；普通Lua草稿72、完整静态109/110、运行时验证0。
 - 下一批检查点247：解决无捕获闭包源码注册缺口，随后按稳定函数/表捕获与可变标量cell分类，逐步装配捕获工厂。
+
+
+## 检查点 #247（2026-11-10）：稳定捕获工厂静态装配与匿名函数语法校正
+
+- 在检查点246的22个无捕获直接子原型绑定基础上，新增两个稳定捕获工厂实例化：
+  - `root.children[46]` DiuItems：UP[0]=root T[2]=`MainLeftBottom.z`（含isDiuing状态），UP[1]=root T[5]=ShowLocalNoticeByType；ShowLocalNoticeByType自身捕获root T[0]=`MainLeftBottom.a`。
+  - `root.children[28]` FindMonsterCandidates：按OP_387顺序注入GetPlayerPosition、IsDie、GetPlayerMapPosition、DistanceCalculation、gatherConfig。
+- DiuItems实例写入`rootPrototypes.DiuItems`并按root PC67导出全局`_G.DiuItems`；FindMonsterCandidates仅保留为MainLoop依赖，不虚构全局导出。
+- 根模块源注册表新增root28候选工厂，并向root_MainLeftBottom_Module源码导出gatherConfig供装配读取。
+- 对主汇总源码全文检查，发现19处`return function Name(...)`非法命名匿名函数表达式，全部改为合法`return function(...)`；函数体及调用逻辑未改动。当前该模式残留数为0。
+- 捕获工厂累计静态装配2/36，尚余34；22个无捕获直接子原型仍记录为源代码层绑定。未执行目标Lua运行时验证，运行时验证数仍为0。
+- 静态完整恢复109、普通Lua草稿72均不变；本批不把装配完成等同于新增完整静态恢复函数。
+- 下一批：优先检查root.children[36] GetAvailableStoragePage与root.children[1] GetStorageItemData的T[4]捕获来源，再推进TakeItems/PickUpItems/StorageItems等稳定表或代理捕获；含可变标量cell的工厂暂缓，待建立显式cell读写适配。
