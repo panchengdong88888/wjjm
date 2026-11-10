@@ -4,7 +4,7 @@
 规范路径：root.children[50]；legacy root/51
 物理指令：224；常量：57；子原型：2；vararg_flag=0
 
-状态：普通Lua主体草稿已恢复；仍有父级捕获的作者级业务原名、LuaSendMsg服务端字段定义及宿主运行时行为待验证。
+状态：普通Lua主体草稿已恢复；检查点206修正多特殊名称匹配时的失败短路语义；仍有父级捕获的作者级业务原名、LuaSendMsg服务端字段定义及宿主运行时行为待验证。
 
 父函数三个捕获槽按实际读写角色表达：
   UP[0] -> storageState：共享状态表，含isStoring及Nested_isOutputted使用的isOutputted。
@@ -122,14 +122,24 @@ local function make_StorageItems(storageState, notify, output)
 
                     -- PC151-PC176：遍历18项特殊名称。匹配时调用child0(item,specialName)。
                     -- 只有最终返回值truthy才继续存仓；false/nil路径跳过当前物品。
-                    local shouldStore = false
+                    -- PC151-PC176：对18项特殊名称逐一做纯文本匹配。
+                    -- VM在每次匹配后立即检查Nested_isOutputted的返回值：
+                    -- 任一次返回false/nil都会直接跳到外层pairs循环的下一件物品，
+                    -- 因而不能让后续另一个名称匹配覆盖失败结果。
+                    local matchedSpecialName = false
+                    local shouldStore = true
                     for _, specialName in ipairs(specialNames) do
                         if string.find(item.Name, specialName, 1, true) then
-                            shouldStore = isOutputted(item, specialName)
+                            matchedSpecialName = true
+                            if not isOutputted(item, specialName) then
+                                shouldStore = false
+                                break
+                            end
                         end
                     end
 
-                    if shouldStore then
+                    -- 没有匹配任何特殊名称时不存仓；有匹配时必须每次门控均truthy。
+                    if matchedSpecialName and shouldStore then
                         -- PC177-PC186：每件候选物品重新查找目标页；nil时输出并退出整个函数。
                         local targetPage = findAvailablePage()
                         if not targetPage then
