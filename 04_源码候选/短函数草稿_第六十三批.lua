@@ -28,7 +28,7 @@ end
 -- ---------------------------------------------------------------------------
 
 local function make_Nested_Helper(checkCallback, checkArgument, notify, printLog)
-    return function Nested_Helper()
+    local function Nested_Helper()
         local success, detail = checkCallback(checkArgument)
         if success then
             notify("已清空怪物阈值")
@@ -38,10 +38,11 @@ local function make_Nested_Helper(checkCallback, checkArgument, notify, printLog
             printLog("清空怪物阈值失败：%s", detail)
         end
     end
+    return Nested_Helper
 end
 
 local function make_Nested_s(checkCallback, checkArgument, notify, printLog)
-    return function Nested_s()
+    local function Nested_s()
         local success, detail = checkCallback(checkArgument)
         if success then
             notify("已清空黑名单距离")
@@ -51,13 +52,14 @@ local function make_Nested_s(checkCallback, checkArgument, notify, printLog)
             printLog("清空黑名单距离失败：%s", detail)
         end
     end
+    return Nested_s
 end
 
 local function make_Nested_Helper_5(
     validateValue, notify, formatCallback, resolveFailureContext,
     failureContext, saveDistance, setButtonState
 )
-    return function Nested_Helper_5(value)
+    local function Nested_Helper_5(value)
         if not validateValue(value) then
             notify("黑名单距离保存失败")
             formatCallback(
@@ -72,13 +74,14 @@ local function make_Nested_Helper_5(
         if not saveDistance(value) then return end
         setButtonState("blacklistbut", true)
     end
+    return Nested_Helper_5
 end
 
 local function make_Nested_Helper_8(
     validateValue, notify, formatCallback, resolveFailureContext,
     failureContext, saveThreshold, setButtonState
 )
-    return function Nested_Helper_8(value)
+    local function Nested_Helper_8(value)
         if not validateValue(value) then
             notify("怪物阈值保存失败")
             formatCallback(
@@ -93,32 +96,35 @@ local function make_Nested_Helper_8(
         if not saveThreshold(value) then return end
         setButtonState("yinguaibut", true)
     end
+    return Nested_Helper_8
 end
 
 local function make_Nested_Helper_4(
     openDialog, validateValue, notify, formatCallback,
     resolveFailureContext, failureContext, saveDistance, setButtonState
 )
-    return function Nested_Helper_4()
+    local function Nested_Helper_4()
         local callback = make_Nested_Helper_5(
             validateValue, notify, formatCallback, resolveFailureContext,
             failureContext, saveDistance, setButtonState
         )
         openDialog("请输入黑名单的距离格子（数字，按线路计算）", callback)
     end
+    return Nested_Helper_4
 end
 
 local function make_Nested_Helper_7(
     openDialog, validateValue, notify, formatCallback,
     resolveFailureContext, failureContext, saveThreshold, setButtonState
 )
-    return function Nested_Helper_7()
+    local function Nested_Helper_7()
         local callback = make_Nested_Helper_8(
             validateValue, notify, formatCallback, resolveFailureContext,
             failureContext, saveThreshold, setButtonState
         )
         openDialog("请输入拉怪的怪物数量阈值（数字）", callback)
     end
+    return Nested_Helper_7
 end
 
 -- ---------------------------------------------------------------------------
@@ -127,7 +133,7 @@ end
 -- T[0]/T[1]/T[2]的具体来源仍未闭合，故明确保留占位，不作为可运行实现。
 -- ---------------------------------------------------------------------------
 local function make_Nested_Anonymous(PrintLog)
-    return function Nested_Anonymous(...)
+    local function Nested_Anonymous(...)
         -- Checkpoint 204: PC130 builds R4 from T[5]..T[8]; PC133 calls ipairs with T[6],
         -- then writes the third return value into T[7]. The runtime value of T[6]
         -- and therefore the concrete T[7] value remain unresolved; do not assign a semantic name. No later explicit T[7] write was found through PC183.
@@ -212,6 +218,7 @@ local function make_Nested_Anonymous(PrintLog)
         Nested_str()
         return
     end
+    return Nested_Anonymous
 end
 
 
@@ -260,7 +267,7 @@ end
 
 -- child4 Nested_UnSchedule：20条，捕获[printLog,timerState,moduleState]。
 local function make_Nested_UnSchedule(printLog, timerState, moduleState)
-    return function Nested_UnSchedule()
+    local function Nested_UnSchedule()
         printLog("点击空白,关闭资源信息窗口")
 
         if timerState.resTimer then
@@ -271,11 +278,12 @@ local function make_Nested_UnSchedule(printLog, timerState, moduleState)
 
         GUI:Win_Close(moduleState.resWin)
     end
+    return Nested_UnSchedule
 end
 
 -- child2 Nested_FFFFFF：65条，捕获[resList,screenW*0.6]。
 local function make_Nested_FFFFFF(listView, cellWidth)
-    return function Nested_FFFFFF(resourceNames, layoutOption, rowType)
+    local function Nested_FFFFFF(resourceNames, layoutOption, rowType)
         local rowTextByName = {}
         local gui = GUI
         local cellNameSuffix = math.ceil(15 / layoutOption)
@@ -308,6 +316,7 @@ local function make_Nested_FFFFFF(listView, cellWidth)
 
         return rowTextByName
     end
+    return Nested_FFFFFF
 end
 
 -- child3 Nested_Helper_3：168条，捕获10项。
@@ -315,7 +324,7 @@ local function make_Nested_Helper_3(
     moduleState, timerState, curTimeText, durTimeText, initState,
     moneyProxy, moneyRows, formatNumber, itemRows, getItemCount
 )
-    return function Nested_Helper_3()
+    local function Nested_Helper_3()
         local gui = GUI
 
         -- PC1-PC19：窗口无效时取消已有定时器、清空句柄并退出。
@@ -386,11 +395,12 @@ local function make_Nested_Helper_3(
             )
         end
     end
+    return Nested_Helper_3
 end
 
 -- 父原型Nested_FFFF00：320条，捕获[moduleState,printLog,timerState,initState]。检查点207逐PC复审PC1-PC320，修正五处Text_Create返回值门控。
 local function make_Nested_FFFF00(moduleState, printLog, timerState, initState)
-    return function Nested_FFFF00()
+    local function Nested_FFFF00()
         local gui = GUI
         local sl = SL
 
@@ -517,6 +527,7 @@ local function make_Nested_FFFF00(moduleState, printLog, timerState, initState)
         -- PC320：无显式返回值。
         return
     end
+    return Nested_FFFF00
 end
 
 
@@ -524,7 +535,7 @@ local function make_Nested_StopGatherMonsters(
     timerState, notify, canStartGather, logNotice,
     openThresholdInput, applyGatherState
 )
-    return function Nested_StopGatherMonsters()
+    local function Nested_StopGatherMonsters()
         if timerState.gatherTimer then
             notify("关闭引怪功能")
             StopGatherMonsters()
@@ -542,10 +553,11 @@ local function make_Nested_StopGatherMonsters(
         applyGatherState(ready)
         return true
     end
+    return Nested_StopGatherMonsters
 end
 
 local function make_Nested_LuaSendMsg(counter, modulus, messageEntries)
-    return function Nested_LuaSendMsg()
+    local function Nested_LuaSendMsg()
         counter = counter + 1
         local index = (counter - 1) % modulus + 1
         local entry = messageEntries[index]
@@ -553,10 +565,11 @@ local function make_Nested_LuaSendMsg(counter, modulus, messageEntries)
 
         LuaSendMsg(9002, entry[1], 1.0, 2.0, 3.0, entry[2], entry[3])
     end
+    return Nested_LuaSendMsg
 end
 
 local function make_Nested_SL_2(timerState, notify, modulus, messageEntries, scheduleContext)
-    return function Nested_SL_2()
+    local function Nested_SL_2()
         if timerState.rewardTimer then
             notify("关闭奖励功能")
             SL:UnSchedule(timerState.rewardTimer)
@@ -569,19 +582,21 @@ local function make_Nested_SL_2(timerState, notify, modulus, messageEntries, sch
         timerState.rewardTimer = SL:Schedule(0, callback, scheduleContext)
         return true
     end
+    return Nested_SL_2
 end
 
 local function make_Nested_ClearBlacklistItems(notify)
-    return function Nested_ClearBlacklistItems()
+    local function Nested_ClearBlacklistItems()
         notify("清空黑名单")
         ClearBlacklistItems()
     end
+    return Nested_ClearBlacklistItems
 end
 
 local function make_Nested_blacklistTimer(
     config, getDistance, timerState, schedule, formatNotice
 )
-    return function Nested_blacklistTimer(distance)
+    local function Nested_blacklistTimer(distance)
         if not distance then
             distance = getDistance()
         end
@@ -593,13 +608,14 @@ local function make_Nested_blacklistTimer(
         formatNotice("开启黑名单功能，距离格子：%d", config.distance)
         return true
     end
+    return Nested_blacklistTimer
 end
 
 local function make_Nested_Helper_10(
     timerState, notify, moduleState, readBlacklistDistance,
     openBlacklistDistanceInput, startBlacklistTimer
 )
-    return function Nested_Helper_10()
+    local function Nested_Helper_10()
         if timerState.blacklistTimer then
             notify("关闭黑名单功能")
             SL:UnSchedule(timerState.blacklistTimer)
@@ -619,10 +635,11 @@ local function make_Nested_Helper_10(
         openBlacklistDistanceInput()
         return false
     end
+    return Nested_Helper_10
 end
 
 local function make_Nested_SL_3(timerState, notify, featureState, schedule)
-    return function Nested_SL_3()
+    local function Nested_SL_3()
         if timerState.storageTimer then
             notify("关闭存仓功能")
             SL:UnSchedule(timerState.storageTimer)
@@ -634,10 +651,11 @@ local function make_Nested_SL_3(timerState, notify, featureState, schedule)
         StorageItems()
         timerState.storageTimer = schedule(StorageItems, 1.0)
     end
+    return Nested_SL_3
 end
 
 local function make_Nested_TakeItems(timerState, notify, featureState, schedule)
-    return function Nested_TakeItems()
+    local function Nested_TakeItems()
         if timerState.takeTimer then
             notify("关闭取物功能")
             SL:UnSchedule(timerState.takeTimer)
@@ -649,10 +667,11 @@ local function make_Nested_TakeItems(timerState, notify, featureState, schedule)
         TakeItems()
         timerState.takeTimer = schedule(TakeItems, 1.0)
     end
+    return Nested_TakeItems
 end
 
 local function make_Nested_shiquTimer(timerState, notify, schedule)
-    return function Nested_shiquTimer()
+    local function Nested_shiquTimer()
         if timerState.shiquTimer then
             notify("关闭拾取物品")
             SL:UnSchedule(timerState.shiquTimer)
@@ -662,10 +681,11 @@ local function make_Nested_shiquTimer(timerState, notify, schedule)
         notify("开启拾取物品")
         timerState.shiquTimer = schedule(PickUpItems, 0.01)
     end
+    return Nested_shiquTimer
 end
 
 local function make_Nested_dropTimer(timerState, notify, featureState, schedule)
-    return function Nested_dropTimer()
+    local function Nested_dropTimer()
         if timerState.dropTimer then
             notify("关闭丢弃物品")
             SL:UnSchedule(timerState.dropTimer)
@@ -677,6 +697,7 @@ local function make_Nested_dropTimer(timerState, notify, featureState, schedule)
         DiuItems()
         timerState.dropTimer = schedule(DiuItems, 1.0)
     end
+    return Nested_dropTimer
 end
 
 local function Nested_OnGameLeaveWorld()
@@ -684,7 +705,7 @@ local function Nested_OnGameLeaveWorld()
 end
 
 local function make_Nested_Helper_9(uiState, notify)
-    return function Nested_Helper_9()
+    local function Nested_Helper_9()
         if uiState.isHidden then
             notify("隐藏所有按钮")
             uiState.hide()
@@ -695,20 +716,22 @@ local function make_Nested_Helper_9(uiState, notify)
         uiState.show()
         GUI:setOpacity(uiState.hidebut, 255)
     end
+    return Nested_Helper_9
 end
 
 local function make_Nested_InitGatherMonsters(config, getThreshold)
-    return function Nested_InitGatherMonsters(threshold)
+    local function Nested_InitGatherMonsters(threshold)
         if not threshold then threshold = getThreshold() end
         config.GATHER_THRESHOLD = threshold
         if not config.GATHER_THRESHOLD then return false end
         InitGatherMonsters()
         return true
     end
+    return Nested_InitGatherMonsters
 end
 
 local function make_Nested_04d_02d_02d(lastSentDate, messageSender, notify)
-    return function Nested_04d_02d_02d()
+    local function Nested_04d_02d_02d()
         local dateParts = os.date("*t")
         if not dateParts then return end
 
@@ -729,10 +752,11 @@ local function make_Nested_04d_02d_02d(lastSentDate, messageSender, notify)
         messageSender.LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)
         notify("到达 22:00:05，发送开启巡航协议")
     end
+    return Nested_04d_02d_02d
 end
 
 local function make_Nested_ffffff(buttonConfigs, buttonByKey)
-    return function Nested_ffffff(key, toggled)
+    local function Nested_ffffff(key, toggled)
         local matchedConfig
         for _, config in ipairs(buttonConfigs) do
             if config.key == key then
@@ -750,6 +774,7 @@ local function make_Nested_ffffff(buttonConfigs, buttonByKey)
         GUI:Button_setTitleText(button, title)
         GUI:Button_setTitleColor(button, toggled and "#ff0000" or "#ffffff")
     end
+    return Nested_ffffff
 end
 
 local function doInit_UI()
