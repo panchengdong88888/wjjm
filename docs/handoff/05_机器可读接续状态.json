@@ -15,7 +15,7 @@
     "root.children[46]": "DiuItems：169条；普通Lua草稿已独立复审并标记完整静态恢复（未运行时验证）；源码04_源码候选/root46_DiuItems.lua；不计运行时验证。",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next.",
     "root.children[8]": "FormatStateChange：10条；检查点176逐指令闭合格式化、单参回调及回调后状态写回；检查点177交叉root初始化、MainLoop捕获映射/调用点及PrintLog本体，确认UP0=PrintLog（root T[4]），UP1=MainLoop共享currentState单元（root T[14]，初值IDLE）。完整静态恢复，未运行时验证；PrintLog的SL.Print分支无调用指令，不推断可见输出。",
-    "root.children[9]": "ReadNumericConfig：45条；检查点130闭合三类失败分支均清理返回槽后返回nil，纯数字字符串才tonumber；检查点178闭合UP0=GetWritablePath（root.children[2]）及root/50 AnonymousHelper_49以blacklist_distance.txt调用并转发返回值。完整静态恢复，未运行时验证；GetWritablePath内部拼接方向单独待核。",
+    "root.children[9]": "ReadNumericConfig：45条；检查点130闭合三类失败分支均清理返回槽后返回nil，纯数字字符串才tonumber；检查点178闭合UP0=GetWritablePath（root.children[2]）及root/50 AnonymousHelper_49以blacklist_distance.txt调用并转发返回值。完整静态恢复，未运行时验证；GetWritablePath拼接顺序已由检查点127独立闭合。",
     "root.children[14]": "FindMonsterInCurrViewField：27条；检查点131完成27条PC映射，确认捕获root.children[29] IsDie包装器对存活actor返回truthy，完成静态恢复，未运行时验证。",
     "root.children[1]": "GetStorageItemData：77条；检查点132完成分页合并、逐页容量计算、proxy方法self、通知回调及返回数组静态恢复；未运行时验证。",
     "root.children[3]": "MoveTo：51条；检查点132完成参数、range假值默认、Facade通知self、PlayerPos坐标顺序及两轴<=比较返回极性静态恢复；未运行时验证。",
@@ -43,7 +43,7 @@
     "root.children[42].children[3].children[4]": "Nested_UnSchedule：20条；原检查点116已完成控制流静态复核。检查点172修正源码表达：子UP0=通知回调、UP1=timerState、UP2=moduleState；父PC68-PC71捕获顺序为父UP1/UP2/UP0。取消timer后写回反汇编未知常量['unknown',2]，源码以UNKNOWN_VALUE_SENTINEL占位，禁止误写nil。完整静态恢复，未运行时验证。",
     "root.children[50].children[0]": "Nested_isOutputted：52条；检查点174独立静态复审完成。父StorageItems PC102创建闭包，PC103/PC104捕获父UP0共享输出状态对象及父UP1输出回调；父PC154-PC170闭合ipairs迭代、Name匹配和两参数调用（item=R19,itemText=R25），PC171消费返回值。子函数纯文本查找聚灵珠、首次命中置位并两次回调输出物品/详情，校验Dura/DuraMax并返回布尔值。完整静态恢复，未运行时验证；更上层捕获原名未知。"
   },
-  "next_action": "检查点178已完成ReadNumericConfig（root.children[9]）45条指令静态复审，闭合UP0=GetWritablePath及blacklist_distance.txt包装调用链，升级完整静态恢复。下一步复核root.children[2] / GetWritablePath（10条），利用ReadNumericConfig与FileExistCheck_pcall_wrapper两个调用点闭合vararg路径参数和拼接方向；运行时验证仍为0。",
+  "next_action": "检查点178已完成ReadNumericConfig（root.children[9]）45条指令静态复审，闭合UP0=GetWritablePath及blacklist_distance.txt包装调用链；GetWritablePath本体的writablePath..fileName拼接顺序已由检查点127独立完成静态恢复。下一步复核root.children[6].children[0] / Nested_onDamageMsg（18条），闭合其父InstallDamageHook的捕获与原处理器返回链；运行时验证仍为0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2229,7 +2229,8 @@
       "UP0 is the zero-capture GetWritablePath closure created immediately before ReadNumericConfig.",
       "ReadNumericConfig passes the first explicit filename argument to GetWritablePath and reuses its returned path for both FileUtils methods.",
       "Root sets blacklist_distance.txt and AnonymousHelper_49 captures ReadNumericConfig plus that filename, calls it, and forwards the result.",
-      "Missing file, non-string content, and failed digit pattern return nil after clearing the return slot; matching ASCII digits pass to tonumber."
+      "Missing file, non-string content, and failed digit pattern return nil after clearing the return slot; matching ASCII digits pass to tonumber.",
+      "GetWritablePath自身已由检查点127独立闭合writablePath .. fileName拼接；本批只确认ReadNumericConfig捕获与调用链。"
     ],
     "counts": {
       "ordinary_lua_drafts": 76,
@@ -2929,7 +2930,6 @@
     "summary": "ReadNumericConfig（45条）闭合唯一捕获UP0=GetWritablePath、FileUtils路径调用链、三类nil失败分支及纯数字转换返回；AnonymousHelper_49以blacklist_distance.txt调用并转发返回值，升级完整静态恢复。",
     "audit_file": "docs/audit/检查点178_ReadNumericConfig捕获来源与配置文件调用链闭合.md",
     "unresolved": [
-      "GetWritablePath内部vararg/拼接方向待独立复审",
       "目标宿主运行时验证"
     ]
   },
@@ -2940,7 +2940,7 @@
     "ordinary_lua_draft_functions": 76,
     "complete_static_reconstruction_functions": 97,
     "runtime_verified_functions": 0,
-    "note": "检查点178闭合ReadNumericConfig的UP0=GetWritablePath、blacklist_distance.txt包装调用链、45条活动路径和全部返回分支；升级完整静态恢复。GetWritablePath内部拼接方向单独待核。",
+    "note": "检查点178闭合ReadNumericConfig的UP0=GetWritablePath、blacklist_distance.txt包装调用链、45条活动路径和全部返回分支；升级完整静态恢复。GetWritablePath本体拼接顺序已由检查点127独立完成静态恢复。",
     "checkpoint": 178,
     "ordinary_lua_drafts": 76,
     "complete_static_reconstruction": 97,
