@@ -8,7 +8,7 @@
 local function make_DiuItems(state, ShowLocalNoticeByType)
     -- Factory parameters model the two captured upvalues, not original Lua arguments.
     -- state is UP[0] (module state table); ShowLocalNoticeByType is UP[1].
-    return function DiuItems()
+    local function DiuItems()
     local MAX_GROUND_ITEMS = 35
 
     -- PC 2-8: re-entry guard. A caller that did not acquire the flag must not clear it.
@@ -96,6 +96,7 @@ local function make_DiuItems(state, ShowLocalNoticeByType)
     ShowLocalNoticeByType("共丢弃 " .. sentCount .. " 件物品")
     state.isDiuing = false
     end
+    return DiuItems
 end
 
 -- Static reconstruction notes:
