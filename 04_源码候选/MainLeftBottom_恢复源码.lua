@@ -686,6 +686,7 @@ end
   if MoveItemToQuickUse ~= nil then __exports["MoveItemToQuickUse"] = MoveItemToQuickUse end
   if AttachRecoveredPrototypes ~= nil then __exports["AttachRecoveredPrototypes"] = AttachRecoveredPrototypes end
   if MainLeftBottom ~= nil then __exports["MainLeftBottom"] = MainLeftBottom end
+  if gatherConfig ~= nil then __exports["gatherConfig"] = gatherConfig end
   MainLeftBottomRecovered.sources["04_源码候选/root_MainLeftBottom_Module.lua"] = __exports
 end
 
@@ -1638,7 +1639,7 @@ end
 -- 原始VM调用帧已证明T[0]=promptText、T[1]=successCallback、T[2]=nil。
 -- ---------------------------------------------------------------------------
 local function make_Nested_Anonymous(PrintLog)
-    return function Nested_Anonymous(promptText, successCallback)
+    return function(promptText, successCallback)
         -- 原始VM调用帧M已确认：本原型fixed_param_count=2。
         -- 两个固定参数分别进入新建帧表T[0]、T[1]；额外实参进入独立X表。
         -- T[2]没有任何写入指令，因此该槽确定为nil。
@@ -2924,7 +2925,7 @@ end
 -- root.children[23] / legacy root/24：六组设置开关与提示回调。
 -- UPVALUE[0]的原始业务名称未知；只按字节码确认的单文本参数契约命名。
 local function make_Builtsetting(onSettingMessage)
-    return function Builtsetting()
+    return function()
         CHANGE_SETTING(27, { 0 })
         onSettingMessage("关闭背景音乐")
 
@@ -3023,7 +3024,7 @@ end
 -- root.children[52].children[0] / legacy root/53/1：
 -- 工厂参数代表子原型捕获的父级T[3]；字节码PC1-PC4明确为SL.JsonDecode(jsonText)点调用。
 make_Nested_JsonDecode = function(jsonText)
-    return function Nested_JsonDecode()
+    return function()
         local jsonDecode = SL.JsonDecode
         return jsonDecode(jsonText)
     end
@@ -3530,7 +3531,7 @@ do
 -- 51条指令；1项捕获：root PC68捕获父root T[4]，此处按用途命名为notify。
 -- 检查点190：PC1-PC51完整静态复核；未运行时验证。
 local function make_GetAvailableStoragePage(notify)
-    return function GetAvailableStoragePage()
+    return function()
         local storageProxy = NPCStorageProxy
         if not storageProxy then
             notify("仓库代理未初始化")
@@ -3710,7 +3711,7 @@ do
 --   ipairs(R8) 迭代值 R25；对应 item 与 itemText。子原型没有读取额外 vararg。
 
 local function make_Nested_isOutputted(outputState, outputCallback)
-    return function Nested_isOutputted(item, itemText)
+    return function(item, itemText)
         if not string.find(itemText, "聚灵珠", 1, true) then
             return true
         end
@@ -3763,7 +3764,7 @@ do
 -- PC19捕获R2=路径参数；捕获顺序及两个生产者均已闭合。
 -- 子函数仅调用 FileUtils:removeFile(path)，不保留方法返回值。
 local function make_Nested_removeFile(fileUtils, path)
-    return function Nested_removeFile()
+    return function()
         fileUtils:removeFile(path)
     end
 end
@@ -3775,7 +3776,7 @@ end
 -- 子函数先调用 SL:RequestOutBlacklist(entryKey)，再在 FriendProxy._blacklistData
 -- 存在时删除该 key；删除操作是本地数据清理，不改变 RequestOutBlacklist 的参数。
 local function make_Nested_SL(entryKey, friendProxy)
-    return function Nested_SL()
+    return function()
         SL:RequestOutBlacklist(entryKey)
 
         if friendProxy._blacklistData then
@@ -4001,7 +4002,7 @@ end
 -- identifier is not recovered. The helper builds a notice record and forwards
 -- that one record to SL.ShowLocalNoticeByType.
 local function make_ShowLocalNoticeByType(capturedScreenObject)
-    return function ShowLocalNoticeByType(message)
+    return function(message)
         local notice = {
             Type = 10,
             Msg = message,
@@ -4042,7 +4043,7 @@ end
 -- root.children[25].children[0] / legacy root/26/1 / Nested_RequestAddBlacklistByName
 -- UP[0] is an object whose .name field is forwarded to the SL API.
 local function make_Nested_RequestAddBlacklistByName(blacklistEntry)
-    return function Nested_RequestAddBlacklistByName()
+    return function()
         SL:RequestAddBlacklistByName(blacklistEntry.name)
     end
 end
@@ -4055,7 +4056,7 @@ end
 -- root.children[42].children[13] / legacy root/43/14 / Nested_Helper_6
 -- UP[0] is the notification callback captured by the UI initializer.
 local function make_Nested_ClearBlacklistItems(notify)
-    return function Nested_ClearBlacklistItems()
+    return function()
         notify("清空黑名单")
         ClearBlacklistItems()
     end
@@ -4447,7 +4448,7 @@ do
 -- UP[0]=快捷栏配置表；UP[1]=移动结果提示回调。
 
 local function make_Nested_ITEM_INDEX_BY_NAME(config, notifyMoveResult)
-    return function Nested_ITEM_INDEX_BY_NAME()
+    return function()
         for _, itemName in ipairs(config.names) do
             local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)
 
@@ -4542,7 +4543,7 @@ local function make_Nested_Panel_mini_chat(validationResult, showWaitingNotice)
     -- UP[0] 精确捕获父 AccountIDValidation 的局部 validationResult（Nested_ID 返回值）。
     -- UP[1] 捕获父函数 UP[0] 的日志/提示回调。
     -- 注意：字节码确实将 validationResult 传给 SL:UnSchedule；其宿主语义未验证。
-    return function Nested_Panel_mini_chat()
+    return function()
         local mainProperty = MainProperty
 
         if mainProperty
@@ -4566,7 +4567,7 @@ local function make_Nested_ID(allowedAccountIDs, showAllowedNotice, showDeniedNo
     -- UP[0]：允许账号 ID 数组
     -- UP[1]：允许时的提示回调
     -- UP[2]：不允许时的提示回调
-    return function Nested_ID(accountID, ...)
+    return function(accountID, ...)
         local normalizedAccountID = tostring(accountID)
 
         for _, allowedID in ipairs(allowedAccountIDs) do
@@ -4597,7 +4598,7 @@ end
 local function make_AccountIDValidation(logCallback, failureCallback)
     -- UP[0]：日志/普通提示回调（游戏ID、账号ID、成功提示、等待提示）。
     -- UP[1]：验证失败提示回调。
-    return function AccountIDValidation()
+    return function()
         local gameID = SL:GetMetaValue("GAME_ID")
         logCallback("游戏id：" .. gameID)
 
@@ -4677,7 +4678,7 @@ local function make_InitGatherMonsters(
     config,                    -- UP[5] <- root T[8]
     showNotice                 -- UP[6] <- root T[4]
 )
-    return function InitGatherMonsters()
+    return function()
         -- PC1-11: cancel the previous timer and clear the stored handle.
         if runtimeState.gatherTimer then
             SL:UnSchedule(runtimeState.gatherTimer)
@@ -4728,7 +4729,7 @@ do
 -- 子闭包捕获FileUtils实例与resolvedPath，执行removeFile，不保留返回值。
 
 local function make_FileExistCheck_pcall_wrapper(resolveWritablePath)
-    return function FileExistCheck_pcall_wrapper(path, ...)
+    return function(path, ...)
         local fileUtils = cc.FileUtils:getInstance()
         local resolvedPath = resolveWritablePath(path)
 
@@ -4768,7 +4769,7 @@ do
 -- 5条指令；捕获ReadNumericConfig闭包与固定文件名；无显式参数。
 
 local function make_AnonymousHelper_49(readNumericConfig, fileName)
-    return function AnonymousHelper_49()
+    return function()
         return readNumericConfig(fileName)
     end
 end
@@ -4797,7 +4798,7 @@ do
 -- 完整静态恢复：PC1-PC92全部映射；未运行时验证。
 
 local function make_LuaSendMsg(hookState, logCallback)
-    return function LuaSendMsg(
+    return function(
         hookKey,
         param1,
         param2,
@@ -5118,7 +5119,7 @@ do
     -- 可达行为仅为坐标有效性检查、相同坐标返回0、Chebyshev距离限幅。
     -- UP[0]由root PC350捕获，但活动路径从未读取，工厂参数仅保留捕获位置。
     local function make_GetMapData2DPtr(unusedCapturedValue)
-        return function GetMapData2DPtr(x1, y1, x2, y2, maxDistance)
+        return function(x1, y1, x2, y2, maxDistance)
             if not x1 or not y1 or not x2 or not y2 or not maxDistance then
                 return nil
             end
@@ -5244,6 +5245,68 @@ do
 
     MainLeftBottomRecovered.sources["04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua"] = {
         make_FindBlacklistPlayer = make_FindBlacklistPlayer
+    }
+end
+
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/root28_FindMonsterCandidates.lua
+-- root.children[28]；5项父级捕获在root装配区按OP_387顺序注入。
+-- ============================================================================
+do
+    local function make_FindMonsterCandidates(
+        GetPlayerPosition,
+        IsDie,
+        GetPlayerMapPosition,
+        DistanceCalculation,
+        config
+    )
+        local function FindMonsterCandidates()
+            local monsters = SL.FindMonsterInCurrViewField()
+            if not monsters or #monsters == 0 then
+                return {}
+            end
+            local ignoreSetting =
+                GET_SETTING(global.MMO.SETTING_IDX_IGNORE_MONSTER)
+            local ignoredNames = {}
+            if ignoreSetting and type(ignoreSetting[1]) == "table" then
+                for name, enabled in pairs(ignoreSetting[1]) do
+                    if enabled == true then
+                        ignoredNames[name] = true
+                    end
+                end
+            end
+            local playerPosition = GetPlayerPosition()
+            local candidates = {}
+            for _, actor in ipairs(monsters) do
+                if IsDie(actor) then
+                    local name = actor:GetName() or "未知怪物"
+                    if not ignoredNames[name] then
+                        local actorPosition = GetPlayerMapPosition(actor)
+                        actor._distance =
+                            DistanceCalculation(playerPosition, actorPosition)
+                        table.insert(candidates, actor)
+                    end
+                end
+            end
+            table.sort(candidates, function(a, b)
+                return a._distance < b._distance
+            end)
+            local result = {}
+            local gatherThreshold = config.GATHER_THRESHOLD
+            for index, actor in ipairs(candidates) do
+                if index > gatherThreshold then
+                    break
+                end
+                table.insert(result, actor)
+            end
+            return result
+        end
+        return FindMonsterCandidates
+    end
+    MainLeftBottomRecovered.sources["04_源码候选/root28_FindMonsterCandidates.lua"] = {
+        make_FindMonsterCandidates = make_FindMonsterCandidates
     }
 end
 
@@ -5400,9 +5463,50 @@ do
         end
     end
 
+    -- 检查点247：两个稳定捕获工厂按父root寄存器身份实例化。
+    -- ShowLocalNoticeByType捕获root T[0]=MainLeftBottom.a（screenH所在表）。
+    local makeShowNotice = sourceFunction(
+        "04_源码候选/其他短辅助函数_第二批草稿.lua",
+        "make_ShowLocalNoticeByType"
+    )
+    if makeShowNotice then
+        rootPrototypes.ShowLocalNoticeByType = makeShowNotice(rootModule.a)
+    end
+
+    -- DiuItems：UP[0]=root T[2]=MainLeftBottom.z（isDiuing状态表）；
+    -- UP[1]=root T[5]=ShowLocalNoticeByType。
+    local makeDiuItems = sourceFunction(
+        "04_源码候选/root46_DiuItems.lua",
+        "make_DiuItems"
+    )
+    if makeDiuItems and rootPrototypes.ShowLocalNoticeByType then
+        rootPrototypes.DiuItems = makeDiuItems(
+            rootModule.z,
+            rootPrototypes.ShowLocalNoticeByType
+        )
+    end
+
+    -- FindMonsterCandidates：UP[0..4]依次为GetPlayerPosition、IsDie、
+    -- GetPlayerMapPosition、DistanceCalculation、gatherConfig。五项均为
+    -- 稳定函数/表引用，不涉及可变标量cell代理。
+    local makeFindMonsterCandidates = sourceFunction(
+        "04_源码候选/root28_FindMonsterCandidates.lua",
+        "make_FindMonsterCandidates"
+    )
+    if makeFindMonsterCandidates and rootSource.gatherConfig then
+        rootPrototypes.FindMonsterCandidates = makeFindMonsterCandidates(
+            rootPrototypes.GetPlayerPosition,
+            rootPrototypes.IsDie,
+            rootPrototypes.GetPlayerMapPosition,
+            rootPrototypes.DistanceCalculation,
+            rootSource.gatherConfig
+        )
+    end
+
     -- 仅导出字节码明确写入_ENV的全局入口；其他辅助闭包留在rootPrototypes。
     local globalExports = {
         log = "PrintLog",
+        DiuItems = "DiuItems",
         GetMapId = "GetMapId",
         GetMapName = "GetMapName",
         PlayerPos = "PlayerPos",
@@ -5421,12 +5525,19 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 246,
+        checkpoint = 247,
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
         missing = missing,
+        captured_factory_closures_expected = 36,
+        captured_factory_closures_bound = 2,
+        captured_factory_closures_pending = 34,
+        captured_factory_names_bound = {
+            "DiuItems",
+            "FindMonsterCandidates"
+        },
         runtime_verified = false,
-        capture_semantics = "OP_387 live shared cell; captured factories not bound in this pass"
+        capture_semantics = "OP_387 live shared cell; this pass binds only factories whose captures are stable table/function references"
     }
 end
 
