@@ -2745,3 +2745,13 @@ Nested_match：
 - MoneyProxy的GetMoneyIdByName/GetMoneyCountById等方法未在43份文档中检索到；按观察到的对象方法调用保留，不分析其内部实现。
 - K[28]=`["unknown",2]`已在检查点102确认是VM dump对nil的序列化占位，不是运行时哨兵。因此本函数resTimer清理和doInit_UI的cruiseTimer清理均恢复为nil。
 - 320条父指令与5个子原型完成静态恢复；完整静态恢复数更新为106/110（96.4%）；运行时验证仍为0。
+
+
+## 检查点 #226（2026-11-10）：Nested_FFFF00 源码副本与状态索引同步
+
+- 根据检查点225已闭合的VM dump证据，`K[28]=[\"unknown\",2]`是nil的序列化占位，不是运行时哨兵。
+- 修正`04_源码候选/短函数草稿_第六十三批.lua`中`Nested_FFFF00`关闭资源窗口后的`timerState.resTimer`赋值：由旧占位符改为`nil`。
+- `04_源码候选/MainLeftBottom_恢复源码.lua`中的同一主体原本已写`nil`；同步其注释、原型索引状态和检查点标记，避免集中稿与单独候选互相矛盾。
+- `docs/handoff/05_机器可读接续状态.json`同步将`root.children[42].children[3] Nested_FFFF00`标记为完整静态恢复（未运行时验证）。函数状态CSV已登记检查点225的完整静态状态，本批不重复计数。
+- 统计保持106/110完整静态恢复，运行时验证仍为0；本批是已完成源码的证据校正与副本同步，不新增原型恢复数量。
+- 下一步仍按用户要求先处理剩余短小函数/闭包；优先追踪`root.children[42].children[22] Nested_Anonymous`的T[2]第三回调生产者及精确帧槽映射，再回到`doInit_UI`剩余GUI参数/闭包装配，最后完成根模块PC1-PC412闭包装配。
