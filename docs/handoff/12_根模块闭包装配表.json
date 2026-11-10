@@ -116,7 +116,8 @@
       36
     ],
     "root_pc86_pc211_capture_audit_checkpoint": 242,
-    "root_pc212_pc340_ledger_checkpoint": 243
+    "root_pc212_pc340_ledger_checkpoint": 243,
+    "root_pc341_pc412_ledger_checkpoint": 244
   },
   "closure_sites": [
     {
@@ -6802,5 +6803,381 @@
       "PC212-PC340未覆盖PC341-PC412的后续闭包与导出。"
     ]
   },
-  "audit_checkpoint_243": "docs/audit/检查点243_root_PC212_PC340字段导出与T54生命周期闭合.md"
+  "audit_checkpoint_243": "docs/audit/检查点243_root_PC212_PC340字段导出与T54生命周期闭合.md",
+  "root_pc341_pc412_ledger": {
+    "pc_range": "341-412",
+    "opaque_table": {
+      "pc_range": "341-349",
+      "target": "T[52]",
+      "value": [
+        [
+          1,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          -1
+        ]
+      ],
+      "note": "按反汇编数值构造顺序恢复；用途未知，不擅自命名。"
+    },
+    "closure_sites": [
+      {
+        "pc": 350,
+        "child_path": "root/22",
+        "name": "GetMapData2DPtr",
+        "captures": [
+          {
+            "upvalue": 0,
+            "parent_T": 52
+          }
+        ],
+        "note": "捕获八元素表；已恢复的可达函数路径不读取此Upvalue。"
+      },
+      {
+        "pc": 352,
+        "child_path": "root/48",
+        "name": "PCallHelper_2",
+        "captures": []
+      },
+      {
+        "pc": 353,
+        "child_path": "root/51",
+        "name": "FindBlacklistPlayer",
+        "captures": [
+          {
+            "upvalue": 0,
+            "parent_T": 54,
+            "value": "PCallHelper_2"
+          }
+        ]
+      },
+      {
+        "pc": 355,
+        "child_path": "root/24",
+        "name": "UseItemByIndex",
+        "captures": [
+          {
+            "upvalue": 0,
+            "parent_T": 37,
+            "value": "randomTeleportItemNames"
+          }
+        ]
+      },
+      {
+        "pc": 357,
+        "child_path": "root/52",
+        "name": "onDamageMsg",
+        "captures": [
+          {
+            "upvalue": 0,
+            "parent_T": 41,
+            "value": "blacklistState"
+          }
+        ]
+      },
+      {
+        "pc": 360,
+        "child_path": "root/6",
+        "name": "InstallDamageHook",
+        "captures": [
+          {
+            "upvalue": 0,
+            "parent_T": 0,
+            "value": "MainLeftBottom module table"
+          },
+          {
+            "upvalue": 1,
+            "parent_T": 4,
+            "value": "PrintLog"
+          }
+        ]
+      },
+      {
+        "pc": 363,
+        "child_path": "root/25",
+        "name": "DeathAutoBlacklist",
+        "captures": [
+          {
+            "upvalue": 0,
+            "parent_T": 41,
+            "value": "blacklistState"
+          },
+          {
+            "upvalue": 1,
+            "parent_T": 4,
+            "value": "PrintLog"
+          },
+          {
+            "upvalue": 2,
+            "parent_T": 55,
+            "value": "FindBlacklistPlayer"
+          },
+          {
+            "upvalue": 3,
+            "parent_T": 5,
+            "value": "ShowLocalNoticeByType"
+          }
+        ]
+      },
+      {
+        "pc": 368,
+        "child_path": "root/47",
+        "name": "BlacklistPlayerDetection",
+        "captures": [
+          {
+            "upvalue": 0,
+            "parent_T": 2,
+            "value": "MainLeftBottom module table"
+          },
+          {
+            "upvalue": 1,
+            "parent_T": 57,
+            "value": "InstallDamageHook"
+          },
+          {
+            "upvalue": 2,
+            "parent_T": 41,
+            "value": "blacklistState"
+          },
+          {
+            "upvalue": 3,
+            "parent_T": 58,
+            "value": "DeathAutoBlacklist"
+          },
+          {
+            "upvalue": 4,
+            "parent_T": 55,
+            "value": "FindBlacklistPlayer"
+          },
+          {
+            "upvalue": 5,
+            "parent_T": 53,
+            "value": "GetMapData2DPtr"
+          },
+          {
+            "upvalue": 6,
+            "parent_T": 38,
+            "value": 2
+          },
+          {
+            "upvalue": 7,
+            "parent_T": 4,
+            "value": "PrintLog"
+          },
+          {
+            "upvalue": 8,
+            "parent_T": 56,
+            "value": "UseItemByIndex"
+          },
+          {
+            "upvalue": 9,
+            "parent_T": 39,
+            "value": 0.01
+          },
+          {
+            "upvalue": 10,
+            "parent_T": 5,
+            "value": "ShowLocalNoticeByType"
+          },
+          {
+            "upvalue": 11,
+            "parent_T": 40,
+            "value": 30
+          },
+          {
+            "upvalue": 12,
+            "parent_T": 37,
+            "value": "randomTeleportItemNames"
+          }
+        ]
+      },
+      {
+        "pc": 383,
+        "child_path": "root/15",
+        "name": "ClearBlacklistItems",
+        "captures": [
+          {
+            "upvalue": 0,
+            "parent_T": 54,
+            "value": "PCallHelper_2"
+          },
+          {
+            "upvalue": 1,
+            "parent_T": 4,
+            "value": "PrintLog"
+          },
+          {
+            "upvalue": 2,
+            "parent_T": 5,
+            "value": "ShowLocalNoticeByType"
+          },
+          {
+            "upvalue": 3,
+            "parent_T": 41,
+            "value": "blacklistState"
+          }
+        ]
+      },
+      {
+        "pc": 390,
+        "child_path": "root/42",
+        "name": "doInit_UI",
+        "captures": [
+          {
+            "upvalue": 0,
+            "parent_T": 4,
+            "value": "PrintLog"
+          },
+          {
+            "upvalue": 1,
+            "parent_T": 2,
+            "value": "MainLeftBottom module table"
+          },
+          {
+            "upvalue": 2,
+            "parent_T": 3,
+            "value": "MainLeftBottom.a"
+          },
+          {
+            "upvalue": 3,
+            "parent_T": 0,
+            "value": "MainLeftBottom module table"
+          },
+          {
+            "upvalue": 4,
+            "parent_T": 1,
+            "value": "MainLeftBottom.b"
+          },
+          {
+            "upvalue": 5,
+            "parent_T": 41,
+            "value": "blacklistState"
+          },
+          {
+            "upvalue": 6,
+            "parent_T": 48,
+            "value": "AnonymousHelper_49(ReadNumericConfig, blacklist_distance.txt)"
+          },
+          {
+            "upvalue": 7,
+            "parent_T": 7,
+            "value": "Schedule"
+          },
+          {
+            "upvalue": 8,
+            "parent_T": 8,
+            "value": "FindMonsterInCurrViewField"
+          },
+          {
+            "upvalue": 9,
+            "parent_T": 50,
+            "value": "AnonymousHelper_33(ReadNumericConfig, gather_monster_count.txt)"
+          },
+          {
+            "upvalue": 10,
+            "parent_T": 49,
+            "value": "AnonymousHelper_32(PCallHelper, blacklist_distance.txt)"
+          },
+          {
+            "upvalue": 11,
+            "parent_T": 5,
+            "value": "ShowLocalNoticeByType"
+          },
+          {
+            "upvalue": 12,
+            "parent_T": 44,
+            "value": "GetWritablePath"
+          },
+          {
+            "upvalue": 13,
+            "parent_T": 42,
+            "value": "blacklist_distance.txt"
+          },
+          {
+            "upvalue": 14,
+            "parent_T": 51,
+            "value": "AnonymousHelper_54(PCallHelper, gather_monster_count.txt)"
+          },
+          {
+            "upvalue": 15,
+            "parent_T": 43,
+            "value": "gather_monster_count.txt"
+          },
+          {
+            "upvalue": 16,
+            "parent_T": 47,
+            "value": "FileExistCheck_pcall_wrapper"
+          },
+          {
+            "upvalue": 17,
+            "parent_T": 11,
+            "value": 18000
+          },
+          {
+            "upvalue": 18,
+            "parent_T": 12,
+            "value": "14-item reward table"
+          },
+          {
+            "upvalue": 19,
+            "parent_T": 9,
+            "value": 0.2
+          }
+        ]
+      }
+    ],
+    "module_fields": [
+      {
+        "pc": 359,
+        "target": "MainLeftBottom.onDamageMsg",
+        "value": "onDamageMsg"
+      },
+      {
+        "pc": 411,
+        "target": "MainLeftBottom.doInit",
+        "value": "doInit_UI"
+      }
+    ],
+    "global_exports": [
+      {
+        "pc": 382,
+        "target": "_G.BlacklistItems",
+        "value": "BlacklistPlayerDetection"
+      },
+      {
+        "pc": 388,
+        "target": "_G.ClearBlacklistItems",
+        "value": "ClearBlacklistItems"
+      }
+    ],
+    "return": {
+      "pc": 412,
+      "value": "return MainLeftBottom module"
+    }
+  }
 }
