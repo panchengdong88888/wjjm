@@ -1,9 +1,7 @@
 -- root.children[9] / legacy root/10
 -- Reconstruction name: ReadNumericConfig
--- 45 physical instructions; first-pass readable Lua draft.
--- Captures: UP[0] = GetWritablePath (root.children[2]).
--- The function prototype is vararg-capable; only the first explicit argument
--- (file name/path) is read by this body. Additional varargs are not observed.
+-- 45 physical instructions; complete static reconstruction, not runtime-validated.
+-- UP[0] = GetWritablePath closure (root.children[2]), captured at root PC298.
 
 local function make_ReadNumericConfig(GetWritablePath)
     return function(fileName, ...)
@@ -15,17 +13,14 @@ local function make_ReadNumericConfig(GetWritablePath)
 
         local fileExists = fileUtils:isFileExist(fullPath)
         if not fileExists then
-            -- PC 11 skips the unconditional jump at PC 12; PC 13 clears T[3]
-            -- and PC 14 returns that cleared slot. The observed result is nil,
-            -- not the false value returned by isFileExist.
+            -- PC 11-14: clear the return slot and return nil.
             return nil
         end
 
         -- PC 15-20: read the file contents and inspect its Lua type.
         local content = fileUtils:getStringFromFile(fullPath)
         if type(content) ~= "string" then
-            -- PC 21 skips the jump at PC 22; PC 23 clears T[4], and PC 24
-            -- returns that cleared slot. The observed result is nil.
+            -- PC 21-24: clear the return slot and return nil.
             return nil
         end
 
@@ -38,21 +33,20 @@ local function make_ReadNumericConfig(GetWritablePath)
             return tonumber(normalized)
         end
 
-        -- PC 37 skips the jump at PC 38 when the pattern does not match;
-        -- PC 39 clears T[4] and PC 40 returns that cleared slot (nil).
+        -- PC 37-40: failed pattern match clears the return slot and returns nil.
         return nil
     end
 end
 
--- Static notes / boundaries:
--- * GetWritablePath is the sole captured upvalue and receives the first explicit
---   argument; its returned path is reused for isFileExist and getStringFromFile.
--- * The false isFileExist branch clears the return slot before returning; the
---   recovered return is nil, not false.
--- * A non-string file-read result also follows a clear-then-return path (nil).
--- * Only a non-empty sequence of ASCII decimal digits reaches tonumber and returns
---   its numeric result. Signs, decimal points, other characters, and empty content
---   fail the pattern and return nil; the normalized text is not returned.
--- * The prototype's vararg flag is retained as (...), although no extra argument
---   is read in the visible 45-instruction body.
--- * No runtime validation; file API behavior is host-dependent.
+-- Static reconstruction notes:
+-- * Parent root PC297 creates GetWritablePath (root.children[2]) with no captures;
+--   root PC298 creates this closure and PC299 captures that helper as UP[0].
+-- * Root PC295 supplies the filename "blacklist_distance.txt" to a wrapper
+--   closure created at root PC304. That wrapper captures this function and the
+--   filename at PC305-PC306, then calls ReadNumericConfig(fileName) and forwards
+--   its return values. The wrapper is root.children[49] / AnonymousHelper_49.
+-- * The false isFileExist branch, non-string file-read branch, and failed
+--   digit-pattern branch each clear the return slot before returning nil.
+-- * Only a non-empty sequence of ASCII decimal digits reaches tonumber.
+-- * The prototype is vararg-capable, but extra varargs are not read.
+-- * No runtime validation; FileUtils/GetWritablePath behavior remains host-dependent.
