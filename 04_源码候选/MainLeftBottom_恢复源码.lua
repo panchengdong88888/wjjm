@@ -132,9 +132,9 @@ MainLeftBottomRecovered.prototype_index = {
   ["root.children[34]"] = { name="AnonymousHelper_33", status="complete_static_reconstruction", source_file="04_源码候选/root35_AnonymousHelper_33_ScheduleWrapper.lua", audit_file="docs/audit/检查点227_AnonymousHelper_33_Schedule包装函数.md", instructions=7, runtime_verified=false },
   ["root.children[42].children[3]"] = { name="Nested_FFFF00", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=320, runtime_verified=false },
   ["root.children[42].children[18]"] = { name="Nested_Helper_10", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=39, runtime_verified=false },
-  ["root.children[49]"] = { name="PCallHelper_2 / AnonymousHelper_49", status="complete_static_reconstruction_not_runtime_verified_integrated_checkpoint230", source_file="04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua", instructions=5, runtime_verified=false },
+  ["root.children[49]"] = { name="PCallHelper_2 / AnonymousHelper_49", status="complete_static_reconstruction_not_runtime_verified_integrated_checkpoint230", source_file="04_源码候选/代理与回调短函数_第四批.lua", instructions=5, runtime_verified=false },
   ["root.children[51]"] = { name="FindBlacklistPlayer", status="complete_static_reconstruction_not_runtime_verified_integrated_checkpoint230", source_file="04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua", instructions=35, runtime_verified=false },
-  ["root.children[49].children[0]"] = { name="Nested_FriendProxy", status="complete_static_reconstruction_not_runtime_verified_integrated_checkpoint230", source_file="04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua", instructions=9, runtime_verified=false },
+  ["root.children[49].children[0]"] = { name="Nested_FriendProxy", status="complete_static_reconstruction_not_runtime_verified_integrated_checkpoint230", source_file="04_源码候选/代理与回调短函数_第四批.lua", instructions=9, runtime_verified=false },
   ["root.children[53]"] = { name="ScheduleOnce", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/verified_helpers_batches_1_3.lua", instructions=7, runtime_verified=false },
   ["root.children[54]"] = { name="AnonymousHelper_54", status="complete_static_reconstruction_not_runtime_verified", source_file="", instructions=6, runtime_verified=false },
   ["root.children[56]"] = { name="ClearTargetID_2", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/root56_root57_short_functions.lua", instructions=22, runtime_verified=false },
@@ -5227,26 +5227,10 @@ do
 end
 
 do
-    -- root.children[49] / legacy root/50 / PCallHelper_2（VM原型名AnonymousHelper_49）
-    -- 5条父指令，0捕获，含一个9条指令的子原型。
-    -- 子原型执行 global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)。
-    -- 父原型以pcall保护该调用：失败或结果为假值时返回nil，否则返回proxy。
-    local function make_PCallHelper_2()
-        local function Nested_FriendProxy()
-            return global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)
-        end
-
-        return function()
-            local ok, proxy = pcall(Nested_FriendProxy)
-            if not ok or not proxy then
-                return nil
-            end
-            return proxy
-        end
-    end
-
     -- root.children[51] / legacy root/52 / FindBlacklistPlayer
-    -- 35条指令，UP[0]为上面的PCallHelper_2闭包；读取首个vararg作为targetId。
+    -- 35条指令，UP[0]为root.children[49] PCallHelper_2。
+    -- PCallHelper_2及其Nested_FriendProxy子原型已在前文“代理与回调短函数”词法块中恢复。
+    -- 原型vararg_flag=1：零固定参数，从首个可变参数读取targetId。
     local function make_FindBlacklistPlayer(getFriendProxySafely)
         return function(...)
             local targetId = ...
