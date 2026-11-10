@@ -77,6 +77,10 @@ local function make_Nested_Helper_3(
             end
         end
 
+        -- 跨函数键值对照：doInit_UI PC85将初始货币数量写入initSnapshot[name]；
+        -- 本回调PC106读取initSnapshot[moneyId]。两端键表达式确实不同。
+        -- MoneyProxy:GetMoneyIdByName的宿主返回语义未在仓库实现中定义，
+        -- 因此保留字节码两端各自的访问方式，不擅自改写为同一键。
         -- PC95-PC137：moneyRows以资源名称为键；快照以moneyId为键。
         for moneyName, textNode in pairs(moneyRows) do
             local moneyId = moneyProxy:GetMoneyIdByName(moneyName)
