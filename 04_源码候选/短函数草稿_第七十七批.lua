@@ -4,10 +4,9 @@
 -- Nested_match：root.children[42].children[22].children[0].children[0] / legacy root/43/23/1/1
 -- Nested_Helper_11：root.children[42].children[22].children[0].children[0].children[0] / legacy root/43/23/1/1/1
 -- 27/50/4条物理指令；三个原型均完成静态恢复（未运行时验证）。
--- 父包装函数Nested_Anonymous仍保留草稿状态，不因子函数完成而升级。
+-- 检查点235：父包装函数Nested_Anonymous现已完整静态恢复；VM fixed_param_count=2，T[0]/T[1]分别为两个实参，T[2]=nil。
 
-local function Nested_str(...)
-    local optionalSuffix = ...
+local function Nested_str(optionalSuffix)
 
     local dialogParams = {
         btnType = 2,
@@ -70,9 +69,9 @@ local function Nested_str(...)
 end
 
 -- 捕获映射：
--- Nested_str UP[0..3]依次来自Nested_Anonymous T[0]、UP[0]、T[2]、T[1]。
+-- Nested_str UP[0..3]依次来自Nested_Anonymous T[0]、UP[0]、T[2]=nil、T[1]。
 -- Nested_match UP[0..3]依次捕获Nested_str UP[1]、UP[0]、UP[2]、UP[3]。
--- Nested_Helper_11唯一捕获Nested_match UP[2]。
+-- Nested_Helper_11唯一捕获Nested_match UP[2]；该槽最终对应父T[2]=nil，错误分支直接调用nil。
 --
 -- 关键语义：
 -- 1. Nested_match仅在status~=1时立即返回。
@@ -84,3 +83,7 @@ end
 -- 6. Nested_Anonymous父包装函数仍未完成；其T0/T1/T2参数映射、
 --    R2()调用业务身份和调用方实参布局继续保留为未解决项。
 -- 未进行游戏客户端运行时验证。
+
+
+-- 检查点235参数元数据纠正：本原型fixed_param_count=1，签名为Nested_str(optionalSuffix)。
+-- 它在Nested_Anonymous中以零实参调用，故optionalSuffix=nil。Nested_match固定参数数2；Nested_Helper_11固定参数数0。
