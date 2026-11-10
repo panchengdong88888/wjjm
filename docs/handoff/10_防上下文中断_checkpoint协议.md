@@ -3368,3 +3368,14 @@ Nested_match：
 - 新建`docs/audit/检查点272_源码注册表唯一性与闭包工厂来源核对.md`；更新主恢复稿注册审计元数据、机器状态、函数状态CSV。
 - 本批没有删除或改写业务函数体，不增加静态恢复数量；109/110完整静态恢复、72个普通Lua草稿、58/58根直接闭包源码层绑定、运行时验证0。未执行Lua解释器/luac。
 - 下一步检查点273：回到root PC1-PC412连续可读源码收敛。先核对PC1-PC42初始化与主装配入口的对象身份和词法作用域，再逐段把可确认语句纳入恢复适配执行体；保留PC275`_ENV.MainLeftBottom`及PC389 T[59]重读，不把OP_387捕获描述写成业务语句。
+
+
+## 检查点 #273（2026-11-10）：PC1-PC42根表初始化与跨词法块身份核对
+
+- 对照root模块候选与主恢复文件中的来源词法块，核对PC1-PC42初始化顺序：PC1-PC2根表及_G写入；PC3-PC5 a表；PC6版本；PC7-PC16屏幕宽高；PC17-PC23 Blocklist；PC24-PC27发送/接收hook表；PC28-PC29界面初值；PC30-PC32 b表及_G.MainLeftBottom重读；PC33-PC35 z表；PC36-PC41六个状态字段；PC42 timerState表。
+- 确认来源词法块内的MainLeftBottom/a/b/z/timerState均为local，装配词法块不能裸引用；来源块通过rootSource导出MainLeftBottom、uiState、buttonMap、timerState。
+- 主恢复文件在rootModule类型检查后增加断言：`_G.MainLeftBottom == rootModule`、uiState/a身份、buttonMap/b身份、z与timerState为table、a/b/z/timerState四表两两不相同。
+- PC30-PC32重读_G.MainLeftBottom语义保留；PC275重读_ENV.MainLeftBottom及PC389 T[59]重读语义沿用此前检查点，不作简化。
+- 新建`docs/audit/检查点273_PC1-PC42根表初始化与跨词法块身份核对.md`；更新主恢复稿、机器状态和函数状态CSV。
+- 本批新增断言未执行；Lua/luac编译与目标游戏运行时验证仍为0。完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定不变。
+- 下一步检查点274：审查PC43-PC85寄存器影子表与T[4..8]复用是否与PC1-PC42 T[0..3]初始化连续衔接，再检查PC86-PC412跨词法块裸local引用、重复字段写入及OP_387捕获描述边界。
