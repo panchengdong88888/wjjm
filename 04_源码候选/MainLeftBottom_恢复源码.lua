@@ -1842,7 +1842,7 @@ local function make_Nested_UnSchedule(printLog, timerState, moduleState)
         if timerState.resTimer then
             SL:UnSchedule(timerState.resTimer)
             -- VM dump中的['unknown',2]尚未确认等价nil；保留占位。
-            timerState.resTimer = UNKNOWN_VALUE_SENTINEL
+            timerState.resTimer = nil -- K[28]=["unknown",2] is the VM dump's nil serialization placeholder
         end
 
         GUI:Win_Close(moduleState.resWin)
@@ -1973,12 +1973,12 @@ local function make_Nested_FFFF00(moduleState, printLog, timerState, initState)
         local gui = GUI
         local sl = SL
 
-        -- PC1-PC27：窗口已存在则关闭；resTimer取消后写入unknown哨兵而非nil。
+        -- PC1-PC27：窗口已存在则关闭；resTimer取消后清为nil；K[28]=["unknown",2]是nil的VM dump序列化占位。
         if gui:Win_IsNotNull(moduleState.resWin) then
             printLog("关闭资源信息窗口")
             if timerState.resTimer then
                 sl:UnSchedule(timerState.resTimer)
-                timerState.resTimer = UNKNOWN_VALUE_SENTINEL
+                timerState.resTimer = nil -- K[28]=["unknown",2] is the VM dump's nil serialization placeholder
             end
             gui:Win_Close(moduleState.resWin)
             return
@@ -2452,7 +2452,7 @@ local function make_doInit_UI(UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALU
     -- PC146-PC166：替换cruiseTimer并建立周期任务。
     if UPVALUE_2.cruiseTimer then
         SL:UnSchedule(UPVALUE_2.cruiseTimer)
-        UPVALUE_2.cruiseTimer = {"unknown", 2}
+        UPVALUE_2.cruiseTimer = nil -- K[28]=["unknown",2] is the VM dump nil placeholder
     end
     -- PC145清空父帧T[5]；PC160-PC163随后以该cell创建child12。
     -- 检查点111已闭合：R5是同日发送标记，另捕获UP[3]发送对象、UP[0]通知回调。
