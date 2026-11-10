@@ -2027,3 +2027,17 @@
 - 下一待办为root.children[42] / doInit_UI（419条、23个子原型），状态仍是首版普通Lua草稿。
 - 先定位仓库内现有doInit_UI首版草稿及相关子闭包文件，再按机器状态中的未闭合项继续：Nested_Anonymous的T[0]/T[1]/T[2]捕获生产者、Nested_FFFF00剩余320条、Nested_Helper_3刷新闭包。
 - 检查点186统计不变：普通Lua草稿71；完整静态恢复102/110；运行时验证0。
+
+
+## 检查点 #187（2026-11-10）：doInit_UI普通Lua草稿数据流与GUI参数校正
+
+- 对象：`root.children[42]` / `doInit_UI`（419条、105常量、23个子原型）。复用检查点88既有普通Lua草稿，不重复底层提取、VM dump、原型统计或已完成子原型分析。
+- 修订源码：`04_源码候选/短函数草稿_第六十三批.lua`；新增审计：`docs/audit/检查点187_doInit_UI草稿数据流与GUI参数校正.md`。
+- PC59-PC85：第一组MoneyProxy货币数量按名称写入`initSnapshot[name]`，不是按moneyId；PC92-PC97第二组背包资源由child[0] `Nested_find(name)`计数并按名称写入快照。
+- PC158-PC166：修正调度顺序为`SL:Schedule(callback, 1.0)`。
+- PC181-PC183：确认调用`GUI:Attach_UITop`且有7个显式实参；来源未闭合，源码用显式TODO占位，不可运行。返回值作为后续按钮创建父节点。
+- PC338-PC345：child[9]捕获uiParent、xBase、yBase、buttonMap、buttonHandlers；按钮创建调用补回uiParent实参，坐标为xBase-85*columnIndex、yBase+rowOffset，三组偏移40/0/80。
+- 未决：doInit_UI部分UPVALUE业务身份、Attach_UITop七参数来源、Nested_Anonymous T[0]/T[1]/T[2]帧映射、GUI宿主语义。Nested_FFFF00（child[3]，320条）主体仍待恢复；Nested_Helper_3（child[3].children[3]，168条）已完整静态恢复，不重复处理。
+- 状态仍为首版普通Lua草稿（已修订），不升级完整静态恢复，不新增草稿函数数。
+- 统计：普通Lua草稿71；完整静态恢复102/110（92.7%）；运行时验证0。
+- 下一步：优先批量恢复`root.children[42].children[3]` / `Nested_FFFF00`（320条）父函数普通Lua主体，复用已完成的子原型候选。
