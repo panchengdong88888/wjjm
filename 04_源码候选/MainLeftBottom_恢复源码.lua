@@ -120,7 +120,7 @@ MainLeftBottomRecovered.prototype_index = {
   ["root.children[3]"] = { name="MoveTo", status="first_pass_draft_move_notification_and_distance_checks_pending_return_polarity_not_runtime_verified", source_file="04_源码候选/短函数草稿_第五十三批.lua", instructions=51, runtime_verified=false },
   ["root.children[15]"] = { name="ClearBlacklistItems", status="first_pass_draft_blacklist_collection_and_async_removal_pending_key_value_capture_identity_not_runtime_verified", source_file="04_源码候选/短函数草稿_第五十四批.lua", instructions=63, runtime_verified=false },
   ["root.children[52]"] = { name="onDamageMsg", status="first_pass_draft_pending_static_review_not_runtime_verified", source_file="04_源码候选/短函数草稿_第五十六批.lua", instructions=72, runtime_verified=false },
-  ["root.children[1]"] = { name="GetStorageItemData", status="first_pass_draft_pending_static_review_not_runtime_verified", source_file="04_源码候选/短函数草稿_第五十六批.lua", instructions=77, runtime_verified=false },
+  ["root.children[1]"] = { name="GetStorageItemData", status="complete_static_reconstruction_not_runtime_verified_integrated_checkpoint230", source_file="04_源码候选/短函数草稿_第五十六批.lua", instructions=77, runtime_verified=false },
   ["root.children[5]"] = { name="TakeItems", status="first_pass_draft_pending_static_review_not_runtime_verified", source_file="04_源码候选/短函数草稿_第五十七批.lua", instructions=99, runtime_verified=false },
   ["root.children[47]"] = { name="BlacklistPlayerDetection", status="first_pass_draft_pending_static_review_not_runtime_verified", source_file="04_源码候选/短函数草稿_第五十九批.lua", instructions=216, runtime_verified=false },
   ["root.children[50]"] = { name="StorageItems", status="complete_static_reconstruction", source_file="04_源码候选/短函数草稿_第六十批.lua", audit_file="docs/audit/检查点223_StorageItems完整静态复审.md", instructions=224, runtime_verified=false },
@@ -132,8 +132,8 @@ MainLeftBottomRecovered.prototype_index = {
   ["root.children[34]"] = { name="AnonymousHelper_33", status="complete_static_reconstruction", source_file="04_源码候选/root35_AnonymousHelper_33_ScheduleWrapper.lua", audit_file="docs/audit/检查点227_AnonymousHelper_33_Schedule包装函数.md", instructions=7, runtime_verified=false },
   ["root.children[42].children[3]"] = { name="Nested_FFFF00", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=320, runtime_verified=false },
   ["root.children[42].children[18]"] = { name="Nested_Helper_10", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=39, runtime_verified=false },
-  ["root.children[49]"] = { name="AnonymousHelper_49", status="complete_static_reconstruction_not_runtime_verified", source_file="", instructions=5, runtime_verified=false },
-  ["root.children[51]"] = { name="FindBlacklistPlayer", status="complete_static_reconstruction_not_runtime_verified", source_file="", instructions=35, runtime_verified=false },
+  ["root.children[49]"] = { name="PCallHelper_2 / AnonymousHelper_49", status="complete_static_reconstruction_not_runtime_verified_integrated_checkpoint230", source_file="04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua", instructions=5, runtime_verified=false },
+  ["root.children[51]"] = { name="FindBlacklistPlayer", status="complete_static_reconstruction_not_runtime_verified_integrated_checkpoint230", source_file="04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua", instructions=35, runtime_verified=false },
   ["root.children[53]"] = { name="ScheduleOnce", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/verified_helpers_batches_1_3.lua", instructions=7, runtime_verified=false },
   ["root.children[54]"] = { name="AnonymousHelper_54", status="complete_static_reconstruction_not_runtime_verified", source_file="", instructions=6, runtime_verified=false },
   ["root.children[56]"] = { name="ClearTargetID_2", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/root56_root57_short_functions.lua", instructions=22, runtime_verified=false },
@@ -5162,5 +5162,121 @@ do
 
     MainLeftBottomRecovered.sources["04_源码候选/root22_GetMapData2DPtr.lua"] = {
         make_GetMapData2DPtr = make_GetMapData2DPtr
+    }
+end
+
+
+-- ============================================================================
+-- 检查点230：继续优先整合简单、已有完整静态证据的明文函数
+-- ============================================================================
+
+do
+    -- root.children[1] / legacy root/2 / GetStorageItemData
+    -- 77条指令；root PC71创建并捕获父T[4]，其业务身份尚未命名，
+    -- 但PC71-PC75明确将其作为一条提示文本回调调用。
+    local function make_GetStorageItemData(notify)
+        return function()
+            local storageItems = {}
+            local storageProxy = NPCStorageProxy
+            if not storageProxy then
+                return storageItems
+            end
+
+            local maxPage = storageProxy:GetMaxPage()
+            local availableSlots = 0
+
+            for page = 1, maxPage do
+                local pageData = storageProxy:GetStorageDataByPage(page)
+
+                if type(pageData) == "table" then
+                    for _, item in ipairs(pageData) do
+                        table.insert(storageItems, item)
+                    end
+                end
+
+                local pageItemCount = 0
+                if pageData then
+                    pageItemCount = #pageData
+                end
+
+                local perPageMax = GUIDefine.STORAGE_PER_PAGE_MAX
+                if not perPageMax then
+                    perPageMax = global.MMO.NPC_STORAGE_MAX_PAGE
+                end
+
+                local openSize = storageProxy:GetOpenSize()
+                local pageLimit = openSize - (page - 1) * perPageMax
+                if pageLimit > perPageMax then
+                    pageLimit = perPageMax
+                end
+
+                if pageLimit > 0 then
+                    availableSlots = availableSlots + (pageLimit - pageItemCount)
+                end
+            end
+
+            notify("仓库总可用格子: " .. tostring(availableSlots))
+            return storageItems
+        end
+    end
+
+    MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第五十六批.lua#GetStorageItemData"] = {
+        make_GetStorageItemData = make_GetStorageItemData
+    }
+end
+
+do
+    -- root.children[49] / legacy root/50 / PCallHelper_2（VM原型名AnonymousHelper_49）
+    -- 5条父指令，0捕获，含一个9条指令的子原型。
+    -- 子原型执行 global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)。
+    -- 父原型以pcall保护该调用：失败或结果为假值时返回nil，否则返回proxy。
+    local function make_PCallHelper_2()
+        local function Nested_FriendProxy()
+            return global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)
+        end
+
+        return function()
+            local ok, proxy = pcall(Nested_FriendProxy)
+            if not ok or not proxy then
+                return nil
+            end
+            return proxy
+        end
+    end
+
+    -- root.children[51] / legacy root/52 / FindBlacklistPlayer
+    -- 35条指令，UP[0]为上面的PCallHelper_2闭包；读取首个vararg作为targetId。
+    local function make_FindBlacklistPlayer(getFriendProxySafely)
+        return function(targetId, ...)
+            local friendProxy = getFriendProxySafely()
+            if not friendProxy then
+                return false
+            end
+
+            local blacklistData = friendProxy._blacklistData
+            if not blacklistData or not targetId then
+                return false
+            end
+
+            local entry = blacklistData[targetId]
+            if entry then
+                return true, entry.Name
+            end
+
+            local masterActorID = SL:GetMetaValue("ACTOR_MASTER_ID", targetId)
+            if masterActorID and masterActorID ~= targetId then
+                local masterEntry = blacklistData[masterActorID]
+                if masterEntry then
+                    return true, masterEntry.Name
+                end
+            end
+
+            return false
+        end
+    end
+
+    MainLeftBottomRecovered.sources["04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua"] = {
+        make_PCallHelper_2 = make_PCallHelper_2,
+        make_FindBlacklistPlayer = make_FindBlacklistPlayer
     }
 end
