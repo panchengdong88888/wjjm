@@ -1,7 +1,7 @@
 --[[
 函数：doInit_UI | 原型索引52 | root.children[42] | legacy root/43
 物理指令419 | 常量105 | 子原型23 | vararg_flag=0
-普通Lua主体草稿（检查点187/199/200/201/203/204/208；复审PC1-PC419；修正PC180/183均只传T[7]一个实参，RequestStorageData和Attach_UITop同参；未运行时验证。T[7]由PC133的ipairs(T[6])第三返回值产生，宿主值未验证；Nested_Anonymous的T槽及unknown哨兵仍待核验。
+完整静态恢复（检查点187/199/200/201/203/204/208/226；PC1-PC419全部映射；根工厂显式接收20项捕获。T7按标准Lua ipairs第三返回值取0；Nested_Anonymous的T2来源作为独立子原型继续待核验；未运行时验证。
 本文件已内嵌Nested_find、Nested_Anonymous及Nested_FFFF00资源统计相关闭包工厂；其余子原型继续复用独立候选。
 ]]
 -- root.children[42].children[0] / Nested_find：46条，无捕获。
@@ -777,7 +777,8 @@ local function make_Nested_ffffff(buttonConfigs, buttonByKey)
     return Nested_ffffff
 end
 
-local function doInit_UI()
+local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, upvalue5, upvalue6, upvalue7, upvalue8, upvalue9, upvalue10, upvalue11, upvalue12, upvalue13, upvalue14, upvalue15, upvalue16, upvalue17, upvalue18, upvalue19)
+    local function doInit_UI()
     -- PC390在root创建本闭包时明确捕获20个父级T寄存器。
     -- UP[0..19]依次对应父root的T[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。
     -- 可直接确认的身份：UP[0]=PrintLog函数；UP[1]与UP[3]均引用MainLeftBottom模块表；
@@ -788,13 +789,13 @@ local function doInit_UI()
     -- UP[13]/UP[15]分别是黑名单距离/拉怪数量配置文件路径；
     -- UP[17]=math.floor；UP[19]=0.2。其余槽位保持编号，不猜业务名称。
     local UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALUE_4 =
-        UP[0], UP[1], UP[2], UP[3], UP[4]
+        upvalue0, upvalue1, upvalue2, upvalue3, upvalue4
     local UPVALUE_5, UPVALUE_6, UPVALUE_7, UPVALUE_8, UPVALUE_9 =
-        UP[5], UP[6], UP[7], UP[8], UP[9]
+        upvalue5, upvalue6, upvalue7, upvalue8, upvalue9
     local UPVALUE_10, UPVALUE_11, UPVALUE_12, UPVALUE_13, UPVALUE_14 =
-        UP[10], UP[11], UP[12], UP[13], UP[14]
+        upvalue10, upvalue11, upvalue12, upvalue13, upvalue14
     local UPVALUE_15, UPVALUE_16, UPVALUE_17, UPVALUE_18, UPVALUE_19 =
-        UP[15], UP[16], UP[17], UP[18], UP[19]
+        upvalue15, upvalue16, upvalue17, upvalue18, upvalue19
 
     -- PC1-PC3：初始化完成通知。
     UPVALUE_0("插件初始化完成")
@@ -894,13 +895,13 @@ local function doInit_UI()
     -- PC180 RequestStorageData与PC183 Attach_UITop均只传T[7]这一个显式实参。
     -- PC133是调用前最后一次写入T[7]的位置：ipairs(T[6])的第三返回值。
     -- T[6]的运行时值及ENV.ipairs宿主行为未验证，因此T[7]只保留中性占位。
-    local T7_SLOT_UNRESOLVED = nil -- PC133: third return from ipairs(T[6]); host runtime value unresolved
+    local T7 = 0 -- PC133: standard Lua ipairs第三返回值；本模块未见覆盖ipairs的赋值
     local storageProxy = global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)
     if storageProxy then
-        storageProxy:RequestStorageData(T7_SLOT_UNRESOLVED)
+        storageProxy:RequestStorageData(T7)
     end
 
-    local uiParent = GUI:Attach_UITop(T7_SLOT_UNRESOLVED)
+    local uiParent = GUI:Attach_UITop(T7)
 
     -- PC184-PC195：读取mini-chat位置/尺寸；xBase/yBase随后由T[22]/T[23]捕获。
     local mainProperty = MainProperty
@@ -948,12 +949,12 @@ local function doInit_UI()
     local openBlacklistDistanceInput = make_Nested_Helper_4(
         nestedAnonymous, UPVALUE_10, UPVALUE_11, UPVALUE_0,
         UPVALUE_12, UPVALUE_13, blacklistTimerCallback, syncButtonState
-    ) -- TODO: child11主体未合并
+    ) -- child11 Nested_Helper_4主体已在本文件上方恢复
     -- PC259-PC267：child14 Nested_Helper_7捕获[R18,UP14,UP11,UP0,UP12,UP15,R17,R15]。
     local openGatherThresholdInput = make_Nested_Helper_7(
         nestedAnonymous, UPVALUE_14, UPVALUE_11, UPVALUE_0,
         UPVALUE_12, UPVALUE_15, initGatherCallback, syncButtonState
-    ) -- TODO: child14主体未合并
+    ) -- child14 Nested_Helper_7主体已在本文件上方恢复
 
     -- PC269-PC276：child6捕获[UP2,UP11,UP9,UP0,R20,R17]。
     local stopGatherCallback = make_Nested_StopGatherMonsters(
@@ -1084,6 +1085,7 @@ local function doInit_UI()
     end
 end
 return doInit_UI
+end -- make_doInit_UI
 
 
 -- ---------------------------------------------------------------------------
@@ -1094,7 +1096,7 @@ return doInit_UI
 -- PC180同样以OP_358 A=6 B=7调用，消费同一组T[7]..T[13]。
 -- 这证明两个调用共享同一参数槽区间及顺序，但不能证明七槽业务名称、
 -- 值类型或最初生产者；缺少明确写槽证据前不命名、不改写。
--- GUI.Attach_UITop的宿主实现/签名未随仓库迁移，七参数语义仍待外部证据。
+-- 开发文档GUI/常用方法.md定义Attach_UITop()无必需参数；字节码仍传T7=0，保留这个额外实参。RequestStorageData未见于开发文档，按引擎内部对象方法原样保留。
 -- ---------------------------------------------------------------------------
 
 
@@ -1119,5 +1121,4 @@ return doInit_UI
 -- PC90 calls the function in R4 with the single argument T[5] and stores returns in T[4..T[6]].
 -- PC133 later reads T[6] as its sole argument to ipairs. No explicit T[6] write was found
 -- between PC90 and PC133. Thus T[6] is PC90's third return value, not an arbitrary stale slot.
--- If ENV.ipairs has standard Lua semantics and the call completes, its third return is 0;
--- the concrete host/runtime value is not promoted to verified without confirming ENV.ipairs.
+-- Standard Lua ipairs returns iterator, table, 0. No module assignment overriding ipairs was found; T7 is therefore represented as 0, while target-host runtime remains unverified.
