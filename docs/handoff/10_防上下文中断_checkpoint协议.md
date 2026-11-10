@@ -2949,3 +2949,21 @@ Nested_match：
 - 运行时验证仍为0；完整静态恢复仍109/110。
 - 下一步检查点243继续root PC212-PC340模块字段/全局导出对账，并核对剩余T54。
 
+
+
+## 检查点 #243（2026-11-10）：root PC212-PC340模块字段/全局导出与T54闭合
+
+- 按corrected phase3 root物理PC逐条复核PC212-PC340；结合原型总索引、闭包装配表和新框架API映射，不重复反汇编已完成的子函数主体。
+- PC212-PC213创建root.children[31] IsInWhitelistMap并导出全局_IsInWhitelistMap（实际全局键为IsInWhitelistMap）。该函数无捕获。
+- PC214-PC237创建root.children[45] MainLoop，依序捕获22个父寄存器，并于PC237导出全局MainLoop；捕获序列与检查点158闭合的22项upvalue映射一致。
+- PC238-PC246创建root.children[19] InitGatherMonsters，捕获[T3,T18,T23,T13,T35,T8,T4]，PC246导出全局InitGatherMonsters。
+- PC247-PC255创建root.children[27] StopGatherMonsters，捕获[T18,T3,T25,T23,T13,T35,T4]，PC255导出全局StopGatherMonsters。
+- PC256-PC258创建root.children[23] Builtsetting，捕获T5，PC258导出全局Builtsetting。
+- PC259-PC260创建无捕获MoveItemToQuickUse，并于PC260导出全局MoveItemToQuickUse。
+- UI控制闭包字段：PC261-PC264创建DestroyUI并捕获[T0,T3,T1]，PC265写入MainLeftBottom.hide；PC266-PC268创建SetButtonVisibilityState并捕获[T0,T1]，PC269写入MainLeftBottom.show；PC270-PC273创建ShowHideAllButtons并捕获[T3,T1,T0]，PC274写入MainLeftBottom.destroy。
+- 账号验证：PC275重新读取MainLeftBottom；PC276-PC278创建AccountIDValidation并捕获[T4,T5]（PrintLog、ShowLocalNoticeByType），PC279写入MainLeftBottom.main。具体调用时机不作推断。
+- 黑名单状态：PC286创建状态表；PC287 lastAttacker=nil、PC288 lastHp=nil、PC289 deathHandled=false、PC290 alertAt=0、PC291 nextTryAt=0、PC292 noStoneWarned=false、PC293 distance=nil；PC294将同一表写入MainLeftBottom.blacklist。
+- T54生命周期闭合：PC318先写入临时数值1.0；PC321覆写为空表并在PC324构造为八向临时表中的一项，PC349组装外层T52数组时该临时表已被消费；PC352将T54覆写为root.children[48] PCallHelper_2闭包。PC354由FindBlacklistPlayer UP[0]捕获T54，PC384由ClearBlacklistItems UP[0]捕获同一live cell；两次捕获均发生在PC352之后，实际捕获值均为PCallHelper_2。后续没有再覆写T54。
+- 因此父寄存器生命周期累计由56/57升至57/57；所有135个OP_387捕获描述符均有父寄存器时间线依据。root PC341-PC412模块字段/导出及根模块整体普通Lua装配仍待完成。
+- 静态完整函数仍109/110；普通Lua草稿72；运行时验证0。本批没有增加函数静态完成数量。
+- 下一步检查点244：复核root PC341-PC412，补齐BlacklistPlayerDetection、DeathAutoBlacklist、ClearBlacklistItems、doInit_UI及相关模块字段/全局导出的最终装配账本，并据此继续根模块普通Lua整合。
