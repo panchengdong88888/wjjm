@@ -50,9 +50,10 @@
     "root.children[12]": "LuaSendMsg（92条）检查点190、205：普通Lua草稿PC1-PC92已独立静态复审；固定六参/message字段、Blocklist仅抑制日志、SendHookList按第1参取hook、pcall(hook,arg1,arg6,message)且仅严格true拦截、否则networkCtl:SendMsg原六参转发均与corrected反汇编一致。草稿仍保留UP0/UP1临时名；作者原名与宿主API语义未证实；未运行时验证。源码04_源码候选/短函数草稿_第五十批.lua；审计docs/audit/检查点205_LuaSendMsg普通Lua草稿独立复审.md。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
     "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192-PC1-PC41；193-PC42-PC85；194-PC86-PC167；195-PC168-PC200；196-PC201-PC270；197-PC271-PC340；198-PC341-PC412。PC341-PC349完成R52八个二元素数组构造；PC350-PC359创建GetMapData2DPtr/PCallHelper_2/FindBlacklistPlayer/UseItemByIndex/onDamageMsg并写MainLeftBottom.onDamageMsg；PC360-PC362创建InstallDamageHook捕获[T0,T4]；PC363-PC367创建DeathAutoBlacklist捕获[T41,T4,T55,T5]；PC368-PC381创建BlacklistPlayerDetection捕获13项并PC382导出BlacklistItems；PC383-PC388创建/导出ClearBlacklistItems；PC389-PC411创建doInit_UI并按序捕获20项，写入MainLeftBottom.doInit；PC412 return。根模块PC1-PC412均有分段普通Lua记录，但仍非作者级完整源码，doInit_UI及部分槽位待复审，未运行时验证。",
-    "root.children[42].children[3]": "Nested_FFFF00（320条）检查点188/201/207：PC1-PC320逐条对照corrected反汇编；修正五处Text_Create结果门控，PC139/173/201/229/257在节点返回false/nil时跳过setAnchorPoint。资源窗口创建/关闭、布局、两组资源行、MoneyProxy获取、刷新闭包立即调用与1秒Schedule主体均已映射。unknown哨兵、GUI布尔/尾参宿主语义、MoneyProxy快照写入name/读取moneyId差异仍未验证；保持普通Lua草稿，不升级完整静态恢复，未运行时验证。审计docs/audit/检查点207_Nested_FFFF00_PC1-PC320普通Lua草稿复审.md。"
+    "root.children[42].children[3]": "Nested_FFFF00（320条）检查点188/201/207：PC1-PC320逐条对照corrected反汇编；修正五处Text_Create结果门控，PC139/173/201/229/257在节点返回false/nil时跳过setAnchorPoint。资源窗口创建/关闭、布局、两组资源行、MoneyProxy获取、刷新闭包立即调用与1秒Schedule主体均已映射。unknown哨兵、GUI布尔/尾参宿主语义、MoneyProxy快照写入name/读取moneyId差异仍未验证；保持普通Lua草稿，不升级完整静态恢复，未运行时验证。审计docs/audit/检查点207_Nested_FFFF00_PC1-PC320普通Lua草稿复审.md。",
+    "root.children[42].children[22]": "Nested_Anonymous（8条父原型；child0 Nested_str 27条；Nested_match 50条；Nested_Helper_11 4条）检查点201/209：PC1创建child0，捕获顺序UP[0]=T[0]、UP[1]=UP[0](PrintLog)、UP[2]=T[2]、UP[3]=T[1]；PC6-PC7零参调用Nested_str，PC8返回。Nested_str构造btnType=2/showEdit/editParams(inputMode=2,maxLength=6)，str取父T[0]，将Nested_match挂入callback并调用SL.OpenCommonTipsPop。Nested_match严格要求status==1；editStr缺省空串，tostring后gsub删除空白，匹配^%d+$并tonumber；数字truthy时调用父T[1](number)；否则PrintLog记录格式错误，并ScheduleOnce(0.1)调用Nested_Helper_11，后者调用父T[2]('参数格式不对，请输入数字')。调用链：doInit_UI PC248创建本闭包捕获PrintLog；PC250创建Nested_Helper_4并将本闭包置于其UP0；Nested_Helper_10回调PC27零参调用Nested_Helper_4；Nested_Helper_4可读主体向openDialog传入两项显式值（prompt及Nested_Helper_5成功回调）。T[0]/T[1]用途可由读写位置判定，但VM帧槽偏移仍待验证；T[2]确实被作为延迟错误提示回调调用，但追踪到的包装器仅显式传两参，未找到第三实参生产者，保留占位。普通Lua草稿，不升级完整静态恢复，未运行时验证。审计docs/audit/检查点209_Nested_Anonymous调用帧复审.md。"
   },
-  "next_action": "继续doInit_UI相关子原型的调用帧闭合：优先复审root.children[42].children[22] Nested_Anonymous（8条父原型及child0 Nested_str、child内Nested_match/Helper_11），追踪调用端T[0]/T[1]/T[2]生产者和实际实参；已知doInit_UI PC248只创建该闭包并捕获[T[0],UP[0],T[2],T[1]]，root/43/19 PC27空参调用root/43/12包装器，root/43/12 PC11转发T[1]..T[2]。若生产者仍不可证，保留占位并审计，不升级完整静态恢复。随后再追踪GUI方法尾参/布尔值宿主定义与MoneyProxy快照键差异。",
+  "next_action": "继续追踪Nested_Anonymous的T[2]第三实参生产者及VM参数帧偏移：从doInit_UI PC250创建的Nested_Helper_4、PC259创建的Nested_Helper_7及其调用点出发，核对root/43/12、root/43/15子原型的捕获payload与函数帧；尤其验证T[0]/T[1]/T[2]是否分别对应prompt、成功回调、可选错误提示回调，或T[2]由宿主/VM隐式注入。不可用常见Lua调用习惯替代字节码证据。若仍无第三实参生产者，明确记录T[2]疑似未初始化/可选参数风险并保留占位。随后可转向GUI宿主尾参/布尔值及MoneyProxy快照键差异。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2963,7 +2964,7 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 208,
+  "last_checkpoint": 209,
   "checkpoint": 205,
   "drafts": 33,
   "next": "检查点201已将Nested_Anonymous父包装器及Nested_str/Nested_match/Nested_Helper_11主体并入第六十三批；同时将Nested_FFFF00父工厂及Nested_Helper_2、Nested_string、Nested_FFFFFF、Nested_Helper_3、Nested_UnSchedule依赖并入统一候选。下一步追踪PC181-PC183 GUI:Attach_UITop七个实参的生产者/类型，并闭合Nested_Anonymous T[0]/T[1]/T[2]来源；保留unknown哨兵宿主语义待核验。",
