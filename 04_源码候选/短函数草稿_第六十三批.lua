@@ -1,8 +1,8 @@
 --[[
 函数：doInit_UI | 原型索引52 | root.children[42] | legacy root/43
 物理指令419 | 常量105 | 子原型23 | vararg_flag=0
-普通Lua草稿（检查点187首版，检查点199独立复审修订）；未运行时验证。已修正资源快照分支、false/nil归一和子闭包依赖说明；Attach_UITop七参数仍以占位标记保留。
-本文件只恢复父函数骨架；23个子原型继续复用独立候选，不重复展开。
+普通Lua主体草稿（检查点187首版、199分支复审、200按钮闭包/每日回调整合、201合并Nested_Anonymous与Nested_FFFF00资源统计工厂及子依赖）；未运行时验证。Attach_UITop七参数、Nested_Anonymous的T槽及unknown哨兵仍待核验。
+本文件已内嵌Nested_find、Nested_Anonymous及Nested_FFFF00资源统计相关闭包工厂；其余子原型继续复用独立候选。
 ]]
 -- root.children[42].children[0] / Nested_find：46条，无捕获。
 -- 从BAG_DATA按pairs遍历，纯文本匹配名称，排除绑定物品，累计OverLap or 1。
