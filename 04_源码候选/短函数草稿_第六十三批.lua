@@ -865,12 +865,6 @@ local function doInit_UI()
     )
     UPVALUE_2.cruiseTimer = SL:Schedule(dailyCallback, 1.0)
 
-    -- PC167-PC180：NPCStorageProxy请求仓库数据。
-    local storageProxy = global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)
-    if storageProxy then
-        storageProxy:RequestStorageData()
-    end
-
     -- PC181-PC195：GUI.Attach_UITop调用实参物理来源未闭合。
     -- 当前草稿把调用错误写成七个nil实参；检查点208依据OP_358/OP_068调用展开规则纠正：
     -- PC180 RequestStorageData与PC183 Attach_UITop均只传T[7]这一个显式实参。
