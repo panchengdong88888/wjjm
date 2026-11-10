@@ -2734,3 +2734,14 @@ Nested_match：
 - 补录 `root.children[42].children[3] Nested_FFFF00`：320条父指令、5个子原型已有主体草稿，但GUI尾参/布尔标志、MoneyProxy键差异和unknown哨兵仍未闭合，保持未完成。
 - 当前完整静态恢复保持105/110（95.5%）；运行时验证仍为0。
 - 剩余重点：Nested_Anonymous、Nested_FFFF00、doInit_UI、根模块闭包装配。按依赖顺序推进，已恢复简单函数不重复处理。
+
+
+## 检查点 #225（2026-11-10）：Nested_FFFF00 完整静态恢复
+
+- 原型：`root.children[42].children[3]`（legacy `root/43/4`），320条父指令、72常量、5个子原型、4项捕获。
+- 捕获按行为角色命名：moduleState、printLog、timerState、initState；不猜原作者变量名。
+- 从`新框架(3_40_xx).zip`核对Win_Create、Win_IsNotNull、Win_Close、Layout_Create、ListView_Create、ListView背景设置、Text_Create、Text_setString、Button_Create、按钮标题设置、setAnchorPoint、setTouchEnabled、addOnClickEvent等签名。源码实参数量、顺序和类型与文档相符。
+- 五组Text_Create返回值均先做truthy门控，再设置锚点。
+- MoneyProxy的GetMoneyIdByName/GetMoneyCountById等方法未在43份文档中检索到；按观察到的对象方法调用保留，不分析其内部实现。
+- K[28]=`["unknown",2]`已在检查点102确认是VM dump对nil的序列化占位，不是运行时哨兵。因此本函数resTimer清理和doInit_UI的cruiseTimer清理均恢复为nil。
+- 320条父指令与5个子原型完成静态恢复；完整静态恢复数更新为106/110（96.4%）；运行时验证仍为0。
