@@ -705,6 +705,9 @@ end
   -- Checkpoint251: shared UI/module state tables captured by the three UI closures.
   __exports["uiState"] = MainLeftBottom.a
   __exports["buttonMap"] = MainLeftBottom.b
+  -- Checkpoint252: stable root captures for map-distance and blacklist helpers.
+  __exports["opaquePairTable"] = opaquePairTable
+  __exports["randomTeleportItemNames"] = randomTeleportItemNames
   MainLeftBottomRecovered.sources["04_源码候选/root_MainLeftBottom_Module.lua"] = __exports
 end
 
@@ -4303,6 +4306,56 @@ end
 
 
 -- ============================================================================
+-- 来源文件：04_源码候选/root22_GetMapData2DPtr.lua
+-- root.children[22]捕获T[52]；活动路径不读取捕获值，仍按捕获顺序传入。
+-- ============================================================================
+do
+-- root.children[22] / legacy root/23
+-- VM index label: GetMapData2DPtr
+-- 144 physical records; no child prototypes; captured UP[0] is not read
+-- on the reachable entry path. PC38-PC144 are unreachable after PC37 return.
+-- This source models the reachable behavior only; it is not runtime-validated.
+
+local function make_GetMapData2DPtr(unusedCapturedValue)
+    return function GetMapData2DPtr(x1, y1, x2, y2, maxDistance)
+        -- PC1-PC10: all four coordinates and maxDistance must be truthy.
+        if not x1 or not y1 or not x2 or not y2 or not maxDistance then
+            return nil
+        end
+
+        -- PC13-PC18: identical coordinates return numeric zero.
+        if x1 == x2 and y1 == y2 then
+            return 0.0
+        end
+
+        -- PC19-PC22: non-positive range returns nil.
+        if maxDistance <= 0 then
+            return nil
+        end
+
+        -- PC23-PC33: Chebyshev distance.
+        local dx = math.abs(x2 - x1)
+        local dy = math.abs(y2 - y1)
+        local distance = math.max(dx, dy)
+
+        -- PC34-PC37: over-limit distance clears the return slot; PC37 returns.
+        if maxDistance < distance then
+            return nil
+        end
+
+        return distance
+    end
+end
+
+  local __exports = {}
+  if make_GetMapData2DPtr ~= nil then
+    __exports["make_GetMapData2DPtr"] = make_GetMapData2DPtr
+  end
+  MainLeftBottomRecovered.sources["04_源码候选/root22_GetMapData2DPtr.lua"] = __exports
+end
+
+
+-- ============================================================================
 -- 来源文件：04_源码候选/短函数草稿_第三十一批.lua
 -- 短函数/辅助闭包集中整合；各工厂参数按对应原型捕获顺序注入。
 -- 本段只表示独立原型源码，不代表已完成根模块所有闭包实例化。
@@ -6501,6 +6554,61 @@ do
         rootModule.destroy = rootPrototypes.ShowHideAllButtons
     end
 
+    -- 检查点252：T[44] GetWritablePath是同一个稳定函数引用，供三个闭包共享。
+    local makeReadNumericConfig = sourceFunction(
+        "04_源码候选/root9_ReadNumericConfig.lua", "make_ReadNumericConfig"
+    )
+    if makeReadNumericConfig and rootPrototypes.GetWritablePath then
+        rootPrototypes.ReadNumericConfig =
+            makeReadNumericConfig(rootPrototypes.GetWritablePath)
+    end
+
+    local makePCallHelper = sourceFunction(
+        "04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua",
+        "make_PCallHelper"
+    )
+    if makePCallHelper and rootPrototypes.GetWritablePath then
+        rootPrototypes.PCallHelper =
+            makePCallHelper(rootPrototypes.GetWritablePath)
+    end
+
+    local makeFileExistCheck = sourceFunction(
+        "04_源码候选/短函数草稿_第三十八批.lua",
+        "make_FileExistCheck_pcall_wrapper"
+    )
+    if makeFileExistCheck and rootPrototypes.GetWritablePath then
+        rootPrototypes.FileExistCheck_pcall_wrapper =
+            makeFileExistCheck(rootPrototypes.GetWritablePath)
+    end
+
+    -- root.children[22]捕获T[52]；静态可达路径不读取此表，但保留真实捕获注入。
+    local makeGetMapData2DPtr = sourceFunction(
+        "04_源码候选/root22_GetMapData2DPtr.lua", "make_GetMapData2DPtr"
+    )
+    if makeGetMapData2DPtr then
+        rootPrototypes.GetMapData2DPtr =
+            makeGetMapData2DPtr(rootSource.opaquePairTable)
+    end
+
+    -- root.children[51] UP[0]=root.children[48] PCallHelper_2。
+    local makeFindBlacklistPlayer = sourceFunction(
+        "04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua",
+        "make_FindBlacklistPlayer"
+    )
+    if makeFindBlacklistPlayer and rootPrototypes.PCallHelper_2 then
+        rootPrototypes.FindBlacklistPlayer =
+            makeFindBlacklistPlayer(rootPrototypes.PCallHelper_2)
+    end
+
+    -- root.children[24] UP[0]=root T[37]随机传送物品名称表。
+    local makeUseItemByIndex = sourceFunction(
+        "04_源码候选/短函数草稿_第三十一批.lua", "make_UseItemByIndex"
+    )
+    if makeUseItemByIndex then
+        rootPrototypes.UseItemByIndex =
+            makeUseItemByIndex(rootSource.randomTeleportItemNames)
+    end
+
     -- 仅导出字节码明确写入_ENV的全局入口；其他辅助闭包留在rootPrototypes。
     local globalExports = {
         log = "PrintLog",
@@ -6529,13 +6637,13 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 251,
+        checkpoint = 252,
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
         missing = missing,
         captured_factory_closures_expected = 36,
-        captured_factory_closures_bound = 21,
-        captured_factory_closures_pending = 15,
+        captured_factory_closures_bound = 27,
+        captured_factory_closures_pending = 9,
         captured_factory_names_bound = {
             "ShowLocalNoticeByType", "DiuItems", "FindMonsterCandidates",
             "LuaSendMsg", "GetAvailableStoragePage", "GetStorageItemData",
@@ -6543,10 +6651,12 @@ do
             "AccountIDValidation", "InstallDamageHook", "FormatStateChange",
             "ResetGatherMonsterData", "MainLoop", "InitGatherMonsters",
             "StopGatherMonsters", "FindMonsterInCurrViewField", "DestroyUI",
-            "SetButtonVisibilityState", "ShowHideAllButtons"
+            "SetButtonVisibilityState", "ShowHideAllButtons", "ReadNumericConfig",
+            "PCallHelper", "FileExistCheck_pcall_wrapper", "GetMapData2DPtr",
+            "FindBlacklistPlayer", "UseItemByIndex"
         },
         runtime_verified = false,
-        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; gather state cells and UI shared tables are passed by identity; three UI factories reuse the root module tables"
+        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; gather live cells and UI shared tables are passed by identity; T[44] GetWritablePath is shared by three helpers; T[52] and T[37] captures are injected"
     }
 end
 
