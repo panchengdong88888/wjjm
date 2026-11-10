@@ -298,7 +298,7 @@ local opaquePairTable = {
 -- PC355-PC356：创建root.children[24] / UseItemByIndex，捕获randomTeleportItemNames。
 -- PC357-PC358：创建root.children[52] / onDamageMsg，捕获blacklistState。
 -- PC359：MainLeftBottom.onDamageMsg = onDamageMsg，实际消息处理器保存在模块字段。
--- PC360-PC362：创建root.children[6] / InstallDamageHook，捕获父T[0]、T[4]，并覆盖同一父寄存器T[57]。
+-- PC360-PC362：创建root.children[6] / InstallDamageHook，捕获父T[0]=MainLeftBottom.a、T[4]=PrintLog，并覆盖同一父寄存器T[57]。
 -- PC368创建BlacklistPlayerDetection时捕获T[57]的live cell；因此其UP[1]是PC360写入的InstallDamageHook，不是PC357创建的onDamageMsg处理器。
 -- 这两个父级捕获槽位按顺序保留；子闭包Nested_onDamageMsg的捕获另见检查点179。
 -- PC363-PC367：创建root.children[25] / DeathAutoBlacklist，捕获：
@@ -317,9 +317,9 @@ local opaquePairTable = {
 -- PC390-PC410：创建root.children[42] / doInit_UI，捕获20项父root寄存器：
 -- [T[4], T[2], T[3], T[0], T[1], T[41], T[48], T[7], T[8], T[50],
 --  T[49], T[5], T[44], T[42], T[51], T[43], T[47], T[11], T[12], T[9]]。
--- 这是父级捕获顺序，不代表所有槽位业务身份均已确认。
+-- 20项槽位身份已由检查点256逐项闭合；完整顺序与装配值见docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md。
 -- doInit_UI本体419条，已有首版普通Lua草稿（检查点187）；
--- GUI宿主语义、Attach_UITop七实参、Nested_Anonymous三个T槽来源等仍待复审。
+-- 静态参数映射已由检查点208/235闭合：RequestStorageData与Attach_UITop各传T[7]一个显式实参；Nested_Anonymous fixed_param_count=2，T[0]=promptText、T[1]=successCallback、T[2]=nil。GUI宿主行为仍未运行时验证。
 -- PC411：MainLeftBottom.doInit = doInit_UI。
 -- PC412：根模块return。
 
@@ -671,9 +671,9 @@ end
 -- PC353-PC354：FindBlacklistPlayer UP[0]=T[54]=PCallHelper_2。
 -- PC355-PC356：UseItemByIndex UP[0]=T[37]=randomTeleportItemNames。
 -- PC357-PC359：onDamageMsg UP[0]=T[41]=blacklistState；PC359写入MainLeftBottom.onDamageMsg。
--- PC360-PC362：InstallDamageHook UP[0]=T[0]模块表、UP[1]=T[4] PrintLog；PC360覆写T[57]，后续BlacklistPlayerDetection捕获该闭包。
+-- PC360-PC362：InstallDamageHook UP[0]=T[0]=MainLeftBottom.a UI/配置状态表、UP[1]=T[4] PrintLog；PC360覆写T[57]，后续BlacklistPlayerDetection捕获该live cell。
 -- PC363-PC367：DeathAutoBlacklist捕获[T41 blacklistState,T4 PrintLog,T55 FindBlacklistPlayer,T5 ShowLocalNoticeByType]。
--- PC368-PC381：BlacklistPlayerDetection捕获13项[T2模块表,T57 InstallDamageHook,T41 blacklistState,T58 DeathAutoBlacklist,T55 FindBlacklistPlayer,T53 GetMapData2DPtr,T38=2.0,T4 PrintLog,T56 UseItemByIndex,T39=0.01,T5 ShowLocalNoticeByType,T40=30.0,T37随机传送道具名表]。
+-- PC368-PC381：BlacklistPlayerDetection捕获13项[T2=MainLeftBottom.z状态表,T57 InstallDamageHook live cell,T41 blacklistState,T58 DeathAutoBlacklist,T55 FindBlacklistPlayer,T53 GetMapData2DPtr,T38=2.0,T4 PrintLog,T56 UseItemByIndex,T39=0.01,T5 ShowLocalNoticeByType,T40=30.0,T37随机传送道具名表]。
 -- PC382：全局导出BlacklistItems=BlacklistPlayerDetection。
 -- PC383-PC387：ClearBlacklistItems捕获[T54 PCallHelper_2,T4 PrintLog,T5 ShowLocalNoticeByType,T41 blacklistState]。
 -- PC388：全局导出ClearBlacklistItems。
