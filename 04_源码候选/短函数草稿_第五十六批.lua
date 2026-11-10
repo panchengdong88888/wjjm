@@ -94,9 +94,9 @@ local function onDamageMsg(arg1, arg2, ...)
 end
 
 -- 3) GetStorageItemData
--- root.children[1] / legacy root/2；77条指令；16常量；无子原型；vararg_flag=0。
--- root PC70创建，捕获root T[4]；捕获业务名未知，但其调用契约为接收一条提示文本的回调。
-local function make_GetStorageItemData(notify)
+-- root.children[1] / legacy root/2；77条指令；16常量；无子原型；fixed_param_count=0。
+-- root PC70创建、PC71捕获root T[4]；捕获时PC43已将T[4]写为PrintLog。
+local function make_GetStorageItemData(printLog)
     return function()
         local storageItems = {}
         local storageProxy = NPCStorageProxy
@@ -144,7 +144,7 @@ local function make_GetStorageItemData(notify)
         end
 
         -- PC71-PC75：捕获回调收到格式化后的仓库总可用格子提示。
-        notify("仓库总可用格子: " .. tostring(availableSlots))
+        printLog("仓库总可用格子: " .. tostring(availableSlots))
 
         -- PC76-PC77：返回累计的仓库物品数组。
         return storageItems
