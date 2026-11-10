@@ -53,7 +53,7 @@
     "root.children[42].children[3]": "Nested_FFFF00（320条）检查点188/201/207：PC1-PC320逐条对照corrected反汇编；修正五处Text_Create结果门控，PC139/173/201/229/257在节点返回false/nil时跳过setAnchorPoint。资源窗口创建/关闭、布局、两组资源行、MoneyProxy获取、刷新闭包立即调用与1秒Schedule主体均已映射。unknown哨兵、GUI布尔/尾参宿主语义、MoneyProxy快照写入name/读取moneyId差异仍未验证；保持普通Lua草稿，不升级完整静态恢复，未运行时验证。审计docs/audit/检查点207_Nested_FFFF00_PC1-PC320普通Lua草稿复审.md。",
     "root.children[42].children[22]": "Nested_Anonymous（8条父原型；child0 Nested_str 27条；Nested_match 50条；Nested_Helper_11 4条）检查点201/209：PC1创建child0，捕获顺序UP[0]=T[0]、UP[1]=UP[0](PrintLog)、UP[2]=T[2]、UP[3]=T[1]；PC6-PC7零参调用Nested_str，PC8返回。Nested_str构造btnType=2/showEdit/editParams(inputMode=2,maxLength=6)，str取父T[0]，将Nested_match挂入callback并调用SL.OpenCommonTipsPop。Nested_match严格要求status==1；editStr缺省空串，tostring后gsub删除空白，匹配^%d+$并tonumber；数字truthy时调用父T[1](number)；否则PrintLog记录格式错误，并ScheduleOnce(0.1)调用Nested_Helper_11，后者调用父T[2]('参数格式不对，请输入数字')。调用链：doInit_UI PC248创建本闭包捕获PrintLog；PC250创建Nested_Helper_4并将本闭包置于其UP0；Nested_Helper_10回调PC27零参调用Nested_Helper_4；Nested_Helper_4可读主体向openDialog传入两项显式值（prompt及Nested_Helper_5成功回调）。T[0]/T[1]用途可由读写位置判定，但VM帧槽偏移仍待验证；T[2]确实被作为延迟错误提示回调调用，但追踪到的包装器仅显式传两参，未找到第三实参生产者，保留占位。普通Lua草稿，不升级完整静态恢复，未运行时验证。审计docs/audit/检查点209_Nested_Anonymous调用帧复审.md。"
   },
-  "next_action": "继续追踪Nested_Anonymous的T[2]第三实参生产者及VM参数帧偏移：从doInit_UI PC250创建的Nested_Helper_4、PC259创建的Nested_Helper_7及其调用点出发，核对root/43/12、root/43/15子原型的捕获payload与函数帧；尤其验证T[0]/T[1]/T[2]是否分别对应prompt、成功回调、可选错误提示回调，或T[2]由宿主/VM隐式注入。不可用常见Lua调用习惯替代字节码证据。若仍无第三实参生产者，明确记录T[2]疑似未初始化/可选参数风险并保留占位。随后可转向GUI宿主尾参/布尔值及MoneyProxy快照键差异。",
+  "next_action": "继续第一阶段根模块恢复：以检查点210的AttachRecoveredPrototypes装配接口为基础，优先把root PC42-PC412中仍以注释记录的闭包创建、父级捕获和模块导出逐段转成普通Lua代码；先补不依赖疑难宿主语义的部分。所有未闭合捕获保留显式占位并标记TODO，不因单个疑点暂停整份源码覆盖。之后整合已恢复的子原型函数体，保持普通Lua草稿状态，不虚报静态完整或运行时验证。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2964,38 +2964,50 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 209,
-  "checkpoint": 205,
-  "drafts": 33,
-  "next": "检查点201已将Nested_Anonymous父包装器及Nested_str/Nested_match/Nested_Helper_11主体并入第六十三批；同时将Nested_FFFF00父工厂及Nested_Helper_2、Nested_string、Nested_FFFFFF、Nested_Helper_3、Nested_UnSchedule依赖并入统一候选。下一步追踪PC181-PC183 GUI:Attach_UITop七个实参的生产者/类型，并闭合Nested_Anonymous T[0]/T[1]/T[2]来源；保留unknown哨兵宿主语义待核验。",
-  "recent_checkpoint": {
-    "number": 205,
+  "last_checkpoint": 210,
+  "checkpoint": {
+    "number": 210,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/短函数草稿_第六十三批.lua",
+      "04_源码候选/root_MainLeftBottom_Module.lua",
+      "docs/audit/检查点210_根模块第一阶段装配接口.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
-      "docs/handoff/10_防上下文中断_checkpoint协议.md",
-      "docs/audit/检查点205_T6生产者与嵌套ipairs链.md"
+      "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
-    "draft_prototypes_touched": 1,
+    "draft_prototypes_touched": 0,
     "draft_prototype_total": 72,
     "complete_static_reconstructions": 103,
     "runtime_verified": 0,
-    "notes": "T6生产者闭合到PC90第三返回值；仅在标准ipairs假设下推导为0，不做运行时确认。"
+    "notes": "为根模块新增可执行普通Lua装配接口AttachRecoveredPrototypes，按PC42-PC411已确认的全局导出与模块字段写入关系接入已恢复闭包实例。该接口不代替原型主体或VM upvalue创建；未增加草稿函数计数，未升级静态恢复等级。"
+  },
+  "drafts": 33,
+  "next": "检查点201已将Nested_Anonymous父包装器及Nested_str/Nested_match/Nested_Helper_11主体并入第六十三批；同时将Nested_FFFF00父工厂及Nested_Helper_2、Nested_string、Nested_FFFFFF、Nested_Helper_3、Nested_UnSchedule依赖并入统一候选。下一步追踪PC181-PC183 GUI:Attach_UITop七个实参的生产者/类型，并闭合Nested_Anonymous T[0]/T[1]/T[2]来源；保留unknown哨兵宿主语义待核验。",
+  "recent_checkpoint": {
+    "number": 210,
+    "date": "2026-11-10",
+    "artifacts": [
+      "04_源码候选/root_MainLeftBottom_Module.lua",
+      "docs/audit/检查点210_根模块第一阶段装配接口.md",
+      "02_基础索引/03_函数状态清单.csv",
+      "docs/handoff/05_机器可读接续状态.json",
+      "docs/handoff/10_防上下文中断_checkpoint协议.md"
+    ],
+    "draft_prototypes_touched": 0,
+    "draft_prototype_total": 72,
+    "complete_static_reconstructions": 103,
+    "runtime_verified": 0,
+    "notes": "为根模块新增可执行普通Lua装配接口AttachRecoveredPrototypes，按PC42-PC411已确认的全局导出与模块字段写入关系接入已恢复闭包实例。该接口不代替原型主体或VM upvalue创建；未增加草稿函数计数，未升级静态恢复等级。"
   },
   "latest_checkpoint": {
-    "checkpoint": "205",
-    "summary": "继续闭合doInit_UI的T[6]来源：PC90 OP_359以T[5]为唯一显式参数调用R[4]（此前PC88装入ENV.ipairs），并将返回值依次写入T[4]、T[5]、T[6]；PC91-PC132未发现再次写入T[6]的指令；PC133 OP_233随后以T[6]为唯一显式参数调用R[5]（PC131装入ENV.ipairs），返回写入T[5]..T[7]。因此T[6]来源已收敛为PC90第三返回值。如果ENV.ipairs为标准Lua ipairs且PC90正常完成，第三返回值为初始控制值0；但ENV.ipairs可能被宿主替换，静态证据尚不足以将0升级为运行时确认。PC133的T[7]之后到PC183无显式覆盖（检查点204）。 另核对Nested_Anonymous包装器调用端：root/43/19 PC26取UP[4]，PC27 OP_358 A=1 B=1为空参数区间，零个显式实参调用root/43/12；包装器PC11再转发其T[1]/T[2]给UP[0]。若按普通Lua缺参规则，两槽为nil，但VM帧语义未验证，故仅记条件推论。 重要限制：若ENV.ipairs为标准Lua ipairs，PC90第三返回值通常为0，但PC133随即对该值再次调用ipairs(0)，与标准ipairs要求表参数的行为冲突。因此不能把T[6]=0作为整条路径的正常运行解释；更可能需要核验宿主对ENV.ipairs的包装/替换，或继续检查调用帧/控制流语义。",
-    "audit_file": "docs/audit/检查点205_T6生产者与嵌套ipairs链.md",
+    "checkpoint": "210",
+    "summary": "根模块新增AttachRecoveredPrototypes装配接口。按反汇编已确认的根级导出点接入GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems/仓库与物品流程、采集流程、界面控制字段、账号验证、黑名单回调及doInit入口。接口只接受已绑定闭包实例，不伪造upvalue；根模块完整源码仍未完成。",
+    "audit_file": "docs/audit/检查点210_根模块第一阶段装配接口.md",
     "unresolved": [
-      "ENV.ipairs是否为标准Lua ipairs及PC90第三返回值的宿主运行时实际值",
-      "Nested_Anonymous包装器T[1]/T[2]的调用帧值与内部T[0]/T[1]/T[2]映射",
-      "UNKNOWN_VALUE_SENTINEL宿主值",
-      "GUI.Attach_UITop / NPCStorageProxy.RequestStorageData宿主签名与参数语义",
-      "No runtime validation",
-      "root/43/12包装器在零实参调用下T[1]/T[2]的VM帧实际值；普通Lua语义下推论nil/nil但未运行时验证",
-      "PC90→PC133连续调用ENV.ipairs的宿主实现：标准ipairs语义下第三返回值0会使后续ipairs(0)不合常规，需查宿主包装或路径语义"
+      "根模块PC42-PC412中大量子闭包创建和捕获仍需转为实际普通Lua代码",
+      "子原型工厂与父级upvalue绑定尚未全部整合",
+      "GUI宿主语义和若干未知VM槽位仍未验证",
+      "未进行游戏客户端运行时验证"
     ]
   },
   "complete_static_reconstruction_count": 103,
@@ -3006,6 +3018,21 @@
     "complete_static_reconstruction": 103,
     "runtime_verified": 0
   },
-  "next_checkpoint": "确认ENV.ipairs运行时绑定；闭合Nested_Anonymous包装器调用帧的两个转发槽",
-  "runtime_verified": 0
+  "next_checkpoint": 211,
+  "runtime_verified": 0,
+  "integration_scaffolds": [
+    {
+      "checkpoint": 210,
+      "path": "04_源码候选/root_MainLeftBottom_Module.lua",
+      "name": "AttachRecoveredPrototypes",
+      "status": "executable_phase1_wiring_scaffold",
+      "runtime_verified": false,
+      "notes": [
+        "将已恢复的闭包实例接回根模块的全局导出和MainLeftBottom字段。",
+        "只接受已按父级捕获顺序绑定的闭包实例，不伪造upvalue。",
+        "未提供的原型键保持不变，不以空函数替代。",
+        "根模块PC1-PC412完整源码仍未完成；草稿计数不增加。"
+      ]
+    }
+  ]
 }
