@@ -3072,3 +3072,15 @@ Nested_match：
 - UseItemByIndex.UP0接入root T[37] randomTeleportItemNames，保留原捕获表，不推测其来源之外的业务用途。
 - 有捕获工厂累计27/36，剩余9；无捕获直接子原型22/22。完整静态恢复109、普通Lua草稿72、运行时验证0。
 - 下一步检查点253：处理剩余黑名单相关闭包，重点审查PC360对T[57]的覆盖；BlacklistPlayerDetection.UP1捕获的是InstallDamageHook闭包，T[58]则是DeathAutoBlacklist。不得将onDamageMsg误绑定为T[57]。
+
+
+## 检查点 #253（2026-11-10）：黑名单前置闭包与配置包装器装配
+
+- 新增五个静态实例化工厂：AnonymousHelper_49、AnonymousHelper_54、DeathAutoBlacklist、onDamageMsg、ClearBlacklistItems。
+- AnonymousHelper_49按[ReadNumericConfig, blacklistDistanceConfigFile(T[42])]捕获；AnonymousHelper_54按[PCallHelper, gatherMonsterCountConfigFile(T[43])]捕获，保留参数顺序和返回值转发。
+- DeathAutoBlacklist按[T[41] blacklistState,T[4] PrintLog,T[55] FindBlacklistPlayer,T[5] ShowLocalNoticeByType]注入。
+- onDamageMsg只捕获T[41] blacklistState，按PC359挂入MainLeftBottom.onDamageMsg。
+- ClearBlacklistItems按[T[54] PCallHelper_2,T[4] PrintLog,T[5] ShowLocalNoticeByType,T[41] blacklistState]注入，并按PC388导出全局ClearBlacklistItems。
+- 补齐PC294真实字段赋值：`MainLeftBottom.blacklist = blacklistState`；所有相关闭包接收的都是rootSource导出的同一表对象。
+- 有捕获工厂累计32/36，剩余4；无捕获直接子原型22/22。完整静态恢复109、普通Lua草稿72、运行时验证0。
+- 下一步检查点254：复核两个匿名包装器的规范原型名；BlacklistPlayerDetection必须按PC360/368 live-cell时间线捕获InstallDamageHook，而不是旧注释中的onDamageMsg；doInit_UI最后处理。
