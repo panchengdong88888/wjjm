@@ -49,13 +49,13 @@
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
     "root.children[12]": "LuaSendMsg（92条）检查点190、205：普通Lua草稿PC1-PC92已独立静态复审；固定六参/message字段、Blocklist仅抑制日志、SendHookList按第1参取hook、pcall(hook,arg1,arg6,message)且仅严格true拦截、否则networkCtl:SendMsg原六参转发均与corrected反汇编一致。草稿仍保留UP0/UP1临时名；作者原名与宿主API语义未证实；未运行时验证。源码04_源码候选/短函数草稿_第五十批.lua；审计docs/audit/检查点205_LuaSendMsg普通Lua草稿独立复审.md。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
-    "root": "MainLeftBottom_Module：412条物理指令、109项常量、58个直接子原型。PC1-PC412分段证据已建；root直接子闭包58/58源码层绑定；主恢复文件PC43-PC85已按VM顺序整合；根模块PC86-PC412仍需连续源码整合。",
+    "root": "MainLeftBottom_Module：412条物理指令、109项常量、58个直接子原型。PC1-PC412分段证据已建；58/58直接子闭包源码层绑定；主恢复文件已整合PC43-PC85、PC86-PC211、PC181-PC258及PC297-PC388关键闭包创建顺序；root主体仍需最终字段/寄存器一致性审计并合并为连续执行体。",
     "root.children[42].children[3]": "Nested_FFFF00（320条父指令、72常量、5个子原型、4项捕获）：检查点225已完成PC1-PC320及5个子原型静态恢复；捕获顺序moduleState/printLog/timerState/initState。Win_Create等GUI调用参数已与新框架43份文档核对；五组Text_Create结果均先做truthy门控。K[28]=['unknown',2]已确认是nil的VM dump序列化占位，resTimer清理写nil。MoneyProxy方法未文档化，保留原调用，不反汇编其内部。完整静态恢复，未运行时验证。",
     "root.children[42].children[22]": "Nested_Anonymous（8条父指令；Nested_str 27条、Nested_match 50条、Nested_Helper_11 4条）已完整静态恢复。原始VM M()每次新建T={}和X={}；fixed_param_count=2；两实参写入T[0]/T[1]；额外实参进入X；T[2]无写入保持nil。Nested_str捕获T[0]/PrintLog/T[2]/T[1]；无效数字路径按原字节码调用nil，保留attempt-to-call-nil行为。未运行时验证。",
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点260：继续整合root PC86-PC211，按字节码顺序整理采集配置、18000常量、14项奖励记录、采集状态与T[14..22]共享cell、FormatStateChange、PC184-PC193辅助闭包及PC194-PC211采集闭包创建；复用已有函数体，不重复反汇编。",
+  "next_action": "检查点261：核对root PC1-PC412全局导出、模块字段和局部寄存器生命周期在主恢复文件中的无遗漏情况；重点审查PC86-PC180的rootSource初始化字段与T[8]/T[11]/T[12]/T[13]/T[14..22]对应关系，以及PC390-PC412 doInit_UI最终返回路径。然后评估能否把root状态初始化与闭包装配适配层合并成单一连续模块执行体。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2806,15 +2806,16 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "259",
+    "checkpoint": "260",
     "targets": [
-      "root PC43-PC85辅助闭包创建/捕获/导出顺序",
-      "无捕获闭包绑定位置与PC级执行时序"
+      "root PC86-PC211闭包创建顺序",
+      "root PC297-PC388配置包装/黑名单闭包创建顺序",
+      "T[14..22]及T[57]共享cell唯一性"
     ],
-    "status": "主恢复源码已将PC43-PC85按VM创建顺序整合：PrintLog、ShowLocalNoticeByType、LuaSendMsg、ScheduleOnce/Schedule、地图位置包装函数、DiuItems、仓库查询/存储/取物及PickUpItems。LuaSendMsg写入MainLeftBottom.a.LuaSendMsg；PC54-PC85对应全局导出按序写入。后续IsInWhitelistMap、MoveItemToQuickUse、GetWritablePath、PCallHelper_2分别移动到PC212/259/297/352。22项bindDirect来源路径和符号静态核验全部存在。 模块尾部重复全局导出表已移除，Builtsetting/ ClearBlacklistItems分别在PC258/388写入；全局入口不再在PC412前集中二次赋值。",
-    "audit_file": "docs/audit/检查点259_PC43-PC85根模块闭包顺序整合.md",
+    "status": "主恢复文件继续按PC顺序整合：PC86-PC180配置/奖励/采集状态值在root候选中按序初始化；PC181 FormatStateChange、PC184-PC193辅助闭包、PC194 FindMonsterCandidates、PC200 ResetGather、PC210 FindMonsterInCurrViewField、PC212 IsInWhitelistMap、PC214-PC258采集控制闭包已顺序排列。PC297-PC315的GetWritablePath/配置包装/四个匿名转发闭包按创建顺序排列；PC350-PC388的MapData/PCallHelper2/FindBlacklistPlayer/UseItem/onDamageMsg/InstallDamageHook/DeathAutoBlacklist/BlacklistPlayerDetection/ClearBlacklistItems按PC顺序排列。删除重复匿名工厂和T57重复cell创建。",
+    "audit_file": "docs/audit/检查点260_PC86-PC211及PC297-PC388根模块顺序整合.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
-    "main_recovery_blob_sha": "0f342a5598be205a6e5d4abc170b911747751d66",
+    "main_recovery_blob_sha": "cd8804843576e79f8849b52145def225ee90229d",
     "static_complete_functions": 109,
     "ordinary_lua_drafts": 72,
     "runtime_verified": 0,
@@ -3541,16 +3542,16 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 259,
-  "checkpoint": 259,
+  "last_checkpoint": 260,
+  "checkpoint": 260,
   "drafts": 33,
-  "next": "检查点260：继续整合root PC86-PC211，按字节码顺序整理采集配置、18000常量、14项奖励记录、采集状态与T[14..22]共享cell、FormatStateChange、PC184-PC193辅助闭包及PC194-PC211采集闭包创建；复用已有函数体，不重复反汇编。",
+  "next": "检查点261：核对root PC1-PC412全局导出、模块字段和局部寄存器生命周期在主恢复文件中的无遗漏情况；重点审查PC86-PC180的rootSource初始化字段与T[8]/T[11]/T[12]/T[13]/T[14..22]对应关系，以及PC390-PC412 doInit_UI最终返回路径。然后评估能否把root状态初始化与闭包装配适配层合并成单一连续模块执行体。",
   "recent_checkpoint": {
-    "number": 259,
+    "number": 260,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点259_PC43-PC85根模块闭包顺序整合.md",
+      "docs/audit/检查点260_PC86-PC211及PC297-PC388根模块顺序整合.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
@@ -3562,9 +3563,9 @@
     "runtime_verified": 0,
     "root_direct_closures_source_bound": 58,
     "root_direct_closures_expected": 58,
-    "notes": "PC43-PC85闭包创建顺序已整合，后续无捕获闭包绑定已移至各自PC区间。 Builtsetting和ClearBlacklistItems也按PC258/388即时导出，已移除模块尾部重复导出表。"
+    "notes": "PC86-PC211及PC297-PC388的闭包/字段顺序已按PC证据整合；共享cell唯一性静态核验。"
   },
-  "latest_checkpoint": 259,
+  "latest_checkpoint": 260,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3731,9 +3732,9 @@
     "runtime_verified": false
   },
   "latest": {
-    "checkpoint": "259",
-    "summary": "PC43-PC85首批辅助闭包已按VM创建顺序整合；移除重复工厂装配；22项bindDirect来源符号全部核验存在。IsInWhitelistMap/MoveItemToQuickUse/GetWritablePath/PCallHelper_2分别位于PC212/259/297/352。根模块整体仍需继续把PC86-PC412整合成连续可读主体；静态恢复109/110、草稿72、根闭包58/58、运行时验证0。；全局导出均已移至对应PC创建点，删除模块尾部重复导出。",
-    "audit_file": "docs/audit/检查点259_PC43-PC85根模块闭包顺序整合.md",
+    "checkpoint": "260",
+    "summary": "PC86-PC211闭包与状态槽、PC297-PC388配置及黑名单闭包顺序已进一步按VM PC整理；PC357 onDamageMsg先于PC360 InstallDamageHook，PC368 BlacklistPlayerDetection、PC383 ClearBlacklistItems顺序正确。匿名工厂各仅保留一次，T57 live cell仅创建一次。完整静态恢复109/110、草稿72、根闭包58/58、运行时验证0。",
+    "audit_file": "docs/audit/检查点260_PC86-PC211及PC297-PC388根模块顺序整合.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua"
   },
   "parameter_metadata_semantics": {
@@ -3789,6 +3790,6 @@
       "BlacklistPlayerDetection",
       "doInit_UI"
     ],
-    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点257核对集合与共享cell；258校正PC412返回MainLeftBottom；259按PC顺序整合PC43-PC85。根模块本体仍需PC86-PC412连续源码整合；运行时验证0。"
+    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。"
   }
 }
