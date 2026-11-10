@@ -4440,3 +4440,424 @@ end
   if make_Nested_onDamageMsg ~= nil then __exports["make_Nested_onDamageMsg"] = make_Nested_onDamageMsg end
   MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第三十九批.lua"] = __exports
 end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/root50_Nested_Anonymous_2.lua
+-- 短原型集中整合；工厂参数用于显式表达捕获槽位。
+-- ============================================================================
+do
+-- root.children[50].children[1] / legacy root/51/2
+-- Reconstruction label: Nested_Anonymous_2
+-- 27 physical VM instructions; 4 captured values; no child prototypes.
+-- Status: complete static reconstruction after independent review (checkpoint 173);
+-- all 27 child instructions, four capture producers, and the parent zero-argument
+-- invocation/result-consumption path are reconciled. Runtime behavior is not validated.
+--
+-- Capture mapping (StorageItems parent, PC54-PC58):
+--   UP[0] = maxPage
+--   UP[1] = pageCapacity
+--   UP[2] = openSize
+--   UP[3] = storedPageData (per-page occupied item counts)
+--
+-- The local function name below is descriptive only; the original identifier
+-- was not recovered.
+
+local function make_FindAvailableStoragePage(
+    maxPage,
+    pageCapacity,
+    openSize,
+    storedPageData
+)
+    return function()
+        -- Search pages in ascending order and return the first page that has
+        -- room for another stored item.
+        for page = 1, maxPage do
+            local pageLimit = pageCapacity
+
+            -- The final page may be smaller than the ordinary page capacity.
+            if page == maxPage then
+                pageLimit = math.min(
+                    pageCapacity,
+                    openSize - (maxPage - 1) * pageCapacity
+                )
+            end
+
+            local currentCount = storedPageData[page]
+            if currentCount < pageLimit then
+                return page
+            end
+        end
+
+        return nil
+    end
+end
+
+-- Evidence / limits:
+-- * Parent root/51 PC54 creates this closure with four captures; PC55-PC58
+--   copy parent R1/R2/R3/R4 into capture slots 0..3.
+-- * Existing StorageItems review maps those captures to
+--   maxPage/pageCapacity/openSize/storedPageData and confirms the final-page
+--   capacity expression above.
+-- * Parent PC37-PC53 builds storedPageData: for each page it calls
+--   NPCStorageProxy:GetStorageDataByPage(page), stores #pageData when present,
+--   and stores 0 when the page data is absent. Thus the child compares a number,
+--   not a possibly-nil raw page-data array.
+-- * Parent PC177-PC179 calls this closure with zero explicit arguments and
+--   branches on its first return: a page number continues the store path; nil
+--   enters the '仓库已满,无法存仓' failure path.
+-- * The child loop checks pages in ascending order, applies the reduced
+--   final-page capacity only when page == maxPage, returns the first page with
+--   currentCount < pageLimit, and returns nil after exhausting all pages.
+-- * This is readable reconstruction, not recovered author formatting or
+--   original local names. No host runtime test has been performed.
+
+  local __exports = {}
+  if make_FindAvailableStoragePage ~= nil then __exports["make_FindAvailableStoragePage"] = make_FindAvailableStoragePage end
+  MainLeftBottomRecovered.sources["04_源码候选/root50_Nested_Anonymous_2.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/短函数草稿_第七十四批.lua
+-- 短原型集中整合；工厂参数用于显式表达捕获槽位。
+-- ============================================================================
+do
+-- root.children[42].children[16] / legacy root/43/17
+-- Nested_ITEM_INDEX_BY_NAME：26条指令；7常量；无子原型；2项捕获。
+-- UP[0]=快捷栏配置表；UP[1]=移动结果提示回调。
+
+local function make_Nested_ITEM_INDEX_BY_NAME(config, notifyMoveResult)
+    return function Nested_ITEM_INDEX_BY_NAME()
+        for _, itemName in ipairs(config.names) do
+            local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)
+
+            if itemIndex then
+                local success, callbackValue =
+                    MoveItemToQuickUse(itemIndex, config.slot)
+
+                notifyMoveResult(callbackValue)
+
+                if success then
+                    break
+                end
+            end
+        end
+    end
+end
+
+-- 调用顺序已闭合：先按config.names顺序查ITEM_INDEX_BY_NAME；
+-- 找到索引后调用MoveItemToQuickUse(itemIndex, config.slot)，将第二返回值
+-- 传给捕获回调；第一返回值truthy时停止遍历。无显式返回值。
+-- MoveItemToQuickUse调用方参数顺序为(itemIndex, slot)，未运行时验证。
+
+  local __exports = {}
+  if make_Nested_ITEM_INDEX_BY_NAME ~= nil then __exports["make_Nested_ITEM_INDEX_BY_NAME"] = make_Nested_ITEM_INDEX_BY_NAME end
+  MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第七十四批.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/root56_root57_short_functions.lua
+-- 短原型集中整合；工厂参数用于显式表达捕获槽位。
+-- ============================================================================
+do
+-- MainLeftBottom(2).lua 静态恢复候选
+-- 检查点 #169；以下两个原型均已完整静态复核，尚未运行时验证。
+
+----------------------------------------------------------------
+-- root.children[56] / legacy root/57
+-- ClearTargetID_2；22 条物理指令
+----------------------------------------------------------------
+local function ClearTargetID_2()
+    if not global.Facade then
+        return
+    end
+
+    local playerInputProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.PlayerInputProxy
+    )
+    if not playerInputProxy then
+        return
+    end
+
+    playerInputProxy:SetTargetID(
+        0,
+        global.MMO.SELETE_TARGET_TYPE_FIND
+    )
+end
+
+----------------------------------------------------------------
+-- root.children[57] / legacy root/58
+-- PlayerPos；10 条物理指令
+----------------------------------------------------------------
+local function PlayerPos()
+    local x = SL:GetMetaValue("X")
+    local y = SL:GetMetaValue("Y")
+    return x, y
+end
+
+-- 静态边界：
+-- ClearTargetID_2：Facade 缺失或 retrieveProxy 返回假值时直接 return；
+-- SetTargetID 保留 playerInputProxy 为 receiver，显式参数为 0 和
+-- global.MMO.SELETE_TARGET_TYPE_FIND。
+-- PlayerPos：先后读取 X、Y，并返回两个独立返回值；不是坐标表。
+-- 两个函数均未进行宿主运行时验证。
+
+  local __exports = {}
+  if ClearTargetID_2 ~= nil then __exports["ClearTargetID_2"] = ClearTargetID_2 end
+  MainLeftBottomRecovered.sources["04_源码候选/root56_root57_short_functions.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/root55_children_drafts.lua
+-- 短原型集中整合；工厂参数用于显式表达捕获槽位。
+-- ============================================================================
+do
+----------------------------------------------------------------
+-- root.children[55].children[0]
+-- legacy root/56/1；Nested_Panel_mini_chat；24 条物理指令
+----------------------------------------------------------------
+local function make_Nested_Panel_mini_chat(validationResult, showWaitingNotice)
+    -- UP[0] 精确捕获父 AccountIDValidation 的局部 validationResult（Nested_ID 返回值）。
+    -- UP[1] 捕获父函数 UP[0] 的日志/提示回调。
+    -- 注意：字节码确实将 validationResult 传给 SL:UnSchedule；其宿主语义未验证。
+    return function Nested_Panel_mini_chat()
+        local mainProperty = MainProperty
+
+        if mainProperty
+            and mainProperty._ui
+            and mainProperty._ui.Panel_mini_chat
+        then
+            SL:UnSchedule(validationResult)
+            MainLeftBottom.doInit()
+        end
+
+        -- PC21-23：无论初始化条件是否满足，均调用等待提示回调。
+        showWaitingNotice("等待主界面属性栏(MainProperty)初始化完成...")
+    end
+end
+
+----------------------------------------------------------------
+-- root.children[55].children[1]
+-- legacy root/56/2；Nested_ID；27 条物理指令；vararg=1
+----------------------------------------------------------------
+local function make_Nested_ID(allowedAccountIDs, showAllowedNotice, showDeniedNotice)
+    -- UP[0]：允许账号 ID 数组
+    -- UP[1]：允许时的提示回调
+    -- UP[2]：不允许时的提示回调
+    return function Nested_ID(accountID, ...)
+        local normalizedAccountID = tostring(accountID)
+
+        for _, allowedID in ipairs(allowedAccountIDs) do
+            if normalizedAccountID == tostring(allowedID) then
+                showAllowedNotice("[提示] 账号ID在允许列表中，功能已开启")
+                return true
+            end
+        end
+
+        showDeniedNotice("账号不存在，功能已限制，账号ID：" .. tostring(accountID))
+        return false
+    end
+end
+
+-- 静态复原说明：
+-- * Nested_ID 的比较是 tostring(accountID) 与 tostring(allowedID) 的相等比较，
+--   不是原值直接比较；只读取第一个显式参数，额外变参未被读取。
+-- * 两条返回路径分别返回 true/false，且各自只调用对应的一参提示回调。
+-- * Nested_Panel_mini_chat 的三层存在性检查、UnSchedule receiver、doInit
+--   零参调用及无条件等待提示均由 PC1-24 覆盖。
+-- * Panel 子闭包的父级捕获生产者已闭合：UP[0]=validationResult，UP[1]=父 UP[0]。
+-- * validationResult 被传入 SL:UnSchedule 是字节码事实；参数为何如此使用仍待宿主运行时验证。
+
+----------------------------------------------------------------
+-- root.children[55]
+-- legacy root/56；AccountIDValidation；64 条物理指令；完整静态恢复（未运行时验证）
+----------------------------------------------------------------
+local function make_AccountIDValidation(logCallback, failureCallback)
+    -- UP[0]：日志/普通提示回调（游戏ID、账号ID、成功提示、等待提示）。
+    -- UP[1]：验证失败提示回调。
+    return function AccountIDValidation()
+        local gameID = SL:GetMetaValue("GAME_ID")
+        logCallback("游戏id：" .. gameID)
+
+        if gameID ~= 204208 then
+            logCallback("游戏不一致，id：" .. gameID)
+            return
+        end
+
+        local accountID = SL:GetMetaValue("UID")
+        logCallback("账号ID：" .. accountID)
+
+        local allowedAccountIDs = {
+            "6324648",
+            "39770358",
+            "3548598",
+            "1957840929",
+            "1488903257",
+            "1585201915",
+            "1627987432",
+            "1580027021",
+            "1304755149",
+        }
+
+        local validateAccountID = make_Nested_ID(
+            allowedAccountIDs,
+            logCallback,
+            failureCallback
+        )
+        local validationResult = validateAccountID(accountID)
+
+        if validationResult then
+            logCallback("[验证成功] 账号ID验证通过")
+        else
+            failureCallback("[验证失败] 账号ID未在允许列表中")
+        end
+
+        -- PC58 创建子闭包：第一个捕获为当前 validationResult，第二个捕获为父 UP[0]。
+        local scheduledCallback = make_Nested_Panel_mini_chat(
+            validationResult,
+            logCallback
+        )
+        SL:Schedule(scheduledCallback, 0.5)
+    end
+end
+
+-- MainLeftBottom(2).lua 普通 Lua 恢复候选
+-- 检查点 #169：root.children[55] 父函数及两个子原型
+-- 说明：这是基于 corrected phase3 反汇编的可读重建，不是原始源码逐字节恢复。
+-- 未进行宿主运行时验证。
+
+
+-- 检查点 #169：父 PC58 的两项捕获已逐指令闭合；validationResult 的宿主含义仍未运行时验证。
+
+  local __exports = {}
+  if make_Nested_Panel_mini_chat ~= nil then __exports["make_Nested_Panel_mini_chat"] = make_Nested_Panel_mini_chat end
+  if make_Nested_ID ~= nil then __exports["make_Nested_ID"] = make_Nested_ID end
+  if make_AccountIDValidation ~= nil then __exports["make_AccountIDValidation"] = make_AccountIDValidation end
+  MainLeftBottomRecovered.sources["04_源码候选/root55_children_drafts.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua
+-- 短原型集中整合；工厂参数用于显式表达捕获槽位。
+-- ============================================================================
+do
+-- root.children[19] / legacy root/20 / InitGatherMonsters
+-- 36 physical instructions, one zero-argument MainLoop child closure.
+-- Complete static reconstruction; not target-runtime validated.
+
+local function make_InitGatherMonsters(
+    runtimeState,              -- UP[0] <- root T[3], contains gatherTimer
+    isGathering,               -- UP[1] <- root T[18], assigned true
+    FormatStateChange,         -- UP[2] <- root T[23]
+    stateConstants,            -- UP[3] <- root T[13]: IDLE/GATHERING/ATTACKING
+    ResetGatherMonsterData,    -- UP[4] <- root T[35]
+    config,                    -- UP[5] <- root T[8]
+    showNotice                 -- UP[6] <- root T[4]
+)
+    return function InitGatherMonsters()
+        -- PC1-11: cancel the previous timer and clear the stored handle.
+        if runtimeState.gatherTimer then
+            SL:UnSchedule(runtimeState.gatherTimer)
+            runtimeState.gatherTimer = nil
+        end
+
+        -- PC12-13: update the captured running flag.
+        isGathering = true
+
+        -- PC14-19: transition to IDLE, then reset gather-monster data.
+        FormatStateChange(stateConstants.IDLE)
+        ResetGatherMonsterData()
+
+        -- PC20-27: schedule MainLoop and save the returned timer.
+        runtimeState.gatherTimer = SL:Schedule(
+            MainLoop,
+            config.CHECK_INTERVAL
+        )
+
+        -- PC28-35: report startup and the configured threshold.
+        showNotice(string.format(
+            "引怪功能已启动 (阈值: %d)",
+            config.GATHER_THRESHOLD
+        ))
+    end
+end
+
+-- Exact parent capture sources at root PC238-245:
+-- UP[0..6] <- T[3], T[18], T[23], T[13], T[35], T[8], T[4].
+-- T[23] is the FormatStateChange closure created at root PC181.
+-- T[13] is the state constants table created at root PC168-171.
+-- T[35] is the ResetGatherMonsterData closure created at root PC200.
+
+  local __exports = {}
+  if make_InitGatherMonsters ~= nil then __exports["make_InitGatherMonsters"] = make_InitGatherMonsters end
+  MainLeftBottomRecovered.sources["04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/短函数草稿_第三十八批.lua
+-- 短原型集中整合；工厂参数用于显式表达捕获槽位。
+-- ============================================================================
+do
+-- root.children[0] / legacy root/1
+-- FileExistCheck_pcall_wrapper：32条父指令；1个子原型；vararg_flag=1。
+-- UP[0]是root.children[2] GetWritablePath闭包；本工厂参数用于显式表达该捕获。
+-- 子闭包捕获FileUtils实例与resolvedPath，执行removeFile，不保留返回值。
+
+local function make_FileExistCheck_pcall_wrapper(resolveWritablePath)
+    return function FileExistCheck_pcall_wrapper(path, ...)
+        local fileUtils = cc.FileUtils:getInstance()
+        local resolvedPath = resolveWritablePath(path)
+
+        if fileUtils:isFileExist(resolvedPath) then
+            return true, resolvedPath
+        end
+
+        local function Nested_removeFile()
+            fileUtils:removeFile(resolvedPath)
+        end
+        local removeSucceeded = pcall(Nested_removeFile)
+
+        if not removeSucceeded then
+            return false, resolvedPath
+        end
+
+        return not fileUtils:isFileExist(resolvedPath), resolvedPath
+    end
+end
+
+-- PC1-PC32按检查点62静态闭合：先解析路径；存在即true/path；
+-- 不存在则pcall删除；pcall失败返回false/path；成功后再次检查并返回
+-- not exists/path。额外vararg不读取。未运行时验证。
+
+  local __exports = {}
+  if make_FileExistCheck_pcall_wrapper ~= nil then __exports["make_FileExistCheck_pcall_wrapper"] = make_FileExistCheck_pcall_wrapper end
+  MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第三十八批.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/root49_AnonymousHelper_49.lua
+-- 短原型集中整合；工厂参数用于显式表达捕获槽位。
+-- ============================================================================
+do
+-- root.children[49] / legacy root/50 / AnonymousHelper_49
+-- 5条指令；捕获ReadNumericConfig闭包与固定文件名；无显式参数。
+
+local function make_AnonymousHelper_49(readNumericConfig, fileName)
+    return function AnonymousHelper_49()
+        return readNumericConfig(fileName)
+    end
+end
+
+-- 返回ReadNumericConfig的全部返回值，不做转换或吞掉nil。
+-- 根模块在root PC304创建，PC305/PC306依序捕获读取函数和文件名。
+
+  local __exports = {}
+  if make_AnonymousHelper_49 ~= nil then __exports["make_AnonymousHelper_49"] = make_AnonymousHelper_49 end
+  MainLeftBottomRecovered.sources["04_源码候选/root49_AnonymousHelper_49.lua"] = __exports
+end
