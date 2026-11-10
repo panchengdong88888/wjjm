@@ -15,16 +15,16 @@
       "end_offset": 71216,
       "constants": [
         "10000",
-        10.0,
+        10,
         "isHidden",
         "TakeItems",
-        21.0,
-        3600.0,
+        21,
+        3600,
         "StopGatherMonsters",
         "onDamageMsg",
         "LuaSendMsg",
         0.01,
-        30.0,
+        30,
         "hidebut",
         "floor",
         "Builtsetting",
@@ -38,26 +38,26 @@
         "destroy",
         "isDiuing",
         "在线时长90分钟",
-        18.0,
+        18,
         "BlacklistItems",
         "screenH",
         "在线时长5分钟",
-        20.0,
+        20,
         "MoveTo",
-        19.0,
-        0.0,
+        19,
+        0,
         "GetAvailableStoragePage",
         "screenW",
         "alertAt",
         "StorageItems",
         "空闲状态",
-        -1.0,
+        -1,
         "hide",
         "SendHookList",
         "累计登录 4 天",
         "RecvHookList",
         "GATHER_THRESHOLD",
-        9.0,
+        9,
         "ATTACKING",
         "累计登录 7 天",
         "noStoneWarned",
@@ -73,7 +73,7 @@
         "累计登录 1 天",
         "blacklist_distance.txt",
         "math",
-        56011.0,
+        56011,
         "在线时长60分钟",
         "main",
         "在线时长120分钟",
@@ -95,7 +95,7 @@
         "PlayerPos",
         "a",
         "DiuItems",
-        56061.0,
+        56061,
         "isPaused",
         "GetStorageItemData",
         "MainLeftBottom",
@@ -110,15 +110,15 @@
         "_G",
         "ClearBlacklistItems",
         "lastAttacker",
-        2.0,
+        2,
         "GetMetaValue",
         "IDLE",
         0.2,
         "",
         "在线时长20分钟",
-        1.0,
+        1,
         "随机传送石",
-        60000.0,
+        60000,
         "lastHp",
         "CHECK_INTERVAL",
         true,
@@ -132,7 +132,8 @@
       "legacy_one_based_label": "root",
       "reconstruction_proto_id": 0,
       "reconstruction_name": "MainLeftBottom_Module",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/0",
@@ -169,7 +170,8 @@
       "legacy_one_based_label": "root/1",
       "reconstruction_proto_id": 1,
       "reconstruction_name": "FileExistCheck_pcall_wrapper",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/0/0",
@@ -202,7 +204,8 @@
       "legacy_one_based_label": "root/1/1",
       "reconstruction_proto_id": 2,
       "reconstruction_name": "Nested_removeFile",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/1",
@@ -220,13 +223,13 @@
         "GetOpenSize",
         "table",
         "insert",
-        0.0,
+        0,
         "global",
         "ipairs",
         "NPC_STORAGE_MAX_PAGE",
         "NPCStorageProxy",
         "MMO",
-        1.0,
+        1,
         "STORAGE_PER_PAGE_MAX",
         "GetMaxPage",
         "GetStorageDataByPage"
@@ -250,7 +253,8 @@
       "legacy_one_based_label": "root/2",
       "reconstruction_proto_id": 3,
       "reconstruction_name": "GetStorageItemData",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/2",
@@ -286,7 +290,8 @@
       "legacy_one_based_label": "root/3",
       "reconstruction_proto_id": 4,
       "reconstruction_name": "GetWritablePath",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/3",
@@ -315,7 +320,7 @@
         "math",
         "MMO",
         "tonumber",
-        0.0,
+        0,
         "type",
         "MAP_ID"
       ],
@@ -338,7 +343,8 @@
       "legacy_one_based_label": "root/4",
       "reconstruction_proto_id": 5,
       "reconstruction_name": "MoveTo",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 3
     },
     {
       "path": "root/4",
@@ -373,7 +379,8 @@
       "legacy_one_based_label": "root/5",
       "reconstruction_proto_id": 6,
       "reconstruction_name": "GetDroppedItems",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/5",
@@ -389,8 +396,8 @@
         "string",
         "isTaking",
         "MakeIndex",
-        999999999.0,
-        0.0,
+        999999999,
+        0,
         false,
         "LuaSendMsg",
         "global",
@@ -402,7 +409,7 @@
         "MsgType",
         "ipairs",
         "取出物品完成, 共取出 ",
-        1.0,
+        1,
         "trim",
         " 件",
         true,
@@ -428,7 +435,8 @@
       "legacy_one_based_label": "root/6",
       "reconstruction_proto_id": 7,
       "reconstruction_name": "TakeItems",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/6",
@@ -469,7 +477,8 @@
       "legacy_one_based_label": "root/7",
       "reconstruction_proto_id": 8,
       "reconstruction_name": "InstallDamageHook",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/6/0",
@@ -505,7 +514,8 @@
       "legacy_one_based_label": "root/7/1",
       "reconstruction_proto_id": 9,
       "reconstruction_name": "Nested_onDamageMsg",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/7",
@@ -517,7 +527,7 @@
       "start_offset": 9715,
       "end_offset": 10070,
       "constants": [
-        -1.0,
+        -1,
         "type",
         "string",
         "",
@@ -547,7 +557,8 @@
       "legacy_one_based_label": "root/8",
       "reconstruction_proto_id": 10,
       "reconstruction_name": "GetOwnerIDText",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/8",
@@ -582,7 +593,8 @@
       "legacy_one_based_label": "root/9",
       "reconstruction_proto_id": 11,
       "reconstruction_name": "FormatStateChange",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/9",
@@ -627,7 +639,8 @@
       "legacy_one_based_label": "root/10",
       "reconstruction_proto_id": 12,
       "reconstruction_name": "ReadNumericConfig",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/10",
@@ -664,7 +677,8 @@
       "legacy_one_based_label": "root/11",
       "reconstruction_proto_id": 13,
       "reconstruction_name": "SetButtonVisibilityState",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/11",
@@ -681,7 +695,7 @@
         "y",
         "max",
         "math",
-        99999.0
+        99999
       ],
       "closure_creation_sites": [
         {
@@ -702,7 +716,8 @@
       "legacy_one_based_label": "root/12",
       "reconstruction_proto_id": 14,
       "reconstruction_name": "DistanceCalculation",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/12",
@@ -714,7 +729,7 @@
       "start_offset": 11269,
       "end_offset": 12464,
       "constants": [
-        2.0,
+        2,
         ")",
         "string",
         ", ",
@@ -726,26 +741,26 @@
         "ipairs",
         "table",
         "concat",
-        0.0,
+        0,
         true,
         "SendHookList",
         "type",
         "param1",
-        5.0,
+        5,
         "tostring",
         "global",
         "find",
-        3.0,
+        3,
         "SendMsg",
         "LuaSendMsg(",
-        6.0,
-        1.0,
+        6,
+        1,
         "param3",
         "insert",
         "msgId",
         "function",
         "pcall",
-        4.0,
+        4,
         "'",
         "param2"
       ],
@@ -768,7 +783,8 @@
       "legacy_one_based_label": "root/13",
       "reconstruction_proto_id": 15,
       "reconstruction_name": "LuaSendMsg",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/13",
@@ -782,7 +798,7 @@
       "constants": [
         "SL",
         "MAP_ID",
-        0.0,
+        0,
         "GetMetaValue"
       ],
       "closure_creation_sites": [
@@ -804,7 +820,8 @@
       "legacy_one_based_label": "root/14",
       "reconstruction_proto_id": 16,
       "reconstruction_name": "GetMapId",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/14",
@@ -840,7 +857,8 @@
       "legacy_one_based_label": "root/15",
       "reconstruction_proto_id": 17,
       "reconstruction_name": "FindMonsterInCurrViewField",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/15",
@@ -863,9 +881,9 @@
           2
         ],
         0.01,
-        1.0,
+        1,
         "ipairs",
-        0.0,
+        0,
         "黑名单为空",
         "开始清空黑名单，共 %d 人",
         "清空黑名单 ",
@@ -892,7 +910,8 @@
       "legacy_one_based_label": "root/16",
       "reconstruction_proto_id": 18,
       "reconstruction_name": "ClearBlacklistItems",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/15/0",
@@ -931,7 +950,8 @@
       "legacy_one_based_label": "root/16/1",
       "reconstruction_proto_id": 19,
       "reconstruction_name": "Nested_SL",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/16",
@@ -955,7 +975,7 @@
         "SL",
         "select",
         "【超本】",
-        0.0
+        0
       ],
       "closure_creation_sites": [
         {
@@ -976,7 +996,8 @@
       "legacy_one_based_label": "root/17",
       "reconstruction_proto_id": 20,
       "reconstruction_name": "PrintLog",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/17",
@@ -1010,7 +1031,8 @@
       "legacy_one_based_label": "root/18",
       "reconstruction_proto_id": 21,
       "reconstruction_name": "PCallHelper",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/17/0",
@@ -1047,7 +1069,8 @@
       "legacy_one_based_label": "root/18/1",
       "reconstruction_proto_id": 22,
       "reconstruction_name": "Nested_tostring",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/18",
@@ -1064,7 +1087,7 @@
         "GetMetaValue",
         "x",
         "Y",
-        0.0,
+        0,
         "SL"
       ],
       "closure_creation_sites": [
@@ -1086,7 +1109,8 @@
       "legacy_one_based_label": "root/19",
       "reconstruction_proto_id": 23,
       "reconstruction_name": "GetPlayerPosition",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/19",
@@ -1132,7 +1156,8 @@
       "legacy_one_based_label": "root/20",
       "reconstruction_proto_id": 24,
       "reconstruction_name": "InitGatherMonsters",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/19/0",
@@ -1165,7 +1190,8 @@
       "legacy_one_based_label": "root/20/1",
       "reconstruction_proto_id": 25,
       "reconstruction_name": "Nested_MainLoop",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/20",
@@ -1177,20 +1203,20 @@
       "start_offset": 15618,
       "end_offset": 15907,
       "constants": [
-        5.0,
+        5,
         "screenH",
         "Y",
         "SL",
-        0.0,
+        0,
         "Type",
         "Msg",
         "ShowLocalNoticeByType",
-        249.0,
+        249,
         "BColor",
         "FColor",
         "X",
-        50.0,
-        10.0
+        50,
+        10
       ],
       "closure_creation_sites": [
         {
@@ -1211,7 +1237,8 @@
       "legacy_one_based_label": "root/21",
       "reconstruction_proto_id": 26,
       "reconstruction_name": "ShowLocalNoticeByType",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/21",
@@ -1238,11 +1265,11 @@
         "mCurrMapX",
         "mapX",
         "MapX",
-        0.0,
+        0,
         "",
         "mName",
         "string",
-        1.0,
+        1,
         "mCurrMapY",
         "item",
         "mONameStr",
@@ -1277,7 +1304,8 @@
       "legacy_one_based_label": "root/22",
       "reconstruction_proto_id": 27,
       "reconstruction_name": "PickUpItems",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/21/0",
@@ -1311,7 +1339,8 @@
       "legacy_one_based_label": "root/22/1",
       "reconstruction_proto_id": 28,
       "reconstruction_name": "Nested_dist",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/21/1",
@@ -1344,7 +1373,8 @@
       "legacy_one_based_label": "root/22/2",
       "reconstruction_proto_id": 29,
       "reconstruction_name": "Nested_dist_2",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/22",
@@ -1363,14 +1393,14 @@
           "unknown",
           2
         ],
-        10000.0,
+        10000,
         "getMapDataCols",
-        0.0,
+        0,
         "global",
         "floor",
         "math",
-        1.0,
-        2.0,
+        1,
+        2,
         "getMapDataRows",
         "max",
         "sceneManager"
@@ -1394,7 +1424,8 @@
       "legacy_one_based_label": "root/23",
       "reconstruction_proto_id": 30,
       "reconstruction_name": "GetMapData2DPtr",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 5
     },
     {
       "path": "root/23",
@@ -1406,20 +1437,20 @@
       "start_offset": 19639,
       "end_offset": 20373,
       "constants": [
-        58.0,
+        58,
         "CHANGE_SETTING",
-        2005.0,
-        57.0,
+        2005,
+        57,
         "关闭屏蔽怪物",
         "关闭游戏音乐",
-        0.0,
+        0,
         "开启人物简装",
-        1002.0,
+        1002,
         "开启怪物简装",
         "关闭高帧率",
-        27.0,
-        1.0,
-        52.0,
+        27,
+        1,
+        52,
         "关闭背景音乐"
       ],
       "closure_creation_sites": [
@@ -1441,7 +1472,8 @@
       "legacy_one_based_label": "root/24",
       "reconstruction_proto_id": 31,
       "reconstruction_name": "Builtsetting",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/24",
@@ -1460,7 +1492,7 @@
         "ITEM_INDEX_BY_NAME",
         "SL",
         "UseItemByIndex",
-        0.0
+        0
       ],
       "closure_creation_sites": [
         {
@@ -1481,7 +1513,8 @@
       "legacy_one_based_label": "root/25",
       "reconstruction_proto_id": 32,
       "reconstruction_name": "UseItemByIndex",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/25",
@@ -1493,7 +1526,7 @@
       "start_offset": 20797,
       "end_offset": 21597,
       "constants": [
-        5.0,
+        5,
         "被 %s 击杀，自动加入黑名单",
         "ScheduleOnce",
         "本次死亡没记录到凶手，跳过自动拉黑",
@@ -1503,8 +1536,8 @@
           2
         ],
         "",
-        1.0,
-        0.0,
+        1,
+        0,
         "自动拉黑：",
         "凶手已在黑名单中：%s",
         "id",
@@ -1531,7 +1564,8 @@
       "legacy_one_based_label": "root/26",
       "reconstruction_proto_id": 33,
       "reconstruction_name": "DeathAutoBlacklist",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/25/0",
@@ -1566,7 +1600,8 @@
       "legacy_one_based_label": "root/26/1",
       "reconstruction_proto_id": 34,
       "reconstruction_name": "Nested_RequestAddBlacklistByName",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/26",
@@ -1579,7 +1614,7 @@
       "end_offset": 21824,
       "constants": [
         "数据已重置",
-        0.0,
+        0,
         ""
       ],
       "closure_creation_sites": [
@@ -1601,7 +1636,8 @@
       "legacy_one_based_label": "root/27",
       "reconstruction_proto_id": 35,
       "reconstruction_name": "ResetGatherMonsterData",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/27",
@@ -1642,7 +1678,8 @@
       "legacy_one_based_label": "root/28",
       "reconstruction_proto_id": 36,
       "reconstruction_name": "StopGatherMonsters",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/28",
@@ -1655,10 +1692,10 @@
       "end_offset": 23414,
       "constants": [
         "global",
-        0.0,
+        0,
         "ipairs",
         "FindMonsterInCurrViewField",
-        1.0,
+        1,
         "未知怪物",
         "type",
         "SETTING_IDX_IGNORE_MONSTER",
@@ -1693,7 +1730,8 @@
       "legacy_one_based_label": "root/29",
       "reconstruction_proto_id": 37,
       "reconstruction_name": "FindMonsterCandidates",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/28/0",
@@ -1726,7 +1764,8 @@
       "legacy_one_based_label": "root/29/1",
       "reconstruction_proto_id": 38,
       "reconstruction_name": "Nested_distance",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/29",
@@ -1759,7 +1798,8 @@
       "legacy_one_based_label": "root/30",
       "reconstruction_proto_id": 39,
       "reconstruction_name": "IsDie",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/30",
@@ -1795,7 +1835,8 @@
       "legacy_one_based_label": "root/31",
       "reconstruction_proto_id": 40,
       "reconstruction_name": "GetMapName",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/31",
@@ -1833,7 +1874,8 @@
       "legacy_one_based_label": "root/32",
       "reconstruction_proto_id": 41,
       "reconstruction_name": "IsInWhitelistMap",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/32",
@@ -1864,7 +1906,8 @@
       "legacy_one_based_label": "root/33",
       "reconstruction_proto_id": 42,
       "reconstruction_name": "AnonymousHelper_32",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/33",
@@ -1895,7 +1938,8 @@
       "legacy_one_based_label": "root/34",
       "reconstruction_proto_id": 43,
       "reconstruction_name": "AnonymousHelper_33",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/34",
@@ -1929,7 +1973,8 @@
       "legacy_one_based_label": "root/35",
       "reconstruction_proto_id": 44,
       "reconstruction_name": "Schedule",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/35",
@@ -1969,7 +2014,8 @@
       "legacy_one_based_label": "root/36",
       "reconstruction_proto_id": 45,
       "reconstruction_name": "SetTargetID",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/36",
@@ -1986,10 +2032,10 @@
         "NPC_STORAGE_MAX_PAGE",
         "仓库代理未初始化",
         "GetMaxPage",
-        0.0,
+        0,
         "GUIDefine",
         "NPCStorageProxy",
-        1.0,
+        1,
         "global",
         "GetStorageDataByPage",
         "MMO"
@@ -2013,7 +2059,8 @@
       "legacy_one_based_label": "root/37",
       "reconstruction_proto_id": 46,
       "reconstruction_name": "GetAvailableStoragePage",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/37",
@@ -2059,7 +2106,8 @@
       "legacy_one_based_label": "root/38",
       "reconstruction_proto_id": 47,
       "reconstruction_name": "DestroyUI",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/38",
@@ -2071,7 +2119,7 @@
       "start_offset": 25655,
       "end_offset": 26010,
       "constants": [
-        -1.0,
+        -1,
         "tostring",
         "GetOwnerID",
         "type",
@@ -2101,7 +2149,8 @@
       "legacy_one_based_label": "root/39",
       "reconstruction_proto_id": 48,
       "reconstruction_name": "GetOwnerID",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/39",
@@ -2136,7 +2185,8 @@
       "legacy_one_based_label": "root/40",
       "reconstruction_proto_id": 49,
       "reconstruction_name": "GetMainPlayerID",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/40",
@@ -2180,7 +2230,8 @@
       "legacy_one_based_label": "root/41",
       "reconstruction_proto_id": 50,
       "reconstruction_name": "ShowHideAllButtons",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/41",
@@ -2217,7 +2268,7 @@
         "global",
         "GetQucikUseDataByPos",
         "快捷栏交换: %d ↔ %d",
-        1.0
+        1
       ],
       "closure_creation_sites": [
         {
@@ -2238,7 +2289,8 @@
       "legacy_one_based_label": "root/42",
       "reconstruction_proto_id": 51,
       "reconstruction_name": "MoveItemToQuickUse",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/42",
@@ -2263,7 +2315,7 @@
         "Builtsetting",
         "slot",
         "开拉怪",
-        18.0,
+        18,
         "retrieveProxy",
         "cruiseTimer",
         [
@@ -2280,7 +2332,7 @@
         "Button_Create",
         "res/public/fuzhu_btn.png",
         "MoneyProxy",
-        80.0,
+        80,
         "Button_setTitleFontName",
         "绑定元宝",
         "快速小退",
@@ -2297,18 +2349,18 @@
         "NPCStorageProxy",
         "插件初始化完成",
         "getWorldPosition",
-        4.0,
+        4,
         "time",
         "width",
         "清距离值",
         "开拾取",
         "关丢物品",
-        1.0,
+        1,
         "getContentSize",
         "Button_setTitleText",
         "storagebut",
         "血龙宝珠",
-        10.0,
+        10,
         "UnSchedule",
         "资源统计",
         "Panel_mini_chat",
@@ -2316,7 +2368,7 @@
         "date",
         "_ui",
         "GetMoneyIdByName",
-        2.0,
+        2,
         "hidebut",
         "xiaotuibut",
         "os",
@@ -2326,7 +2378,7 @@
         "Facade",
         "initTimeStr",
         "隐 藏",
-        40.0,
+        40,
         "cleardistancebut",
         "开黑名单",
         "key",
@@ -2343,7 +2395,7 @@
         "yinguaibut",
         "name",
         "盟重回城石",
-        3.0,
+        3,
         "关拾取",
         "names",
         "x",
@@ -2356,7 +2408,7 @@
         "永久回城石",
         "global",
         "悟道茶",
-        0.0,
+        0,
         "开丢物品"
       ],
       "closure_creation_sites": [
@@ -2378,7 +2430,8 @@
       "legacy_one_based_label": "root/43",
       "reconstruction_proto_id": 52,
       "reconstruction_name": "doInit_UI",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/0",
@@ -2393,7 +2446,7 @@
         "find",
         "Name",
         "GetMetaValue",
-        1.0,
+        1,
         "BAG_DATA",
         "string",
         "MakeIndex",
@@ -2401,7 +2454,7 @@
         "SL",
         "pairs",
         "OverLap",
-        0.0
+        0
       ],
       "closure_creation_sites": [
         {
@@ -2422,7 +2475,8 @@
       "legacy_one_based_label": "root/43/1",
       "reconstruction_proto_id": 53,
       "reconstruction_name": "Nested_find",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/42/1",
@@ -2443,7 +2497,7 @@
         "UnSchedule",
         "rewardTimer",
         "Schedule",
-        0.0,
+        0,
         "关闭奖励功能"
       ],
       "closure_creation_sites": [
@@ -2465,7 +2519,8 @@
       "legacy_one_based_label": "root/43/2",
       "reconstruction_proto_id": 54,
       "reconstruction_name": "Nested_SL_2",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/1/0",
@@ -2477,10 +2532,10 @@
       "start_offset": 34701,
       "end_offset": 34963,
       "constants": [
-        2.0,
-        1.0,
-        9002.0,
-        3.0,
+        2,
+        1,
+        9002,
+        3,
         "LuaSendMsg"
       ],
       "closure_creation_sites": [
@@ -2502,7 +2557,8 @@
       "legacy_one_based_label": "root/43/2/1",
       "reconstruction_proto_id": 55,
       "reconstruction_name": "Nested_LuaSendMsg",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/2",
@@ -2538,7 +2594,8 @@
       "legacy_one_based_label": "root/43/3",
       "reconstruction_proto_id": 56,
       "reconstruction_name": "Nested_Helper",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/3",
@@ -2552,7 +2609,7 @@
       "constants": [
         "#FFFF00",
         "durTimeText",
-        2.0,
+        2,
         "noteText",
         "global",
         "money",
@@ -2566,8 +2623,8 @@
         "#FF0000",
         "当前时间:--",
         "绑定灵符",
-        999.0,
-        255.0,
+        999,
+        255,
         "（括号内数量为非绑定资源的收益）",
         "声望卷",
         "历时:--",
@@ -2586,7 +2643,7 @@
         "resWin",
         "血龙宝珠",
         "Facade",
-        0.0,
+        0,
         "ListView_setBackGroundColorOpacity",
         "item",
         "screenH",
@@ -2603,10 +2660,10 @@
         "关闭资源信息窗口",
         "curTimeText",
         "setAnchorPoint",
-        1.0,
+        1,
         "closeResWin",
         "ListView_setBackGroundColor",
-        15.0,
+        15,
         "resList",
         "retrieveProxy",
         "初始时间:",
@@ -2622,9 +2679,9 @@
         "#CEB5F7",
         "洗髓丹",
         "setTouchEnabled",
-        30.0,
+        30,
         0.5,
-        20.0
+        20
       ],
       "closure_creation_sites": [
         {
@@ -2645,7 +2702,8 @@
       "legacy_one_based_label": "root/43/4",
       "reconstruction_proto_id": 57,
       "reconstruction_name": "Nested_FFFF00",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/3/0",
@@ -2657,16 +2715,16 @@
       "start_offset": 39273,
       "end_offset": 39720,
       "constants": [
-        0.0,
+        0,
         "万",
         "format",
         "string",
         "%.1f亿",
-        10.0,
+        10,
         "tostring",
-        10000.0,
-        100000.0,
-        100000000.0,
+        10000,
+        100000,
+        100000000,
         "floor",
         "math"
       ],
@@ -2689,7 +2747,8 @@
       "legacy_one_based_label": "root/43/4/1",
       "reconstruction_proto_id": 58,
       "reconstruction_name": "Nested_Helper_2",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/42/3/1",
@@ -2702,13 +2761,13 @@
       "end_offset": 40284,
       "constants": [
         "string",
-        1.0,
+        1,
         "SL",
         "pairs",
         "OverLap",
         "ITEM_IS_BIND",
         "Name",
-        0.0,
+        0,
         "GetMetaValue",
         "BAG_DATA",
         "find",
@@ -2733,7 +2792,8 @@
       "legacy_one_based_label": "root/43/4/2",
       "reconstruction_proto_id": 59,
       "reconstruction_name": "Nested_string",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/42/3/2",
@@ -2745,22 +2805,22 @@
       "start_offset": 40284,
       "end_offset": 41063,
       "constants": [
-        35.0,
+        35,
         "#FFFFFF",
-        1.0,
+        1,
         "Layout_Create",
         ":--",
         "math",
         "_",
-        15.0,
+        15,
         0.5,
         "_cell_",
-        30.0,
+        30,
         "GUI",
         "_text_",
         "Text_Create",
         "ceil",
-        0.0,
+        0,
         "setAnchorPoint"
       ],
       "closure_creation_sites": [
@@ -2782,7 +2842,8 @@
       "legacy_one_based_label": "root/43/4/3",
       "reconstruction_proto_id": 60,
       "reconstruction_name": "Nested_FFFFFF",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 3
     },
     {
       "path": "root/42/3/3",
@@ -2802,11 +2863,11 @@
         "floor",
         "initTime",
         ")",
-        0.0,
-        3600.0,
+        0,
+        3600,
         "%Y-%m-%d %H:%M:%S",
         "历时:",
-        60.0,
+        60,
         "math",
         "resWin",
         "date",
@@ -2848,7 +2909,8 @@
       "legacy_one_based_label": "root/43/4/4",
       "reconstruction_proto_id": 61,
       "reconstruction_name": "Nested_Helper_3",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/3/4",
@@ -2891,7 +2953,8 @@
       "legacy_one_based_label": "root/43/4/5",
       "reconstruction_proto_id": 62,
       "reconstruction_name": "Nested_UnSchedule",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/4",
@@ -2926,7 +2989,8 @@
       "legacy_one_based_label": "root/43/5",
       "reconstruction_proto_id": 63,
       "reconstruction_name": "Nested_OnGameLeaveWorld",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/5",
@@ -2968,7 +3032,8 @@
       "legacy_one_based_label": "root/43/6",
       "reconstruction_proto_id": 64,
       "reconstruction_name": "Nested_ffffff",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/42/6",
@@ -3005,7 +3070,8 @@
       "legacy_one_based_label": "root/43/7",
       "reconstruction_proto_id": 65,
       "reconstruction_name": "Nested_StopGatherMonsters",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/7",
@@ -3039,7 +3105,8 @@
       "legacy_one_based_label": "root/43/8",
       "reconstruction_proto_id": 66,
       "reconstruction_name": "Nested_InitGatherMonsters",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/42/8",
@@ -3061,7 +3128,7 @@
           "unknown",
           2
         ],
-        1.0,
+        1,
         "开启存仓功能",
         "关闭存仓功能"
       ],
@@ -3084,7 +3151,8 @@
       "legacy_one_based_label": "root/43/9",
       "reconstruction_proto_id": 67,
       "reconstruction_name": "Nested_SL_3",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/9",
@@ -3096,8 +3164,8 @@
       "start_offset": 44921,
       "end_offset": 46230,
       "constants": [
-        85.0,
-        18.0,
+        85,
+        18,
         "Button_setTitleFontSize",
         "toggled",
         "GUI",
@@ -3133,7 +3201,8 @@
       "legacy_one_based_label": "root/43/10",
       "reconstruction_proto_id": 68,
       "reconstruction_name": "Nested_Button_setTitleFontSize",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 3
     },
     {
       "path": "root/42/9/0",
@@ -3175,7 +3244,8 @@
       "legacy_one_based_label": "root/43/10/1",
       "reconstruction_proto_id": 69,
       "reconstruction_name": "Nested_Button_setTitleText",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/10",
@@ -3218,7 +3288,8 @@
       "legacy_one_based_label": "root/43/11",
       "reconstruction_proto_id": 70,
       "reconstruction_name": "Nested_shiquTimer",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/11",
@@ -3251,7 +3322,8 @@
       "legacy_one_based_label": "root/43/12",
       "reconstruction_proto_id": 71,
       "reconstruction_name": "Nested_Helper_4",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/11/0",
@@ -3289,7 +3361,8 @@
       "legacy_one_based_label": "root/43/12/1",
       "reconstruction_proto_id": 72,
       "reconstruction_name": "Nested_Helper_5",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/42/12",
@@ -3306,23 +3379,23 @@
         "",
         "sec",
         "date",
-        79205.0,
-        3600.0,
+        79205,
+        3600,
         "day",
-        1.0,
-        3.0,
+        1,
+        3,
         "string",
-        79208.0,
+        79208,
         "year",
-        9002.0,
-        2.0,
+        9002,
+        2,
         "os",
         "*t",
         "hour",
-        60.0,
-        55556.0,
+        60,
+        55556,
         "LuaSendMsg",
-        0.0,
+        0,
         "min",
         "format",
         "month"
@@ -3346,7 +3419,8 @@
       "legacy_one_based_label": "root/43/13",
       "reconstruction_proto_id": 73,
       "reconstruction_name": "Nested_04d_02d_02d",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/13",
@@ -3380,7 +3454,8 @@
       "legacy_one_based_label": "root/43/14",
       "reconstruction_proto_id": 74,
       "reconstruction_name": "Nested_Helper_6",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/14",
@@ -3413,7 +3488,8 @@
       "legacy_one_based_label": "root/43/15",
       "reconstruction_proto_id": 75,
       "reconstruction_name": "Nested_Helper_7",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/14/0",
@@ -3450,7 +3526,8 @@
       "legacy_one_based_label": "root/43/15/1",
       "reconstruction_proto_id": 76,
       "reconstruction_name": "Nested_Helper_8",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/42/15",
@@ -3464,14 +3541,14 @@
       "constants": [
         "隐藏所有按钮",
         "hidebut",
-        255.0,
+        255,
         "setOpacity",
         "show",
         "isHidden",
         "GUI",
         "显示所有按钮",
         "hide",
-        0.0
+        0
       ],
       "closure_creation_sites": [
         {
@@ -3492,7 +3569,8 @@
       "legacy_one_based_label": "root/43/16",
       "reconstruction_proto_id": 77,
       "reconstruction_name": "Nested_Helper_9",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/16",
@@ -3531,7 +3609,8 @@
       "legacy_one_based_label": "root/43/17",
       "reconstruction_proto_id": 78,
       "reconstruction_name": "Nested_ITEM_INDEX_BY_NAME",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/17",
@@ -3568,7 +3647,8 @@
       "legacy_one_based_label": "root/43/18",
       "reconstruction_proto_id": 79,
       "reconstruction_name": "Nested_blacklistTimer",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/42/18",
@@ -3612,7 +3692,8 @@
       "legacy_one_based_label": "root/43/19",
       "reconstruction_proto_id": 80,
       "reconstruction_name": "Nested_Helper_10",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/19",
@@ -3629,7 +3710,7 @@
           2
         ],
         "TakeItems",
-        1.0,
+        1,
         "开启取物功能",
         "isTaking",
         "UnSchedule",
@@ -3657,7 +3738,8 @@
       "legacy_one_based_label": "root/43/20",
       "reconstruction_proto_id": 81,
       "reconstruction_name": "Nested_TakeItems",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/20",
@@ -3693,7 +3775,8 @@
       "legacy_one_based_label": "root/43/21",
       "reconstruction_proto_id": 82,
       "reconstruction_name": "Nested_s",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/21",
@@ -3705,7 +3788,7 @@
       "start_offset": 51117,
       "end_offset": 51511,
       "constants": [
-        1.0,
+        1,
         "dropTimer",
         [
           "unknown",
@@ -3738,7 +3821,8 @@
       "legacy_one_based_label": "root/43/22",
       "reconstruction_proto_id": 83,
       "reconstruction_name": "Nested_dropTimer",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/42/22",
@@ -3769,7 +3853,8 @@
       "legacy_one_based_label": "root/43/23",
       "reconstruction_proto_id": 84,
       "reconstruction_name": "Nested_Anonymous",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/42/22/0",
@@ -3785,13 +3870,13 @@
         true,
         "btnType",
         "SL",
-        6.0,
+        6,
         "OpenCommonTipsPop",
         "\n",
         "editParams",
         "maxLength",
         "showEdit",
-        2.0,
+        2,
         "inputMode",
         "callback"
       ],
@@ -3814,7 +3899,8 @@
       "legacy_one_based_label": "root/43/23/1",
       "reconstruction_proto_id": 85,
       "reconstruction_name": "Nested_str",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/42/22/0/0",
@@ -3827,7 +3913,7 @@
       "end_offset": 52715,
       "constants": [
         "match",
-        1.0,
+        1,
         "%s：参数格式不对（%s）",
         "^%d+$",
         "gsub",
@@ -3860,7 +3946,8 @@
       "legacy_one_based_label": "root/43/23/1/1",
       "reconstruction_proto_id": 86,
       "reconstruction_name": "Nested_match",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/42/22/0/0/0",
@@ -3893,7 +3980,8 @@
       "legacy_one_based_label": "root/43/23/1/1/1",
       "reconstruction_proto_id": 87,
       "reconstruction_name": "Nested_Helper_11",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/43",
@@ -3905,7 +3993,7 @@
       "start_offset": 52718,
       "end_offset": 52983,
       "constants": [
-        -1.0,
+        -1,
         "其他玩家",
         "GetOwnerID",
         "无归属",
@@ -3935,7 +4023,8 @@
       "legacy_one_based_label": "root/44",
       "reconstruction_proto_id": 88,
       "reconstruction_name": "GetOwnerDescription",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/44",
@@ -3951,7 +4040,7 @@
         "y",
         "x",
         "mCurrMapX",
-        0.0
+        0
       ],
       "closure_creation_sites": [
         {
@@ -3972,7 +4061,8 @@
       "legacy_one_based_label": "root/45",
       "reconstruction_proto_id": 89,
       "reconstruction_name": "GetPlayerMapPosition",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/45",
@@ -4004,13 +4094,13 @@
         "锁定怪物 %s 失败",
         "开始引怪，目标数量: %d",
         "GetID",
-        1.0,
+        1,
         "table",
         "time",
         "怪物列表处理完毕但未全部获取归属，重新扫描",
         "怪物 %s 归属已变更为自己",
         "扫描怪物中",
-        0.0,
+        0,
         "等待归属变更中: %s (还剩 %d 秒)",
         "没有可攻击的怪物",
         "format",
@@ -4045,7 +4135,8 @@
       "legacy_one_based_label": "root/46",
       "reconstruction_proto_id": 90,
       "reconstruction_name": "MainLoop",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/46",
@@ -4078,9 +4169,9 @@
         "ITEM_IS_BIND",
         "count",
         "技能残页",
-        0.0,
+        0,
         "麻痹",
-        35.0,
+        35,
         "主印",
         "血龙宝珠",
         "共丢弃 ",
@@ -4119,7 +4210,7 @@
         "ipairs",
         "地面物品已满",
         ")",
-        1.0,
+        1,
         "鸿蒙"
       ],
       "closure_creation_sites": [
@@ -4141,7 +4232,8 @@
       "legacy_one_based_label": "root/47",
       "reconstruction_proto_id": 91,
       "reconstruction_name": "DiuItems",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/46/0",
@@ -4156,7 +4248,7 @@
         "string",
         "ipairs",
         "find",
-        1.0
+        1
       ],
       "closure_creation_sites": [
         {
@@ -4177,7 +4269,8 @@
       "legacy_one_based_label": "root/47/1",
       "reconstruction_proto_id": 92,
       "reconstruction_name": "Nested_string_2",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/47",
@@ -4199,7 +4292,7 @@
         "distance",
         "format",
         "黑名单玩家 %s，距离 %d 格，使用 %s 随机传送",
-        1.0,
+        1,
         "concat",
         "os",
         "SL",
@@ -4225,7 +4318,7 @@
         "黑名单玩家：%s（%d格），飞随机",
         "string",
         true,
-        0.0,
+        0,
         "noStoneWarned"
       ],
       "closure_creation_sites": [
@@ -4247,7 +4340,8 @@
       "legacy_one_based_label": "root/48",
       "reconstruction_proto_id": 93,
       "reconstruction_name": "BlacklistPlayerDetection",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/48",
@@ -4280,7 +4374,8 @@
       "legacy_one_based_label": "root/49",
       "reconstruction_proto_id": 94,
       "reconstruction_name": "PCallHelper_2",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/48/0",
@@ -4317,7 +4412,8 @@
       "legacy_one_based_label": "root/49/1",
       "reconstruction_proto_id": 95,
       "reconstruction_name": "Nested_FriendProxy",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/49",
@@ -4348,7 +4444,8 @@
       "legacy_one_based_label": "root/50",
       "reconstruction_proto_id": 96,
       "reconstruction_name": "AnonymousHelper_49",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/50",
@@ -4371,7 +4468,7 @@
         "MSG_CS_STORAGE_STORE_REQUEST",
         "宝石精魄",
         "GUIDefine",
-        999999999.0,
+        999999999,
         true,
         "使用: ",
         "MsgType",
@@ -4394,9 +4491,9 @@
         "GetStorageDataByPage",
         "魔神石",
         "GetAvailableStoragePage",
-        0.0,
+        0,
         "金罡",
-        1.0,
+        1,
         "ipairs",
         " 件物品",
         "存仓完成, 共存入 ",
@@ -4437,7 +4534,8 @@
       "legacy_one_based_label": "root/51",
       "reconstruction_proto_id": 97,
       "reconstruction_name": "StorageItems",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/50/0",
@@ -4452,7 +4550,7 @@
         "isOutputted",
         "tostring",
         "聚灵珠信息: ",
-        1.0,
+        1,
         " Dura=",
         true,
         "string",
@@ -4484,7 +4582,8 @@
       "legacy_one_based_label": "root/51/1",
       "reconstruction_proto_id": 98,
       "reconstruction_name": "Nested_isOutputted",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/50/1",
@@ -4496,7 +4595,7 @@
       "start_offset": 67198,
       "end_offset": 67463,
       "constants": [
-        1.0
+        1
       ],
       "closure_creation_sites": [
         {
@@ -4517,7 +4616,8 @@
       "legacy_one_based_label": "root/51/2",
       "reconstruction_proto_id": 99,
       "reconstruction_name": "Nested_Anonymous_2",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/51",
@@ -4554,7 +4654,8 @@
       "legacy_one_based_label": "root/52",
       "reconstruction_proto_id": 100,
       "reconstruction_name": "FindBlacklistPlayer",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/52",
@@ -4569,7 +4670,7 @@
         "ACTOR_IS_HERO",
         "GetMetaValue",
         "table",
-        1.0,
+        1,
         "lastAttacker",
         "UserID",
         "",
@@ -4605,7 +4706,8 @@
       "legacy_one_based_label": "root/53",
       "reconstruction_proto_id": 101,
       "reconstruction_name": "onDamageMsg",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/52/0",
@@ -4639,7 +4741,8 @@
       "legacy_one_based_label": "root/53/1",
       "reconstruction_proto_id": 102,
       "reconstruction_name": "Nested_JsonDecode",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/53",
@@ -4673,7 +4776,8 @@
       "legacy_one_based_label": "root/54",
       "reconstruction_proto_id": 103,
       "reconstruction_name": "ScheduleOnce",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 2
     },
     {
       "path": "root/54",
@@ -4704,7 +4808,8 @@
       "legacy_one_based_label": "root/55",
       "reconstruction_proto_id": 104,
       "reconstruction_name": "AnonymousHelper_54",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/55",
@@ -4724,7 +4829,7 @@
         "3548598",
         "游戏不一致，id：",
         "Schedule",
-        204208.0,
+        204208,
         "账号ID：",
         "1585201915",
         "SL",
@@ -4757,7 +4862,8 @@
       "legacy_one_based_label": "root/56",
       "reconstruction_proto_id": 105,
       "reconstruction_name": "AccountIDValidation",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/55/0",
@@ -4797,7 +4903,8 @@
       "legacy_one_based_label": "root/56/1",
       "reconstruction_proto_id": 106,
       "reconstruction_name": "Nested_Panel_mini_chat",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/55/1",
@@ -4833,7 +4940,8 @@
       "legacy_one_based_label": "root/56/2",
       "reconstruction_proto_id": 107,
       "reconstruction_name": "Nested_ID",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 1
     },
     {
       "path": "root/56",
@@ -4851,7 +4959,7 @@
         "retrieveProxy",
         "Facade",
         "SetTargetID",
-        0.0,
+        0,
         "PlayerInputProxy",
         "SELETE_TARGET_TYPE_FIND"
       ],
@@ -4874,7 +4982,8 @@
       "legacy_one_based_label": "root/57",
       "reconstruction_proto_id": 108,
       "reconstruction_name": "ClearTargetID_2",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     },
     {
       "path": "root/57",
@@ -4910,7 +5019,8 @@
       "legacy_one_based_label": "root/58",
       "reconstruction_proto_id": 109,
       "reconstruction_name": "PlayerPos",
-      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。"
+      "path_note": "path 字段为 JSON children 零基索引；legacy_one_based_label 是旧报告/部分反汇编采用的子原型一基标签。",
+      "fixed_param_count": 0
     }
   ],
   "path_conventions": {
@@ -4918,5 +5028,13 @@
     "legacy": "旧报告中的 root/46、root/47/1 等路径按子原型从 1 开始编号；root/46 等于 canonical root.children[45]。",
     "dot_path": "MainLeftBottom_完整明文重建版.lua 中 path=root.45 使用 JSON 0-based 索引。",
     "warning": "禁止只写 root/46 而不注明编号体系；后续一律优先使用 canonical_json_path。"
+  },
+  "parameter_metadata_semantics": {
+    "original_proto_field": "vararg",
+    "legacy_index_field": "vararg_flag",
+    "correct_meaning": "fixed_param_count",
+    "explanation": "F() writes D() into prototype tuple slot [3]. M() reads W[3] as V, creates fresh T={} and X={}, copies arguments with zero-based index < V into T[index], and stores arguments at index >= V in X[index-V]. This is the fixed-parameter count, not a boolean vararg flag.",
+    "evidence_file": "01_原始资料/MainLeftBottom(2).lua",
+    "compatibility": "Each prototype retains legacy vararg_flag and also exposes fixed_param_count with the same numeric value. New analysis must use fixed_param_count."
   }
 }
