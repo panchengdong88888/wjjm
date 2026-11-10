@@ -2199,3 +2199,16 @@
 - 当前统计：普通Lua草稿72；完整静态恢复103/110；运行时验证0。
 - 已更新并重新fetch验证第六十三批草稿、函数状态CSV和机器状态JSON；本协议随后追加并回读验证。
 - 下一步：继续PC269-PC337各按钮回调子闭包的捕获工厂接入，并恢复child12每日回调的可读主体；Attach_UITop七实参继续作为TODO，不阻断草稿推进。
+
+
+## 检查点 #200（2026-11-10）：doInit_UI PC269-PC337闭包工厂与每日巡航回调整合
+
+- 基于检查点88/187/199既有草稿继续扩展，不重建doInit_UI主体。
+- PC269-PC337的12个父级闭包创建点均已接入普通Lua工厂/handler表，捕获顺序按corrected phase3反汇编逐项映射：child6 [UP2,UP11,UP9,UP0,R20,R17]；child2 [UP16,UP15,UP11,UP0]；child20 [UP16,UP13,UP11,UP0]；child1 [UP2,UP0,UP17,UP18,UP19]；child13 [UP0]；child18 [UP2,UP0,UP1,R19,R16]；child8 [UP2,UP0,UP1,UP7]；child19 [UP2,UP0,UP1,UP7]；child10 [UP2,UP0,UP7]；child21 [UP2,UP0,UP1,UP7]；child3 [UP3,UP0,UP2,UP1]；child4无捕获。
+- PC236-PC267前置依赖同步登记：child5同步按钮状态、child17黑名单定时回调、child7引怪初始化、child22 Nested_Anonymous、child11 Helper_4、child14 Helper_7。Helper_4/7包装器和其child5/8校验回调工厂已并入；其openDialog仍依赖未合并的Nested_Anonymous父包装器。
+- child6分支复核并修正：UP3接收固定提示文本；R20/child14负责打开阈值输入；R17/child7负责应用/启动阈值状态。gatherTimer存在时关闭；否则按canStartGather truthy分支返回true/false。
+- child12每日巡航回调主体并入：PC145先清空父T5，PC160捕获该cell作为nil初值日期标记；工厂落实os.date('*t')、22:00:05至22:00:08含边界、YYYYMMDD同日去重、先写标记再调用messageSender.LuaSendMsg(9002,55556,1,2,3,'',0)，随后通知；父级继续SL:Schedule(dailyCallback,1.0)。
+- 本批修改：`04_源码候选/短函数草稿_第六十三批.lua`；同步更新函数状态CSV与机器状态JSON，并重新fetch验证；本协议和审计报告随后创建/追加并回读验证。
+- 本批未增加草稿原型计数；统计维持普通Lua草稿72、完整静态恢复103/110、运行时验证0。
+- 未解决：Nested_Anonymous父包装器仍未并入；Nested_FFFF00资源统计工厂仍在第六十二批独立候选；Attach_UITop七个实参来源未闭合；GUI宿主语义/部分UPVALUE身份未完全确认；未运行时验证。
+- 下一步：恢复root.children[42].children[22] Nested_Anonymous父包装器并复用已完成Nested_str/Nested_match/Nested_Helper_11；然后合并Nested_FFFF00资源统计工厂及依赖，继续追踪Attach_UITop七实参。
