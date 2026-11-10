@@ -2094,3 +2094,13 @@
 - 本批把原检查点86结构占位草稿升级为完整普通Lua主体草稿，但不升级完整静态恢复等级。SetQuickUsePosData布尔值业务语义、Bag返回表[1]业务身份、宿主代理副作用未验证。
 - 统计：普通Lua草稿71；完整静态恢复103/110（93.6%）；运行时验证0。
 - 下一批：依据最新CSV筛选尚未形成普通Lua主体的短函数/相似函数批量恢复。
+
+
+## 检查点 #192（2026-11-10）：root模块PC1-PC41首段草稿
+
+- 对象：`root` / `MainLeftBottom_Module`（412条指令、109常量、58个直接子原型）。
+- 新增源码：`04_源码候选/root_MainLeftBottom_Module.lua`；新增审计：`docs/audit/检查点192_root模块初始化PC1-PC41首段草稿.md`。
+- 本批仅恢复PC1-PC41：创建全局MainLeftBottom；初始化a表的version、屏幕宽高、四项Blocklist、SendHookList/RecvHookList、isHidden=true及hidebut=nil；创建b/z表并初始化六个false状态字段。
+- PC42-PC412未转写，不计完整静态恢复；未做运行时验证。
+- 统计：普通Lua草稿72；完整静态恢复103/110（93.6%）；运行时验证0。
+- 下一步：继续root PC42-PC137，闭合早期辅助函数注册与模块初始化；复用已存在子原型源码和闭包映射，不重做底层VM分析。
