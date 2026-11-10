@@ -1,4 +1,5 @@
 -- 检查点 #63 / #133：InstallDamageHook 完整静态恢复
+-- 检查点249：根装配以MainLeftBottom.a和PrintLog绑定UP[0]/UP[1]，供BlacklistPlayerDetection后续捕获。
 -- root.children[6] / legacy root/7；40条指令；9常量；1个子原型。
 -- 父闭包捕获2项：UP[0]为模块状态对象（PC31读取后立即被覆盖，未参与后续行为）；
 -- UP[1]为挂接完成提示回调。
