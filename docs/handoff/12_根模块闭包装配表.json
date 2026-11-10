@@ -7662,7 +7662,7 @@
     "binding_policy": "Only capture_count=0 direct children; captured factories remain pending until shared live-cell bindings are implemented.",
     "runtime_verified": false
   },
-  "next_action": "检查点268：核对PC390-PC412的doInit_UI 20项父捕获、PC411写入MainLeftBottom.doInit、PC412返回根模块表，并复核21项全局导出及10项模块字段的PC写入位置。",
+  "next_action": "检查点269：对主恢复文件做结构/语法层静态审计，检查词法块、do/end、注册表边界、重复字段/导出、过时PC注释和适配变量；探测可用Lua/luac工具，不把静态检查冒充运行时验证。",
   "root_assembly_checkpoint_247": {
     "direct_child_closures_expected": 22,
     "direct_child_closures_source_bound": 22,
@@ -11647,6 +11647,213 @@
       "rootCells[57] is a live-cell recovery adapter, not claimed to be the author's original data structure.",
       "T[52] is preserved as raw numeric pairs; its business semantics remain unknown.",
       "No Lua compiler or target-game runtime validation has been performed."
+    ],
+    "runtime_verified": false
+  },
+  "root_assembly_checkpoint_268": {
+    "date": "2026-11-10",
+    "root_pc_range": "390-412",
+    "source_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
+    "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
+    "closure": {
+      "pc_zero_based": 389,
+      "pc_one_based": 390,
+      "prototype": "root.children[42]",
+      "name": "doInit_UI",
+      "fixed_param_count": 0,
+      "capture_count": 20,
+      "capture_parent_T_registers": [
+        4,
+        2,
+        3,
+        0,
+        1,
+        41,
+        48,
+        7,
+        8,
+        50,
+        49,
+        5,
+        44,
+        42,
+        51,
+        43,
+        47,
+        11,
+        12,
+        9
+      ],
+      "capture_pc_range": "391-410",
+      "injection_order": [
+        "rootPrototypes.PrintLog",
+        "rootModule.z",
+        "rootSource.timerState",
+        "rootModule.a",
+        "rootModule.b",
+        "rootSource.blacklistState",
+        "rootConfigRegisters[48]",
+        "rootPrototypes.Schedule",
+        "rootPrototypes.FindMonsterInCurrViewField",
+        "rootConfigRegisters[50]",
+        "rootConfigRegisters[49]",
+        "rootPrototypes.ShowLocalNoticeByType",
+        "rootConfigRegisters[44]",
+        "rootSource.blacklistDistanceConfigFile",
+        "rootConfigRegisters[51]",
+        "rootSource.gatherMonsterCountConfigFile",
+        "rootConfigRegisters[47]",
+        "rootSource.rootRegister11",
+        "rootSource.loginAndOnlineRewardEntries",
+        "0.2"
+      ]
+    },
+    "module_field": {
+      "pc": 411,
+      "target": "MainLeftBottom.doInit",
+      "value": "doInit_UI",
+      "assertion": "rootModule.doInit == rootPrototypes.doInit_UI"
+    },
+    "return": {
+      "pc": 412,
+      "expression": "return recoveredRootModule",
+      "source": "MainLeftBottomRecovered.root_module",
+      "identity": "same rootModule table created at PC1",
+      "adapter_container_exported_globally": false
+    },
+    "global_exports_total": 21,
+    "global_exports": [
+      {
+        "pc": 2,
+        "target": "_G.MainLeftBottom"
+      },
+      {
+        "pc": 45,
+        "target": "_G.log"
+      },
+      {
+        "pc": 55,
+        "target": "_G.GetMapId"
+      },
+      {
+        "pc": 57,
+        "target": "_G.GetMapName"
+      },
+      {
+        "pc": 59,
+        "target": "_G.PlayerPos"
+      },
+      {
+        "pc": 61,
+        "target": "_G.GetDroppedItems"
+      },
+      {
+        "pc": 63,
+        "target": "_G.MoveTo"
+      },
+      {
+        "pc": 67,
+        "target": "_G.DiuItems"
+      },
+      {
+        "pc": 70,
+        "target": "_G.GetAvailableStoragePage"
+      },
+      {
+        "pc": 73,
+        "target": "_G.GetStorageItemData"
+      },
+      {
+        "pc": 78,
+        "target": "_G.StorageItems"
+      },
+      {
+        "pc": 82,
+        "target": "_G.TakeItems"
+      },
+      {
+        "pc": 85,
+        "target": "_G.PickUpItems"
+      },
+      {
+        "pc": 213,
+        "target": "_G.IsInWhitelistMap"
+      },
+      {
+        "pc": 237,
+        "target": "_G.MainLoop"
+      },
+      {
+        "pc": 246,
+        "target": "_G.InitGatherMonsters"
+      },
+      {
+        "pc": 255,
+        "target": "_G.StopGatherMonsters"
+      },
+      {
+        "pc": 258,
+        "target": "_G.Builtsetting"
+      },
+      {
+        "pc": 260,
+        "target": "_G.MoveItemToQuickUse"
+      },
+      {
+        "pc": 382,
+        "target": "_G.BlacklistItems"
+      },
+      {
+        "pc": 388,
+        "target": "_G.ClearBlacklistItems"
+      }
+    ],
+    "module_field_ledger_total": 26,
+    "root_direct_module_fields_total": 10,
+    "root_direct_module_fields": [
+      "MainLeftBottom.a",
+      "MainLeftBottom.b",
+      "MainLeftBottom.z",
+      "MainLeftBottom.hide",
+      "MainLeftBottom.show",
+      "MainLeftBottom.destroy",
+      "_ENV.MainLeftBottom.main (PC275 reread; PC279 assignment)",
+      "MainLeftBottom.blacklist",
+      "MainLeftBottom.onDamageMsg",
+      "MainLeftBottom.doInit"
+    ],
+    "nested_fields_total": 15,
+    "nested_field_groups": {
+      "MainLeftBottom.a": [
+        "version",
+        "screenW",
+        "screenH",
+        "Blocklist",
+        "SendHookList",
+        "RecvHookList",
+        "isHidden",
+        "hidebut",
+        "LuaSendMsg"
+      ],
+      "MainLeftBottom.z": [
+        "isPaused",
+        "isRunning",
+        "isStoring",
+        "isTaking",
+        "isDiuing",
+        "isOutputted"
+      ]
+    },
+    "special_semantics": [
+      "PC275 rereads _ENV.MainLeftBottom; AccountIDValidation is written to that reread table at PC279.",
+      "PC412 returns the original MainLeftBottom root table, not MainLeftBottomRecovered or rootPrototypes.",
+      "ShowLocalNoticeByType, ScheduleOnce and Schedule are not root-level global exports in the audited PC ranges."
+    ],
+    "caveats": [
+      "The 21 global export count includes _G.MainLeftBottom itself.",
+      "The 26 module ledger entries comprise the root-table export, 10 direct root fields, and 15 nested a/z fields.",
+      "This remains a static recovery adapter, not author-original source.",
+      "No Lua compiler or game runtime validation has been performed."
     ],
     "runtime_verified": false
   }
