@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点221：剩余真正未完成的原型中，先处理Nested_Anonymous（8条）参数槽位与T2生产者映射；随后再按难度处理LuaSendMsg、MoveItemToQuickUse、StorageItems、根模块和doInit_UI。",
+  "next_action": "检查点222：剩余真正未完成原型中先回到Nested_Anonymous（8条）尝试闭合T2生产者；随后处理MoveItemToQuickUse（133条）与StorageItems（224条），最后完成根模块与doInit_UI。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -128,7 +128,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "220"
+    "last_checkpoint": "221"
   },
   "static_recovered_functions": [
     {
@@ -2645,39 +2645,52 @@
       "notes": [
         "检查点126：父root PC185创建闭包，captures=0。PC1-PC5检查global.Facade并在假值时return；PC6-PC15通过Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)取代理，代理假值时return；PC16-PC22保留proxy作为SetTargetID接收者，传入0及global.MMO.SELETE_TARGET_TYPE_FIND；所有22条指令均映射，无显式返回值；源码候选04_源码候选/root56_root57_short_functions.lua。"
       ]
+    },
+    {
+      "path": "root.children[12]",
+      "legacy_path": "root/13",
+      "name": "LuaSendMsg",
+      "source_file": "04_源码候选/短函数草稿_第五十批.lua",
+      "audit_file": "docs/audit/检查点221_LuaSendMsg完整静态复审.md",
+      "status": "complete_static_reconstruction",
+      "physical_instructions": 92,
+      "constant_count": 34,
+      "child_count": 0,
+      "capture_count": 2,
+      "vararg_flag": 0,
+      "runtime_verified": false,
+      "notes": [
+        "六个固定参数：hookKey、param1、param2、param3、param4、messageId；构造message={recog=0,msgId=messageId,param1..param4}。",
+        "UPVALUE[0]为含Blocklist和SendHookList的状态表；UPVALUE[1]为日志回调。业务原名未知，使用中性名称。",
+        "Blocklist查找使用table.find(Blocklist,tonumber(hookKey))；命中仅跳过日志构造，不阻止后续hook与发送。",
+        "未命中时ipairs遍历param1..param4，字符串加单引号，其他值tostring，table.concat后调用日志回调。",
+        "PC63-PC70对SendHookList[hookKey]执行两次索引：第一次truthy门控，第二次取hook并type检查。",
+        "pcall(hook,hookKey,messageId,message)成功且第二返回值严格为true时提前返回；否则global.networkCtl:SendMsg原六参转发。",
+        "92条物理指令全部映射；完整静态恢复，未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "220",
+    "checkpoint": "221",
     "targets": [
-      "FileExistCheck_pcall_wrapper（32条+5条子闭包）",
-      "AnonymousHelper_49（5条）",
-      "Nested_ITEM_INDEX_BY_NAME（26条）",
-      "Nested_Anonymous_2（27条）",
-      "ClearTargetID_2（22条）",
-      "Nested_Panel_mini_chat/Nested_ID/AccountIDValidation（24/27/64条）",
-      "InitGatherMonsters（36条）"
+      "root.children[12] LuaSendMsg（92条、2项捕获、无子原型）"
     ],
-    "status": "完成一批短函数来源整合，并将FileExistCheck、Nested_ITEM_INDEX_BY_NAME改为显式捕获工厂；补入AnonymousHelper_49。所有这些原型在函数状态CSV中原已标记完整静态恢复，本批不增加完成数量。",
-    "audit_file": "docs/audit/检查点220_短原型源码集中整合.md",
+    "status": "完成LuaSendMsg全部92条指令的静态闭合，确认SendHookList存在性门控与第二次取值，保留两个捕获的中性名称。",
+    "audit_file": "docs/audit/检查点221_LuaSendMsg完整静态复审.md",
     "files": [
-      "04_源码候选/root50_Nested_Anonymous_2.lua",
-      "04_源码候选/短函数草稿_第七十四批.lua",
-      "04_源码候选/root56_root57_short_functions.lua",
-      "04_源码候选/root55_children_drafts.lua",
-      "04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua",
-      "04_源码候选/短函数草稿_第三十八批.lua",
-      "04_源码候选/root49_AnonymousHelper_49.lua",
+      "04_源码候选/短函数草稿_第五十批.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "docs/handoff/05_机器可读接续状态.json",
+      "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "findings": [
-      "FileExistCheck显式捕获GetWritablePath，并保留removeFile子闭包与pcall分支。",
-      "Nested_ITEM_INDEX_BY_NAME显式捕获config和结果回调，保留MoveItemToQuickUse(itemIndex,slot)顺序。",
-      "AnonymousHelper_49捕获ReadNumericConfig和文件名，零参调用并转发所有返回值。",
-      "其余短原型已集中进MainLeftBottom_恢复源码.lua；本批不增加静态完成数。"
+      "六个固定参数映射与message表字段构造闭合。",
+      "Blocklist命中只绕过日志构造，不跳过hook处理和网络发送。",
+      "SendHookList[hookKey]两次索引：第一次truthy门控，第二次取hook。",
+      "hook必须为function；pcall第二返回值严格等于true才拦截；否则原六参数转发networkCtl:SendMsg。",
+      "UPVALUE[0]状态表、UPVALUE[1]日志回调业务原名未知，以中性名表达；92条指令完整静态恢复。"
     ]
   },
   "corrections": [
@@ -2977,17 +2990,23 @@
       "legacy_path": "root/13",
       "name": "LuaSendMsg",
       "source_file": "04_源码候选/短函数草稿_第五十批.lua",
-      "audit_file": "docs/audit/检查点190_GetAvailableStoragePage与LuaSendMsg批量恢复.md",
-      "status": "first_pass_draft_revised_checkpoint_190_parameter_mapping_blocklist_hook_flow_pending_capture_names_host_runtime_not_runtime_verified",
+      "audit_file": "docs/audit/检查点221_LuaSendMsg完整静态复审.md",
+      "status": "complete_static_reconstruction",
       "physical_instructions": 92,
       "constant_count": 34,
       "child_count": 0,
       "notes": [
-        "六参映射：arg1为Blocklist/SendHookList键，arg2..5为param1..4，arg6为msgId，recog=0。",
-        "Blocklist通过table.find(Blocklist,tonumber(arg1))命中时仅跳过日志；不阻断hook/发送。",
-        "SendHookList[arg1]若为function，则pcall(hook,arg1,arg6,message)，成功且返回严格true才拦截；否则原六参转发networkCtl:SendMsg。",
-        "root T[0]/T[4]捕获业务原名及宿主运行时语义未知。"
-      ]
+        "六个固定参数：hookKey、param1、param2、param3、param4、messageId；构造message={recog=0,msgId=messageId,param1..param4}。",
+        "UPVALUE[0]为含Blocklist和SendHookList的状态表；UPVALUE[1]为日志回调。业务原名未知，使用中性名称。",
+        "Blocklist查找使用table.find(Blocklist,tonumber(hookKey))；命中仅跳过日志构造，不阻止后续hook与发送。",
+        "未命中时ipairs遍历param1..param4，字符串加单引号，其他值tostring，table.concat后调用日志回调。",
+        "PC63-PC70对SendHookList[hookKey]执行两次索引：第一次truthy门控，第二次取hook并type检查。",
+        "pcall(hook,hookKey,messageId,message)成功且第二返回值严格为true时提前返回；否则global.networkCtl:SendMsg原六参转发。",
+        "92条物理指令全部映射；完整静态恢复，未运行时验证。"
+      ],
+      "capture_count": 2,
+      "vararg_flag": 0,
+      "runtime_verified": false
     },
     {
       "path": "root.children[22]",
@@ -3322,76 +3341,65 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 220,
+  "last_checkpoint": 221,
   "checkpoint": {
-    "number": 220,
+    "number": 221,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/root50_Nested_Anonymous_2.lua",
-      "04_源码候选/短函数草稿_第七十四批.lua",
-      "04_源码候选/root56_root57_short_functions.lua",
-      "04_源码候选/root55_children_drafts.lua",
-      "04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua",
-      "04_源码候选/短函数草稿_第三十八批.lua",
-      "04_源码候选/root49_AnonymousHelper_49.lua",
+      "04_源码候选/短函数草稿_第五十批.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点220_短原型源码集中整合.md",
+      "docs/audit/检查点221_LuaSendMsg完整静态复审.md",
       "docs/handoff/05_机器可读接续状态.json",
+      "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
-    "draft_prototypes_touched": 0,
+    "draft_prototypes_touched": 1,
     "draft_prototype_total": 72,
-    "complete_static_reconstructions": 102,
+    "complete_static_reconstructions": 103,
     "runtime_verified": 0,
-    "notes": "短原型来源集中整合；FileExistCheck和Nested_ITEM_INDEX_BY_NAME规范化为显式捕获工厂；补入AnonymousHelper_49。CSV原已将这些原型登记为完整静态恢复，本批不增加数量；运行时验证0。"
+    "notes": "LuaSendMsg（root.children[12]）92条指令完整静态恢复。六参映射、message字段、Blocklist日志分支、SendHookList两次索引、pcall拦截条件及networkCtl:SendMsg原参转发全部闭合。两个Upvalue原始业务名未知但调用契约明确，使用中性名称。未运行时验证。"
   },
   "drafts": 33,
   "next": "检查点213：继续把剩余源码候选逐批纳入MainLeftBottom_恢复源码.lua；优先补齐目前只有索引/审计、尚未进入集中源码的原型。随后继续把根模块PC42-PC412的闭包创建、捕获和导出从注释转成普通Lua；按新框架API对照复核接收者形式与参数数量。未闭合处保留TODO，不虚构实现。",
   "recent_checkpoint": {
-    "number": 220,
+    "number": 221,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/root50_Nested_Anonymous_2.lua",
-      "04_源码候选/短函数草稿_第七十四批.lua",
-      "04_源码候选/root56_root57_short_functions.lua",
-      "04_源码候选/root55_children_drafts.lua",
-      "04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua",
-      "04_源码候选/短函数草稿_第三十八批.lua",
-      "04_源码候选/root49_AnonymousHelper_49.lua",
+      "04_源码候选/短函数草稿_第五十批.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点220_短原型源码集中整合.md",
+      "docs/audit/检查点221_LuaSendMsg完整静态复审.md",
       "docs/handoff/05_机器可读接续状态.json",
+      "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
-    "draft_prototypes_touched": 0,
+    "draft_prototypes_touched": 1,
     "draft_prototype_total": 72,
-    "complete_static_reconstructions": 102,
+    "complete_static_reconstructions": 103,
     "runtime_verified": 0,
-    "notes": "短原型来源集中整合；FileExistCheck和Nested_ITEM_INDEX_BY_NAME规范化为显式捕获工厂；补入AnonymousHelper_49。CSV原已将这些原型登记为完整静态恢复，本批不增加数量；运行时验证0。"
+    "notes": "LuaSendMsg（root.children[12]）92条指令完整静态恢复。六参映射、message字段、Blocklist日志分支、SendHookList两次索引、pcall拦截条件及networkCtl:SendMsg原参转发全部闭合。两个Upvalue原始业务名未知但调用契约明确，使用中性名称。未运行时验证。"
   },
   "latest_checkpoint": {
-    "checkpoint": "220",
-    "summary": "继续集中整合短原型源码：文件存在检查及removeFile闭包、配置读取转发匿名闭包、仓库空页查找、快捷栏物品名称解析、目标ID清理、账号校验子闭包及采集初始化函数。",
-    "audit_file": "docs/audit/检查点220_短原型源码集中整合.md",
+    "checkpoint": "221",
+    "summary": "完成LuaSendMsg 92条指令静态恢复；纠正候选中SendHookList只查一次的问题，按字节码保留两次索引与truthy门控。",
+    "audit_file": "docs/audit/检查点221_LuaSendMsg完整静态复审.md",
     "unresolved": [
-      "Nested_Anonymous（8条）T槽位映射与T2生产者仍待闭合",
-      "LuaSendMsg（92条）参数映射和捕获业务名仍待完成",
-      "MoveItemToQuickUse（133条）宿主代理布尔语义仍待验证",
-      "StorageItems（224条）父捕获名与服务端协议字段仍待确认",
-      "MainLeftBottom根模块PC201-PC412未完成",
-      "doInit_UI（419条）Attach_UITop参数和剩余捕获映射未完成",
+      "Nested_Anonymous（8条）T0/T1/T2帧槽映射及T2生产者仍待闭合",
+      "MoveItemToQuickUse（133条）代理返回值语义与宿主行为仍待验证",
+      "StorageItems（224条）父捕获身份及服务器协议字段未完全确认",
+      "MainLeftBottom根模块PC201-PC412尚未完成",
+      "doInit_UI（419条）Attach_UITop实参来源和剩余捕获映射未完成",
       "未进行Lua解释器或目标游戏运行时验证"
     ]
   },
-  "complete_static_reconstruction_count": 102,
-  "complete_static_reconstruction": "102/110 (92.7%)",
+  "complete_static_reconstruction_count": 103,
+  "complete_static_reconstruction": "103/110 (93.6%)",
   "progress_reconciled": true,
   "counts": {
     "ordinary_lua_drafts": 72,
-    "complete_static_reconstruction": 102,
+    "complete_static_reconstruction": 103,
     "runtime_verified": 0
   },
-  "next_checkpoint": 221,
+  "next_checkpoint": 222,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3538,7 +3546,8 @@
       "04_源码候选/root55_children_drafts.lua",
       "04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua",
       "04_源码候选/短函数草稿_第三十八批.lua",
-      "04_源码候选/root49_AnonymousHelper_49.lua"
+      "04_源码候选/root49_AnonymousHelper_49.lua",
+      "04_源码候选/短函数草稿_第五十批.lua"
     ],
     "lexical_block_balance": "passed",
     "full_lua_compiler_available": false,
