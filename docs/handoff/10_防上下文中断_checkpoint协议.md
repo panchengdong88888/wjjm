@@ -2186,3 +2186,16 @@
 - 根模块PC1-PC412现均有分段源码记录；不等于作者级完整源码恢复。根函数仍不计入完整静态恢复新增数量，也不增加运行时验证数量。
 - 更新后已重新fetch验证源码、函数状态CSV、机器状态JSON；本协议随后追加本记录并重新fetch验证。
 - 下一步：转向root.children[42] doInit_UI（419条）首版普通Lua草稿扩展，重点利用既有检查点187、102、106、107、108、110、115、118等，不重复已完成的子函数体。
+
+
+## 检查点 #199（2026-11-10）：doInit_UI PC66-PC99资源快照分支独立复审
+
+- 对象：root.children[42] / doInit_UI，419条；沿用检查点88/187首版普通Lua主体，不从头重建。
+- 反汇编核验：PC66-PC87的MoneyProxy truthy分支只包围第一组moneyNames遍历；PC88-PC99在跳出该分支后独立遍历第二组resourceNames。因此即使MoneyProxy不存在，第二组背包资源仍会调用无捕获child0 Nested_find并写入initSnapshot[name]。
+- PC82-PC85：GetMoneyCountById返回false或nil均进入0回退路径，修正草稿原先仅判断nil的问题。
+- 已将root.children[42].children[0] / Nested_find的普通Lua主体并入第六十三批草稿：BAG_DATA缺失返回0；pairs遍历；item/Name/MakeIndex门槛；string.find(...,1,true)纯文本匹配；ITEM_IS_BIND truthy排除；累计OverLap or 1。
+- 已在doInit_UI草稿显式记录moneybut的make_Nested_FFFF00四项捕获工厂依赖，以及hide按钮child15的make_Nested_Helper_9[UP[3],UP[0]]依赖；child12每日回调仍是父帧闭包，捕获父R5日期标记、UP[3]模块发送对象、UP[0]通知/日志回调，R5生产者未闭合，暂保留依赖TODO。
+- 未将doInit_UI升级完整静态恢复；不增加普通Lua函数数量（Nested_find作为既有子原型主体补入，不重复计数），完整静态恢复和运行时验证数量不变。
+- 当前统计：普通Lua草稿72；完整静态恢复103/110；运行时验证0。
+- 已更新并重新fetch验证第六十三批草稿、函数状态CSV和机器状态JSON；本协议随后追加并回读验证。
+- 下一步：继续PC269-PC337各按钮回调子闭包的捕获工厂接入，并恢复child12每日回调的可读主体；Attach_UITop七实参继续作为TODO，不阻断草稿推进。
