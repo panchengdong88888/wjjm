@@ -3008,6 +3008,22 @@ Nested_match：
 - DiuItems实例写入`rootPrototypes.DiuItems`并按root PC67导出全局`_G.DiuItems`；FindMonsterCandidates仅保留为MainLoop依赖，不虚构全局导出。
 - 根模块源注册表新增root28候选工厂，并向root_MainLeftBottom_Module源码导出gatherConfig供装配读取。
 - 对主汇总源码全文检查，发现19处`return function Name(...)`非法命名匿名函数表达式，全部改为合法`return function(...)`；函数体及调用逻辑未改动。当前该模式残留数为0。
-- 捕获工厂累计静态装配2/36，尚余34；22个无捕获直接子原型仍记录为源代码层绑定。未执行目标Lua运行时验证，运行时验证数仍为0。
+- 捕获工厂累计静态装配3/36，尚余33（更正：ShowLocalNoticeByType自身也属于1个有捕获原型，上一版统计漏计该依赖闭包）；22个无捕获直接子原型仍记录为源代码层绑定。未执行目标Lua运行时验证，运行时验证数仍为0。
 - 静态完整恢复109、普通Lua草稿72均不变；本批不把装配完成等同于新增完整静态恢复函数。
 - 下一批：优先检查root.children[36] GetAvailableStoragePage与root.children[1] GetStorageItemData的T[4]捕获来源，再推进TakeItems/PickUpItems/StorageItems等稳定表或代理捕获；含可变标量cell的工厂暂缓，待建立显式cell读写适配。
+
+
+## 检查点 #248（2026-11-10）：物品与仓库稳定捕获工厂装配
+
+- 新增6个有捕获工厂的静态实例化：
+  - LuaSendMsg：UP[0]=root T[0]=MainLeftBottom.a，UP[1]=root T[4]=PrintLog；结果写入`MainLeftBottom.a.LuaSendMsg`，不导出为全局。
+  - GetAvailableStoragePage：UP[0]=root T[4]=PrintLog；按PC70导出全局。
+  - GetStorageItemData：UP[0]=root T[4]=PrintLog；按PC73导出全局。
+  - TakeItems：UP[0]=root T[2]=MainLeftBottom.z，UP[1]=root T[5]=ShowLocalNoticeByType；按PC82导出全局。
+  - PickUpItems：UP[0]=root T[5]=ShowLocalNoticeByType；按PC85导出全局。
+  - StorageItems：UP[0..2]=[root T[2],T[4],T[5]]，即状态表、PrintLog、ShowLocalNoticeByType；按PC78导出全局。
+- StorageItems原候选跨多个词法块直接引用`make_Nested_isOutputted`与`make_FindAvailableStoragePage`，在独立`do`块中不是可见局部变量。本批将两个子原型工厂作为额外的装配注入参数显式传入；这两个参数属于源码适配层，不计入原型真实Upvalue数量。
+- PickUpItems原候选中的`Nested_dist`定义在工厂之后，导致工厂体内引用可能解析为全局；本批将两个比较器子闭包移入返回的PickUpItems函数体内，并将`return function PickUpItems()`改为合法匿名函数表达式。
+- 更正检查点247统计：ShowLocalNoticeByType本身是root.children[20]的1项捕获闭包，且此前已实例化。因此检查点247应计3/36，而非2/36；本批完成后累计9/36，尚余27。
+- 完整静态恢复109、普通Lua草稿72、运行时验证0均不变；StorageItems仍保持普通Lua草稿等级。
+- 下一批：优先处理Builtsetting的单捕获；随后建立共享标量cell适配，再推进FormatStateChange、ResetGatherMonsterData及采集启停闭包。
