@@ -41,7 +41,7 @@ local function make_BlacklistPlayerDetection(
     noStoneRetryDelay,
     randomTeleportNames
 )
-    return function BlacklistPlayerDetection()
+    local function BlacklistPlayerDetection()
         featureState.isBlacklisting = true
         onDamageMsg()
 
@@ -180,6 +180,7 @@ local function make_BlacklistPlayerDetection(
             end
         end
     end
+    return BlacklistPlayerDetection
 end
 
 
