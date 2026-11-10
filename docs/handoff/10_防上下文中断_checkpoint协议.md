@@ -2675,3 +2675,14 @@ Nested_match：
 - 发现机器状态JSON的部分 `draft_recovered_functions` 仍保留旧pending状态，与函数状态CSV的“完整静态恢复”冲突。本批以CSV中106个完整静态条目为准，统一JSON状态记录。
 - 完整静态恢复数量保持106/110（95.5%），这是状态对账，不是新增恢复计数；运行时验证仍为0。
 - 下一批优先处理短子原型/少捕获函数；复杂UI、资源刷新、MainLoop及地图遍历函数最后处理。
+
+
+## 检查点 #220（2026-11-10）：短原型源码集中整合
+
+- 整合来源：`root50_Nested_Anonymous_2.lua`、`短函数草稿_第七十四批.lua`、`root56_root57_short_functions.lua`、`root55_children_drafts.lua`、`InitGatherMonsters_初始化逻辑_第八批草稿.lua`、`短函数草稿_第三十八批.lua`、`root49_AnonymousHelper_49.lua`。
+- `FileExistCheck_pcall_wrapper` 改为显式捕获 `resolveWritablePath` 的工厂形式；内部removeFile子闭包捕获FileUtils实例和resolvedPath，保留pcall及二次文件存在检查。
+- `Nested_ITEM_INDEX_BY_NAME` 改为显式捕获config和移动结果回调的工厂形式，保留 `MoveItemToQuickUse(itemIndex, config.slot)` 参数顺序。
+- 新增 `AnonymousHelper_49`：捕获ReadNumericConfig与固定文件名，零参调用并转发全部返回值。
+- 其余已静态完成函数包括仓库空页查找、目标ID清理、账号ID验证及两个子闭包、采集初始化。
+- 本批只做源码集中整合，不增加完整静态恢复数量；运行时验证仍为0。
+- 下一批先处理剩余短原型Nested_Anonymous（8条），再处理LuaSendMsg、MoveItemToQuickUse、StorageItems和两个大模块。
