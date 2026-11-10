@@ -5679,6 +5679,43 @@ do
         )
     end
 
+    -- Builtsetting：UP[0]=root T[5]=ShowLocalNoticeByType；PC258导出全局。
+    local makeBuiltsetting = sourceFunction(
+        "04_源码候选/短函数草稿_第四十五批.lua",
+        "make_Builtsetting"
+    )
+    if makeBuiltsetting and rootPrototypes.ShowLocalNoticeByType then
+        rootPrototypes.Builtsetting =
+            makeBuiltsetting(rootPrototypes.ShowLocalNoticeByType)
+    end
+
+    -- AccountIDValidation：UP[0]=root T[4]=PrintLog，UP[1]=root T[5]=ShowLocalNoticeByType。
+    -- 内部Nested_ID与Nested_Panel_mini_chat工厂保留在同一来源词法块。
+    local makeAccountIDValidation = sourceFunction(
+        "04_源码候选/root55_children_drafts.lua",
+        "make_AccountIDValidation"
+    )
+    if makeAccountIDValidation and rootPrototypes.ShowLocalNoticeByType then
+        rootPrototypes.AccountIDValidation = makeAccountIDValidation(
+            rootPrototypes.PrintLog,
+            rootPrototypes.ShowLocalNoticeByType
+        )
+        rootModule.main = rootPrototypes.AccountIDValidation
+    end
+
+    -- InstallDamageHook：UP[0]=root T[0]=MainLeftBottom.a，UP[1]=root T[4]=PrintLog。
+    -- 该闭包供后续BlacklistPlayerDetection捕获，不是全局导出。
+    local makeInstallDamageHook = sourceFunction(
+        "04_源码候选/短函数草稿_第三十九批.lua",
+        "make_InstallDamageHook"
+    )
+    if makeInstallDamageHook then
+        rootPrototypes.InstallDamageHook = makeInstallDamageHook(
+            rootModule.a,
+            rootPrototypes.PrintLog
+        )
+    end
+
     -- 仅导出字节码明确写入_ENV的全局入口；其他辅助闭包留在rootPrototypes。
     local globalExports = {
         log = "PrintLog",
@@ -5688,6 +5725,7 @@ do
         StorageItems = "StorageItems",
         TakeItems = "TakeItems",
         PickUpItems = "PickUpItems",
+        Builtsetting = "Builtsetting",
         GetMapId = "GetMapId",
         GetMapName = "GetMapName",
         PlayerPos = "PlayerPos",
@@ -5706,20 +5744,21 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 248,
+        checkpoint = 249,
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
         missing = missing,
         captured_factory_closures_expected = 36,
-        captured_factory_closures_bound = 9,
-        captured_factory_closures_pending = 27,
+        captured_factory_closures_bound = 12,
+        captured_factory_closures_pending = 24,
         captured_factory_names_bound = {
             "ShowLocalNoticeByType", "DiuItems", "FindMonsterCandidates",
             "LuaSendMsg", "GetAvailableStoragePage", "GetStorageItemData",
-            "TakeItems", "PickUpItems", "StorageItems"
+            "TakeItems", "PickUpItems", "StorageItems", "Builtsetting",
+            "AccountIDValidation", "InstallDamageHook"
         },
         runtime_verified = false,
-        capture_semantics = "OP_387 live shared cell; only confirmed table/function captures and explicit nested factory adapters are bound"
+        capture_semantics = "OP_387 live shared cell; only confirmed stable table/function captures are bound; scalar shared cells remain pending"
     }
 end
 
