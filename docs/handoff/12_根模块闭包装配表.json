@@ -9336,9 +9336,9 @@
         "name": "BlacklistPlayerDetection",
         "capture_count": 13,
         "bindings": [
-          "T[2] MainLeftBottom module table",
-          "T[57] rootCells[57] containing InstallDamageHook closure",
-          "T[41] blacklistState",
+          "T[2] MainLeftBottom.z (rootModule.z)",
+          "T[57] InstallDamageHook function value (PC360 write; PC368 capture; no later T[57] writes)",
+          "T[41] blacklistState (rootSource.blacklistState)",
           "T[58] DeathAutoBlacklist",
           "T[55] FindBlacklistPlayer",
           "T[53] GetMapData2DPtr",
@@ -9358,9 +9358,10 @@
       "T[57]": {
         "pc360_write": "InstallDamageHook closure",
         "pc368_capture_by": "BlacklistPlayerDetection.UP[1]",
-        "adapter": "rootCells[57]",
-        "read_expression": "rootCells[57].value()",
-        "note": "The captured value is the PC360-installed hook function. Do not bind onDamageMsg here; that callback is separately stored in MainLeftBottom.onDamageMsg at PC359."
+        "capture_semantics": "OP_387 captures the live parent T[57] cell. Its value is InstallDamageHook at PC368; register timeline shows no subsequent writes, so the current source adapter passes the function value directly.",
+        "adapter": "none required",
+        "read_expression": "rootPrototypes.InstallDamageHook",
+        "note": "PC357 creates onDamageMsg and PC359 stores it in MainLeftBottom.onDamageMsg. PC360 then overwrites T[57] with InstallDamageHook. Do not bind UP[1] to onDamageMsg or to a plain {value=...} table."
       }
     },
     "runtime_verified": false,
