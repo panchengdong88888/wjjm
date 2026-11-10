@@ -450,7 +450,7 @@ local opaquePairTable = {
 -- PC363-PC367：创建root.children[25] / DeathAutoBlacklist，捕获：
 -- [T[41], T[4], T[55], T[5]]。
 -- PC368-PC381：创建root.children[47] / BlacklistPlayerDetection，按序捕获：
--- [T[2], T[57], T[41], T[58], T[55], T[53], T[38],
+-- [T[2]=MainLeftBottom.z, T[57]=InstallDamageHook live cell, T[41], T[58], T[55], T[53], T[38],
 --  T[4], T[56], T[39], T[5], T[40], T[37]]。
 -- PC382：将该闭包导出为全局BlacklistItems。
 -- 13项捕获的逐槽用途见检查点186；此处不重复展开已恢复函数主体。
@@ -463,9 +463,9 @@ local opaquePairTable = {
 -- PC390-PC410：创建root.children[42] / doInit_UI，捕获20项父root寄存器：
 -- [T[4], T[2], T[3], T[0], T[1], T[41], T[48], T[7], T[8], T[50],
 --  T[49], T[5], T[44], T[42], T[51], T[43], T[47], T[11], T[12], T[9]]。
--- 这是父级捕获顺序，不代表所有槽位业务身份均已确认。
+-- 20项槽位身份已由检查点256逐项闭合；完整顺序与装配值见docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md。
 -- doInit_UI本体419条，已有首版普通Lua草稿（检查点187）；
--- GUI宿主语义、Attach_UITop七实参、Nested_Anonymous三个T槽来源等仍待复审。
+-- 静态参数映射已由检查点208/235闭合：RequestStorageData与Attach_UITop各传T[7]一个显式实参；Nested_Anonymous fixed_param_count=2，T[0]=promptText、T[1]=successCallback、T[2]=nil。GUI宿主行为仍未运行时验证。
 -- PC411：MainLeftBottom.doInit = doInit_UI。
 -- PC412：根模块return。
 
