@@ -1,24 +1,10 @@
 -- MainLeftBottom(2).lua 简单函数明文整合候选
--- 检查点230；所有函数均为完整静态恢复候选，尚未进行目标运行时验证。
-
--- root.children[49] / legacy root/50 / PCallHelper_2
--- 父原型5条指令，子原型9条指令。
-local function make_PCallHelper_2()
-    local function Nested_FriendProxy()
-        return global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)
-    end
-
-    return function()
-        local ok, proxy = pcall(Nested_FriendProxy)
-        if not ok or not proxy then
-            return nil
-        end
-        return proxy
-    end
-end
+-- 检查点230；FindBlacklistPlayer为完整静态恢复，尚未进行目标运行时验证。
+-- 依赖PCallHelper_2及Nested_FriendProxy；二者已在主恢复源码
+-- “代理与回调短函数_第四批.lua”词法块中定义，不在此重复实现。
 
 -- root.children[51] / legacy root/52 / FindBlacklistPlayer
--- UP[0] = PCallHelper_2；vararg_flag=1，只读取首个可变参数。
+-- UP[0] = PCallHelper_2；vararg_flag=1，零固定参数，只读取首个可变参数。
 local function make_FindBlacklistPlayer(getFriendProxySafely)
     return function(...)
         local targetId = ...
