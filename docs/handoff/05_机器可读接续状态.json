@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点234：继续按简单优先处理真实未闭合项。对CSV已完整、prototype_index滞后的项目先对账，不重复反汇编；优先检查DeathAutoBlacklist、MoveTo、ClearBlacklistItems、onDamageMsg、TakeItems、BlacklistPlayerDetection的主文件源码与捕获映射是否一致。更复杂的根模块装配仍后置。",
+  "next_action": "检查点235：开始处理剩余复杂项。优先继续追查Nested_Anonymous（root.children[42].children[22]）T[2]错误提示回调槽的实际生产者/VM帧初始化语义；两个已知调用包装器只传两个显式参数，不能臆造第三参数或默认nil。只有证据闭合后才完成该原型。之后再做MainLeftBottom_Module（root）根级闭包实例化、共享Upvalue cell和导出装配。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -3512,19 +3512,19 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 233,
+  "last_checkpoint": 234,
   "checkpoint": {
-    "number": 233,
+    "number": 234,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点233_已完成函数索引状态对账.md",
+      "docs/audit/检查点234_剩余未闭合原型盘点.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "complete_static_reconstructions": 108,
     "runtime_verified": 0,
-    "notes": "将DeathAutoBlacklist、MoveTo、ClearBlacklistItems、onDamageMsg、TakeItems、BlacklistPlayerDetection六个已由CSV/既有PC审计闭合且主体已在主文件的原型，prototype_index过时first-pass状态统一为complete_static_reconstruction_not_runtime_verified；不重复添加主体、不增加静态恢复数量。"
+    "notes": "GetMapData2DPtr的PC1-PC37完整可达路径、PC38-PC144死尾部已闭合；MoveItemToQuickUse的133条活动路径与返回路径已由CSV/审计闭合。两者仅同步prototype_index状态，不重复加源码、不增加108/110静态完成计数。简单及普通中等函数均已对账；真正未完成仅Nested_Anonymous T[2]槽位和根模块闭包装配。"
   },
   "drafts": 33,
   "next": "检查点230：继续优先整合简单明文，随后处理中等函数；复杂大函数与根级装配最后处理。",
@@ -3546,13 +3546,13 @@
     "notes": "按简单优先实际整合GetStorageItemData和FindBlacklistPlayer。FindBlacklistPlayer（root.children[51]）的UP[0]正确指向root.children[48] PCallHelper_2（其Nested_FriendProxy子原型为root.children[48].children[0]）；相邻root.children[49]是独立AnonymousHelper_49，路径已校正。PCallHelper_2/Nested_FriendProxy此前已在主文件定义，本批复用不重复实现。GetStorageItemData父T[4]回调身份未证明，保留notify参数。静态恢复数不变，运行时验证0。"
   },
   "latest_checkpoint": {
-    "checkpoint": "233",
-    "summary": "将六个已有完整PC级证据、已在主源码的函数状态同步到prototype_index，避免误判为未完成；不重复添加源码。",
-    "audit_file": "docs/audit/检查点233_已完成函数索引状态对账.md",
+    "checkpoint": "234",
+    "summary": "对账GetMapData2DPtr与MoveItemToQuickUse的完整静态恢复状态；确认简单函数已全部覆盖，剩余仅Nested_Anonymous T[2]来源与根模块闭包装配。",
+    "audit_file": "docs/audit/检查点234_剩余未闭合原型盘点.md",
     "unresolved": [
-      "Nested_Anonymous T[2]帧槽来源仍未闭合",
-      "根模块PC1-PC412闭包装配和共享Upvalue cell接线仍未完成",
-      "尚未进行目标运行时验证"
+      "Nested_Anonymous T[2]错误提示回调槽生产者/VM帧初始化语义未闭合",
+      "MainLeftBottom_Module根级闭包实例化、共享Upvalue cell和导出装配未完成",
+      "运行时验证为0"
     ]
   },
   "complete_static_reconstruction_count": 108,
@@ -3563,7 +3563,7 @@
     "complete_static_reconstruction": 108,
     "runtime_verified": 0
   },
-  "next_checkpoint": 234,
+  "next_checkpoint": 235,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
