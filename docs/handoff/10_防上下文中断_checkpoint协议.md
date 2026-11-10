@@ -2019,3 +2019,11 @@
 - 更新源码：04_源码候选/root47_BlacklistPlayerDetection.lua；新增审计：docs/audit/检查点186_BlacklistPlayerDetection216条指令完整静态复核.md。
 - 统计：普通Lua草稿71；完整静态恢复102/110；运行时验证0。
 - 下一步：检查root.children[45] MainLoop既有源码候选与未闭合CFG。
+
+
+### 检查点 #186 后的接续目标重定位（不改变统计）
+
+- CSV核验显示root.children[45] / MainLoop（417条）已经在检查点152-158标记为完整静态恢复（未运行时验证），不要将其列为下一待办或重复分析。
+- 下一待办为root.children[42] / doInit_UI（419条、23个子原型），状态仍是首版普通Lua草稿。
+- 先定位仓库内现有doInit_UI首版草稿及相关子闭包文件，再按机器状态中的未闭合项继续：Nested_Anonymous的T[0]/T[1]/T[2]捕获生产者、Nested_FFFF00剩余320条、Nested_Helper_3刷新闭包。
+- 检查点186统计不变：普通Lua草稿71；完整静态恢复102/110；运行时验证0。
