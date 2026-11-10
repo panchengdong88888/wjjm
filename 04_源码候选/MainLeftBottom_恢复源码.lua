@@ -5282,3 +5282,18 @@ end
 -- GetMapName、PlayerPos、GetDroppedItems、MoveTo、DiuItems、
 -- GetAvailableStoragePage、GetStorageItemData、StorageItems、TakeItems、
 -- PickUpItems。详细PC映射见root_MainLeftBottom_Module.lua及检查点241审计。
+
+
+-- 检查点242：root PC86-PC211寄存器生命周期摘要与捕获时值核验。
+-- T7=Schedule；T9=0.2；T11=18000；T12=14项奖励记录表；
+-- T13=gatherStatusText；T14=currentState共享cell；
+-- T15目标ID集合、T16自己归属计数、T17扫描游标、T18运行标记、
+-- T19等待标记、T20截止时间、T21等待目标ID、T22等待目标名称；
+-- T23 FormatStateChange、T24 SetTargetID、T25 ClearTargetID_2、
+-- T26 GetMainPlayerID、T27 GetPlayerPosition、T28 GetPlayerMapPosition、
+-- T29 DistanceCalculation、T30 IsDie、T31 GetOwnerIDText、T32 GetOwnerID、
+-- T33 GetOwnerDescription、T34 FindMonsterCandidates、
+-- T35 ResetGatherMonsterData、T36 FindMonsterInCurrViewField。
+-- 更正：PC210创建的是FindMonsterInCurrViewField，PC211捕获T30=IsDie；
+-- ClearBlacklistItems实际在PC383创建（root.children[15]），不是PC210。
+-- 所有捕获按OP_387共享live cell与PC顺序核对；无运行时验证。
