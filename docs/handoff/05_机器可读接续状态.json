@@ -51,7 +51,7 @@
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
     "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192-PC1-PC41；193-PC42-PC85；194-PC86-PC167；195-PC168-PC200；196-PC201-PC270；197-PC271-PC340；198-PC341-PC412。PC341-PC349完成R52八个二元素数组构造；PC350-PC359创建GetMapData2DPtr/PCallHelper_2/FindBlacklistPlayer/UseItemByIndex/onDamageMsg并写MainLeftBottom.onDamageMsg；PC360-PC362创建InstallDamageHook捕获[T0,T4]；PC363-PC367创建DeathAutoBlacklist捕获[T41,T4,T55,T5]；PC368-PC381创建BlacklistPlayerDetection捕获13项并PC382导出BlacklistItems；PC383-PC388创建/导出ClearBlacklistItems；PC389-PC411创建doInit_UI并按序捕获20项，写入MainLeftBottom.doInit；PC412 return。根模块PC1-PC412均有分段普通Lua记录，但仍非作者级完整源码，doInit_UI及部分槽位待复审，未运行时验证。"
   },
-  "next_action": "沿doInit_UI PC133的OP_233回溯T[6]/T[7]进入迭代器调用前的初始化和循环分支；确认T[7]的实际值。再追踪root/43/19 PC27空参数调用后，root/43/12包装器T[1]/T[2]在VM调用帧中的实际来源，闭合Nested_Anonymous的三个捕获槽；并继续检查['unknown',2]宿主解码语义。",
+  "next_action": "继续用T槽写入点与控制流路径闭合doInit_UI PC133输入T[6]；同步核对PC180/183传入T[7]时是否仍为该次ipairs第三返回值。随后追踪root/43/12包装器T[1]/T[2]的调用帧实际来源。unknown哨兵及GUI宿主签名仍待核验。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2962,35 +2962,33 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": "203",
-  "checkpoint": 203,
+  "last_checkpoint": "204",
+  "checkpoint": 204,
   "drafts": 33,
   "next": "检查点201已将Nested_Anonymous父包装器及Nested_str/Nested_match/Nested_Helper_11主体并入第六十三批；同时将Nested_FFFF00父工厂及Nested_Helper_2、Nested_string、Nested_FFFFFF、Nested_Helper_3、Nested_UnSchedule依赖并入统一候选。下一步追踪PC181-PC183 GUI:Attach_UITop七个实参的生产者/类型，并闭合Nested_Anonymous T[0]/T[1]/T[2]来源；保留unknown哨兵宿主语义待核验。",
   "recent_checkpoint": {
-    "number": 201,
+    "number": 204,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/短函数草稿_第六十三批.lua",
-      "04_源码候选/Nested_Anonymous_第七十八批.lua",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
-      "docs/audit/检查点201_doInit_UI_Nested_Anonymous与Nested_FFFF00依赖合并.md",
-      "docs/handoff/10_防上下文中断_checkpoint协议.md"
+      "docs/handoff/10_防上下文中断_checkpoint协议.md",
+      "docs/audit/检查点204_PC133迭代器输入与T7返回槽追踪.md"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 72,
     "complete_static_reconstructions": 103,
     "runtime_verified": 0,
-    "notes": "将既有普通Lua草稿的两个外部父工厂依赖及静态完成子原型工厂并入同一文件；不增加原型草稿数量，不提升完整静态恢复/运行时验证计数。"
+    "notes": "仅补充已确认的PC130-PC133调用/返回槽事实；未确认T6实际值，不升级静态完成或运行时统计。"
   },
   "latest_checkpoint": {
-    "checkpoint": "203",
-    "summary": "更正检查点202的调用参数计数：U(T,A+1,B)按unpack(start,end)解释，B是结束下标；PC180/PC183 A=6 B=7均只传T[7]一个实参，而非七个。两次调用传递同一T[7]。doInit_UI PC133的OP_233多返回值调用是T[7]在调用前最后一个静态可见写入点（同时写T[5]..T[7]）；PC143 OP_339只写T[8]..T[9]。Nested_Anonymous调用链追踪到root/43/12包装器：由doInit_UI PC250创建并将Nested_Anonymous捕获为UP[0]；root/43/19 PC27以空参数区间调用该包装器；包装器PC11再以T[1]..T[2]转发给Nested_Anonymous。转发位置已确认，三个捕获槽的值/类型/业务映射仍未闭合。",
-    "audit_file": "docs/audit/检查点203_参数展开规则纠正与Nested_Anonymous调用链.md",
-    "correction": "检查点202审计中“七个显式实参”表述已被更正；PC180/PC183实际各传一个实参T[7]。",
+    "checkpoint": "204",
+    "summary": "复核doInit_UI PC130-PC133。PC130 OP_088以T[5]..T[8]构造R4；PC131装入ipairs，PC132复制R4到R6；PC133 OP_233实际调用ipairs(T[6])，返回值写T[5]..T[7]，故T[7]为本次调用第三返回值。T[6]的运行时值及其调用前来源尚未闭合，不能推断T[7]的具体值或类型。",
+    "audit_file": "docs/audit/检查点204_PC133迭代器输入与T7返回槽追踪.md",
     "unresolved": [
-      "T[7]在PC133多返回值调用中的具体运行时值及其初始参数来源",
-      "Nested_Anonymous T[0]/T[1]/T[2]与调用端转发槽的精确映射",
+      "PC133调用时T[6]的运行时值、初始化点及控制流来源",
+      "Nested_Anonymous T[0]/T[1]/T[2]与包装器T[1]/T[2]的实际帧值映射",
       "UNKNOWN_VALUE_SENTINEL宿主值",
       "GUI.Attach_UITop / NPCStorageProxy.RequestStorageData宿主签名与参数语义",
       "No runtime validation"
@@ -3004,5 +3002,6 @@
     "complete_static_reconstruction": 103,
     "runtime_verified": 0
   },
-  "next_checkpoint": "追踪doInit_UI PC133的T[7]产生值及Nested_Anonymous包装器T[1]/T[2]帧来源"
+  "next_checkpoint": "闭合PC133的T[6]生产者与控制流；核对T[7]跨PC134-PC183的存活性",
+  "runtime_verified": 0
 }
