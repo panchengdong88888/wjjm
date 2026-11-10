@@ -3,7 +3,8 @@
 -- 102 physical VM instructions; one nested distance comparator.
 -- Static reconstruction only; runtime validation has not been performed.
 
-local function FindMonsterCandidates()
+local function make_FindMonsterCandidates(GetPlayerPosition, IsDie, GetPlayerMapPosition, DistanceCalculation, config)
+    local function FindMonsterCandidates()
     local monsters = SL.FindMonsterInCurrViewField()
     if not monsters or #monsters == 0 then
         return {}
@@ -50,4 +51,6 @@ local function FindMonsterCandidates()
     end
 
     return result
+    end
+    return FindMonsterCandidates
 end
