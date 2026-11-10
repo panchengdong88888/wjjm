@@ -1,8 +1,8 @@
 -- root.children[42].children[22] / legacy root/43/23
 -- Reconstruction name: Nested_Anonymous
 -- 8 physical VM instructions; one child prototype Nested_str (27 instructions).
--- Status: first-pass readable Lua draft; VM T-register/argument mapping remains unresolved.
--- Not original source text and not runtime-validated.
+-- Status: integrated into short-function batch 63 at checkpoint 201; T-register/argument mapping remains unresolved.
+-- Not original source text; parent factory and child callback body are now present in batch 63; not runtime-validated.
 
 local function make_Nested_Anonymous(PrintLog)
     return function Nested_Anonymous(...)
