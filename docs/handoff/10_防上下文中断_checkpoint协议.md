@@ -3093,3 +3093,13 @@ Nested_match：
 - 两者使用`PlayerPos与匿名转发闭包_第十一批.lua`中的规范工厂；不混用代理辅助批次中相似命名的其他闭包。
 - 有捕获工厂累计34/36，剩余2：BlacklistPlayerDetection、doInit_UI。完整静态恢复109、普通Lua草稿72、运行时验证0。
 - 下一步检查点255：BlacklistPlayerDetection需严格按PC360/368复核T[57] live-cell被InstallDamageHook覆盖、T[58]为DeathAutoBlacklist；不得将UP1错误绑定为onDamageMsg。doInit_UI最后处理。
+
+
+## 检查点 #255（2026-11-10）：BlacklistPlayerDetection十三项捕获与T[57] live-cell
+
+- 已静态实例化root.children[47] BlacklistPlayerDetection，13项捕获严格按PC368顺序注入。
+- UP[0]=T[2] MainLeftBottom模块表；UP[1]=T[57]；UP[2]=T[41] blacklistState；UP[3]=T[58] DeathAutoBlacklist；UP[4]=T[55] FindBlacklistPlayer；UP[5]=T[53] GetMapData2DPtr；UP[6]=T[38] 2.0；UP[7]=T[4] PrintLog；UP[8]=T[56] UseItemByIndex；UP[9]=T[39] 0.01；UP[10]=T[5] ShowLocalNoticeByType；UP[11]=T[40] 30.0；UP[12]=T[37] randomTeleportItemNames。
+- 关键校正：PC360创建InstallDamageHook并写入父T[57]；PC368的OP_387捕获的是该T[57] live cell。装配层创建`rootCells[57] = newLiveCell(rootPrototypes.InstallDamageHook)`，UP1通过`.value()`调用。不得把UP1误接为PC359另行挂入MainLeftBottom.onDamageMsg的消息回调。
+- UP0按账本接入根MainLeftBottom模块表；UP2复用PC294挂入MainLeftBottom.blacklist的同一blacklistState表。
+- 有捕获工厂累计35/36，剩余最后一个doInit_UI；无捕获直接子原型22/22。完整静态恢复109、普通Lua草稿72、运行时验证0。
+- 下一步检查点256：处理doInit_UI的20项捕获与23个子原型依赖，保留未知槽位及缺失依赖，不伪造空函数。
