@@ -2777,3 +2777,15 @@ Nested_match：
 - `SL:Schedule(callback,time)`签名由`新框架(3_40_xx).zip`中的SL.md确认。
 - 修正prototype_index中该原型原先指向错误候选文件的问题，并将其补入函数状态CSV。
 - 完整静态恢复数更新为108/110（98.2%）；运行时验证仍为0。剩余两个未完成原型为Nested_Anonymous与根模块MainLeftBottom_Module。
+
+
+## 检查点 #228（2026-11-10）：Nested_Anonymous 双调用点与第三捕获槽复核
+
+- 重读corrected phase3的root/43/12、root/43/15、root/43/23及三层子原型。
+- doInit_UI PC248创建Nested_Anonymous；PC250/PC259分别将其捕获给root/43/12与root/43/15。
+- 两个包装器PC11均只传两个显式实参：提示文本和成功回调。没有第三个显式实参生产者。
+- Nested_Anonymous父原型PC1创建Nested_str时捕获当前帧T[0]、父UP[0]=PrintLog、当前帧T[2]、当前帧T[1]；Nested_match后续将T[2]捕获给Nested_Helper_11，并在0.1秒后将固定错误提示传给它。
+- T[2]的业务用途已知为错误提示回调槽，但VM帧基址/vararg槽初始化语义尚未证明；不得猜成nil或虚构回调。T[0]/T[1]也不提前命名为已证实作者变量。
+- 已同步更新Nested_Anonymous独立候选与MainLeftBottom_恢复源码.lua的注释；不改变函数行为、不增加静态恢复数量。
+- 统计保持108/110完整静态恢复，运行时验证0。
+- 下一步：根模块MainLeftBottom_Module的PC1-PC412根级闭包装配与共享Upvalue cell接线。
