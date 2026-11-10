@@ -2,6 +2,8 @@
 -- Reconstruction name: FindMonsterCandidates
 -- 102 physical VM instructions; one nested distance comparator.
 -- Static reconstruction only; runtime validation has not been performed.
+-- Checkpoint 247: integrated into the aggregate root assembly with five dependencies
+-- supplied in OP_387 order; static binding only, not runtime validation.
 
 local function make_FindMonsterCandidates(GetPlayerPosition, IsDie, GetPlayerMapPosition, DistanceCalculation, config)
     local function FindMonsterCandidates()
