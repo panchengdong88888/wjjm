@@ -8442,6 +8442,23 @@ do
         "AnonymousHelper_54", rootPrototypes.AnonymousHelper_54
     )
 
+    -- PC316-PC349：T[52]是八个二元数值子表构成的外层数组；只核对原始值，
+    -- 不为其命名业务用途，也不把它误认成脚本函数或引擎API。
+    local expectedOpaquePairs = {
+        {1, 0}, {-1, 0}, {0, 1}, {0, -1},
+        {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
+    }
+    assert(type(rootSource.opaquePairTable) == "table"
+        and #rootSource.opaquePairTable == #expectedOpaquePairs,
+        "PC316-PC349 T[52] outer table size mismatch")
+    for i, expectedPair in ipairs(expectedOpaquePairs) do
+        local actualPair = rootSource.opaquePairTable[i]
+        assert(type(actualPair) == "table"
+            and actualPair[1] == expectedPair[1]
+            and actualPair[2] == expectedPair[2],
+            "PC316-PC349 T[52] pair mismatch at index " .. i)
+    end
+
     -- root.children[22]捕获T[52]；静态可达路径不读取此表，但保留真实捕获注入。
     local makeGetMapData2DPtr = sourceFunction(
         "04_源码候选/root22_GetMapData2DPtr.lua", "make_GetMapData2DPtr"
@@ -8498,6 +8515,8 @@ do
     rootModule.onDamageMsg = rootPrototypes.onDamageMsg
     assert(rootModule.onDamageMsg == rootPrototypes.onDamageMsg,
         "PC359 MainLeftBottom.onDamageMsg attachment failed")
+    assert(rootCells[57] == nil or rootCells[57].value ~= rootPrototypes.onDamageMsg,
+        "PC357 onDamageMsg must not be confused with PC360 InstallDamageHook")
 
     -- root PC360-PC362：InstallDamageHook捕获T[0]=MainLeftBottom.a、T[4]=PrintLog。
     -- PC360写入T[57]；后续BlacklistPlayerDetection捕获同一个live cell。
@@ -8519,6 +8538,9 @@ do
         "T[57] InstallDamageHook live cell aliases another root cell")
     seenRootCells[damageHookCell] = true
     rootCells[57] = damageHookCell
+    assert(rootCells[57].value == rootPrototypes.InstallDamageHook
+        and rootCells[57].value ~= rootPrototypes.onDamageMsg,
+        "PC360 T[57] must contain InstallDamageHook, not onDamageMsg")
 
     local makeDeathAutoBlacklist = sourceFunction(
         "04_源码候选/root25_DeathAutoBlacklist.lua", "make_DeathAutoBlacklist"
