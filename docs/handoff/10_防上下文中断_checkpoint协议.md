@@ -1923,3 +1923,15 @@
 - 新增审计：docs/audit/检查点178_ReadNumericConfig捕获来源与配置文件调用链闭合.md；更新源码候选、函数状态CSV、机器状态JSON。
 - 统计：普通Lua草稿76；完整静态恢复97/110；运行时验证0。
 - 下一步：复核root.children[6].children[0] / Nested_onDamageMsg（18条），闭合其父InstallDamageHook的捕获与原处理器返回链。
+
+
+## 检查点 #179：Nested_onDamageMsg 原始处理器必达路径纠错
+
+- 对象：root.children[6].children[0] / Nested_onDamageMsg（18条）；父级为InstallDamageHook。
+- root T[0]为MainLeftBottom模块表，root PC359先将onDamageMsg函数写入该表字段。InstallDamageHook的父级UP0捕获该模块表；父级PC22从gameMapController.mNetMsgHandle[MSG_SC_DAMAGE_HP]取得原始处理器R2。
+- InstallDamageHook PC30创建子闭包，PC31捕获父UP0作为子UP0，PC32捕获父R2作为子UP1；PC33将新闭包安装到消息处理表。
+- 子函数PC1-PC6读取UP0.onDamageMsg并判断type。若为function，PC7-PC12执行pcall(callback,arg1,arg2)，但pcall结果全部丢弃；随后PC13-PC16仍调用UP1(arg1,arg2)并返回原处理器多返回值。非函数路径直接跳至PC13。pcall捕获回调异常，不阻断原处理器调用。PC17-PC18在PC16无条件return后不可达；额外vararg不读取/不转发。
+- 修正旧草稿错误：不得将pcall写成return，也不得将原处理器写成else分支；原处理器是所有路径的必达调用。
+- 新增审计：docs/audit/检查点179_Nested_onDamageMsg原始处理器必达路径纠错.md；更新源码候选、函数状态CSV、机器状态JSON。
+- 统计：普通Lua草稿75；完整静态恢复98/110；运行时验证0。
+- 下一步：复核root.children[52] / onDamageMsg（72条），重点闭合入口门槛、UPVALUE_0来源及Nested_JsonDecode调用链。
