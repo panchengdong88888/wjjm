@@ -10325,5 +10325,160 @@
     "root_module_candidate_blob_sha": "b57defb2a4660a120b311f925e083d40668f417c",
     "audit_file": "docs/audit/检查点258_根模块返回值与寄存器身份校正.md",
     "structure_tree_file": "docs/handoff/13_原型结构树.md"
+  },
+  "root_assembly_checkpoint_259": {
+    "date": "2026-11-10",
+    "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
+    "main_recovery_blob_sha": "245dc46e5e2982dc7bfec024b218a093b9f2f95f",
+    "audit_file": "docs/audit/检查点259_PC43-PC85根模块闭包顺序整合.md",
+    "pc43_pc85_order": [
+      {
+        "pc": "43-45",
+        "name": "PrintLog",
+        "effects": [
+          "T[4]=PrintLog",
+          "_G.log=PrintLog"
+        ]
+      },
+      {
+        "pc": "46-47",
+        "name": "ShowLocalNoticeByType",
+        "captures": [
+          "T[0]=MainLeftBottom.a"
+        ]
+      },
+      {
+        "pc": "48-51",
+        "name": "LuaSendMsg",
+        "captures": [
+          "T[0]=MainLeftBottom.a",
+          "T[4]=PrintLog"
+        ],
+        "effects": [
+          "MainLeftBottom.a.LuaSendMsg=LuaSendMsg"
+        ]
+      },
+      {
+        "pc": "52",
+        "name": "ScheduleOnce",
+        "captures": []
+      },
+      {
+        "pc": "53",
+        "name": "Schedule",
+        "captures": []
+      },
+      {
+        "pc": "54-55",
+        "name": "GetMapId",
+        "effects": [
+          "_G.GetMapId=GetMapId"
+        ]
+      },
+      {
+        "pc": "56-57",
+        "name": "GetMapName",
+        "effects": [
+          "_G.GetMapName=GetMapName"
+        ]
+      },
+      {
+        "pc": "58-59",
+        "name": "PlayerPos",
+        "effects": [
+          "_G.PlayerPos=PlayerPos"
+        ]
+      },
+      {
+        "pc": "60-61",
+        "name": "GetDroppedItems",
+        "effects": [
+          "_G.GetDroppedItems=GetDroppedItems"
+        ]
+      },
+      {
+        "pc": "62-63",
+        "name": "MoveTo",
+        "effects": [
+          "_G.MoveTo=MoveTo"
+        ]
+      },
+      {
+        "pc": "64-67",
+        "name": "DiuItems",
+        "captures": [
+          "T[2]=MainLeftBottom.z",
+          "T[5]=ShowLocalNoticeByType"
+        ],
+        "effects": [
+          "_G.DiuItems=DiuItems"
+        ]
+      },
+      {
+        "pc": "68-70",
+        "name": "GetAvailableStoragePage",
+        "captures": [
+          "T[4]=PrintLog"
+        ],
+        "effects": [
+          "_G.GetAvailableStoragePage=GetAvailableStoragePage"
+        ]
+      },
+      {
+        "pc": "71-73",
+        "name": "GetStorageItemData",
+        "captures": [
+          "T[4]=PrintLog"
+        ],
+        "effects": [
+          "_G.GetStorageItemData=GetStorageItemData"
+        ]
+      },
+      {
+        "pc": "74-78",
+        "name": "StorageItems",
+        "captures": [
+          "T[2]=MainLeftBottom.z",
+          "T[4]=PrintLog",
+          "T[5]=ShowLocalNoticeByType"
+        ],
+        "effects": [
+          "_G.StorageItems=StorageItems"
+        ]
+      },
+      {
+        "pc": "79-82",
+        "name": "TakeItems",
+        "captures": [
+          "T[2]=MainLeftBottom.z",
+          "T[5]=ShowLocalNoticeByType"
+        ],
+        "effects": [
+          "_G.TakeItems=TakeItems"
+        ]
+      },
+      {
+        "pc": "83-85",
+        "name": "PickUpItems",
+        "captures": [
+          "T[5]=ShowLocalNoticeByType"
+        ],
+        "effects": [
+          "_G.PickUpItems=PickUpItems"
+        ]
+      }
+    ],
+    "late_direct_bindings": {
+      "IsInWhitelistMap": 212,
+      "MoveItemToQuickUse": 259,
+      "GetWritablePath": 297,
+      "PCallHelper_2": 352
+    },
+    "bind_direct_count": 22,
+    "source_registry_missing": 0,
+    "root_direct_closures_source_bound": 58,
+    "root_direct_closures_expected": 58,
+    "status": "Static ordered assembly only; no Lua compiler or game runtime validation",
+    "next_action": "检查点260：按PC顺序继续整合root PC86-PC211，尤其配置/奖励/状态cell/辅助闭包创建顺序。"
   }
 }
