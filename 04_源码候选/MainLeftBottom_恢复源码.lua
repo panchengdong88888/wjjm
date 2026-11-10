@@ -112,7 +112,7 @@ MainLeftBottomRecovered.prototype_index = {
   ["root.children[2]"] = { name="GetWritablePath", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/root2_GetWritablePath.lua", audit_file="docs/audit/检查点231_短函数复核_GetWritablePath与InstallDamageHook.md", instructions=10, runtime_verified=false },
   ["root.children[42].children[22]"] = { name="Nested_Anonymous", status="first_pass_draft_pending_VM_T_slot_mapping_and_T2_producer_not_runtime_verified", source_file="04_源码候选/Nested_Anonymous_第七十八批.lua", instructions=8, runtime_verified=false },
   ["root.children[8]"] = { name="FormatStateChange", status="complete_static_reconstruction", source_file="04_源码候选/root8_FormatStateChange.lua", audit_file="docs/audit/检查点177_FormatStateChange父级捕获身份与状态共享链闭合.md", instructions=10, runtime_verified=false },
-  ["root.children[9]"] = { name="ReadNumericConfig", status="first_pass_draft_vararg_declaration_pending_not_runtime_verified", source_file="04_源码候选/短函数草稿_第四十四批.lua", instructions=45, runtime_verified=false },
+  ["root.children[9]"] = { name="ReadNumericConfig", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/root9_ReadNumericConfig.lua", audit_file="docs/audit/检查点232_ReadNumericConfig首参数与vararg入口复核.md", instructions=45, runtime_verified=false },
   ["root.children[23]"] = { name="Builtsetting", status="complete_static_reconstruction", source_file="04_源码候选/短函数草稿_第四十五批.lua", audit_file="docs/audit/检查点215_Builtsetting完整静态复审.md", instructions=55, runtime_verified=false },
   ["root.children[25]"] = { name="DeathAutoBlacklist", status="first_pass_draft_upvalue_business_names_pending_not_runtime_verified", source_file="04_源码候选/短函数草稿_第四十九批.lua", instructions=47, runtime_verified=false },
   ["root.children[12]"] = { name="LuaSendMsg", status="complete_static_reconstruction", source_file="04_源码候选/短函数草稿_第五十批.lua", audit_file="docs/audit/检查点221_LuaSendMsg完整静态复审.md", instructions=92, runtime_verified=false },
@@ -3252,7 +3252,11 @@ do
 -- UP[0] = GetWritablePath closure (root.children[2]), captured at root PC298.
 
 local function make_ReadNumericConfig(GetWritablePath)
-    return function(fileName, ...)
+    return function(...)
+        -- The VM prototype is vararg-capable; only the first supplied value is read as fileName.
+        -- This avoids asserting an unavailable fixed-parameter count.
+        local fileName = ...
+
         -- PC 1-4: acquire the FileUtils singleton before resolving the path.
         local fileUtils = cc.FileUtils:getInstance()
 
