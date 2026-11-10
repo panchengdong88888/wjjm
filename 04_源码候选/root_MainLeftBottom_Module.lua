@@ -353,14 +353,17 @@ local opaquePairTable = {
 -- [T[54], T[4], T[5], T[41]]。
 -- PC388：导出全局ClearBlacklistItems。
 
--- PC389：重新读取全局MainLeftBottom。
+-- PC389：原始指令[82,137,59,"MainLeftBottom",null]将_ENV.MainLeftBottom读取到独立临时寄存器T[59]。
+-- PC392/PC393/PC394仍分别捕获T[2]=MainLeftBottom.z、T[3]=timerState、T[0]=MainLeftBottom.a；
+-- PC389不覆盖这三个寄存器。
 -- PC390-PC410：创建root.children[42] / doInit_UI，捕获20项父root寄存器：
 -- [T[4], T[2], T[3], T[0], T[1], T[41], T[48], T[7], T[8], T[50],
 --  T[49], T[5], T[44], T[42], T[51], T[43], T[47], T[11], T[12], T[9]]。
 -- 20项槽位身份已由检查点256逐项闭合；完整顺序与装配值见docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md。
 -- doInit_UI本体419条，已有首版普通Lua草稿（检查点187）；
 -- 静态参数映射已由检查点208/235闭合：RequestStorageData与Attach_UITop各传T[7]一个显式实参；Nested_Anonymous fixed_param_count=2，T[0]=promptText、T[1]=successCallback、T[2]=nil。GUI宿主行为仍未运行时验证。
--- PC411：MainLeftBottom.doInit = doInit_UI。
+-- PC411：原始指令[144,268,59,"doInit",60]写入T[59].doInit=doInit_UI；
+-- 主恢复稿在PC389读取的doInitModule上执行该赋值，不以rootModule局部变量替代。
 -- PC412：根模块return。
 
 -- 根模块PC1-PC412至此均有分段源码记录。
@@ -746,3 +749,8 @@ end
 -- PC368 BlacklistPlayerDetection.UP1捕获T57 live cell，捕获时cell.value为InstallDamageHook，不能接成onDamageMsg。
 -- PC382/388分别导出_G.BlacklistItems与_G.ClearBlacklistItems；主恢复稿已增加对象身份断言。
 -- 详细逐PC来源与函数主体边界见docs/audit/检查点267_PC350-PC388黑名单闭包链与导出身份核对.md。
+
+
+-- 检查点268：PC389/PC411原始指令核对。
+-- PC389把_ENV.MainLeftBottom读入T[59]；PC392/393/394捕获的T[2]/T[3]/T[0]
+-- 仍分别是z/timerState/a。PC411向T[59].doInit写入doInit_UI；详见检查点268审计。
