@@ -53,6 +53,74 @@ local function make_Nested_s(checkCallback, checkArgument, notify, printLog)
     end
 end
 
+local function make_Nested_Helper_5(
+    validateValue, notify, formatCallback, resolveFailureContext,
+    failureContext, saveDistance, setButtonState
+)
+    return function Nested_Helper_5(value)
+        if not validateValue(value) then
+            notify("黑名单距离保存失败")
+            formatCallback(
+                "黑名单距离保存失败，路径：%s",
+                resolveFailureContext(failureContext)
+            )
+            return
+        end
+
+        notify("黑名单距离已保存：" .. value .. " 格")
+        formatCallback("黑名单距离已保存：%d 格", value)
+        if not saveDistance(value) then return end
+        setButtonState("blacklistbut", true)
+    end
+end
+
+local function make_Nested_Helper_8(
+    validateValue, notify, formatCallback, resolveFailureContext,
+    failureContext, saveThreshold, setButtonState
+)
+    return function Nested_Helper_8(value)
+        if not validateValue(value) then
+            notify("怪物阈值保存失败")
+            formatCallback(
+                "怪物阈值保存失败，路径：%s",
+                resolveFailureContext(failureContext)
+            )
+            return
+        end
+
+        notify("怪物阈值已保存：" .. value)
+        formatCallback("怪物阈值已保存：%d", value)
+        if not saveThreshold(value) then return end
+        setButtonState("yinguaibut", true)
+    end
+end
+
+local function make_Nested_Helper_4(
+    openDialog, validateValue, notify, formatCallback,
+    resolveFailureContext, failureContext, saveDistance, setButtonState
+)
+    return function Nested_Helper_4()
+        local callback = make_Nested_Helper_5(
+            validateValue, notify, formatCallback, resolveFailureContext,
+            failureContext, saveDistance, setButtonState
+        )
+        openDialog("请输入黑名单的距离格子（数字，按线路计算）", callback)
+    end
+end
+
+local function make_Nested_Helper_7(
+    openDialog, validateValue, notify, formatCallback,
+    resolveFailureContext, failureContext, saveThreshold, setButtonState
+)
+    return function Nested_Helper_7()
+        local callback = make_Nested_Helper_8(
+            validateValue, notify, formatCallback, resolveFailureContext,
+            failureContext, saveThreshold, setButtonState
+        )
+        openDialog("请输入拉怪的怪物数量阈值（数字）", callback)
+    end
+end
+
 local function make_Nested_StopGatherMonsters(
     timerState, notify, canStartGather, logNotice,
     openThresholdInput, applyGatherState
