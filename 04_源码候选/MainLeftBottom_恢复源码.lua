@@ -5316,3 +5316,10 @@ end
 -- doInit_UI在root创建时按20项顺序捕获[T4,T2,T3,T0,T1,T41,T48,T7,T8,T50,T49,T5,T44,T42,T51,T43,T47,T11,T12,T9]。
 -- BlacklistPlayerDetection的13项捕获、DeathAutoBlacklist的4项捕获、ClearBlacklistItems的4项捕获及onDamageMsg的状态表捕获已写入根模块闭包装配表；均为父寄存器live cell，不是独立快照。
 -- 本段补齐的是root级创建/挂载/导出账本，不将未完成的根模块伪装成完整作者源码。
+
+
+-- 检查点245：根模块PC1-PC412导出/字段总账复核。
+-- 全局导出共21项（包含模块根表_MainLeftBottom本身）：MainLeftBottom、log、GetMapId、GetMapName、PlayerPos、GetDroppedItems、MoveTo、DiuItems、GetAvailableStoragePage、GetStorageItemData、StorageItems、TakeItems、PickUpItems、IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、MoveItemToQuickUse、BlacklistItems、ClearBlacklistItems。
+-- MainLeftBottom根表字段：a、b、z、hide、show、destroy、main、blacklist、onDamageMsg、doInit；a/b/z内部字段另按层级记录。
+-- PC86-PC211未发现新的根级导出/根表字段赋值；该区间的寄存器闭包创建和共享状态不视为导出。
+-- 本总账只确认静态字节码赋值，不代表宿主执行时机已验证。
