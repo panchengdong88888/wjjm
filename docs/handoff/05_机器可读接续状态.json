@@ -2248,7 +2248,8 @@
       "04_源码候选/root_MainLeftBottom_Module.lua",
       "docs/audit/检查点195_root模块PC168-PC200状态单元与辅助闭包注册.md",
       "docs/audit/检查点194_root模块PC86-PC137配置初始化与奖励记录表恢复.md",
-      "02_基础索引/03_函数状态清单.csv"
+      "02_基础索引/03_函数状态清单.csv",
+      "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "findings": [
       "PC168-PC172 creates IDLE/GATHERING/ATTACKING labels and initializes shared currentState to IDLE.",
