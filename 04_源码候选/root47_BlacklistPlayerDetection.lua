@@ -73,12 +73,14 @@ local function make_BlacklistPlayerDetection(
             return
         end
 
-        local players = SL:GetMetaValue("FIND_IN_VIEW_PLAYER_LIST")
+        -- The VM call captures two return values: player list and count.
+        local players, playerCount = SL:GetMetaValue("FIND_IN_VIEW_PLAYER_LIST")
         if not players then
             return
         end
-
-        local playerCount = #players
+        if not playerCount then
+            return
+        end
         if playerCount <= 0 then
             return
         end
@@ -182,7 +184,7 @@ end
 
 
 -- Review notes (checkpoint 184):
--- * PC74-PC77 is a numeric loop over players[1..#players].
+-- * PC63-PC73 captures both returns from FIND_IN_VIEW_PLAYER_LIST: the player list and its explicit count; PC74-PC77 loops from 1 through that returned count.
 -- * Nil actors and actorID == mainActorID are skipped.
 -- * UP[4](actorID) supplies (isBlacklisted, displayName); only the first
 --   return controls entry. displayName falls back to ACTOR_NAME, then the
