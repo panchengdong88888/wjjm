@@ -2789,3 +2789,12 @@ Nested_match：
 - 已同步更新Nested_Anonymous独立候选与MainLeftBottom_恢复源码.lua的注释；不改变函数行为、不增加静态恢复数量。
 - 统计保持108/110完整静态恢复，运行时验证0。
 - 下一步：根模块MainLeftBottom_Module的PC1-PC412根级闭包装配与共享Upvalue cell接线。
+
+
+## 检查点 #229（2026-11-10）：简单明文优先整合
+
+- 用户明确要求先处理简单明文、复杂内容后置。本阶段因此暂停根模块PC1-PC412大型闭包装配。
+- 已实际向 `04_源码候选/MainLeftBottom_恢复源码.lua` 合入：root.children[32] AnonymousHelper_32（6条）、root.children[53] ScheduleOnce（7条）、root.children[54] AnonymousHelper_54（6条）、root.children[22] GetMapData2DPtr（144条记录，PC38-PC144不可达，仅恢复PC1-PC37活动路径）。
+- AnonymousHelper_32按两个捕获及首个显式参数转发；ScheduleOnce保留SL self并返回全部结果；AnonymousHelper_54按PCallHelper(fileName,firstArg)调用；GetMapData2DPtr按Chebyshev距离限幅恢复，UP0活动路径未读取。
+- 完整静态恢复仍为108/110，运行时验证0；本批仅增加主文件中的明文主体，不虚增静态恢复数。
+- 下一步先整合GetStorageItemData（77条）、FindBlacklistPlayer（35条）和其他短函数，再处理复杂函数与根级装配。
