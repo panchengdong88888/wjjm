@@ -4,7 +4,8 @@
 -- root PC48创建闭包，捕获root T[0]与root T[4]。
 -- UPVALUE_0按用途临时命名为hookState（含Blocklist/SendHookList）；
 -- UPVALUE_1按用途临时命名为logCallback。原始业务变量名尚未确认。
--- 普通Lua草稿；未运行时验证。
+-- 两个Upvalue的业务身份未知不影响其读写与调用契约恢复。
+-- 完整静态恢复：PC1-PC92全部映射；未运行时验证。
 
 local function make_LuaSendMsg(hookState, logCallback)
     return function LuaSendMsg(
@@ -62,16 +63,21 @@ local function make_LuaSendMsg(hookState, logCallback)
 
         -- PC63-PC86：按arg1查SendHookList；只接受function类型。
         -- pcall(hook,arg1,arg6,message)成功且第二返回值严格为true时拦截发送。
-        local hook = hookState.SendHookList[hookKey]
-        if type(hook) == "function" then
-            local callOK, handled = pcall(
-                hook,
-                hookKey,
-                messageId,
-                message
-            )
-            if callOK and handled == true then
-                return
+        -- PC63-PC67：第一次读取只做truthy存在性门控。
+        local hookExists = hookState.SendHookList[hookKey]
+        if hookExists then
+            -- PC68-PC70：字节码再次读取同一键，保留第二次table索引。
+            local hook = hookState.SendHookList[hookKey]
+            if type(hook) == "function" then
+                local callOK, handled = pcall(
+                    hook,
+                    hookKey,
+                    messageId,
+                    message
+                )
+                if callOK and handled == true then
+                    return
+                end
             end
         end
 
@@ -87,4 +93,3 @@ local function make_LuaSendMsg(hookState, logCallback)
     end
 end
 
-return make_LuaSendMsg
