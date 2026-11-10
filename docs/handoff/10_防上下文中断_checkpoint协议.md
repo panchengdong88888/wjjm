@@ -2143,3 +2143,11 @@
 - 检查点194范围校正：奖励表实际构造延续至PC167，因此PC86-PC167均属于检查点194；其审计正文已校正。PC90-PC95计算值18000在root PC408被doInit_UI捕获为UPVALUE[17]，具体UI用途仍未知；奖励数组在PC409捕获为UPVALUE[18]。
 - 统计：普通Lua草稿72；完整静态恢复103/110（93.6%）；运行时验证0。root仍为分段普通Lua草稿，不可作为完整可运行模块。
 - 下一步：继续root PC201-PC270，核对PC210-PC214辅助闭包、MainLoop 22项捕获及InitGatherMonsters/StopGatherMonsters等闭包创建位置；复用既有函数体审计，不重复恢复。
+
+
+## 检查点 #196（2026-11-10）：root PC201-PC270闭包注册与捕获关系
+- 已更新源码候选、审计报告、函数状态CSV及机器状态JSON；GitHub回读验证待完成。
+- 本批闭合ClearBlacklistItems/IsInWhitelistMap/MainLoop/InitGatherMonsters/StopGatherMonsters/Builtsetting/MoveItemToQuickUse/DestroyUI/SetButtonVisibilityState的根帧创建、捕获及已见导出关系。
+- PC270创建ShowHideAllButtons（3项捕获），捕获描述从PC271开始，下一批继续。
+- 统计维持普通Lua草稿72、完整静态恢复103/110（93.6%）、运行时验证0。
+- 下一步：root PC271-PC340；复用已完成函数体审计，不重复分析。
