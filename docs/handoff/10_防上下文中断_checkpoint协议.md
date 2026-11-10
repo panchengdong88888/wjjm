@@ -2755,3 +2755,15 @@ Nested_match：
 - `docs/handoff/05_机器可读接续状态.json`同步将`root.children[42].children[3] Nested_FFFF00`标记为完整静态恢复（未运行时验证）。函数状态CSV已登记检查点225的完整静态状态，本批不重复计数。
 - 统计保持106/110完整静态恢复，运行时验证仍为0；本批是已完成源码的证据校正与副本同步，不新增原型恢复数量。
 - 下一步仍按用户要求先处理剩余短小函数/闭包；优先追踪`root.children[42].children[22] Nested_Anonymous`的T[2]第三回调生产者及精确帧槽映射，再回到`doInit_UI`剩余GUI参数/闭包装配，最后完成根模块PC1-PC412闭包装配。
+
+
+## 检查点 #226（2026-11-10）：doInit_UI 419条父指令完整静态恢复
+
+- 原型：`root.children[42]`（legacy `root/43`），419条物理指令、105常量、23个子原型、20项父级捕获。
+- 将原先依赖未定义全局`UP[0..19]`的草稿改为`make_doInit_UI(upvalue0,...,upvalue19)`显式工厂，捕获顺序严格按root PC390的20项顺序传入。
+- PC1-PC419父函数控制流完整映射。Nested_Helper_4/5、Nested_Helper_7/8等工厂均已在同一候选文件定义；删除原先“child11/child14未合并”的过期TODO。
+- PC133调用标准Lua`ipairs(T[6])`，第三返回值为0；模块中未发现覆盖ipairs的赋值。PC180 RequestStorageData和PC183 GUI.Attach_UITop均保留字节码要求的单个实参0。
+- 开发文档`GUI/常用方法.md`定义`Attach_UITop()`无必需参数；字节码传入额外0仍按原调用保留。RequestStorageData未在43份文档中检索到，按引擎内部对象方法原样调用，不分析内部实现。
+- cruiseTimer清理写nil；同型`["unknown",2]`为VM dump的nil序列化占位，依据检查点102。
+- child22 Nested_Anonymous的T0/T1/T2生产者仍独立未闭合，不将其冒充完成；父函数自身419条指令完整静态恢复。
+- 完整静态恢复数更新为107/110（97.3%）；运行时验证仍为0。
