@@ -701,6 +701,7 @@ end
   __exports["resetSlot21"] = resetSlot21
   __exports["resetSlot22"] = resetSlot22
   __exports["timerState"] = timerState
+  __exports["gatherStatusText"] = gatherStatusText
   MainLeftBottomRecovered.sources["04_源码候选/root_MainLeftBottom_Module.lua"] = __exports
 end
 
@@ -6090,6 +6091,16 @@ do
         )
     end
 
+    -- FindMonsterInCurrViewField UP[0]=T[30]=IsDie；作为MainLoop稳定函数捕获。
+    local makeFindInView = sourceFunction(
+        "04_源码候选/短函数草稿_第十三批.lua",
+        "make_FindMonsterInCurrViewField"
+    )
+    if makeFindInView then
+        rootPrototypes.FindMonsterInCurrViewField =
+            makeFindInView(rootPrototypes.IsDie)
+    end
+
     local makeMainLoop = sourceFunction(
         "04_源码候选/root45_MainLoop.lua", "make_MainLoop"
     )
@@ -6169,18 +6180,18 @@ do
         direct_child_closures_bound = 22 - #missing,
         missing = missing,
         captured_factory_closures_expected = 36,
-        captured_factory_closures_bound = 17,
-        captured_factory_closures_pending = 19,
+        captured_factory_closures_bound = 18,
+        captured_factory_closures_pending = 18,
         captured_factory_names_bound = {
             "ShowLocalNoticeByType", "DiuItems", "FindMonsterCandidates",
             "LuaSendMsg", "GetAvailableStoragePage", "GetStorageItemData",
             "TakeItems", "PickUpItems", "StorageItems", "Builtsetting",
             "AccountIDValidation", "InstallDamageHook", "FormatStateChange",
             "ResetGatherMonsterData", "MainLoop", "InitGatherMonsters",
-            "StopGatherMonsters"
+            "StopGatherMonsters", "FindMonsterInCurrViewField"
         },
         runtime_verified = false,
-        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; all five gather closures reuse identical cell objects"
+        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; all six newly bound gather dependencies reuse identical cell objects"
     }
 end
 
