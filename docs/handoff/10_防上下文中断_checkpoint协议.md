@@ -2068,3 +2068,14 @@
 - PC211计数在LuaSendMsg调用返回后递增，但无服务端确认分支；代码命名为queuedCount，不称为服务端成功数。
 - 状态仍为普通Lua草稿，不升级完整静态恢复。统计：普通Lua草稿71；完整静态恢复102/110（92.7%）；运行时验证0。
 - 下一步：转向`root.children[22]` GetMapData2DPtr（144条）已有首版草稿，优先恢复可读主体，保留vararg/障碍物/返回契约未知项。
+
+
+## 检查点 #190（2026-11-10）：GetAvailableStoragePage与LuaSendMsg批量恢复
+
+- 更新`04_源码候选/短函数草稿_第十四批.lua`、`04_源码候选/短函数草稿_第五十批.lua`、`02_基础索引/03_函数状态清单.csv`，新增审计`docs/audit/检查点190_GetAvailableStoragePage与LuaSendMsg批量恢复.md`。
+- `root.children[36]` GetAvailableStoragePage（51条）逐PC完整静态恢复：NPCStorageProxy缺失时调用捕获回调并返回nil；逐页读取pageData长度或0；每轮读取单页容量配置（假值回退global.MMO.NPC_STORAGE_MAX_PAGE）及openSize；计算pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>0且pageLimit>currentCount的页码，耗尽返回nil。删除旧草稿中emptyPages统计和错误maxPage截断近似算法。
+- `root.children[12]` LuaSendMsg（92条）仍为普通Lua草稿，但六参映射已校正：arg1为Blocklist/SendHookList查找键，arg2..5为message.param1..4，arg6为message.msgId，recog=0。
+- Blocklist使用table.find(Blocklist,tonumber(arg1))；命中仅跳过日志构造。SendHookList[arg1]为function时pcall(hook,arg1,arg6,message)，成功且返回严格true才提前返回；否则networkCtl:SendMsg原六参转发。
+- LuaSendMsg捕获root T[0]/T[4]业务原名及宿主实现仍未知；未运行时验证。
+- 统计：普通Lua草稿71；完整静态恢复103/110（93.6%）；运行时验证0。
+- 下一步：恢复`root.children[41]` MoveItemToQuickUse（133条）普通Lua主体，保留代理调用实参/返回契约疑问。
