@@ -3542,17 +3542,17 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 265,
-  "checkpoint": 265,
+  "last_checkpoint": 266,
+  "checkpoint": 266,
   "drafts": 33,
-  "next": "检查点266：继续PC297-PC340配置文件读写包装及二维数值表构造。核对GetWritablePath、ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper、AnonymousHelper_49/32/33/54的来源符号和工厂参数；逐项确认T[44..51]捕获身份与doInit_UI后续捕获。PC316-PC349数值表按字节码原值保留，不推测其业务用途。",
+  "next": "检查点267：继续PC350-PC388黑名单闭包链。核对GetMapData2DPtr(T[52])、PCallHelper_2、FindBlacklistPlayer、UseItemByIndex(T[37])、onDamageMsg、InstallDamageHook(T[57] live cell)、DeathAutoBlacklist、BlacklistPlayerDetection、ClearBlacklistItems的捕获顺序及模块/全局写入。特别区分PC357 onDamageMsg处理函数与PC360 InstallDamageHook闭包，不能混用T[57]。",
   "recent_checkpoint": {
-    "number": 265,
+    "number": 266,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "04_源码候选/root_MainLeftBottom_Module.lua",
-      "docs/audit/检查点265_PC212-PC296模块字段与UI闭包挂接恢复.md",
+      "docs/audit/检查点266_PC297-PC315配置包装链与寄存器捕获恢复.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
@@ -3564,7 +3564,7 @@
     "runtime_verified": 0,
     "root_direct_closures_source_bound": 58,
     "root_direct_closures_expected": 58,
-    "notes": "PC212-PC296 UI闭包工厂和模块字段挂接顺序按PC证据核对；requireRecoveredClosure保护防止缺失工厂静默跳过。PC275显式重读_ENV.MainLeftBottom并将AccountIDValidation写入重读目标；PC280-PC296对象/常量初值通过静态断言核对。未执行Lua编译或游戏运行验证。"
+    "notes": "PC297-PC315的T[44..51]寄存器对象按PC创建顺序映射并注入doInit_UI对应捕获槽；每个函数工厂结果由requireRecoveredClosure校验。未执行Lua编译或游戏运行验证。"
   },
   "latest_checkpoint": 261,
   "complete_static_reconstruction_count": 109,
@@ -3575,7 +3575,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 266,
+  "next_checkpoint": 267,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3735,12 +3735,13 @@
     "root_pc1_pc42_order": "static_pc_timeline_aligned",
     "root_pc43_pc85_register_order": "static_pc_timeline_aligned",
     "root_pc86_pc211_capture_order": "static_pc_timeline_aligned",
-    "root_pc212_pc296_module_fields": "static_pc_timeline_aligned"
+    "root_pc212_pc296_module_fields": "static_pc_timeline_aligned",
+    "root_pc297_pc315_register_order": "static_pc_timeline_aligned"
   },
   "latest": {
-    "checkpoint": "265",
-    "summary": "PC212-PC296模块字段与UI闭包挂接已补齐必需函数校验。Builtsetting、MoveItemToQuickUse、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons、AccountIDValidation缺失时中止装配；hide/show/destroy/main按PC265/269/274/279挂接。保留PC275重新读取_ENV.MainLeftBottom后再写入accountValidationModule.main。对UI捕获对象身份、blacklistState七个初值、随机传送物品名、黑名单阈值/延迟和配置文件名增加静态断言。完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0。",
-    "audit_file": "docs/audit/检查点265_PC212-PC296模块字段与UI闭包挂接恢复.md",
+    "checkpoint": "266",
+    "summary": "PC297-PC315配置文件包装链已按父寄存器T[44..51]显式恢复：GetWritablePath、ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper、AnonymousHelper_49、AnonymousHelper_32、AnonymousHelper_33、AnonymousHelper_54。所有工厂结果经requireRecoveredClosure校验；doInit_UI的UP[6]/[9]/[10]/[12]/[14]/[16]改为从rootConfigRegisters[48]/[50]/[49]/[44]/[51]/[47]注入，保持PC390-PC410捕获对象身份。",
+    "audit_file": "docs/audit/检查点266_PC297-PC315配置包装链与寄存器捕获恢复.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3800,9 +3801,10 @@
     "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。",
     "checkpoint261_gather_status_scope_fixed": true
   },
-  "root_assembly_checkpoint": 265,
+  "root_assembly_checkpoint": 266,
   "root_pc1_pc42_sequential_source_restored": true,
   "root_pc43_pc85_register_ordered": true,
   "root_pc86_pc211_cells_capture_ordered": true,
-  "root_pc212_pc296_module_fields_guarded": true
+  "root_pc212_pc296_module_fields_guarded": true,
+  "root_pc297_pc315_config_registers_ordered": true
 }
