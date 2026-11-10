@@ -3871,3 +3871,417 @@ end
   if make_Nested_SL ~= nil then __exports["make_Nested_SL"] = make_Nested_SL end
   MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第十五批.lua"] = __exports
 end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/小型辅助函数_首批草稿.lua
+-- 独立短辅助函数与比较闭包；保留来源及各原型的词法边界。
+-- ============================================================================
+do
+-- Small helper batch 1: readable static Lua drafts.
+-- These are reconstructed from corrected physical-PC disassembly, not original
+-- source text. No target-runtime validation has been performed.
+
+-- root.children[13] / legacy root/14 / GetMapId (9 instructions)
+local function GetMapId()
+    return SL:GetMetaValue("MAP_ID") or 0
+end
+
+-- root.children[29] / legacy root/30 / IsDie (7 instructions)
+-- Preserve Lua's short-circuit return behavior: false/nil actor is returned as-is.
+local function IsDie(actor)
+    return actor and not actor:IsDie()
+end
+
+-- root.children[30] / legacy root/31 / GetMapName (9 instructions)
+local function GetMapName()
+    return SL:GetMetaValue("MAP_NAME") or ""
+end
+
+-- root.children[39] / legacy root/40 / GetMainPlayerID (6 instructions)
+local function GetMainPlayerID()
+    return global.gamePlayerController:GetMainPlayerID()
+end
+
+-- root.children[28].children[0] / legacy root/29/1 / distance comparator
+local function CompareDistance(a, b)
+    return a._distance < b._distance
+end
+
+-- root.children[46].children[0] / legacy root/47/1 / keyword matcher closure
+-- The nested prototype captures the keyword array from DiuItems.
+local function MakeContainsAnyKeyword(capturedKeywords)
+    return function(text)
+        for _, keyword in ipairs(capturedKeywords) do
+            if string.find(text, keyword, 1, true) then
+                return true
+            end
+        end
+        return false
+    end
+end
+
+  local __exports = {}
+  if IsDie ~= nil then __exports["IsDie"] = IsDie end
+  if CompareDistance ~= nil then __exports["CompareDistance"] = CompareDistance end
+  if MakeContainsAnyKeyword ~= nil then __exports["MakeContainsAnyKeyword"] = MakeContainsAnyKeyword end
+  MainLeftBottomRecovered.sources["04_源码候选/小型辅助函数_首批草稿.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/PrintLog_日志辅助函数_第七批.lua
+-- 独立短辅助函数与比较闭包；保留来源及各原型的词法边界。
+-- ============================================================================
+do
+-- root.children[16] / legacy root/17 / PrintLog
+-- 38 physical instructions; static reconstruction, not runtime-validated.
+-- The function is vararg: first argument is the value/message, remaining
+-- arguments are optional string.format substitutions.
+
+local function PrintLog(value, ...)
+    if type(value) == "table" then
+        -- PC6-10: SL.dump(value, "【超本】")
+        SL.dump(value, "【超本】")
+        return
+    end
+
+    -- PC12-14: convert the first argument before optional formatting.
+    local message = tostring(value)
+
+    -- PC15-20: count extra arguments. If none, skip the protected format path.
+    if select("#", ...) > 0 then
+        -- PC21-30: pcall(string.format, message, ...).
+        local ok, formatted = pcall(string.format, message, ...)
+        if ok and formatted then
+            -- PC29 copies the truthy result into a register, but the active
+            -- bytecode does not subsequently consume that register.
+            message = formatted
+        end
+    end
+
+    -- PC31-37: test SL and SL.Print existence. There is no call instruction
+    -- after the lookup in this prototype; preserve this as an observed no-op
+    -- check rather than inventing a Print invocation.
+    if SL and SL.Print then
+        -- Intentionally empty: no corresponding call exists in the bytecode.
+    end
+end
+
+  local __exports = {}
+  if PrintLog ~= nil then __exports["PrintLog"] = PrintLog end
+  MainLeftBottomRecovered.sources["04_源码候选/PrintLog_日志辅助函数_第七批.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua
+-- 独立短辅助函数与比较闭包；保留来源及各原型的词法边界。
+-- ============================================================================
+do
+-- PCallHelper and its nested file-write closure.
+-- Source prototypes:
+--   root.children[17] / legacy root/18 / PCallHelper (14 physical instructions)
+--   root.children[17].children[0] / legacy root/18/1 / Nested_tostring (14)
+-- Complete static reconstruction; not runtime-validated.
+
+local function make_PCallHelper(capturedOuter)
+    return function(arg1, arg0, ...)
+        -- Child upvalues:
+        --   UP[0] <- parent arg1
+        --   UP[1] <- parent capturedOuter
+        --   UP[2] <- parent arg0
+        local function Nested_tostring()
+            local fileUtils = cc.FileUtils:getInstance()
+            local payload = tostring(arg1)
+
+            -- OP_252 invokes capturedOuter(arg0), collects all returned values,
+            -- and forwards that result window as the final argument list to
+            -- writeStringToFile. The method receiver is fileUtils.
+            return fileUtils:writeStringToFile(
+                payload,
+                capturedOuter(arg0)
+            )
+        end
+
+        -- pcall receives Nested_tostring followed by the original varargs.
+        -- Nested_tostring is non-vararg, so extra arguments are ignored.
+        local ok, result = pcall(Nested_tostring, ...)
+
+        -- Exact wrapper contract:
+        --   pcall error             -> false
+        --   successful result false -> false
+        --   any other successful result (including nil) -> true
+        if not ok or result == false then
+            return false
+        end
+        return true
+    end
+end
+
+  local __exports = {}
+  if make_PCallHelper ~= nil then __exports["make_PCallHelper"] = make_PCallHelper end
+  MainLeftBottomRecovered.sources["04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/位置读取函数_第五批草稿.lua
+-- 独立短辅助函数与比较闭包；保留来源及各原型的词法边界。
+-- ============================================================================
+do
+-- Position-reading helper batch 5.
+-- Static reconstruction only; no target-runtime validation.
+
+-- root.children[57] / legacy root/58 / PlayerPos (10 physical instructions)
+-- PC1-4: SL:GetMetaValue("X") -> first return value.
+-- PC5-8: SL:GetMetaValue("Y") -> variable return window.
+-- PC9 returns all accumulated values. The Y call is deliberately kept as a
+-- multiple-return expression instead of forcing a single result.
+local function PlayerPos()
+    return SL:GetMetaValue("X"), SL:GetMetaValue("Y")
+end
+
+-- root.children[18] / legacy root/19 / GetPlayerPosition (19 physical instructions)
+-- Complete static reconstruction from all 19 physical instructions.
+-- X and Y are read independently; each false/nil result takes a zero fallback.
+-- The fused PC14 sequence constructs the fallback value/table path; PC15-17
+-- build the returned coordinate table and assign x/y fields.
+local function GetPlayerPosition()
+    local x = SL:GetMetaValue("X") or 0
+    local y = SL:GetMetaValue("Y") or 0
+
+    return {
+        x = x,
+        y = y,
+    }
+end
+
+  local __exports = {}
+  if GetPlayerPosition ~= nil then __exports["GetPlayerPosition"] = GetPlayerPosition end
+  MainLeftBottomRecovered.sources["04_源码候选/位置读取函数_第五批草稿.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/其他短辅助函数_第二批草稿.lua
+-- 独立短辅助函数与比较闭包；保留来源及各原型的词法边界。
+-- ============================================================================
+do
+-- Small helper batch 2: readable static Lua reconstructions.
+-- No target-runtime validation has been performed.
+
+-- root.children[4] / legacy root/5 / GetDroppedItems (8 instructions)
+-- The method returns both values unchanged; callers decide which result to use.
+local function GetDroppedItems()
+    return global.dropItemManager:FindDropItemInCurrViewFieldAll()
+end
+
+-- root.children[20] / legacy root/21 / ShowLocalNoticeByType (15 instructions)
+-- The single upvalue is represented as screenState; its exact original local
+-- identifier is not recovered. The helper builds a notice record and forwards
+-- that one record to SL.ShowLocalNoticeByType.
+local function make_ShowLocalNoticeByType(capturedScreenObject)
+    return function ShowLocalNoticeByType(message)
+        local notice = {
+            Type = 10,
+            Msg = message,
+            FColor = 249,
+            BColor = 0,
+            X = 5,
+            Y = capturedScreenObject.screenH - 50,
+        }
+
+        SL.ShowLocalNoticeByType(notice)
+    end
+end
+
+-- Capture proof: root initializer creates root.children[20] at root PC46;
+-- the immediately following OP_387 capture descriptor selects parent T[0].
+-- The object identity is therefore represented as capturedScreenObject; its
+-- screenH field and use in Y=screenH-50 are directly observed in the child.
+
+  local __exports = {}
+  if make_ShowLocalNoticeByType ~= nil then __exports["make_ShowLocalNoticeByType"] = make_ShowLocalNoticeByType end
+  MainLeftBottomRecovered.sources["04_源码候选/其他短辅助函数_第二批草稿.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/短闭包辅助函数_第三批草稿.lua
+-- 独立短辅助函数与比较闭包；保留来源及各原型的词法边界。
+-- ============================================================================
+do
+-- Small closure/helper batch 3: static readable reconstructions.
+-- Captured values are represented as factory parameters; these names are explanatory.
+
+-- root.children[19].children[0] / legacy root/20/1 / Nested_MainLoop
+local function Nested_MainLoop()
+    MainLoop()
+end
+
+-- root.children[25].children[0] / legacy root/26/1 / Nested_RequestAddBlacklistByName
+-- UP[0] is an object whose .name field is forwarded to the SL API.
+local function make_Nested_RequestAddBlacklistByName(blacklistEntry)
+    return function Nested_RequestAddBlacklistByName()
+        SL:RequestAddBlacklistByName(blacklistEntry.name)
+    end
+end
+
+-- root.children[42].children[4] / legacy root/43/5 / Nested_OnGameLeaveWorld
+local function Nested_OnGameLeaveWorld()
+    global.gameWorldController:OnGameLeaveWorld()
+end
+
+-- root.children[42].children[13] / legacy root/43/14 / Nested_Helper_6
+-- UP[0] is the notification callback captured by the UI initializer.
+local function make_Nested_ClearBlacklistItems(notify)
+    return function Nested_ClearBlacklistItems()
+        notify("清空黑名单")
+        ClearBlacklistItems()
+    end
+end
+
+  local __exports = {}
+  if Nested_MainLoop ~= nil then __exports["Nested_MainLoop"] = Nested_MainLoop end
+  if make_Nested_RequestAddBlacklistByName ~= nil then __exports["make_Nested_RequestAddBlacklistByName"] = make_Nested_RequestAddBlacklistByName end
+  if Nested_OnGameLeaveWorld ~= nil then __exports["Nested_OnGameLeaveWorld"] = Nested_OnGameLeaveWorld end
+  if make_Nested_ClearBlacklistItems ~= nil then __exports["make_Nested_ClearBlacklistItems"] = make_Nested_ClearBlacklistItems end
+  MainLeftBottomRecovered.sources["04_源码候选/短闭包辅助函数_第三批草稿.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/代理与回调短函数_第四批.lua
+-- 独立短辅助函数与比较闭包；保留来源及各原型的词法边界。
+-- ============================================================================
+do
+-- Short proxy/callback helper batch 4.
+-- Reconstructed from corrected physical-PC disassembly; no runtime validation.
+
+-- root.children[49].children[0] / legacy root/50/1 / Nested_FriendProxy
+-- No captured upvalues and no explicit parameters.
+local function Nested_FriendProxy()
+    return global.Facade.retrieveProxy(
+        global.ProxyTable.FriendProxy
+    )
+end
+
+-- root.children[32] / legacy root/33 / AnonymousHelper_33
+-- Two captured upvalues are forwarded as a function and its first argument;
+-- remaining varargs are forwarded unchanged. Capture identities need parent review.
+local function make_AnonymousHelper_33(callback, wrappedFunction)
+    return function(...)
+        return callback(wrappedFunction, ...)
+    end
+end
+
+-- root.children[33] / legacy root/34 / AnonymousHelper_34
+-- One captured function is called with the second captured value as its sole argument.
+local function make_AnonymousHelper_34(callback, argument)
+    return function()
+        return callback(argument)
+    end
+end
+
+-- root.children[48] / legacy root/49 / PCallHelper_2 (10 instructions)
+-- Executes the zero-argument FriendProxy lookup under pcall. On error it returns
+-- nil; on success it returns the child result (false/nil also normalize to nil).
+local function PCallHelper_2()
+    local ok, result = pcall(Nested_FriendProxy)
+    if not ok then
+        return nil
+    end
+    return result or nil
+end
+
+  local __exports = {}
+  if Nested_FriendProxy ~= nil then __exports["Nested_FriendProxy"] = Nested_FriendProxy end
+  if make_AnonymousHelper_33 ~= nil then __exports["make_AnonymousHelper_33"] = make_AnonymousHelper_33 end
+  if make_AnonymousHelper_34 ~= nil then __exports["make_AnonymousHelper_34"] = make_AnonymousHelper_34 end
+  if PCallHelper_2 ~= nil then __exports["PCallHelper_2"] = PCallHelper_2 end
+  MainLeftBottomRecovered.sources["04_源码候选/代理与回调短函数_第四批.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/短函数草稿_第三十七批.lua
+-- 独立短辅助函数与比较闭包；保留来源及各原型的词法边界。
+-- ============================================================================
+do
+-- 第三十七批：短函数普通 Lua 恢复草稿
+-- 来源：MainLeftBottom(2).lua VM corrected phase3 disassembly
+-- 说明：按真实原型路径与控制流恢复；业务对象类型/作者原始局部变量名不作猜测。
+-- 本批包含一个短函数：GetPlayerMapPosition。
+
+----------------------------------------------------------------------
+-- 原型索引 89
+-- 规范路径：root.children[44]
+-- legacy 路径：root/45
+-- 17条物理指令；5个常量；无子原型；vararg_flag=1
+--
+-- 控制流：
+-- 1) actor 为 nil/false 时返回 nil；
+-- 2) 分别读取 actor.mCurrMapX / actor.mCurrMapY；
+-- 3) 对任一假值坐标使用 0 作为默认值；
+-- 4) 返回 { x = ..., y = ... }。
+--
+-- 注意：VM 条件使用 Lua truthiness，而非仅判断 nil。
+----------------------------------------------------------------------
+
+local function GetPlayerMapPosition(actor)
+    if not actor then
+        return nil
+    end
+
+    local mapX = actor.mCurrMapX
+    if not mapX then
+        mapX = 0
+    end
+
+    local mapY = actor.mCurrMapY
+    if not mapY then
+        mapY = 0
+    end
+
+    return {
+        x = mapX,
+        y = mapY,
+    }
+end
+
+  local __exports = {}
+  if GetPlayerMapPosition ~= nil then __exports["GetPlayerMapPosition"] = GetPlayerMapPosition end
+  MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第三十七批.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/PickUpItems_距离比较闭包_第九批.lua
+-- 独立短辅助函数与比较闭包；保留来源及各原型的词法边界。
+-- ============================================================================
+do
+-- PickUpItems short comparator closures.
+-- Parent: root.children[21] / legacy root/22 / PickUpItems.
+-- Static reconstruction only; no runtime validation.
+
+-- root.children[21].children[0] / legacy root/22/1
+-- 19 physical instructions, vararg; compares kIdx first and dist on ties.
+local function Nested_dist(a, b)
+    if a.kIdx ~= b.kIdx then
+        return a.kIdx < b.kIdx
+    end
+    return a.dist < b.dist
+end
+
+-- root.children[21].children[1] / legacy root/22/2
+-- 8 physical instructions, vararg; compares dist only.
+local function Nested_dist_2(a, b)
+    return a.dist < b.dist
+end
+
+  local __exports = {}
+  if Nested_dist ~= nil then __exports["Nested_dist"] = Nested_dist end
+  if Nested_dist_2 ~= nil then __exports["Nested_dist_2"] = Nested_dist_2 end
+  MainLeftBottomRecovered.sources["04_源码候选/PickUpItems_距离比较闭包_第九批.lua"] = __exports
+end
