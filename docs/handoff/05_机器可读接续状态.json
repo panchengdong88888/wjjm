@@ -2811,10 +2811,10 @@
       "root PC43-PC85辅助闭包创建/捕获/导出顺序",
       "无捕获闭包绑定位置与PC级执行时序"
     ],
-    "status": "主恢复源码已将PC43-PC85按VM创建顺序整合：PrintLog、ShowLocalNoticeByType、LuaSendMsg、ScheduleOnce/Schedule、地图位置包装函数、DiuItems、仓库查询/存储/取物及PickUpItems。LuaSendMsg写入MainLeftBottom.a.LuaSendMsg；PC54-PC85对应全局导出按序写入。后续IsInWhitelistMap、MoveItemToQuickUse、GetWritablePath、PCallHelper_2分别移动到PC212/259/297/352。22项bindDirect来源路径和符号静态核验全部存在。",
+    "status": "主恢复源码已将PC43-PC85按VM创建顺序整合：PrintLog、ShowLocalNoticeByType、LuaSendMsg、ScheduleOnce/Schedule、地图位置包装函数、DiuItems、仓库查询/存储/取物及PickUpItems。LuaSendMsg写入MainLeftBottom.a.LuaSendMsg；PC54-PC85对应全局导出按序写入。后续IsInWhitelistMap、MoveItemToQuickUse、GetWritablePath、PCallHelper_2分别移动到PC212/259/297/352。22项bindDirect来源路径和符号静态核验全部存在。 模块尾部重复全局导出表已移除，Builtsetting/ ClearBlacklistItems分别在PC258/388写入；全局入口不再在PC412前集中二次赋值。",
     "audit_file": "docs/audit/检查点259_PC43-PC85根模块闭包顺序整合.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
-    "main_recovery_blob_sha": "245dc46e5e2982dc7bfec024b218a093b9f2f95f",
+    "main_recovery_blob_sha": "0f342a5598be205a6e5d4abc170b911747751d66",
     "static_complete_functions": 109,
     "ordinary_lua_drafts": 72,
     "runtime_verified": 0,
@@ -3562,7 +3562,7 @@
     "runtime_verified": 0,
     "root_direct_closures_source_bound": 58,
     "root_direct_closures_expected": 58,
-    "notes": "PC43-PC85闭包创建顺序已整合，后续无捕获闭包绑定已移至各自PC区间。"
+    "notes": "PC43-PC85闭包创建顺序已整合，后续无捕获闭包绑定已移至各自PC区间。 Builtsetting和ClearBlacklistItems也按PC258/388即时导出，已移除模块尾部重复导出表。"
   },
   "latest_checkpoint": 260,
   "complete_static_reconstruction_count": 109,
@@ -3732,7 +3732,7 @@
   },
   "latest": {
     "checkpoint": "259",
-    "summary": "PC43-PC85首批辅助闭包已按VM创建顺序整合；移除重复工厂装配；22项bindDirect来源符号全部核验存在。IsInWhitelistMap/MoveItemToQuickUse/GetWritablePath/PCallHelper_2分别位于PC212/259/297/352。根模块整体仍需继续把PC86-PC412整合成连续可读主体；静态恢复109/110、草稿72、根闭包58/58、运行时验证0。",
+    "summary": "PC43-PC85首批辅助闭包已按VM创建顺序整合；移除重复工厂装配；22项bindDirect来源符号全部核验存在。IsInWhitelistMap/MoveItemToQuickUse/GetWritablePath/PCallHelper_2分别位于PC212/259/297/352。根模块整体仍需继续把PC86-PC412整合成连续可读主体；静态恢复109/110、草稿72、根闭包58/58、运行时验证0。；全局导出均已移至对应PC创建点，删除模块尾部重复导出。",
     "audit_file": "docs/audit/检查点259_PC43-PC85根模块闭包顺序整合.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua"
   },
