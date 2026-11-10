@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点231：继续只筛选短函数/短闭包并实际整合主恢复源码。优先检查root.children[33] AnonymousHelper_33、root.children[56]/[57]及其他已完整静态恢复但未集中入主文件的短原型；中大型业务逻辑、Nested_Anonymous帧槽问题与根级闭包装配后置。",
+  "next_action": "检查点232：继续简单/中等短函数复核。优先复核ReadNumericConfig（root.children[9]，45条，vararg入口/调用参数契约）；随后DeathAutoBlacklist（47条）、MoveTo（51条）、ClearBlacklistItems（63条）、onDamageMsg（72条）。已存在于主源码的短函数不重复追加；静态恢复计数与运行时验证计数按证据更新。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -3512,23 +3512,19 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 230,
+  "last_checkpoint": 231,
   "checkpoint": {
-    "number": 230,
+    "number": 231,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua",
-      "docs/audit/检查点230_简单函数明文整合.md",
+      "docs/audit/检查点231_短函数复核_GetWritablePath与InstallDamageHook.md",
       "docs/handoff/05_机器可读接续状态.json",
-      "docs/handoff/10_防上下文中断_checkpoint协议.md",
-      "02_基础索引/03_函数状态清单.csv"
+      "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
-    "draft_prototypes_touched": 4,
-    "draft_prototype_total": 72,
     "complete_static_reconstructions": 108,
     "runtime_verified": 0,
-    "notes": "按简单优先实际整合GetStorageItemData和FindBlacklistPlayer。FindBlacklistPlayer（root.children[51]）的UP[0]正确指向root.children[48] PCallHelper_2（其Nested_FriendProxy子原型为root.children[48].children[0]）；相邻root.children[49]是独立AnonymousHelper_49，路径已校正。PCallHelper_2/Nested_FriendProxy此前已在主文件定义，本批复用不重复实现。GetStorageItemData父T[4]回调身份未证明，保留notify参数。静态恢复数不变，运行时验证0。"
+    "notes": "复核GetWritablePath（10条）和InstallDamageHook（40条+18条子原型），二者完整静态主体此前已存在主源码，本批仅修正prototype_index中过时的first-pass状态并新增审计；root.children[33]/[56]/[57]及20条以内短原型均已在主文件，不重复追加。静态恢复总数仍108/110，运行时验证0。"
   },
   "drafts": 33,
   "next": "检查点230：继续优先整合简单明文，随后处理中等函数；复杂大函数与根级装配最后处理。",
@@ -3550,13 +3546,16 @@
     "notes": "按简单优先实际整合GetStorageItemData和FindBlacklistPlayer。FindBlacklistPlayer（root.children[51]）的UP[0]正确指向root.children[48] PCallHelper_2（其Nested_FriendProxy子原型为root.children[48].children[0]）；相邻root.children[49]是独立AnonymousHelper_49，路径已校正。PCallHelper_2/Nested_FriendProxy此前已在主文件定义，本批复用不重复实现。GetStorageItemData父T[4]回调身份未证明，保留notify参数。静态恢复数不变，运行时验证0。"
   },
   "latest_checkpoint": {
-    "checkpoint": "230",
-    "summary": "简单函数优先：GetStorageItemData与FindBlacklistPlayer已实际合入主恢复源码；FindBlacklistPlayer复用root.children[48]既有PCallHelper_2/Nested_FriendProxy实现；已校正相邻root.children[49]为独立AnonymousHelper_49。",
-    "audit_file": "docs/audit/检查点230_简单函数明文整合.md",
+    "checkpoint": "231",
+    "summary": "复核并统一GetWritablePath与InstallDamageHook的主源码索引状态；确认root.children[33]/[56]/[57]等短函数已经整合，避免重复追加。",
+    "audit_file": "docs/audit/检查点231_短函数复核_GetWritablePath与InstallDamageHook.md",
     "unresolved": [
-      "GetStorageItemData父T[4]通知回调的业务名称尚未证明",
+      "ReadNumericConfig vararg入口及调用参数契约待复核",
+      "DeathAutoBlacklist Upvalue业务名待进一步确认",
+      "MoveTo返回极性待复核",
+      "ClearBlacklistItems捕获身份待闭合",
       "Nested_Anonymous T[2]帧槽来源仍未闭合",
-      "根模块PC1-PC412闭包装配和共享Upvalue cell接线仍后置",
+      "根模块闭包装配仍后置",
       "运行时验证为0"
     ]
   },
@@ -3568,7 +3567,7 @@
     "complete_static_reconstruction": 108,
     "runtime_verified": 0
   },
-  "next_checkpoint": 231,
+  "next_checkpoint": 232,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
