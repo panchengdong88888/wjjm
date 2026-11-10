@@ -13,7 +13,7 @@
   "major_targets": {
     "root.children[45]": "MainLoop：417条；检查点152-158形成并完成完整静态恢复（未运行时验证）。CFG报告统计314个入口可达节点、103个静态不可达节点。全部22个upvalue父root T寄存器生产者已闭合：运行标记、当前状态/常量、PrintLog、FormatStateChange、ResetGatherMonsterData、GetMainPlayerID、FindMonsterCandidates、目标ID数组、GetOwnerID、扫描游标/自己归属计数、等待状态字段、FindMonsterInCurrViewField、GetOwnerIDText、IsDie、GetOwnerDescription、SetTargetID、配置表。检查点153/154闭合GATHERING/ATTACKING循环；155/156校正入口等待与未归属锁定路径；157完成全CFG分区总账。静态完整，未运行时验证。",
     "root.children[46]": "DiuItems：169条；普通Lua草稿已独立复审并标记完整静态恢复（未运行时验证）；源码04_源码候选/root46_DiuItems.lua；不计运行时验证。",
-    "root.children[42]": "doInit_UI（419条）父函数与23个子原型全部完成静态恢复。检查点235依据原始VM执行器M()闭合Nested_Anonymous固定参数与T槽：fixed_param_count=2，T[0]=promptText、T[1]=successCallback、T[2]=nil；错误分支直接调用nil的原始行为保留。其余UI创建、按钮、GUI参数、共享状态捕获均已由检查点226/235闭合；未运行时验证。",
+    "root.children[42]": "doInit_UI（419条）父函数与23个子原型全部完成静态恢复。Nested_Anonymous fixed_param_count=2，T[0]=promptText、T[1]=successCallback、T[2]=nil；两个调用包装器已确认传入参数，错误分支直接调用nil的原始行为保留。无未解析T槽；未运行时验证。",
     "root.children[8]": "FormatStateChange：10条；检查点177闭合UP0=PrintLog、UP1=MainLoop共享currentState cell、格式参数和回写时序；完整静态恢复，未运行时验证。根级工厂实例化仍待整合。",
     "root.children[9]": "ReadNumericConfig：45条；检查点130闭合三类失败分支均清理返回槽后返回nil，纯数字字符串才tonumber；检查点178闭合UP0=GetWritablePath（root.children[2]）及root/50 AnonymousHelper_49以blacklist_distance.txt调用并转发返回值。完整静态恢复，未运行时验证；GetWritablePath拼接顺序已由检查点127独立闭合。",
     "root.children[14]": "FindMonsterInCurrViewField：27条；检查点131完成27条PC映射，确认捕获root.children[29] IsDie包装器对存活actor返回truthy，完成静态恢复，未运行时验证。",
@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点257：对根模块58个直接子闭包做一次统一装配一致性审计（所有捕获计数/源函数/全局与模块字段/共享cell身份），重点复核MainLeftBottom.z与MainLeftBottom.a在T[2]/T[0]中的区分、T[57]覆盖、T[14..22]共享cell；然后继续处理doInit_UI内部Nested_Anonymous及其未解析T槽，不得宣称作者级或运行时完成。",
+  "next_action": "检查点258：以04_源码候选/root_MainLeftBottom_Module.lua为唯一根模块主体，按PC1-PC412将分段账本整合成连续可读Lua模块；复用已完成的58个子原型和捕获工厂，不重复分析函数体。先整理PC1-PC85模块表构造/早期全局导出，再接入PC86-PC412配置、状态、闭包创建、模块字段和导出时序；保留引擎内部API原始调用，不生成占位函数。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2806,17 +2806,25 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "256",
+    "checkpoint": "257",
     "targets": [
-      "root.children[42] doInit_UI"
+      "root原型结构树",
+      "root直接子闭包58/58一致性审计",
+      "Nested_Anonymous固定参数槽注释纠错"
     ],
-    "status": "20项捕获按PC390-PC410严格顺序装配：T4 PrintLog、T2 MainLeftBottom.z、T3 timerState、T0 MainLeftBottom.a、T1 MainLeftBottom.b、T41 blacklistState、T48 AnonymousHelper_49、T7 Schedule、T8 FindMonsterInCurrViewField、T50 AnonymousHelper_33、T49 AnonymousHelper_32、T5 ShowLocalNoticeByType、T44 GetWritablePath、T42 blacklistDistanceConfigFile、T51 AnonymousHelper_54、T43 gatherMonsterCountConfigFile、T47 FileExistCheck_pcall_wrapper、T11=18000、T12奖励表、T9=0.2。rootModule.doInit接入；根模块有捕获工厂36/36、无捕获22/22，运行时验证0。",
-    "audit_file": "docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md",
-    "source_commit_sha": "b74bac4fefd693b5a7c353f39e771bdc9de57c84",
-    "candidate_commit_sha": "d6ca0c98acf0f751ed336aed18094efebca2844b",
-    "root_module_candidate_commit_sha": "ff42eb1eb283a82fd07f6a3bdbf698e2f719be62",
-    "doInit_candidate_commit_sha": "d6ca0c98acf0f751ed336aed18094efebca2844b",
-    "manifest_commit_sha": "db1f43462326443074ff8c51f04aaa6dba48f479"
+    "status": "递归对照VM Dump与prototype_index确认110/110原型路径；root 58个直接子原型中22个无捕获、36个有捕获，主恢复源码绑定集合与闭包账本集合差异均为0。核对T[0]=MainLeftBottom.a、T[1]=MainLeftBottom.b、T[2]=MainLeftBottom.z、T[3]=timerState；T[14..22]共享cell和T[57] InstallDamageHook live cell。确认21项全局导出与26项模块字段。按检查点235证据纠正Nested_Anonymous：T[0]=promptText、T[1]=successCallback、T[2]=nil，不再列为未解析。",
+    "audit_file": "docs/audit/检查点257_根模块58个直接闭包装配一致性审计.md",
+    "structure_tree_file": "docs/handoff/13_原型结构树.md",
+    "source_commit_sha": "72ff5c57300d0fbe0f585d320898a6659ebd561e",
+    "source_blob_sha": "afcd4476e1c114a7c27fe372c45c7e883c121f84",
+    "candidate_commit_sha": "30d2f48079c998895bee7bca91420dd565d66e04",
+    "structure_tree_commit_sha": "8f9cd94f24cb80a593a7931dbe96991c66247cd3",
+    "audit_commit_sha": "aa22de63bad591bd13fa2eeac8611e9ddc5251d1",
+    "static_complete_functions": 109,
+    "ordinary_lua_drafts": 72,
+    "runtime_verified": 0,
+    "root_direct_closures_source_bound": 58,
+    "root_direct_closures_expected": 58
   },
   "corrections": [
     {
@@ -3538,35 +3546,33 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 256,
-  "checkpoint": 256,
+  "last_checkpoint": 257,
+  "checkpoint": 257,
   "drafts": 33,
-  "next": "检查点257：根直接闭包装配已达58/58源代码层；先做统一审计和依赖缺失扫描，再处理doInit_UI内部Nested_Anonymous的T0/T1/T2来源及其他未完成嵌套原型。运行时验证仍为0。",
+  "next": "检查点258：以04_源码候选/root_MainLeftBottom_Module.lua为唯一根模块主体，按PC1-PC412将分段账本整合成连续可读Lua模块；复用已完成的58个子原型和捕获工厂，不重复分析函数体。先整理PC1-PC85模块表构造/早期全局导出，再接入PC86-PC412配置、状态、闭包创建、模块字段和导出时序；保留引擎内部API原始调用，不生成占位函数。",
   "recent_checkpoint": {
-    "number": 256,
+    "number": 257,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "04_源码候选/root_MainLeftBottom_Module.lua",
       "04_源码候选/短函数草稿_第六十三批.lua",
+      "docs/handoff/13_原型结构树.md",
+      "docs/audit/检查点257_根模块58个直接闭包装配一致性审计.md",
+      "docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
-      "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md"
+      "02_基础索引/03_函数状态清单.csv"
     ],
     "complete_static_reconstructions": 109,
     "ordinary_lua_drafts": 72,
     "runtime_verified": 0,
-    "captured_factory_bindings": 36,
-    "captured_factory_pending": 0,
-    "notes": "doInit_UI 20项捕获按根PC390-PC410顺序装配，写入MainLeftBottom.doInit；根直接子闭包58/58源代码层绑定。内部Nested_Anonymous仍保留未解析T槽，不宣称作者级/运行时完成。",
-    "source_commit_sha": "b74bac4fefd693b5a7c353f39e771bdc9de57c84",
-    "root_module_candidate_commit_sha": "ff42eb1eb283a82fd07f6a3bdbf698e2f719be62",
-    "doInit_candidate_commit_sha": "d6ca0c98acf0f751ed336aed18094efebca2844b",
-    "manifest_commit_sha": "db1f43462326443074ff8c51f04aaa6dba48f479"
+    "root_direct_closures_source_bound": 58,
+    "root_direct_closures_expected": 58,
+    "notes": "完成110原型结构树及58个根直接闭包装配一致性审计；纠正Nested_Anonymous槽位状态。下一步转入root模块PC1-PC412连续源码整合。"
   },
-  "latest_checkpoint": 256,
+  "latest_checkpoint": 257,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3733,13 +3739,13 @@
     "runtime_verified": false
   },
   "latest": {
-    "checkpoint": "256",
-    "summary": "完成最后一个有捕获根闭包root.children[42] doInit_UI的20项捕获静态装配，按PC390-PC410顺序注入PrintLog、MainLeftBottom.z、timerState、MainLeftBottom.a、MainLeftBottom.b、blacklistState及配置/回调函数，并写入MainLeftBottom.doInit。根模块有捕获工厂达到36/36，连同22/22无捕获闭包共58/58源代码层绑定；运行时验证0。",
-    "audit_file": "docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md",
+    "checkpoint": "257",
+    "summary": "完成110原型结构树（root+58个直接子原型+51个更深层嵌套原型）及58个根直接闭包统一装配审计。22/22无捕获绑定、36/36捕获工厂绑定，名称集合差异0；核对21项全局导出、26项模块字段、T[0]/T[1]/T[2]/T[3]状态表身份及T[14..22]/T[57]共享cell。Nested_Anonymous固定参数槽按检查点235证据确认T0/T1/T2。静态恢复109/110、草稿72、运行时验证0。",
+    "audit_file": "docs/audit/检查点257_根模块58个直接闭包装配一致性审计.md",
+    "structure_tree_file": "docs/handoff/13_原型结构树.md",
     "unresolved": [
-      "doInit_UI内部Nested_Anonymous的T槽来源仍有未解析占位，不能据此宣称所有23个嵌套子原型均完成作者级恢复",
-      "完整根模块仍不是作者原文逐字恢复",
-      "运行时验证为0"
+      "root模块原型（412条指令）仍是分段草稿，需整合为连续可读模块主体",
+      "Lua编译器/目标游戏宿主运行时验证尚未执行"
     ]
   },
   "parameter_metadata_semantics": {
@@ -3795,6 +3801,6 @@
       "BlacklistPlayerDetection",
       "doInit_UI"
     ],
-    "note": "根模块58个直接子闭包均已在源码层绑定：22个无捕获闭包+36个有捕获工厂。doInit_UI的20项捕获已按PC390-PC410顺序注入并挂入MainLeftBottom.doInit；内部Nested_Anonymous仍有T槽来源未解析，所有闭包均未运行时验证。"
+    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点257已核对名称集合、全局导出、模块字段和共享cell身份；Nested_Anonymous固定参数槽已闭合。所有绑定未运行时验证。"
   }
 }
