@@ -1639,18 +1639,24 @@ local function make_Nested_Anonymous(PrintLog)
         -- Checkpoint 204: PC130 builds R4 from T[5]..T[8]; PC133 calls ipairs with T[6],
         -- then writes the third return value into T[7]. The runtime value of T[6]
         -- and therefore the concrete T[7] value remain unresolved; do not assign a semantic name. No later explicit T[7] write was found through PC183.
-        -- Checkpoint 209 caller/capture trace:
-        -- doInit_UI PC248 creates this closure (root/43/23), capturing UP[0]=PrintLog.
-        -- doInit_UI PC250 creates root/43/12 (Nested_Helper_4) with this closure as UP[0].
-        -- root/43/19 PC27 invokes Nested_Helper_4 with no arguments; the recovered
-        -- Nested_Helper_4 body builds a prompt and Nested_Helper_5 success callback,
-        -- then calls its openDialog capture with those two explicit values.
-        -- Usage identifies T[0] as the dialog prompt (dialogParams.str) and T[1]
-        -- as the success callback (called with numericValue).
-        -- T[2] is separately captured and invoked by Nested_Helper_11 with the
-        -- fixed format-error message, but no third explicit producer was found
-        -- in the traced wrapper call. Keep T[2] unresolved; do not invent a callback.
-        -- Exact VM frame-slot offset and T[2]'s runtime value remain unproven.
+        -- Checkpoint 228: caller sites were re-read from corrected phase3.
+        -- doInit_UI PC248 creates root/43/23 and captures UP[0]=PrintLog.
+        -- doInit_UI PC250 creates root/43/12 (blacklist-distance dialog wrapper),
+        -- passing the Nested_Anonymous closure as its UP[0].
+        -- root/43/12 PC11 calls UP[0] with exactly T[1]..T[2] (two explicit args):
+        -- promptText and the Nested_Helper_5 success callback.
+        -- doInit_UI PC259 creates root/43/15 (gather-threshold dialog wrapper),
+        -- also passing the same Nested_Anonymous closure as UP[0].
+        -- root/43/15 PC11 likewise calls UP[0] with exactly T[1]..T[2].
+        -- Thus both known call sites supply two explicit arguments; neither has a
+        -- third explicit argument producer. The nested child captures current-frame
+        -- T[0], T[2], T[1] in that order around the PrintLog upvalue. T[0]/T[1]
+        -- appear to carry prompt/success-callback roles from their downstream use,
+        -- but exact VM frame-slot base mapping is not yet proven.
+        -- T[2] is later invoked by Nested_Helper_11 as the delayed error-notice
+        -- callback. Its value/producer cannot be inferred from the two call sites;
+        -- do not replace it with nil or invent a callback until frame semantics
+        -- and any implicit VM slot initialization are established.
         local T0_SLOT_UNRESOLVED = nil
         local T1_SLOT_UNRESOLVED = nil
         local T2_SLOT_UNRESOLVED = nil
