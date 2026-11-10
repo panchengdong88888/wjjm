@@ -3345,3 +3345,13 @@ Nested_match：
 - 剩余root45_MainLoop三次、root22_GetMapData2DPtr两次sources注册语句仍待核对，禁止只按次数删除。
 - 运行时验证仍0；未执行Lua/luac。
 - 下一步检查点271：核查上述剩余注册语句并审计所有sources键的唯一性，之后继续根模块连续源码收敛。
+
+
+## 检查点 #271（2026-11-10）：MainLoop共享cell版本与root22注册去重
+
+- root45_MainLoop原有三个sources注册版本。第1版为检查点250共享cell工厂，UP[8]/UP[10]通过`.value`读写；第2/3版是first-pass普通值草稿，直接把UP[8]/UP[10]当普通table/number使用。
+- 根装配实际传入rootCells[15]/rootCells[17]，所以第1版才符合OP_387 cell适配；删除后两个旧草稿，保留第1版。root45注册键和make_MainLoop工厂现各一处。
+- root22_GetMapData2DPtr存在两个等价工厂/注册块；删除后续重复块，保留带PC范围说明的首个版本。root22注册键和工厂定义现各一处。
+- 新建`docs/audit/检查点271_MainLoop共享cell版本与root22注册去重.md`。
+- 本批未改MainLoop业务逻辑，未提升静态完成数；运行时验证0。
+- 下一步检查点272：全量扫描所有sources注册键及sourceFunction调用，排除其他同名覆盖；再推进根模块连续源码收敛。
