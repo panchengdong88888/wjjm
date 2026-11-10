@@ -8375,7 +8375,9 @@ do
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
         checkpoint = 260,
+        root_pc86_pc211_ordered = true,
         root_pc181_pc258_ordered = true,
+        root_pc297_pc357_ordered = true,
         root_pc357_pc388_ordered = true,
         root_prefix_pc43_pc85_ordered = true,
         root_late_direct_bindings_at_pc = { IsInWhitelistMap = 212, MoveItemToQuickUse = 259, GetWritablePath = 297, PCallHelper_2 = 352 },
