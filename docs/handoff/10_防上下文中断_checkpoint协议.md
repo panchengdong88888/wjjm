@@ -1987,3 +1987,14 @@
 - 删除“地图感知距离”“障碍采样”解释。检查点182报告追加纠错声明；新审计docs/audit/检查点183_DistanceCalculation不可达尾部纠错.md。
 - 本批不提升主函数状态；统计仍为普通Lua草稿73、完整静态恢复100/110、运行时验证0。
 - 下一步：逐条复核root.children[47] PC74-PC141玩家扫描循环CFG。
+
+
+## 检查点 #184：距离辅助函数活动路径与黑名单玩家扫描CFG闭合
+
+- root.children[22] / GetMapData2DPtr：父root PC350创建，捕获T[52]为UP0；活动CFG仅PC1-PC37，检查五参数、相同坐标返回0、非正范围返回nil、计算Chebyshev max(abs(dx),abs(dy))并执行maxDistance门槛。PC37无条件return，PC38-PC144不可达；UP0在活动路径不读取。新增04_源码候选/root22_GetMapData2DPtr.lua，升级完整静态恢复（未运行时验证）。
+- root.children[47] PC74-PC77为数字循环；PC78读取players[index]；nil actor、自身ID、UP4未命中均走PC215循环回跳；UP4首返回值truthy时命中，第二返回值优先作为名称，缺失时查ACTOR_NAME，再回退“黑名单玩家”。
+- UP2.distance为false/nil时跳过坐标读取和UP5调用，后续格式化距离默认为0；truthy时读取主/目标X/Y并五参调用UP5。helper返回nil时跳过当前actor继续循环。
+- PC142-PC214日志节流/重试/随机传送分支位于玩家循环体内。PC163、PC192、PC214均跳到PC216 return；第一个通过距离门槛的黑名单玩家进入该分支后，本次回调退出。仅helper nil路径会继续扫描后续玩家。
+- 修正root47源码候选：移除循环后聚合目标，动作逻辑放回循环体；加入distance配置缺失时绕过helper及显示0的分支。
+- 统计：普通Lua草稿72；完整静态恢复101/110；运行时验证0。
+- 下一步：合并复核root.children[47] PC1-PC73及PC142-PC216全CFG，再决定是否升级完整静态恢复。
