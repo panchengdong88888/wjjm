@@ -53,7 +53,9 @@
     ],
     "register_timelines_completed_count": 28,
     "register_timelines_remaining": 29,
-    "last_timeline_checkpoint": 240
+    "last_timeline_checkpoint": 240,
+    "root_prefix_pc_covered": 85,
+    "last_export_ledger_checkpoint": 241
   },
   "closure_sites": [
     {
@@ -4861,5 +4863,183 @@
       ],
       "status": "verified_from_root_disassembly_and_M_live_cell_semantics"
     }
-  ]
+  ],
+  "root_prefix_export_ledger": {
+    "pc_range": "1-85",
+    "module_fields": [
+      {
+        "pc": 2,
+        "target": "_G.MainLeftBottom",
+        "value": "root module table"
+      },
+      {
+        "pc": 5,
+        "target": "MainLeftBottom.a",
+        "value": "new table"
+      },
+      {
+        "pc": 6,
+        "target": "MainLeftBottom.a.version",
+        "value": "10000"
+      },
+      {
+        "pc": 11,
+        "target": "MainLeftBottom.a.screenW",
+        "value": "SL:GetMetaValue('SCREEN_WIDTH')"
+      },
+      {
+        "pc": 16,
+        "target": "MainLeftBottom.a.screenH",
+        "value": "SL:GetMetaValue('SCREEN_HEIGHT')"
+      },
+      {
+        "pc": 23,
+        "target": "MainLeftBottom.a.Blocklist",
+        "value": [
+          1,
+          9,
+          10,
+          60000
+        ]
+      },
+      {
+        "pc": 25,
+        "target": "MainLeftBottom.a.SendHookList",
+        "value": "empty table"
+      },
+      {
+        "pc": 27,
+        "target": "MainLeftBottom.a.RecvHookList",
+        "value": "empty table"
+      },
+      {
+        "pc": 28,
+        "target": "MainLeftBottom.a.isHidden",
+        "value": true
+      },
+      {
+        "pc": 29,
+        "target": "MainLeftBottom.a.hidebut",
+        "value": null
+      },
+      {
+        "pc": 32,
+        "target": "MainLeftBottom.b",
+        "value": "empty table"
+      },
+      {
+        "pc": 35,
+        "target": "MainLeftBottom.z",
+        "value": "new table"
+      },
+      {
+        "pc": 36,
+        "target": "MainLeftBottom.z.isPaused",
+        "value": false
+      },
+      {
+        "pc": 37,
+        "target": "MainLeftBottom.z.isRunning",
+        "value": false
+      },
+      {
+        "pc": 38,
+        "target": "MainLeftBottom.z.isStoring",
+        "value": false
+      },
+      {
+        "pc": 39,
+        "target": "MainLeftBottom.z.isTaking",
+        "value": false
+      },
+      {
+        "pc": 40,
+        "target": "MainLeftBottom.z.isDiuing",
+        "value": false
+      },
+      {
+        "pc": 41,
+        "target": "MainLeftBottom.z.isOutputted",
+        "value": false
+      },
+      {
+        "pc": 51,
+        "target": "MainLeftBottom.a.LuaSendMsg",
+        "value": "LuaSendMsg closure"
+      }
+    ],
+    "global_exports": [
+      {
+        "pc": 2,
+        "target": "_G.MainLeftBottom",
+        "prototype": "module table"
+      },
+      {
+        "pc": 45,
+        "target": "_G.log",
+        "prototype": "PrintLog"
+      },
+      {
+        "pc": 55,
+        "target": "_G.GetMapId",
+        "prototype": "GetMapId"
+      },
+      {
+        "pc": 57,
+        "target": "_G.GetMapName",
+        "prototype": "GetMapName"
+      },
+      {
+        "pc": 59,
+        "target": "_G.PlayerPos",
+        "prototype": "PlayerPos"
+      },
+      {
+        "pc": 61,
+        "target": "_G.GetDroppedItems",
+        "prototype": "GetDroppedItems"
+      },
+      {
+        "pc": 63,
+        "target": "_G.MoveTo",
+        "prototype": "MoveTo"
+      },
+      {
+        "pc": 67,
+        "target": "_G.DiuItems",
+        "prototype": "DiuItems"
+      },
+      {
+        "pc": 70,
+        "target": "_G.GetAvailableStoragePage",
+        "prototype": "GetAvailableStoragePage"
+      },
+      {
+        "pc": 73,
+        "target": "_G.GetStorageItemData",
+        "prototype": "GetStorageItemData"
+      },
+      {
+        "pc": 78,
+        "target": "_G.StorageItems",
+        "prototype": "StorageItems"
+      },
+      {
+        "pc": 82,
+        "target": "_G.TakeItems",
+        "prototype": "TakeItems"
+      },
+      {
+        "pc": 85,
+        "target": "_G.PickUpItems",
+        "prototype": "PickUpItems"
+      }
+    ],
+    "notes": [
+      "T[0] is reused from the initial module table into MainLeftBottom.a at PC3; later T[0] captures refer to the a table.",
+      "T[8] is sequentially reused for the PC54-PC83 closures, each exported before the next overwrite.",
+      "T[6] first holds LuaSendMsg and is assigned to MainLeftBottom.a.LuaSendMsg at PC51 before reuse for ScheduleOnce at PC52.",
+      "ShowLocalNoticeByType, ScheduleOnce and Schedule are created in this range but are not exported in PC1-PC85."
+    ]
+  }
 }
