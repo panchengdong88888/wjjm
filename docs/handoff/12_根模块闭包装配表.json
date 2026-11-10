@@ -10329,7 +10329,7 @@
   "root_assembly_checkpoint_259": {
     "date": "2026-11-10",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
-    "main_recovery_blob_sha": "245dc46e5e2982dc7bfec024b218a093b9f2f95f",
+    "main_recovery_blob_sha": "0f342a5598be205a6e5d4abc170b911747751d66",
     "audit_file": "docs/audit/检查点259_PC43-PC85根模块闭包顺序整合.md",
     "pc43_pc85_order": [
       {
@@ -10479,6 +10479,7 @@
     "root_direct_closures_source_bound": 58,
     "root_direct_closures_expected": 58,
     "status": "Static ordered assembly only; no Lua compiler or game runtime validation",
-    "next_action": "检查点260：按PC顺序继续整合root PC86-PC211，尤其配置/奖励/状态cell/辅助闭包创建顺序。"
+    "next_action": "检查点260：按PC顺序继续整合root PC86-PC211，尤其配置/奖励/状态cell/辅助闭包创建顺序。",
+    "global_export_policy": "All root global exports are assigned at their original PC creation sites; the former end-of-module duplicate globalExports table was removed. Builtsetting at PC258 and ClearBlacklistItems at PC388 are assigned immediately."
   }
 }
