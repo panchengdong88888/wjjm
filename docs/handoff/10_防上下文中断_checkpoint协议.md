@@ -3148,3 +3148,15 @@ Nested_match：
 - 更正Nested_Anonymous旧注释：检查点235已确认fixed_param_count=2，两个调用包装器传入(promptText, successCallback)，分别进入T[0]/T[1]；T[2]无写入确定为nil。错误分支调用nil的原始行为保留，不再把它列为未解析T槽。
 - 根直接闭包58/58仅表示源码层捕获装配完成；完整静态恢复109/110、普通Lua草稿72、运行时验证0。未执行Lua编译器或目标游戏宿主。
 - 下一步检查点258：以root_MainLeftBottom_Module.lua为唯一根模块主体，按PC1-PC412把分段初始化、状态/配置表、闭包创建、模块字段和全局导出时序整合成连续可读Lua模块；复用58个已恢复子原型，不重复分析其函数体。
+
+
+## 检查点 #258（2026-11-10）：根模块返回值与T寄存器身份校正
+
+- 主恢复文件`04_源码候选/MainLeftBottom_恢复源码.lua`最终改为返回`MainLeftBottomRecovered.root_module`，即root PC412应返回的MainLeftBottom模块表；恢复注册容器`MainLeftBottomRecovered`保持chunk-local，并移除额外的`_G.MainLeftBottomRecovered`全局写入。
+- 早期`AttachRecoveredPrototypes`函数保留为兼容适配器，已标注不参与当前主装配流程，避免与checkpoint256的58闭包主装配重复执行。
+- 根据register_value_timeline纠正根模块旧注释：T[0]=MainLeftBottom.a UI/配置状态表；T[1]=MainLeftBottom.b按钮映射表；T[2]=MainLeftBottom.z功能状态表；T[3]=timerState。InstallDamageHook.UP0捕获a表；BlacklistPlayerDetection.UP0捕获z表；doInit_UI对应UP1=z、UP3=a、UP4=b。
+- 同步更正root模块候选和主汇总稿中的Attach_UITop七实参旧注释、Nested_Anonymous未闭合旧注释。Nested_Anonymous的T[0]=promptText、T[1]=successCallback、T[2]=nil已由检查点235确认。
+- 静态扫描主恢复文件、root模块候选、doInit_UI候选，未发现`return function 函数名(...)`非法匿名函数写法。主恢复文件22项直接绑定源路径和37处sourceFunction工厂引用均能在source registry中找到对应来源符号；37处包括嵌套子工厂，不等同于根直接闭包数量。
+- 以上为源码静态整合和引用核对；未执行Lua解释器/luac，也未在游戏宿主运行。
+- 当前统计仍为完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0。
+- 下一步检查点259：继续按PC1-PC412整合root模块连续主体，优先处理PC43-PC85的辅助闭包创建与导出时序；不重复恢复已完成的子函数体。
