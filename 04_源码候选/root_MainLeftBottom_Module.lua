@@ -579,3 +579,11 @@ end
 -- T[42]=blacklist_distance.txt（PC295；捕获PC306/309/404）；T[43]=gather_monster_count.txt（PC296；捕获PC312/315/406）。
 -- T[44]在PC297承载GetWritablePath闭包，PC299/301/303/403捕获同一闭包cell。
 -- 详细逐PC时间线见docs/handoff/12_根模块闭包装配表.json；本批未改变静态完成数及运行时验证数。
+
+
+-- 检查点239：根模块寄存器生命周期补充（均按捕获PC处的共享live cell值记录）。
+-- T38=2.0（BlacklistPlayerDetection告警间隔）；T39=0.01（成功重试延迟）；T40=30.0（无道具重试延迟）。
+-- T50=AnonymousHelper_34(ReadNumericConfig, 'gather_monster_count.txt')；由doInit_UI UP9捕获。
+-- T52=PC349构造的8元素表，PC351被GetMapData2DPtr捕获；其可达源码路径不读取该UPVALUE。
+-- T53=GetMapData2DPtr；T55=FindBlacklistPlayer；T56=UseItemByIndex(itemNameList)；T58=DeathAutoBlacklist。
+-- BlacklistPlayerDetection的UP3/4/5/6/8/9/11与上述捕获身份/常量逐项对齐。详见docs/handoff/12_根模块闭包装配表.json及检查点239审计。
