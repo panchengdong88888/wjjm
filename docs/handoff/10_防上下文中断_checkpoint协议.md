@@ -2631,3 +2631,18 @@ Nested_match：
 - 源码 `04_源码候选/root8_FormatStateChange.lua` 已作为工厂表达整合进集中源码。根级最终实例化时必须确保它与MainLoop绑定同一状态cell，不能各自复制状态值。
 - 完整静态恢复数更新为106/110（96.4%）；运行时验证仍为0。
 - 下一批继续优先处理短小、少捕获、控制流简单的函数；复杂UI/资源刷新链/状态机留到最后。
+
+
+## 检查点 #217（2026-11-10）：短函数候选源码批量集中整合
+
+将以下7份已有候选源码整合进 `04_源码候选/MainLeftBottom_恢复源码.lua`，每份保留独立词法块并登记到 `MainLeftBottomRecovered.sources`：
+
+- `root9_ReadNumericConfig.lua`
+- `短函数草稿_第十二批.lua`：DistanceCalculation、IsInWhitelistMap、SetTargetID
+- `短函数草稿_第十三批.lua`：SetButtonVisibilityState、ResetGatherMonsterData、StopGatherMonsters、FindMonsterInCurrViewField
+- `短函数草稿_第十四批.lua`：GetAvailableStoragePage、DestroyUI、ShowHideAllButtons
+- `短函数草稿_第三十一批.lua`：UseItemByIndex
+- `短函数草稿_第三十四批.lua`：Nested_isOutputted
+- `短函数草稿_第十五批.lua`：Nested_removeFile、Nested_SL
+
+本批仅集中已存在的静态候选，不增加完整静态恢复计数。带可变标量Upvalue的工厂（例如ResetGatherMonsterData、StopGatherMonsters）仍需在根模块用共享cell正确装配；不能将独立工厂参数值误当作已与父闭包共享的可变Upvalue。运行时验证仍为0。下一批继续短小、简单函数，复杂UI/资源刷新/状态机最后处理。
