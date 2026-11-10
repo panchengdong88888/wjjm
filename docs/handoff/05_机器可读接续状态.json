@@ -49,13 +49,13 @@
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
     "root.children[12]": "LuaSendMsg（92条）检查点190、205：普通Lua草稿PC1-PC92已独立静态复审；固定六参/message字段、Blocklist仅抑制日志、SendHookList按第1参取hook、pcall(hook,arg1,arg6,message)且仅严格true拦截、否则networkCtl:SendMsg原六参转发均与corrected反汇编一致。草稿仍保留UP0/UP1临时名；作者原名与宿主API语义未证实；未运行时验证。源码04_源码候选/短函数草稿_第五十批.lua；审计docs/audit/检查点205_LuaSendMsg普通Lua草稿独立复审.md。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
-    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点241-245已完成PC1-PC412分段闭包创建/捕获/全局导出/模块字段总账；21项全局导出（含MainLeftBottom根表），根表字段入口a/b/z/hide/show/destroy/main/blacklist/onDamageMsg/doInit；父寄存器57/57、捕获描述符135项。根模块整体普通Lua源码装配仍未完成；静态完整109/110，普通Lua草稿72，运行时0。",
+    "root": "MainLeftBottom_Module：412条物理指令、109项常量、58个直接子原型。PC1-PC412分段证据已建；root直接子闭包58/58源码层绑定。主恢复文件PC412返回MainLeftBottom模块表；当前仍是根模块分段草稿+闭包装配适配结构，尚未达到完整连续作者级源码。",
     "root.children[42].children[3]": "Nested_FFFF00（320条父指令、72常量、5个子原型、4项捕获）：检查点225已完成PC1-PC320及5个子原型静态恢复；捕获顺序moduleState/printLog/timerState/initState。Win_Create等GUI调用参数已与新框架43份文档核对；五组Text_Create结果均先做truthy门控。K[28]=['unknown',2]已确认是nil的VM dump序列化占位，resTimer清理写nil。MoneyProxy方法未文档化，保留原调用，不反汇编其内部。完整静态恢复，未运行时验证。",
     "root.children[42].children[22]": "Nested_Anonymous（8条父指令；Nested_str 27条、Nested_match 50条、Nested_Helper_11 4条）已完整静态恢复。原始VM M()每次新建T={}和X={}；fixed_param_count=2；两实参写入T[0]/T[1]；额外实参进入X；T[2]无写入保持nil。Nested_str捕获T[0]/PrintLog/T[2]/T[1]；无效数字路径按原字节码调用nil，保留attempt-to-call-nil行为。未运行时验证。",
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点258：以04_源码候选/root_MainLeftBottom_Module.lua为唯一根模块主体，按PC1-PC412将分段账本整合成连续可读Lua模块；复用已完成的58个子原型和捕获工厂，不重复分析函数体。先整理PC1-PC85模块表构造/早期全局导出，再接入PC86-PC412配置、状态、闭包创建、模块字段和导出时序；保留引擎内部API原始调用，不生成占位函数。",
+  "next_action": "检查点259：继续按root PC1-PC412整合根模块连续主体，优先处理PC43-PC85的辅助闭包创建与全局导出顺序；复用已恢复的函数体和58/58捕获装配，不重复反汇编。核对PC43-PC85的每个闭包创建点、捕获对象、模块字段写入和_G导出，整理成可读的根模块执行序列。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2806,20 +2806,21 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "257",
+    "checkpoint": "258",
     "targets": [
-      "root原型结构树",
-      "root直接子闭包58/58一致性审计",
-      "Nested_Anonymous固定参数槽注释纠错"
+      "root模块最终返回值",
+      "T[0]/T[2]寄存器身份",
+      "root模块过期注释与兼容装配器边界"
     ],
-    "status": "递归对照VM Dump与prototype_index确认110/110原型路径；root 58个直接子原型中22个无捕获、36个有捕获，主恢复源码绑定集合与闭包账本集合差异均为0。核对T[0]=MainLeftBottom.a、T[1]=MainLeftBottom.b、T[2]=MainLeftBottom.z、T[3]=timerState；T[14..22]共享cell和T[57] InstallDamageHook live cell。确认21项全局导出与26项模块字段。按检查点235证据纠正Nested_Anonymous：T[0]=promptText、T[1]=successCallback、T[2]=nil，不再列为未解析。",
-    "audit_file": "docs/audit/检查点257_根模块58个直接闭包装配一致性审计.md",
+    "status": "主恢复文件PC412现返回MainLeftBottomRecovered.root_module（MainLeftBottom模块表），恢复注册容器改为chunk-local并移除额外_G.MainLeftBottomRecovered导出。修正InstallDamageHook.UP0=T[0]=MainLeftBottom.a、BlacklistPlayerDetection.UP0=T[2]=MainLeftBottom.z；doInit_UI的T0/T1/T2槽状态同步修正。早期AttachRecoveredPrototypes明确标注为未被当前主装配调用的兼容适配器。",
+    "audit_file": "docs/audit/检查点258_根模块返回值与寄存器身份校正.md",
     "structure_tree_file": "docs/handoff/13_原型结构树.md",
-    "source_commit_sha": "72ff5c57300d0fbe0f585d320898a6659ebd561e",
-    "source_blob_sha": "afcd4476e1c114a7c27fe372c45c7e883c121f84",
-    "candidate_commit_sha": "30d2f48079c998895bee7bca91420dd565d66e04",
-    "structure_tree_commit_sha": "8f9cd94f24cb80a593a7931dbe96991c66247cd3",
-    "audit_commit_sha": "aa22de63bad591bd13fa2eeac8611e9ddc5251d1",
+    "source_commit_sha": "697fc737b4f99b7a3ab19c52b2ff552a6bb47f5e",
+    "source_blob_sha": "6ff85f003ebe7b79021e6fbbfd7e06a0b8a081e5",
+    "root_module_candidate_commit_sha": "cd8678c77fa2e4cc27487c4251a5a657c2988c71",
+    "root_module_candidate_blob_sha": "b57defb2a4660a120b311f925e083d40668f417c",
+    "structure_tree_commit_sha": "23f03a5beded87f5a2cd93c5b8d2c46a4f652372",
+    "audit_commit_sha": "40f5f1172b5fe74073f09f8d77b2bd512edd15f5",
     "static_complete_functions": 109,
     "ordinary_lua_drafts": 72,
     "runtime_verified": 0,
@@ -3546,20 +3547,20 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 257,
-  "checkpoint": 257,
+  "last_checkpoint": 258,
+  "checkpoint": 258,
   "drafts": 33,
-  "next": "检查点258：以04_源码候选/root_MainLeftBottom_Module.lua为唯一根模块主体，按PC1-PC412将分段账本整合成连续可读Lua模块；复用已完成的58个子原型和捕获工厂，不重复分析函数体。先整理PC1-PC85模块表构造/早期全局导出，再接入PC86-PC412配置、状态、闭包创建、模块字段和导出时序；保留引擎内部API原始调用，不生成占位函数。",
+  "next": "检查点259：继续按root PC1-PC412整合根模块连续主体，优先处理PC43-PC85的辅助闭包创建与全局导出顺序；复用已恢复的函数体和58/58捕获装配，不重复反汇编。核对PC43-PC85的每个闭包创建点、捕获对象、模块字段写入和_G导出，整理成可读的根模块执行序列。",
   "recent_checkpoint": {
-    "number": 257,
+    "number": 258,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "04_源码候选/root_MainLeftBottom_Module.lua",
       "04_源码候选/短函数草稿_第六十三批.lua",
-      "docs/handoff/13_原型结构树.md",
+      "docs/audit/检查点258_根模块返回值与寄存器身份校正.md",
       "docs/audit/检查点257_根模块58个直接闭包装配一致性审计.md",
-      "docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md",
+      "docs/handoff/13_原型结构树.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
@@ -3570,9 +3571,9 @@
     "runtime_verified": 0,
     "root_direct_closures_source_bound": 58,
     "root_direct_closures_expected": 58,
-    "notes": "完成110原型结构树及58个根直接闭包装配一致性审计；纠正Nested_Anonymous槽位状态。下一步转入root模块PC1-PC412连续源码整合。"
+    "notes": "PC412返回MainLeftBottom模块表；恢复注册容器保持局部。修正T0=a/T2=z语义和过期注释。下一步继续PC43-PC85根模块执行序列整合。"
   },
-  "latest_checkpoint": 257,
+  "latest_checkpoint": 258,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3739,13 +3740,13 @@
     "runtime_verified": false
   },
   "latest": {
-    "checkpoint": "257",
-    "summary": "完成110原型结构树（root+58个直接子原型+51个更深层嵌套原型）及58个根直接闭包统一装配审计。22/22无捕获绑定、36/36捕获工厂绑定，名称集合差异0；核对21项全局导出、26项模块字段、T[0]/T[1]/T[2]/T[3]状态表身份及T[14..22]/T[57]共享cell。Nested_Anonymous固定参数槽按检查点235证据确认T0/T1/T2。静态恢复109/110、草稿72、运行时验证0。",
-    "audit_file": "docs/audit/检查点257_根模块58个直接闭包装配一致性审计.md",
+    "checkpoint": "258",
+    "summary": "主恢复文件现返回MainLeftBottom模块表，恢复注册容器为局部变量，不额外导出全局。根寄存器语义已明确：T0=a、T1=b、T2=z、T3=timerState；InstallDamageHook.UP0=a，BlacklistPlayerDetection.UP0=z，doInit_UI对应捕获身份正确。过期的Attach_UITop七实参和Nested_Anonymous槽位未闭合注释已修正。静态恢复109/110、草稿72、根闭包58/58、运行时验证0。",
+    "audit_file": "docs/audit/检查点258_根模块返回值与寄存器身份校正.md",
     "structure_tree_file": "docs/handoff/13_原型结构树.md",
     "unresolved": [
-      "root模块原型（412条指令）仍是分段草稿，需整合为连续可读模块主体",
-      "Lua编译器/目标游戏宿主运行时验证尚未执行"
+      "root模块PC1-PC412仍需整合成连续可读主体；当前仍保留分段证据和装配适配结构",
+      "未执行Lua编译器或目标游戏宿主运行时验证"
     ]
   },
   "parameter_metadata_semantics": {
@@ -3801,6 +3802,6 @@
       "BlacklistPlayerDetection",
       "doInit_UI"
     ],
-    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点257已核对名称集合、全局导出、模块字段和共享cell身份；Nested_Anonymous固定参数槽已闭合。所有绑定未运行时验证。"
+    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点257核对名称集合、全局导出、模块字段和共享cell身份；检查点258使主恢复文件最终返回MainLeftBottom模块表。root模块本体仍需连续源码整合；运行时验证0。"
   }
 }
