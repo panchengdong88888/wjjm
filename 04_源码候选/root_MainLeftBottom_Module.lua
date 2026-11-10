@@ -244,6 +244,9 @@ local blacklistState = {
     distance = nil
 }
 
+-- PC294：同一blacklistState表挂入模块字段；后续onDamageMsg/黑名单闭包共享该对象。
+MainLeftBottom.blacklist = blacklistState
+
 -- PC295-PC296：两个配置文件名常量。
 local blacklistDistanceConfigFile = "blacklist_distance.txt"
 local gatherMonsterCountConfigFile = "gather_monster_count.txt"
