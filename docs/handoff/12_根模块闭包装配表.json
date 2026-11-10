@@ -28,13 +28,17 @@
       3,
       4,
       5,
+      8,
       37,
       41,
+      42,
+      43,
+      44,
       57
     ],
-    "register_timelines_completed_count": 9,
-    "register_timelines_remaining": 48,
-    "last_timeline_checkpoint": 237
+    "register_timelines_completed_count": 13,
+    "register_timelines_remaining": 44,
+    "last_timeline_checkpoint": 238
   },
   "closure_sites": [
     {
@@ -3896,6 +3900,114 @@
         ]
       }
     ],
+    "8": [
+      {
+        "pc_one_based": 54,
+        "event": "创建root.children[13] GetMapId闭包",
+        "value": "GetMapId",
+        "note": "PC55将闭包导出为_G.GetMapId；随后T[8]继续复用。"
+      },
+      {
+        "pc_one_based": 56,
+        "event": "创建root.children[30] GetMapName闭包",
+        "value": "GetMapName",
+        "note": "PC57将闭包导出为_G.GetMapName。"
+      },
+      {
+        "pc_one_based": 58,
+        "event": "创建root.children[57] PlayerPos闭包",
+        "value": "PlayerPos",
+        "note": "PC59将闭包导出为_G.PlayerPos。"
+      },
+      {
+        "pc_one_based": 60,
+        "event": "创建root.children[4] GetDroppedItems闭包",
+        "value": "GetDroppedItems",
+        "note": "PC61将闭包导出为_G.GetDroppedItems。"
+      },
+      {
+        "pc_one_based": 62,
+        "event": "创建root.children[3] MoveTo闭包",
+        "value": "MoveTo",
+        "note": "PC63将闭包导出为_G.MoveTo。"
+      },
+      {
+        "pc_one_based": 64,
+        "event": "创建root.children[46] DiuItems闭包",
+        "value": "DiuItems",
+        "note": "PC65-PC66捕获T[2]/T[5]；PC67将闭包导出为_G.DiuItems。"
+      },
+      {
+        "pc_one_based": 68,
+        "event": "创建root.children[36] GetAvailableStoragePage闭包",
+        "value": "GetAvailableStoragePage",
+        "note": "PC69捕获T[4]；PC70导出为全局函数。"
+      },
+      {
+        "pc_one_based": 71,
+        "event": "创建root.children[1] GetStorageItemData闭包",
+        "value": "GetStorageItemData",
+        "note": "PC72捕获T[4]；PC73导出为全局函数。"
+      },
+      {
+        "pc_one_based": 74,
+        "event": "创建root.children[50] StorageItems闭包",
+        "value": "StorageItems",
+        "note": "PC75-PC77捕获T[2]/T[4]/T[5]；PC78导出为全局函数。"
+      },
+      {
+        "pc_one_based": 79,
+        "event": "创建root.children[5] TakeItems闭包",
+        "value": "TakeItems",
+        "note": "PC80-PC81捕获T[2]/T[5]；PC82导出为全局函数。"
+      },
+      {
+        "pc_one_based": 83,
+        "event": "创建root.children[21] PickUpItems闭包",
+        "value": "PickUpItems",
+        "note": "PC84捕获T[5]；PC85导出为全局函数。"
+      },
+      {
+        "pc_one_based": 86,
+        "event": "创建采集配置表",
+        "value": "gatherConfig = { GATHER_THRESHOLD=10, CHECK_INTERVAL=0.5, ATTACK_WAIT_TIME=1 }",
+        "note": "PC87-PC89依次写入三个字段；PC194创建FindMonsterCandidates后捕获该表。"
+      },
+      {
+        "pc_one_based": 199,
+        "event": "capture parent T[8] live cell",
+        "value": "gatherConfig",
+        "note": "root.children[28] FindMonsterCandidates UP[4]。"
+      },
+      {
+        "pc_one_based": 236,
+        "event": "capture parent T[8] live cell",
+        "value": "gatherConfig",
+        "note": "root.children[45] MainLoop UP[21]。"
+      },
+      {
+        "pc_one_based": 244,
+        "event": "capture parent T[8] live cell",
+        "value": "gatherConfig",
+        "note": "root.children[19] InitGatherMonsters UP[5]。"
+      },
+      {
+        "pc_one_based": 399,
+        "event": "capture parent T[8] live cell",
+        "value": "gatherConfig",
+        "note": "root.children[42] doInit_UI UP[8]。"
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "gatherConfig",
+        "semantic_role": "采集阈值/间隔配置表",
+        "capture_count": 4,
+        "notes": [
+          "T[8]先被PC54-PC85连续复用为无捕获辅助闭包并逐个导出全局；PC86重新覆盖为配置表。",
+          "PC87-PC89构造三个字段，所有四个捕获点均发生在PC86-PC89之后；闭包捕获的是同一配置表live cell。"
+        ]
+      }
+    ],
     "37": [
       {
         "pc_one_based": 212,
@@ -4084,6 +4196,121 @@
         "notes": [
           "The nil values at lastAttacker, lastHp and distance correspond to the VM dump's nil serialization placeholder.",
           "The five capture sites share this same live table cell; they do not receive independent table snapshots."
+        ]
+      }
+    ],
+    "42": [
+      {
+        "pc_one_based": 295,
+        "event": "写入配置文件名",
+        "value": "blacklist_distance.txt",
+        "note": "PC304 AnonymousHelper_49捕获该值；PC307 root.children[32]也捕获该值；PC390 doInit_UI捕获该值。"
+      },
+      {
+        "pc_one_based": 306,
+        "event": "capture parent T[42] live cell",
+        "value": "blacklist_distance.txt",
+        "note": "root.children[49] AnonymousHelper_49 UP[1]。"
+      },
+      {
+        "pc_one_based": 309,
+        "event": "capture parent T[42] live cell",
+        "value": "blacklist_distance.txt",
+        "note": "root.children[32] AnonymousHelper_32 UP[1]。"
+      },
+      {
+        "pc_one_based": 404,
+        "event": "capture parent T[42] live cell",
+        "value": "blacklist_distance.txt",
+        "note": "root.children[42] doInit_UI UP[13]。"
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "blacklist_distance.txt",
+        "semantic_role": "黑名单距离配置文件名",
+        "capture_count": 3,
+        "notes": [
+          "PC295为该寄存器的有效写入；PC306/309/404捕获时没有后续覆盖。",
+          "AnonymousHelper_49与doInit_UI均应使用原始文件名，不将其误认为路径或函数闭包。"
+        ]
+      }
+    ],
+    "43": [
+      {
+        "pc_one_based": 296,
+        "event": "写入配置文件名",
+        "value": "gather_monster_count.txt",
+        "note": "PC313 AnonymousHelper_54捕获该值；PC310 root.children[33]也捕获该值；PC390 doInit_UI捕获该值。"
+      },
+      {
+        "pc_one_based": 312,
+        "event": "capture parent T[43] live cell",
+        "value": "gather_monster_count.txt",
+        "note": "root.children[33] AnonymousHelper_33 UP[1]。"
+      },
+      {
+        "pc_one_based": 315,
+        "event": "capture parent T[43] live cell",
+        "value": "gather_monster_count.txt",
+        "note": "root.children[54] AnonymousHelper_54 UP[1]。"
+      },
+      {
+        "pc_one_based": 406,
+        "event": "capture parent T[43] live cell",
+        "value": "gather_monster_count.txt",
+        "note": "root.children[42] doInit_UI UP[15]。"
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "gather_monster_count.txt",
+        "semantic_role": "引怪数量配置文件名",
+        "capture_count": 3,
+        "notes": [
+          "PC296为该寄存器的有效写入；PC312/315/406捕获时没有后续覆盖。",
+          "PC313创建的AnonymousHelper_54捕获该文件名，作为配置读取/写入包装链的一部分。"
+        ]
+      }
+    ],
+    "44": [
+      {
+        "pc_one_based": 297,
+        "event": "创建root.children[2] GetWritablePath闭包",
+        "value": "GetWritablePath",
+        "note": "无捕获；PC298创建ReadNumericConfig，随后PC299捕获T[44]。"
+      },
+      {
+        "pc_one_based": 299,
+        "event": "capture parent T[44] live cell",
+        "value": "GetWritablePath",
+        "note": "root.children[9] ReadNumericConfig UP[0]。"
+      },
+      {
+        "pc_one_based": 301,
+        "event": "capture parent T[44] live cell",
+        "value": "GetWritablePath",
+        "note": "root.children[17] PCallHelper UP[0]。"
+      },
+      {
+        "pc_one_based": 303,
+        "event": "capture parent T[44] live cell",
+        "value": "GetWritablePath",
+        "note": "root.children[0] FileExistCheck_pcall_wrapper UP[0]。"
+      },
+      {
+        "pc_one_based": 403,
+        "event": "capture parent T[44] live cell",
+        "value": "GetWritablePath",
+        "note": "root.children[42] doInit_UI UP[12]。"
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "GetWritablePath闭包",
+        "semantic_role": "可写目录路径拼接辅助函数",
+        "capture_count": 4,
+        "notes": [
+          "PC297创建无捕获GetWritablePath闭包并写入T[44]。",
+          "PC299/301/303的三个捕获者分别为ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper；PC403为doInit_UI。",
+          "四处均捕获同一T[44] live cell，不能误把它们归类为底层FileUtils API本身。"
         ]
       }
     ],
