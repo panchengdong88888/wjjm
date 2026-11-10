@@ -1947,3 +1947,18 @@
 - 新增源码：04_源码候选/root52_onDamageMsg.lua；新增审计：docs/audit/检查点180_onDamageMsgJSON入口与lastAttacker捕获闭合.md。
 - 统计：普通Lua草稿74；完整静态恢复99/110；运行时验证0。
 - 下一步：复核root.children[25] / DeathAutoBlacklist（47条）及Nested_RequestAddBlacklistByName调用链，或继续BlacklistPlayerDetection主体剩余CFG。
+
+
+## 检查点 #181：DeathAutoBlacklist 四项捕获与六次延迟请求闭合
+
+- root.children[25] / DeathAutoBlacklist（47条）父root PC363创建，PC364-PC367按序捕获T[41]/T[4]/T[55]/T[5]。
+- UP0=T[41]黑名单状态表；UP1=T[4] PrintLog；UP2=T[55] FindBlacklistPlayer；UP3=T[5] ShowLocalNoticeByType。四项身份均由root状态表初始化、root子原型创建点及函数调用用途交叉确认。
+- PC1-PC4先取lastAttacker局部记录，再清空共享字段；PC5-PC16记录/name缺失或空串时提示并返回。
+- PC17-PC26调用FindBlacklistPlayer(lastAttacker.id)，只消费首返回值；命中时日志提示并返回。
+- 未命中时PC27-PC30打印击杀提示，PC31-PC35显示“自动拉黑：”本地通知。
+- PC36-PC39初始化0..5步长1数值循环；PC40-PC45按0.5*index调用SL:ScheduleOnce；PC46循环回跳，因此安排6次，延迟0/0.5/1/1.5/2/2.5秒。
+- 子闭包捕获父R0的lastAttacker记录表，读取其name并调用SL:RequestAddBlacklistByName(name)；不提前复制name。
+- 47条父指令、6条子指令、四项捕获和所有分支闭合，升级为完整静态恢复（未运行时验证）。
+- 新增源码：04_源码候选/root25_DeathAutoBlacklist.lua；新增审计：docs/audit/检查点181_DeathAutoBlacklist四项捕获与六次延迟请求闭合.md。
+- 统计：普通Lua草稿73；完整静态恢复100/110；运行时验证0。
+- 下一步：复核root.children[47] / BlacklistPlayerDetection（216条）尚未闭合的地图/障碍门槛与全CFG分区。
