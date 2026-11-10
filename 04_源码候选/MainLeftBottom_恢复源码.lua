@@ -156,12 +156,17 @@ do
 local MainLeftBottom = {}
 _G.MainLeftBottom = MainLeftBottom
 
--- PC3-PC16：主模块a表及版本、屏幕尺寸。
-MainLeftBottom.a = {
-    version = "10000",
-    screenW = SL:GetMetaValue("SCREEN_WIDTH"),
-    screenH = SL:GetMetaValue("SCREEN_HEIGHT")
-}
+-- PC3-PC5：先创建a状态表，再挂入模块根表。
+MainLeftBottom.a = {}
+
+-- PC6：版本字段。
+MainLeftBottom.a.version = "10000"
+
+-- PC7-PC11：读取屏幕宽度并写入a.screenW。
+MainLeftBottom.a.screenW = SL:GetMetaValue("SCREEN_WIDTH")
+
+-- PC12-PC16：读取屏幕高度并写入a.screenH。
+MainLeftBottom.a.screenH = SL:GetMetaValue("SCREEN_HEIGHT")
 
 -- PC17-PC29：a表中的钩子容器和界面状态。
 MainLeftBottom.a.Blocklist = {1.0, 9.0, 10.0, 60000.0}
