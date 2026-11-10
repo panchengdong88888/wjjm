@@ -43,9 +43,10 @@
     "root.children[42].children[3].children[4]": "Nested_UnSchedule：20条；原检查点116已完成控制流静态复核。检查点172修正源码表达：子UP0=通知回调、UP1=timerState、UP2=moduleState；父PC68-PC71捕获顺序为父UP1/UP2/UP0。取消timer后写回反汇编未知常量['unknown',2]，源码以UNKNOWN_VALUE_SENTINEL占位，禁止误写nil。完整静态恢复，未运行时验证。",
     "root.children[50].children[0]": "Nested_isOutputted：52条；检查点174独立静态复审完成。父StorageItems PC102创建闭包，PC103/PC104捕获父UP0共享输出状态对象及父UP1输出回调；父PC154-PC170闭合ipairs迭代、Name匹配和两参数调用（item=R19,itemText=R25），PC171消费返回值。子函数纯文本查找聚灵珠、首次命中置位并两次回调输出物品/详情，校验Dura/DuraMax并返回布尔值。完整静态恢复，未运行时验证；更上层捕获原名未知。",
     "root.children[6].children[0]": "Nested_onDamageMsg：18条；检查点179闭合父InstallDamageHook捕获：UP0=MainLeftBottom模块表（root T[0]），UP1=原始MSG_SC_DAMAGE_HP处理函数（父R2）。若模块表.onDamageMsg为function则pcall(callback,arg1,arg2)但丢弃结果；所有路径随后均调用原处理器并转发其多返回值；回调异常由pcall保护，不阻断原处理器。PC17-PC18不可达，额外vararg不读取。完整静态恢复，未运行时验证。",
-    "root.children[52]": "onDamageMsg：72条；检查点180闭合UP0=root T[41]黑名单状态表、Nested_JsonDecode捕获首个JSON参数T[1]、pcall/表类型门槛、MAIN_ACTOR_ID/UserID/AttackUserID过滤、ACTOR_IS_HERO/MASTER_ID/NAME查询及分身纯文本过滤；最终写入blacklistState.lastAttacker={id,name}。完整静态恢复，未运行时验证；仅记录攻击者，不直接执行加黑请求。"
+    "root.children[52]": "onDamageMsg：72条；检查点180闭合UP0=root T[41]黑名单状态表、Nested_JsonDecode捕获首个JSON参数T[1]、pcall/表类型门槛、MAIN_ACTOR_ID/UserID/AttackUserID过滤、ACTOR_IS_HERO/MASTER_ID/NAME查询及分身纯文本过滤；最终写入blacklistState.lastAttacker={id,name}。完整静态恢复，未运行时验证；仅记录攻击者，不直接执行加黑请求。",
+    "root.children[25]": "DeathAutoBlacklist：47条+子原型6条；检查点181闭合UP0=root T[41]黑名单状态表、UP1=T[4] PrintLog、UP2=T[55] FindBlacklistPlayer、UP3=T[5] ShowLocalNoticeByType。取出lastAttacker后清空共享字段；检查记录/name及黑名单命中；未命中时输出日志/本地通知，并按0..5循环以0.5*index安排6次ScheduleOnce，子闭包捕获记录表并调用RequestAddBlacklistByName(record.name)。完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点180已完成onDamageMsg（root.children[52]）72条指令静态重建，闭合UP0黑名单状态表、Nested_JsonDecode的T[1]参数捕获、JSON/元数据门槛和lastAttacker写入。下一步复核root.children[25] / DeathAutoBlacklist（47条）及Nested_RequestAddBlacklistByName调用链，或继续BlacklistPlayerDetection主体剩余CFG；运行时验证仍为0。",
+  "next_action": "检查点181已完成DeathAutoBlacklist（root.children[25]）47条父指令及6条子闭包静态复核，闭合四项捕获、lastAttacker清理、黑名单查询、通知和六次0.5秒间隔请求。下一步复核root.children[47] / BlacklistPlayerDetection（216条）尚未闭合的地图/障碍门槛与全CFG分区；运行时验证仍为0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -118,7 +119,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "180"
+    "last_checkpoint": "181"
   },
   "static_recovered_functions": [
     {
@@ -2216,26 +2217,27 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "180",
+    "checkpoint": "181",
     "targets": [
-      "root.children[52]"
+      "root.children[25]",
+      "root.children[25].children[0]"
     ],
-    "status": "Closed the blacklist state upvalue, nested JSON decoder capture, protected decode/type gate, actor metadata filters, clone-name exclusion, and lastAttacker write across all 72 instructions; promoted to complete static reconstruction, not runtime-validated.",
-    "audit_file": "docs/audit/检查点180_onDamageMsgJSON入口与lastAttacker捕获闭合.md",
+    "status": "Closed all four parent captures, lastAttacker consumption/reset, blacklist lookup branch, logging/notice callbacks, and six scheduled retries with their captured record table.",
+    "audit_file": "docs/audit/检查点181_DeathAutoBlacklist四项捕获与六次延迟请求闭合.md",
     "files": [
-      "04_源码候选/root52_onDamageMsg.lua",
-      "docs/audit/检查点180_onDamageMsgJSON入口与lastAttacker捕获闭合.md",
+      "04_源码候选/root25_DeathAutoBlacklist.lua",
+      "docs/audit/检查点181_DeathAutoBlacklist四项捕获与六次延迟请求闭合.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "UP0 is root T[41], the shared blacklist state table exposed as MainLeftBottom.blacklist.",
-      "Nested_JsonDecode captures parent T[1], the first JSON text argument; pcall protects decode and the result must be a table.",
-      "Filters MAIN_ACTOR_ID, UserID, AttackUserID, ACTOR_IS_HERO/master ID, actor name, and the literal 分身 substring.",
-      "Only writes blacklistState.lastAttacker={id,name}; does not directly request blacklist insertion."
+      "UP0 blacklistState; UP1 PrintLog; UP2 FindBlacklistPlayer; UP3 ShowLocalNoticeByType.",
+      "The lastAttacker record is copied then the shared state field is cleared immediately.",
+      "Already-blacklisted IDs stop after a log; otherwise log and local notice are issued.",
+      "Six ScheduleOnce callbacks are scheduled for 0, 0.5, 1, 1.5, 2, and 2.5 seconds; each captures the record table and reads .name when run."
     ],
     "counts": {
-      "ordinary_lua_drafts": 74,
-      "complete_static_reconstruction": 99,
+      "ordinary_lua_drafts": 73,
+      "complete_static_reconstruction": 100,
       "runtime_verified": 0
     }
   },
@@ -2906,50 +2908,50 @@
       ]
     }
   ],
-  "draft_function_count": 74,
-  "ordinary_lua_draft_functions": 74,
-  "last_checkpoint": "180",
-  "checkpoint": "180",
+  "draft_function_count": 73,
+  "ordinary_lua_draft_functions": 73,
+  "last_checkpoint": "181",
+  "checkpoint": "181",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 180,
+    "number": 181,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/root52_onDamageMsg.lua",
-      "docs/audit/检查点180_onDamageMsgJSON入口与lastAttacker捕获闭合.md",
+      "04_源码候选/root25_DeathAutoBlacklist.lua",
+      "docs/audit/检查点181_DeathAutoBlacklist四项捕获与六次延迟请求闭合.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "draft_prototypes_touched": 1,
-    "draft_prototype_total": 74,
-    "complete_static_reconstructions": 99,
+    "draft_prototype_total": 73,
+    "complete_static_reconstructions": 100,
     "runtime_verified": 0,
-    "notes": "闭合onDamageMsg父UP0=root T41黑名单状态表及Nested_JsonDecode捕获父T1首个JSON参数；72条活动路径完成静态复核，确认只写lastAttacker，不直接发起加黑请求。"
+    "notes": "父root PC363依次捕获blacklistState/PrintLog/FindBlacklistPlayer/ShowLocalNoticeByType；47条父指令和6条子闭包闭合，确认清空lastAttacker后执行黑名单查询、通知及六次ScheduleOnce请求。"
   },
   "latest_checkpoint": {
-    "checkpoint": "180",
-    "summary": "onDamageMsg（72条）闭合父UP0=blacklistState、Nested_JsonDecode捕获T[1] JSON参数、pcall/表类型门槛、主玩家/攻击者过滤、英雄master ID/name/分身检查及lastAttacker状态写入，升级完整静态恢复。",
-    "audit_file": "docs/audit/检查点180_onDamageMsgJSON入口与lastAttacker捕获闭合.md",
+    "checkpoint": "181",
+    "summary": "DeathAutoBlacklist（47条+6条子闭包）闭合四项父捕获、lastAttacker清理、FindBlacklistPlayer分支、PrintLog/本地通知和0..5六次ScheduleOnce请求。",
+    "audit_file": "docs/audit/检查点181_DeathAutoBlacklist四项捕获与六次延迟请求闭合.md",
     "unresolved": [
       "目标宿主运行时验证"
     ]
   },
-  "complete_static_reconstruction_count": 99,
+  "complete_static_reconstruction_count": 100,
   "complete_static_reconstruction": "95/110 (86.4%)",
   "progress_reconciled": {
     "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；精选索引数组不作为完整计数器。",
-    "ordinary_lua_draft_functions": 74,
-    "complete_static_reconstruction_functions": 99,
+    "ordinary_lua_draft_functions": 73,
+    "complete_static_reconstruction_functions": 100,
     "runtime_verified_functions": 0,
-    "note": "检查点180完成onDamageMsg的72条指令及父UP0状态表、Nested_JsonDecode首参数捕获、JSON解码门槛、actor过滤和lastAttacker写入闭合。",
-    "checkpoint": 180,
-    "ordinary_lua_drafts": 74,
-    "complete_static_reconstruction": 99,
+    "note": "检查点181闭合DeathAutoBlacklist四项捕获、lastAttacker取出/清空、FindBlacklistPlayer分支、PrintLog/ShowLocalNoticeByType调用及六次ScheduleOnce循环。",
+    "checkpoint": 181,
+    "ordinary_lua_drafts": 73,
+    "complete_static_reconstruction": 100,
     "runtime_verified": 0
   },
   "counts": {
-    "ordinary_lua_drafts": 74,
-    "complete_static_reconstruction": 99,
+    "ordinary_lua_drafts": 73,
+    "complete_static_reconstruction": 100,
     "runtime_verified": 0
   }
 }
