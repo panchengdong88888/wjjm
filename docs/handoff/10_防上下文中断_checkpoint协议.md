@@ -2905,3 +2905,19 @@ Nested_match：
 - BlacklistPlayerDetection UP3/4/5/6/8/9/11与上述闭包/常量逐项对齐；详细见docs/audit/检查点239_root_T38_T39_T40_T50_T52_T53_T55_T56_T58寄存器生命周期闭合.md。
 - 累计22个具体父寄存器生命周期已闭合；完整静态恢复109/110；运行时验证0。
 - 下一步检查T47/T48/T49/T51及T45/T46匿名包装链，然后开始模块字段/全局导出对账。
+
+
+## 检查点 #240（2026-11-10）：T45/T46生产者、T47/T48/T49/T51包装链与doInit_UI捕获绑定
+
+- 重读GitHub最新机器状态、闭包装配表、corrected phase3反汇编、原型索引、root模块草稿、主恢复源码和函数状态CSV。
+- root PC298创建T45=root.children[9] ReadNumericConfig(GetWritablePath)，PC299捕获T44；PC300创建T46=root.children[17] PCallHelper(GetWritablePath)，PC301捕获T44。
+- PC302创建T47=root.children[0] FileExistCheck_pcall_wrapper，PC303捕获T44。
+- PC304创建T48=root.children[49] AnonymousHelper_49，PC305/306捕获T45/T42，固定文件名blacklist_distance.txt。
+- PC307创建T49=root.children[32] AnonymousHelper_32，PC308/309捕获T46/T42，固定文件名blacklist_distance.txt。
+- PC310创建T50=root.children[33] AnonymousHelper_33，PC311/312捕获T45/T43，固定文件名gather_monster_count.txt。canonical children路径与legacy路径标签不可混为原型名称；恢复名以原型索引为准。
+- PC313创建T51=root.children[54] AnonymousHelper_54，PC314/315捕获T46/T43，固定文件名gather_monster_count.txt。
+- root PC390创建doInit_UI的20项捕获中：UP6=T48、UP9=T50、UP10=T49、UP12=T44、UP14=T51、UP16=T47；完整映射见检查点240审计及12_根模块闭包装配表.json。
+- 累计闭合28/57个具体父寄存器生命周期；完整静态恢复109/110，运行时验证0。
+- 本批不新增函数静态完成数量；根模块字段/全局导出逐PC总账与PC1-PC412普通Lua装配仍未完成。
+- 下一步检查点241从root PC1-PC85建立模块字段和全局导出账本，再继续剩余29个寄存器生命周期。
+
