@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点256：处理最后一个root.children[42] doInit_UI（20项捕获、23个子原型）。先核对PC390-PC410每个捕获寄存器生产者及模块字段/配置常量；按依赖顺序装配Nested_Helper_10、匿名UI回调与timer闭包，不能把未确认槽位强行命名或用nil函数填充。",
+  "next_action": "检查点257：对根模块58个直接子闭包做一次统一装配一致性审计（所有捕获计数/源函数/全局与模块字段/共享cell身份），重点复核MainLeftBottom.z与MainLeftBottom.a在T[2]/T[0]中的区分、T[57]覆盖、T[14..22]共享cell；然后继续处理doInit_UI内部Nested_Anonymous及其未解析T槽，不得宣称作者级或运行时完成。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2806,16 +2806,14 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "255",
+    "checkpoint": "256",
     "targets": [
-      "root.children[47] BlacklistPlayerDetection"
+      "root.children[42] doInit_UI"
     ],
-    "status": "按PC368捕获顺序静态实例化13项：UP0=rootModule.z；UP1=rootCells[57]，代表PC360覆盖为InstallDamageHook的T57 live cell，工厂通过.value()读取并调用；UP2=blacklistState；UP3=DeathAutoBlacklist；UP4=FindBlacklistPlayer；UP5=GetMapData2DPtr；UP6=2.0；UP7=PrintLog；UP8=UseItemByIndex；UP9=0.01；UP10=ShowLocalNoticeByType；UP11=30.0；UP12=randomTeleportItemNames。MainLeftBottom.onDamageMsg仍独立挂接root.children[52]。累计35/36，剩余doInit_UI；运行时验证0。",
-    "audit_file": "docs/audit/检查点255_BlacklistPlayerDetection十三项捕获与T57_live_cell.md",
-    "source_commit_sha": "8cbbd1df7019095211fffcb70774b384d83426b4",
-    "candidate_commit_sha": "e97468aa3e86c00158b87b6da3f59e72ba00030d",
-    "source_blob_sha": "0fc20c94d9ae6b806626ebe12dcba123eaaf6117",
-    "audit_commit_sha": "1bbb87dad146e1f6b078bea233dd527048827200"
+    "status": "20项捕获按PC390-PC410严格顺序装配：T4 PrintLog、T2 MainLeftBottom.z、T3 timerState、T0 MainLeftBottom.a、T1 MainLeftBottom.b、T41 blacklistState、T48 AnonymousHelper_49、T7 Schedule、T8 FindMonsterInCurrViewField、T50 AnonymousHelper_33、T49 AnonymousHelper_32、T5 ShowLocalNoticeByType、T44 GetWritablePath、T42 blacklistDistanceConfigFile、T51 AnonymousHelper_54、T43 gatherMonsterCountConfigFile、T47 FileExistCheck_pcall_wrapper、T11=18000、T12奖励表、T9=0.2。rootModule.doInit接入；根模块有捕获工厂36/36、无捕获22/22，运行时验证0。",
+    "audit_file": "docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md",
+    "source_commit_sha": "752ece5e1d8da71cbaf6391198b8dbd7278a5d12",
+    "candidate_commit_sha": "d6ca0c98acf0f751ed336aed18094efebca2844b"
   },
   "corrections": [
     {
@@ -3537,31 +3535,32 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 255,
-  "checkpoint": 255,
+  "last_checkpoint": 256,
+  "checkpoint": 256,
   "drafts": 33,
-  "next": "检查点256：最后处理doInit_UI。核对20项捕获顺序[T4,T2,T3,T0,T1,T41,T48,T7,T8,T50,T49,T5,T44,T42,T51,T43,T47,T11,T12,T9]；已有工厂依赖优先复用，未恢复子原型保留显式缺失，不要制造空函数或伪造UI行为。",
+  "next": "检查点257：根直接闭包装配已达58/58源代码层；先做统一审计和依赖缺失扫描，再处理doInit_UI内部Nested_Anonymous的T0/T1/T2来源及其他未完成嵌套原型。运行时验证仍为0。",
   "recent_checkpoint": {
-    "number": 255,
+    "number": 256,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "04_源码候选/root47_BlacklistPlayerDetection.lua",
+      "04_源码候选/root_MainLeftBottom_Module.lua",
+      "04_源码候选/短函数草稿_第六十三批.lua",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
       "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点255_BlacklistPlayerDetection十三项捕获与T57_live_cell.md"
+      "docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md"
     ],
     "complete_static_reconstructions": 109,
     "ordinary_lua_drafts": 72,
     "runtime_verified": 0,
-    "captured_factory_bindings": 35,
-    "captured_factory_pending": 1,
-    "notes": "完成BlacklistPlayerDetection的13项捕获静态装配；UP0=rootModule.z；UP1=rootCells[57]保留T57 live-cell语义，工厂通过.value()调用InstallDamageHook；onDamageMsg保持独立。仅doInit_UI剩余。",
-    "source_commit_sha": "8cbbd1df7019095211fffcb70774b384d83426b4"
+    "captured_factory_bindings": 36,
+    "captured_factory_pending": 0,
+    "notes": "doInit_UI 20项捕获按根PC390-PC410顺序装配，写入MainLeftBottom.doInit；根直接子闭包58/58源代码层绑定。内部Nested_Anonymous仍保留未解析T槽，不宣称作者级/运行时完成。",
+    "source_commit_sha": "752ece5e1d8da71cbaf6391198b8dbd7278a5d12"
   },
-  "latest_checkpoint": 255,
+  "latest_checkpoint": 256,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3570,7 +3569,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 256,
+  "next_checkpoint": 257,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3728,11 +3727,12 @@
     "runtime_verified": false
   },
   "latest": {
-    "checkpoint": "255",
-    "summary": "完成BlacklistPlayerDetection的13项捕获工厂静态装配；修正UP0=rootModule.z，UP1=rootCells[57]并通过.value()调用PC360覆盖后的InstallDamageHook，保留OP_387 live-cell语义；onDamageMsg保持独立模块字段。累计35/36，剩余仅doInit_UI，运行时验证0。",
-    "audit_file": "docs/audit/检查点255_BlacklistPlayerDetection十三项捕获与T57_live_cell.md",
+    "checkpoint": "256",
+    "summary": "完成最后一个有捕获根闭包root.children[42] doInit_UI的20项捕获静态装配，按PC390-PC410顺序注入PrintLog、MainLeftBottom.z、timerState、MainLeftBottom.a、MainLeftBottom.b、blacklistState及配置/回调函数，并写入MainLeftBottom.doInit。根模块有捕获工厂达到36/36，连同22/22无捕获闭包共58/58源代码层绑定；运行时验证0。",
+    "audit_file": "docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md",
     "unresolved": [
-      "最后一个有捕获工厂doInit_UI尚未装配，包含20项捕获与23个子原型依赖",
+      "doInit_UI内部Nested_Anonymous的T槽来源仍有未解析占位，不能据此宣称所有23个嵌套子原型均完成作者级恢复",
+      "完整根模块仍不是作者原文逐字恢复",
       "运行时验证为0"
     ]
   },
@@ -3744,13 +3744,13 @@
     "capture_semantics": "OP_387 stores a live cell reference {parent_T_table, register_index}; the upvalue proxy __index/__newindex reads/writes the parent T register dynamically. Later parent writes are visible to closures."
   },
   "root_assembly": {
-    "checkpoint": 255,
+    "checkpoint": 256,
     "direct_child_closures_expected": 22,
     "bound_at_source_level": 22,
     "runtime_verified": false,
     "captured_factory_closures_expected": 36,
-    "captured_factory_closures_bound": 35,
-    "captured_factory_closures_pending": 1,
+    "captured_factory_closures_bound": 36,
+    "captured_factory_closures_pending": 0,
     "bound_factory_names": [
       "ShowLocalNoticeByType",
       "DiuItems",
@@ -3786,8 +3786,9 @@
       "ClearBlacklistItems",
       "AnonymousHelper_32",
       "AnonymousHelper_33",
-      "BlacklistPlayerDetection"
+      "BlacklistPlayerDetection",
+      "doInit_UI"
     ],
-    "note": "22个无捕获直接子原型已接入；35个有捕获工厂已静态实例化。BlacklistPlayerDetection.UP0接rootModule.z；UP1接rootCells[57]，保留PC360覆盖后的InstallDamageHook live-cell，并在工厂内部通过.value()读取调用；UP2与MainLeftBottom.blacklist共享同一blacklistState。仅doInit_UI尚未装配。所有绑定均未运行时验证。"
+    "note": "根模块58个直接子闭包均已在源码层绑定：22个无捕获闭包+36个有捕获工厂。doInit_UI的20项捕获已按PC390-PC410顺序注入并挂入MainLeftBottom.doInit；内部Nested_Anonymous仍有T槽来源未解析，所有闭包均未运行时验证。"
   }
 }
