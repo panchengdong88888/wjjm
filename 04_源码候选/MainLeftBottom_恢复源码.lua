@@ -2661,6 +2661,7 @@ end
 -- If ENV.ipairs has standard Lua semantics and the call completes, its third return is 0;
 -- the concrete host/runtime value is not promoted to verified without confirming ENV.ipairs.
 
+end -- make_doInit_UI factory
   local __exports = {}
   if Nested_find ~= nil then __exports["Nested_find"] = Nested_find end
   if make_Nested_Helper ~= nil then __exports["make_Nested_Helper"] = make_Nested_Helper end
