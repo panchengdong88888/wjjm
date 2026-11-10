@@ -3237,3 +3237,16 @@ Nested_match：
 - 新建`docs/audit/检查点264_PC86-PC211采集闭包与共享cell恢复.md`；更新主恢复稿、根候选、机器状态、闭包装配表、CSV和结构树。
 - 完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或游戏运行。
 - 下一步检查点265：继续PC212-PC296，核对UI控制闭包与模块字段挂接，并给Builtsetting、MoveItemToQuickUse、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons、AccountIDValidation等必要工厂增加来源校验。
+
+
+## 检查点 #265（2026-11-10）：PC212-PC296模块字段与UI闭包挂接恢复
+
+- PC212-PC296按根模块PC顺序核对IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、MoveItemToQuickUse、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons、AccountIDValidation及黑名单状态/配置常量。
+- 为Builtsetting、MoveItemToQuickUse、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons、AccountIDValidation增加`requireRecoveredClosure`保护；工厂/函数来源缺失时不再静默跳过模块字段或全局导出。
+- 模块字段按PC位置写入：hide PC265、show PC269、destroy PC274、main PC279；前面三个UI闭包捕获顺序分别为[T0,T3,T1]、[T0,T1]、[T3,T1,T0]。
+- 保留PC275重新读取`_ENV.MainLeftBottom`的语义：适配器读取`_G.MainLeftBottom`到accountValidationModule，再于PC279写入accountValidationModule.main；不直接用rootModule局部变量代替该重读动作。
+- PC280-PC282校验randomTeleportItemNames为单元素`{"随机传送石"}`；PC283-PC285核对2.0/0.01/30.0；PC286-PC294核对blacklistState七项初值及其与MainLeftBottom.blacklist的对象身份；PC295-PC296核对两个配置文件名。
+- UI捕获对象身份断言确认uiState==rootModule.a、buttonMap==rootModule.b，timerState为共享表；blacklistState与rootModule.blacklist是同一对象。
+- 新建`docs/audit/检查点265_PC212-PC296模块字段与UI闭包挂接恢复.md`；更新主恢复稿、根候选、机器状态、闭包装配表、函数状态CSV和原型结构树。
+- 完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或游戏运行。
+- 下一步检查点266：核对PC297-PC340配置文件读写包装工厂及T[44..51]捕获身份；PC316-PC349二维数值表按字节码原值保留，不猜测用途。
