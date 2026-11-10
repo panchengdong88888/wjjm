@@ -8450,20 +8450,29 @@ do
         rootPrototypes.GetMapData2DPtr =
             makeGetMapData2DPtr(rootSource.opaquePairTable)
     end
+    rootPrototypes.GetMapData2DPtr = requireRecoveredClosure(
+        "GetMapData2DPtr", rootPrototypes.GetMapData2DPtr
+    )
 
     -- root.children[51] UP[0]=root.children[48] PCallHelper_2。
     -- root PC352：创建无捕获PCallHelper_2，PC353由FindBlacklistPlayer捕获。
     bindDirect("PCallHelper_2",
         "04_源码候选/代理与回调短函数_第四批.lua", "PCallHelper_2")
+    rootPrototypes.PCallHelper_2 = requireRecoveredClosure(
+        "PCallHelper_2", rootPrototypes.PCallHelper_2
+    )
 
     local makeFindBlacklistPlayer = sourceFunction(
         "04_源码候选/root49_PCallHelper_2_and_root51_FindBlacklistPlayer.lua",
         "make_FindBlacklistPlayer"
     )
-    if makeFindBlacklistPlayer and rootPrototypes.PCallHelper_2 then
+    if makeFindBlacklistPlayer then
         rootPrototypes.FindBlacklistPlayer =
             makeFindBlacklistPlayer(rootPrototypes.PCallHelper_2)
     end
+    rootPrototypes.FindBlacklistPlayer = requireRecoveredClosure(
+        "FindBlacklistPlayer", rootPrototypes.FindBlacklistPlayer
+    )
 
     -- root.children[24] UP[0]=root T[37]随机传送物品名称表。
     local makeUseItemByIndex = sourceFunction(
@@ -8473,14 +8482,22 @@ do
         rootPrototypes.UseItemByIndex =
             makeUseItemByIndex(rootSource.randomTeleportItemNames)
     end
+    rootPrototypes.UseItemByIndex = requireRecoveredClosure(
+        "UseItemByIndex", rootPrototypes.UseItemByIndex
+    )
 
         local makeOnDamageMsg = sourceFunction(
         "04_源码候选/root52_onDamageMsg.lua", "make_onDamageMsg"
     )
     if makeOnDamageMsg then
         rootPrototypes.onDamageMsg = makeOnDamageMsg(rootSource.blacklistState)
-        rootModule.onDamageMsg = rootPrototypes.onDamageMsg
     end
+    rootPrototypes.onDamageMsg = requireRecoveredClosure(
+        "onDamageMsg", rootPrototypes.onDamageMsg
+    )
+    rootModule.onDamageMsg = rootPrototypes.onDamageMsg
+    assert(rootModule.onDamageMsg == rootPrototypes.onDamageMsg,
+        "PC359 MainLeftBottom.onDamageMsg attachment failed")
 
     -- root PC360-PC362：InstallDamageHook捕获T[0]=MainLeftBottom.a、T[4]=PrintLog。
     -- PC360写入T[57]；后续BlacklistPlayerDetection捕获同一个live cell。
@@ -8494,7 +8511,14 @@ do
             rootPrototypes.PrintLog
         )
     end
-    rootCells[57] = newLiveCell(rootPrototypes.InstallDamageHook)
+    rootPrototypes.InstallDamageHook = requireRecoveredClosure(
+        "InstallDamageHook", rootPrototypes.InstallDamageHook
+    )
+    local damageHookCell = newLiveCell(rootPrototypes.InstallDamageHook)
+    assert(not seenRootCells[damageHookCell],
+        "T[57] InstallDamageHook live cell aliases another root cell")
+    seenRootCells[damageHookCell] = true
+    rootCells[57] = damageHookCell
 
     local makeDeathAutoBlacklist = sourceFunction(
         "04_源码候选/root25_DeathAutoBlacklist.lua", "make_DeathAutoBlacklist"
@@ -8507,6 +8531,9 @@ do
             rootPrototypes.ShowLocalNoticeByType
         )
     end
+    rootPrototypes.DeathAutoBlacklist = requireRecoveredClosure(
+        "DeathAutoBlacklist", rootPrototypes.DeathAutoBlacklist
+    )
 
     -- 检查点255：BlacklistPlayerDetection的13项捕获按root PC368顺序注入。
     -- UP[0]=root T[2]=MainLeftBottom.z状态表；UP[1]=root T[57]共享live cell，
@@ -8533,8 +8560,11 @@ do
             rootSource.blacklistNoItemRetryDelay,
             rootSource.randomTeleportItemNames
         )
-        _G.BlacklistItems = rootPrototypes.BlacklistPlayerDetection
     end
+    rootPrototypes.BlacklistPlayerDetection = requireRecoveredClosure(
+        "BlacklistPlayerDetection", rootPrototypes.BlacklistPlayerDetection
+    )
+    _G.BlacklistItems = rootPrototypes.BlacklistPlayerDetection
 
     local makeClearBlacklistItems = sourceFunction(
         "04_源码候选/短函数草稿_第五十四批.lua", "make_ClearBlacklistItems"
@@ -8547,9 +8577,10 @@ do
             rootSource.blacklistState
         )
     end
-    if rootPrototypes.ClearBlacklistItems then
-        _G.ClearBlacklistItems = rootPrototypes.ClearBlacklistItems
-    end
+    rootPrototypes.ClearBlacklistItems = requireRecoveredClosure(
+        "ClearBlacklistItems", rootPrototypes.ClearBlacklistItems
+    )
+    _G.ClearBlacklistItems = rootPrototypes.ClearBlacklistItems
 
     -- 检查点256：最后一个root.children[42]工厂，20项捕获严格按PC390-PC410顺序注入。
     local makeDoInitUI = sourceFunction(
@@ -8578,8 +8609,9 @@ do
             rootSource.loginAndOnlineRewardEntries,           -- UP18 <- T[12]
             0.2                                               -- UP19 <- T[9]
         )
-        rootModule.doInit = rootPrototypes.doInit_UI
     end
+    rootPrototypes.doInit_UI = requireRecoveredClosure("doInit_UI", rootPrototypes.doInit_UI)
+    rootModule.doInit = rootPrototypes.doInit_UI
 
     -- 根级全局导出已在各自PC创建点写入；不在模块尾部重复赋值。
     MainLeftBottomRecovered.root_module = rootModule
