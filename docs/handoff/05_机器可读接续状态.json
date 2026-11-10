@@ -49,13 +49,13 @@
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
     "root.children[12]": "LuaSendMsg（92条）检查点190、205：普通Lua草稿PC1-PC92已独立静态复审；固定六参/message字段、Blocklist仅抑制日志、SendHookList按第1参取hook、pcall(hook,arg1,arg6,message)且仅严格true拦截、否则networkCtl:SendMsg原六参转发均与corrected反汇编一致。草稿仍保留UP0/UP1临时名；作者原名与宿主API语义未证实；未运行时验证。源码04_源码候选/短函数草稿_第五十批.lua；审计docs/audit/检查点205_LuaSendMsg普通Lua草稿独立复审.md。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
-    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192-PC1-PC41；193-PC42-PC85；194-PC86-PC167；195-PC168-PC200；196-PC201-PC270；197-PC271-PC340；198-PC341-PC412。检查点211已将root.children[41] MoveItemToQuickUse（133条、0项upvalue）主体内嵌根模块，并按PC259-PC260导出全局函数；其余闭包创建/捕获和主体整合仍未完成。根模块仍非作者级完整源码，未运行时验证。",
+    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192-PC1-PC41；193-PC42-PC85；194-PC86-PC167；195-PC168-PC200；196-PC201-PC270；197-PC271-PC340；198-PC341-PC412。MoveItemToQuickUse主体已内嵌主恢复源码；其余根级闭包创建、共享Upvalue cell、模块表字段和全局导出尚未完成。根模块仍为分段草稿，未运行时验证。",
     "root.children[42].children[3]": "Nested_FFFF00（320条父指令、72常量、5个子原型、4项捕获）：检查点225已完成PC1-PC320及5个子原型静态恢复；捕获顺序moduleState/printLog/timerState/initState。Win_Create等GUI调用参数已与新框架43份文档核对；五组Text_Create结果均先做truthy门控。K[28]=['unknown',2]已确认是nil的VM dump序列化占位，resTimer清理写nil。MoneyProxy方法未文档化，保留原调用，不反汇编其内部。完整静态恢复，未运行时验证。",
-    "root.children[42].children[22]": "Nested_Anonymous（8条父原型；child0 Nested_str 27条；Nested_match 50条；Nested_Helper_11 4条）检查点201/209：PC1创建child0，捕获顺序UP[0]=T[0]、UP[1]=UP[0](PrintLog)、UP[2]=T[2]、UP[3]=T[1]；PC6-PC7零参调用Nested_str，PC8返回。Nested_str构造btnType=2/showEdit/editParams(inputMode=2,maxLength=6)，str取父T[0]，将Nested_match挂入callback并调用SL.OpenCommonTipsPop。Nested_match严格要求status==1；editStr缺省空串，tostring后gsub删除空白，匹配^%d+$并tonumber；数字truthy时调用父T[1](number)；否则PrintLog记录格式错误，并ScheduleOnce(0.1)调用Nested_Helper_11，后者调用父T[2]('参数格式不对，请输入数字')。调用链：doInit_UI PC248创建本闭包捕获PrintLog；PC250创建Nested_Helper_4并将本闭包置于其UP0；Nested_Helper_10回调PC27零参调用Nested_Helper_4；Nested_Helper_4可读主体向openDialog传入两项显式值（prompt及Nested_Helper_5成功回调）。T[0]/T[1]用途可由读写位置判定，但VM帧槽偏移仍待验证；T[2]确实被作为延迟错误提示回调调用，但追踪到的包装器仅显式传两参，未找到第三实参生产者，保留占位。普通Lua草稿，不升级完整静态恢复，未运行时验证。审计docs/audit/检查点209_Nested_Anonymous调用帧复审.md。",
+    "root.children[42].children[22]": "Nested_Anonymous（8条父原型；child0 Nested_str 27条；Nested_match 50条；Nested_Helper_11 4条）检查点201/209/228：父PC1创建child0，捕获当前帧T[0]、UP[0]=PrintLog、T[2]、T[1]；child0内创建Nested_match，继续捕获prompt槽、PrintLog、T[2]、T[1]。doInit_UI PC248创建本闭包；PC250/PC259分别把它作为UP[0]传给root/43/12与root/43/15两个对话包装器；两个包装器PC11均只传两个显式实参（promptText、成功回调），没有第三显式实参。T[2]后续由Nested_Helper_11作为延迟错误提示回调调用；其来源需核对VM帧基址/槽位初始化或复用语义，不能猜nil。普通Lua草稿，未运行时验证。",
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点228：110原型中仅剩Nested_Anonymous（8条父原型及其三层子闭包）与根模块MainLeftBottom_Module（412条，PC1-PC412根级闭包实例化/共享Upvalue cell/导出接线）未完成。先继续追踪Nested_Anonymous的T2生产者，再完成根模块装配并逐项核对全部110个原型。",
+  "next_action": "检查点229：转入根模块MainLeftBottom_Module（412条）的根级闭包装配与共享Upvalue cell接线。Nested_Anonymous两个已知调用点均只传两个显式参数，T[2]没有显式第三实参来源；仍须先核对VM帧基址/槽位初始化语义，不能猜成nil或虚构回调。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -3512,7 +3512,7 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 227,
+  "last_checkpoint": 228,
   "checkpoint": {
     "number": 227,
     "date": "2026-11-10",
@@ -3567,7 +3567,7 @@
     "complete_static_reconstruction": 108,
     "runtime_verified": 0
   },
-  "next_checkpoint": 228,
+  "next_checkpoint": 229,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
