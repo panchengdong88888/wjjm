@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点251：继续处理剩余有捕获工厂，优先寻找稳定函数/表捕获且不依赖新的可变标量cell的闭包；维持T[14..22]共享cell对象不变，并逐项核对父寄存器生命周期与全局/模块字段导出。",
+  "next_action": "检查点252：继续处理剩余15个有捕获工厂，优先处理捕获稳定函数/表的短辅助闭包（ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper、GetMapData2DPtr、FindBlacklistPlayer、UseItemByIndex等）；对T[44]等共享捕获先核对创建顺序和写入点，不得按值误绑定。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2806,19 +2806,15 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "250",
+    "checkpoint": "251",
     "targets": [
-      "root.children[8] FormatStateChange",
-      "root.children[26] ResetGatherMonsterData",
-      "root.children[45] MainLoop",
-      "root.children[19] InitGatherMonsters",
-      "root.children[27] StopGatherMonsters",
-      "root.children[14] FindMonsterInCurrViewField"
+      "root.children[37] DestroyUI",
+      "root.children[10] SetButtonVisibilityState",
+      "root.children[40] ShowHideAllButtons"
     ],
-    "status": "新增6个有捕获工厂/依赖的静态实例化；为T[14..22]建立每个寄存器唯一的共享{value=...}cell对象，五个采集状态闭包按真实捕获关系复用同一cell。累计18/36，尚余18；运行时验证0。",
-    "audit_file": "docs/audit/检查点250_采集状态共享LiveCell与MainLoop装配.md",
-    "source_commit_sha": "7ff99233212d293b74a6fb30939c8e6234fa62e",
-    "standalone_mainloop_commit_sha": "4ee545323f49c501249566758d6a608680c06037"
+    "status": "三项UI闭包按捕获顺序静态实例化：DestroyUI(T0 UI状态,T3定时器,T1按钮映射)写入MainLeftBottom.hide；SetButtonVisibilityState(T0,T1)写入MainLeftBottom.show；ShowHideAllButtons(T3,T1,T0)写入MainLeftBottom.destroy。三者复用根模块已有表对象，不复制状态。累计21/36，剩余15；运行时验证0。",
+    "audit_file": "docs/audit/检查点251_UI闭包共享模块表装配.md",
+    "source_commit_sha": "75ce40af4a08f55a96d338b1de40d24e017de205"
   },
   "corrections": [
     {
@@ -3540,32 +3536,30 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 250,
-  "checkpoint": 250,
+  "last_checkpoint": 251,
+  "checkpoint": 251,
   "drafts": 33,
-  "next": "检查点251：从根模块闭包装配表剩余18个捕获工厂中，优先选稳定函数/表捕获的简单闭包批量装配；不可把标量捕获按值复制，遇到新可变寄存器必须扩展共享cell表。",
+  "next": "检查点252：优先装配剩余有捕获短函数。先核对root T[44] GetWritablePath闭包是否已在source registry可用，再依序实例化ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper；继续处理T[52]不读取捕获的GetMapData2DPtr、T[54] PCallHelper_2与FindBlacklistPlayer、T[37] randomTeleportItemNames与UseItemByIndex。",
   "recent_checkpoint": {
-    "number": 250,
+    "number": 251,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "04_源码候选/root45_MainLoop.lua",
-      "04_源码候选/root_MainLeftBottom_Module.lua",
-      "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
-      "docs/audit/检查点250_采集状态共享LiveCell与MainLoop装配.md"
+      "02_基础索引/03_函数状态清单.csv",
+      "docs/audit/检查点251_UI闭包共享模块表装配.md"
     ],
     "complete_static_reconstructions": 109,
     "ordinary_lua_drafts": 72,
     "runtime_verified": 0,
-    "captured_factory_bindings": 18,
-    "captured_factory_pending": 18,
-    "notes": "本批建立共享cell适配，装配FormatStateChange、ResetGatherMonsterData、MainLoop、InitGatherMonsters、StopGatherMonsters，并补齐FindMonsterInCurrViewField依赖；不增加完整静态函数数量。",
-    "source_commit_sha": "7ff99233212d293b74a6fb30939c8e6234fa62e"
+    "captured_factory_bindings": 21,
+    "captured_factory_pending": 15,
+    "notes": "本批静态实例化三个UI闭包，按父T寄存器捕获顺序复用模块a/b表和timerState；完整静态恢复、普通草稿和运行时验证计数均不变。",
+    "source_commit_sha": "75ce40af4a08f55a96d338b1de40d24e017de205"
   },
-  "latest_checkpoint": 250,
+  "latest_checkpoint": 251,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3574,7 +3568,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 251,
+  "next_checkpoint": 252,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3732,11 +3726,11 @@
     "runtime_verified": false
   },
   "latest": {
-    "checkpoint": "250",
-    "summary": "建立共享OP_387 live-cell适配层，完成FormatStateChange、ResetGatherMonsterData、MainLoop、InitGatherMonsters、StopGatherMonsters五个工厂，并补齐MainLoop依赖FindMonsterInCurrViewField；累计18/36个有捕获工厂静态装配，运行时验证0。",
-    "audit_file": "docs/audit/检查点250_采集状态共享LiveCell与MainLoop装配.md",
+    "checkpoint": "251",
+    "summary": "完成DestroyUI、SetButtonVisibilityState、ShowHideAllButtons三个UI闭包静态实例化，按父寄存器捕获顺序共享MainLeftBottom.a、MainLeftBottom.b与timerState，并写入hide/show/destroy模块字段；累计21/36个有捕获工厂静态装配，运行时验证0。",
+    "audit_file": "docs/audit/检查点251_UI闭包共享模块表装配.md",
     "unresolved": [
-      "18个有捕获直接子原型尚未装配",
+      "15个有捕获直接子原型尚未装配",
       "完整根模块仍非作者原文逐字恢复",
       "运行时验证为0"
     ]
@@ -3749,13 +3743,13 @@
     "capture_semantics": "OP_387 stores a live cell reference {parent_T_table, register_index}; the upvalue proxy __index/__newindex reads/writes the parent T register dynamically. Later parent writes are visible to closures."
   },
   "root_assembly": {
-    "checkpoint": 250,
+    "checkpoint": 251,
     "direct_child_closures_expected": 22,
     "bound_at_source_level": 22,
     "runtime_verified": false,
     "captured_factory_closures_expected": 36,
-    "captured_factory_closures_bound": 18,
-    "captured_factory_closures_pending": 18,
+    "captured_factory_closures_bound": 21,
+    "captured_factory_closures_pending": 15,
     "bound_factory_names": [
       "ShowLocalNoticeByType",
       "DiuItems",
@@ -3774,8 +3768,11 @@
       "MainLoop",
       "InitGatherMonsters",
       "StopGatherMonsters",
-      "FindMonsterInCurrViewField"
+      "FindMonsterInCurrViewField",
+      "DestroyUI",
+      "SetButtonVisibilityState",
+      "ShowHideAllButtons"
     ],
-    "note": "22个无捕获直接子原型已接入；18个有捕获工厂已静态实例化。T[14..22]每个父寄存器仅有一个共享cell对象；所有绑定均未运行时验证。"
+    "note": "22个无捕获直接子原型已接入；21个有捕获工厂已静态实例化。T[14..22]共享cell适配不变；UI闭包共享MainLeftBottom.a、MainLeftBottom.b、timerState表引用。所有绑定均未运行时验证。"
   }
 }
