@@ -2238,28 +2238,27 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "196",
+    "checkpoint": "197",
     "targets": [
-      "root PC201-PC270"
+      "root PC271-PC340"
     ],
-    "status": "Closed root-frame helper registrations, MainLoop 22-capture sequence, InitGatherMonsters/StopGatherMonsters registrations and UI helper closure sites; root remains a segmented draft.",
-    "audit_file": "docs/audit/检查点196_root模块PC201-PC270闭包注册与捕获关系.md",
+    "status": "Closed ShowHideAllButtons captures, AccountIDValidation registration, blacklist state/config setup, file helper closure captures, and first six entries of the R52 pair table. Root remains a segmented ordinary Lua draft.",
+    "audit_file": "docs/audit/检查点197_root_PC271-PC340恢复记录.md",
     "files": [
       "04_源码候选/root_MainLeftBottom_Module.lua",
-      "docs/audit/检查点196_root模块PC201-PC270闭包注册与捕获关系.md",
+      "docs/audit/检查点197_root_PC271-PC340恢复记录.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "findings": [
-      "PC210 creates ClearBlacklistItems capturing root T30 (IsDie).",
-      "PC212-PC213 creates and exports IsInWhitelistMap.",
-      "PC214-PC237 creates MainLoop and captures root T registers [18,14,13,4,23,35,26,34,15,32,17,16,19,20,22,36,21,31,30,33,24,8] in order; global export at PC237.",
-      "PC238-PC246 creates/exports InitGatherMonsters with captures [T3,T18,T23,T13,T35,T8,T4].",
-      "PC247-PC255 creates/exports StopGatherMonsters with captures [T18,T3,T25,T23,T13,T35,T4].",
-      "PC256-PC258 creates/exports Builtsetting capturing T5; PC259-PC260 creates/exports MoveItemToQuickUse with no captures.",
-      "PC261-PC264 creates DestroyUI capturing [T0,T3,T1]; PC265/269 assign module hide/show fields; PC266 creates SetButtonVisibilityState capturing [T0,T1].",
-      "PC270 creates ShowHideAllButtons with three captures; source descriptors begin PC271 and remain next batch."
+      "PC271-PC273 captures T[3],T[1],T[0] for ShowHideAllButtons; PC274 assigns MainLeftBottom.destroy.",
+      "PC276-PC279 creates AccountIDValidation capturing T[4]=PrintLog and T[5]=ShowLocalNoticeByType; assigns MainLeftBottom.main.",
+      "PC280-PC282 constructs the single-element random teleport item name list; PC283-PC285 loads 2.0, 0.01, 30.0.",
+      "PC286-PC294 initializes and exports the shared blacklist state table.",
+      "PC295-PC303 establishes the two config file names and GetWritablePath/ReadNumericConfig/PCallHelper/FileExistCheck closures.",
+      "PC304-PC315 records file-specific helper closure capture sources.",
+      "PC316-PC340 constructs the first six two-element entries of R52; PC341-PC349 remains next."
     ]
   },
   "corrections": [
@@ -2320,7 +2319,7 @@
     "audit_file": "docs/audit/检查点27_InitGatherMonsters完整静态恢复.md",
     "runtime_verified": false
   },
-  "draft_recovered_count": 35,
+  "draft_recovered_count": 72,
   "draft_recovered_functions": [
     {
       "path": "root.children[46]",
@@ -2982,31 +2981,31 @@
       "PC350-PC412 remaining closure creation, capture and export map"
     ]
   },
-  "checkpoint": "196",
+  "checkpoint": "197",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 191,
+    "number": 197,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/短函数草稿_第六十一批.lua",
-      "docs/audit/检查点191_MoveItemToQuickUse普通Lua主体复原与调用点校正.md",
-      "02_基础索引/03_函数状态清单.csv"
+      "04_源码候选/root_MainLeftBottom_Module.lua",
+      "docs/audit/检查点197_root_PC271-PC340恢复记录.md",
+      "02_基础索引/03_函数状态清单.csv",
+      "docs/handoff/05_机器可读接续状态.json"
     ],
     "draft_prototypes_touched": 1,
-    "draft_prototype_total": 71,
+    "draft_prototype_total": 72,
     "complete_static_reconstructions": 103,
     "runtime_verified": 0,
-    "notes": "MoveItemToQuickUse检查点86首版升级为完整普通Lua主体草稿；参数顺序由doInit_UI调用点确认；统计不增加草稿函数、不升级完整静态恢复。"
+    "notes": "根模块PC271-PC340已形成分段普通Lua草稿；本批未增加普通Lua函数草稿数量、完整静态恢复数量或运行时验证数量。"
   },
   "latest_checkpoint": {
-    "checkpoint": "195",
-    "summary": "root PC1-PC200分段普通Lua草稿：PC1-PC41模块表初始化；PC42-PC85辅助闭包创建/导出；PC86-PC167采集配置与14项奖励数组；PC168-PC200状态常量/共享单元及辅助闭包创建、捕获。PC201-PC412待恢复。",
-    "audit_file": "docs/audit/检查点195_root模块PC168-PC200状态单元与辅助闭包注册.md",
+    "checkpoint": "197",
+    "summary": "root PC1-PC340分段普通Lua草稿：PC1-PC41模块表初始化；PC42-PC85辅助闭包创建/导出；PC86-PC167采集配置与14项奖励数组；PC168-PC200状态常量/共享单元及辅助闭包；PC201-PC270采集/主循环/UI闭包注册；PC271-PC340 UI导出、AccountIDValidation、黑名单状态/配置和R52前六个二元项。PC341-PC412待恢复。",
+    "audit_file": "docs/audit/检查点197_root_PC271-PC340恢复记录.md",
     "unresolved": [
-      "root PC201-PC412其余闭包创建、全局注册与模块初始化",
-      "T25预停止回调的生产者/业务身份",
-      "T16/T17/T19/T20/T21/T22等共享槽的完整业务字段语义",
+      "root PC341-PC412剩余数组、闭包创建、捕获与导出",
+      "doInit_UI（root.children[42]）普通Lua草稿和20项捕获语义待独立复审",
       "目标Lua/游戏运行时验证"
     ]
   },
@@ -3018,5 +3017,5 @@
     "complete_static_reconstruction": 103,
     "runtime_verified": 0
   },
-  "next_checkpoint": "root PC271-PC340"
+  "next_checkpoint": "root PC341-PC412"
 }
