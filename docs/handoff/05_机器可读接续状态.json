@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点222：剩余真正未完成原型中先回到Nested_Anonymous（8条）尝试闭合T2生产者；随后处理MoveItemToQuickUse（133条）与StorageItems（224条），最后完成根模块与doInit_UI。",
+  "next_action": "检查点223：剩余未完成原型中，优先继续追踪Nested_Anonymous（8条）T2生产者与参数帧映射；随后处理StorageItems（224条）和根模块/doInit_UI等复杂主体。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -128,7 +128,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "221"
+    "last_checkpoint": "222"
   },
   "static_recovered_functions": [
     {
@@ -2668,29 +2668,53 @@
         "pcall(hook,hookKey,messageId,message)成功且第二返回值严格为true时提前返回；否则global.networkCtl:SendMsg原六参转发。",
         "92条物理指令全部映射；完整静态恢复，未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[41]",
+      "legacy_path": "root/42",
+      "name": "MoveItemToQuickUse",
+      "source_file": "04_源码候选/短函数草稿_第六十一批.lua",
+      "audit_file": "docs/audit/检查点222_MoveItemToQuickUse完整静态复审.md",
+      "status": "complete_static_reconstruction",
+      "physical_instructions": 133,
+      "constant_count": 26,
+      "child_count": 0,
+      "capture_count": 0,
+      "fixed_parameter_count": 2,
+      "vararg_flag": 2,
+      "runtime_verified": false,
+      "notes": [
+        "固定参数itemIndex、targetPos；调用点由ITEM_INDEX_BY_NAME和slotConfig.slot传入。",
+        "PC1-PC14取得QuickUseProxy与Bag代理；PC15-PC21代理缺失时返回false/参数无效。",
+        "PC22-PC30校验targetPos范围[1,GetQuickUseSize()]；PC31-PC35取得快捷栏数据并pairs遍历。",
+        "PC36-PC88处理快捷栏已有物品：相同位置返回false；目标占用时按PC50-PC66顺序写回并交换；目标空时移动并返回对应提示。",
+        "PC89-PC103查背包物品并同时检查truthy与next非空；PC104-PC116处理目标槽已有物品并退回背包；PC117-PC125删除背包条目并写入快捷栏；PC126-PC133返回成功提示/尾部return。",
+        "SetQuickUsePosData的true/false原值和调用顺序按字节码保留；不推断宿主代理内部语义。",
+        "133条物理指令全部映射；完整静态恢复，未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "221",
+    "checkpoint": "222",
     "targets": [
-      "root.children[12] LuaSendMsg（92条、2项捕获、无子原型）"
+      "root.children[41] MoveItemToQuickUse（133条、零捕获、2固定参数）"
     ],
-    "status": "完成LuaSendMsg全部92条指令的静态闭合，确认SendHookList存在性门控与第二次取值，保留两个捕获的中性名称。",
-    "audit_file": "docs/audit/检查点221_LuaSendMsg完整静态复审.md",
+    "status": "完成MoveItemToQuickUse全部133条物理指令静态复审；保持SetQuickUsePosData布尔值与调用顺序，不臆测宿主代理语义。",
+    "audit_file": "docs/audit/检查点222_MoveItemToQuickUse完整静态复审.md",
     "files": [
-      "04_源码候选/短函数草稿_第五十批.lua",
+      "04_源码候选/短函数草稿_第六十一批.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "docs/handoff/05_机器可读接续状态.json",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "findings": [
-      "六个固定参数映射与message表字段构造闭合。",
-      "Blocklist命中只绕过日志构造，不跳过hook处理和网络发送。",
-      "SendHookList[hookKey]两次索引：第一次truthy门控，第二次取hook。",
-      "hook必须为function；pcall第二返回值严格等于true才拦截；否则原六参数转发networkCtl:SendMsg。",
-      "UPVALUE[0]状态表、UPVALUE[1]日志回调业务原名未知，以中性名表达；92条指令完整静态恢复。"
+      "QuickUseProxy与Bag代理获取及缺失分支闭合。",
+      "目标位置范围校验和快捷栏遍历闭合。",
+      "快捷栏已存在、目标槽占用/空槽、背包中存在/不存在四类路径闭合。",
+      "SetQuickUsePosData所有true/false值与顺序按字节码保留；外部代理方法实现不反汇编。",
+      "133条指令完整静态恢复；运行时验证仍为0。"
     ]
   },
   "corrections": [
@@ -3309,20 +3333,24 @@
       "legacy_path": "root/42",
       "name": "MoveItemToQuickUse",
       "source_file": "04_源码候选/短函数草稿_第六十一批.lua",
-      "audit_file": "docs/audit/检查点191_MoveItemToQuickUse普通Lua主体复原与调用点校正.md",
-      "status": "first_pass_ordinary_lua_body_draft_recovered_checkpoint_191_caller_arguments_closed_proxy_boolean_semantics_host_runtime_pending",
+      "audit_file": "docs/audit/检查点222_MoveItemToQuickUse完整静态复审.md",
+      "status": "complete_static_reconstruction",
       "physical_instructions": 133,
       "constant_count": 26,
       "child_count": 0,
       "capture_count": 0,
       "notes": [
-        "调用点doInit_UI PC131-PC145确认arg1为ITEM_INDEX_BY_NAME结果itemIndex，arg2为slotConfig.slot；调用方消费success,message并PrintLog(message)。",
-        "PC1-PC30代理取得与范围校验；PC31-PC90快捷栏条目Index查找、已在目标位置拒绝、目标位占用交换/空位移动。",
-        "PC50-PC54先行SetQuickUsePosData(position,entry,true)保留；占用目标时再以false双位置写入，空位时以true写目标位置。",
-        "PC89-PC103 Bag列表通过next非空检查；PC104-PC116占位目标条目回退Bag；PC117-PC125操作itemDataList[1]并写目标位。",
-        "PC126-PC132返回true及格式化提示；失败路径返回false及固定提示。",
-        "SetQuickUsePosData布尔语义、Bag返回表[1]业务身份和宿主运行时行为未知；不升级完整静态恢复。"
-      ]
+        "固定参数itemIndex、targetPos；调用点由ITEM_INDEX_BY_NAME和slotConfig.slot传入。",
+        "PC1-PC14取得QuickUseProxy与Bag代理；PC15-PC21代理缺失时返回false/参数无效。",
+        "PC22-PC30校验targetPos范围[1,GetQuickUseSize()]；PC31-PC35取得快捷栏数据并pairs遍历。",
+        "PC36-PC88处理快捷栏已有物品：相同位置返回false；目标占用时按PC50-PC66顺序写回并交换；目标空时移动并返回对应提示。",
+        "PC89-PC103查背包物品并同时检查truthy与next非空；PC104-PC116处理目标槽已有物品并退回背包；PC117-PC125删除背包条目并写入快捷栏；PC126-PC133返回成功提示/尾部return。",
+        "SetQuickUsePosData的true/false原值和调用顺序按字节码保留；不推断宿主代理内部语义。",
+        "133条物理指令全部映射；完整静态恢复，未运行时验证。"
+      ],
+      "fixed_parameter_count": 2,
+      "vararg_flag": 2,
+      "runtime_verified": false
     },
     {
       "path": "root",
@@ -3341,65 +3369,64 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 221,
+  "last_checkpoint": 222,
   "checkpoint": {
-    "number": 221,
+    "number": 222,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/短函数草稿_第五十批.lua",
+      "04_源码候选/短函数草稿_第六十一批.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点221_LuaSendMsg完整静态复审.md",
+      "docs/audit/检查点222_MoveItemToQuickUse完整静态复审.md",
       "docs/handoff/05_机器可读接续状态.json",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 72,
-    "complete_static_reconstructions": 103,
+    "complete_static_reconstructions": 104,
     "runtime_verified": 0,
-    "notes": "LuaSendMsg（root.children[12]）92条指令完整静态恢复。六参映射、message字段、Blocklist日志分支、SendHookList两次索引、pcall拦截条件及networkCtl:SendMsg原参转发全部闭合。两个Upvalue原始业务名未知但调用契约明确，使用中性名称。未运行时验证。"
+    "notes": "MoveItemToQuickUse（root.children[41]）133条指令全部映射，固定参数itemIndex/targetPos，零捕获。代理获取、范围校验、快捷栏交换/移动、背包回退及返回提示均闭合。SetQuickUsePosData布尔实参按字节码保留，不推断宿主实现。未运行时验证。"
   },
   "drafts": 33,
   "next": "检查点213：继续把剩余源码候选逐批纳入MainLeftBottom_恢复源码.lua；优先补齐目前只有索引/审计、尚未进入集中源码的原型。随后继续把根模块PC42-PC412的闭包创建、捕获和导出从注释转成普通Lua；按新框架API对照复核接收者形式与参数数量。未闭合处保留TODO，不虚构实现。",
   "recent_checkpoint": {
-    "number": 221,
+    "number": 222,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/短函数草稿_第五十批.lua",
+      "04_源码候选/短函数草稿_第六十一批.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点221_LuaSendMsg完整静态复审.md",
+      "docs/audit/检查点222_MoveItemToQuickUse完整静态复审.md",
       "docs/handoff/05_机器可读接续状态.json",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 72,
-    "complete_static_reconstructions": 103,
+    "complete_static_reconstructions": 104,
     "runtime_verified": 0,
-    "notes": "LuaSendMsg（root.children[12]）92条指令完整静态恢复。六参映射、message字段、Blocklist日志分支、SendHookList两次索引、pcall拦截条件及networkCtl:SendMsg原参转发全部闭合。两个Upvalue原始业务名未知但调用契约明确，使用中性名称。未运行时验证。"
+    "notes": "MoveItemToQuickUse（root.children[41]）133条指令全部映射，固定参数itemIndex/targetPos，零捕获。代理获取、范围校验、快捷栏交换/移动、背包回退及返回提示均闭合。SetQuickUsePosData布尔实参按字节码保留，不推断宿主实现。未运行时验证。"
   },
   "latest_checkpoint": {
-    "checkpoint": "221",
-    "summary": "完成LuaSendMsg 92条指令静态恢复；纠正候选中SendHookList只查一次的问题，按字节码保留两次索引与truthy门控。",
-    "audit_file": "docs/audit/检查点221_LuaSendMsg完整静态复审.md",
+    "checkpoint": "222",
+    "summary": "完成MoveItemToQuickUse 133条指令完整静态复审，覆盖快捷栏内移动/交换、背包回退和所有返回路径；宿主代理布尔语义仅保留原值，不作臆测。",
+    "audit_file": "docs/audit/检查点222_MoveItemToQuickUse完整静态复审.md",
     "unresolved": [
       "Nested_Anonymous（8条）T0/T1/T2帧槽映射及T2生产者仍待闭合",
-      "MoveItemToQuickUse（133条）代理返回值语义与宿主行为仍待验证",
-      "StorageItems（224条）父捕获身份及服务器协议字段未完全确认",
+      "StorageItems（224条）父捕获身份及服务端协议字段未完全确认",
       "MainLeftBottom根模块PC201-PC412尚未完成",
       "doInit_UI（419条）Attach_UITop实参来源和剩余捕获映射未完成",
       "未进行Lua解释器或目标游戏运行时验证"
     ]
   },
-  "complete_static_reconstruction_count": 103,
-  "complete_static_reconstruction": "103/110 (93.6%)",
+  "complete_static_reconstruction_count": 104,
+  "complete_static_reconstruction": "104/110 (94.5%)",
   "progress_reconciled": true,
   "counts": {
     "ordinary_lua_drafts": 72,
-    "complete_static_reconstruction": 103,
+    "complete_static_reconstruction": 104,
     "runtime_verified": 0
   },
-  "next_checkpoint": 222,
+  "next_checkpoint": 223,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3547,7 +3574,8 @@
       "04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua",
       "04_源码候选/短函数草稿_第三十八批.lua",
       "04_源码候选/root49_AnonymousHelper_49.lua",
-      "04_源码候选/短函数草稿_第五十批.lua"
+      "04_源码候选/短函数草稿_第五十批.lua",
+      "04_源码候选/短函数草稿_第六十一批.lua"
     ],
     "lexical_block_balance": "passed",
     "full_lua_compiler_available": false,
