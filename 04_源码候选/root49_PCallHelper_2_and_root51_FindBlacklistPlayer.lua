@@ -20,7 +20,8 @@ end
 -- root.children[51] / legacy root/52 / FindBlacklistPlayer
 -- UP[0] = PCallHelper_2；vararg_flag=1，只读取首个可变参数。
 local function make_FindBlacklistPlayer(getFriendProxySafely)
-    return function(targetId, ...)
+    return function(...)
+        local targetId = ...
         local friendProxy = getFriendProxySafely()
         if not friendProxy then
             return false
