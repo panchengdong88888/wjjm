@@ -5271,3 +5271,14 @@ end
 -- T48/T50才是ReadNumericConfig固定文件名读取包装器。
 -- root.children[33]的恢复名为AnonymousHelper_33（legacy路径root/34），
 -- 不要将一基路径编号误作原型函数名。所有结论均为静态恢复，未运行时验证。
+
+
+-- 检查点241：根模块PC1-PC85明文字段/导出对账摘要。
+-- _G.MainLeftBottom在PC2导出；MainLeftBottom.a含version="10000"、
+-- screenW/screenH、Blocklist={1,9,10,60000}、SendHookList、RecvHookList、
+-- isHidden=true、hidebut=nil及PC51写入的LuaSendMsg。
+-- MainLeftBottom.b为空表；MainLeftBottom.z含六个false状态字段。
+-- PC45/55/57/59/61/63/67/70/73/78/82/85分别导出log、GetMapId、
+-- GetMapName、PlayerPos、GetDroppedItems、MoveTo、DiuItems、
+-- GetAvailableStoragePage、GetStorageItemData、StorageItems、TakeItems、
+-- PickUpItems。详细PC映射见root_MainLeftBottom_Module.lua及检查点241审计。
