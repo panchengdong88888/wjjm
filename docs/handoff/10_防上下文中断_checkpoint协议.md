@@ -3098,10 +3098,10 @@ Nested_match：
 ## 检查点 #255（2026-11-10）：BlacklistPlayerDetection十三项捕获与T[57]覆盖校正
 
 - 已静态实例化root.children[47] BlacklistPlayerDetection，13项捕获严格按PC368顺序注入。
-- UP[0]=T[2]=MainLeftBottom.z状态表；UP[1]=T[57]=InstallDamageHook；UP[2]=T[41] blacklistState；UP[3]=T[58] DeathAutoBlacklist；UP[4]=T[55] FindBlacklistPlayer；UP[5]=T[53] GetMapData2DPtr；UP[6]=T[38] 2.0；UP[7]=T[4] PrintLog；UP[8]=T[56] UseItemByIndex；UP[9]=T[39] 0.01；UP[10]=T[5] ShowLocalNoticeByType；UP[11]=T[40] 30.0；UP[12]=T[37] randomTeleportItemNames。
+- UP[0]=T[2]=MainLeftBottom.z状态表；UP[1]=T[57] live cell；UP[2]=T[41] blacklistState；UP[3]=T[58] DeathAutoBlacklist；UP[4]=T[55] FindBlacklistPlayer；UP[5]=T[53] GetMapData2DPtr；UP[6]=T[38] 2.0；UP[7]=T[4] PrintLog；UP[8]=T[56] UseItemByIndex；UP[9]=T[39] 0.01；UP[10]=T[5] ShowLocalNoticeByType；UP[11]=T[40] 30.0；UP[12]=T[37] randomTeleportItemNames。
 - T[2]时间线：PC31临时装入模块表，PC33覆盖为新建的MainLeftBottom.z表；PC368捕获时仍为该状态表。不能把UP[0]绑定为整个MainLeftBottom模块表。
-- T[57]时间线：PC357创建onDamageMsg并于PC359写入MainLeftBottom.onDamageMsg；PC360随后覆盖T[57]=InstallDamageHook；PC368创建BlacklistPlayerDetection，PC370捕获该live cell。PC360之后无进一步T[57]写入，因此当前静态适配直接传入InstallDamageHook函数值即可；不传普通`{value=...}`表，也不需要虚构可调用cell代理。
+- T[57]时间线：PC357创建onDamageMsg并于PC359写入MainLeftBottom.onDamageMsg；PC360随后覆盖T[57]=InstallDamageHook；PC368创建BlacklistPlayerDetection，PC370捕获该live cell。装配层创建`rootCells[57] = newLiveCell(rootPrototypes.InstallDamageHook)`，作为UP[1]传入；工厂通过`.value()`读取当前函数值并调用，保留OP_387共享cell适配语义。
 - onDamageMsg仍保留在MainLeftBottom.onDamageMsg；UP[1]调用的是InstallDamageHook。UP[2]复用PC294挂入MainLeftBottom.blacklist的同一blacklistState表。
-- 主汇总源码已更正UP[0]/UP[1]绑定，并按PC382导出全局BlacklistItems。此处仅为静态装配，不代表运行时验证。
+- 主汇总源码已按上述顺序接入，并按PC382导出全局BlacklistItems。此处仅为静态装配，不代表运行时验证。
 - 有捕获工厂累计35/36，剩余最后一个doInit_UI；无捕获直接子原型22/22。完整静态恢复109、普通Lua草稿72、运行时验证0。
 - 下一步检查点256：处理doInit_UI的20项捕获与23个子原型依赖，保留未知槽位及缺失依赖，不伪造空函数。
