@@ -5741,6 +5741,29 @@ do
     assert(type(rootModule) == "table",
         "root module candidate is missing from source registry")
 
+    -- 检查点273：PC1-PC42根表与四个初始table的跨词法块身份核对。
+    -- root_MainLeftBottom_Module来源块执行PC1-PC42后，将局部值导出到rootSource；
+    -- 此处不能直接访问来源块的local a/b/z/timerState。
+    assert(_G.MainLeftBottom == rootModule,
+        "PC1-PC2 root module global/source identity mismatch")
+    assert(type(rootModule.a) == "table"
+        and rootSource.uiState == rootModule.a,
+        "PC3-PC5 T[0]/MainLeftBottom.a identity mismatch")
+    assert(type(rootModule.b) == "table"
+        and rootSource.buttonMap == rootModule.b,
+        "PC30-PC32 T[1]/MainLeftBottom.b identity mismatch")
+    assert(type(rootModule.z) == "table",
+        "PC33-PC35 T[2]/MainLeftBottom.z is missing")
+    assert(type(rootSource.timerState) == "table",
+        "PC42 T[3] timerState is missing")
+    assert(rootModule.a ~= rootModule.b
+        and rootModule.a ~= rootModule.z
+        and rootModule.a ~= rootSource.timerState
+        and rootModule.b ~= rootModule.z
+        and rootModule.b ~= rootSource.timerState
+        and rootModule.z ~= rootSource.timerState,
+        "PC1-PC42 initial tables must be distinct identities")
+
     local function sourceFunction(sourcePath, symbol)
         local source = sources[sourcePath]
         local value = source and source[symbol]
@@ -6535,7 +6558,7 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 272,
+        checkpoint = 273,
         root_pc86_pc211_ordered = true,
         root_pc181_pc258_ordered = true,
         root_pc297_pc357_ordered = true,
@@ -6558,6 +6581,7 @@ do
         checkpoint272_source_registry_keys_unique = true,
         checkpoint272_source_function_references_resolved = true,
         checkpoint272_bind_direct_references_resolved = true,
+        checkpoint273_root_initial_table_identity_checked = true,
         source_registry_registration_count = 53,
         source_registry_unique_key_count = 53,
         source_function_literal_reference_count = 37,
