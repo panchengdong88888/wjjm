@@ -1,8 +1,8 @@
 --[[
 MainLeftBottom(2).lua 明文恢复整合稿（静态候选）
-生成：2026-11-10 | GitHub checkpoint 261
+生成：2026-11-10 | GitHub checkpoint 262
 用途：按110原型索引和PC级证据整合普通Lua候选、根模块状态及58个直接子闭包。
-当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配；PC43-PC85、PC181-PC258及PC297-PC388闭包已按VM创建顺序整合；检查点261修正采集状态表的跨词法块引用。
+当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配；PC43-PC85、PC181-PC258及PC297-PC388闭包已按VM创建顺序整合；检查点261修正采集状态表跨词法块引用；检查点262按寄存器生命周期重建PC1-PC41的表创建、挂接及字段写入顺序。
 重要：
 - 根模块初始化与闭包创建仍采用明确标注的恢复适配结构，不冒充原作者逐字源码。
 - 所有函数体仍按原型路径保留；根装配按OP_387捕获顺序绑定共享cell和状态表。
@@ -156,35 +156,50 @@ do
 local MainLeftBottom = {}
 _G.MainLeftBottom = MainLeftBottom
 
--- PC3-PC5：先创建a状态表，再挂入模块根表。
-MainLeftBottom.a = {}
+-- PC3-PC5：T[0]先创建a状态表，再于PC5挂入模块根表。
+local a = {}
+MainLeftBottom.a = a
 
 -- PC6：版本字段。
-MainLeftBottom.a.version = "10000"
+a.version = "10000"
 
 -- PC7-PC11：读取屏幕宽度并写入a.screenW。
-MainLeftBottom.a.screenW = SL:GetMetaValue("SCREEN_WIDTH")
+a.screenW = SL:GetMetaValue("SCREEN_WIDTH")
 
 -- PC12-PC16：读取屏幕高度并写入a.screenH。
-MainLeftBottom.a.screenH = SL:GetMetaValue("SCREEN_HEIGHT")
+a.screenH = SL:GetMetaValue("SCREEN_HEIGHT")
 
--- PC17-PC29：a表中的钩子容器和界面状态。
-MainLeftBottom.a.Blocklist = {1.0, 9.0, 10.0, 60000.0}
-MainLeftBottom.a.SendHookList = {}
-MainLeftBottom.a.RecvHookList = {}
-MainLeftBottom.a.isHidden = true
-MainLeftBottom.a.hidebut = nil
+-- PC17-PC23：T[1]临时构造Blocklist数组，完成后挂入a表。
+local blocklist = {1.0, 9.0, 10.0, 60000.0}
+a.Blocklist = blocklist
 
--- PC30-PC41：建立b表、z表，并初始化六个状态字段。
-MainLeftBottom.b = {}
-MainLeftBottom.z = {
-    isPaused = false,
-    isRunning = false,
-    isStoring = false,
-    isTaking = false,
-    isDiuing = false,
-    isOutputted = false
-}
+-- PC24-PC25：创建并挂入发送钩子列表。
+local sendHookList = {}
+a.SendHookList = sendHookList
+
+-- PC26-PC27：创建并挂入接收钩子列表。
+local recvHookList = {}
+a.RecvHookList = recvHookList
+
+-- PC28-PC29：界面初始显示状态字段。
+a.isHidden = true
+a.hidebut = nil
+
+-- PC30-PC32：T[1]创建b映射表，再挂入模块根表。
+local b = {}
+MainLeftBottom.b = b
+
+-- PC33-PC35：T[2]创建z状态表，再挂入模块根表。
+local z = {}
+MainLeftBottom.z = z
+
+-- PC36-PC41：按PC顺序初始化六个状态字段。
+z.isPaused = false
+z.isRunning = false
+z.isStoring = false
+z.isTaking = false
+z.isDiuing = false
+z.isOutputted = false
 
 -- PC42：创建供各定时器闭包共享的空状态表（T[3]）。
 local timerState = {}
