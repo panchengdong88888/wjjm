@@ -1417,6 +1417,8 @@ do
 -- 72 physical instructions; complete static reconstruction, not runtime-validated.
 -- UP[0] = blacklistState (root T[41]); the same table is exposed as MainLeftBottom.blacklist.
 
+local make_Nested_JsonDecode
+
 local function make_onDamageMsg(blacklistState)
     return function(messageJson, ...)
         -- PC 1-5: reject a false/nil or empty first argument.
@@ -1425,8 +1427,11 @@ local function make_onDamageMsg(blacklistState)
         end
 
         -- PC 6-16: decode the JSON under pcall; require a table result.
-        -- root.children[52].children[0]：父级捕获messageJson后调用Nested_JsonDecode。
-        local decodeMessage = make_Nested_JsonDecode(messageJson)
+        -- root.children[52].children[0]：捕获messageJson；PC1-PC4使用SL.JsonDecode点调用。
+        local function decodeMessage()
+            local jsonDecode = SL.JsonDecode
+            return jsonDecode(messageJson)
+        end
         local decodeOk, message = pcall(decodeMessage)
         if not decodeOk or type(message) ~= "table" then
             return
@@ -3060,7 +3065,7 @@ end
 
 -- root.children[52].children[0] / legacy root/53/1：
 -- 工厂参数代表子原型捕获的父级T[3]；字节码PC1-PC4明确为SL.JsonDecode(jsonText)点调用。
-local function make_Nested_JsonDecode(jsonText)
+make_Nested_JsonDecode = function(jsonText)
     return function Nested_JsonDecode()
         local jsonDecode = SL.JsonDecode
         return jsonDecode(jsonText)
