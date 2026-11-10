@@ -2007,3 +2007,15 @@
 - PC74-PC77以1为起始、playerCount为上界、1为步长初始化数字循环；PC215推进循环。
 - 旧草稿使用#players计算上界不符合字节码，现改为local players, playerCount = SL:GetMetaValue(...)并直接循环至playerCount。
 - 主函数仍为普通Lua草稿，等待PC1-PC73与PC142-PC216全CFG合并复核；统计维持普通Lua草稿72、完整静态恢复101/110、运行时验证0。
+
+
+## 检查点 #186：BlacklistPlayerDetection 216条指令完整静态复核
+
+- root.children[47] / BlacklistPlayerDetection（216条）父root PC367创建，PC368-PC381捕获13项：T[2]模块状态、T[57]onDamageMsg、T[41]黑名单状态、T[58]DeathAutoBlacklist、T[55]FindBlacklistPlayer、T[53]root.children[22] helper、T[38]阈值2秒、T[4]PrintLog、T[56]随机传送道具使用helper、T[39]0.01秒、T[5]本地通知、T[40]30秒、T[37]随机传送石名称数组。
+- PC1-PC73：设置isBlacklisting；零参调用onDamageMsg；取MAIN_ACTOR_ID；tonumber(HP) nil回退0；闭合lastHp/deathHandled初始化、复活清标记及正HP转非正时一次性调用DeathAutoBlacklist；hp<=0、白名单门槛；FIND_IN_VIEW_PLAYER_LIST双返回值players/playerCount检查，第二返回值直接作为数字循环上界。
+- PC74-PC141：跳过nil actor和自身ID；UP4首返回truthy才进入，第二返回优先为显示名，否则查ACTOR_NAME/默认名；UP2.distance false/nil时绕过坐标/helper并以0显示，truthy时五参调用root.children[22] Chebyshev helper；nil结果继续下一玩家。
+- PC142-PC214：在玩家循环体内执行2秒alertAt日志节流、nextTryAt门槛、随机传送使用及成功/失败通知/日志。nextTryAt未到期、成功、失败路径均跳PC216 return；仅距离helper nil路径回到PC215继续扫描。
+- PC215是数字循环增量/回跳；PC216函数return。216条物理指令及全部可达分支闭合，升级完整静态恢复（未运行时验证）。
+- 更新源码：04_源码候选/root47_BlacklistPlayerDetection.lua；新增审计：docs/audit/检查点186_BlacklistPlayerDetection216条指令完整静态复核.md。
+- 统计：普通Lua草稿71；完整静态恢复102/110；运行时验证0。
+- 下一步：检查root.children[45] MainLoop既有源码候选与未闭合CFG。
