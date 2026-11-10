@@ -51,7 +51,7 @@
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
     "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192新增PC1-PC41首段普通Lua草稿。创建全局MainLeftBottom，a表(version/screenW/screenH/Blocklist/SendHookList/RecvHookList/isHidden/hidebut)，b空表，z表六个false状态字段。PC42-PC412尚未转写，分段继续；未运行时验证。"
   },
-  "next_action": "检查点192仅恢复root PC1-PC41首段。下一步继续root PC42-PC137，按PC顺序闭合日志/代理辅助函数、全局函数注册和早期初始化；复用已有58个子原型草稿与闭包映射，不重做底层VM分析。之后再推进PC138-PC412，逐段写回并更新检查点。",
+  "next_action": "检查点193已恢复root PC42-PC85闭包创建、捕获描述和全局导出。下一步继续root PC86-PC137：逐条闭合GATHER_THRESHOLD/CHECK_INTERVAL/ATTACK_WAIT_TIME等配置初始化、登录奖励/在线时长数组构造及相关表的持有关系；不得仅凭常量名称推断数组字段。之后推进PC138-PC412。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2238,23 +2238,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "192",
+    "checkpoint": "193",
     "targets": [
-      "root PC1-PC41"
+      "root PC42-PC85"
     ],
-    "status": "Created a partial ordinary-Lua root-module draft for the initial module tables and state fields; the remaining PC42-PC412 is explicitly unfinished.",
-    "audit_file": "docs/audit/检查点192_root模块初始化PC1-PC41首段草稿.md",
+    "status": "Restored root-level closure creation, capture descriptors, and confirmed global exports; root remains a partial draft.",
+    "audit_file": "docs/audit/检查点193_root模块PC42-PC85闭包创建与全局导出.md",
     "files": [
       "04_源码候选/root_MainLeftBottom_Module.lua",
-      "docs/audit/检查点192_root模块初始化PC1-PC41首段草稿.md",
+      "docs/audit/检查点193_root模块PC42-PC85闭包创建与全局导出.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "PC1-PC2 create and export the global MainLeftBottom table.",
-      "PC3-PC16 initialize MainLeftBottom.a with version and screen dimensions.",
-      "PC17-PC29 create the four-entry Blocklist, SendHookList, RecvHookList, isHidden=true and hidebut=nil.",
-      "PC30-PC41 create b/z tables and initialize six false state flags.",
-      "Only PC1-PC41 are drafted; PC42-PC412 remain pending."
+      "PC43 PrintLog closure is assigned to _G.log at PC45.",
+      "PC48 LuaSendMsg closure captures parent T[0],T[4] and is assigned to MainLeftBottom.a.LuaSendMsg at PC51.",
+      "PC55/57/59/61/63 export GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo.",
+      "PC64-85 create and export DiuItems, GetAvailableStoragePage, GetStorageItemData, StorageItems, TakeItems, PickUpItems; captures retained in exact order.",
+      "PC46 ShowLocalNoticeByType and PC52-53 ScheduleOnce/Schedule have no observed global assignment within this range."
     ]
   },
   "corrections": [
@@ -2946,18 +2946,19 @@
       "path": "root",
       "name": "MainLeftBottom_Module",
       "source_file": "04_源码候选/root_MainLeftBottom_Module.lua",
-      "status": "partial_ordinary_lua_draft_PC1_PC41_only_not_runtime_verified",
+      "status": "partial_ordinary_lua_draft_PC1_PC85_only_not_runtime_verified",
       "physical_instructions": 412,
       "notes": [
         "Checkpoint 192 covers only PC1-PC41: module export, a/b/z table initialization, screen dimensions, hook tables and six false flags.",
-        "PC42-PC412 remain unfinished; do not treat as a complete module body."
+        "PC42-PC412 remain unfinished; do not treat as a complete module body.",
+        "Checkpoint 193 adds PC42-PC85 closure creation/export mapping: _G.log=PrintLog; MainLeftBottom.a.LuaSendMsg=LuaSendMsg; global GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems/GetAvailableStoragePage/GetStorageItemData/StorageItems/TakeItems/PickUpItems. Captures preserved in exact order. PC86-PC412 remain unfinished."
       ]
     }
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": "192",
-  "checkpoint": "192",
+  "last_checkpoint": "193",
+  "checkpoint": "193",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
@@ -2975,12 +2976,12 @@
     "notes": "MoveItemToQuickUse检查点86首版升级为完整普通Lua主体草稿；参数顺序由doInit_UI调用点确认；统计不增加草稿函数、不升级完整静态恢复。"
   },
   "latest_checkpoint": {
-    "checkpoint": "192",
-    "summary": "root模块PC1-PC41首段普通Lua草稿；创建MainLeftBottom及a/b/z表，恢复版本/屏幕尺寸/钩子表/界面标志/六个状态字段；PC42-PC412待恢复。",
-    "audit_file": "docs/audit/检查点192_root模块初始化PC1-PC41首段草稿.md",
+    "checkpoint": "193",
+    "summary": "root PC1-PC85分段普通Lua草稿：PC1-PC41模块表初始化；PC42-PC85辅助闭包创建、捕获与全局导出。PC86-PC412待恢复。",
+    "audit_file": "docs/audit/检查点193_root模块PC42-PC85闭包创建与全局导出.md",
     "unresolved": [
-      "root PC42-PC412普通Lua主体",
-      "root直接子原型函数注册与upvalue捕获来源",
+      "root PC86-PC137配置/数组构造及表持有关系",
+      "root PC138-PC412其余闭包注册、状态及初始化",
       "目标Lua/游戏运行时验证"
     ]
   },
@@ -2991,5 +2992,6 @@
     "ordinary_lua_drafts": 72,
     "complete_static_reconstruction": 103,
     "runtime_verified": 0
-  }
+  },
+  "next_checkpoint": "root PC86-PC137"
 }
