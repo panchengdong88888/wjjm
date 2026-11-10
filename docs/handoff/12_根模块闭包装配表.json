@@ -7093,7 +7093,7 @@
           {
             "upvalue": 8,
             "parent_T": 8,
-            "value": "FindMonsterInCurrViewField"
+            "value": "gatherConfig"
           },
           {
             "upvalue": 9,
@@ -7214,7 +7214,7 @@
         ]
       }
     ],
-    "capture_correction": "PC389 writes the global MainLeftBottom table to temporary T[59], not to T[2], T[3], or T[0]. Therefore doInit_UI captures UP1=T[2]=MainLeftBottom.z, UP2=T[3]=timerState, UP3=T[0]=MainLeftBottom.a. PC411 writes the doInit closure to T[59].doInit. The prior values in this ledger for UP1/UP2/UP3 were incorrect; register_value_timeline for T[2]/T[3]/T[0] and raw PC389/411 instructions establish the corrected mapping."
+    "capture_correction": "PC389 writes the global MainLeftBottom table to temporary T[59], not to T[2], T[3], or T[0]. Therefore doInit_UI captures UP1=T[2]=MainLeftBottom.z, UP2=T[3]=timerState, UP3=T[0]=MainLeftBottom.a. PC411 writes the doInit closure to T[59].doInit. The prior values in this ledger for UP1/UP2/UP3 were incorrect; register_value_timeline for T[2]/T[3]/T[0] and raw PC389/411 instructions establish the corrected mapping. In addition, PC399 captures T[8]=gatherConfig; it is not FindMonsterInCurrViewField. The doInit_UI child passes UP[8] to Nested_InitGatherMonsters(config, getThreshold), whose body writes config.GATHER_THRESHOLD, so the capture must be the shared gatherConfig table."
   },
   "root_complete_module_ledger": {
     "pc_range": "1-412",
@@ -11738,6 +11738,137 @@
     },
     "module_target": "T[59] is loaded from _ENV.MainLeftBottom at PC389; PC411 writes T[59].doInit=doInit_UI",
     "correction": "PC389 does not overwrite T[2]/T[3]/T[0]; it writes a separate temporary T[59].",
+    "runtime_verified": false
+  },
+  "root_assembly_checkpoint_269": {
+    "date": "2026-11-10",
+    "root_pc_range": "390-410",
+    "prototype": "root.children[42] doInit_UI",
+    "parent_T_capture_order": [
+      4,
+      2,
+      3,
+      0,
+      1,
+      41,
+      48,
+      7,
+      8,
+      50,
+      49,
+      5,
+      44,
+      42,
+      51,
+      43,
+      47,
+      11,
+      12,
+      9
+    ],
+    "captures": [
+      {
+        "upvalue": 0,
+        "parent_T": 4,
+        "value": "PrintLog"
+      },
+      {
+        "upvalue": 1,
+        "parent_T": 2,
+        "value": "MainLeftBottom.z"
+      },
+      {
+        "upvalue": 2,
+        "parent_T": 3,
+        "value": "timerState table"
+      },
+      {
+        "upvalue": 3,
+        "parent_T": 0,
+        "value": "MainLeftBottom.a"
+      },
+      {
+        "upvalue": 4,
+        "parent_T": 1,
+        "value": "MainLeftBottom.b"
+      },
+      {
+        "upvalue": 5,
+        "parent_T": 41,
+        "value": "blacklistState"
+      },
+      {
+        "upvalue": 6,
+        "parent_T": 48,
+        "value": "AnonymousHelper_49(ReadNumericConfig, blacklist_distance.txt)"
+      },
+      {
+        "upvalue": 7,
+        "parent_T": 7,
+        "value": "Schedule"
+      },
+      {
+        "upvalue": 8,
+        "parent_T": 8,
+        "value": "gatherConfig={GATHER_THRESHOLD=10,CHECK_INTERVAL=0.5,ATTACK_WAIT_TIME=1}"
+      },
+      {
+        "upvalue": 9,
+        "parent_T": 50,
+        "value": "AnonymousHelper_33(ReadNumericConfig, gather_monster_count.txt)"
+      },
+      {
+        "upvalue": 10,
+        "parent_T": 49,
+        "value": "AnonymousHelper_32(PCallHelper, blacklist_distance.txt)"
+      },
+      {
+        "upvalue": 11,
+        "parent_T": 5,
+        "value": "ShowLocalNoticeByType"
+      },
+      {
+        "upvalue": 12,
+        "parent_T": 44,
+        "value": "GetWritablePath"
+      },
+      {
+        "upvalue": 13,
+        "parent_T": 42,
+        "value": "blacklist_distance.txt"
+      },
+      {
+        "upvalue": 14,
+        "parent_T": 51,
+        "value": "AnonymousHelper_54(PCallHelper, gather_monster_count.txt)"
+      },
+      {
+        "upvalue": 15,
+        "parent_T": 43,
+        "value": "gather_monster_count.txt"
+      },
+      {
+        "upvalue": 16,
+        "parent_T": 47,
+        "value": "FileExistCheck_pcall_wrapper"
+      },
+      {
+        "upvalue": 17,
+        "parent_T": 11,
+        "value": 18000
+      },
+      {
+        "upvalue": 18,
+        "parent_T": 12,
+        "value": "14 ordered reward entries"
+      },
+      {
+        "upvalue": 19,
+        "parent_T": 9,
+        "value": 0.2
+      }
+    ],
+    "correction": "UP8 is gatherConfig, not FindMonsterInCurrViewField. doInit_UI passes UP8 and UP9 to Nested_InitGatherMonsters(config,getThreshold), whose body writes config.GATHER_THRESHOLD. The main assembly now injects rootSource.gatherConfig and asserts its three bytecode-derived fields.",
     "runtime_verified": false
   }
 }
