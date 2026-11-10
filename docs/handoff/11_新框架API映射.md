@@ -92,3 +92,8 @@
 - 不因 API 名称相似就替换原型身份。
 - 文档未列出的方法只标记为宿主调用，不编造签名。
 - 所有 API 调用方式的修正必须同时有开发包文档和字节码调用窗口证据。
+
+
+## 检查点214补充：Nested_JsonDecode 的实际调用形式
+
+开发包中 `SL:JsonDecode(jsonStr, isfilter)` 是通用文档写法；但 `root.children[52].children[0]` 的 corrected phase3 字节码 PC1-PC4 明确读取 `SL.JsonDecode` 后，仅传入捕获的JSON文本，不传入SL作为self。因此该子原型及其父函数中的解码闭包必须保留点调用形式 `SL.JsonDecode(jsonText)`。这是具体原型的字节码证据优先于通用文档示例的情况，不应将所有SL方法统一改为冒号调用。
