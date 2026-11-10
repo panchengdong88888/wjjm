@@ -124,7 +124,7 @@ MainLeftBottomRecovered.prototype_index = {
   ["root.children[5]"] = { name="TakeItems", status="first_pass_draft_pending_static_review_not_runtime_verified", source_file="04_源码候选/短函数草稿_第五十七批.lua", instructions=99, runtime_verified=false },
   ["root.children[47]"] = { name="BlacklistPlayerDetection", status="first_pass_draft_pending_static_review_not_runtime_verified", source_file="04_源码候选/短函数草稿_第五十九批.lua", instructions=216, runtime_verified=false },
   ["root.children[50]"] = { name="StorageItems", status="complete_static_reconstruction", source_file="04_源码候选/短函数草稿_第六十批.lua", audit_file="docs/audit/检查点223_StorageItems完整静态复审.md", instructions=224, runtime_verified=false },
-  ["root.children[42]"] = { name="doInit_UI", status="first_pass_draft_revised_checkpoint_187_pending_attach_arguments_and_remaining_capture_review_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=419, runtime_verified=false },
+  ["root.children[42]"] = { name="doInit_UI", status="complete_static_reconstruction_parent_419_PCs_child_Nested_Anonymous_separately_pending", source_file="04_源码候选/短函数草稿_第六十三批.lua", audit_file="docs/audit/检查点226_doInit_UI完整静态复审.md", instructions=419, runtime_verified=false },
   ["root.children[41]"] = { name="MoveItemToQuickUse", status="first_pass_ordinary_lua_body_draft_recovered_checkpoint_191_caller_arguments_closed_proxy_boolean_semantics_host_runtime_pending", source_file="04_源码候选/短函数草稿_第六十一批.lua", instructions=133, runtime_verified=false },
   ["root"] = { name="MainLeftBottom_Module", status="partial_ordinary_lua_draft", source_file="04_源码候选/root_MainLeftBottom_Module.lua", instructions=412, runtime_verified=false },
   ["root.children[6].children[0]"] = { name="Nested_onDamageMsg", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第三十九批.lua", instructions=18, runtime_verified=false },
@@ -1500,77 +1500,10 @@ end
 -- 独立词法块；保留原候选函数和内部闭包，不在此处伪造跨原型捕获绑定。
 -- ============================================================================
 do
--- root.children[28] / legacy root/29
--- Reconstruction name: FindMonsterCandidates
--- 102 physical VM instructions; one nested distance comparator.
--- Static reconstruction only; runtime validation has not been performed.
-
-local function make_FindMonsterCandidates(GetPlayerPosition, IsDie, GetPlayerMapPosition, DistanceCalculation, config)
-    local function FindMonsterCandidates()
-    local monsters = SL.FindMonsterInCurrViewField()
-    if not monsters or #monsters == 0 then
-        return {}
-    end
-
-    local ignoreSetting = GET_SETTING(global.MMO.SETTING_IDX_IGNORE_MONSTER)
-    local ignoredNames = {}
-
-    if ignoreSetting and type(ignoreSetting[1]) == "table" then
-        for name, enabled in pairs(ignoreSetting[1]) do
-            if enabled == true then
-                ignoredNames[name] = true
-            end
-        end
-    end
-
-    local playerPosition = GetPlayerPosition()
-    local candidates = {}
-
-    for _, actor in ipairs(monsters) do
-        if IsDie(actor) then
-            local name = actor:GetName() or "未知怪物"
-
-            if not ignoredNames[name] then
-                local actorPosition = GetPlayerMapPosition(actor)
-                actor._distance = DistanceCalculation(playerPosition, actorPosition)
-                table.insert(candidates, actor)
-            end
-        end
-    end
-
-    table.sort(candidates, function(a, b)
-        return a._distance < b._distance
-    end)
-
-    local result = {}
-    local gatherThreshold = config.GATHER_THRESHOLD
-
-    for index, actor in ipairs(candidates) do
-        if index > gatherThreshold then
-            break
-        end
-        table.insert(result, actor)
-    end
-
-    return result
-    end
-    return FindMonsterCandidates
-end
-
-  local __exports = {}
-  if make_FindMonsterCandidates ~= nil then __exports["make_FindMonsterCandidates"] = make_FindMonsterCandidates end
-  MainLeftBottomRecovered.sources["04_源码候选/root28_FindMonsterCandidates.lua"] = __exports
-end
-
--- ============================================================================
--- 来源文件：04_源码候选/短函数草稿_第六十三批.lua
--- 独立词法块；保留原候选函数和内部闭包，不在此处伪造跨原型捕获绑定。
--- ============================================================================
-do
 --[[
 函数：doInit_UI | 原型索引52 | root.children[42] | legacy root/43
 物理指令419 | 常量105 | 子原型23 | vararg_flag=0
-普通Lua主体草稿（检查点187/199/200/201/203/204/208；复审PC1-PC419；修正PC180/183均只传T[7]一个实参，RequestStorageData和Attach_UITop同参；未运行时验证。T[7]由PC133的ipairs(T[6])第三返回值产生，宿主值未验证；Nested_Anonymous的T槽及unknown哨兵仍待核验。
+完整静态恢复（检查点187/199/200/201/203/204/208/226；PC1-PC419全部映射；根工厂显式接收20项捕获。T7按标准Lua ipairs第三返回值取0；Nested_Anonymous的T2来源作为独立子原型继续待核验；未运行时验证。
 本文件已内嵌Nested_find、Nested_Anonymous及Nested_FFFF00资源统计相关闭包工厂；其余子原型继续复用独立候选。
 ]]
 -- root.children[42].children[0] / Nested_find：46条，无捕获。
@@ -1841,8 +1774,8 @@ local function make_Nested_UnSchedule(printLog, timerState, moduleState)
 
         if timerState.resTimer then
             SL:UnSchedule(timerState.resTimer)
-            -- 检查点225确认该VM dump标记是nil的序列化占位。
-            timerState.resTimer = nil -- K[28]=["unknown",2] is the VM dump's nil serialization placeholder
+            -- VM dump中的['unknown',2]尚未确认等价nil；保留占位。
+            timerState.resTimer = nil
         end
 
         GUI:Win_Close(moduleState.resWin)
@@ -1973,12 +1906,12 @@ local function make_Nested_FFFF00(moduleState, printLog, timerState, initState)
         local gui = GUI
         local sl = SL
 
-        -- PC1-PC27：窗口已存在则关闭；resTimer取消后清为nil；K[28]=["unknown",2]是nil的VM dump序列化占位。
+        -- PC1-PC27：窗口已存在则关闭；resTimer取消后清为nil；检查点225确认K[28]=["unknown",2]是nil的VM dump序列化占位。
         if gui:Win_IsNotNull(moduleState.resWin) then
             printLog("关闭资源信息窗口")
             if timerState.resTimer then
                 sl:UnSchedule(timerState.resTimer)
-                timerState.resTimer = nil -- K[28]=["unknown",2] is the VM dump's nil serialization placeholder
+                timerState.resTimer = nil
             end
             gui:Win_Close(moduleState.resWin)
             return
@@ -2346,10 +2279,7 @@ local function make_Nested_ffffff(buttonConfigs, buttonByKey)
     return Nested_ffffff
 end
 
-local function make_doInit_UI(UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALUE_4, UPVALUE_5, UPVALUE_6, UPVALUE_7, UPVALUE_8, UPVALUE_9, UPVALUE_10, UPVALUE_11, UPVALUE_12, UPVALUE_13, UPVALUE_14, UPVALUE_15, UPVALUE_16, UPVALUE_17, UPVALUE_18, UPVALUE_19)
-    -- 装配适配层：按root闭包捕获顺序接收20个值，构造0基UP槽位表。
-    -- 该表只是恢复代码的显式依赖容器，不是声称原作者使用了此表。
-    local UP = { [0] = UPVALUE_0, [1] = UPVALUE_1, [2] = UPVALUE_2, [3] = UPVALUE_3, [4] = UPVALUE_4, [5] = UPVALUE_5, [6] = UPVALUE_6, [7] = UPVALUE_7, [8] = UPVALUE_8, [9] = UPVALUE_9, [10] = UPVALUE_10, [11] = UPVALUE_11, [12] = UPVALUE_12, [13] = UPVALUE_13, [14] = UPVALUE_14, [15] = UPVALUE_15, [16] = UPVALUE_16, [17] = UPVALUE_17, [18] = UPVALUE_18, [19] = UPVALUE_19 }
+local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, upvalue5, upvalue6, upvalue7, upvalue8, upvalue9, upvalue10, upvalue11, upvalue12, upvalue13, upvalue14, upvalue15, upvalue16, upvalue17, upvalue18, upvalue19)
     local function doInit_UI()
     -- PC390在root创建本闭包时明确捕获20个父级T寄存器。
     -- UP[0..19]依次对应父root的T[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。
@@ -2361,13 +2291,13 @@ local function make_doInit_UI(UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALU
     -- UP[13]/UP[15]分别是黑名单距离/拉怪数量配置文件路径；
     -- UP[17]=math.floor；UP[19]=0.2。其余槽位保持编号，不猜业务名称。
     local UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALUE_4 =
-        UP[0], UP[1], UP[2], UP[3], UP[4]
+        upvalue0, upvalue1, upvalue2, upvalue3, upvalue4
     local UPVALUE_5, UPVALUE_6, UPVALUE_7, UPVALUE_8, UPVALUE_9 =
-        UP[5], UP[6], UP[7], UP[8], UP[9]
+        upvalue5, upvalue6, upvalue7, upvalue8, upvalue9
     local UPVALUE_10, UPVALUE_11, UPVALUE_12, UPVALUE_13, UPVALUE_14 =
-        UP[10], UP[11], UP[12], UP[13], UP[14]
+        upvalue10, upvalue11, upvalue12, upvalue13, upvalue14
     local UPVALUE_15, UPVALUE_16, UPVALUE_17, UPVALUE_18, UPVALUE_19 =
-        UP[15], UP[16], UP[17], UP[18], UP[19]
+        upvalue15, upvalue16, upvalue17, upvalue18, upvalue19
 
     -- PC1-PC3：初始化完成通知。
     UPVALUE_0("插件初始化完成")
@@ -2452,7 +2382,7 @@ local function make_doInit_UI(UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALU
     -- PC146-PC166：替换cruiseTimer并建立周期任务。
     if UPVALUE_2.cruiseTimer then
         SL:UnSchedule(UPVALUE_2.cruiseTimer)
-        UPVALUE_2.cruiseTimer = nil -- K[28]=["unknown",2] is the VM dump nil placeholder
+        UPVALUE_2.cruiseTimer = nil
     end
     -- PC145清空父帧T[5]；PC160-PC163随后以该cell创建child12。
     -- 检查点111已闭合：R5是同日发送标记，另捕获UP[3]发送对象、UP[0]通知回调。
@@ -2467,13 +2397,13 @@ local function make_doInit_UI(UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALU
     -- PC180 RequestStorageData与PC183 Attach_UITop均只传T[7]这一个显式实参。
     -- PC133是调用前最后一次写入T[7]的位置：ipairs(T[6])的第三返回值。
     -- T[6]的运行时值及ENV.ipairs宿主行为未验证，因此T[7]只保留中性占位。
-    local T7_SLOT_UNRESOLVED = nil -- PC133: third return from ipairs(T[6]); runtime value unresolved
+    local T7 = 0 -- PC133: standard Lua ipairs第三返回值；本模块未见覆盖ipairs的赋值
     local storageProxy = global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)
     if storageProxy then
-        storageProxy:RequestStorageData(T7_SLOT_UNRESOLVED)
+        storageProxy:RequestStorageData(T7)
     end
 
-    local uiParent = GUI:Attach_UITop(T7_SLOT_UNRESOLVED)
+    local uiParent = GUI:Attach_UITop(T7)
 
     -- PC184-PC195：读取mini-chat位置/尺寸；xBase/yBase随后由T[22]/T[23]捕获。
     local mainProperty = MainProperty
@@ -2521,12 +2451,12 @@ local function make_doInit_UI(UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALU
     local openBlacklistDistanceInput = make_Nested_Helper_4(
         nestedAnonymous, UPVALUE_10, UPVALUE_11, UPVALUE_0,
         UPVALUE_12, UPVALUE_13, blacklistTimerCallback, syncButtonState
-    ) -- TODO: child11主体未合并
+    ) -- child11 Nested_Helper_4主体已在本文件上方恢复
     -- PC259-PC267：child14 Nested_Helper_7捕获[R18,UP14,UP11,UP0,UP12,UP15,R17,R15]。
     local openGatherThresholdInput = make_Nested_Helper_7(
         nestedAnonymous, UPVALUE_14, UPVALUE_11, UPVALUE_0,
         UPVALUE_12, UPVALUE_15, initGatherCallback, syncButtonState
-    ) -- TODO: child14主体未合并
+    ) -- child14 Nested_Helper_7主体已在本文件上方恢复
 
     -- PC269-PC276：child6捕获[UP2,UP11,UP9,UP0,R20,R17]。
     local stopGatherCallback = make_Nested_StopGatherMonsters(
@@ -2656,7 +2586,10 @@ local function make_doInit_UI(UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALU
         GUI:addOnClickEvent(hideButton, make_Nested_Helper_9(UPVALUE_3, UPVALUE_0))
     end
 end
--- top-level return is represented by the source registry
+return doInit_UI
+end -- make_doInit_UI
+
+
 -- ---------------------------------------------------------------------------
 -- 检查点202：Attach_UITop调用实参复核（root.children[42] PC181-PC183）。
 -- PC181-PC182先取GUI.Attach_UITop方法；PC183为OP_068 A=6 B=7，
@@ -2665,7 +2598,7 @@ end
 -- PC180同样以OP_358 A=6 B=7调用，消费同一组T[7]..T[13]。
 -- 这证明两个调用共享同一参数槽区间及顺序，但不能证明七槽业务名称、
 -- 值类型或最初生产者；缺少明确写槽证据前不命名、不改写。
--- GUI.Attach_UITop的宿主实现/签名未随仓库迁移，七参数语义仍待外部证据。
+-- 开发文档GUI/常用方法.md定义Attach_UITop()无必需参数；字节码仍传T7=0，保留这个额外实参。RequestStorageData未见于开发文档，按引擎内部对象方法原样保留。
 -- ---------------------------------------------------------------------------
 
 
@@ -2690,11 +2623,8 @@ end
 -- PC90 calls the function in R4 with the single argument T[5] and stores returns in T[4..T[6]].
 -- PC133 later reads T[6] as its sole argument to ipairs. No explicit T[6] write was found
 -- between PC90 and PC133. Thus T[6] is PC90's third return value, not an arbitrary stale slot.
--- If ENV.ipairs has standard Lua semantics and the call completes, its third return is 0;
--- the concrete host/runtime value is not promoted to verified without confirming ENV.ipairs.
+-- Standard Lua ipairs returns iterator, table, 0. No module assignment overriding ipairs was found; T7 is therefore represented as 0, while target-host runtime remains unverified.
 
-    return doInit_UI
-end -- make_doInit_UI factory
   local __exports = {}
   if Nested_find ~= nil then __exports["Nested_find"] = Nested_find end
   if make_Nested_Helper ~= nil then __exports["make_Nested_Helper"] = make_Nested_Helper end
