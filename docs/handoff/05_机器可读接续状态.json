@@ -3542,18 +3542,18 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 268,
-  "checkpoint": 268,
+  "last_checkpoint": 269,
+  "checkpoint": 269,
   "drafts": 33,
-  "next": "检查点269：逐项复核root PC389-PC412最终段的全部20项doInit_UI捕获值、T[59]模块表重读、PC411字段写入及PC412返回对象；重点把closure_sites与register_value_timeline逐槽交叉核对，避免只修UP1-UP3而遗漏其他寄存器身份。完成后继续整理根模块连续可读源码组织，保持恢复适配结构与作者原始源码的边界标注。",
+  "next": "检查点270：收敛根模块连续可读源码组织。先检查root.children[42] doInit_UI的词法依赖与主恢复稿sources注册区是否重复定义/作用域错位，再核对MainLoop、DiuItems等长函数是否仅作为source注册、是否已进入可读主恢复稿；在保留原型边界、OP_387共享cell与恢复适配标注的前提下，优先消除重复定义和不必要的跨词法块工厂依赖。",
   "recent_checkpoint": {
-    "number": 268,
+    "number": 269,
     "date": "2026-11-10",
     "artifacts": [
       "02_基础索引/MainLeftBottom_vm_dump.json",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "04_源码候选/root_MainLeftBottom_Module.lua",
-      "docs/audit/检查点268_PC389-T59模块表重读与doInit捕获校正.md",
+      "docs/audit/检查点269_doInit_UI二十项捕获逐槽对账与T8配置表修正.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
@@ -3565,7 +3565,7 @@
     "runtime_verified": 0,
     "root_direct_closures_source_bound": 58,
     "root_direct_closures_expected": 58,
-    "notes": "PC389 T59全局模块表重读与PC411 T59.doInit写入目标按原始VM Dump确认；doInit_UI的UP1/UP2/UP3仍分别是z/timerState/a。未执行Lua编译或游戏运行验证。"
+    "notes": "doInit_UI的20项捕获与主恢复稿逐槽一致；UP8=T8=gatherConfig已修正。PC389 T59模块表重读/PC411字段写入保留。未执行Lua编译或游戏运行验证。"
   },
   "latest_checkpoint": 261,
   "complete_static_reconstruction_count": 109,
@@ -3576,7 +3576,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 269,
+  "next_checkpoint": 270,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3741,12 +3741,13 @@
     "root_pc350_pc388_capture_identity": "static_pc_timeline_aligned",
     "root_pc350_pc388_blacklist_chain": "static_pc_timeline_aligned",
     "root_pc390_pc412_capture_and_return": "static_pc_timeline_aligned",
-    "root_pc389_pc411_t59": "raw_vm_dump_aligned"
+    "root_pc389_pc411_t59": "raw_vm_dump_aligned",
+    "doInit_ui_capture_20_slots": "static_register_timeline_aligned"
   },
   "latest": {
-    "checkpoint": "268",
-    "summary": "回查02_基础索引/MainLeftBottom_vm_dump.json原始root.ins PC389-PC412。PC389原始指令[82,137,59,'MainLeftBottom',null]将_ENV.MainLeftBottom读入独立T[59]；PC392/393/394分别捕获T[2]/T[3]/T[0]，其身份仍为MainLeftBottom.z、timerState、MainLeftBottom.a。PC411原始指令[144,268,59,'doInit',60]写入T[59].doInit。主恢复稿现于工厂创建前读取local doInitModule=_G.MainLeftBottom，并将PC411写入doInitModule.doInit；原有UP1=z、UP2=timerState、UP3=a注入保持不变。修正closure_sites错误value并补充T59原始事件。",
-    "audit_file": "docs/audit/检查点268_PC389-T59模块表重读与doInit捕获校正.md",
+    "checkpoint": "269",
+    "summary": "对照原始VM Dump、register_value_timeline、root closure ledger和主恢复稿，逐槽核对doInit_UI PC390-PC410的20项捕获。修正UP[8]：父T[8]在PC86-PC89构造gatherConfig，后续PC399捕获时仍是该表；doInit_UI将UP[8]传给Nested_InitGatherMonsters(config,getThreshold)，子函数写config.GATHER_THRESHOLD，因此不能注入FindMonsterInCurrViewField。主恢复稿现注入rootSource.gatherConfig，并断言GATHER_THRESHOLD=10、CHECK_INTERVAL=0.5、ATTACK_WAIT_TIME=1。其余19项均与捕获账本一致。PC389 T[59]模块表重读和PC411 T[59].doInit写入语义保持。",
+    "audit_file": "docs/audit/检查点269_doInit_UI二十项捕获逐槽对账与T8配置表修正.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3806,7 +3807,7 @@
     "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。",
     "checkpoint261_gather_status_scope_fixed": true
   },
-  "root_assembly_checkpoint": 268,
+  "root_assembly_checkpoint": 269,
   "root_pc1_pc42_sequential_source_restored": true,
   "root_pc43_pc85_register_ordered": true,
   "root_pc86_pc211_cells_capture_ordered": true,
@@ -3814,5 +3815,7 @@
   "root_pc297_pc315_config_registers_ordered": true,
   "root_pc350_pc388_blacklist_chain_guarded": true,
   "root_pc390_pc412_final_export_return_checked": true,
-  "root_pc389_t59_reread_preserved": true
+  "root_pc389_t59_reread_preserved": true,
+  "root_pc390_pc410_capture_slots_verified": true,
+  "root_pc399_up8_gather_config_corrected": true
 }
