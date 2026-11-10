@@ -4,7 +4,11 @@
 -- UP[0] = GetWritablePath closure (root.children[2]), captured at root PC298.
 
 local function make_ReadNumericConfig(GetWritablePath)
-    return function(fileName, ...)
+    return function(...)
+        -- The VM prototype is vararg-capable; only the first supplied value is read as fileName.
+        -- This avoids asserting an unavailable fixed-parameter count.
+        local fileName = ...
+
         -- PC 1-4: acquire the FileUtils singleton before resolving the path.
         local fileUtils = cc.FileUtils:getInstance()
 
