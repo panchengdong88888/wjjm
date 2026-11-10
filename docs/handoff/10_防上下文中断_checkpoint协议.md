@@ -2711,3 +2711,17 @@ Nested_match：
 - PC104-PC116将目标槽原有物品退回背包；PC117-PC125取itemDataList[1]删除并写入目标快捷栏位置；PC126-PC133返回成功提示。
 - SetQuickUsePosData所有true/false实参及调用顺序按字节码保留；不推断外部代理方法内部语义。
 - 完整静态恢复数更新为104/110（94.5%）；运行时验证仍为0。
+
+
+## 检查点 #223（2026-11-10）：StorageItems 224指令完整静态恢复
+
+- 原型：`root.children[50]`（legacy `root/51`），224条父指令、57常量、2个子原型、3项捕获。
+- 三项捕获按实际角色中性命名：UPVALUE[0]=storageState；UPVALUE[1]=notify；UPVALUE[2]=output。原始作者变量名不做猜测。
+- PC1-PC23：存仓互斥状态与可用仓库页检查；PC24-PC58：读取最大页、页容量、开放格数及各页占用，并创建目标页查找闭包。
+- PC61-PC104：构造18项特殊名称表和单项过滤表、读取背包、创建Nested_isOutputted子闭包、初始化MakeIndex去重和请求计数。
+- PC105-PC176：单次pairs遍历，按MakeIndex去重、过滤绑定物品、处理单项名称，并遍历18项特殊名称；每次匹配后立即检查Nested_isOutputted返回值，失败即跳过当前物品。
+- PC177-PC186：每件候选物品重新查找目标页；无页时输出仓库满、复位状态并退出。
+- PC187-PC205：先输出存仓提示，再按七参数调用LuaSendMsg；原样保留MSG_CS_STORAGE_STORE_REQUEST、999999999、MakeIndex、targetPage、0、Name、string.len(Name)。
+- PC206-PC211：发送调用返回后更新本地去重集合、页占用数及请求计数；请求计数不代表服务器确认。
+- PC214-PC224：复位存仓状态；只有请求数大于0才输出完成提示。
+- 两个子原型均有独立完整源码。完整静态恢复数更新为105/110（95.5%）；运行时验证仍为0。
