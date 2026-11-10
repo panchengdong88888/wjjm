@@ -14,7 +14,7 @@
     "root.children[45]": "MainLoop：417条；检查点152-158形成并完成完整静态恢复（未运行时验证）。CFG报告统计314个入口可达节点、103个静态不可达节点。全部22个upvalue父root T寄存器生产者已闭合：运行标记、当前状态/常量、PrintLog、FormatStateChange、ResetGatherMonsterData、GetMainPlayerID、FindMonsterCandidates、目标ID数组、GetOwnerID、扫描游标/自己归属计数、等待状态字段、FindMonsterInCurrViewField、GetOwnerIDText、IsDie、GetOwnerDescription、SetTargetID、配置表。检查点153/154闭合GATHERING/ATTACKING循环；155/156校正入口等待与未归属锁定路径；157完成全CFG分区总账。静态完整，未运行时验证。",
     "root.children[46]": "DiuItems：169条；普通Lua草稿已独立复审并标记完整静态恢复（未运行时验证）；源码04_源码候选/root46_DiuItems.lua；不计运行时验证。",
     "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next.",
-    "root.children[8]": "FormatStateChange：10条；检查点130独立复核PC1-PC10的格式化、回调调用和捕获状态更新时序；首版草稿保留，原始局部名未恢复，未运行时验证。",
+    "root.children[8]": "FormatStateChange：10条；检查点176逐指令闭合格式化、单参回调及回调后状态写回；检查点177交叉root初始化、MainLoop捕获映射/调用点及PrintLog本体，确认UP0=PrintLog（root T[4]），UP1=MainLoop共享currentState单元（root T[14]，初值IDLE）。完整静态恢复，未运行时验证；PrintLog的SL.Print分支无调用指令，不推断可见输出。",
     "root.children[9]": "ReadNumericConfig：45条；检查点130独立复核并校正失败/非字符串/非数字三类分支均清理返回槽后返回nil；仅纯数字字符串走tonumber返回；未运行时验证。",
     "root.children[14]": "FindMonsterInCurrViewField：27条；检查点131完成27条PC映射，确认捕获root.children[29] IsDie包装器对存活actor返回truthy，完成静态恢复，未运行时验证。",
     "root.children[1]": "GetStorageItemData：77条；检查点132完成分页合并、逐页容量计算、proxy方法self、通知回调及返回数组静态恢复；未运行时验证。",
@@ -43,7 +43,7 @@
     "root.children[42].children[3].children[4]": "Nested_UnSchedule：20条；原检查点116已完成控制流静态复核。检查点172修正源码表达：子UP0=通知回调、UP1=timerState、UP2=moduleState；父PC68-PC71捕获顺序为父UP1/UP2/UP0。取消timer后写回反汇编未知常量['unknown',2]，源码以UNKNOWN_VALUE_SENTINEL占位，禁止误写nil。完整静态恢复，未运行时验证。",
     "root.children[50].children[0]": "Nested_isOutputted：52条；检查点174独立静态复审完成。父StorageItems PC102创建闭包，PC103/PC104捕获父UP0共享输出状态对象及父UP1输出回调；父PC154-PC170闭合ipairs迭代、Name匹配和两参数调用（item=R19,itemText=R25），PC171消费返回值。子函数纯文本查找聚灵珠、首次命中置位并两次回调输出物品/详情，校验Dura/DuraMax并返回布尔值。完整静态恢复，未运行时验证；更上层捕获原名未知。"
   },
-  "next_action": "检查点176：FormatStateChange（root.children[8]，10条）逐指令复核，父root PC181捕获T[4]/T[14]，子UP0回调、UP1可变旧状态单元；回调后才写回首个参数。父级两个T槽业务身份与宿主回调契约未闭合，保持普通Lua草稿。下一步追踪父root T[4]/T[14]生产与使用，或转向其他独立短函数。运行时验证仍为0。",
+  "next_action": "检查点177已完成FormatStateChange（root.children[8]）父级捕获身份和共享状态链闭合，升级完整静态恢复。下一步复核root.children[9] / ReadNumericConfig（45条），优先闭合UP[0] GetWritablePath捕获来源、调用参数和返回值链；运行时验证仍为0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -115,8 +115,8 @@
     "enabled": true,
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
-    "last_checkpoint_date": "2026-11-09",
-    "last_checkpoint": "174"
+    "last_checkpoint_date": "2026-11-10",
+    "last_checkpoint": "177"
   },
   "static_recovered_functions": [
     {
@@ -2213,27 +2213,27 @@
     }
   ],
   "latest_batch": {
-    "date": "2026-11-09",
-    "checkpoint": "174",
+    "date": "2026-11-10",
+    "checkpoint": "177",
     "targets": [
-      "root.children[50].children[0]"
+      "root.children[8]"
     ],
-    "status": "Independently reconciled all 52 instructions, both closure captures, the parent's ipairs iteration and two-argument call site, and the returned boolean consumer; promoted to complete static reconstruction.",
-    "audit_file": "docs/audit/检查点174_Nested_isOutputted完整静态复审.md",
+    "status": "Closed parent capture identities and shared-state lifecycle using root initialization, MainLoop capture/call sites, and PrintLog body; promoted FormatStateChange to complete static reconstruction, not runtime-validated.",
+    "audit_file": "docs/audit/检查点177_FormatStateChange父级捕获身份与状态共享链闭合.md",
     "files": [
-      "04_源码候选/短函数草稿_第三十四批.lua",
-      "docs/audit/检查点174_Nested_isOutputted完整静态复审.md",
+      "04_源码候选/root8_FormatStateChange.lua",
+      "docs/audit/检查点177_FormatStateChange父级捕获身份与状态共享链闭合.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "Child UP0 is shared state with isOutputted field; UP1 is output callback; parent PC103-PC104 capture in that order.",
-      "Parent PC167-PC170 passes current item R19 and current ipairs(R8) value R25; PC171 consumes child return.",
-      "Child performs plain string.find for 聚灵珠, one-time output state mutation, two callback invocations, and Dura/DuraMax validation.",
-      "All 52 instructions reconciled; no extra vararg reads; upper-level original capture identifiers remain unknown."
+      "UP0 is PrintLog (root.children[16], root T[4]); callback receives exactly one formatted string.",
+      "UP1 is the shared current-state cell root T[14], initialized to stateConstants.IDLE and also captured/read by MainLoop.",
+      "MainLoop, InitGatherMonsters and StopGatherMonsters call FormatStateChange with one state constant.",
+      "PrintLog stringifies its argument; its SL.Print branch has no call instruction, so visible output is not claimed."
     ],
     "counts": {
-      "ordinary_lua_drafts": 78,
-      "complete_static_reconstruction": 95,
+      "ordinary_lua_drafts": 77,
+      "complete_static_reconstruction": 96,
       "runtime_verified": 0
     }
   },
@@ -2904,52 +2904,51 @@
       ]
     }
   ],
-  "draft_function_count": 78,
-  "ordinary_lua_draft_functions": 78,
-  "last_checkpoint": "176",
-  "checkpoint": "176",
+  "draft_function_count": 77,
+  "ordinary_lua_draft_functions": 77,
+  "last_checkpoint": "177",
+  "checkpoint": "177",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 176,
+    "number": 177,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/root8_FormatStateChange.lua",
-      "docs/audit/检查点176_FormatStateChange捕获单元与调用栈复核.md",
+      "docs/audit/检查点177_FormatStateChange父级捕获身份与状态共享链闭合.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "draft_prototypes_touched": 1,
-    "draft_prototype_total": 78,
-    "complete_static_reconstructions": 95,
+    "draft_prototype_total": 77,
+    "complete_static_reconstructions": 96,
     "runtime_verified": 0,
-    "notes": "FormatStateChange的10条指令、父级T[4]/T[14]捕获顺序、回调调用参数和回调后状态写回闭合；父级业务身份未闭合，状态不升级。"
+    "notes": "交叉root初始化、MainLoop父级捕获映射与调用点、PrintLog源码，确认UP0=PrintLog（root T[4]），UP1=MainLoop共享currentState单元（root T[14]，初值IDLE）；父级捕获及回调契约闭合，升级完整静态恢复。PrintLog的SL.Print分支只有存在性检查，无调用指令。"
   },
   "latest_checkpoint": {
-    "checkpoint": "176",
-    "summary": "FormatStateChange（10条）捕获顺序及可变状态单元语义复核；保持普通Lua草稿。",
-    "audit_file": "docs/audit/检查点176_FormatStateChange捕获单元与调用栈复核.md",
+    "checkpoint": "177",
+    "summary": "FormatStateChange（10条）父级T[4]/T[14]身份闭合：UP0=PrintLog，UP1=MainLoop共享currentState单元，初值IDLE；调用点与回调参数交叉核对后升级完整静态恢复。",
+    "audit_file": "docs/audit/检查点177_FormatStateChange父级捕获身份与状态共享链闭合.md",
     "unresolved": [
-      "父root T[4]/T[14]原始业务身份及生命周期",
-      "宿主回调契约",
-      "尚未运行时验证"
+      "目标宿主运行时验证",
+      "PrintLog的SL.Print分支无调用指令，不能据此声称产生可见输出"
     ]
   },
-  "complete_static_reconstruction_count": 95,
+  "complete_static_reconstruction_count": 96,
   "complete_static_reconstruction": "95/110 (86.4%)",
   "progress_reconciled": {
     "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；精选索引数组不作为完整计数器。",
-    "ordinary_lua_draft_functions": 78,
-    "complete_static_reconstruction_functions": 95,
+    "ordinary_lua_draft_functions": 77,
+    "complete_static_reconstruction_functions": 96,
     "runtime_verified_functions": 0,
-    "note": "检查点176复核FormatStateChange的10条指令和父级捕获顺序，确认UP1为可变状态单元且回调后才写回；父级业务身份未闭合，状态和计数不变。",
-    "checkpoint": 176,
-    "ordinary_lua_drafts": 78,
-    "complete_static_reconstruction": 95,
+    "note": "检查点177交叉root初始化、MainLoop捕获映射/调用点及PrintLog本体，闭合FormatStateChange父级T[4]/T[14]身份与共享状态链，升级完整静态恢复。PrintLog的SL.Print分支无调用指令，不声称可见输出。",
+    "checkpoint": 177,
+    "ordinary_lua_drafts": 77,
+    "complete_static_reconstruction": 96,
     "runtime_verified": 0
   },
   "counts": {
-    "ordinary_lua_drafts": 78,
-    "complete_static_reconstruction": 95,
+    "ordinary_lua_drafts": 77,
+    "complete_static_reconstruction": 96,
     "runtime_verified": 0
   }
 }
