@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点239：继续按parent_register_fanout核对T[50]/T[55]/T[56]/T[58]及T[38..40]/T[47..53]，逐项确认最后写入、捕获时值和是否为脚本闭包/普通表/常量；随后完成剩余寄存器和模块字段/全局导出对账，再把根模块PC1-PC412整合为真实普通Lua源码。",
+  "next_action": "检查点240：优先核对PC302-PC315创建的T47/T48/T49/T51及T45/T46生产者，按子原型捕获描述和已有短函数源码确定doInit_UI UP[6]/UP[10]/UP[12]/UP[14]的实际包装函数；再继续剩余寄存器生命周期，并开始MainLeftBottom模块字段与全局导出逐PC对账。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -128,7 +128,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "238"
+    "last_checkpoint": "239"
   },
   "static_recovered_functions": [
     {
@@ -2804,12 +2804,12 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "238",
+    "checkpoint": "239",
     "targets": [
-      "MainLeftBottom_Module root register lifetime"
+      "MainLeftBottom_Module root blacklist/config closure bindings"
     ],
-    "status": "完成T8/T42/T43/T44寄存器值生命周期闭合，更新机器装配表与根模块源码说明；未增加完整静态函数数或运行时验证数。",
-    "audit_file": "docs/audit/检查点238_root_T8_T42_T43_T44寄存器生命周期闭合.md",
+    "status": "完成T38/T39/T40/T50/T52/T53/T55/T56/T58生命周期闭合，核对BlacklistPlayerDetection多项UPVALUE真实身份与常量；未增加静态完整函数数或运行时验证数。",
+    "audit_file": "docs/audit/检查点239_root_T38_T39_T40_T50_T52_T53_T55_T56_T58寄存器生命周期闭合.md",
     "files": [
       "docs/handoff/12_根模块闭包装配表.json",
       "04_源码候选/root_MainLeftBottom_Module.lua",
@@ -2817,9 +2817,10 @@
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "T8在PC86-PC89构造为gatherConfig并被四个闭包共享捕获。",
-      "T42/43分别是blacklist_distance.txt和gather_monster_count.txt。",
-      "T44是GetWritablePath闭包，供ReadNumericConfig/PCallHelper/FileExistCheck_pcall_wrapper/doInit_UI捕获。"
+      "T55=FindBlacklistPlayer，T56=UseItemByIndex，T58=DeathAutoBlacklist，T53=GetMapData2DPtr。",
+      "T38/T39/T40分别为2.0/0.01/30.0并对应BlacklistPlayerDetection告警及重试时间。",
+      "T50为ReadNumericConfig('gather_monster_count.txt')固定参数包装闭包。",
+      "T52为PC349先构造的8元素表，GetMapData2DPtr捕获但可达路径不读取。"
     ]
   },
   "corrections": [
@@ -3542,16 +3543,16 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 238,
+  "last_checkpoint": 239,
   "checkpoint": {
-    "number": 238,
+    "number": 239,
     "date": "2026-11-10",
     "artifacts": [
       "docs/handoff/12_根模块闭包装配表.json",
       "04_源码候选/root_MainLeftBottom_Module.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点238_root_T8_T42_T43_T44寄存器生命周期闭合.md",
+      "docs/audit/检查点239_root_T38_T39_T40_T50_T52_T53_T55_T56_T58寄存器生命周期闭合.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
@@ -3566,25 +3567,34 @@
       5,
       8,
       37,
+      38,
+      39,
+      40,
       41,
       42,
       43,
       44,
-      57
+      50,
+      52,
+      53,
+      55,
+      56,
+      57,
+      58
     ],
-    "notes": "闭合T8=gatherConfig（PC86-PC89构造，PC199/236/244/399捕获）；T42=blacklist_distance.txt（PC295写入，PC306/309/404捕获）；T43=gather_monster_count.txt（PC296写入，PC312/315/406捕获）；T44=GetWritablePath闭包（PC297创建，PC299/301/303/403捕获）。静态109/110，运行时0。"
+    "notes": "闭合T38=2.0、T39=0.01、T40=30.0；T50=ReadNumericConfig('gather_monster_count.txt')固定参数包装闭包；T52=PC349构造的8元素未使用捕获表；T53=GetMapData2DPtr；T55=FindBlacklistPlayer；T56=UseItemByIndex；T58=DeathAutoBlacklist。静态109/110，运行时0。"
   },
   "drafts": 33,
   "next": "检查点237：按docs/handoff/12_根模块闭包装配表.json的寄存器fanout从高到低，建立root T[0..60]寄存器数据流/值生命周期表；先闭合T[0..5]、T[14..23]、T[37..60]等共享cell及写入PC，再逐项核对模块字段/全局导出。特别保留T[57]时间线：PC357 onDamageMsg→PC359写模块字段→PC360覆盖T[57]=InstallDamageHook→PC368 BlacklistPlayerDetection捕获该live cell。",
   "recent_checkpoint": {
-    "number": 238,
+    "number": 239,
     "date": "2026-11-10",
     "artifacts": [
       "docs/handoff/12_根模块闭包装配表.json",
       "04_源码候选/root_MainLeftBottom_Module.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点238_root_T8_T42_T43_T44寄存器生命周期闭合.md",
+      "docs/audit/检查点239_root_T38_T39_T40_T50_T52_T53_T55_T56_T58寄存器生命周期闭合.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
@@ -3599,20 +3609,30 @@
       5,
       8,
       37,
+      38,
+      39,
+      40,
       41,
       42,
       43,
       44,
-      57
+      50,
+      52,
+      53,
+      55,
+      56,
+      57,
+      58
     ],
-    "notes": "闭合T8=gatherConfig（PC86-PC89构造，PC199/236/244/399捕获）；T42=blacklist_distance.txt（PC295写入，PC306/309/404捕获）；T43=gather_monster_count.txt（PC296写入，PC312/315/406捕获）；T44=GetWritablePath闭包（PC297创建，PC299/301/303/403捕获）。静态109/110，运行时0。"
+    "notes": "闭合T38=2.0、T39=0.01、T40=30.0；T50=ReadNumericConfig('gather_monster_count.txt')固定参数包装闭包；T52=PC349构造的8元素未使用捕获表；T53=GetMapData2DPtr；T55=FindBlacklistPlayer；T56=UseItemByIndex；T58=DeathAutoBlacklist。静态109/110，运行时0。"
   },
   "latest_checkpoint": {
-    "checkpoint": "238",
-    "summary": "完成root T8/T42/T43/T44值生命周期及全部捕获时值；T8确认最终为gatherConfig，T42/T43为两个配置文件名，T44为GetWritablePath闭包。",
-    "audit_file": "docs/audit/检查点238_root_T8_T42_T43_T44寄存器生命周期闭合.md",
+    "checkpoint": "239",
+    "summary": "完成黑名单检测相关闭包与常量寄存器生命周期核对，确认BlacklistPlayerDetection UP3/4/5/6/8/9/11身份；doInit_UI捕获T50为引怪数量配置读取包装器；GetMapData2DPtr捕获的T52为PC349先构造的八元素表且可达路径未读取。",
+    "audit_file": "docs/audit/检查点239_root_T38_T39_T40_T50_T52_T53_T55_T56_T58寄存器生命周期闭合.md",
     "unresolved": [
-      "其余root父寄存器值生命周期仍待闭合",
+      "T47/T48/T49/T51及T45/T46匿名包装链仍待闭合",
+      "剩余root父寄存器值生命周期仍待闭合",
       "根模块PC1-PC412完整普通Lua装配及模块字段/全局导出仍未完成",
       "运行时验证为0"
     ]
@@ -3625,7 +3645,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 239,
+  "next_checkpoint": 240,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
