@@ -2817,3 +2817,13 @@ Nested_match：
 ### 检查点230补充校正：相邻原型路径
 
 再次按原型总索引的0-based children路径核对：PCallHelper_2=`root.children[48]`（legacy root/49），Nested_FriendProxy=`root.children[48].children[0]`；AnonymousHelper_49=`root.children[49]`（legacy root/50），为blacklist_distance.txt读取包装闭包。FindBlacklistPlayer=`root.children[51]`捕获的是root.children[48] PCallHelper_2。本次已修正主文件prototype_index、FindBlacklistPlayer注释、CSV和审计记录，删除错误添加的root.children[49].children[0]索引，并避免对PCallHelper_2重复定义。
+
+
+## 检查点231（2026-11-10）：短函数状态复核
+
+- 重新读取README、机器状态、checkpoint协议、新框架API映射、原型总索引、函数状态CSV与主恢复源码。
+- 确认root.children[33]、root.children[56]、root.children[57]及其他20条以内短原型已存在主恢复源码，不重复追加。
+- 复核GetWritablePath（root.children[2]，10条）：FileUtils:getInstance、实例:getWritablePath、首个vararg path、writablePath..path、return；完整静态恢复。
+- 复核InstallDamageHook（root.children[6]，40条）及Nested_onDamageMsg（18条）：前置检查、幂等条件、子闭包捕获、处理器表写入、originalHandler.__ylwHookedOrigin写入、通知回调和原处理器多返回值转发均与PC级证据一致；完整静态恢复。
+- 两个函数主体此前已在主源码，本批只统一prototype_index的状态并补审计。完整静态恢复108/110，运行时验证0。
+- 下一批优先复核ReadNumericConfig（45条）vararg入口及调用契约，再看DeathAutoBlacklist、MoveTo、ClearBlacklistItems、onDamageMsg。
