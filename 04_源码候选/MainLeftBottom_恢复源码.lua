@@ -5251,3 +5251,8 @@ end
 -- 检查点238根模块寄存器生命周期补充：T[8]=gatherConfig（PC86-PC89构造，4个捕获）；
 -- T[42]=blacklist_distance.txt；T[43]=gather_monster_count.txt；T[44]=GetWritablePath闭包。
 -- 以上均为PC证据确认的父帧共享cell值，详细捕获点见docs/handoff/12_根模块闭包装配表.json。
+
+
+-- 检查点239根模块闭包绑定补充：BlacklistPlayerDetection（root.children[47]）UP[3]=DeathAutoBlacklist(T58)、UP[4]=FindBlacklistPlayer(T55)、UP[5]=GetMapData2DPtr(T53)、UP[6]=2.0(T38)、UP[8]=UseItemByIndex(T56)、UP[9]=0.01(T39)、UP[11]=30.0(T40)。
+-- doInit_UI UP[9]捕获T50，即ReadNumericConfig('gather_monster_count.txt')固定参数包装闭包。
+-- GetMapData2DPtr UP[0]捕获PC349组装的T52八元素表；可达路径不读取该Upvalue。完整PC时间线见docs/handoff/12_根模块闭包装配表.json。
