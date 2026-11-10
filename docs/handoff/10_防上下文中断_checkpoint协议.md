@@ -2620,3 +2620,14 @@ Nested_match：
 - 源码：`04_源码候选/短函数草稿_第四十五批.lua`；集中源码已加入 `make_Builtsetting` 工厂。
 - 回调原始业务名称未知；未进行Lua解释器或目标游戏运行时验证。
 - 下一批继续优先处理短小、少捕获、重复调用结构的函数；复杂UI/状态机最后处理。
+
+
+## 检查点 #216（2026-11-10）：FormatStateChange 完整静态恢复与源码整合
+
+- 原型：`root.children[8]`（legacy `root/9`），10条物理指令、3个常量、无子原型、2项捕获、`vararg_flag=1`。
+- 检查点177已交叉闭合：UPVALUE[0]=PrintLog（root.children[16]）；UPVALUE[1]=root T[14]，与MainLoop共享的currentState cell，初值为IDLE。
+- 固定格式为“状态切换: %s -> %s”，旧状态与首个显式参数依序格式化；只向PrintLog传一个消息。
+- PrintLog正常返回后才把首个显式参数写回共享状态cell；额外vararg未读取。
+- 源码 `04_源码候选/root8_FormatStateChange.lua` 已作为工厂表达整合进集中源码。根级最终实例化时必须确保它与MainLoop绑定同一状态cell，不能各自复制状态值。
+- 完整静态恢复数更新为106/110（96.4%）；运行时验证仍为0。
+- 下一批继续优先处理短小、少捕获、控制流简单的函数；复杂UI/资源刷新链/状态机留到最后。
