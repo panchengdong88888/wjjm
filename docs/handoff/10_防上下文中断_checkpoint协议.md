@@ -2967,3 +2967,14 @@ Nested_match：
 - 因此父寄存器生命周期累计由56/57升至57/57；所有135个OP_387捕获描述符均有父寄存器时间线依据。root PC341-PC412模块字段/导出及根模块整体普通Lua装配仍待完成。
 - 静态完整函数仍109/110；普通Lua草稿72；运行时验证0。本批没有增加函数静态完成数量。
 - 下一步检查点244：复核root PC341-PC412，补齐BlacklistPlayerDetection、DeathAutoBlacklist、ClearBlacklistItems、doInit_UI及相关模块字段/全局导出的最终装配账本，并据此继续根模块普通Lua整合。
+
+
+## 检查点 #244（2026-11-10）：root PC341-PC412最终闭包与模块装配
+
+- 复核PC341-PC349八元素opaque数值表，按原始顺序记录为{ {1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1} }，不臆测业务用途。
+- PC350 GetMapData2DPtr捕获T52；PC352 PCallHelper_2无捕获；PC353 FindBlacklistPlayer捕获T54；PC355 UseItemByIndex捕获T37；PC357 onDamageMsg捕获T41并于PC359挂入MainLeftBottom.onDamageMsg。
+- PC360 InstallDamageHook捕获T0/T4；PC363 DeathAutoBlacklist捕获[T41,T4,T55,T5]；PC368 BlacklistPlayerDetection捕获13项[T2,T57,T41,T58,T55,T53,T38,T4,T56,T39,T5,T40,T37]；PC383 ClearBlacklistItems捕获[T54,T4,T5,T41]。
+- PC382全局导出BlacklistItems=BlacklistPlayerDetection；PC388全局导出ClearBlacklistItems。
+- PC390 doInit_UI按序捕获20项[T4,T2,T3,T0,T1,T41,T48,T7,T8,T50,T49,T5,T44,T42,T51,T43,T47,T11,T12,T9]；PC411挂入MainLeftBottom.doInit；PC412返回模块表。
+- root PC341-PC412根级闭包创建/捕获/模块字段/全局导出账本已完成。父寄存器57/57闭合、捕获描述符135项；完整静态109/110、普通Lua草稿72、运行时验证0。
+- 下一步检查点245定位唯一未完整静态恢复原型，并推进真实捕获顺序下的根模块普通Lua装配；不得把装配脚手架标为完整恢复。
