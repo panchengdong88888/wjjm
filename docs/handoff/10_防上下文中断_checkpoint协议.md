@@ -2827,3 +2827,12 @@ Nested_match：
 - 复核InstallDamageHook（root.children[6]，40条）及Nested_onDamageMsg（18条）：前置检查、幂等条件、子闭包捕获、处理器表写入、originalHandler.__ylwHookedOrigin写入、通知回调和原处理器多返回值转发均与PC级证据一致；完整静态恢复。
 - 两个函数主体此前已在主源码，本批只统一prototype_index的状态并补审计。完整静态恢复108/110，运行时验证0。
 - 下一批优先复核ReadNumericConfig（45条）vararg入口及调用契约，再看DeathAutoBlacklist、MoveTo、ClearBlacklistItems、onDamageMsg。
+
+
+## 检查点232（2026-11-10）：ReadNumericConfig vararg入口复核
+
+- 复核root.children[9] / legacy root/10，45条指令、13常量、无子原型，捕获UP[0]=GetWritablePath。
+- 活动路径：FileUtils实例→GetWritablePath(首个传入值)→isFileExist→getStringFromFile→type检查→string.gsub去除空白→string.match非空ASCII数字正则→tonumber返回；失败路径返回nil，尾部return不可达。
+- VM dump提供vararg标记，但不提供固定形参数量；调用链只证明AnonymousHelper_49传入一个文件名。源码保守统一为`function(...) local fileName = ...`，只读取首个传入值，不额外断言固定参数数量。
+- 同步主恢复源码、独立候选、函数状态CSV、机器状态和审计。升级为完整静态恢复（未运行时验证）；总体108/110不变，运行时验证0。
+- 下一批优先DeathAutoBlacklist、MoveTo、ClearBlacklistItems和onDamageMsg的未决点。
