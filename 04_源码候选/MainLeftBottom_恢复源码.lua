@@ -702,6 +702,9 @@ end
   __exports["resetSlot22"] = resetSlot22
   __exports["timerState"] = timerState
   __exports["gatherStatusText"] = gatherStatusText
+  -- Checkpoint251: shared UI/module state tables captured by the three UI closures.
+  __exports["uiState"] = MainLeftBottom.a
+  __exports["buttonMap"] = MainLeftBottom.b
   MainLeftBottomRecovered.sources["04_源码候选/root_MainLeftBottom_Module.lua"] = __exports
 end
 
@@ -6465,6 +6468,39 @@ do
         _G.StopGatherMonsters = rootPrototypes.StopGatherMonsters
     end
 
+    -- 检查点251：UI闭包按父root寄存器T[0]/T[1]/T[3]捕获顺序注入。
+    -- T[0]=MainLeftBottom.a（UI状态对象），T[1]=MainLeftBottom.b（按钮映射），
+    -- T[3]=timerState；三者均为共享表引用，不作值复制。
+    local makeDestroyUI = sourceFunction(
+        "04_源码候选/短函数草稿_第十四批.lua", "make_DestroyUI"
+    )
+    if makeDestroyUI then
+        rootPrototypes.DestroyUI = makeDestroyUI(
+            rootSource.uiState, rootSource.timerState, rootSource.buttonMap
+        )
+        rootModule.hide = rootPrototypes.DestroyUI
+    end
+
+    local makeSetButtonVisibility = sourceFunction(
+        "04_源码候选/短函数草稿_第十三批.lua", "make_SetButtonVisibilityState"
+    )
+    if makeSetButtonVisibility then
+        rootPrototypes.SetButtonVisibilityState = makeSetButtonVisibility(
+            rootSource.uiState, rootSource.buttonMap
+        )
+        rootModule.show = rootPrototypes.SetButtonVisibilityState
+    end
+
+    local makeShowHideAll = sourceFunction(
+        "04_源码候选/短函数草稿_第十四批.lua", "make_ShowHideAllButtons"
+    )
+    if makeShowHideAll then
+        rootPrototypes.ShowHideAllButtons = makeShowHideAll(
+            rootSource.timerState, rootSource.buttonMap, rootSource.uiState
+        )
+        rootModule.destroy = rootPrototypes.ShowHideAllButtons
+    end
+
     -- 仅导出字节码明确写入_ENV的全局入口；其他辅助闭包留在rootPrototypes。
     local globalExports = {
         log = "PrintLog",
@@ -6493,23 +6529,24 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 250,
+        checkpoint = 251,
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
         missing = missing,
         captured_factory_closures_expected = 36,
-        captured_factory_closures_bound = 18,
-        captured_factory_closures_pending = 18,
+        captured_factory_closures_bound = 21,
+        captured_factory_closures_pending = 15,
         captured_factory_names_bound = {
             "ShowLocalNoticeByType", "DiuItems", "FindMonsterCandidates",
             "LuaSendMsg", "GetAvailableStoragePage", "GetStorageItemData",
             "TakeItems", "PickUpItems", "StorageItems", "Builtsetting",
             "AccountIDValidation", "InstallDamageHook", "FormatStateChange",
             "ResetGatherMonsterData", "MainLoop", "InitGatherMonsters",
-            "StopGatherMonsters", "FindMonsterInCurrViewField"
+            "StopGatherMonsters", "FindMonsterInCurrViewField", "DestroyUI",
+            "SetButtonVisibilityState", "ShowHideAllButtons"
         },
         runtime_verified = false,
-        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; all six newly bound gather dependencies reuse identical cell objects"
+        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; gather state cells and UI shared tables are passed by identity; three UI factories reuse the root module tables"
     }
 end
 
