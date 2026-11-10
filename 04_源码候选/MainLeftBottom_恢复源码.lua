@@ -5306,3 +5306,13 @@ end
 -- AccountIDValidation捕获PrintLog与ShowLocalNoticeByType；blacklistState在PC286-PC293初始化并于PC294挂入MainLeftBottom.blacklist。
 -- 根寄存器时间线至检查点243为57/57闭合；T54最终为PCallHelper_2，分别于PC354/PC384捕获给FindBlacklistPlayer/ClearBlacklistItems。
 -- 该账本不是根模块完整普通Lua装配，PC341-PC412仍待复核；本文件所有恢复仍未运行时验证。
+
+
+-- 检查点244：根模块PC341-PC412最终装配关系（依据corrected phase3）。
+-- MainLeftBottom.onDamageMsg = onDamageMsg（PC359）。
+-- _G.BlacklistItems = BlacklistPlayerDetection（PC382）。
+-- _G.ClearBlacklistItems = ClearBlacklistItems（PC388）。
+-- MainLeftBottom.doInit = doInit_UI（PC411）；PC412返回MainLeftBottom。
+-- doInit_UI在root创建时按20项顺序捕获[T4,T2,T3,T0,T1,T41,T48,T7,T8,T50,T49,T5,T44,T42,T51,T43,T47,T11,T12,T9]。
+-- BlacklistPlayerDetection的13项捕获、DeathAutoBlacklist的4项捕获、ClearBlacklistItems的4项捕获及onDamageMsg的状态表捕获已写入根模块闭包装配表；均为父寄存器live cell，不是独立快照。
+-- 本段补齐的是root级创建/挂载/导出账本，不将未完成的根模块伪装成完整作者源码。
