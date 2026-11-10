@@ -248,7 +248,7 @@ local resetSlot22 = ""
 -- PC274：将该闭包写入模块表的destroy字段（R0为MainLeftBottom模块表）。
 -- 因此当前已确认模块表的hide/show/destroy三个字段分别在PC265/269/274写入。
 
--- PC275：重新读取_ENV.MainLeftBottom。
+-- PC275：重新读取_ENV.MainLeftBottom；检查点265的主装配适配器显式读取_G.MainLeftBottom后再写入main字段。
 -- PC276-PC278：创建root.children[55] / AccountIDValidation，捕获父root T[4]与T[5]；
 -- 即PrintLog与ShowLocalNoticeByType两个已建立的回调闭包。
 -- PC279：将AccountIDValidation闭包写入MainLeftBottom.main字段。
