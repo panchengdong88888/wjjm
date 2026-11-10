@@ -47,11 +47,11 @@
     "root.children[25]": "DeathAutoBlacklist：47条+子原型6条；检查点181闭合UP0=root T[41]黑名单状态表、UP1=T[4] PrintLog、UP2=T[55] FindBlacklistPlayer、UP3=T[5] ShowLocalNoticeByType。取出lastAttacker后清空共享字段；检查记录/name及黑名单命中；未命中时输出日志/本地通知，并按0..5循环以0.5*index安排6次ScheduleOnce，子闭包捕获记录表并调用RequestAddBlacklistByName(record.name)。完整静态恢复，未运行时验证。",
     "root.children[22]": "GetMapData2DPtr（144条，UP0捕获root T[52]但活动路径不读取）：检查点184确认PC1-PC37是唯一可达路径；检查五实参、相同坐标返回0、maxDistance<=0返回nil、计算Chebyshev max(abs(dx),abs(dy))、超限返回nil否则返回距离；PC37无条件return，PC38-PC144不可达死尾部。完整静态恢复，未运行时验证。",
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
-    "root.children[12]": "LuaSendMsg（92条）检查点190修订普通Lua草稿：固定六参，arg1为Blocklist/SendHookList键，arg2..5为param1..4，arg6为msgId；table.find命中只跳过日志；SendHookList函数经pcall(hook,arg1,arg6,message)，成功且返回true才拦截；否则networkCtl:SendMsg原六参转发。捕获root T[0]/T[4]业务原名与宿主语义待验证。",
+    "root.children[12]": "LuaSendMsg（92条）检查点190、205：普通Lua草稿PC1-PC92已独立静态复审；固定六参/message字段、Blocklist仅抑制日志、SendHookList按第1参取hook、pcall(hook,arg1,arg6,message)且仅严格true拦截、否则networkCtl:SendMsg原六参转发均与corrected反汇编一致。草稿仍保留UP0/UP1临时名；作者原名与宿主API语义未证实；未运行时验证。源码04_源码候选/短函数草稿_第五十批.lua；审计docs/audit/检查点205_LuaSendMsg普通Lua草稿独立复审.md。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
     "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192-PC1-PC41；193-PC42-PC85；194-PC86-PC167；195-PC168-PC200；196-PC201-PC270；197-PC271-PC340；198-PC341-PC412。PC341-PC349完成R52八个二元素数组构造；PC350-PC359创建GetMapData2DPtr/PCallHelper_2/FindBlacklistPlayer/UseItemByIndex/onDamageMsg并写MainLeftBottom.onDamageMsg；PC360-PC362创建InstallDamageHook捕获[T0,T4]；PC363-PC367创建DeathAutoBlacklist捕获[T41,T4,T55,T5]；PC368-PC381创建BlacklistPlayerDetection捕获13项并PC382导出BlacklistItems；PC383-PC388创建/导出ClearBlacklistItems；PC389-PC411创建doInit_UI并按序捕获20项，写入MainLeftBottom.doInit；PC412 return。根模块PC1-PC412均有分段普通Lua记录，但仍非作者级完整源码，doInit_UI及部分槽位待复审，未运行时验证。"
   },
-  "next_action": "优先查明ENV.ipairs是否为宿主自定义包装函数，解释PC90返回第三项后PC133再次调用的可执行性；同时继续核验root/43/12零实参调用下T[1]/T[2]的VM帧值。",
+  "next_action": "优先复审并完善root.children[50] StorageItems（224条）现有普通Lua主体草稿；两个子原型root.children[50].children[0/1]已完整静态恢复，不重复。之后处理root.children[42]剩余首版草稿闭包。ENV.ipairs和root.children[42]调用帧槽值问题作为后续定点疑问，不阻塞普通Lua草稿产出。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2962,7 +2962,7 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": "205",
+  "last_checkpoint": "检查点205（2026-11-10）：LuaSendMsg PC1-PC92普通Lua草稿独立静态复审通过；未提升完整静态恢复数或运行时验证数。下一项root.children[50] StorageItems主体草稿复审。",
   "checkpoint": 205,
   "drafts": 33,
   "next": "检查点201已将Nested_Anonymous父包装器及Nested_str/Nested_match/Nested_Helper_11主体并入第六十三批；同时将Nested_FFFF00父工厂及Nested_Helper_2、Nested_string、Nested_FFFFFF、Nested_Helper_3、Nested_UnSchedule依赖并入统一候选。下一步追踪PC181-PC183 GUI:Attach_UITop七个实参的生产者/类型，并闭合Nested_Anonymous T[0]/T[1]/T[2]来源；保留unknown哨兵宿主语义待核验。",
