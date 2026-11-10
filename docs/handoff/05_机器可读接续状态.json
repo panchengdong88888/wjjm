@@ -3541,8 +3541,8 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 260,
-  "checkpoint": 260,
+  "last_checkpoint": 259,
+  "checkpoint": 259,
   "drafts": 33,
   "next": "检查点260：继续整合root PC86-PC211，按字节码顺序整理采集配置、18000常量、14项奖励记录、采集状态与T[14..22]共享cell、FormatStateChange、PC184-PC193辅助闭包及PC194-PC211采集闭包创建；复用已有函数体，不重复反汇编。",
   "recent_checkpoint": {
@@ -3564,7 +3564,7 @@
     "root_direct_closures_expected": 58,
     "notes": "PC43-PC85闭包创建顺序已整合，后续无捕获闭包绑定已移至各自PC区间。 Builtsetting和ClearBlacklistItems也按PC258/388即时导出，已移除模块尾部重复导出表。"
   },
-  "latest_checkpoint": 260,
+  "latest_checkpoint": 259,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
