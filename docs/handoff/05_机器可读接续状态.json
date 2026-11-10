@@ -13,7 +13,7 @@
   "major_targets": {
     "root.children[45]": "MainLoop：417条；检查点152-158形成并完成完整静态恢复（未运行时验证）。CFG报告统计314个入口可达节点、103个静态不可达节点。全部22个upvalue父root T寄存器生产者已闭合：运行标记、当前状态/常量、PrintLog、FormatStateChange、ResetGatherMonsterData、GetMainPlayerID、FindMonsterCandidates、目标ID数组、GetOwnerID、扫描游标/自己归属计数、等待状态字段、FindMonsterInCurrViewField、GetOwnerIDText、IsDie、GetOwnerDescription、SetTargetID、配置表。检查点153/154闭合GATHERING/ATTACKING循环；155/156校正入口等待与未归属锁定路径；157完成全CFG分区总账。静态完整，未运行时验证。",
     "root.children[46]": "DiuItems：169条；普通Lua草稿已独立复审并标记完整静态恢复（未运行时验证）；源码04_源码候选/root46_DiuItems.lua；不计运行时验证。",
-    "root.children[42]": "doInit_UI（419条）检查点187/199/200/201/203/204/208：PC1-PC419主体已逐段复审；检查点208纠正PC180 RequestStorageData与PC183 GUI.Attach_UITop均只传T[7]一个显式实参（旧草稿无参/七参写法错误），T[7]由PC133 ipairs(T[6])第三返回值写入；T[6]运行时值/ENV.ipairs宿主语义仍未验证。PC184-PC195 mini-chat定位与坐标已映射；PC196-PC235三组按钮配置；PC236-PC337闭包工厂；PC338-PC418按钮创建/隐藏按钮设置。GUI尾参/布尔值、MoneyProxy快照写name/读moneyId差异、Nested_Anonymous T[0]/T[1]/T[2]来源、unknown哨兵仍未闭合；保持普通Lua草稿，不升级完整静态恢复，未运行时验证。审计docs/audit/检查点208_doInit_UI_PC1-PC419调用参数与GUI入口复审.md。",
+    "root.children[42]": "doInit_UI（419条）父函数与23个子原型全部完成静态恢复。检查点235依据原始VM执行器M()闭合Nested_Anonymous固定参数与T槽：fixed_param_count=2，T[0]=promptText、T[1]=successCallback、T[2]=nil；错误分支直接调用nil的原始行为保留。其余UI创建、按钮、GUI参数、共享状态捕获均已由检查点226/235闭合；未运行时验证。",
     "root.children[8]": "FormatStateChange：10条；检查点177闭合UP0=PrintLog、UP1=MainLoop共享currentState cell、格式参数和回写时序；完整静态恢复，未运行时验证。根级工厂实例化仍待整合。",
     "root.children[9]": "ReadNumericConfig：45条；检查点130闭合三类失败分支均清理返回槽后返回nil，纯数字字符串才tonumber；检查点178闭合UP0=GetWritablePath（root.children[2]）及root/50 AnonymousHelper_49以blacklist_distance.txt调用并转发返回值。完整静态恢复，未运行时验证；GetWritablePath拼接顺序已由检查点127独立闭合。",
     "root.children[14]": "FindMonsterInCurrViewField：27条；检查点131完成27条PC映射，确认捕获root.children[29] IsDie包装器对存活actor返回truthy，完成静态恢复，未运行时验证。",
@@ -49,13 +49,13 @@
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
     "root.children[12]": "LuaSendMsg（92条）检查点190、205：普通Lua草稿PC1-PC92已独立静态复审；固定六参/message字段、Blocklist仅抑制日志、SendHookList按第1参取hook、pcall(hook,arg1,arg6,message)且仅严格true拦截、否则networkCtl:SendMsg原六参转发均与corrected反汇编一致。草稿仍保留UP0/UP1临时名；作者原名与宿主API语义未证实；未运行时验证。源码04_源码候选/短函数草稿_第五十批.lua；审计docs/audit/检查点205_LuaSendMsg普通Lua草稿独立复审.md。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
-    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192-PC1-PC41；193-PC42-PC85；194-PC86-PC167；195-PC168-PC200；196-PC201-PC270；197-PC271-PC340；198-PC341-PC412。MoveItemToQuickUse主体已内嵌主恢复源码；其余根级闭包创建、共享Upvalue cell、模块表字段和全局导出尚未完成。根模块仍为分段草稿，未运行时验证。",
+    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192-PC1-PC41；193-PC42-PC85；194-PC86-PC167；195-PC168-PC200；196-PC201-PC270；197-PC271-PC340；198-PC341-PC412。除根模块闭包实例化/共享Upvalue cell/模块字段赋值/导出装配外，其余110原型中的109个已完成静态恢复。根级装配仍为唯一未完成项；未运行时验证。",
     "root.children[42].children[3]": "Nested_FFFF00（320条父指令、72常量、5个子原型、4项捕获）：检查点225已完成PC1-PC320及5个子原型静态恢复；捕获顺序moduleState/printLog/timerState/initState。Win_Create等GUI调用参数已与新框架43份文档核对；五组Text_Create结果均先做truthy门控。K[28]=['unknown',2]已确认是nil的VM dump序列化占位，resTimer清理写nil。MoneyProxy方法未文档化，保留原调用，不反汇编其内部。完整静态恢复，未运行时验证。",
-    "root.children[42].children[22]": "Nested_Anonymous（8条父原型；child0 Nested_str 27条；Nested_match 50条；Nested_Helper_11 4条）检查点201/209/228：父PC1创建child0，捕获当前帧T[0]、UP[0]=PrintLog、T[2]、T[1]；child0内创建Nested_match，继续捕获prompt槽、PrintLog、T[2]、T[1]。doInit_UI PC248创建本闭包；PC250/PC259分别把它作为UP[0]传给root/43/12与root/43/15两个对话包装器；两个包装器PC11均只传两个显式实参（promptText、成功回调），没有第三显式实参。T[2]后续由Nested_Helper_11作为延迟错误提示回调调用；其来源需核对VM帧基址/槽位初始化或复用语义，不能猜nil。普通Lua草稿，未运行时验证。",
+    "root.children[42].children[22]": "Nested_Anonymous（8条父指令；Nested_str 27条、Nested_match 50条、Nested_Helper_11 4条）已完整静态恢复。原始VM M()每次新建T={}和X={}；fixed_param_count=2；两实参写入T[0]/T[1]；额外实参进入X；T[2]无写入保持nil。Nested_str捕获T[0]/PrintLog/T[2]/T[1]；无效数字路径按原字节码调用nil，保留attempt-to-call-nil行为。未运行时验证。",
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点235：开始处理剩余复杂项。优先继续追查Nested_Anonymous（root.children[42].children[22]）T[2]错误提示回调槽的实际生产者/VM帧初始化语义；两个已知调用包装器只传两个显式参数，不能臆造第三参数或默认nil。只有证据闭合后才完成该原型。之后再做MainLeftBottom_Module（root）根级闭包实例化、共享Upvalue cell和导出装配。",
+  "next_action": "检查点236：开始最后一个未完成原型MainLeftBottom_Module（root，412条指令、58个子原型）的根级闭包装配。先从root PC1-PC412已有分段记录建立完整closure-site/Upvalue-cell/模块字段/导出表；逐个验证子原型工厂参数与共享cell，不臆造函数名或捕获来源。Nested_Anonymous已完成静态恢复，T[2]确定为nil且原错误路径保留。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -128,7 +128,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "227"
+    "last_checkpoint": "235"
   },
   "static_recovered_functions": [
     {
@@ -2746,20 +2746,14 @@
       "name": "doInit_UI",
       "source_file": "04_源码候选/短函数草稿_第六十三批.lua",
       "audit_file": "docs/audit/检查点226_doInit_UI完整静态复审.md",
-      "status": "complete_static_reconstruction_parent_only_child_Nested_Anonymous_pending",
+      "status": "complete_static_reconstruction",
       "physical_instructions": 419,
       "constant_count": 105,
       "child_count": 23,
       "capture_count": 20,
       "runtime_verified": false,
       "notes": [
-        "将原来依赖全局UP[0..19]的草稿转换为make_doInit_UI(upvalue0..upvalue19)工厂，20个捕获按root PC390给出的顺序显式注入。",
-        "PC1-PC419父函数控制流完整映射；23个子原型中，Nested_Helper_4/5、Nested_Helper_7/8等已有完整工厂；child11/child14不再标为未合并。",
-        "PC133从标准Lua ipairs(T[6])取得第三返回值0；模块内未发现覆盖ipairs的赋值。PC180 RequestStorageData与PC183 Attach_UITop均保留单个实参0。",
-        "GUI.Attach_UITop()在开发文档中无必需参数；字节码传入的额外0原样保留。RequestStorageData未见于开发文档，按引擎内部对象方法原样保留。",
-        "cruiseTimer清理为nil；K[28]=['unknown',2]是dump的nil序列化占位（检查点102）。",
-        "Nested_Anonymous（child22）T0/T1/T2帧槽仍独立未闭合；该子原型保持pending，不影响父函数419条指令静态恢复状态。",
-        "完整静态恢复父函数，未运行时验证。"
+        "父原型419条指令及23个子原型均已完成静态恢复（未运行时验证）。检查点235通过原始VM调用帧M()确定Nested_Anonymous固定参数数2，T[0]/T[1]映射到两个显式实参，T[2]=nil；无效数字错误分支调用nil的原始行为保留。"
       ]
     },
     {
@@ -2782,28 +2776,56 @@
         "PC6-PC7位于直接return之后，不可达；不额外生成逻辑。",
         "SL:Schedule(callback,time)由新框架3_40_xx/SL.md确认；7条指令完整静态恢复，未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[42].children[22]",
+      "legacy_path": "root/43/23",
+      "name": "Nested_Anonymous",
+      "physical_instructions": 8,
+      "constant_count": 0,
+      "child_count": 1,
+      "status": "complete_static_reconstruction",
+      "runtime_verified": false,
+      "source_file": "04_源码候选/Nested_Anonymous_第七十八批.lua",
+      "audit_file": "docs/audit/检查点235_VM调用帧初始化与固定参数计数纠错.md",
+      "parameters": [
+        "promptText",
+        "successCallback"
+      ],
+      "notes": [
+        "fixed_param_count=2，由原始VM执行器M()确认。",
+        "T[0]=promptText，T[1]=successCallback；每次调用新建T={}，T[2]无写入保持nil；额外实参进入X表。",
+        "捕获顺序为T[0]、父UP[0]=PrintLog、T[2]=nil、T[1]。",
+        "Nested_str固定参数数1，但PC6-PC7零参调用；Nested_match固定参数数2；Nested_Helper_11固定参数数0。",
+        "错误分支直接调用nil的T[2]，保留原始attempt-to-call-nil行为；未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "227",
+    "checkpoint": "235",
     "targets": [
-      "root.children[34] AnonymousHelper_33（7条、零捕获、2参数）"
+      "Nested_Anonymous（root.children[42].children[22]）",
+      "VM prototype tuple[3] fixed_param_count semantics"
     ],
-    "status": "补齐此前漏登记的root.children[34]短函数；确认其为SL:Schedule(callback,interval)的无捕获转发包装器。",
-    "audit_file": "docs/audit/检查点227_AnonymousHelper_33_Schedule包装函数.md",
+    "status": "从原始文件中找到VM执行器M()，闭合固定参数映射与Nested_Anonymous的T[2]=nil；同步修正受误读影响的源码签名；Nested_Anonymous与doInit_UI升级完整静态恢复，唯一未完成为根模块装配。",
+    "audit_file": "docs/audit/检查点235_VM调用帧初始化与固定参数计数纠错.md",
     "files": [
-      "04_源码候选/root35_AnonymousHelper_33_ScheduleWrapper.lua",
+      "01_原始资料/MainLeftBottom(2).lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/handoff/05_机器可读接续状态.json",
+      "04_源码候选/Nested_Anonymous_第七十八批.lua",
+      "04_源码候选/短函数草稿_第六十三批.lua",
+      "02_基础索引/02_原型总索引.json",
       "02_基础索引/03_函数状态清单.csv",
+      "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "findings": [
-      "PC1-PC2取得SL.Schedule并保留SL self。",
-      "PC3-PC4转发callback和interval。",
-      "PC5直接返回全部Schedule返回值；PC6-PC7不可达。",
-      "SL:Schedule(callback,time)签名由3_40_xx开发文档确认。"
+      "原型tuple[3]是固定参数数量，不是vararg布尔标志。",
+      "M()每次新建T/X；前V个实参写入T[0..V-1]，额外参数写入X。",
+      "Nested_Anonymous固定参数数2，T0/T1对应prompt和成功回调，T2为nil。",
+      "错误分支调用nil是原始字节码行为，未补造回调。",
+      "GetWritablePath/ReadNumericConfig/FindBlacklistPlayer/GetMapData2DPtr/onDamageMsg等受影响函数签名已按固定参数数修正。"
     ]
   },
   "corrections": [
@@ -2817,6 +2839,13 @@
         "FUNCTION root/47 PC49-60 and PC124-147"
       ],
       "status": "corrected; previous attribution superseded"
+    },
+    {
+      "date": "2026-11-10",
+      "checkpoint": 235,
+      "topic": "原型tuple[3]参数元数据语义",
+      "status": "corrected; previous vararg_flag interpretation superseded",
+      "details": "原始VM F()将D()写入proto[3]；M()读取为固定参数数量V。前V个参数写入T，其余写入独立X表。原索引字段vararg_flag为历史误命名；原型总索引新增fixed_param_count，后续以该字段为准。"
     }
   ],
   "init_gather_capture_review": {
@@ -3512,22 +3541,26 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 234,
+  "last_checkpoint": 235,
   "checkpoint": {
-    "number": 234,
+    "number": 235,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点234_剩余未闭合原型盘点.md",
+      "04_源码候选/Nested_Anonymous_第七十八批.lua",
+      "04_源码候选/短函数草稿_第六十三批.lua",
+      "02_基础索引/02_原型总索引.json",
+      "02_基础索引/03_函数状态清单.csv",
+      "docs/audit/检查点235_VM调用帧初始化与固定参数计数纠错.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
-    "complete_static_reconstructions": 108,
+    "complete_static_reconstructions": 109,
     "runtime_verified": 0,
-    "notes": "GetMapData2DPtr的PC1-PC37完整可达路径、PC38-PC144死尾部已闭合；MoveItemToQuickUse的133条活动路径与返回路径已由CSV/审计闭合。两者仅同步prototype_index状态，不重复加源码、不增加108/110静态完成计数。简单及普通中等函数均已对账；真正未完成仅Nested_Anonymous T[2]槽位和根模块闭包装配。"
+    "notes": "找到原始VM执行器M()并证明原型tuple[3]是固定参数数量；Nested_Anonymous fixed_param_count=2，T0/T1为两个实参，T2确定为nil，错误路径调用nil的原始行为保留。同步修正若干函数签名及原型总索引fixed_param_count字段；Nested_Anonymous和doInit_UI升级完整静态恢复。唯一未完成原型为MainLeftBottom_Module根级闭包装配。"
   },
   "drafts": 33,
-  "next": "检查点230：继续优先整合简单明文，随后处理中等函数；复杂大函数与根级装配最后处理。",
+  "next": "检查点236：仅剩MainLeftBottom_Module根级闭包装配；按root PC1-PC412既有分段记录建立闭包创建点、Upvalue捕获cell、模块字段赋值和导出映射表，逐段装配，不猜测未闭合绑定。",
   "recent_checkpoint": {
     "number": 230,
     "date": "2026-11-10",
@@ -3546,24 +3579,23 @@
     "notes": "按简单优先实际整合GetStorageItemData和FindBlacklistPlayer。FindBlacklistPlayer（root.children[51]）的UP[0]正确指向root.children[48] PCallHelper_2（其Nested_FriendProxy子原型为root.children[48].children[0]）；相邻root.children[49]是独立AnonymousHelper_49，路径已校正。PCallHelper_2/Nested_FriendProxy此前已在主文件定义，本批复用不重复实现。GetStorageItemData父T[4]回调身份未证明，保留notify参数。静态恢复数不变，运行时验证0。"
   },
   "latest_checkpoint": {
-    "checkpoint": "234",
-    "summary": "对账GetMapData2DPtr与MoveItemToQuickUse的完整静态恢复状态；确认简单函数已全部覆盖，剩余仅Nested_Anonymous T[2]来源与根模块闭包装配。",
-    "audit_file": "docs/audit/检查点234_剩余未闭合原型盘点.md",
+    "checkpoint": "235",
+    "summary": "原始VM调用帧M()闭合固定参数映射，Nested_Anonymous T[2]确定为nil并完成静态恢复；109/110完整，唯一未完成根模块闭包装配。",
+    "audit_file": "docs/audit/检查点235_VM调用帧初始化与固定参数计数纠错.md",
     "unresolved": [
-      "Nested_Anonymous T[2]错误提示回调槽生产者/VM帧初始化语义未闭合",
-      "MainLeftBottom_Module根级闭包实例化、共享Upvalue cell和导出装配未完成",
+      "MainLeftBottom_Module根级闭包实例化/共享Upvalue cell/模块字段与导出装配未完成",
       "运行时验证为0"
     ]
   },
-  "complete_static_reconstruction_count": 108,
-  "complete_static_reconstruction": "108/110 (98.2%)",
+  "complete_static_reconstruction_count": 109,
+  "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
   "counts": {
     "ordinary_lua_drafts": 72,
-    "complete_static_reconstruction": 108,
+    "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 235,
+  "next_checkpoint": 236,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3719,5 +3751,20 @@
     "lexical_block_balance": "passed",
     "full_lua_compiler_available": false,
     "runtime_verified": false
+  },
+  "latest": {
+    "checkpoint": "235",
+    "summary": "原始VM调用帧M()闭合固定参数映射，Nested_Anonymous T[2]确定为nil并完成静态恢复；109/110完整，唯一未完成根模块闭包装配。",
+    "audit_file": "docs/audit/检查点235_VM调用帧初始化与固定参数计数纠错.md",
+    "unresolved": [
+      "MainLeftBottom_Module根级闭包实例化/共享Upvalue cell/模块字段与导出装配未完成",
+      "运行时验证为0"
+    ]
+  },
+  "parameter_metadata_semantics": {
+    "original_proto_field": "vararg",
+    "legacy_index_field": "vararg_flag",
+    "correct_meaning": "fixed_param_count",
+    "evidence": "01_原始资料/MainLeftBottom(2).lua: F()写C[3]=D(); M()读取W[3]作为V，创建T={}与X={}，将索引<V的实参写入T[index]，其余写入X[index-V]。"
   }
 }
