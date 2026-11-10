@@ -6,14 +6,12 @@
 
 local function make_Nested_Anonymous(PrintLog)
     return function Nested_Anonymous(...)
-        -- Both observed callers pass (promptText, callbackClosure). This proves the
-        -- caller contract, but does NOT by itself prove how those values populate
-        -- this VM frame's T[0], T[1], and T[2] slots.
-        local argument1, argument2 = ...
-
-        -- Explicit placeholders for the exact values captured by Nested_str.
-        -- T[2] is later invoked as the delayed error-notice callback; its producer
-        -- is not yet identified. T[0]/T[1] meanings are also not proven.
+        -- Checkpoint 228: both known wrapper call sites pass exactly two explicit
+        -- arguments (promptText, callbackClosure); neither supplies a third one.
+        -- Do not bind those varargs to T[0]/T[1] until the VM frame-base convention
+        -- is proven. The child closure captures current-frame T[0], T[2], T[1].
+        -- T[2] is later invoked as an error-notice callback, but its value may be
+        -- affected by VM frame-slot initialization/reuse; it is not safe to assume nil.
         local T0_SLOT_UNRESOLVED = nil
         local T1_SLOT_UNRESOLVED = nil
         local T2_SLOT_UNRESOLVED = nil
