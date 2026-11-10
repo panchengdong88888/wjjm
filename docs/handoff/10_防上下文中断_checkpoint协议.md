@@ -1977,3 +1977,13 @@
 - 本批仅为阶段复核，root.children[47]仍为普通Lua草稿；统计维持普通Lua草稿73、完整静态恢复100/110、运行时验证0。
 - 新增审计：docs/audit/检查点182_BlacklistPlayerDetection地图障碍距离门槛阶段复核.md；同步更新root47源码候选、CSV、机器状态JSON。
 - 下一步：逐条解码root.children[22] PC72-PC141障碍采样/插值循环，再复核root.children[47] PC74-PC141玩家扫描全CFG。
+
+
+## 检查点 #183：DistanceCalculation 不可达尾部纠错
+
+- 纠正检查点182：root.children[22] / legacy root/23在PC37执行OP_220无条件return；PC1-PC37内无任何跳转目标落入PC38-PC144，因此后段sceneManager、GetMapData2DPtr、地图边界及isObstacle代码不可达。
+- 可达路径：PC1-PC10参数检查；PC13-PC18相同坐标返回0.0；PC19-PC22拒绝非正范围；PC23-PC33计算Chebyshev距离max(abs(dx),abs(dy))；PC34-PC37按第五实参最大范围返回数值或nil。
+- BlacklistPlayerDetection UP[5]五实参顺序仍为mainX/mainY/candidateX/candidateY/blacklistState.distance；PC136-PC141仅接受非nil距离。
+- 删除“地图感知距离”“障碍采样”解释。检查点182报告追加纠错声明；新审计docs/audit/检查点183_DistanceCalculation不可达尾部纠错.md。
+- 本批不提升主函数状态；统计仍为普通Lua草稿73、完整静态恢复100/110、运行时验证0。
+- 下一步：逐条复核root.children[47] PC74-PC141玩家扫描循环CFG。
