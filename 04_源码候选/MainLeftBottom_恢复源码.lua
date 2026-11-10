@@ -5246,3 +5246,8 @@ do
         make_FindBlacklistPlayer = make_FindBlacklistPlayer
     }
 end
+
+
+-- 检查点238根模块寄存器生命周期补充：T[8]=gatherConfig（PC86-PC89构造，4个捕获）；
+-- T[42]=blacklist_distance.txt；T[43]=gather_monster_count.txt；T[44]=GetWritablePath闭包。
+-- 以上均为PC证据确认的父帧共享cell值，详细捕获点见docs/handoff/12_根模块闭包装配表.json。
