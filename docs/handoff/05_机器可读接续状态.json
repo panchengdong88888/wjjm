@@ -3542,19 +3542,20 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 262,
-  "checkpoint": 262,
+  "last_checkpoint": 263,
+  "checkpoint": 263,
   "drafts": 33,
-  "next": "检查点263：将root PC43-PC85闭包创建、OP_387捕获、T寄存器复用、全局导出及MainLeftBottom.a.LuaSendMsg字段写入转换为连续恢复适配语句。重点逐项核对T[4]由Blocklist常量转为PrintLog、T[5]由_G转为ShowLocalNoticeByType、T[6]由LuaSendMsg转为ScheduleOnce、T[8]依序复用的十一个函数；每个导出必须先于对应寄存器下一次覆盖。不要重复反汇编已恢复子函数体。",
+  "next": "检查点264：继续root PC86-PC211，按PC顺序整合FindMonsterCandidates、FormatStateChange、ResetGatherMonsterData、FindMonsterInCurrViewField、MainLoop、InitGatherMonsters、StopGatherMonsters的创建与捕获。特别核对T[14..22]共享cell的创建、后续写入及OP_387捕获注入；不重复恢复已完整静态恢复的子函数主体。",
   "recent_checkpoint": {
-    "number": 262,
+    "number": 263,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/root_MainLeftBottom_Module.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点262_PC1-PC42根模块初始化顺序恢复.md",
+      "04_源码候选/root_MainLeftBottom_Module.lua",
+      "docs/audit/检查点263_PC43-PC85父寄存器复用与闭包导出恢复.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
+      "docs/handoff/12_根模块闭包装配表.json",
       "docs/handoff/13_原型结构树.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
@@ -3563,7 +3564,7 @@
     "runtime_verified": 0,
     "root_direct_closures_source_bound": 58,
     "root_direct_closures_expected": 58,
-    "notes": "PC1-PC42按register_value_timeline及root_complete_module_ledger转换为顺序恢复适配语句。a表字段、Blocklist/hook表挂接、b/z/timerState建立顺序与PC证据对齐；显式保留PC31重读_G.MainLeftBottom。主恢复稿与root候选同步。未执行Lua编译或游戏运行时验证。"
+    "notes": "PC43-PC85按PC顺序显式建模T[4..8]的创建、覆写、捕获和全局导出；PC51先将LuaSendMsg写入a.LuaSendMsg再复用T[6]。T[8]十一项闭包逐次导出，加入requireRecoveredClosure保护以避免T[8]残留函数误导出。未执行luac/游戏运行验证。"
   },
   "latest_checkpoint": 261,
   "complete_static_reconstruction_count": 109,
@@ -3574,7 +3575,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 263,
+  "next_checkpoint": 264,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3731,12 +3732,13 @@
     "full_lua_compiler_available": false,
     "runtime_verified": false,
     "checkpoint261_scope_review": "passed_static_after_fix",
-    "root_pc1_pc42_order": "static_pc_timeline_aligned"
+    "root_pc1_pc42_order": "static_pc_timeline_aligned",
+    "root_pc43_pc85_register_order": "static_pc_timeline_aligned"
   },
   "latest": {
-    "checkpoint": "262",
-    "summary": "PC1-PC42根模块初始化已按寄存器时间线改为顺序Lua语句：T[0]模块表转a表、PC2全局导出、a字段按PC6/11/16写入、Blocklist/SendHookList/RecvHookList临时表按PC23/25/27挂入、T[1]最终b表、T[2]最终z表及六个状态字段、T[3]timerState。保留PC31重新读取_G.MainLeftBottom。主汇总稿与单独root候选同步。完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0。",
-    "audit_file": "docs/audit/检查点262_PC1-PC42根模块初始化顺序恢复.md",
+    "checkpoint": "263",
+    "summary": "PC43-PC85已按父T寄存器复用顺序整合为恢复适配代码。显式建立rootRegisters影子表；T[4]=PrintLog，T[5]由_G覆写为ShowLocalNoticeByType，T[6]先存LuaSendMsg并写入a.LuaSendMsg后覆写为ScheduleOnce，T[7]=Schedule，T[8]按PC54/56/58/60/62/64/68/71/74/79/83依次复用并在每次覆写前导出。增加必需闭包校验，防止缺失源码时误导出上一个T[8]函数。完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0。",
+    "audit_file": "docs/audit/检查点263_PC43-PC85父寄存器复用与闭包导出恢复.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3796,6 +3798,7 @@
     "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。",
     "checkpoint261_gather_status_scope_fixed": true
   },
-  "root_assembly_checkpoint": 262,
-  "root_pc1_pc42_sequential_source_restored": true
+  "root_assembly_checkpoint": 263,
+  "root_pc1_pc42_sequential_source_restored": true,
+  "root_pc43_pc85_register_ordered": true
 }
