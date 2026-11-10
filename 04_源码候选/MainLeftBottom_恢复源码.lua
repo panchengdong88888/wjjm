@@ -5256,3 +5256,18 @@ end
 -- 检查点239根模块闭包绑定补充：BlacklistPlayerDetection（root.children[47]）UP[3]=DeathAutoBlacklist(T58)、UP[4]=FindBlacklistPlayer(T55)、UP[5]=GetMapData2DPtr(T53)、UP[6]=2.0(T38)、UP[8]=UseItemByIndex(T56)、UP[9]=0.01(T39)、UP[11]=30.0(T40)。
 -- doInit_UI UP[9]捕获T50，即ReadNumericConfig('gather_monster_count.txt')固定参数包装闭包。
 -- GetMapData2DPtr UP[0]捕获PC349组装的T52八元素表；可达路径不读取该Upvalue。完整PC时间线见docs/handoff/12_根模块闭包装配表.json。
+
+
+-- 检查点240：root PC298-PC315闭包创建与捕获值核对。
+-- T45=ReadNumericConfig(GetWritablePath)；T46=PCallHelper(GetWritablePath)。
+-- T47=FileExistCheck_pcall_wrapper(GetWritablePath)。
+-- T48=AnonymousHelper_49(ReadNumericConfig,"blacklist_distance.txt")。
+-- T49=AnonymousHelper_32(PCallHelper,"blacklist_distance.txt")。
+-- T50=AnonymousHelper_33(ReadNumericConfig,"gather_monster_count.txt")。
+-- T51=AnonymousHelper_54(PCallHelper,"gather_monster_count.txt")。
+-- root PC390 doInit_UI捕获槽：UP[6]=T48、UP[9]=T50、UP[10]=T49、
+-- UP[12]=T44(GetWritablePath)、UP[14]=T51、UP[16]=T47。
+-- T49/T51均调用PCallHelper(固定文件名, firstArg)，不是读取配置文件的包装器；
+-- T48/T50才是ReadNumericConfig固定文件名读取包装器。
+-- root.children[33]的恢复名为AnonymousHelper_33（legacy路径root/34），
+-- 不要将一基路径编号误作原型函数名。所有结论均为静态恢复，未运行时验证。
