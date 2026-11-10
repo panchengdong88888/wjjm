@@ -1919,7 +1919,7 @@
 - root.children[9] / ReadNumericConfig（45条）原检查点130已逐PC复核三类失败路径：文件不存在、读取结果非string、数字正则不匹配，均清理返回槽后返回nil；仅非空ASCII数字串调用tonumber返回。
 - root PC297创建无捕获GetWritablePath闭包进入R44；PC298创建ReadNumericConfig，PC299捕获R44为UP[0]。子函数PC5-PC7以首个文件名参数调用UP[0]，返回路径复用于isFileExist/getStringFromFile。
 - root PC295设置blacklist_distance.txt；PC304创建AnonymousHelper_49，PC305/306捕获ReadNumericConfig与该文件名。AnonymousHelper_49的PC3调用ReadNumericConfig(fileName)并转发返回值；PC4-PC5不可达。
-- 捕获身份、文件名传递、FileUtils receiver、活动分支及返回值闭合，ReadNumericConfig升级为完整静态恢复（未运行时验证）。GetWritablePath内部拼接方向不外推，留待独立复审。
+- 捕获身份、文件名传递、FileUtils receiver、活动分支及返回值闭合，ReadNumericConfig升级为完整静态恢复（未运行时验证）。GetWritablePath内部writablePath .. fileName拼接顺序已由检查点127独立闭合。
 - 新增审计：docs/audit/检查点178_ReadNumericConfig捕获来源与配置文件调用链闭合.md；更新源码候选、函数状态CSV、机器状态JSON。
 - 统计：普通Lua草稿76；完整静态恢复97/110；运行时验证0。
-- 下一步：复核root.children[2] / GetWritablePath（10条），利用ReadNumericConfig与FileExistCheck_pcall_wrapper两个调用点闭合vararg路径参数及拼接方向。
+- 下一步：复核root.children[6].children[0] / Nested_onDamageMsg（18条），闭合其父InstallDamageHook的捕获与原处理器返回链。
