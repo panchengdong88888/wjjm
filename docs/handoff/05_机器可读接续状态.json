@@ -23,7 +23,7 @@
     "root.children[15]": "ClearBlacklistItems：63条父指令+13条子指令；检查点133确认pairs首返回值key、子回调捕获entryKey/friendProxy、异步删除索引及ScheduleOnce延迟；完整静态恢复，未运行时验证。",
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
     "root.children[23]": "Builtsetting：55条；检查点215闭合六组CHANGE_SETTING参数、顺序、中文提示及单一捕获回调契约；原回调业务名称未知但不影响函数体静态恢复。完整静态恢复，未运行时验证。",
-    "root.children[47]": "BlacklistPlayerDetection：UP[0]=root T[2]=MainLeftBottom.z状态表；UP[1]=root T[57]，PC360覆盖为InstallDamageHook且PC368捕获后无再写入，故静态装配传函数值；UP[2]=T[41] blacklistState；UP[3]=T[58] DeathAutoBlacklist；UP[4]=T[55] FindBlacklistPlayer；UP[5]=T[53] GetMapData2DPtr；UP[6]=T[38] 2.0；UP[7]=T[4] PrintLog；UP[8]=T[56] UseItemByIndex；UP[9]=T[39] 0.01；UP[10]=T[5] ShowLocalNoticeByType；UP[11]=T[40] 30.0；UP[12]=T[37] randomTeleportItemNames。PC357创建的onDamageMsg只挂MainLeftBottom.onDamageMsg，不是UP[1]。216条指令完整静态恢复，未运行时验证。",
+    "root.children[47]": "BlacklistPlayerDetection：UP[0]=root T[2]=MainLeftBottom.z状态表；UP[1]=root T[57] live cell，PC360覆盖为InstallDamageHook，PC368捕获；UP[2]=T[41] blacklistState；UP[3]=T[58] DeathAutoBlacklist；UP[4]=T[55] FindBlacklistPlayer；UP[5]=T[53] GetMapData2DPtr；UP[6]=T[38] 2.0；UP[7]=T[4] PrintLog；UP[8]=T[56] UseItemByIndex；UP[9]=T[39] 0.01；UP[10]=T[5] ShowLocalNoticeByType；UP[11]=T[40] 30.0；UP[12]=T[37] randomTeleportItemNames。装配通过rootCells[57]保存共享cell，工厂以.value()读取并调用。PC357创建的onDamageMsg仅挂MainLeftBottom.onDamageMsg，不是UP[1]。216条指令完整静态恢复，未运行时验证。",
     "root.children[50]": "StorageItems（224条）检查点189、206、223：父函数PC1-PC224与两个子原型均完成静态恢复；UP[0..2]按storageState/notify/output中性命名；检查点248已按T[2]/T[4]/T[5]装配状态表、PrintLog、ShowLocalNoticeByType，并显式注入两个子原型工厂；完整静态恢复，未运行时验证。",
     "root.children[50].children[1]": "Nested_Anonymous_2：27条；检查点173独立静态复审完成。父StorageItems PC54-PC58捕获maxPage/pageCapacity/openSize/storedPageData；父PC37-PC53逐页构建计数表（#pageData或0）；子函数升序遍历，末页容量按openSize剩余空间裁剪，返回首个可用页码或nil；父PC177-PC179零参调用并消费页码/nil。完整静态恢复，未运行时验证。",
     "root.children[7]": "GetOwnerIDText：检查点151新增04_源码候选/root7_GetOwnerIDText.lua。nil/空串/-1返回false；string分支ownerID==tostring(ownerID)；非string分支ownerID==第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
@@ -2810,11 +2810,12 @@
     "targets": [
       "root.children[47] BlacklistPlayerDetection"
     ],
-    "status": "按PC368捕获顺序静态实例化13项：UP0=rootModule.z；UP1=PC360覆盖T57后的InstallDamageHook函数值（捕获后无再写入，不传不可调用的cell表）；UP2=blacklistState；UP3=DeathAutoBlacklist；UP4=FindBlacklistPlayer；UP5=GetMapData2DPtr；UP6=2.0；UP7=PrintLog；UP8=UseItemByIndex；UP9=0.01；UP10=ShowLocalNoticeByType；UP11=30.0；UP12=randomTeleportItemNames。MainLeftBottom.onDamageMsg仍独立挂接root.children[52]。累计35/36，剩余doInit_UI；运行时验证0。",
+    "status": "按PC368捕获顺序静态实例化13项：UP0=rootModule.z；UP1=rootCells[57]，代表PC360覆盖为InstallDamageHook的T57 live cell，工厂通过.value()读取并调用；UP2=blacklistState；UP3=DeathAutoBlacklist；UP4=FindBlacklistPlayer；UP5=GetMapData2DPtr；UP6=2.0；UP7=PrintLog；UP8=UseItemByIndex；UP9=0.01；UP10=ShowLocalNoticeByType；UP11=30.0；UP12=randomTeleportItemNames。MainLeftBottom.onDamageMsg仍独立挂接root.children[52]。累计35/36，剩余doInit_UI；运行时验证0。",
     "audit_file": "docs/audit/检查点255_BlacklistPlayerDetection十三项捕获与T57_live_cell.md",
-    "source_commit_sha": "118abf10f489b6384b43f778fd578cd93f4ebab7",
+    "source_commit_sha": "8cbbd1df7019095211fffcb70774b384d83426b4",
     "candidate_commit_sha": "e97468aa3e86c00158b87b6da3f59e72ba00030d",
-    "source_blob_sha": "ef54376b0d5e8e644affa1509045808d2829dbcb"
+    "source_blob_sha": "0fc20c94d9ae6b806626ebe12dcba123eaaf6117",
+    "audit_commit_sha": "1bbb87dad146e1f6b078bea233dd527048827200"
   },
   "corrections": [
     {
@@ -3557,8 +3558,8 @@
     "runtime_verified": 0,
     "captured_factory_bindings": 35,
     "captured_factory_pending": 1,
-    "notes": "完成BlacklistPlayerDetection的13项捕获静态装配；UP0=rootModule.z；UP1传入PC360覆盖T[57]后的InstallDamageHook函数值，捕获后无再写入；onDamageMsg保持独立。仅doInit_UI剩余。",
-    "source_commit_sha": "118abf10f489b6384b43f778fd578cd93f4ebab7"
+    "notes": "完成BlacklistPlayerDetection的13项捕获静态装配；UP0=rootModule.z；UP1=rootCells[57]保留T57 live-cell语义，工厂通过.value()调用InstallDamageHook；onDamageMsg保持独立。仅doInit_UI剩余。",
+    "source_commit_sha": "8cbbd1df7019095211fffcb70774b384d83426b4"
   },
   "latest_checkpoint": 255,
   "complete_static_reconstruction_count": 109,
@@ -3728,7 +3729,7 @@
   },
   "latest": {
     "checkpoint": "255",
-    "summary": "完成BlacklistPlayerDetection的13项捕获工厂静态装配；修正UP0=rootModule.z，UP1=PC360/368确认的InstallDamageHook函数值（不传不可调用的cell表）；onDamageMsg保持独立模块字段。累计35/36，剩余仅doInit_UI，运行时验证0。",
+    "summary": "完成BlacklistPlayerDetection的13项捕获工厂静态装配；修正UP0=rootModule.z，UP1=rootCells[57]并通过.value()调用PC360覆盖后的InstallDamageHook，保留OP_387 live-cell语义；onDamageMsg保持独立模块字段。累计35/36，剩余仅doInit_UI，运行时验证0。",
     "audit_file": "docs/audit/检查点255_BlacklistPlayerDetection十三项捕获与T57_live_cell.md",
     "unresolved": [
       "最后一个有捕获工厂doInit_UI尚未装配，包含20项捕获与23个子原型依赖",
@@ -3787,6 +3788,6 @@
       "AnonymousHelper_33",
       "BlacklistPlayerDetection"
     ],
-    "note": "22个无捕获直接子原型已接入；35个有捕获工厂已静态实例化。BlacklistPlayerDetection.UP0接rootModule.z；UP1接PC360覆盖T[57]后的InstallDamageHook函数值（捕获后无再写入，未传cell包装表）；UP2与MainLeftBottom.blacklist共享同一blacklistState。仅doInit_UI尚未装配。所有绑定均未运行时验证。"
+    "note": "22个无捕获直接子原型已接入；35个有捕获工厂已静态实例化。BlacklistPlayerDetection.UP0接rootModule.z；UP1接rootCells[57]，保留PC360覆盖后的InstallDamageHook live-cell，并在工厂内部通过.value()读取调用；UP2与MainLeftBottom.blacklist共享同一blacklistState。仅doInit_UI尚未装配。所有绑定均未运行时验证。"
   }
 }
