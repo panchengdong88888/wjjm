@@ -5,7 +5,7 @@
 -- Local names are reconstruction labels, not recovered original identifiers.
 --
 -- Captures (checkpoint 146):
---   UP[0]  module feature state (isBlacklisting)
+--   UP[0]  MainLeftBottom.z feature-state table (isBlacklisting)
 --   UP[1]  root T[57] live cell; PC360 writes InstallDamageHook before PC368 captures it
 --   UP[2]  blacklist-player state table
 --   UP[3]  death -> auto-blacklist callback
