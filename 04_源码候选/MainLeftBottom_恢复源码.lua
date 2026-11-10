@@ -5156,8 +5156,8 @@ end
 do
     -- root.children[1] / legacy root/2 / GetStorageItemData
     -- 77条指令；root PC71创建并捕获父T[4]，其业务身份尚未命名，
-    -- 但PC71-PC75明确将其作为一条提示文本回调调用。
-    local function make_GetStorageItemData(notify)
+    -- PC72捕获时父T[4]已由PC43写入PrintLog，因此该回调确定为printLog。
+    local function make_GetStorageItemData(printLog)
         return function()
             local storageItems = {}
             local storageProxy = NPCStorageProxy
@@ -5198,7 +5198,7 @@ do
                 end
             end
 
-            notify("仓库总可用格子: " .. tostring(availableSlots))
+            printLog("仓库总可用格子: " .. tostring(availableSlots))
             return storageItems
         end
     end
