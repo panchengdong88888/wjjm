@@ -133,79 +133,42 @@ end
 -- T[0]/T[1]/T[2]的具体来源仍未闭合，故明确保留占位，不作为可运行实现。
 -- ---------------------------------------------------------------------------
 local function make_Nested_Anonymous(PrintLog)
-    local function Nested_Anonymous(...)
-        -- Checkpoint 204: PC130 builds R4 from T[5]..T[8]; PC133 calls ipairs with T[6],
-        -- then writes the third return value into T[7]. The runtime value of T[6]
-        -- and therefore the concrete T[7] value remain unresolved; do not assign a semantic name. No later explicit T[7] write was found through PC183.
-        -- Checkpoint 209 caller/capture trace:
-        -- doInit_UI PC248 creates this closure (root/43/23), capturing UP[0]=PrintLog.
-        -- doInit_UI PC250 creates root/43/12 (Nested_Helper_4) with this closure as UP[0].
-        -- root/43/19 PC27 invokes Nested_Helper_4 with no arguments; the recovered
-        -- Nested_Helper_4 body builds a prompt and Nested_Helper_5 success callback,
-        -- then calls its openDialog capture with those two explicit values.
-        -- Usage identifies T[0] as the dialog prompt (dialogParams.str) and T[1]
-        -- as the success callback (called with numericValue).
-        -- T[2] is separately captured and invoked by Nested_Helper_11 with the
-        -- fixed format-error message, but no third explicit producer was found
-        -- in the traced wrapper call. Keep T[2] unresolved; do not invent a callback.
-        -- Exact VM frame-slot offset and T[2]'s runtime value remain unproven.
-        local T0_SLOT_UNRESOLVED = nil
-        local T1_SLOT_UNRESOLVED = nil
-        local T2_SLOT_UNRESOLVED = nil
+    return function Nested_Anonymous(promptText, successCallback)
+        -- 原始VM调用帧M已确认：本原型fixed_param_count=2。
+        -- 两个固定参数分别进入新建帧表T[0]、T[1]；额外实参进入独立X表。
+        -- T[2]没有任何写入指令，因此该槽确定为nil。
+        local T0_SLOT = promptText
+        local T1_SLOT = successCallback
+        local T2_SLOT = nil
 
-        -- Child root.children[42].children[22].children[0] capture order:
-        -- UP[0] <- current T[0]
-        -- UP[1] <- current UP[0] (PrintLog)
-        -- UP[2] <- current T[2]
-        -- UP[3] <- current T[1]
-        local function Nested_str(...)
-            local optionalSuffix = ...
-
+        local function Nested_str(optionalSuffix)
             local dialogParams = {
                 btnType = 2,
                 showEdit = true,
-                editParams = {
-                    inputMode = 2,
-                    maxLength = 6,
-                },
+                editParams = { inputMode = 2, maxLength = 6 },
             }
-
-            local initialText = T0_SLOT_UNRESOLVED
+            local initialText = T0_SLOT
             if optionalSuffix then
                 initialText = initialText .. "\n" .. optionalSuffix
             end
             dialogParams.str = initialText
 
             local function Nested_match(status, result)
-                if status ~= 1 then
-                    return
-                end
-
+                if status ~= 1 then return end
                 local editStr = result and result.editStr or ""
                 local normalized = tostring(editStr):gsub("%s", "")
                 local isDigits = string.match(normalized, "^%d+$")
                 local numericValue
-
-                if isDigits then
-                    numericValue = tonumber(normalized)
-                end
-
+                if isDigits then numericValue = tonumber(normalized) end
                 if numericValue then
-                    T1_SLOT_UNRESOLVED(numericValue)
+                    T1_SLOT(numericValue)
                     return
                 end
-
-                PrintLog(
-                    "%s：参数格式不对（%s）",
-                    initialText,
-                    tostring(editStr)
-                )
-
+                PrintLog("%s：参数格式不对（%s）", initialText, tostring(editStr))
                 local function Nested_Helper_11()
-                    -- Existing child prototype; its sole capture is Nested_match UP[2].
-                    T2_SLOT_UNRESOLVED("参数格式不对，请输入数字")
+                    -- 原字节码直接调用T[2]；该槽确定为nil，保留attempt-to-call-nil行为。
+                    T2_SLOT("参数格式不对，请输入数字")
                 end
-
                 SL:ScheduleOnce(Nested_Helper_11, 0.1)
             end
 
@@ -213,13 +176,12 @@ local function make_Nested_Anonymous(PrintLog)
             SL:OpenCommonTipsPop(dialogParams)
         end
 
-        -- PC6-PC7 copy the just-created child closure and invoke it with zero args.
-        -- Therefore Nested_str's optional vararg suffix is absent on this path.
+        -- Nested_str固定参数数为1，但PC6-PC7以空实参区间调用，optionalSuffix=nil。
         Nested_str()
         return
     end
-    return Nested_Anonymous
 end
+
 
 
 -- ---------------------------------------------------------------------------
