@@ -49,9 +49,9 @@
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
     "root.children[12]": "LuaSendMsg（92条）检查点190修订普通Lua草稿：固定六参，arg1为Blocklist/SendHookList键，arg2..5为param1..4，arg6为msgId；table.find命中只跳过日志；SendHookList函数经pcall(hook,arg1,arg6,message)，成功且返回true才拦截；否则networkCtl:SendMsg原六参转发。捕获root T[0]/T[4]业务原名与宿主语义待验证。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
-    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192恢复PC1-PC41初始化；检查点193恢复PC42-PC85闭包创建/导出；检查点194恢复PC86-PC137相关初始化并交叉使用后续指令闭合：PC86-PC89创建gatherConfig={GATHER_THRESHOLD=10,CHECK_INTERVAL=0.5,ATTACK_WAIT_TIME=1}，由FindMonsterCandidates捕获为UP4；PC90-PC95计算floor(3600/0.2)=18000，最终用途未命名；PC96-PC167构造14项三字段奖励记录（累计登录1-7天及在线5/10/20/30/60/90/120分钟），外层数组R12在PC409被doInit_UI捕获为UP18。根模块仍为分段普通Lua草稿，PC138-PC412尚待恢复；未运行时验证。"
+    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192恢复PC1-PC41初始化；检查点193恢复PC42-PC85闭包创建/导出；检查点194恢复PC86-PC167：PC86-PC89创建gatherConfig，FindMonsterCandidates捕获为UP4；PC90-PC95计算floor(3600/0.2)=18000，root PC408将其捕获为doInit_UI UP17，UI用途未明；PC96-PC167构造14项奖励记录数组，root PC409捕获为doInit_UI UP18。检查点195恢复PC168-PC200：状态文字表IDLE/GATHERING/ATTACKING，T14=currentState初值IDLE；T15-T22共享槽初值；PC181 FormatStateChange捕获PrintLog/currentState；PC184-PC193创建10个无捕获辅助闭包；PC194 FindMonsterCandidates捕获GetPlayerPosition/IsDie/GetPlayerMapPosition/DistanceCalculation/gatherConfig；PC200 ResetGatherMonsterData捕获T15/T16/T17/T25/T19/T20/T21/T22/T4。根模块仍为分段草稿，PC201-PC412待恢复，未运行时验证。"
   },
-  "next_action": "检查点194已恢复root PC86-PC137配置初始化与奖励记录数组，并用后续PC167/PC409闭合数组组装顺序及doInit_UI捕获关系。下一步继续root PC138-PC200：核实状态常量表、状态初值/共享单元，以及PC181以后辅助闭包创建与捕获。复用既有子原型状态和捕获审计，不重复分析已完成函数本体。",
+  "next_action": "检查点195已恢复root PC168-PC200状态单元与辅助闭包注册，且复用检查点162/177/3/4等既有子函数和捕获审计。下一步继续root PC201-PC270：闭合PC210-PC214后续辅助闭包创建/导出、MainLoop的22项捕获描述，以及InitGatherMonsters、StopGatherMonsters、UseItemByIndex、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons等闭包创建与捕获位置；不重复恢复已完成子原型函数体。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -124,7 +124,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "191"
+    "last_checkpoint": "195"
   },
   "static_recovered_functions": [
     {
@@ -2238,23 +2238,25 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "193",
+    "checkpoint": "195",
     "targets": [
-      "root PC42-PC85"
+      "root PC168-PC200"
     ],
-    "status": "Restored root-level closure creation, capture descriptors, and confirmed global exports; root remains a partial draft.",
-    "audit_file": "docs/audit/检查点193_root模块PC42-PC85闭包创建与全局导出.md",
+    "status": "Restored state constants, shared state initializers, helper closure creation and verified capture ordering; root remains a partial draft.",
+    "audit_file": "docs/audit/检查点195_root模块PC168-PC200状态单元与辅助闭包注册.md",
     "files": [
       "04_源码候选/root_MainLeftBottom_Module.lua",
-      "docs/audit/检查点193_root模块PC42-PC85闭包创建与全局导出.md",
+      "docs/audit/检查点195_root模块PC168-PC200状态单元与辅助闭包注册.md",
+      "docs/audit/检查点194_root模块PC86-PC137配置初始化与奖励记录表恢复.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "PC43 PrintLog closure is assigned to _G.log at PC45.",
-      "PC48 LuaSendMsg closure captures parent T[0],T[4] and is assigned to MainLeftBottom.a.LuaSendMsg at PC51.",
-      "PC55/57/59/61/63 export GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo.",
-      "PC64-85 create and export DiuItems, GetAvailableStoragePage, GetStorageItemData, StorageItems, TakeItems, PickUpItems; captures retained in exact order.",
-      "PC46 ShowLocalNoticeByType and PC52-53 ScheduleOnce/Schedule have no observed global assignment within this range."
+      "PC168-PC172 creates IDLE/GATHERING/ATTACKING labels and initializes shared currentState to IDLE.",
+      "PC173-PC180 initializes shared T15-T22 slots; only confirmed uses are named.",
+      "PC181 creates FormatStateChange capturing PrintLog (T4) and shared currentState (T14).",
+      "PC184-PC193 creates ten no-capture helpers in exact prototype-index order.",
+      "PC194-PC199 creates FindMonsterCandidates capturing T27/T30/T28/T29/T8 = GetPlayerPosition/IsDie/GetPlayerMapPosition/DistanceCalculation/gatherConfig.",
+      "PC200-PC209 creates ResetGatherMonsterData capturing T15/T16/T17/T25/T19/T20/T21/T22/T4; matches checkpoint 162."
     ]
   },
   "corrections": [
@@ -2946,19 +2948,21 @@
       "path": "root",
       "name": "MainLeftBottom_Module",
       "source_file": "04_源码候选/root_MainLeftBottom_Module.lua",
-      "status": "partial_ordinary_lua_draft_PC1_PC85_only_not_runtime_verified",
+      "status": "partial_ordinary_lua_draft_PC1_PC200_segmented_not_runtime_verified",
       "physical_instructions": 412,
       "notes": [
-        "Checkpoint 192 covers only PC1-PC41: module export, a/b/z table initialization, screen dimensions, hook tables and six false flags.",
-        "PC42-PC412 remain unfinished; do not treat as a complete module body.",
-        "Checkpoint 193 adds PC42-PC85 closure creation/export mapping: _G.log=PrintLog; MainLeftBottom.a.LuaSendMsg=LuaSendMsg; global GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems/GetAvailableStoragePage/GetStorageItemData/StorageItems/TakeItems/PickUpItems. Captures preserved in exact order. PC86-PC412 remain unfinished."
+        "Checkpoint 192 covers PC1-PC41: module export and a/b/z table initialization.",
+        "Checkpoint 193 covers PC42-PC85 closure creation, capture descriptors and verified exports.",
+        "Checkpoint 194 covers PC86-PC167: gatherConfig, math.floor(3600/0.2)=18000 (captured by doInit_UI UP17; UI use unresolved), and 14 reward entries (captured by doInit_UI UP18).",
+        "Checkpoint 195 covers PC168-PC200: state label table and currentState shared cell; T15-T22 initializers; FormatStateChange captures PrintLog/currentState; ten no-capture helper closures; FindMonsterCandidates and ResetGatherMonsterData capture lists cross-checked against prior audits.",
+        "PC201-PC412 remain unfinished; this file is a segmented ordinary-Lua draft, not a complete executable module."
       ]
     }
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": "193",
-  "checkpoint": "193",
+  "last_checkpoint": "195",
+  "checkpoint": "195",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
@@ -2976,12 +2980,13 @@
     "notes": "MoveItemToQuickUse检查点86首版升级为完整普通Lua主体草稿；参数顺序由doInit_UI调用点确认；统计不增加草稿函数、不升级完整静态恢复。"
   },
   "latest_checkpoint": {
-    "checkpoint": "193",
-    "summary": "root PC1-PC85分段普通Lua草稿：PC1-PC41模块表初始化；PC42-PC85辅助闭包创建、捕获与全局导出。PC86-PC412待恢复。",
-    "audit_file": "docs/audit/检查点193_root模块PC42-PC85闭包创建与全局导出.md",
+    "checkpoint": "195",
+    "summary": "root PC1-PC200分段普通Lua草稿：PC1-PC41模块表初始化；PC42-PC85辅助闭包创建/导出；PC86-PC167采集配置与14项奖励数组；PC168-PC200状态常量/共享单元及辅助闭包创建、捕获。PC201-PC412待恢复。",
+    "audit_file": "docs/audit/检查点195_root模块PC168-PC200状态单元与辅助闭包注册.md",
     "unresolved": [
-      "root PC86-PC137配置/数组构造及表持有关系",
-      "root PC138-PC412其余闭包注册、状态及初始化",
+      "root PC201-PC412其余闭包创建、全局注册与模块初始化",
+      "T25预停止回调的生产者/业务身份",
+      "T16/T17/T19/T20/T21/T22等共享槽的完整业务字段语义",
       "目标Lua/游戏运行时验证"
     ]
   },
@@ -2993,5 +2998,5 @@
     "complete_static_reconstruction": 103,
     "runtime_verified": 0
   },
-  "next_checkpoint": "root PC86-PC137"
+  "next_checkpoint": "root PC201-PC270"
 }
