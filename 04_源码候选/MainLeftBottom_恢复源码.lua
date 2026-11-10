@@ -7877,8 +7877,16 @@ do
     local rootPrototypes = {}
     local missing = {}
 
-    -- root PC43-PC85：按原始VM创建/捕获/导出时序绑定首批辅助闭包。
-    -- 这里只把字节码中确实创建的函数接入rootPrototypes；不提前装配PC184之后的函数。
+    -- 检查点263：PC43-PC85根模块首批闭包装配。
+    -- rootRegisters是恢复适配层的父T寄存器影子表，不是原作者的数据结构。
+    -- T[0..3]的值已由PC1-PC42初始化段建立；此处显式记录T[4..8]的创建和覆写。
+    local rootRegisters = {
+        [0] = rootModule.a,       -- T[0]在PC3覆写为a表
+        [1] = rootModule.b,       -- T[1]在PC30最终成为b表
+        [2] = rootModule.z,       -- T[2]在PC33最终成为z表
+        [3] = rootSource.timerState
+    }
+
     local function bindDirect(prototypeName, sourcePath, symbol)
         local fn = sourceFunction(sourcePath, symbol)
         if fn then
@@ -7890,69 +7898,91 @@ do
         return fn
     end
 
-    -- PC43-PC45：PrintLog创建并写入T[4]，PC45导出_G.log。
+    -- PC43：创建PrintLog并写入父寄存器T[4]。
     bindDirect("PrintLog", "04_源码候选/PrintLog_日志辅助函数_第七批.lua", "PrintLog")
-    _G.log = rootPrototypes.PrintLog
+    rootRegisters[4] = rootPrototypes.PrintLog
 
-    -- PC46-PC47：ShowLocalNoticeByType捕获T[0]=MainLeftBottom.a。
+    -- PC44-PC45：T[5]暂存_G；PC45执行_G.log=T[4]。
+    rootRegisters[5] = _G
+    rootRegisters[5].log = rootRegisters[4]
+
+    -- PC46-PC47：创建ShowLocalNoticeByType，捕获T[0]=a表，随后覆写T[5]。
     local makeShowNotice = sourceFunction(
         "04_源码候选/其他短辅助函数_第二批草稿.lua",
         "make_ShowLocalNoticeByType"
     )
     if makeShowNotice then
-        rootPrototypes.ShowLocalNoticeByType = makeShowNotice(rootModule.a)
+        rootPrototypes.ShowLocalNoticeByType = makeShowNotice(rootRegisters[0])
+        rootRegisters[5] = rootPrototypes.ShowLocalNoticeByType
     end
 
-    -- PC48-PC51：LuaSendMsg捕获T[0]=a表、T[4]=PrintLog；PC51写入a.LuaSendMsg。
+    -- PC48-PC51：创建LuaSendMsg，按序捕获T[0]=a、T[4]=PrintLog；
+    -- PC51先将T[6]闭包存入a.LuaSendMsg，之后T[6]才允许被ScheduleOnce覆盖。
     local makeLuaSendMsg = sourceFunction(
         "04_源码候选/短函数草稿_第五十批.lua", "make_LuaSendMsg"
     )
     if makeLuaSendMsg then
-        rootPrototypes.LuaSendMsg = makeLuaSendMsg(rootModule.a, rootPrototypes.PrintLog)
-        rootModule.a.LuaSendMsg = rootPrototypes.LuaSendMsg
+        rootPrototypes.LuaSendMsg = makeLuaSendMsg(rootRegisters[0], rootRegisters[4])
+        rootRegisters[6] = rootPrototypes.LuaSendMsg
+        rootRegisters[0].LuaSendMsg = rootRegisters[6]
     end
 
-    -- PC52-PC53：两个无捕获调度包装器。
+    -- PC52-PC53：T[6]覆写为ScheduleOnce；T[7]创建Schedule。
     bindDirect("ScheduleOnce", "root/54_ScheduleOnce.lua", "ScheduleOnce")
+    rootRegisters[6] = rootPrototypes.ScheduleOnce
     bindDirect("Schedule", "04_源码候选/root35_AnonymousHelper_33_ScheduleWrapper.lua", "AnonymousHelper_33_Schedule")
+    rootRegisters[7] = rootPrototypes.Schedule
 
-    -- PC54-PC63：依序创建并在对应PC立即写入全局环境。
+    -- PC54-PC63：T[8]连续复用五次；每个闭包都在下一次覆写前立即导出。
     bindDirect("GetMapId", "04_源码候选/verified_helpers_batches_1_3.lua", "GetMapId")
-    _G.GetMapId = rootPrototypes.GetMapId
+    rootRegisters[8] = rootPrototypes.GetMapId
+    _G.GetMapId = rootRegisters[8]
+
     bindDirect("GetMapName", "04_源码候选/verified_helpers_batches_1_3.lua", "GetMapName")
-    _G.GetMapName = rootPrototypes.GetMapName
+    rootRegisters[8] = rootPrototypes.GetMapName
+    _G.GetMapName = rootRegisters[8]
+
     bindDirect("PlayerPos", "04_源码候选/verified_helpers_batches_1_3.lua", "PlayerPos")
-    _G.PlayerPos = rootPrototypes.PlayerPos
+    rootRegisters[8] = rootPrototypes.PlayerPos
+    _G.PlayerPos = rootRegisters[8]
+
     bindDirect("GetDroppedItems", "04_源码候选/verified_helpers_batches_1_3.lua", "GetDroppedItems")
-    _G.GetDroppedItems = rootPrototypes.GetDroppedItems
+    rootRegisters[8] = rootPrototypes.GetDroppedItems
+    _G.GetDroppedItems = rootRegisters[8]
+
     bindDirect("MoveTo", "04_源码候选/短函数草稿_第五十三批.lua", "MoveTo")
-    _G.MoveTo = rootPrototypes.MoveTo
+    rootRegisters[8] = rootPrototypes.MoveTo
+    _G.MoveTo = rootRegisters[8]
 
-    -- PC64-PC67：DiuItems捕获T[2]=MainLeftBottom.z、T[5]=ShowLocalNoticeByType。
+    -- PC64-PC67：T[8]=DiuItems；捕获T[2]=z表、T[5]=ShowLocalNoticeByType。
     local makeDiuItems = sourceFunction("04_源码候选/root46_DiuItems.lua", "make_DiuItems")
-    if makeDiuItems and rootPrototypes.ShowLocalNoticeByType then
-        rootPrototypes.DiuItems = makeDiuItems(rootModule.z, rootPrototypes.ShowLocalNoticeByType)
+    if makeDiuItems and rootRegisters[5] then
+        rootPrototypes.DiuItems = makeDiuItems(rootRegisters[2], rootRegisters[5])
+        rootRegisters[8] = rootPrototypes.DiuItems
     end
-    _G.DiuItems = rootPrototypes.DiuItems
+    _G.DiuItems = rootRegisters[8]
 
-    -- PC68-PC70：GetAvailableStoragePage捕获T[4]=PrintLog。
+    -- PC68-PC70：T[8]=GetAvailableStoragePage，捕获T[4]=PrintLog。
     local makeGetAvailableStoragePage = sourceFunction(
         "04_源码候选/短函数草稿_第十四批.lua", "make_GetAvailableStoragePage"
     )
     if makeGetAvailableStoragePage then
-        rootPrototypes.GetAvailableStoragePage = makeGetAvailableStoragePage(rootPrototypes.PrintLog)
+        rootPrototypes.GetAvailableStoragePage = makeGetAvailableStoragePage(rootRegisters[4])
+        rootRegisters[8] = rootPrototypes.GetAvailableStoragePage
     end
-    _G.GetAvailableStoragePage = rootPrototypes.GetAvailableStoragePage
+    _G.GetAvailableStoragePage = rootRegisters[8]
 
-    -- PC71-PC73：GetStorageItemData捕获T[4]=PrintLog。
+    -- PC71-PC73：T[8]=GetStorageItemData，捕获T[4]=PrintLog。
     local getStorageItemSource = sources["04_源码候选/短函数草稿_第五十六批.lua#GetStorageItemData"]
     local makeGetStorageItemData = getStorageItemSource and getStorageItemSource.make_GetStorageItemData
     if type(makeGetStorageItemData) == "function" then
-        rootPrototypes.GetStorageItemData = makeGetStorageItemData(rootPrototypes.PrintLog)
+        rootPrototypes.GetStorageItemData = makeGetStorageItemData(rootRegisters[4])
+        rootRegisters[8] = rootPrototypes.GetStorageItemData
     end
-    _G.GetStorageItemData = rootPrototypes.GetStorageItemData
+    _G.GetStorageItemData = rootRegisters[8]
 
-    -- PC74-PC78：StorageItems捕获[T[2],T[4],T[5]]；嵌套工厂参数仅为恢复适配。
+    -- PC74-PC78：T[8]=StorageItems，捕获[T[2],T[4],T[5]]；
+    -- 两个嵌套工厂代表StorageItems内部创建的子闭包，不是root额外捕获槽。
     local makeStorageItems = sourceFunction("04_源码候选/短函数草稿_第六十批.lua", "make_StorageItems")
     local makeNestedIsOutputted = sourceFunction("04_源码候选/短函数草稿_第三十四批.lua", "make_Nested_isOutputted")
     local makeFindAvailablePage = sourceFunction(
@@ -7960,25 +7990,28 @@ do
     )
     if makeStorageItems and makeNestedIsOutputted and makeFindAvailablePage then
         rootPrototypes.StorageItems = makeStorageItems(
-            rootModule.z, rootPrototypes.PrintLog, rootPrototypes.ShowLocalNoticeByType,
+            rootRegisters[2], rootRegisters[4], rootRegisters[5],
             makeNestedIsOutputted, makeFindAvailablePage
         )
+        rootRegisters[8] = rootPrototypes.StorageItems
     end
-    _G.StorageItems = rootPrototypes.StorageItems
+    _G.StorageItems = rootRegisters[8]
 
-    -- PC79-PC82：TakeItems捕获[T[2],T[5]]。
+    -- PC79-PC82：T[8]=TakeItems，捕获[T[2],T[5]]。
     local makeTakeItems = sourceFunction("04_源码候选/短函数草稿_第五十七批.lua", "make_TakeItems")
-    if makeTakeItems and rootPrototypes.ShowLocalNoticeByType then
-        rootPrototypes.TakeItems = makeTakeItems(rootModule.z, rootPrototypes.ShowLocalNoticeByType)
+    if makeTakeItems and rootRegisters[5] then
+        rootPrototypes.TakeItems = makeTakeItems(rootRegisters[2], rootRegisters[5])
+        rootRegisters[8] = rootPrototypes.TakeItems
     end
-    _G.TakeItems = rootPrototypes.TakeItems
+    _G.TakeItems = rootRegisters[8]
 
-    -- PC83-PC85：PickUpItems捕获T[5]=ShowLocalNoticeByType。
+    -- PC83-PC85：T[8]=PickUpItems，捕获T[5]；PC85完成本段最后一次全局导出。
     local makePickUpItems = sourceFunction("04_源码候选/PickUpItems_拾取流程_第十批.lua", "make_PickUpItems")
-    if makePickUpItems and rootPrototypes.ShowLocalNoticeByType then
-        rootPrototypes.PickUpItems = makePickUpItems(rootPrototypes.ShowLocalNoticeByType)
+    if makePickUpItems and rootRegisters[5] then
+        rootPrototypes.PickUpItems = makePickUpItems(rootRegisters[5])
+        rootRegisters[8] = rootPrototypes.PickUpItems
     end
-    _G.PickUpItems = rootPrototypes.PickUpItems
+    _G.PickUpItems = rootRegisters[8]
 
     -- 检查点261：gatherStatusText在root source候选的独立词法块内声明，
     -- 通过__exports导出为rootSource.gatherStatusText；不能在本装配词法块
