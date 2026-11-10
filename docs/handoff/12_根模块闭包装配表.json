@@ -10320,6 +10320,10 @@
       "Nested_Anonymous T0/T1/T2 fixed-parameter slots are resolved at checkpoint235"
     ],
     "status": "Static source integration only; Lua parser/compiler and target host runtime not executed",
-    "next_action": "检查点259：继续把root模块PC1-PC412分段记录与58个已绑定子原型整合成连续可读模块主体；优先检查PC43-PC85闭包创建/导出顺序与模块字段最终状态。"
+    "next_action": "检查点259：继续按PC1-PC412整合根模块连续主体，优先处理PC43-PC85的辅助闭包创建与导出时序；不重复恢复已完成的子函数体。",
+    "main_recovery_blob_sha": "6ff85f003ebe7b79021e6fbbfd7e06a0b8a081e5",
+    "root_module_candidate_blob_sha": "b57defb2a4660a120b311f925e083d40668f417c",
+    "audit_file": "docs/audit/检查点258_根模块返回值与寄存器身份校正.md",
+    "structure_tree_file": "docs/handoff/13_原型结构树.md"
   }
 }
