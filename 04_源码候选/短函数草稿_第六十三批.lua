@@ -133,7 +133,7 @@ end
 -- T[0]/T[1]/T[2]的具体来源仍未闭合，故明确保留占位，不作为可运行实现。
 -- ---------------------------------------------------------------------------
 local function make_Nested_Anonymous(PrintLog)
-    return function Nested_Anonymous(promptText, successCallback)
+    return function(promptText, successCallback)
         -- 原始VM调用帧M已确认：本原型fixed_param_count=2。
         -- 两个固定参数分别进入新建帧表T[0]、T[1]；额外实参进入独立X表。
         -- T[2]没有任何写入指令，因此该槽确定为nil。
