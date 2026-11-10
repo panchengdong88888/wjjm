@@ -1962,3 +1962,18 @@
 - 新增源码：04_源码候选/root25_DeathAutoBlacklist.lua；新增审计：docs/audit/检查点181_DeathAutoBlacklist四项捕获与六次延迟请求闭合.md。
 - 统计：普通Lua草稿73；完整静态恢复100/110；运行时验证0。
 - 下一步：复核root.children[47] / BlacklistPlayerDetection（216条）尚未闭合的地图/障碍门槛与全CFG分区。
+
+
+## 检查点 #182：BlacklistPlayerDetection 地图/障碍距离门槛阶段复核
+
+- 主原型：root.children[47] / BlacklistPlayerDetection（216条）；辅助原型：root.children[22] / legacy root/23（144条，vararg_flag=5）。
+- root.children[47] 的UP[5]捕获root T[53]，即root.children[22]距离/地图路径检查辅助函数。
+- PC108-PC127取得mainX/mainY/candidateX/candidateY；PC128-PC134将四坐标与UP[5]及UP[2].distance按序组成五实参调用。第五参数是最大距离阈值，不是actor ID。
+- root.children[22] PC1-PC10检查输入；PC13-PC18处理相同坐标并返回0.0；PC19-PC22拒绝非正范围；PC23-PC33计算Chebyshev距离max(abs(dx),abs(dy))；PC34-PC37拒绝超过阈值的坐标对。
+- PC38-PC53要求global.sceneManager及GetMapData2DPtr可用，并读取getMapDataRows/getMapDataCols；PC54-PC61校验目标坐标非负且处于行列边界内。
+- PC64-PC71调用isObstacle(x2,y2)，目标点障碍返回非零时结果被拒绝；PC72-PC141含数值/插值循环，并在PC119-PC124再次调用isObstacle，确认存在路径障碍采样。
+- helper PC72-PC141精确插值/采样公式仍待逐指令复核，不得提前标为Bresenham或其他算法。
+- root.children[47] PC136-PC141只接受UP[5]非nil返回值；nil不会更新当前目标缓存或发现标志。
+- 本批仅为阶段复核，root.children[47]仍为普通Lua草稿；统计维持普通Lua草稿73、完整静态恢复100/110、运行时验证0。
+- 新增审计：docs/audit/检查点182_BlacklistPlayerDetection地图障碍距离门槛阶段复核.md；同步更新root47源码候选、CSV、机器状态JSON。
+- 下一步：逐条解码root.children[22] PC72-PC141障碍采样/插值循环，再复核root.children[47] PC74-PC141玩家扫描全CFG。
