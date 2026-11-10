@@ -1883,3 +1883,12 @@
 - 源码改为 `make_Nested_isOutputted(outputState, outputCallback)` 工厂闭包，避免把捕获值误当全局变量；更上层捕获业务原名保持未知。
 - 计数：普通草稿78；完整静态恢复95/110；运行时验证0。
 - 新增审计：`docs/audit/检查点174_Nested_isOutputted完整静态复审.md`。
+
+
+## 检查点 #175：Nested_Anonymous 包装闭包复核（保留草稿）
+
+- `root.children[42].children[22]` / Nested_Anonymous（8条）独立复核。PC1创建Nested_str，按顺序捕获当前帧T[0]、UP[0]、T[2]、T[1]；PC6-PC7零参数调用子闭包，PC8返回。
+- UP[0]由父root创建点闭合为PrintLog；其余三个T槽来源/类型仍未闭合。下层回调行为不能反向证明捕获槽原始业务身份，因此不提升完整静态恢复。
+- CSV保持普通Lua草稿状态；新增审计：`docs/audit/检查点175_Nested_Anonymous包装闭包复核.md`。
+- 计数不变：普通Lua草稿78；完整静态恢复95/110（86.4%）；运行时验证0。
+- 下一步：追踪doInit_UI中该闭包的T槽生产者与调用链；无法闭合时转向其他父级调用关系明确的短函数。
