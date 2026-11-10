@@ -23,7 +23,7 @@
     "root.children[15]": "ClearBlacklistItems：63条父指令+13条子指令；检查点133确认pairs首返回值key、子回调捕获entryKey/friendProxy、异步删除索引及ScheduleOnce延迟；完整静态恢复，未运行时验证。",
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
     "root.children[23]": "Builtsetting：55条；检查点215闭合六组CHANGE_SETTING参数、顺序、中文提示及单一捕获回调契约；原回调业务名称未知但不影响函数体静态恢复。完整静态恢复，未运行时验证。",
-    "root.children[47]": "BlacklistPlayerDetection：216条，检查点186完成全部CFG与13项父捕获闭合，升级完整静态恢复（未运行时验证）。PC1-PC73入口/HP状态机/白名单/双返回玩家列表；PC74-PC141玩家循环/UP4双返回值/距离配置门槛；PC142-PC216日志节流、nextTryAt、随机传送成功失败及循环尾部全部闭合。第一个通过距离门槛的黑名单玩家进入处理后退出本次回调；距离配置false/nil绕过helper并以0显示，helper nil继续下一玩家。",
+    "root.children[47]": "BlacklistPlayerDetection的UP[1]捕获root T[57] live cell。PC357创建root.children[52] onDamageMsg并于PC359写入MainLeftBottom.onDamageMsg；PC360覆盖T[57]为root.children[6] InstallDamageHook；PC368才创建BlacklistPlayerDetection捕获T[57]。因此入口零参调用UP[1]()实际安装伤害钩子。已同步主源码参数名installDamageHook及检查点146/186/236。",
     "root.children[50]": "StorageItems（224条）检查点189、206：普通Lua主体草稿位于04_源码候选/短函数草稿_第六十批.lua；PC1-PC224复审，互斥/仓库可用页检查/分页占用快照/18项特殊名称/待定过滤项/BAG_DATA/MakeIndex去重/ITEM_IS_BIND过滤/两组ipairs匹配/UseItemByIndex/child0门控/child1找页/七项LuaSendMsg/本地记账/复位提示均已映射。检查点206修正PC151-PC176：每次特殊名称匹配后立即检查Nested_isOutputted返回值，任一false/nil立即跳过当前物品；无匹配也不存仓。三个UPVALUE仅按用途临时命名；999999999协议含义、服务端第四字段定义、宿主API未验证。仍为普通Lua草稿，不升级完整静态恢复，未运行时验证。审计docs/audit/检查点206_StorageItems普通Lua草稿复审与控制流修正.md。",
     "root.children[50].children[1]": "Nested_Anonymous_2：27条；检查点173独立静态复审完成。父StorageItems PC54-PC58捕获maxPage/pageCapacity/openSize/storedPageData；父PC37-PC53逐页构建计数表（#pageData或0）；子函数升序遍历，末页容量按openSize剩余空间裁剪，返回首个可用页码或nil；父PC177-PC179零参调用并消费页码/nil。完整静态恢复，未运行时验证。",
     "root.children[7]": "GetOwnerIDText：检查点151新增04_源码候选/root7_GetOwnerIDText.lua。nil/空串/-1返回false；string分支ownerID==tostring(ownerID)；非string分支ownerID==第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
@@ -49,13 +49,13 @@
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
     "root.children[12]": "LuaSendMsg（92条）检查点190、205：普通Lua草稿PC1-PC92已独立静态复审；固定六参/message字段、Blocklist仅抑制日志、SendHookList按第1参取hook、pcall(hook,arg1,arg6,message)且仅严格true拦截、否则networkCtl:SendMsg原六参转发均与corrected反汇编一致。草稿仍保留UP0/UP1临时名；作者原名与宿主API语义未证实；未运行时验证。源码04_源码候选/短函数草稿_第五十批.lua；审计docs/audit/检查点205_LuaSendMsg普通Lua草稿独立复审.md。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
-    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192-PC1-PC41；193-PC42-PC85；194-PC86-PC167；195-PC168-PC200；196-PC201-PC270；197-PC271-PC340；198-PC341-PC412。除根模块闭包实例化/共享Upvalue cell/模块字段赋值/导出装配外，其余110原型中的109个已完成静态恢复。根级装配仍为唯一未完成项；未运行时验证。",
+    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192-PC1-PC41；193-PC42-PC85；194-PC86-PC167；195-PC168-PC200；196-PC201-PC270；197-PC271-PC340；198-PC341-PC412。检查点236已从root反汇编自动核对58/58闭包创建点、135个OP_387捕获描述符，建立docs/handoff/12_根模块闭包装配表.json和父寄存器fanout表。原始VM M()证明OP_387捕获live cell，不是值快照。已发现T[57]在PC357创建onDamageMsg并PC359写模块字段后，PC360被InstallDamageHook覆盖；PC368的BlacklistPlayerDetection UP[1]实际捕获InstallDamageHook。剩余工作是逐寄存器值生命周期、模块字段/全局导出对账与根函数装配；根模块仍是唯一未完成原型。",
     "root.children[42].children[3]": "Nested_FFFF00（320条父指令、72常量、5个子原型、4项捕获）：检查点225已完成PC1-PC320及5个子原型静态恢复；捕获顺序moduleState/printLog/timerState/initState。Win_Create等GUI调用参数已与新框架43份文档核对；五组Text_Create结果均先做truthy门控。K[28]=['unknown',2]已确认是nil的VM dump序列化占位，resTimer清理写nil。MoneyProxy方法未文档化，保留原调用，不反汇编其内部。完整静态恢复，未运行时验证。",
     "root.children[42].children[22]": "Nested_Anonymous（8条父指令；Nested_str 27条、Nested_match 50条、Nested_Helper_11 4条）已完整静态恢复。原始VM M()每次新建T={}和X={}；fixed_param_count=2；两实参写入T[0]/T[1]；额外实参进入X；T[2]无写入保持nil。Nested_str捕获T[0]/PrintLog/T[2]/T[1]；无效数字路径按原字节码调用nil，保留attempt-to-call-nil行为。未运行时验证。",
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点236：开始最后一个未完成原型MainLeftBottom_Module（root，412条指令、58个子原型）的根级闭包装配。先从root PC1-PC412已有分段记录建立完整closure-site/Upvalue-cell/模块字段/导出表；逐个验证子原型工厂参数与共享cell，不臆造函数名或捕获来源。Nested_Anonymous已完成静态恢复，T[2]确定为nil且原错误路径保留。",
+  "next_action": "检查点237：继续根模块闭包装配。先按closure manifest的parent_register_fanout建立root寄存器值生命周期表；以PC写入/覆盖点为边界，给每个被捕获T寄存器标记当前值、捕获时值及后续改写。优先T[4]/T[5]/T[0]/T[2]/T[3]/T[41]/T[57]/T[37]等高复用寄存器；已确认T[57]在PC360被InstallDamageHook覆盖，root.children[47] UP[1]捕获的是安装器，不是onDamageMsg消息处理器。完成数据流表后再构建共享cell实例化代码与模块导出。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -128,7 +128,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "235"
+    "last_checkpoint": "236"
   },
   "static_recovered_functions": [
     {
@@ -2565,7 +2565,8 @@
       "status": "complete_static_reconstruction",
       "runtime_verified": false,
       "notes": [
-        "检查点83/135/137/138/139/140/145/146/148/149/182/183/184/185/186：父root PC367-PC381的13项捕获闭合。PC1-PC73完成功能标记、零参onDamageMsg、MAIN_ACTOR_ID/HP转换、lastHp/deathHandled死亡状态机、hp<=0/白名单门槛及FIND_IN_VIEW_PLAYER_LIST双返回值(players,playerCount)校验；PC74-PC77使用playerCount循环。循环内跳过nil/自身，UP4首返回truthy命中、第二返回名优先否则查ACTOR_NAME/默认名；UP2.distance false/nil绕过UP5并以0显示，truthy时五参调用root.children[22] Chebyshev helper，nil结果继续下一玩家。PC142-PC214日志节流/nextTryAt/随机传送成功失败路径均在循环体内；第一个通过距离门槛的目标处理后跳PC216 return。PC215为循环回跳；216条物理指令和全部可达分支闭合，完整静态恢复，未运行时验证。"
+        "检查点83/135/137/138/139/140/145/146/148/149/182/183/184/185/186：父root PC367-PC381的13项捕获闭合。PC1-PC73完成功能标记、零参InstallDamageHook安装器、MAIN_ACTOR_ID/HP转换、lastHp/deathHandled死亡状态机、hp<=0/白名单门槛及FIND_IN_VIEW_PLAYER_LIST双返回值(players,playerCount)校验；PC74-PC77使用playerCount循环。循环内跳过nil/自身，UP4首返回truthy命中、第二返回名优先否则查ACTOR_NAME/默认名；UP2.distance false/nil绕过UP5并以0显示，truthy时五参调用root.children[22] Chebyshev helper，nil结果继续下一玩家。PC142-PC214日志节流/nextTryAt/随机传送成功失败路径均在循环体内；第一个通过距离门槛的目标处理后跳PC216 return。PC215为循环回跳；216条物理指令和全部可达分支闭合，完整静态恢复，未运行时验证。",
+        "检查点236：UP[1]=root T[57] live cell；PC360覆盖为root.children[6] InstallDamageHook，PC368捕获时不是root.children[52] onDamageMsg处理器。"
       ]
     },
     {
@@ -2803,29 +2804,24 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "235",
+    "checkpoint": "236",
     "targets": [
-      "Nested_Anonymous（root.children[42].children[22]）",
-      "VM prototype tuple[3] fixed_param_count semantics"
+      "MainLeftBottom_Module root closure assembly"
     ],
-    "status": "从原始文件中找到VM执行器M()，闭合固定参数映射与Nested_Anonymous的T[2]=nil；同步修正受误读影响的源码签名；Nested_Anonymous与doInit_UI升级完整静态恢复，唯一未完成为根模块装配。",
-    "audit_file": "docs/audit/检查点235_VM调用帧初始化与固定参数计数纠错.md",
+    "status": "已解析root 58/58直接子原型闭包创建点与135个OP_387捕获描述符；建立父寄存器fanout表；依据live-cell语义纠正T57复用导致的BlacklistPlayerDetection UP1实际值。",
+    "audit_file": "docs/audit/检查点236_根模块58个闭包创建点与捕获cell清单.md",
     "files": [
-      "01_原始资料/MainLeftBottom(2).lua",
+      "docs/handoff/04_闭包捕获映射.json",
+      "docs/handoff/12_根模块闭包装配表.json",
+      "04_源码候选/root_MainLeftBottom_Module.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "04_源码候选/Nested_Anonymous_第七十八批.lua",
-      "04_源码候选/短函数草稿_第六十三批.lua",
-      "02_基础索引/02_原型总索引.json",
-      "02_基础索引/03_函数状态清单.csv",
-      "docs/handoff/05_机器可读接续状态.json",
-      "docs/handoff/10_防上下文中断_checkpoint协议.md"
+      "docs/audit/检查点146_BlacklistPlayerDetection13槽闭包捕获映射.md",
+      "docs/audit/检查点186_BlacklistPlayerDetection216条指令完整静态复核.md"
     ],
     "findings": [
-      "原型tuple[3]是固定参数数量，不是vararg布尔标志。",
-      "M()每次新建T/X；前V个实参写入T[0..V-1]，额外参数写入X。",
-      "Nested_Anonymous固定参数数2，T0/T1对应prompt和成功回调，T2为nil。",
-      "错误分支调用nil是原始字节码行为，未补造回调。",
-      "GetWritablePath/ReadNumericConfig/FindBlacklistPlayer/GetMapData2DPtr/onDamageMsg等受影响函数签名已按固定参数数修正。"
+      "58个直接子原型各有一个root闭包创建点；135个捕获描述符全部为OP_387。",
+      "OP_387捕获父T寄存器live cell；不是创建时值快照。",
+      "T57在PC357先保存onDamageMsg并于PC359写模块字段；PC360被InstallDamageHook覆盖；PC368 BlacklistPlayerDetection捕获T57，因此UP1=InstallDamageHook。"
     ]
   },
   "corrections": [
@@ -2846,6 +2842,13 @@
       "topic": "原型tuple[3]参数元数据语义",
       "status": "corrected; previous vararg_flag interpretation superseded",
       "details": "原始VM F()将D()写入proto[3]；M()读取为固定参数数量V。前V个参数写入T，其余写入独立X表。原索引字段vararg_flag为历史误命名；原型总索引新增fixed_param_count，后续以该字段为准。"
+    },
+    {
+      "date": "2026-11-10",
+      "checkpoint": 236,
+      "topic": "root T[57] live cell reuse",
+      "status": "corrected",
+      "details": "PC357 creates onDamageMsg in T[57]; PC359 assigns it to MainLeftBottom.onDamageMsg; PC360 overwrites T[57] with InstallDamageHook; PC368 BlacklistPlayerDetection captures the live cell, so UP[1] is InstallDamageHook."
     }
   ],
   "init_gather_capture_review": {
@@ -3541,26 +3544,25 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 235,
+  "last_checkpoint": 236,
   "checkpoint": {
-    "number": 235,
+    "number": 236,
     "date": "2026-11-10",
     "artifacts": [
+      "docs/handoff/04_闭包捕获映射.json",
+      "docs/handoff/12_根模块闭包装配表.json",
+      "docs/audit/检查点236_根模块58个闭包创建点与捕获cell清单.md",
+      "04_源码候选/root_MainLeftBottom_Module.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "04_源码候选/Nested_Anonymous_第七十八批.lua",
-      "04_源码候选/短函数草稿_第六十三批.lua",
-      "02_基础索引/02_原型总索引.json",
-      "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点235_VM调用帧初始化与固定参数计数纠错.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "complete_static_reconstructions": 109,
     "runtime_verified": 0,
-    "notes": "找到原始VM执行器M()并证明原型tuple[3]是固定参数数量；Nested_Anonymous fixed_param_count=2，T0/T1为两个实参，T2确定为nil，错误路径调用nil的原始行为保留。同步修正若干函数签名及原型总索引fixed_param_count字段；Nested_Anonymous和doInit_UI升级完整静态恢复。唯一未完成原型为MainLeftBottom_Module根级闭包装配。"
+    "notes": "解析root 58/58直接子原型闭包创建点和135个OP_387捕获描述符，建立root寄存器fanout表。M()证明OP_387捕获live cell。修正T57复用：PC357 onDamageMsg、PC359模块字段赋值、PC360覆盖T57=InstallDamageHook、PC368 BlacklistPlayerDetection捕获该cell，因此UP1为InstallDamageHook。根模块仍唯一未完成；静态109/110，运行时0。"
   },
   "drafts": 33,
-  "next": "检查点236：仅剩MainLeftBottom_Module根级闭包装配；按root PC1-PC412既有分段记录建立闭包创建点、Upvalue捕获cell、模块字段赋值和导出映射表，逐段装配，不猜测未闭合绑定。",
+  "next": "检查点237：按docs/handoff/12_根模块闭包装配表.json的寄存器fanout从高到低，建立root T[0..60]寄存器数据流/值生命周期表；先闭合T[0..5]、T[14..23]、T[37..60]等共享cell及写入PC，再逐项核对模块字段/全局导出。特别保留T[57]时间线：PC357 onDamageMsg→PC359写模块字段→PC360覆盖T[57]=InstallDamageHook→PC368 BlacklistPlayerDetection捕获该live cell。",
   "recent_checkpoint": {
     "number": 230,
     "date": "2026-11-10",
@@ -3579,11 +3581,12 @@
     "notes": "按简单优先实际整合GetStorageItemData和FindBlacklistPlayer。FindBlacklistPlayer（root.children[51]）的UP[0]正确指向root.children[48] PCallHelper_2（其Nested_FriendProxy子原型为root.children[48].children[0]）；相邻root.children[49]是独立AnonymousHelper_49，路径已校正。PCallHelper_2/Nested_FriendProxy此前已在主文件定义，本批复用不重复实现。GetStorageItemData父T[4]回调身份未证明，保留notify参数。静态恢复数不变，运行时验证0。"
   },
   "latest_checkpoint": {
-    "checkpoint": "235",
-    "summary": "原始VM调用帧M()闭合固定参数映射，Nested_Anonymous T[2]确定为nil并完成静态恢复；109/110完整，唯一未完成根模块闭包装配。",
-    "audit_file": "docs/audit/检查点235_VM调用帧初始化与固定参数计数纠错.md",
+    "checkpoint": "236",
+    "summary": "根模块58/58闭包创建点、135个OP_387捕获描述符已建表；确认OP_387 live cell并纠正T57导致BlacklistPlayerDetection UP1实际为InstallDamageHook。",
+    "audit_file": "docs/audit/检查点236_根模块58个闭包创建点与捕获cell清单.md",
     "unresolved": [
-      "MainLeftBottom_Module根级闭包实例化/共享Upvalue cell/模块字段与导出装配未完成",
+      "root T寄存器值生命周期/共享cell初始化及后续覆盖映射未完全闭合",
+      "根模块模块字段与全局导出装配未完成",
       "运行时验证为0"
     ]
   },
@@ -3595,7 +3598,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 236,
+  "next_checkpoint": 237,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3753,11 +3756,12 @@
     "runtime_verified": false
   },
   "latest": {
-    "checkpoint": "235",
-    "summary": "原始VM调用帧M()闭合固定参数映射，Nested_Anonymous T[2]确定为nil并完成静态恢复；109/110完整，唯一未完成根模块闭包装配。",
-    "audit_file": "docs/audit/检查点235_VM调用帧初始化与固定参数计数纠错.md",
+    "checkpoint": "236",
+    "summary": "根模块58/58闭包创建点、135个OP_387捕获描述符已建表；确认OP_387 live cell并纠正T57导致BlacklistPlayerDetection UP1实际为InstallDamageHook。",
+    "audit_file": "docs/audit/检查点236_根模块58个闭包创建点与捕获cell清单.md",
     "unresolved": [
-      "MainLeftBottom_Module根级闭包实例化/共享Upvalue cell/模块字段与导出装配未完成",
+      "root T寄存器值生命周期/共享cell初始化及后续覆盖映射未完全闭合",
+      "根模块模块字段与全局导出装配未完成",
       "运行时验证为0"
     ]
   },
@@ -3765,6 +3769,7 @@
     "original_proto_field": "vararg",
     "legacy_index_field": "vararg_flag",
     "correct_meaning": "fixed_param_count",
-    "evidence": "01_原始资料/MainLeftBottom(2).lua: F()写C[3]=D(); M()读取W[3]作为V，创建T={}与X={}，将索引<V的实参写入T[index]，其余写入X[index-V]。"
+    "evidence": "01_原始资料/MainLeftBottom(2).lua: F()写C[3]=D(); M()读取W[3]作为V，创建T={}与X={}，将索引<V的实参写入T[index]，其余写入X[index-V]。",
+    "capture_semantics": "OP_387 stores a live cell reference {parent_T_table, register_index}; the upvalue proxy __index/__newindex reads/writes the parent T register dynamically. Later parent writes are visible to closures."
   }
 }
