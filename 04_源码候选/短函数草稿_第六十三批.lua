@@ -1,7 +1,7 @@
 --[[
 函数：doInit_UI | 原型索引52 | root.children[42] | legacy root/43
 物理指令419 | 常量105 | 子原型23 | vararg_flag=0
-普通Lua主体草稿（检查点187首版、199分支复审、200按钮闭包/每日回调整合、201合并Nested_Anonymous与Nested_FFFF00资源统计工厂及子依赖、203纠正调用参数展开并追踪Nested_Anonymous调用链）；未运行时验证。Attach_UITop的T[7]实参来源、Nested_Anonymous的T槽及unknown哨兵仍待核验。检查点204补充：PC133 OP_233的第三返回值写入T[7]；其输入T[6]的运行时来源仍未闭合。
+普通Lua主体草稿（检查点187/199/200/201/203/204/208；复审PC1-PC419；修正PC180/183均只传T[7]一个实参，RequestStorageData和Attach_UITop同参；未运行时验证。T[7]由PC133的ipairs(T[6])第三返回值产生，宿主值未验证；Nested_Anonymous的T槽及unknown哨兵仍待核验。
 本文件已内嵌Nested_find、Nested_Anonymous及Nested_FFFF00资源统计相关闭包工厂；其余子原型继续复用独立候选。
 ]]
 -- root.children[42].children[0] / Nested_find：46条，无捕获。
@@ -871,21 +871,18 @@ local function doInit_UI()
         storageProxy:RequestStorageData()
     end
 
-    -- PC181-PC183：调用GUI.Attach_UITop，物理调用栈传入7个显式实参；
-    -- 目前七个实参的业务来源/顺序尚未闭合，以下仅为明确标记的占位值，
-    -- 不能据此运行。调用返回值保留为后续Button_Create的父节点T[6]。
-    local ATTACH_UI_TOP_ARG_1 = nil -- TODO: trace parent-frame producer
-    local ATTACH_UI_TOP_ARG_2 = nil -- TODO: trace parent-frame producer
-    local ATTACH_UI_TOP_ARG_3 = nil -- TODO: trace parent-frame producer
-    local ATTACH_UI_TOP_ARG_4 = nil -- TODO: trace parent-frame producer
-    local ATTACH_UI_TOP_ARG_5 = nil -- TODO: trace parent-frame producer
-    local ATTACH_UI_TOP_ARG_6 = nil -- TODO: trace parent-frame producer
-    local ATTACH_UI_TOP_ARG_7 = nil -- TODO: trace parent-frame producer
-    local uiParent = GUI:Attach_UITop(
-        ATTACH_UI_TOP_ARG_1, ATTACH_UI_TOP_ARG_2, ATTACH_UI_TOP_ARG_3,
-        ATTACH_UI_TOP_ARG_4, ATTACH_UI_TOP_ARG_5, ATTACH_UI_TOP_ARG_6,
-        ATTACH_UI_TOP_ARG_7
-    )
+    -- PC181-PC195：GUI.Attach_UITop调用实参物理来源未闭合。
+    -- 当前草稿把调用错误写成七个nil实参；检查点208依据OP_358/OP_068调用展开规则纠正：
+    -- PC180 RequestStorageData与PC183 Attach_UITop均只传T[7]这一个显式实参。
+    -- PC133是调用前最后一次写入T[7]的位置：ipairs(T[6])的第三返回值。
+    -- T[6]的运行时值及ENV.ipairs宿主行为未验证，因此T[7]只保留中性占位。
+    local T7_SLOT_UNRESOLVED = nil -- PC133: third return from ipairs(T[6]); runtime value unresolved
+    local storageProxy = global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)
+    if storageProxy then
+        storageProxy:RequestStorageData(T7_SLOT_UNRESOLVED)
+    end
+
+    local uiParent = GUI:Attach_UITop(T7_SLOT_UNRESOLVED)
 
     -- PC184-PC195：读取mini-chat位置/尺寸；xBase/yBase随后由T[22]/T[23]捕获。
     local mainProperty = MainProperty
