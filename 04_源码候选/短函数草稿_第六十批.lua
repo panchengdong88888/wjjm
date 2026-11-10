@@ -16,10 +16,12 @@
   child0 Nested_isOutputted：make_Nested_isOutputted(storageState, notify)
   child1 Nested_Anonymous_2：make_FindAvailableStoragePage(maxPage,pageCapacity,openSize,storedPageData)
 
+装配适配：make_Nested_isOutputted与make_FindAvailableStoragePage作为额外工厂参数显式注入，避免跨文件局部作用域失效。原型的三个Upvalue仍仅为storageState/notify/output。
+
 本文件保留VM可见的循环、筛选、调用顺序和七项LuaSendMsg参数；不把999999999或服务端字段猜成未证实的协议含义。
 ]]
 
-local function make_StorageItems(storageState, notify, output)
+local function make_StorageItems(storageState, notify, output, makeNestedIsOutputted, makeFindAvailableStoragePage)
     local function StorageItems()
         -- PC1-PC7：互斥检查。正在存仓则直接返回，否则先置位。
         if storageState.isStoring then
@@ -57,7 +59,7 @@ local function make_StorageItems(storageState, notify, output)
         end
 
         -- PC54-PC58：child1捕获[maxPage,pageCapacity,openSize,storedPageData]。
-        local findAvailablePage = make_FindAvailableStoragePage(
+        local findAvailablePage = makeFindAvailableStoragePage(
             maxPage, pageCapacity, openSize, storedPageData
         )
 
@@ -99,7 +101,7 @@ local function make_StorageItems(storageState, notify, output)
         local queuedCount = 0
 
         -- PC102-PC104：child0捕获[storageState,notify]。
-        local isOutputted = make_Nested_isOutputted(storageState, notify)
+        local isOutputted = makeNestedIsOutputted(storageState, notify)
 
         -- PC105-PC224：唯一一轮pairs遍历；不拆成两次遍历。
         for _, item in pairs(bagData) do
