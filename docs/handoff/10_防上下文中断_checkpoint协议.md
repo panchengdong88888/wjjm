@@ -3061,3 +3061,14 @@ Nested_match：
 - 有捕获工厂累计21/36，剩余15；无捕获直接子原型22/22。完整静态恢复109、普通Lua草稿72、运行时验证0，本批不增加函数完成计数。
 - 尚未运行目标Lua宿主，不能宣称UI实际行为验证通过。
 - 下一步检查点252：优先处理剩余稳定函数/表捕获短闭包；重点核对T[44] GetWritablePath在root.children[9]/[17]/[0]创建前是否已有确定的生产者与同一引用。
+
+
+## 检查点 #252（2026-11-10）：稳定捕获辅助闭包装配
+
+- 新增六个有捕获工厂静态实例化：ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper、GetMapData2DPtr、FindBlacklistPlayer、UseItemByIndex。
+- T[44] GetWritablePath由无捕获root.children[2]产生；ReadNumericConfig.UP0、PCallHelper.UP0、FileExistCheck_pcall_wrapper.UP0均接入同一个`rootPrototypes.GetWritablePath`函数对象，不各自重建副本。
+- GetMapData2DPtr.UP0按root PC350捕获T[52] opaquePairTable；尽管该捕获在已闭合的可达PC1-PC37路径中未读取，仍保留捕获参数注入。
+- FindBlacklistPlayer.UP0接入root.children[48] PCallHelper_2；该无捕获辅助闭包已在直接绑定表中。
+- UseItemByIndex.UP0接入root T[37] randomTeleportItemNames，保留原捕获表，不推测其来源之外的业务用途。
+- 有捕获工厂累计27/36，剩余9；无捕获直接子原型22/22。完整静态恢复109、普通Lua草稿72、运行时验证0。
+- 下一步检查点253：处理剩余黑名单相关闭包，重点审查PC360对T[57]的覆盖；BlacklistPlayerDetection.UP1捕获的是InstallDamageHook闭包，T[58]则是DeathAutoBlacklist。不得将onDamageMsg误绑定为T[57]。
