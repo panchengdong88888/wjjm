@@ -2212,3 +2212,15 @@
 - 本批未增加草稿原型计数；统计维持普通Lua草稿72、完整静态恢复103/110、运行时验证0。
 - 未解决：Nested_Anonymous父包装器仍未并入；Nested_FFFF00资源统计工厂仍在第六十二批独立候选；Attach_UITop七个实参来源未闭合；GUI宿主语义/部分UPVALUE身份未完全确认；未运行时验证。
 - 下一步：恢复root.children[42].children[22] Nested_Anonymous父包装器并复用已完成Nested_str/Nested_match/Nested_Helper_11；然后合并Nested_FFFF00资源统计工厂及依赖，继续追踪Attach_UITop七实参。
+
+
+## 检查点 #201（2026-11-10）：doInit_UI Nested_Anonymous 与 Nested_FFFF00 依赖合并
+
+- 第六十三批主候选继续承接检查点200，不重建419条主体。
+- root.children[42].children[22] / root/43/23 Nested_Anonymous父包装器主体已从第七十八批并入。父PC1创建Nested_str并捕获T[0]/UP[0]/T[2]/T[1]；父PC6-PC7零参调用子闭包，PC8返回。UP[0]=PrintLog已闭合。Nested_str构造OpenCommonTipsPop参数；Nested_match校验status严格1、editStr空串回退、删除空白、纯数字正则及tonumber；成功调用T[1]槽，失败调用PrintLog并ScheduleOnce(0.1)执行Nested_Helper_11固定提示。T[0]/T[1]/T[2]生产者与类型仍未知，保留显式占位，不升级完整静态恢复。
+- root.children[42].children[3] / Nested_FFFF00父工厂及依赖已并入：Nested_Helper_2、Nested_string、Nested_FFFFFF工厂、Nested_Helper_3工厂、Nested_UnSchedule工厂。原调用捕获顺序moduleState/printLog/timerState/initState及资源刷新顺序保持。
+- Nested_UnSchedule与Nested_FFFF00中反汇编['unknown',2]仍以UNKNOWN_VALUE_SENTINEL表示；不得未经宿主证据替换nil。MoneyProxy快照写入name/刷新读取moneyId差异保留，不自行合并。
+- 检查点200按钮闭包批次及child12每日巡航回调保留。
+- 更新并回读验证：第六十三批源码、第七十八批状态说明、函数状态CSV、机器接续状态JSON、本审计报告。
+- 统计维持普通Lua草稿72、完整静态恢复103/110、运行时验证0；本批不增加原型计数。
+- 下一步：回溯doInit_UI PC181-PC183 GUI:Attach_UITop七个显式实参的寄存器生产者/顺序；继续追踪Nested_Anonymous T[0]/T[1]/T[2]cell来源；复核UNKNOWN_VALUE_SENTINEL和GUI宿主参数语义。doInit_UI仍为普通Lua草稿，不得宣称可运行。
