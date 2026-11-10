@@ -2120,12 +2120,26 @@
 - 下一步：root PC86-PC137，优先核清配置表、奖励/在线时长数据结构及其持有关系。
 
 
-## 检查点 #194（2026-11-10）：root模块PC86-PC137配置初始化与奖励记录表恢复
+## 检查点 #194（2026-11-10）：root模块PC86-PC167配置初始化与奖励记录表恢复
 
-- 更新源码：`04_源码候选/root_MainLeftBottom_Module.lua`；新增审计：`docs/audit/检查点194_root模块PC86-PC137配置初始化与奖励记录表恢复.md`；同步函数状态CSV与机器状态JSON。
+- 更新源码：`04_源码候选/root_MainLeftBottom_Module.lua`；新增审计：`docs/audit/检查点194_root模块PC86-PC167配置初始化与奖励记录表恢复.md`；同步函数状态CSV与机器状态JSON。
 - PC86-PC89创建gatherConfig：`GATHER_THRESHOLD=10`、`CHECK_INTERVAL=0.5`、`ATTACK_WAIT_TIME=1`。root PC194创建FindMonsterCandidates时捕获该表为UPVALUE[4]，与检查点3既有闭包映射一致。
 - PC90-PC95计算`math.floor(3600/0.2)=18000`；最终业务用途未由本批闭合，源码不赋予猜测性名称。
 - PC96-PC167构造14项三字段奖励记录：累计登录1-7天共7项（首字段56061、第三字段18），在线时长5/10/20/30/60/90/120分钟共7项（首字段56011，第三字段依次19/20/20/20/20/20/21）。PC167按顺序组装外层数组。
 - root PC409创建doInit_UI时捕获该外层数组R12为UPVALUE[18]；因此持有关系闭合到doInit_UI闭包，数组三列的服务端/界面正式字段语义仍未确认。
 - 根模块源码继续保持分段普通Lua草稿，不是完整可运行源码。统计维持普通Lua草稿72、完整静态恢复103/110（93.6%）、运行时验证0。
-- 下一步：继续root PC138-PC200，核实状态常量表、状态初值/共享单元及PC181以后辅助闭包创建与捕获；复用已完成的子原型，不重复恢复。
+- 下一步：继续root PC168-PC200，核实状态常量表、状态初值/共享单元及PC181以后辅助闭包创建与捕获；复用已完成的子原型，不重复恢复。
+
+
+## 检查点 #195（2026-11-10）：root模块PC168-PC200状态单元与辅助闭包注册
+
+- 更新源码：`04_源码候选/root_MainLeftBottom_Module.lua`；新增审计：`docs/audit/检查点195_root模块PC168-PC200状态单元与辅助闭包注册.md`；同步函数状态CSV、机器状态JSON。
+- PC168-PC171创建状态文字表：IDLE=“空闲状态”、GATHERING=“引怪中”、ATTACKING=“攻击中”；PC172以IDLE初始化root T[14]共享currentState单元。检查点177已确认FormatStateChange和MainLoop共享该cell。
+- PC173-PC180初始化T[15]={}、T[16]=0、T[17]=0、T[18]=false、T[19]=false、T[20]=0、T[21]=nil、T[22]=""。T[18]在StopGatherMonsters中作为running标记；其余槽位仅按已核实复位行为作中性命名。
+- PC181创建root.children[8] / FormatStateChange，依序捕获T[4]=PrintLog、T[14]=currentState共享cell。
+- PC184-PC193依序创建10个无捕获闭包：SetTargetID、ClearTargetID_2、GetMainPlayerID、GetPlayerPosition、GetPlayerMapPosition、DistanceCalculation、IsDie、GetOwnerIDText、GetOwnerID、GetOwnerDescription。此处仅确认闭包创建，不推断全局导出。
+- PC194创建root.children[28] / FindMonsterCandidates；PC195-PC199依序捕获T[27] GetPlayerPosition、T[30] IsDie、T[28] GetPlayerMapPosition、T[29] DistanceCalculation、T[8] gatherConfig。与检查点3/4既有捕获映射和函数体审计一致。
+- PC200创建root.children[26] / ResetGatherMonsterData；PC201-PC209依序捕获T[15],T[16],T[17],T[25],T[19],T[20],T[21],T[22],T[4]。与检查点162既有审计的UPVALUE用途和复位顺序一致；T[25]具体生产者/业务身份仍未闭合。
+- 检查点194范围校正：奖励表实际构造延续至PC167，因此PC86-PC167均属于检查点194；其审计正文已校正。PC90-PC95计算值18000在root PC408被doInit_UI捕获为UPVALUE[17]，具体UI用途仍未知；奖励数组在PC409捕获为UPVALUE[18]。
+- 统计：普通Lua草稿72；完整静态恢复103/110（93.6%）；运行时验证0。root仍为分段普通Lua草稿，不可作为完整可运行模块。
+- 下一步：继续root PC201-PC270，核对PC210-PC214辅助闭包、MainLoop 22项捕获及InitGatherMonsters/StopGatherMonsters等闭包创建位置；复用既有函数体审计，不重复恢复。
