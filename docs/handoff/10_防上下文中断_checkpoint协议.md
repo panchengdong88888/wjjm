@@ -3263,3 +3263,19 @@ Nested_match：
 - 新建`docs/audit/检查点266_PC297-PC315配置包装链与寄存器捕获恢复.md`；更新主恢复稿、根候选注释、机器状态、闭包装配表、函数状态CSV及结构树。
 - 完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或游戏运行。
 - 下一步检查点267：恢复PC350-PC388黑名单闭包链，区分onDamageMsg处理函数与InstallDamageHook闭包及T[57] live cell，核对BlacklistPlayerDetection的13项捕获。
+
+
+## 检查点 #267（2026-11-10）：PC350-PC388黑名单闭包链与导出身份核对
+
+- PC350 GetMapData2DPtr捕获T52；其可达PC1-PC37不读取该Upvalue，仍保留工厂参数以符合捕获结构。
+- PC352 PCallHelper_2无捕获直接绑定；PC353 FindBlacklistPlayer捕获T54=PCallHelper_2。
+- PC355 UseItemByIndex捕获T37=randomTeleportItemNames。
+- PC357 onDamageMsg捕获T41=blacklistState，并于PC359写入MainLeftBottom.onDamageMsg。
+- PC360 InstallDamageHook捕获T0=MainLeftBottom.a、T4=PrintLog，并将结果写入T57 live cell。
+- PC363 DeathAutoBlacklist按[T41,T4,T55,T5]注入；PC368 BlacklistPlayerDetection按13项捕获顺序注入，其中UP1必须是T57 live cell；PC382导出_G.BlacklistItems。
+- PC383 ClearBlacklistItems按[T54,T4,T5,T41]注入；PC388导出_G.ClearBlacklistItems。
+- 主恢复稿增加身份断言：blacklist共享表、onDamageMsg模块字段、T57.value=InstallDamageHook且不等于onDamageMsg、BlacklistItems/ClearBlacklistItems全局导出身份。
+- 特别强调：PC357 onDamageMsg是伤害消息解析/记录处理函数；PC360 InstallDamageHook是消息处理器挂接函数。BlacklistPlayerDetection捕获的是PC360写入T57的InstallDamageHook共享cell，绝不能把UP1接成onDamageMsg。
+- 新建`docs/audit/检查点267_PC350-PC388黑名单闭包链与导出身份核对.md`；更新主恢复稿、机器状态及根模块闭包装配表。
+- 函数主体仍按静态恢复状态统计109/110、普通Lua草稿72、根直接闭包58/58源码层绑定；运行时验证0，未执行Lua解释器/luac或游戏运行。
+- 下一步检查点268：从函数状态清单确认尚未完整静态恢复的真实原型，优先批量恢复简单业务函数主体；不得凭109/110总数猜测原型名称。
