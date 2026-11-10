@@ -7662,7 +7662,7 @@
     "binding_policy": "Only capture_count=0 direct children; captured factories remain pending until shared live-cell bindings are implemented.",
     "runtime_verified": false
   },
-  "next_action": "检查点257：对根模块58个直接子闭包做统一装配一致性审计，随后处理doInit_UI内部Nested_Anonymous未解析T槽。",
+  "next_action": "检查点258：按PC1-PC412将root_MainLeftBottom_Module.lua的分段根模块草稿整合为连续可读的模块主体，复用已恢复的58个子原型，不重复分析子函数。",
   "root_assembly_checkpoint_247": {
     "direct_child_closures_expected": 22,
     "direct_child_closures_source_bound": 22,
@@ -9424,9 +9424,22 @@
       ],
       "module_field": "MainLeftBottom.doInit",
       "nested_prototype_count": 23,
-      "nested_unknowns": [
-        "Nested_Anonymous child22内部T[0]/T[1]/T[2]来源仍未完全确认；保留候选中的中性占位，不升级作者级恢复。"
-      ]
+      "nested_unknowns": [],
+      "nested_resolution": {
+        "prototype": "root.children[42].children[22]",
+        "fixed_param_count": 2,
+        "callers": [
+          "Nested_Helper_4",
+          "Nested_Helper_7"
+        ],
+        "arguments": [
+          "promptText -> T[0]",
+          "successCallback -> T[1]"
+        ],
+        "untouched_slot": "T[2]=nil",
+        "behavior": "Nested_Helper_11 error branch directly calls T[2]; preserve attempt-to-call-nil behavior",
+        "evidence": "docs/audit/检查点235_VM调用帧初始化与固定参数计数纠错.md"
+      }
     },
     "bound_factories": [
       {
@@ -9733,7 +9746,7 @@
     },
     "root_direct_closure_status": "58/58 source-level bindings; not runtime-verified",
     "runtime_verified": false,
-    "next_action": "检查点257：对根模块58个直接子闭包做统一装配一致性审计，随后处理doInit_UI内部Nested_Anonymous未解析T槽。",
+    "next_action": "检查点257：已完成58个根直接闭包集合与装配一致性审计；下一步转入唯一未完整静态恢复的root模块原型，按PC1-PC412整合连续模块主体。",
     "bound_factory_names": [
       "ShowLocalNoticeByType",
       "DiuItems",
@@ -10249,5 +10262,44 @@
       }
     ],
     "all_bound_factories_count": 36
-  }
+  },
+  "root_assembly_checkpoint_257": {
+    "date": "2026-11-10",
+    "root_prototype_count": 110,
+    "root_physical_instructions": 412,
+    "root_constants": 109,
+    "direct_child_count": 58,
+    "nested_descendant_count": 51,
+    "no_capture_children": 22,
+    "captured_children": 36,
+    "direct_bindings_in_source": 22,
+    "captured_factories_in_source": 36,
+    "direct_binding_missing": [],
+    "captured_factory_missing": [],
+    "direct_binding_extra": [],
+    "captured_factory_extra": [],
+    "source_level_bindings": "58/58",
+    "global_exports": 21,
+    "module_fields": 26,
+    "shared_cells": {
+      "parent_registers": "T[14..22]",
+      "unique_cell_per_register": true,
+      "reused_by": "FormatStateChange, ResetGatherMonsterData, MainLoop, InitGatherMonsters, StopGatherMonsters",
+      "blacklist_T57": "rootCells[57] preserves InstallDamageHook live cell; factory dereferences .value()"
+    },
+    "nested_anonymous": {
+      "fixed_param_count": 2,
+      "T0": "promptText",
+      "T1": "successCallback",
+      "T2": "nil (no write in child frame)",
+      "status": "resolved at checkpoint235; nil-call behavior preserved"
+    },
+    "static_complete_functions": 109,
+    "ordinary_lua_drafts": 72,
+    "runtime_verified": 0,
+    "audit_file": "docs/audit/检查点257_根模块58个直接闭包装配一致性审计.md",
+    "structure_tree_file": "docs/handoff/13_原型结构树.md",
+    "next_action": "检查点258：按PC1-PC412将root_MainLeftBottom_Module.lua的分段根模块草稿整合为连续可读的模块主体，复用已恢复的58个子原型，不重复分析子函数。"
+  },
+  "root_structure_tree_file": "docs/handoff/13_原型结构树.md"
 }
