@@ -8228,13 +8228,17 @@ do
         rootPrototypes.Builtsetting =
             makeBuiltsetting(rootPrototypes.ShowLocalNoticeByType)
     end
-    if rootPrototypes.Builtsetting then
-        _G.Builtsetting = rootPrototypes.Builtsetting
-    end
+    rootPrototypes.Builtsetting = requireRecoveredClosure(
+        "Builtsetting", rootPrototypes.Builtsetting
+    )
+    _G.Builtsetting = rootPrototypes.Builtsetting
 
     -- root PC259-PC260：创建无捕获MoveItemToQuickUse；PC260导出全局。
     bindDirect("MoveItemToQuickUse",
         "04_源码候选/root_MainLeftBottom_Module.lua", "MoveItemToQuickUse")
+    rootPrototypes.MoveItemToQuickUse = requireRecoveredClosure(
+        "MoveItemToQuickUse", rootPrototypes.MoveItemToQuickUse
+    )
     _G.MoveItemToQuickUse = rootPrototypes.MoveItemToQuickUse
 
     -- 检查点251：UI闭包按父root寄存器T[0]/T[1]/T[3]捕获顺序注入。
@@ -8247,8 +8251,9 @@ do
         rootPrototypes.DestroyUI = makeDestroyUI(
             rootSource.uiState, rootSource.timerState, rootSource.buttonMap
         )
-        rootModule.hide = rootPrototypes.DestroyUI
     end
+    rootPrototypes.DestroyUI = requireRecoveredClosure("DestroyUI", rootPrototypes.DestroyUI)
+    rootModule.hide = rootPrototypes.DestroyUI
 
     local makeSetButtonVisibility = sourceFunction(
         "04_源码候选/短函数草稿_第十三批.lua", "make_SetButtonVisibilityState"
@@ -8257,8 +8262,11 @@ do
         rootPrototypes.SetButtonVisibilityState = makeSetButtonVisibility(
             rootSource.uiState, rootSource.buttonMap
         )
-        rootModule.show = rootPrototypes.SetButtonVisibilityState
     end
+    rootPrototypes.SetButtonVisibilityState = requireRecoveredClosure(
+        "SetButtonVisibilityState", rootPrototypes.SetButtonVisibilityState
+    )
+    rootModule.show = rootPrototypes.SetButtonVisibilityState
 
     local makeShowHideAll = sourceFunction(
         "04_源码候选/短函数草稿_第十四批.lua", "make_ShowHideAllButtons"
@@ -8267,8 +8275,11 @@ do
         rootPrototypes.ShowHideAllButtons = makeShowHideAll(
             rootSource.timerState, rootSource.buttonMap, rootSource.uiState
         )
-        rootModule.destroy = rootPrototypes.ShowHideAllButtons
     end
+    rootPrototypes.ShowHideAllButtons = requireRecoveredClosure(
+        "ShowHideAllButtons", rootPrototypes.ShowHideAllButtons
+    )
+    rootModule.destroy = rootPrototypes.ShowHideAllButtons
 
     -- AccountIDValidation：UP[0]=root T[4]=PrintLog，UP[1]=root T[5]=ShowLocalNoticeByType。
     -- 内部Nested_ID与Nested_Panel_mini_chat工厂保留在同一来源词法块。
@@ -8281,8 +8292,23 @@ do
             rootPrototypes.PrintLog,
             rootPrototypes.ShowLocalNoticeByType
         )
-        rootModule.main = rootPrototypes.AccountIDValidation
     end
+    rootPrototypes.AccountIDValidation = requireRecoveredClosure(
+        "AccountIDValidation", rootPrototypes.AccountIDValidation
+    )
+    rootModule.main = rootPrototypes.AccountIDValidation
+
+    -- PC280-PC296的模块状态和配置常量来自root来源词法块。
+    assert(type(rootSource.randomTeleportItemNames) == "table"
+        and #rootSource.randomTeleportItemNames == 1
+        and rootSource.randomTeleportItemNames[1] == "随机传送石",
+        "PC280-PC282 randomTeleportItemNames reconstruction mismatch")
+    assert(type(rootSource.blacklistState) == "table"
+        and rootModule.blacklist == rootSource.blacklistState,
+        "PC286-PC294 blacklistState identity mismatch")
+    assert(type(rootSource.blacklistDistanceConfigFile) == "string"
+        and type(rootSource.gatherMonsterCountConfigFile) == "string",
+        "PC295-PC296 configuration file names missing")
 
     -- 检查点252：T[44] GetWritablePath是同一个稳定函数引用，供三个闭包共享。
     -- root PC297：创建无捕获GetWritablePath，供PC298/301/303闭包捕获。
