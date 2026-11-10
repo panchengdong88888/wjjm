@@ -109,6 +109,7 @@ end
 
 -- MainLeftBottom(2).lua 普通 Lua 恢复候选
 -- 检查点 #169：root.children[55] 父函数及两个子原型
+-- 检查点249：根装配以PrintLog和ShowLocalNoticeByType绑定UP[0]/UP[1]，写入MainLeftBottom.main。
 -- 说明：这是基于 corrected phase3 反汇编的可读重建，不是原始源码逐字节恢复。
 -- 未进行宿主运行时验证。
 
