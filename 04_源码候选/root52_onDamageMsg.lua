@@ -3,18 +3,20 @@
 -- UP[0] = blacklistState (root T[41]); the same table is exposed as MainLeftBottom.blacklist.
 
 local function make_onDamageMsg(blacklistState)
-    return function(messageJson)
-        -- fixed_param_count=1; additional arguments are not read.
-        -- PC 1-5: reject a false/nil or empty first argument.
+    return function(arg1, messageJson)
+        -- fixed_param_count=2; PC1/PC3 gate on the second fixed parameter.
         if not messageJson or messageJson == "" then
             return
         end
 
         -- PC 6-16: decode the JSON under pcall; require a table result.
+        local decodeInput = arg1
         local function decodeMessage()
             local jsonDecode = SL.JsonDecode
-            return jsonDecode(messageJson)
+            return jsonDecode(decodeInput)
         end
+        -- OP_387 captured the parent T[0] cell; PC8 then overwrites T[0] with T[1].
+        decodeInput = messageJson
 
         local decodeOk, message = pcall(decodeMessage)
         if not decodeOk or type(message) ~= "table" then
@@ -66,10 +68,9 @@ local function make_onDamageMsg(blacklistState)
 end
 
 -- Static reconstruction boundaries:
--- * The callback reads only the first explicit argument (messageJson); the
---   second argument and any extra varargs are not read.
--- * Nested_JsonDecode captures the first argument in parent T[1], calls
---   SL:JsonDecode(messageJson), and returns the decoder's values to pcall.
+-- * fixed_param_count=2; PC1/PC3 check the second parameter for truthy/non-empty.
+-- * Nested_JsonDecode captures the parent T[0] cell; PC8 writes T[1] into that cell
+--   before pcall, so the child decodes the second fixed parameter messageJson.
 -- * The callback stores only blacklistState.lastAttacker; it does not itself
 --   request blacklist insertion or schedule any action.
 -- * No runtime validation; SL metadata and JSON decoder behavior are host-dependent.
