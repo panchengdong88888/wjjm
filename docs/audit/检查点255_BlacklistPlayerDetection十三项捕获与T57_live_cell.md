@@ -9,7 +9,7 @@
 | UP槽 | 父寄存器 | 值/身份 | 装配值 |
 |---:|---:|---|---|
 | 0 | T[2] | MainLeftBottom.z 状态表 | rootModule.z |
-| 1 | T[57] | InstallDamageHook闭包（PC360写入，PC368捕获时仍为该值） | rootPrototypes.InstallDamageHook |
+| 1 | T[57] | OP_387 live cell；PC360写入InstallDamageHook，PC368捕获 | rootCells[57]，工厂内.value()调用 |
 | 2 | T[41] | blacklistState | rootSource.blacklistState |
 | 3 | T[58] | DeathAutoBlacklist | rootPrototypes.DeathAutoBlacklist |
 | 4 | T[55] | FindBlacklistPlayer | rootPrototypes.FindBlacklistPlayer |
@@ -28,7 +28,7 @@
 - PC360-PC362随后创建InstallDamageHook，并写入/覆盖父帧T[57]。
 - PC368创建BlacklistPlayerDetection，PC370以OP_387捕获T[57] live cell。
 - 因此UP[1]是InstallDamageHook，不是onDamageMsg。两者在根模块中承担不同角色，不能互换。
-- register_value_timeline显示PC360之后、PC368捕获前及捕获后均无T[57]再次写入；因此恢复装配可直接传入当时的函数值`rootPrototypes.InstallDamageHook`，与该live cell在本模块执行路径上的可观察值一致。不要传入普通`{value=...}`表，因为候选工厂内部按函数调用UP[1]()，该表不可调用；也不需要额外制造可调用代理。
+- 装配层创建`rootCells[57] = newLiveCell(rootPrototypes.InstallDamageHook)`，并将该cell对象作为UP[1]传入。候选工厂通过`installDamageHookCell.value()`读取当前函数值并调用，保留OP_387共享cell适配语义。此处的`{value=...}`是恢复适配层，不是原作者源码写法。
 
 ## 共享对象核对
 
