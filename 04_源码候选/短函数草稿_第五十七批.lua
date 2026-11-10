@@ -1,6 +1,7 @@
 -- 检查点 #81 / #134：TakeItems 完整静态恢复
 -- root.children[5] / legacy root/6；99条物理指令；23常量；无子原型；无vararg。
 -- 父root PC79创建闭包：UP[0]=root T[2]状态对象；UP[1]=root T[5]文本回调。
+-- 检查点248：汇总源码以MainLeftBottom.z和ShowLocalNoticeByType实例化此工厂。
 local function make_TakeItems(takingState, notify)
     return function()
         -- PC1-PC7：isTaking互斥保护并置为true。
