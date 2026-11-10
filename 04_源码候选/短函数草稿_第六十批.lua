@@ -20,7 +20,7 @@
 ]]
 
 local function make_StorageItems(storageState, notify, output)
-    return function StorageItems()
+    local function StorageItems()
         -- PC1-PC7：互斥检查。正在存仓则直接返回，否则先置位。
         if storageState.isStoring then
             return
@@ -177,6 +177,7 @@ local function make_StorageItems(storageState, notify, output)
             )
         end
     end
+    return StorageItems
 end
 
 return make_StorageItems
