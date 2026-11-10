@@ -113,7 +113,7 @@ MainLeftBottomRecovered.prototype_index = {
   ["root.children[42].children[22]"] = { name="Nested_Anonymous", status="first_pass_draft_pending_VM_T_slot_mapping_and_T2_producer_not_runtime_verified", source_file="04_源码候选/Nested_Anonymous_第七十八批.lua", instructions=8, runtime_verified=false },
   ["root.children[8]"] = { name="FormatStateChange", status="conservative_first_pass_draft_argument_slots_pending_not_runtime_verified", source_file="04_源码候选/短函数草稿_第四十三批.lua", instructions=10, runtime_verified=false },
   ["root.children[9]"] = { name="ReadNumericConfig", status="first_pass_draft_vararg_declaration_pending_not_runtime_verified", source_file="04_源码候选/短函数草稿_第四十四批.lua", instructions=45, runtime_verified=false },
-  ["root.children[23]"] = { name="Builtsetting", status="first_pass_draft_UPVALUE_0_business_semantics_pending_not_runtime_verified", source_file="04_源码候选/短函数草稿_第四十五批.lua", instructions=55, runtime_verified=false },
+  ["root.children[23]"] = { name="Builtsetting", status="complete_static_reconstruction", source_file="04_源码候选/短函数草稿_第四十五批.lua", audit_file="docs/audit/检查点215_Builtsetting完整静态复审.md", instructions=55, runtime_verified=false },
   ["root.children[25]"] = { name="DeathAutoBlacklist", status="first_pass_draft_upvalue_business_names_pending_not_runtime_verified", source_file="04_源码候选/短函数草稿_第四十九批.lua", instructions=47, runtime_verified=false },
   ["root.children[12]"] = { name="LuaSendMsg", status="first_pass_draft_revised_checkpoint_190_parameter_mapping_blocklist_hook_flow_pending_capture_names_host_runtime_not_runtime_verified", source_file="04_源码候选/短函数草稿_第五十批.lua", instructions=92, runtime_verified=false },
   ["root.children[22]"] = { name="GetMapData2DPtr", status="conservative_first_pass_draft_map_traversal_and_return_contract_pending_not_runtime_verified", source_file="04_源码候选/短函数草稿_第五十一批.lua", instructions=144, runtime_verified=false },
@@ -3003,6 +3003,37 @@ end
 local function GetDroppedItems()
     return global.dropItemManager:FindDropItemInCurrViewFieldAll()
 end
+
+-- root.children[23] / legacy root/24：六组设置开关与提示回调。
+-- UPVALUE[0]的原始业务名称未知；只按字节码确认的单文本参数契约命名。
+local function make_Builtsetting(onSettingMessage)
+    return function Builtsetting()
+        CHANGE_SETTING(27, { 0 })
+        onSettingMessage("关闭背景音乐")
+
+        CHANGE_SETTING(52, { 0 })
+        onSettingMessage("关闭游戏音乐")
+
+        CHANGE_SETTING(1002, { 0 })
+        onSettingMessage("关闭高帧率")
+
+        CHANGE_SETTING(57, { 1 })
+        onSettingMessage("开启人物简装")
+
+        CHANGE_SETTING(58, { 1 })
+        onSettingMessage("开启怪物简装")
+
+        CHANGE_SETTING(2005, { 0 })
+        onSettingMessage("关闭屏蔽怪物")
+    end
+end
+
+do
+    local __exports = { make_Builtsetting = make_Builtsetting }
+    MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第四十五批.lua"] = __exports
+end
+
+
 
 -- root/9：记录状态切换，并更新闭包保存的当前状态。
 local function __makeRoot9(logger, initialState)
