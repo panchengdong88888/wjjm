@@ -4,10 +4,8 @@
 -- UP[0] = GetWritablePath closure (root.children[2]), captured at root PC298.
 
 local function make_ReadNumericConfig(GetWritablePath)
-    return function(...)
-        -- The VM prototype is vararg-capable; only the first supplied value is read as fileName.
-        -- This avoids asserting an unavailable fixed-parameter count.
-        local fileName = ...
+    return function(fileName)
+        -- fixed_param_count=1; fileName is the sole fixed parameter.
 
         -- PC 1-4: acquire the FileUtils singleton before resolving the path.
         local fileUtils = cc.FileUtils:getInstance()
@@ -52,6 +50,6 @@ end
 -- * The false isFileExist branch, non-string file-read branch, and failed
 --   digit-pattern branch each clear the return slot before returning nil.
 -- * Only a non-empty sequence of ASCII decimal digits reaches tonumber.
--- * The prototype is vararg-capable, but extra varargs are not read.
+-- * fixed_param_count=1; fileName is the sole fixed parameter; additional arguments are unused.
 -- * GetWritablePath is independently complete-static at checkpoint 127: it returns writablePath .. fileName.
 -- * No target-runtime validation; FileUtils behavior remains host-dependent.
