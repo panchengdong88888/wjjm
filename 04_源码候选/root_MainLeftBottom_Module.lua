@@ -304,7 +304,7 @@ local opaquePairTable = {
 -- PC363-PC367：创建root.children[25] / DeathAutoBlacklist，捕获：
 -- [T[41], T[4], T[55], T[5]]。
 -- PC368-PC381：创建root.children[47] / BlacklistPlayerDetection，按序捕获：
--- [T[2], T[57], T[41], T[58], T[55], T[53], T[38],
+-- [T[2]=MainLeftBottom.z, T[57]=InstallDamageHook live cell, T[41], T[58], T[55], T[53], T[38],
 --  T[4], T[56], T[39], T[5], T[40], T[37]]。
 -- PC382：将该闭包导出为全局BlacklistItems。
 -- 13项捕获的逐槽用途见检查点186；此处不重复展开已恢复函数主体。
