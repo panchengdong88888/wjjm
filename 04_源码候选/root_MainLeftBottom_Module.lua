@@ -33,7 +33,7 @@ MainLeftBottom.z = {
     isOutputted = false
 }
 
--- 后续PC201-PC412仍需逐段恢复：其余闭包注册、全局初始化及main/doInit注册。
+-- 后续PC42-PC340已按检查点193-197分段整理；PC341-PC412尚待恢复。
 -- 本文件不是完整、可直接运行的原始Lua文件。
 
 
