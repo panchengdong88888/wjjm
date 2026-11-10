@@ -3084,3 +3084,12 @@ Nested_match：
 - 补齐PC294真实字段赋值：`MainLeftBottom.blacklist = blacklistState`；所有相关闭包接收的都是rootSource导出的同一表对象。
 - 有捕获工厂累计32/36，剩余4；无捕获直接子原型22/22。完整静态恢复109、普通Lua草稿72、运行时验证0。
 - 下一步检查点254：复核两个匿名包装器的规范原型名；BlacklistPlayerDetection必须按PC360/368 live-cell时间线捕获InstallDamageHook，而不是旧注释中的onDamageMsg；doInit_UI最后处理。
+
+
+## 检查点 #254（2026-11-10）：匿名配置转发闭包装配
+
+- 完成root.children[32] AnonymousHelper_32：UP0=root T[46] PCallHelper，UP1=root T[42] blacklistDistanceConfigFile；固定参数arg1进入PCallHelper(fileName,arg1)，保留多返回值。
+- 完成root.children[33] AnonymousHelper_33：UP0=root T[45] ReadNumericConfig，UP1=root T[43] gatherMonsterCountConfigFile；零参调用并原样返回。
+- 两者使用`PlayerPos与匿名转发闭包_第十一批.lua`中的规范工厂；不混用代理辅助批次中相似命名的其他闭包。
+- 有捕获工厂累计34/36，剩余2：BlacklistPlayerDetection、doInit_UI。完整静态恢复109、普通Lua草稿72、运行时验证0。
+- 下一步检查点255：BlacklistPlayerDetection需严格按PC360/368复核T[57] live-cell被InstallDamageHook覆盖、T[58]为DeathAutoBlacklist；不得将UP1错误绑定为onDamageMsg。doInit_UI最后处理。
