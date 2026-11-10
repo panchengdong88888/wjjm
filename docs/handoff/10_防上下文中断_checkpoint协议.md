@@ -1900,3 +1900,15 @@
 - 子函数以固定格式 `状态切换: %s -> %s` 按旧状态/首个显式参数格式化，仅向回调传一个消息；回调正常返回后才将首个参数写回 UP[1]；无显式返回，额外 vararg 未读取。
 - 父级 T[4]/T[14] 原始业务身份与宿主回调契约未闭合，保持普通 Lua 草稿，不升级。
 - 审计：`docs/audit/检查点176_FormatStateChange捕获单元与调用栈复核.md`。计数不变：普通草稿78；完整静态恢复95/110（86.4%）；运行时验证0。
+
+
+## 检查点 #177：FormatStateChange 父级捕获身份与状态共享链闭合
+
+- 对象：root.children[8] / FormatStateChange（10条）。root PC181创建闭包，捕获顺序为T[4]/T[14]。
+- 交叉root初始化、MainLoop捕获映射和调用点，确认UP[0]=PrintLog（root.children[16]，root T[4]）；UP[1]=MainLoop共享currentState单元（root T[14]），初始值为状态常量表IDLE。MainLoop同样捕获并读取该单元。
+- MainLoop、InitGatherMonsters、StopGatherMonsters均以单个状态常量调用FormatStateChange。子函数固定格式化旧状态与首个参数，只向PrintLog传一个字符串；回调正常返回后写回共享状态单元。
+- PrintLog源码显示字符串首参经tostring处理；SL.Print分支只有存在性检查，没有调用指令，因此不推断实际可见输出。
+- 父级捕获身份、共享状态生命周期、回调身份及参数闭合，升级为完整静态恢复（未运行时验证）。
+- 新增审计：docs/audit/检查点177_FormatStateChange父级捕获身份与状态共享链闭合.md；更新源码候选、函数状态CSV、机器状态JSON。
+- 统计：普通Lua草稿77；完整静态恢复96/110；运行时验证0。
+- 下一步：复核root.children[9] / ReadNumericConfig（45条），闭合UP[0] GetWritablePath捕获来源与调用参数链。
