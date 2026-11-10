@@ -46,7 +46,7 @@
 ## 模块字段与嵌套子原型
 
 - doInit_UI实例化后写入`MainLeftBottom.doInit`，对应PC411。
-- 候选文件内保留23个子原型/回调构造逻辑。Nested_Anonymous child22的T[0]/T[1]/T[2]来源仍未完全闭合，保持中性占位；不把它伪装为完整作者原文。
+- 候选文件内保留23个子原型/回调构造逻辑。Nested_Anonymous child22的固定参数槽已由检查点235闭合：fixed_param_count=2，两个调用包装器分别传入(promptText, successCallback)，对应T[0]/T[1]；T[2]无写入，确定为nil。错误分支直接调用T[2]的attempt-to-call-nil行为按原字节码保留，不是待补回调。
 - 对外依赖Builtsetting、MoveItemToQuickUse、BlacklistItems、ClearBlacklistItems、InitGatherMonsters、StopGatherMonsters等已通过前序全局导出装配。
 
 ## 根闭包总计
@@ -61,4 +61,4 @@
 
 ## 下一步
 
-检查点257对58个根闭包做统一装配一致性审计，然后继续解析Nested_Anonymous未确认T槽和其他尚未完成的嵌套原型。
+检查点257对58个根闭包做统一装配一致性审计，Nested_Anonymous的固定参数槽已闭合；后续先做58个根闭包统一审计，再转入唯一未完整恢复的根模块原型。
