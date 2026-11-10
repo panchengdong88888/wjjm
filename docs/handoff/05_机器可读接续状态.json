@@ -49,13 +49,13 @@
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
     "root.children[12]": "LuaSendMsg（92条）检查点190、205：普通Lua草稿PC1-PC92已独立静态复审；固定六参/message字段、Blocklist仅抑制日志、SendHookList按第1参取hook、pcall(hook,arg1,arg6,message)且仅严格true拦截、否则networkCtl:SendMsg原六参转发均与corrected反汇编一致。草稿仍保留UP0/UP1临时名；作者原名与宿主API语义未证实；未运行时验证。源码04_源码候选/短函数草稿_第五十批.lua；审计docs/audit/检查点205_LuaSendMsg普通Lua草稿独立复审.md。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
-    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192-PC1-PC41；193-PC42-PC85；194-PC86-PC167；195-PC168-PC200；196-PC201-PC270；197-PC271-PC340；198-PC341-PC412。检查点236已从root反汇编自动核对58/58闭包创建点、135个OP_387捕获描述符，建立docs/handoff/12_根模块闭包装配表.json和父寄存器fanout表。原始VM M()证明OP_387捕获live cell，不是值快照。已发现T[57]在PC357创建onDamageMsg并PC359写模块字段后，PC360被InstallDamageHook覆盖；PC368的BlacklistPlayerDetection UP[1]实际捕获InstallDamageHook。剩余工作是逐寄存器值生命周期、模块字段/全局导出对账与根函数装配；根模块仍是唯一未完成原型。",
+    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：PC1-PC412已有分段源码草稿；完整结构树已在04_源码候选/MainLeftBottom_完整结构树.lua（110原型含root、5,580条指令、父子层级/PC范围/upvalue/状态）。检查点236闭合58/58闭包创建点与135捕获描述符；检查点237闭合T0/T1/T2/T3/T4/T5/T37/T41/T57；检查点238闭合T8/T42/T43/T44。仍需完成其余父寄存器值生命周期、模块字段/全局导出对账和root整体普通Lua装配。",
     "root.children[42].children[3]": "Nested_FFFF00（320条父指令、72常量、5个子原型、4项捕获）：检查点225已完成PC1-PC320及5个子原型静态恢复；捕获顺序moduleState/printLog/timerState/initState。Win_Create等GUI调用参数已与新框架43份文档核对；五组Text_Create结果均先做truthy门控。K[28]=['unknown',2]已确认是nil的VM dump序列化占位，resTimer清理写nil。MoneyProxy方法未文档化，保留原调用，不反汇编其内部。完整静态恢复，未运行时验证。",
     "root.children[42].children[22]": "Nested_Anonymous（8条父指令；Nested_str 27条、Nested_match 50条、Nested_Helper_11 4条）已完整静态恢复。原始VM M()每次新建T={}和X={}；fixed_param_count=2；两实参写入T[0]/T[1]；额外实参进入X；T[2]无写入保持nil。Nested_str捕获T[0]/PrintLog/T[2]/T[1]；无效数字路径按原字节码调用nil，保留attempt-to-call-nil行为。未运行时验证。",
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点238：继续按parent_register_fanout建立剩余root T寄存器值生命周期表。优先检查T[7]/T[8]/T[50]/T[55]/T[56]/T[58]及其所有写入、模块字段赋值和捕获时值；区分寄存器复用与共享cell。随后补齐剩余寄存器，最后组装root PC1-PC412及模块导出。",
+  "next_action": "检查点239：继续按parent_register_fanout核对T[50]/T[55]/T[56]/T[58]及T[38..40]/T[47..53]，逐项确认最后写入、捕获时值和是否为脚本闭包/普通表/常量；随后完成剩余寄存器和模块字段/全局导出对账，再把根模块PC1-PC412整合为真实普通Lua源码。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -128,7 +128,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "236"
+    "last_checkpoint": "238"
   },
   "static_recovered_functions": [
     {
@@ -2804,24 +2804,22 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "236",
+    "checkpoint": "238",
     "targets": [
-      "MainLeftBottom_Module root closure assembly"
+      "MainLeftBottom_Module root register lifetime"
     ],
-    "status": "已解析root 58/58直接子原型闭包创建点与135个OP_387捕获描述符；建立父寄存器fanout表；依据live-cell语义纠正T57复用导致的BlacklistPlayerDetection UP1实际值。",
-    "audit_file": "docs/audit/检查点236_根模块58个闭包创建点与捕获cell清单.md",
+    "status": "完成T8/T42/T43/T44寄存器值生命周期闭合，更新机器装配表与根模块源码说明；未增加完整静态函数数或运行时验证数。",
+    "audit_file": "docs/audit/检查点238_root_T8_T42_T43_T44寄存器生命周期闭合.md",
     "files": [
-      "docs/handoff/04_闭包捕获映射.json",
       "docs/handoff/12_根模块闭包装配表.json",
       "04_源码候选/root_MainLeftBottom_Module.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点146_BlacklistPlayerDetection13槽闭包捕获映射.md",
-      "docs/audit/检查点186_BlacklistPlayerDetection216条指令完整静态复核.md"
+      "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "58个直接子原型各有一个root闭包创建点；135个捕获描述符全部为OP_387。",
-      "OP_387捕获父T寄存器live cell；不是创建时值快照。",
-      "T57在PC357先保存onDamageMsg并于PC359写模块字段；PC360被InstallDamageHook覆盖；PC368 BlacklistPlayerDetection捕获T57，因此UP1=InstallDamageHook。"
+      "T8在PC86-PC89构造为gatherConfig并被四个闭包共享捕获。",
+      "T42/43分别是blacklist_distance.txt和gather_monster_count.txt。",
+      "T44是GetWritablePath闭包，供ReadNumericConfig/PCallHelper/FileExistCheck_pcall_wrapper/doInit_UI捕获。"
     ]
   },
   "corrections": [
@@ -3544,17 +3542,16 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 237,
+  "last_checkpoint": 238,
   "checkpoint": {
-    "number": 237,
+    "number": 238,
     "date": "2026-11-10",
     "artifacts": [
       "docs/handoff/12_根模块闭包装配表.json",
       "04_源码候选/root_MainLeftBottom_Module.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "04_源码候选/短函数草稿_第五十六批.lua",
       "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点237_根模块高复用寄存器值生命周期.md",
+      "docs/audit/检查点238_root_T8_T42_T43_T44寄存器生命周期闭合.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
@@ -3567,24 +3564,27 @@
       3,
       4,
       5,
+      8,
       37,
       41,
+      42,
+      43,
+      44,
       57
     ],
-    "notes": "依据corrected phase3 root反汇编与OP_387 live-cell语义，完成T0/T1/T2/T3/T4/T5/T37/T41/T57的写入时间线及捕获时值。关键纠正：T4在PC43写入PrintLog，PC72 GetStorageItemData捕获该cell，因此其提示回调确定为PrintLog；T37最终为{随机传送石}；T41为共享黑名单状态表；T57在PC360被InstallDamageHook覆盖，PC370捕获的是InstallDamageHook。静态109/110，运行时0。"
+    "notes": "闭合T8=gatherConfig（PC86-PC89构造，PC199/236/244/399捕获）；T42=blacklist_distance.txt（PC295写入，PC306/309/404捕获）；T43=gather_monster_count.txt（PC296写入，PC312/315/406捕获）；T44=GetWritablePath闭包（PC297创建，PC299/301/303/403捕获）。静态109/110，运行时0。"
   },
   "drafts": 33,
   "next": "检查点237：按docs/handoff/12_根模块闭包装配表.json的寄存器fanout从高到低，建立root T[0..60]寄存器数据流/值生命周期表；先闭合T[0..5]、T[14..23]、T[37..60]等共享cell及写入PC，再逐项核对模块字段/全局导出。特别保留T[57]时间线：PC357 onDamageMsg→PC359写模块字段→PC360覆盖T[57]=InstallDamageHook→PC368 BlacklistPlayerDetection捕获该live cell。",
   "recent_checkpoint": {
-    "number": 237,
+    "number": 238,
     "date": "2026-11-10",
     "artifacts": [
       "docs/handoff/12_根模块闭包装配表.json",
       "04_源码候选/root_MainLeftBottom_Module.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "04_源码候选/短函数草稿_第五十六批.lua",
       "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点237_根模块高复用寄存器值生命周期.md",
+      "docs/audit/检查点238_root_T8_T42_T43_T44寄存器生命周期闭合.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
@@ -3597,18 +3597,22 @@
       3,
       4,
       5,
+      8,
       37,
       41,
+      42,
+      43,
+      44,
       57
     ],
-    "notes": "依据corrected phase3 root反汇编与OP_387 live-cell语义，完成T0/T1/T2/T3/T4/T5/T37/T41/T57的写入时间线及捕获时值。关键纠正：T4在PC43写入PrintLog，PC72 GetStorageItemData捕获该cell，因此其提示回调确定为PrintLog；T37最终为{随机传送石}；T41为共享黑名单状态表；T57在PC360被InstallDamageHook覆盖，PC370捕获的是InstallDamageHook。静态109/110，运行时0。"
+    "notes": "闭合T8=gatherConfig（PC86-PC89构造，PC199/236/244/399捕获）；T42=blacklist_distance.txt（PC295写入，PC306/309/404捕获）；T43=gather_monster_count.txt（PC296写入，PC312/315/406捕获）；T44=GetWritablePath闭包（PC297创建，PC299/301/303/403捕获）。静态109/110，运行时0。"
   },
   "latest_checkpoint": {
-    "checkpoint": "237",
-    "summary": "完成9个高复用root寄存器T0/T1/T2/T3/T4/T5/T37/T41/T57的值生命周期与OP_387捕获时值；确定GetStorageItemData的T4回调为PrintLog。",
-    "audit_file": "docs/audit/检查点237_根模块高复用寄存器值生命周期.md",
+    "checkpoint": "238",
+    "summary": "完成root T8/T42/T43/T44值生命周期及全部捕获时值；T8确认最终为gatherConfig，T42/T43为两个配置文件名，T44为GetWritablePath闭包。",
+    "audit_file": "docs/audit/检查点238_root_T8_T42_T43_T44寄存器生命周期闭合.md",
     "unresolved": [
-      "其余root父寄存器的值生命周期与捕获时值尚未全部闭合",
+      "其余root父寄存器值生命周期仍待闭合",
       "根模块PC1-PC412完整普通Lua装配及模块字段/全局导出仍未完成",
       "运行时验证为0"
     ]
@@ -3621,7 +3625,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 238,
+  "next_checkpoint": 239,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
