@@ -10,7 +10,7 @@ end
 -- UP[0] captures root T[46]; UP[1] captures root T[42].
 -- The bytecode forwards exactly the first vararg after the captured argument.
 local function make_AnonymousHelper_32(upvalue0, upvalue1)
-    return function(arg1, ...)
+    return function(arg1)
         return upvalue0(upvalue1, arg1)
     end
 end
