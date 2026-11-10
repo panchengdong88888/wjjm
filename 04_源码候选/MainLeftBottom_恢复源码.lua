@@ -8398,13 +8398,14 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 261,
+        checkpoint = 262,
         root_pc86_pc211_ordered = true,
         root_pc181_pc258_ordered = true,
         root_pc297_pc357_ordered = true,
         root_pc357_pc388_ordered = true,
         root_prefix_pc43_pc85_ordered = true,
         checkpoint261_gather_status_scope_fixed = true,
+        checkpoint262_root_pc1_pc42_sequential_source_restored = true,
         root_late_direct_bindings_at_pc = { IsInWhitelistMap = 212, MoveItemToQuickUse = 259, GetWritablePath = 297, PCallHelper_2 = 352 },
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
