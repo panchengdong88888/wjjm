@@ -7662,7 +7662,7 @@
     "binding_policy": "Only capture_count=0 direct children; captured factories remain pending until shared live-cell bindings are implemented.",
     "runtime_verified": false
   },
-  "next_action": "检查点254：核对两个匿名包装器规范原型名/捕获映射；复核BlacklistPlayerDetection的T[57] live-cell覆盖和T[58]死亡回调；doInit_UI留到最后。",
+  "next_action": "检查点255：BlacklistPlayerDetection 13项捕获按root PC360/368时间线复核后装配；T[57]是InstallDamageHook live cell，T[58]是DeathAutoBlacklist。doInit_UI最后处理。",
   "root_assembly_checkpoint_247": {
     "direct_child_closures_expected": 22,
     "direct_child_closures_source_bound": 22,
@@ -8760,5 +8760,308 @@
     },
     "runtime_verified": false,
     "next_action": "检查点254：核对两个匿名包装器规范原型名/捕获映射；复核BlacklistPlayerDetection的T[57] live-cell覆盖和T[58]死亡回调；doInit_UI留到最后。"
+  },
+  "root_assembly_checkpoint_254": {
+    "direct_child_closures_expected": 22,
+    "direct_child_closures_source_bound": 22,
+    "captured_factory_closures_expected": 36,
+    "captured_factory_closures_bound": 34,
+    "captured_factory_closures_pending": 2,
+    "bound_factories": [
+      {
+        "prototype": "root.children[8]",
+        "name": "FormatStateChange",
+        "capture_count": 2,
+        "bindings": [
+          "PrintLog",
+          "rootCells[14]"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[26]",
+        "name": "ResetGatherMonsterData",
+        "capture_count": 9,
+        "bindings": [
+          "rootCells[15]",
+          "rootCells[16]",
+          "rootCells[17]",
+          "ClearTargetID_2",
+          "rootCells[19]",
+          "rootCells[20]",
+          "rootCells[21]",
+          "rootCells[22]",
+          "PrintLog"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[45]",
+        "name": "MainLoop",
+        "capture_count": 22,
+        "bindings": [
+          "rootCells[18]",
+          "rootCells[14]",
+          "gatherStatusText",
+          "PrintLog",
+          "FormatStateChange",
+          "ResetGatherMonsterData",
+          "GetMainPlayerID",
+          "FindMonsterCandidates",
+          "rootCells[15]",
+          "GetOwnerID",
+          "rootCells[17]",
+          "rootCells[16]",
+          "rootCells[19]",
+          "rootCells[20]",
+          "rootCells[22]",
+          "FindMonsterInCurrViewField",
+          "rootCells[21]",
+          "GetOwnerIDText",
+          "IsDie",
+          "GetOwnerDescription",
+          "SetTargetID",
+          "gatherConfig"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[19]",
+        "name": "InitGatherMonsters",
+        "capture_count": 7,
+        "bindings": [
+          "timerState",
+          "rootCells[18]",
+          "FormatStateChange",
+          "gatherStatusText",
+          "ResetGatherMonsterData",
+          "gatherConfig",
+          "PrintLog"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[27]",
+        "name": "StopGatherMonsters",
+        "capture_count": 7,
+        "bindings": [
+          "rootCells[18]",
+          "timerState",
+          "ClearTargetID_2",
+          "FormatStateChange",
+          "gatherStatusText",
+          "ResetGatherMonsterData",
+          "PrintLog"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[14]",
+        "name": "FindMonsterInCurrViewField",
+        "capture_count": 1,
+        "bindings": [
+          "IsDie"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[37]",
+        "name": "DestroyUI",
+        "capture_count": 3,
+        "bindings": [
+          "rootSource.uiState (MainLeftBottom.a)",
+          "rootSource.timerState (root T[3])",
+          "rootSource.buttonMap (MainLeftBottom.b)"
+        ],
+        "module_field": "MainLeftBottom.hide",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[10]",
+        "name": "SetButtonVisibilityState",
+        "capture_count": 2,
+        "bindings": [
+          "rootSource.uiState (MainLeftBottom.a)",
+          "rootSource.buttonMap (MainLeftBottom.b)"
+        ],
+        "module_field": "MainLeftBottom.show",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[40]",
+        "name": "ShowHideAllButtons",
+        "capture_count": 3,
+        "bindings": [
+          "rootSource.timerState (root T[3])",
+          "rootSource.buttonMap (MainLeftBottom.b)",
+          "rootSource.uiState (MainLeftBottom.a)"
+        ],
+        "module_field": "MainLeftBottom.destroy",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[9]",
+        "name": "ReadNumericConfig",
+        "capture_count": 1,
+        "bindings": [
+          "GetWritablePath (root.children[2], root T[44])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[17]",
+        "name": "PCallHelper",
+        "capture_count": 1,
+        "bindings": [
+          "GetWritablePath (root.children[2], root T[44])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[0]",
+        "name": "FileExistCheck_pcall_wrapper",
+        "capture_count": 1,
+        "bindings": [
+          "GetWritablePath (root.children[2], root T[44])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[22]",
+        "name": "GetMapData2DPtr",
+        "capture_count": 1,
+        "bindings": [
+          "opaquePairTable (root T[52], captured but not read on reachable CFG)"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[51]",
+        "name": "FindBlacklistPlayer",
+        "capture_count": 1,
+        "bindings": [
+          "PCallHelper_2 (root.children[48])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[24]",
+        "name": "UseItemByIndex",
+        "capture_count": 1,
+        "bindings": [
+          "randomTeleportItemNames (root T[37])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[49]",
+        "name": "AnonymousHelper_49",
+        "capture_count": 2,
+        "bindings": [
+          "ReadNumericConfig (root.children[9])",
+          "blacklistDistanceConfigFile (root T[42])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[54]",
+        "name": "AnonymousHelper_54",
+        "capture_count": 2,
+        "bindings": [
+          "PCallHelper (root.children[17])",
+          "gatherMonsterCountConfigFile (root T[43])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[25]",
+        "name": "DeathAutoBlacklist",
+        "capture_count": 4,
+        "bindings": [
+          "blacklistState (root T[41])",
+          "PrintLog (root T[4])",
+          "FindBlacklistPlayer (root T[55])",
+          "ShowLocalNoticeByType (root T[5])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[52]",
+        "name": "onDamageMsg",
+        "capture_count": 1,
+        "bindings": [
+          "blacklistState (root T[41])"
+        ],
+        "module_field": "MainLeftBottom.onDamageMsg",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[15]",
+        "name": "ClearBlacklistItems",
+        "capture_count": 4,
+        "bindings": [
+          "PCallHelper_2 (root T[54])",
+          "PrintLog (root T[4])",
+          "ShowLocalNoticeByType (root T[5])",
+          "blacklistState (root T[41])"
+        ],
+        "global_export": "ClearBlacklistItems",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[32]",
+        "name": "AnonymousHelper_32",
+        "capture_count": 2,
+        "bindings": [
+          "PCallHelper (root T[46])",
+          "blacklistDistanceConfigFile (root T[42])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[33]",
+        "name": "AnonymousHelper_33",
+        "capture_count": 2,
+        "bindings": [
+          "ReadNumericConfig (root T[45])",
+          "gatherMonsterCountConfigFile (root T[43])"
+        ],
+        "runtime_verified": false
+      }
+    ],
+    "shared_capture_groups": {
+      "T[42]": {
+        "value": "blacklistDistanceConfigFile",
+        "shared_by": [
+          "AnonymousHelper_49.UP[1]",
+          "AnonymousHelper_32.UP[1]",
+          "doInit_UI.UP[13]"
+        ]
+      },
+      "T[43]": {
+        "value": "gatherMonsterCountConfigFile",
+        "shared_by": [
+          "AnonymousHelper_54.UP[1]",
+          "AnonymousHelper_33.UP[1]",
+          "doInit_UI.UP[15]"
+        ]
+      },
+      "T[46]": {
+        "value": "PCallHelper",
+        "shared_by": [
+          "AnonymousHelper_32.UP[0]",
+          "AnonymousHelper_54.UP[0]"
+        ]
+      },
+      "T[45]": {
+        "value": "ReadNumericConfig",
+        "shared_by": [
+          "AnonymousHelper_49.UP[0]",
+          "AnonymousHelper_33.UP[0]"
+        ]
+      }
+    },
+    "runtime_verified": false,
+    "next_action": "检查点255：BlacklistPlayerDetection 13项捕获按root PC360/368时间线复核后装配；T[57]是InstallDamageHook live cell，T[58]是DeathAutoBlacklist。doInit_UI最后处理。"
   }
 }
