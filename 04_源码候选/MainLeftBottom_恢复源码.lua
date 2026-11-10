@@ -2932,7 +2932,7 @@ do
 
 local function make_BlacklistPlayerDetection(
     featureState,
-    installDamageHook,
+    installDamageHookCell,
     blacklistState,
     onDeathAutoBlacklist,
     findBlacklistActor,
@@ -2947,7 +2947,8 @@ local function make_BlacklistPlayerDetection(
 )
     local function BlacklistPlayerDetection()
         featureState.isBlacklisting = true
-        installDamageHook()
+        -- OP_387 live-cell适配：按T[57]共享cell当前值调用安装器。
+        installDamageHookCell.value()
 
         local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
         if not mainActorID then
@@ -8283,10 +8284,11 @@ do
     end
 
     -- 检查点255：BlacklistPlayerDetection的13项捕获按root PC368顺序注入。
-    -- UP[0]=root T[2]=MainLeftBottom.z状态表；UP[1]=PC360写入T[57]的
-    -- InstallDamageHook闭包（PC368捕获时该寄存器值已确定）；UP[2]=共享blacklistState。
-    -- T[57]在捕获前已覆盖，且后续无再写入，故此处传入其函数值，不传cell包装表。
+    -- UP[0]=root T[2]=MainLeftBottom.z状态表；UP[1]=root T[57]共享live cell，
+    -- PC360已将其值覆盖为InstallDamageHook；UP[2]=共享blacklistState。
+    -- 用rootCells[57]保留OP_387 cell语义，工厂内部通过.value()读取并调用当前函数值。
     -- 特别注意：不能将UP[0]误接为整个MainLeftBottom模块表，也不能将UP[1]接成onDamageMsg。
+    rootCells[57] = newLiveCell(rootPrototypes.InstallDamageHook)
     local makeBlacklistPlayerDetection = sourceFunction(
         "04_源码候选/root47_BlacklistPlayerDetection.lua",
         "make_BlacklistPlayerDetection"
@@ -8294,7 +8296,7 @@ do
     if makeBlacklistPlayerDetection then
         rootPrototypes.BlacklistPlayerDetection = makeBlacklistPlayerDetection(
             rootModule.z,
-            rootPrototypes.InstallDamageHook,
+            rootCells[57],
             rootSource.blacklistState,
             rootPrototypes.DeathAutoBlacklist,
             rootPrototypes.FindBlacklistPlayer,
@@ -8392,7 +8394,7 @@ do
             "BlacklistPlayerDetection", "doInit_UI"
         },
         runtime_verified = false,
-        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; gather live cells and UI shared tables are passed by identity; T[44] GetWritablePath is shared by three helpers; T[52] and T[37] captures are injected; blacklistState and config filename captures are shared; root.children[32]/[33] anonymous wrappers are bound; T[57] cell wraps InstallDamageHook for BlacklistPlayerDetection"
+        capture_semantics = "OP_387 shared cells T[14..22] represented by one shared {value=...} adapter per parent register; gather live cells and UI shared tables are passed by identity; T[44] GetWritablePath is shared by three helpers; T[52] and T[37] captures are injected; blacklistState and config filename captures are shared; root.children[32]/[33] anonymous wrappers are bound; T[57] live cell is represented by rootCells[57]; BlacklistPlayerDetection dereferences .value()"
     }
 end
 
