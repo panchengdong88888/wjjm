@@ -8054,6 +8054,15 @@ do
         [22] = newLiveCell(rootSource.resetSlot22)
     }
 
+    -- 每个父T寄存器只分配一个cell；不同寄存器不能误共用同一代理对象。
+    local seenRootCells = {}
+    for _, registerIndex in ipairs({14, 15, 16, 17, 18, 19, 20, 21, 22}) do
+        local cell = rootCells[registerIndex]
+        assert(type(cell) == "table" and not seenRootCells[cell],
+            "invalid or reused OP_387 parent cell T[" .. registerIndex .. "]")
+        seenRootCells[cell] = true
+    end
+
     local makeFormatStateChange = sourceFunction(
         "04_源码候选/root8_FormatStateChange.lua", "make_FormatStateChange"
     )
@@ -8061,18 +8070,32 @@ do
         rootPrototypes.FormatStateChange =
             makeFormatStateChange(rootPrototypes.PrintLog, rootCells[14])
     end
+    rootPrototypes.FormatStateChange = requireRecoveredClosure(
+        "FormatStateChange", rootPrototypes.FormatStateChange
+    )
 
     -- PC86之后才创建的无捕获函数，在各自PC区间前完成绑定。
+    -- PC184-PC193按root寄存器创建顺序绑定十个无捕获辅助闭包。
     bindDirect("SetTargetID", "04_源码候选/短函数草稿_第十二批.lua", "SetTargetID")
+    rootPrototypes.SetTargetID = requireRecoveredClosure("SetTargetID", rootPrototypes.SetTargetID)
     bindDirect("ClearTargetID_2", "04_源码候选/root56_root57_short_functions.lua", "ClearTargetID_2")
+    rootPrototypes.ClearTargetID_2 = requireRecoveredClosure("ClearTargetID_2", rootPrototypes.ClearTargetID_2)
     bindDirect("GetMainPlayerID", "04_源码候选/verified_helpers_batches_1_3.lua", "GetMainPlayerID")
+    rootPrototypes.GetMainPlayerID = requireRecoveredClosure("GetMainPlayerID", rootPrototypes.GetMainPlayerID)
     bindDirect("GetPlayerPosition", "04_源码候选/位置读取函数_第五批草稿.lua", "GetPlayerPosition")
+    rootPrototypes.GetPlayerPosition = requireRecoveredClosure("GetPlayerPosition", rootPrototypes.GetPlayerPosition)
     bindDirect("GetPlayerMapPosition", "04_源码候选/短函数草稿_第三十七批.lua", "GetPlayerMapPosition")
+    rootPrototypes.GetPlayerMapPosition = requireRecoveredClosure("GetPlayerMapPosition", rootPrototypes.GetPlayerMapPosition)
     bindDirect("DistanceCalculation", "04_源码候选/短函数草稿_第十二批.lua", "DistanceCalculation")
+    rootPrototypes.DistanceCalculation = requireRecoveredClosure("DistanceCalculation", rootPrototypes.DistanceCalculation)
     bindDirect("IsDie", "04_源码候选/小型辅助函数_首批草稿.lua", "IsDie")
+    rootPrototypes.IsDie = requireRecoveredClosure("IsDie", rootPrototypes.IsDie)
     bindDirect("GetOwnerIDText", "04_源码候选/root7_GetOwnerIDText.lua", "GetOwnerIDText")
+    rootPrototypes.GetOwnerIDText = requireRecoveredClosure("GetOwnerIDText", rootPrototypes.GetOwnerIDText)
     bindDirect("GetOwnerID", "04_源码候选/root38_GetOwnerID.lua", "GetOwnerID")
+    rootPrototypes.GetOwnerID = requireRecoveredClosure("GetOwnerID", rootPrototypes.GetOwnerID)
     bindDirect("GetOwnerDescription", "04_源码候选/verified_helpers_batches_1_3.lua", "GetOwnerDescription")
+    rootPrototypes.GetOwnerDescription = requireRecoveredClosure("GetOwnerDescription", rootPrototypes.GetOwnerDescription)
 
     -- FindMonsterCandidates：UP[0..4]依次为GetPlayerPosition、IsDie、
     -- GetPlayerMapPosition、DistanceCalculation、gatherConfig。五项均为
@@ -8090,6 +8113,9 @@ do
             rootSource.gatherConfig
         )
     end
+    rootPrototypes.FindMonsterCandidates = requireRecoveredClosure(
+        "FindMonsterCandidates", rootPrototypes.FindMonsterCandidates
+    )
 
     local makeResetGather = sourceFunction(
         "04_源码候选/短函数草稿_第十三批.lua", "make_ResetGatherMonsterData"
@@ -8102,6 +8128,9 @@ do
             rootPrototypes.PrintLog
         )
     end
+    rootPrototypes.ResetGatherMonsterData = requireRecoveredClosure(
+        "ResetGatherMonsterData", rootPrototypes.ResetGatherMonsterData
+    )
 
     -- FindMonsterInCurrViewField UP[0]=T[30]=IsDie；作为MainLoop稳定函数捕获。
     local makeFindInView = sourceFunction(
@@ -8112,10 +8141,16 @@ do
         rootPrototypes.FindMonsterInCurrViewField =
             makeFindInView(rootPrototypes.IsDie)
     end
+    rootPrototypes.FindMonsterInCurrViewField = requireRecoveredClosure(
+        "FindMonsterInCurrViewField", rootPrototypes.FindMonsterInCurrViewField
+    )
 
     -- root PC212-PC213：创建并导出IsInWhitelistMap。
     bindDirect("IsInWhitelistMap",
         "04_源码候选/短函数草稿_第十二批.lua", "IsInWhitelistMap")
+    rootPrototypes.IsInWhitelistMap = requireRecoveredClosure(
+        "IsInWhitelistMap", rootPrototypes.IsInWhitelistMap
+    )
     _G.IsInWhitelistMap = rootPrototypes.IsInWhitelistMap
 
     local makeMainLoop = sourceFunction(
@@ -8134,6 +8169,7 @@ do
             rootPrototypes.GetOwnerDescription, rootPrototypes.SetTargetID,
             rootSource.gatherConfig
         )
+        rootPrototypes.MainLoop = requireRecoveredClosure("MainLoop", rootPrototypes.MainLoop)
         _G.MainLoop = rootPrototypes.MainLoop
     end
 
@@ -8148,6 +8184,9 @@ do
             rootPrototypes.ResetGatherMonsterData, rootSource.gatherConfig,
             rootPrototypes.PrintLog
         )
+        rootPrototypes.InitGatherMonsters = requireRecoveredClosure(
+            "InitGatherMonsters", rootPrototypes.InitGatherMonsters
+        )
         _G.InitGatherMonsters = rootPrototypes.InitGatherMonsters
     end
 
@@ -8160,6 +8199,9 @@ do
             rootPrototypes.ClearTargetID_2, rootPrototypes.FormatStateChange,
             rootSource.gatherStatusText, rootPrototypes.ResetGatherMonsterData,
             rootPrototypes.PrintLog
+        )
+        rootPrototypes.StopGatherMonsters = requireRecoveredClosure(
+            "StopGatherMonsters", rootPrototypes.StopGatherMonsters
         )
         _G.StopGatherMonsters = rootPrototypes.StopGatherMonsters
     end
