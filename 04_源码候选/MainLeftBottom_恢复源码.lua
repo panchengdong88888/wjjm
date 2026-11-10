@@ -3218,7 +3218,7 @@ end
 --
 -- 尚未做：全部候选函数的最终去重/根级闭包实例化/全局导出调用链集成、
 -- Lua解释器语法检查、引擎环境运行验证。不要把本文件误当作最终可执行脚本。
-return MainLeftBottomRecovered
+
 
 
 -- ============================================================================
@@ -5323,3 +5323,111 @@ end
 -- MainLeftBottom根表字段：a、b、z、hide、show、destroy、main、blacklist、onDamageMsg、doInit；a/b/z内部字段另按层级记录。
 -- PC86-PC211未发现新的根级导出/根表字段赋值；该区间的寄存器闭包创建和共享状态不视为导出。
 -- 本总账只确认静态字节码赋值，不代表宿主执行时机已验证。
+
+
+-- ============================================================================
+-- 检查点246：root 22个无捕获直接子原型的实际绑定
+--
+-- 依据：docs/handoff/12_根模块闭包装配表.json closure_sites。
+-- 本段只绑定capture_count=0的直接子原型；有捕获工厂暂不在此猜测参数，
+-- 避免把OP_387 live-cell误作值快照。所有绑定均是静态候选，未运行时验证。
+-- ============================================================================
+do
+    local sources = MainLeftBottomRecovered.sources
+    local rootSource = sources["04_源码候选/root_MainLeftBottom_Module.lua"]
+    local rootModule = rootSource and rootSource.MainLeftBottom
+    assert(type(rootModule) == "table",
+        "root module candidate is missing from source registry")
+
+    local function sourceFunction(sourcePath, symbol)
+        local source = sources[sourcePath]
+        local value = source and source[symbol]
+        if type(value) ~= "function" then
+            return nil
+        end
+        return value
+    end
+
+    local rootPrototypes = {}
+    local missing = {}
+
+    local directBindings = {
+        {"PrintLog", "04_源码候选/PrintLog_日志辅助函数_第七批.lua", "PrintLog"},
+        {"ScheduleOnce", "root/54_ScheduleOnce.lua", "ScheduleOnce"},
+        {"Schedule", "04_源码候选/root35_AnonymousHelper_33_ScheduleWrapper.lua", "AnonymousHelper_33_Schedule"},
+        {"GetMapId", "04_源码候选/verified_helpers_batches_1_3.lua", "GetMapId"},
+        {"GetMapName", "04_源码候选/verified_helpers_batches_1_3.lua", "GetMapName"},
+        {"PlayerPos", "04_源码候选/verified_helpers_batches_1_3.lua", "PlayerPos"},
+        {"GetDroppedItems", "04_源码候选/verified_helpers_batches_1_3.lua", "GetDroppedItems"},
+        {"MoveTo", "04_源码候选/短函数草稿_第五十三批.lua", "MoveTo"},
+        {"SetTargetID", "04_源码候选/短函数草稿_第十二批.lua", "SetTargetID"},
+        {"ClearTargetID_2", "04_源码候选/root56_root57_short_functions.lua", "ClearTargetID_2"},
+        {"GetMainPlayerID", "04_源码候选/verified_helpers_batches_1_3.lua", "GetMainPlayerID"},
+        {"GetPlayerPosition", "04_源码候选/位置读取函数_第五批草稿.lua", "GetPlayerPosition"},
+        {"GetPlayerMapPosition", "04_源码候选/短函数草稿_第三十七批.lua", "GetPlayerMapPosition"},
+        {"DistanceCalculation", "04_源码候选/短函数草稿_第十二批.lua", "DistanceCalculation"},
+        {"IsDie", "04_源码候选/小型辅助函数_首批草稿.lua", "IsDie"},
+        {"GetOwnerIDText", "04_源码候选/root7_GetOwnerIDText.lua", "GetOwnerIDText"},
+        {"GetOwnerID", "04_源码候选/root38_GetOwnerID.lua", "GetOwnerID"},
+        {"GetOwnerDescription", "04_源码候选/verified_helpers_batches_1_3.lua", "GetOwnerDescription"},
+        {"IsInWhitelistMap", "04_源码候选/短函数草稿_第十二批.lua", "IsInWhitelistMap"},
+        {"MoveItemToQuickUse", "04_源码候选/root_MainLeftBottom_Module.lua", "MoveItemToQuickUse"},
+        {"GetWritablePath", "04_源码候选/verified_helpers_batches_1_3.lua", "GetWritablePath"},
+        {"PCallHelper_2", "04_源码候选/代理与回调短函数_第四批.lua", "PCallHelper_2"}
+    }
+
+    for _, binding in ipairs(directBindings) do
+        local prototypeName, sourcePath, symbol =
+            binding[1], binding[2], binding[3]
+        local fn = sourceFunction(sourcePath, symbol)
+        if fn then
+            rootPrototypes[prototypeName] = fn
+        else
+            missing[#missing + 1] = prototypeName .. " <- " ..
+                sourcePath .. ":" .. symbol
+        end
+    end
+
+    -- root PC52/PC53：两个无捕获调度包装器，按已恢复函数体原样表达。
+    if rootPrototypes.ScheduleOnce == nil then
+        rootPrototypes.ScheduleOnce = function(callback, delay)
+            return SL:ScheduleOnce(callback, delay)
+        end
+    end
+    if rootPrototypes.Schedule == nil then
+        rootPrototypes.Schedule = function(callback, interval)
+            return SL:Schedule(callback, interval)
+        end
+    end
+
+    -- 仅导出字节码明确写入_ENV的全局入口；其他辅助闭包留在rootPrototypes。
+    local globalExports = {
+        log = "PrintLog",
+        GetMapId = "GetMapId",
+        GetMapName = "GetMapName",
+        PlayerPos = "PlayerPos",
+        GetDroppedItems = "GetDroppedItems",
+        MoveTo = "MoveTo",
+        IsInWhitelistMap = "IsInWhitelistMap",
+        MoveItemToQuickUse = "MoveItemToQuickUse"
+    }
+    for globalName, prototypeName in pairs(globalExports) do
+        local fn = rootPrototypes[prototypeName]
+        if fn then
+            _G[globalName] = fn
+        end
+    end
+
+    MainLeftBottomRecovered.root_module = rootModule
+    MainLeftBottomRecovered.root_prototypes = rootPrototypes
+    MainLeftBottomRecovered.root_assembly_checkpoint = {
+        checkpoint = 246,
+        direct_child_closures_expected = 22,
+        direct_child_closures_bound = 22 - #missing,
+        missing = missing,
+        runtime_verified = false,
+        capture_semantics = "OP_387 live shared cell; captured factories not bound in this pass"
+    }
+end
+
+return MainLeftBottomRecovered
