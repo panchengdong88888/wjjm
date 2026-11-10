@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点261：核对root PC1-PC412全局导出、模块字段和局部寄存器生命周期在主恢复文件中的无遗漏情况；重点审查PC86-PC180的rootSource初始化字段与T[8]/T[11]/T[12]/T[13]/T[14..22]对应关系，以及PC390-PC412 doInit_UI最终返回路径。然后评估能否把root状态初始化与闭包装配适配层合并成单一连续模块执行体。",
+  "next_action": "检查点273：回到root PC1-PC412连续可读源码收敛。先对照root PC1-PC42初始化源段和主装配入口，确认MainLeftBottom根表、a/b/z、timerState的创建顺序、对象身份及跨词法块引用；随后继续将PC43-PC412的可确认语句逐步收敛为连续恢复适配执行体，保留PC275_ENV.MainLeftBottom与PC389 T[59]重读语义，不把OP_387捕获描述写成业务语句。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -3542,30 +3542,30 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 271,
-  "checkpoint": 271,
+  "last_checkpoint": 272,
+  "checkpoint": 272,
   "drafts": 33,
-  "next": "检查点272：对MainLeftBottom_恢复源码.lua所有MainLeftBottomRecovered.sources注册键做全量重复扫描；确认没有同名键后写入覆盖，并逐一核对根装配区sourceFunction调用只依赖唯一来源块。完成后回到根模块PC1-PC412连续可读源码组织与局部变量/字段赋值顺序收敛。",
+  "next": "检查点273：回到root PC1-PC412连续可读源码收敛。先对照root PC1-PC42初始化源段和主装配入口，确认MainLeftBottom根表、a/b/z、timerState的创建顺序、对象身份及跨词法块引用；随后继续将PC43-PC412的可确认语句逐步收敛为连续恢复适配执行体，保留PC275_ENV.MainLeftBottom与PC389 T[59]重读语义，不把OP_387捕获描述写成业务语句。",
   "recent_checkpoint": {
-    "number": 271,
+    "number": 272,
     "date": "2026-11-10",
-    "artifacts": [
-      "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点271_MainLoop共享cell版本与root22注册去重.md",
-      "docs/handoff/05_机器可读接续状态.json",
-      "docs/handoff/10_防上下文中断_checkpoint协议.md",
-      "docs/handoff/12_根模块闭包装配表.json",
-      "docs/handoff/13_原型结构树.md",
-      "02_基础索引/03_函数状态清单.csv"
-    ],
-    "complete_static_reconstructions": 109,
-    "ordinary_lua_drafts": 72,
-    "runtime_verified": 0,
-    "root_direct_closures_source_bound": 58,
-    "root_direct_closures_expected": 58,
-    "notes": "MainLoop唯一注册版本与rootCells[15]/[17]共享cell参数契约一致；root22工厂唯一注册。静态完成数不变，未执行Lua/luac或游戏运行。"
+    "audit_file": "docs/audit/检查点272_源码注册表唯一性与闭包工厂来源核对.md",
+    "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
+    "metrics": {
+      "source_registry_assignments": 53,
+      "source_registry_unique_paths": 53,
+      "duplicate_source_registry_paths": 0,
+      "literal_source_function_calls": 37,
+      "source_function_distinct_paths": 31,
+      "unresolved_source_function_paths": 0,
+      "unresolved_source_function_symbols": 0,
+      "bind_direct_calls": 22,
+      "unresolved_bind_direct_paths_or_symbols": 0,
+      "explicit_duplicate_exports_within_source_block": 0
+    },
+    "notes": "重复的局部函数标识符处于不同do/end词法块且按(path,symbol)隔离；短函数草稿_第五十七批中的重复item匹配来自函数内部局部/表字段，不是重复导出。未改动业务函数主体或静态恢复计数。"
   },
-  "latest_checkpoint": 261,
+  "latest_checkpoint": 272,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3574,7 +3574,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 272,
+  "next_checkpoint": 273,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3743,12 +3743,13 @@
     "doInit_ui_capture_20_slots": "static_register_timeline_aligned",
     "shadowed_source_blocks": "four_obsolete_blocks_removed;remaining_root45_and_root22_registry_multiplicity_pending",
     "root45_mainloop_shared_cell": "checkpoint250_factory_preserved",
-    "source_registry_duplicate_audit": "root45_and_root22_duplicates_removed;global_scan_pending"
+    "source_registry_duplicate_audit": "root45_and_root22_duplicates_removed;global_scan_pending",
+    "checkpoint272_source_registry_static_audit": "passed"
   },
   "latest": {
-    "checkpoint": "271",
-    "summary": "清理root45_MainLoop三个来源注册版本中的两个旧普通Lua草稿，保留检查点250共享cell工厂版本。根装配传入rootCells[15]/rootCells[17]，保留版本通过UPVALUE_8.value/UPVALUE_10.value读写，两个旧版把cell当普通table/number使用，会覆盖正确版本并破坏装配。另删除root22_GetMapData2DPtr后续重复注册块，保留首个带PC范围说明的工厂。清理后root45和root22来源键各一处；MainLoop工厂与GetMapData2DPtr工厂定义各一处。",
-    "audit_file": "docs/audit/检查点271_MainLoop共享cell版本与root22注册去重.md",
+    "checkpoint": "272",
+    "summary": "全量扫描MainLeftBottomRecovered.sources注册赋值：53条、53个唯一路径、重复键0。主装配37处字面sourceFunction(path,symbol)引用涉及31个路径，路径缺失0、符号缺失0；22处bindDirect引用的来源路径/符号缺失0。此前只扫描=__exports会漏掉直接table注册，本批修正扫描口径。未删除或改写函数体，静态恢复计数不变。",
+    "audit_file": "docs/audit/检查点272_源码注册表唯一性与闭包工厂来源核对.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3760,7 +3761,7 @@
     "capture_semantics": "OP_387 stores a live cell reference {parent_T_table, register_index}; the upvalue proxy __index/__newindex reads/writes the parent T register dynamically. Later parent writes are visible to closures."
   },
   "root_assembly": {
-    "checkpoint": 261,
+    "checkpoint": 272,
     "direct_child_closures_expected": 22,
     "bound_at_source_level": 22,
     "runtime_verified": false,
@@ -3805,10 +3806,19 @@
       "BlacklistPlayerDetection",
       "doInit_UI"
     ],
-    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。",
-    "checkpoint261_gather_status_scope_fixed": true
+    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。 检查点272全量核对53个sources注册键唯一、37个sourceFunction字面调用及22个bindDirect调用全部命中来源路径与符号；未执行Lua解释器/luac。",
+    "checkpoint261_gather_status_scope_fixed": true,
+    "checkpoint272_source_registry_keys_unique": true,
+    "source_registry_registration_count": 53,
+    "source_registry_unique_key_count": 53,
+    "source_function_literal_reference_count": 37,
+    "source_function_distinct_path_count": 31,
+    "source_function_unresolved_path_count": 0,
+    "source_function_unresolved_symbol_count": 0,
+    "bind_direct_reference_count": 22,
+    "bind_direct_unresolved_count": 0
   },
-  "root_assembly_checkpoint": 271,
+  "root_assembly_checkpoint": 272,
   "root_pc1_pc42_sequential_source_restored": true,
   "root_pc43_pc85_register_ordered": true,
   "root_pc86_pc211_cells_capture_ordered": true,
