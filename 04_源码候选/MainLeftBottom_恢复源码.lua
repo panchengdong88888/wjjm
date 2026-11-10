@@ -8331,80 +8331,111 @@ do
         and rootSource.gatherMonsterCountConfigFile == "gather_monster_count.txt",
         "PC295-PC296 configuration file names mismatch")
 
-    -- 检查点252：T[44] GetWritablePath是同一个稳定函数引用，供三个闭包共享。
-    -- root PC297：创建无捕获GetWritablePath，供PC298/301/303闭包捕获。
+    -- 检查点266：PC297-PC315配置文件包装链。
+    -- rootConfigRegisters是恢复适配层影子表，显式记录T[42..51]捕获身份。
+    local rootConfigRegisters = {
+        [42] = rootSource.blacklistDistanceConfigFile,
+        [43] = rootSource.gatherMonsterCountConfigFile
+    }
+
+    -- PC297：创建无捕获GetWritablePath，写入T[44]。
     bindDirect("GetWritablePath",
         "04_源码候选/verified_helpers_batches_1_3.lua", "GetWritablePath")
+    rootConfigRegisters[44] = requireRecoveredClosure(
+        "GetWritablePath", rootPrototypes.GetWritablePath
+    )
 
+    -- PC298-PC299：ReadNumericConfig捕获T[44]，创建后写入T[45]。
     local makeReadNumericConfig = sourceFunction(
         "04_源码候选/root9_ReadNumericConfig.lua", "make_ReadNumericConfig"
     )
-    if makeReadNumericConfig and rootPrototypes.GetWritablePath then
+    if makeReadNumericConfig then
         rootPrototypes.ReadNumericConfig =
-            makeReadNumericConfig(rootPrototypes.GetWritablePath)
+            makeReadNumericConfig(rootConfigRegisters[44])
     end
+    rootConfigRegisters[45] = requireRecoveredClosure(
+        "ReadNumericConfig", rootPrototypes.ReadNumericConfig
+    )
 
+    -- PC300-PC301：PCallHelper捕获同一T[44]，创建后写入T[46]。
     local makePCallHelper = sourceFunction(
         "04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua",
         "make_PCallHelper"
     )
-    if makePCallHelper and rootPrototypes.GetWritablePath then
+    if makePCallHelper then
         rootPrototypes.PCallHelper =
-            makePCallHelper(rootPrototypes.GetWritablePath)
+            makePCallHelper(rootConfigRegisters[44])
     end
+    rootConfigRegisters[46] = requireRecoveredClosure(
+        "PCallHelper", rootPrototypes.PCallHelper
+    )
 
+    -- PC302-PC303：FileExistCheck_pcall_wrapper捕获T[44]，写入T[47]。
     local makeFileExistCheck = sourceFunction(
         "04_源码候选/短函数草稿_第三十八批.lua",
         "make_FileExistCheck_pcall_wrapper"
     )
-    if makeFileExistCheck and rootPrototypes.GetWritablePath then
+    if makeFileExistCheck then
         rootPrototypes.FileExistCheck_pcall_wrapper =
-            makeFileExistCheck(rootPrototypes.GetWritablePath)
+            makeFileExistCheck(rootConfigRegisters[44])
     end
+    rootConfigRegisters[47] = requireRecoveredClosure(
+        "FileExistCheck_pcall_wrapper", rootPrototypes.FileExistCheck_pcall_wrapper
+    )
 
-    -- 检查点253：黑名单前置闭包按root PC顺序装配。
+    -- PC304-PC306：AnonymousHelper_49捕获[T[45],T[42]]，写入T[48]。
     local makeAnonymousHelper49 = sourceFunction(
         "04_源码候选/root49_AnonymousHelper_49.lua", "make_AnonymousHelper_49"
     )
-    if makeAnonymousHelper49 and rootPrototypes.ReadNumericConfig then
+    if makeAnonymousHelper49 then
         rootPrototypes.AnonymousHelper_49 = makeAnonymousHelper49(
-            rootPrototypes.ReadNumericConfig,
-            rootSource.blacklistDistanceConfigFile
+            rootConfigRegisters[45], rootConfigRegisters[42]
         )
     end
+    rootConfigRegisters[48] = requireRecoveredClosure(
+        "AnonymousHelper_49", rootPrototypes.AnonymousHelper_49
+    )
 
--- 检查点254：两个匿名转发器按规范root.children[32]/[33]工厂装配。
+    -- PC307-PC309：AnonymousHelper_32捕获[T[46],T[42]]，写入T[49]。
     local makeAnonymousHelper32 = sourceFunction(
         "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
         "make_AnonymousHelper_32"
     )
-    if makeAnonymousHelper32 and rootPrototypes.PCallHelper then
+    if makeAnonymousHelper32 then
         rootPrototypes.AnonymousHelper_32 = makeAnonymousHelper32(
-            rootPrototypes.PCallHelper,
-            rootSource.blacklistDistanceConfigFile
+            rootConfigRegisters[46], rootConfigRegisters[42]
         )
     end
+    rootConfigRegisters[49] = requireRecoveredClosure(
+        "AnonymousHelper_32", rootPrototypes.AnonymousHelper_32
+    )
 
+    -- PC310-PC312：AnonymousHelper_33捕获[T[45],T[43]]，写入T[50]。
     local makeAnonymousHelper33 = sourceFunction(
         "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
         "make_AnonymousHelper_33"
     )
-    if makeAnonymousHelper33 and rootPrototypes.ReadNumericConfig then
+    if makeAnonymousHelper33 then
         rootPrototypes.AnonymousHelper_33 = makeAnonymousHelper33(
-            rootPrototypes.ReadNumericConfig,
-            rootSource.gatherMonsterCountConfigFile
+            rootConfigRegisters[45], rootConfigRegisters[43]
         )
     end
+    rootConfigRegisters[50] = requireRecoveredClosure(
+        "AnonymousHelper_33", rootPrototypes.AnonymousHelper_33
+    )
 
+    -- PC313-PC315：AnonymousHelper_54捕获[T[46],T[43]]，写入T[51]。
     local makeAnonymousHelper54 = sourceFunction(
         "root/55_AnonymousHelper_54.lua", "make_AnonymousHelper_54"
     )
-    if makeAnonymousHelper54 and rootPrototypes.PCallHelper then
+    if makeAnonymousHelper54 then
         rootPrototypes.AnonymousHelper_54 = makeAnonymousHelper54(
-            rootPrototypes.PCallHelper,
-            rootSource.gatherMonsterCountConfigFile
+            rootConfigRegisters[46], rootConfigRegisters[43]
         )
     end
+    rootConfigRegisters[51] = requireRecoveredClosure(
+        "AnonymousHelper_54", rootPrototypes.AnonymousHelper_54
+    )
 
     -- root.children[22]捕获T[52]；静态可达路径不读取此表，但保留真实捕获注入。
     local makeGetMapData2DPtr = sourceFunction(
