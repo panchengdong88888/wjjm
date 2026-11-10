@@ -47,7 +47,7 @@
     "root.children[25]": "DeathAutoBlacklist：47条+子原型6条；检查点181闭合UP0=root T[41]黑名单状态表、UP1=T[4] PrintLog、UP2=T[55] FindBlacklistPlayer、UP3=T[5] ShowLocalNoticeByType。取出lastAttacker后清空共享字段；检查记录/name及黑名单命中；未命中时输出日志/本地通知，并按0..5循环以0.5*index安排6次ScheduleOnce，子闭包捕获记录表并调用RequestAddBlacklistByName(record.name)。完整静态恢复，未运行时验证。",
     "root.children[22]": "GetMapData2DPtr（144条，UP0捕获root T[52]但活动路径不读取）：检查点184确认PC1-PC37是唯一可达路径；检查五实参、相同坐标返回0、maxDistance<=0返回nil、计算Chebyshev max(abs(dx),abs(dy))、超限返回nil否则返回距离；PC37无条件return，PC38-PC144不可达死尾部。完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点186已完成BlacklistPlayerDetection（root.children[47]）216条指令全CFG及13项捕获闭合，升级完整静态恢复；运行时验证仍为0。下一步检查root.children[45] MainLoop既有源码候选与未闭合CFG，先核对当前机器状态/CSV并避免重复已完成区段。",
+  "next_action": "检查点186已完成BlacklistPlayerDetection（root.children[47]）216条指令全CFG及13项捕获闭合，升级完整静态恢复；运行时验证仍为0。MainLoop（root.children[45]）在函数状态CSV中已是完整静态恢复（检查点152-158），不应作为下一待办重复分析。下一步转向root.children[42] doInit_UI（419条，23个子原型）现有首版普通Lua草稿，重点继续核查Nested_Anonymous的T[0]/T[1]/T[2]捕获生产者、Nested_FFFF00剩余320条及Nested_Helper_3刷新闭包；先定位已有草稿文件并按未闭合区段续做。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
