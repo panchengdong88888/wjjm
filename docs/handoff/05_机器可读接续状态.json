@@ -1,6 +1,6 @@
 {
   "project": "MainLeftBottom(2).lua VM devirtualization / readable Lua recovery",
-  "as_of": "2026-11-09",
+  "as_of": "2026-11-10",
   "source_sha256": {
     "MainLeftBottom(2).lua": "458b2f98d635307cc566e38222cf7c59bea3d0eeee545b55dbdf79c665a96bfe",
     "MainLeftBottom_vm_dump.json": "7d79cecada92270dca0512dc4161d12c45a547ca8f9aeb74d0d2f87b5f996e43",
@@ -43,7 +43,7 @@
     "root.children[42].children[3].children[4]": "Nested_UnSchedule：20条；原检查点116已完成控制流静态复核。检查点172修正源码表达：子UP0=通知回调、UP1=timerState、UP2=moduleState；父PC68-PC71捕获顺序为父UP1/UP2/UP0。取消timer后写回反汇编未知常量['unknown',2]，源码以UNKNOWN_VALUE_SENTINEL占位，禁止误写nil。完整静态恢复，未运行时验证。",
     "root.children[50].children[0]": "Nested_isOutputted：52条；检查点174独立静态复审完成。父StorageItems PC102创建闭包，PC103/PC104捕获父UP0共享输出状态对象及父UP1输出回调；父PC154-PC170闭合ipairs迭代、Name匹配和两参数调用（item=R19,itemText=R25），PC171消费返回值。子函数纯文本查找聚灵珠、首次命中置位并两次回调输出物品/详情，校验Dura/DuraMax并返回布尔值。完整静态恢复，未运行时验证；更上层捕获原名未知。"
   },
-  "next_action": "检查点174：Nested_isOutputted（root.children[50].children[0]，52条）子函数全部指令、父级两个捕获槽、迭代器参数顺序及返回值消费点已闭合并升级为完整静态恢复。下一步继续批量复核其他短草稿及剩余子原型；优先追踪能通过父级调用点闭合的函数。运行时验证仍为0。",
+  "next_action": "检查点175：Nested_Anonymous（root.children[42].children[22]，8条）已独立复核；确认创建Nested_str并零参调用，UP[0]=PrintLog，但T[0]/T[2]/T[1]来源未闭合，保持普通Lua草稿。下一步追踪doInit_UI中此闭包的创建/传递链；若调用点仍无法闭合，转向其他父级调用关系明确的短函数。运行时验证仍为0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2906,7 +2906,7 @@
   ],
   "draft_function_count": 78,
   "ordinary_lua_draft_functions": 78,
-  "last_checkpoint": "174",
+  "last_checkpoint": "175",
   "checkpoint": "174",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
@@ -2934,14 +2934,14 @@
     ]
   },
   "complete_static_reconstruction_count": 95,
-  "complete_static_reconstruction": "89/110 (80.9%)",
+  "complete_static_reconstruction": "95/110 (86.4%)",
   "progress_reconciled": {
-    "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；机器状态中的static_recovered_functions是精选索引，不作为完整计数器。",
-    "ordinary_lua_draft_functions": 82,
-    "complete_static_reconstruction_functions": 88,
+    "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；精选索引数组不作为完整计数器。",
+    "ordinary_lua_draft_functions": 78,
+    "complete_static_reconstruction_functions": 95,
     "runtime_verified_functions": 0,
-    "note": "检查点167将UseItemByIndex root.children[24]升级为完整静态恢复，并将UPVALUE_0=T[37]正确表达为工厂闭包捕获；列表业务来源仍未命名。运行时验证仍为0。",
-    "checkpoint": 174,
+    "note": "检查点175复核Nested_Anonymous（root.children[42].children[22]）8条指令；捕获UP[0]=PrintLog已闭合，T[0]/T[2]/T[1]来源仍未知，状态保持普通Lua草稿，不调整计数。",
+    "checkpoint": 175,
     "ordinary_lua_drafts": 78,
     "complete_static_reconstruction": 95,
     "runtime_verified": 0
