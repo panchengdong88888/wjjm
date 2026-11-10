@@ -118,7 +118,8 @@
     "root_pc86_pc211_capture_audit_checkpoint": 242,
     "root_pc212_pc340_ledger_checkpoint": 243,
     "root_pc341_pc412_ledger_checkpoint": 244,
-    "root_complete_module_ledger_checkpoint": 245
+    "root_complete_module_ledger_checkpoint": 245,
+    "root_assembly_checkpoint": 246
   },
   "closure_sites": [
     {
@@ -7629,5 +7630,37 @@
       "同一闭包可先存入模块字段、随后T寄存器复用；按模块表字段的赋值事实记录，不因寄存器覆写而删除。",
       "全局导出名称与模块字段名称严格区分；ShowLocalNoticeByType、ScheduleOnce、Schedule在已审PC段未观察到根级导出。"
     ]
-  }
+  },
+  "root_assembly_checkpoint_246": {
+    "method": "MainLeftBottom_恢复源码.lua末尾root_assembly_checkpoint区段",
+    "direct_child_closures_expected": 22,
+    "direct_child_prototypes": [
+      "root.children[16]",
+      "root.children[53]",
+      "root.children[34]",
+      "root.children[13]",
+      "root.children[30]",
+      "root.children[57]",
+      "root.children[4]",
+      "root.children[3]",
+      "root.children[35]",
+      "root.children[56]",
+      "root.children[39]",
+      "root.children[18]",
+      "root.children[44]",
+      "root.children[11]",
+      "root.children[29]",
+      "root.children[7]",
+      "root.children[38]",
+      "root.children[43]",
+      "root.children[31]",
+      "root.children[41]",
+      "root.children[2]",
+      "root.children[48]"
+    ],
+    "direct_child_closures_bound": "22 minus any missing registry source; recorded at runtime in root_assembly_checkpoint.missing",
+    "binding_policy": "Only capture_count=0 direct children; captured factories remain pending until shared live-cell bindings are implemented.",
+    "runtime_verified": false
+  },
+  "next_action": "检查点247：逐项解决root直接子原型的源码注册缺口；随后按可变/不可变cell分类，优先装配捕获仅为稳定对象/函数的工厂，特别是FormatStateChange与MainLoop等共享状态cell不得复制快照。"
 }
