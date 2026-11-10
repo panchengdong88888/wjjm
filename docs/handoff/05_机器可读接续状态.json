@@ -49,9 +49,9 @@
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
     "root.children[12]": "LuaSendMsg（92条）检查点190修订普通Lua草稿：固定六参，arg1为Blocklist/SendHookList键，arg2..5为param1..4，arg6为msgId；table.find命中只跳过日志；SendHookList函数经pcall(hook,arg1,arg6,message)，成功且返回true才拦截；否则networkCtl:SendMsg原六参转发。捕获root T[0]/T[4]业务原名与宿主语义待验证。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
-    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192恢复PC1-PC41；193恢复PC42-PC85；194恢复PC86-PC167；195恢复PC168-PC200；196恢复PC201-PC270。PC210创建ClearBlacklistItems并捕获T30；PC212-PC213创建/导出IsInWhitelistMap；PC214-PC237创建MainLoop并按序捕获22项，PC237导出；PC238-PC246创建/导出InitGatherMonsters，捕获[T3,T18,T23,T13,T35,T8,T4]；PC247-PC255创建/导出StopGatherMonsters，捕获[T18,T3,T25,T23,T13,T35,T4]；PC256-PC258创建/导出Builtsetting捕获T5；PC259-PC260创建/导出MoveItemToQuickUse无捕获；PC261-PC264创建DestroyUI捕获[T0,T3,T1]；PC265/269将闭包写入模块hide/show字段；PC266创建SetButtonVisibilityState捕获[T0,T1]；PC270创建ShowHideAllButtons，捕获数3、来源待PC271后续描述确认。根模块仍为分段草稿，PC271-PC412待恢复，未运行时验证。"
+    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192恢复PC1-PC41；193恢复PC42-PC85；194恢复PC86-PC167；195恢复PC168-PC200；196恢复PC201-PC270；197恢复PC271-PC340。PC271-PC273闭合ShowHideAllButtons捕获[T3,T1,T0]，PC274写模块destroy；PC276-PC279创建AccountIDValidation并捕获[T4=PrintLog,T5=ShowLocalNoticeByType]，写MainLeftBottom.main；PC280-PC282构造随机传送石名称数组；PC283-PC285装载黑名单处理数值常量；PC286-PC294初始化并挂接共享blacklist状态表；PC295-PC303建立文件名/GetWritablePath及ReadNumericConfig、PCallHelper、FileExistCheck闭包；PC304-PC315建立两个文件读取辅助闭包及其他短闭包捕获；PC316-PC340构造二维数值表的前六个二元项，后两项及外层组装待PC341-PC349。PC341-PC412待恢复，未运行时验证。"
   },
-  "next_action": "检查点196已恢复root PC201-PC270闭包创建、捕获与导出关系。下一步继续root PC271-PC340，闭合ShowHideAllButtons三项捕获来源及后续UI闭包创建/导出；复用已有子函数主体审计，不重复恢复函数体或底层VM分析。",
+  "next_action": "检查点197已恢复root PC271-PC340。下一步继续PC341-PC349，闭合R52二维表剩余两个二元项及外层数组组装；随后PC350-PC412，重点闭合剩余辅助闭包、BlacklistItems/StorageItems/AccountIDValidation等闭包捕获与MainLeftBottom.doInit导出。复用既有函数主体，不重复恢复已完成函数体或底层VM分析。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2964,7 +2964,24 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": "196",
+  "last_checkpoint": {
+    "number": 197,
+    "date": "2026-11-10",
+    "scope": "root PC271-PC340",
+    "status": "partial batch persisted; source/CSV/state/protocol updated and re-fetched",
+    "completed": [
+      "ShowHideAllButtons captures T[3],T[1],T[0] and MainLeftBottom.destroy assignment",
+      "AccountIDValidation captures PrintLog and ShowLocalNoticeByType; assigned to MainLeftBottom.main",
+      "random teleport item-name array and blacklist numeric constants",
+      "shared blacklist state table initialization and MainLeftBottom.blacklist assignment",
+      "ReadNumericConfig/PCallHelper/FileExistCheck and file-specific helper closure capture sources",
+      "first six two-value entries in R52 table"
+    ],
+    "pending": [
+      "PC341-PC349 remaining two R52 entries and outer table assembly",
+      "PC350-PC412 remaining closure creation, capture and export map"
+    ]
+  },
   "checkpoint": "196",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
