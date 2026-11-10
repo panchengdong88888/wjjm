@@ -7662,7 +7662,7 @@
     "binding_policy": "Only capture_count=0 direct children; captured factories remain pending until shared live-cell bindings are implemented.",
     "runtime_verified": false
   },
-  "next_action": "检查点264：整合root PC86-PC211的采集状态、FindMonsterCandidates、FormatStateChange、ResetGatherMonsterData、FindMonsterInCurrViewField及MainLoop/InitGatherMonsters/StopGatherMonsters的创建捕获顺序；重点维护T[14..22]每个共享cell唯一性。",
+  "next_action": "检查点265：校验PC212-PC296的闭包工厂和模块字段挂接顺序，重点覆盖Builtsetting、MoveItemToQuickUse、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons、AccountIDValidation与blacklistState。",
   "root_assembly_checkpoint_247": {
     "direct_child_closures_expected": 22,
     "direct_child_closures_source_bound": 22,
@@ -10842,5 +10842,256 @@
       "Subprototype bodies remain in their individual candidate source blocks.",
       "No Lua interpreter or target game runtime validation has been performed."
     ]
+  },
+  "root_assembly_checkpoint_264": {
+    "date": "2026-11-10",
+    "root_pc_range": "86-211",
+    "source_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
+    "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
+    "shared_cells": {
+      "registers": [
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "unique_cell_per_register": true,
+      "initial_values": {
+        "T[14]": "gatherStatusText.IDLE",
+        "T[15]": "{}",
+        "T[16]": 0,
+        "T[17]": 0,
+        "T[18]": false,
+        "T[19]": false,
+        "T[20]": 0,
+        "T[21]": null,
+        "T[22]": ""
+      },
+      "adapter": "rootCells[index]={value=initialValue}",
+      "static_assertion": "seenRootCells rejects non-table or reused cell object",
+      "runtime_verified": false
+    },
+    "closures": [
+      {
+        "pc": 181,
+        "name": "FormatStateChange",
+        "prototype": "root.children[8]",
+        "captures": [
+          4,
+          14
+        ],
+        "factory": "make_FormatStateChange",
+        "args": [
+          "rootPrototypes.PrintLog",
+          "rootCells[14]"
+        ]
+      },
+      {
+        "pc": 184,
+        "name": "SetTargetID",
+        "prototype": "root.children[35]",
+        "captures": [],
+        "source": "04_源码候选/短函数草稿_第十二批.lua"
+      },
+      {
+        "pc": 185,
+        "name": "ClearTargetID_2",
+        "prototype": "root.children[56]",
+        "captures": [],
+        "source": "04_源码候选/root56_root57_short_functions.lua"
+      },
+      {
+        "pc": 186,
+        "name": "GetMainPlayerID",
+        "prototype": "root.children[39]",
+        "captures": [],
+        "source": "04_源码候选/verified_helpers_batches_1_3.lua",
+        "api_boundary": "Lua wrapper; retain global.gamePlayerController:GetMainPlayerID()"
+      },
+      {
+        "pc": 187,
+        "name": "GetPlayerPosition",
+        "prototype": "root.children[18]",
+        "captures": [],
+        "source": "04_源码候选/位置读取函数_第五批草稿.lua"
+      },
+      {
+        "pc": 188,
+        "name": "GetPlayerMapPosition",
+        "prototype": "root.children[44]",
+        "captures": [],
+        "source": "04_源码候选/短函数草稿_第三十七批.lua"
+      },
+      {
+        "pc": 189,
+        "name": "DistanceCalculation",
+        "prototype": "root.children[11]",
+        "captures": [],
+        "source": "04_源码候选/短函数草稿_第十二批.lua"
+      },
+      {
+        "pc": 190,
+        "name": "IsDie",
+        "prototype": "root.children[29]",
+        "captures": [],
+        "source": "04_源码候选/小型辅助函数_首批草稿.lua",
+        "api_boundary": "Lua wrapper; preserve observed actor method"
+      },
+      {
+        "pc": 191,
+        "name": "GetOwnerIDText",
+        "prototype": "root.children[7]",
+        "captures": [],
+        "source": "04_源码候选/root7_GetOwnerIDText.lua"
+      },
+      {
+        "pc": 192,
+        "name": "GetOwnerID",
+        "prototype": "root.children[38]",
+        "captures": [],
+        "source": "04_源码候选/root38_GetOwnerID.lua",
+        "api_boundary": "Lua wrapper; preserve observed actor:GetOwnerID()"
+      },
+      {
+        "pc": 193,
+        "name": "GetOwnerDescription",
+        "prototype": "root.children[43]",
+        "captures": [],
+        "source": "04_源码候选/verified_helpers_batches_1_3.lua"
+      },
+      {
+        "pc": 194,
+        "name": "FindMonsterCandidates",
+        "prototype": "root.children[28]",
+        "captures": [
+          27,
+          30,
+          28,
+          29,
+          8
+        ],
+        "factory": "make_FindMonsterCandidates"
+      },
+      {
+        "pc": 200,
+        "name": "ResetGatherMonsterData",
+        "prototype": "root.children[26]",
+        "captures": [
+          15,
+          16,
+          17,
+          25,
+          19,
+          20,
+          21,
+          22,
+          4
+        ],
+        "factory": "make_ResetGatherMonsterData"
+      },
+      {
+        "pc": 210,
+        "name": "FindMonsterInCurrViewField",
+        "prototype": "root.children[14]",
+        "captures": [
+          30
+        ],
+        "factory": "make_FindMonsterInCurrViewField"
+      }
+    ],
+    "downstream_capture_sequences": {
+      "MainLoop": {
+        "pc": 214,
+        "prototype": "root.children[45]",
+        "parent_registers": [
+          18,
+          14,
+          13,
+          4,
+          23,
+          35,
+          26,
+          34,
+          15,
+          32,
+          17,
+          16,
+          19,
+          20,
+          22,
+          36,
+          21,
+          31,
+          30,
+          33,
+          24,
+          8
+        ]
+      },
+      "InitGatherMonsters": {
+        "pc": 238,
+        "prototype": "root.children[19]",
+        "parent_registers": [
+          3,
+          18,
+          23,
+          13,
+          35,
+          8,
+          4
+        ]
+      },
+      "StopGatherMonsters": {
+        "pc": 247,
+        "prototype": "root.children[27]",
+        "parent_registers": [
+          18,
+          3,
+          25,
+          23,
+          13,
+          35,
+          4
+        ]
+      }
+    },
+    "required_closure_guard": "requireRecoveredClosure",
+    "guarded_prototypes": [
+      "FormatStateChange",
+      "SetTargetID",
+      "ClearTargetID_2",
+      "GetMainPlayerID",
+      "GetPlayerPosition",
+      "GetPlayerMapPosition",
+      "DistanceCalculation",
+      "IsDie",
+      "GetOwnerIDText",
+      "GetOwnerID",
+      "GetOwnerDescription",
+      "FindMonsterCandidates",
+      "ResetGatherMonsterData",
+      "FindMonsterInCurrViewField",
+      "IsInWhitelistMap",
+      "MainLoop",
+      "InitGatherMonsters",
+      "StopGatherMonsters"
+    ],
+    "correction": "主恢复稿早期PC210注释误标ClearBlacklistItems；已修正为FindMonsterInCurrViewField。ClearBlacklistItems为root.children[15]，PC383创建。",
+    "verified_against": [
+      "register_value_timeline keys 8,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36",
+      "closure_sites PC181-PC210",
+      "root_pc86_pc211_register_ledger"
+    ],
+    "caveats": [
+      "rootCells are recovery adapters for OP_387 live-cell semantics, not original source data structures.",
+      "All child function bodies remain in their individual static candidate blocks.",
+      "No Lua compiler or game runtime validation has been performed."
+    ],
+    "runtime_verified": false
   }
 }
