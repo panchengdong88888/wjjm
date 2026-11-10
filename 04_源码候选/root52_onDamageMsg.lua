@@ -3,7 +3,8 @@
 -- UP[0] = blacklistState (root T[41]); the same table is exposed as MainLeftBottom.blacklist.
 
 local function make_onDamageMsg(blacklistState)
-    return function(messageJson, ...)
+    return function(messageJson)
+        -- fixed_param_count=1; additional arguments are not read.
         -- PC 1-5: reject a false/nil or empty first argument.
         if not messageJson or messageJson == "" then
             return
