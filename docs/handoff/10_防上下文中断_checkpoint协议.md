@@ -2582,3 +2582,17 @@ Nested_match：
 - 将 `doInit_UI` 20项父捕获改为显式 `make_doInit_UI(UPVALUE_0,...,UPVALUE_19)` 工厂，按已确认的捕获顺序构造恢复适配层UP表。
 - 汇总稿和5份受影响原候选通过词法块平衡检查；当前环境无Lua/luac或Lua parser，不能声称已完成完整Lua编译验证。
 - 函数计数不变：普通Lua草稿72、完整静态恢复103、运行时验证0。
+
+
+## 检查点 #213（2026-11-10）：GetWritablePath 完整静态复审与集中源码纠错
+
+- 原型：`root.children[2]`（legacy `root/3`），10条物理指令、4个常量、无子原型、`vararg_flag=1`。
+- PC1-PC4取得 `cc.FileUtils:getInstance()` 实例；PC5-PC6调用实例 `getWritablePath()`。
+- PC7读取首个可变参数作为路径；PC8融合拼接顺序确认为 `writablePath .. path`；PC9返回；PC10为不可达尾部return。
+- 保留 `...` 形式，因为原型标记为可变参数，且函数体只读取首个参数。
+- `ReadNumericConfig` 与 `FileExistCheck_pcall_wrapper` 的调用点均支持传入一个路径/文件名。
+- 新增源码：`04_源码候选/root2_GetWritablePath.lua`；审计：`docs/audit/检查点213_GetWritablePath完整静态复审.md`。
+- 修正集中源码 `MainLeftBottom_恢复源码.lua` 原先错误的 `prefix .. writablePath`，改为 `writablePath .. path`。
+- CSV原已将该函数登记为完整静态恢复，本批是补齐机器状态和集中源码纠错，不重复增加完成数。
+- 运行时验证仍为0；未执行Lua解释器/目标游戏验证。
+- 下一批优先处理短小、无子原型、少捕获的未完成函数；复杂UI和状态机最后处理。
