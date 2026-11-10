@@ -143,9 +143,13 @@ local function make_BlacklistPlayerDetection(
                         mainX, mainY, actorX, actorY, blacklistState.distance
                     )
 
-                    -- The nil-sentinel branch at PC 136-141 gates the
-                    -- notification/teleport path. The exact sentinel meaning
-                    -- is retained as a TODO rather than guessed.
+                    -- UP[5] is root.children[22] (legacy root/23), a 144-PC
+                    -- map-aware distance helper. Confirmed contract:
+                    -- five args x1,y1,x2,y2,maxDistance; Chebyshev distance
+                    -- max(abs(dx),abs(dy)); positive range and map checks;
+                    -- target-cell and route-sample obstacle checks. The exact
+                    -- interpolation/sample loop remains under review.
+                    -- PC136-PC141 accepts only a non-nil helper result.
                     if distance ~= nil then
                         currentTargetName = actorName
                         currentTargetDistance = distance
@@ -223,10 +227,14 @@ end
 --    the main actor id, calls UP[4](actorId), and only continues on its first
 --    return value. A truthy second return is the display name; otherwise the
 --    function queries ACTOR_NAME and falls back to "黑名单玩家".
--- 4. UP[5] is root.children[23], called with mainX, mainY, candidateX,
---    candidateY, and blacklistState.distance (the fifth argument is a range
---    limit, not an actor id).
--- 5. UP[1] is root.children[53]. PC1-PC5 checks the second formal argument
+-- 4. UP[5] is root.children[22] (legacy root/23), called with mainX, mainY,
+--    candidateX, candidateY, and blacklistState.distance. The first four
+--    arguments are coordinates; the fifth is a positive maximum Chebyshev
+--    range, not an actor ID. It also checks map bounds and obstacle state;
+--    its exact route-sampling formula remains under review.
+-- 5. PC136-PC141 accepts only a non-nil result from the map-aware distance
+--    helper; nil rejects the candidate before notification/teleportation.
+-- 6. UP[1] is root.children[53]. PC1-PC5 checks the second formal argument
 --    and returns immediately when it is nil/false; this zero-argument call
 --    therefore follows the early-return path and does not reach its payload.
 -- 6. UP[11] is 30.0 and is used as the failed-path retry delay only.
