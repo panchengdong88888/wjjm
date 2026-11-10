@@ -4,37 +4,39 @@
 
 -- 1) Nested_FFFFFF
 -- root.children[42].children[3].children[2] / legacy root/43/4/3
--- 65条指令；17常量；vararg_flag=3；父PC265捕获父T[5]、T[1]。
-local function Nested_FFFFFF(arg1, arg2, arg3)
-    local layout = {}
-    local columnCount = math.ceil(15 / arg1)
-    local GUI = _G.GUI
-    local captured0, captured1 = UPVALUE_0, UPVALUE_1 -- TODO：捕获对象业务身份
+-- 65条指令；17常量；父PC265捕获父T[5]=resList、父T[1]=screenW*0.6。
+-- 普通Lua工厂用于显式表达这两个闭包捕获；实际原型参数为(resourceNames,layoutOption,rowType,...).
+local function make_Nested_FFFFFF(resList, cellWidth)
+    return function Nested_FFFFFF(resourceNames, layoutOption, rowType, ...)
+        local textNodes = {}
+        local columnCount = math.ceil(15 / layoutOption)
 
-    local layoutName = "_cell_" .. tostring(arg2) .. "_"
-    local container = GUI.Layout_Create(captured0, 0, 0, 35, true)
+        for groupStart = 1, #resourceNames, layoutOption do
+            local cellName = tostring(rowType) .. "_cell_" .. tostring(columnCount)
+            local cell = GUI:Layout_Create(
+                resList, cellName, 0, 0, cellWidth, 35, 1
+            )
 
-    -- PC23-PC62为两层数值循环；精确边界、步长及索引公式待复核。
-    local outerCount = #arg1
-    local innerCount = columnCount
-    for outerIndex = 1, outerCount do
-        for innerIndex = 1, innerCount do
-            local itemIndex = 14 + innerIndex -- TODO：核实索引公式
-            local item = arg1[itemIndex]
-            if item then
-                local textName = "_text_" .. tostring(itemIndex) .. "_"
-                local text = GUI.Text_Create(
-                    container, textName, 0, 0, 15, 30,
-                    "#FFFFFF", tostring(item) .. ":--"
-                )
-                if text then
-                    GUI.setAnchorPoint(text, 0.5, 0.5)
-                    layout[itemIndex] = text
+            for columnIndex = 1, layoutOption do
+                local resourceIndex = groupStart + columnIndex - 1
+                local resourceName = resourceNames[resourceIndex]
+                if resourceName then
+                    local textName = "2_text_0.5_" .. tostring(columnIndex)
+                    local x = cellWidth * (columnIndex - 0.5) / 1
+                    local text = GUI:Text_Create(
+                        cell, textName, x, 15, 30, "#FFFFFF",
+                        resourceName .. ":--"
+                    )
+                    if text then
+                        GUI:setAnchorPoint(text, 0.5, 0.5)
+                        textNodes[resourceName] = text
+                    end
                 end
             end
         end
+
+        return textNodes
     end
-    return layout
 end
 
 -- 2) onDamageMsg
