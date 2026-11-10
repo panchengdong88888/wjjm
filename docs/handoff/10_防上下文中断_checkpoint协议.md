@@ -1935,3 +1935,15 @@
 - 新增审计：docs/audit/检查点179_Nested_onDamageMsg原始处理器必达路径纠错.md；更新源码候选、函数状态CSV、机器状态JSON。
 - 统计：普通Lua草稿75；完整静态恢复98/110；运行时验证0。
 - 下一步：复核root.children[52] / onDamageMsg（72条），重点闭合入口门槛、UPVALUE_0来源及Nested_JsonDecode调用链。
+
+
+## 检查点 #180：onDamageMsg JSON入口与lastAttacker捕获闭合
+
+- root.children[52] / onDamageMsg（72条）：root PC357创建闭包，PC358捕获root T[41]黑名单状态表为UP[0]；root PC294将该表挂到MainLeftBottom.blacklist，PC359将onDamageMsg闭包挂到MainLeftBottom.onDamageMsg。
+- onDamageMsg PC7创建Nested_JsonDecode，PC8捕获父T[1]首个JSON文本参数；子闭包以SL为receiver调用SL:JsonDecode并返回多返回值。父PC9通过pcall保护，PC10-PC16校验调用成功及解码结果严格为table。
+- PC1-PC5拒绝首参false/nil/空串；PC18-PC27检查MAIN_ACTOR_ID及UserID；PC28-PC33检查AttackUserID；PC34-PC47按ACTOR_IS_HERO truthy门控查询ACTOR_MASTER_ID并truthy时替换有效ID；PC48-PC56查询并校验ACTOR_NAME；PC57-PC66以plain=true查找“分身”，命中则退出。
+- PC67-PC72写入blacklistState.lastAttacker={id=effectiveAttackerID,name=attackerName}。第二参数及额外varargs不读取；本函数仅记录lastAttacker，不直接执行加黑请求。
+- 72条指令、父UP0、子闭包捕获、JSON返回门槛、元数据查询参数及所有提前返回路径闭合，升级为完整静态恢复（未运行时验证）。
+- 新增源码：04_源码候选/root52_onDamageMsg.lua；新增审计：docs/audit/检查点180_onDamageMsgJSON入口与lastAttacker捕获闭合.md。
+- 统计：普通Lua草稿74；完整静态恢复99/110；运行时验证0。
+- 下一步：复核root.children[25] / DeathAutoBlacklist（47条）及Nested_RequestAddBlacklistByName调用链，或继续BlacklistPlayerDetection主体剩余CFG。
