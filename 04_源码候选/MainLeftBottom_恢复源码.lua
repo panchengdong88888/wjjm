@@ -2674,7 +2674,7 @@ do
 本文件保留VM可见的循环、筛选、调用顺序和七项LuaSendMsg参数；不把999999999或服务端字段猜成未证实的协议含义。
 ]]
 
-local function make_StorageItems(storageState, notify, output)
+local function make_StorageItems(storageState, notify, output, makeNestedIsOutputted, makeFindAvailableStoragePage)
     local function StorageItems()
         -- PC1-PC7：互斥检查。正在存仓则直接返回，否则先置位。
         if storageState.isStoring then
@@ -2712,7 +2712,7 @@ local function make_StorageItems(storageState, notify, output)
         end
 
         -- PC54-PC58：child1捕获[maxPage,pageCapacity,openSize,storedPageData]。
-        local findAvailablePage = make_FindAvailableStoragePage(
+        local findAvailablePage = makeFindAvailableStoragePage(
             maxPage, pageCapacity, openSize, storedPageData
         )
 
@@ -2754,7 +2754,7 @@ local function make_StorageItems(storageState, notify, output)
         local queuedCount = 0
 
         -- PC102-PC104：child0捕获[storageState,notify]。
-        local isOutputted = make_Nested_isOutputted(storageState, notify)
+        local isOutputted = makeNestedIsOutputted(storageState, notify)
 
         -- PC105-PC224：唯一一轮pairs遍历；不拆成两次遍历。
         for _, item in pairs(bagData) do
@@ -5311,6 +5311,137 @@ do
 end
 
 
+
+-- ============================================================================
+-- 来源文件：04_源码候选/短函数草稿_第五十七批.lua
+-- root.children[5] / legacy root/6 / TakeItems；捕获T[2]状态表、T[5]提示回调。
+-- ============================================================================
+do
+    local function make_TakeItems(takingState, notify)
+        return function()
+            if takingState.isTaking then
+                return
+            end
+            takingState.isTaking = true
+            local storageItems = GetStorageItemData()
+            if not storageItems or #storageItems == 0 then
+                notify("仓库无可取物品")
+                takingState.isTaking = false
+                return
+            end
+            -- 字节码PC42-PC64的"待定"过滤循环位于不可达分支。
+            local _deadFilterTerms = { "待定" }
+            local takenCount = 0
+            for _, item in ipairs(storageItems) do
+                if item and item.Name and item.MakeIndex then
+                    local itemName = string.trim(item.Name)
+                    notify("取: " .. itemName)
+                    LuaSendMsg(
+                        global.MsgType.MSG_CS_STORAGE_PICK_OUT_REQUEST,
+                        999999999,
+                        item.MakeIndex,
+                        0,
+                        0,
+                        itemName,
+                        string.len(itemName)
+                    )
+                    takenCount = takenCount + 1
+                end
+            end
+            takingState.isTaking = false
+            if takenCount > 0 then
+                notify("取出物品完成, 共取出 " .. tostring(takenCount) .. " 件")
+            end
+        end
+    end
+    MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第五十七批.lua"] = {
+        make_TakeItems = make_TakeItems
+    }
+end
+
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/PickUpItems_拾取流程_第十批.lua
+-- root.children[21]；UP[0]=root T[5]=ShowLocalNoticeByType。
+-- 两个比较器作为父原型的子闭包，在PickUpItems调用体内建立。
+-- ============================================================================
+do
+    local function make_PickUpItems(notify)
+        return function()
+            local function Nested_dist_2(a, b)
+                return a.dist < b.dist
+            end
+            local function Nested_dist(a, b)
+                if a.kIdx ~= b.kIdx then
+                    return a.kIdx < b.kIdx
+                end
+                return a.dist < b.dist
+            end
+
+            local nameRules = {}
+            local droppedItems, droppedCount = GetDroppedItems()
+            if droppedCount == 0 then
+                notify("地面无可拾取物品")
+                return
+            end
+            local playerX, playerY = PlayerPos()
+            local preferredItems = {}
+            local ordinaryItems = {}
+
+            for itemIndex, item in ipairs(droppedItems) do
+                local name = item.mName or item.mONameStr or item.Name or item.name or ""
+                local x = item.mCurrMapX or item.MapX or item.mapX or item.x
+                local y = item.mCurrMapY or item.MapY or item.mapY or item.y
+                if x and y then
+                    local distance = math.abs(playerX - x) + math.abs(playerY - y)
+                    local matchedRuleIndex = 0
+                    for ruleIndex, rule in ipairs(nameRules) do
+                        if string.find(name, rule) then
+                            matchedRuleIndex = ruleIndex
+                            break
+                        end
+                    end
+                    if matchedRuleIndex > 0 then
+                        table.insert(preferredItems, {
+                            item = item, dist = distance,
+                            kIdx = matchedRuleIndex, x = x, y = y
+                        })
+                    else
+                        table.insert(ordinaryItems, {
+                            item = item, dist = distance, x = x, y = y
+                        })
+                    end
+                end
+            end
+            table.sort(preferredItems, Nested_dist)
+            table.sort(ordinaryItems, Nested_dist_2)
+            local candidates = {}
+            for _, entry in ipairs(preferredItems) do
+                table.insert(candidates, entry)
+            end
+            for _, entry in ipairs(ordinaryItems) do
+                table.insert(candidates, entry)
+            end
+            if #candidates == 0 then
+                return
+            end
+            local target = candidates[1]
+            MoveTo(target.x, target.y, 0)
+            if math.abs(playerX - target.x) <= 1
+                and math.abs(playerY - target.y) <= 1
+            then
+                global.dropItemController:PickMainPlayerPosItem()
+                notify("拾取: " .. target.item.mName)
+            end
+        end
+    end
+    MainLeftBottomRecovered.sources["04_源码候选/PickUpItems_拾取流程_第十批.lua"] = {
+        make_PickUpItems = make_PickUpItems
+    }
+end
+
+
 -- 检查点238根模块寄存器生命周期补充：T[8]=gatherConfig（PC86-PC89构造，4个捕获）；
 -- T[42]=blacklist_distance.txt；T[43]=gather_monster_count.txt；T[44]=GetWritablePath闭包。
 -- 以上均为PC证据确认的父帧共享cell值，详细捕获点见docs/handoff/12_根模块闭包装配表.json。
@@ -5503,10 +5634,60 @@ do
         )
     end
 
+    -- LuaSendMsg：UP[0]=MainLeftBottom.a，UP[1]=PrintLog；写回a.LuaSendMsg。
+    local makeLuaSendMsg = sourceFunction("04_源码候选/短函数草稿_第五十批.lua", "make_LuaSendMsg")
+    if makeLuaSendMsg then
+        rootPrototypes.LuaSendMsg = makeLuaSendMsg(rootModule.a, rootPrototypes.PrintLog)
+        rootModule.a.LuaSendMsg = rootPrototypes.LuaSendMsg
+    end
+
+    -- 两个仓库查询函数均捕获root T[4]=PrintLog。
+    local makeGetAvailableStoragePage = sourceFunction("04_源码候选/短函数草稿_第十四批.lua", "make_GetAvailableStoragePage")
+    if makeGetAvailableStoragePage then
+        rootPrototypes.GetAvailableStoragePage = makeGetAvailableStoragePage(rootPrototypes.PrintLog)
+    end
+    local getStorageItemSource = sources["04_源码候选/短函数草稿_第五十六批.lua#GetStorageItemData"]
+    local makeGetStorageItemData = getStorageItemSource and getStorageItemSource.make_GetStorageItemData
+    if type(makeGetStorageItemData) == "function" then
+        rootPrototypes.GetStorageItemData = makeGetStorageItemData(rootPrototypes.PrintLog)
+    end
+
+    -- TakeItems：UP[0]=MainLeftBottom.z状态表，UP[1]=ShowLocalNoticeByType。
+    local makeTakeItems = sourceFunction("04_源码候选/短函数草稿_第五十七批.lua", "make_TakeItems")
+    if makeTakeItems and rootPrototypes.ShowLocalNoticeByType then
+        rootPrototypes.TakeItems = makeTakeItems(rootModule.z, rootPrototypes.ShowLocalNoticeByType)
+    end
+
+    -- PickUpItems：UP[0]=ShowLocalNoticeByType；两个比较器子闭包在父函数体内创建。
+    local makePickUpItems = sourceFunction("04_源码候选/PickUpItems_拾取流程_第十批.lua", "make_PickUpItems")
+    if makePickUpItems and rootPrototypes.ShowLocalNoticeByType then
+        rootPrototypes.PickUpItems = makePickUpItems(rootPrototypes.ShowLocalNoticeByType)
+    end
+
+    -- StorageItems：UP[0..2]=[状态表,PrintLog,ShowLocalNoticeByType]。
+    -- 两个子原型工厂作为装配适配参数注入，不计入StorageItems真实Upvalue数量。
+    local makeStorageItems = sourceFunction("04_源码候选/短函数草稿_第六十批.lua", "make_StorageItems")
+    local makeNestedIsOutputted = sourceFunction("04_源码候选/短函数草稿_第三十四批.lua", "make_Nested_isOutputted")
+    local makeFindAvailablePage = sourceFunction("04_源码候选/root50_Nested_Anonymous_2.lua", "make_FindAvailableStoragePage")
+    if makeStorageItems and makeNestedIsOutputted and makeFindAvailablePage then
+        rootPrototypes.StorageItems = makeStorageItems(
+            rootModule.z,
+            rootPrototypes.PrintLog,
+            rootPrototypes.ShowLocalNoticeByType,
+            makeNestedIsOutputted,
+            makeFindAvailablePage
+        )
+    end
+
     -- 仅导出字节码明确写入_ENV的全局入口；其他辅助闭包留在rootPrototypes。
     local globalExports = {
         log = "PrintLog",
         DiuItems = "DiuItems",
+        GetAvailableStoragePage = "GetAvailableStoragePage",
+        GetStorageItemData = "GetStorageItemData",
+        StorageItems = "StorageItems",
+        TakeItems = "TakeItems",
+        PickUpItems = "PickUpItems",
         GetMapId = "GetMapId",
         GetMapName = "GetMapName",
         PlayerPos = "PlayerPos",
@@ -5525,19 +5706,20 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 247,
+        checkpoint = 248,
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
         missing = missing,
         captured_factory_closures_expected = 36,
-        captured_factory_closures_bound = 2,
-        captured_factory_closures_pending = 34,
+        captured_factory_closures_bound = 9,
+        captured_factory_closures_pending = 27,
         captured_factory_names_bound = {
-            "DiuItems",
-            "FindMonsterCandidates"
+            "ShowLocalNoticeByType", "DiuItems", "FindMonsterCandidates",
+            "LuaSendMsg", "GetAvailableStoragePage", "GetStorageItemData",
+            "TakeItems", "PickUpItems", "StorageItems"
         },
         runtime_verified = false,
-        capture_semantics = "OP_387 live shared cell; this pass binds only factories whose captures are stable table/function references"
+        capture_semantics = "OP_387 live shared cell; only confirmed table/function captures and explicit nested factory adapters are bound"
     }
 end
 
