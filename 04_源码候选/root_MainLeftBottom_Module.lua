@@ -558,7 +558,7 @@ end
 --       _G.log。PC72 GetStorageItemData捕获的就是PrintLog，通知回调身份现已确定。
 -- T[5]：PC21的60000.0先用于Blocklist；PC44临时写入_G，PC46覆盖为
 --       ShowLocalNoticeByType闭包。后续十个捕获点均取得该通知回调。
--- T[37]：PC212-PC270依次复用为多个临时闭包；PC275写入MainLeftBottom，
+-- T[37]：PC212-PC270依次复用为IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、MoveItemToQuickUse、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons等闭包；PC275写入MainLeftBottom，
 --       PC280重置为空表，PC281-PC282构造{"随机传送石"}。PC356 UseItemByIndex
 --       和PC381 BlacklistPlayerDetection捕获的都是该一元素数组。
 -- T[41]：PC286创建黑名单状态表，PC287-PC293初始化lastAttacker=nil、
