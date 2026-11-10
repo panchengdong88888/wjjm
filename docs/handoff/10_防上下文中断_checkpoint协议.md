@@ -2767,3 +2767,13 @@ Nested_match：
 - cruiseTimer清理写nil；同型`["unknown",2]`为VM dump的nil序列化占位，依据检查点102。
 - child22 Nested_Anonymous的T0/T1/T2生产者仍独立未闭合，不将其冒充完成；父函数自身419条指令完整静态恢复。
 - 完整静态恢复数更新为107/110（97.3%）；运行时验证仍为0。
+
+
+## 检查点 #227（2026-11-10）：补齐root.children[34]漏登记短原型
+
+- 原型：`root.children[34]`（legacy `root/35`），7条指令、2常量、零捕获、无子原型、两个显式参数。
+- 新增`root35_AnonymousHelper_33_ScheduleWrapper.lua`，恢复为`SL:Schedule(callback,interval)`转发包装函数。
+- PC1-PC2读取SL.Schedule并保留SL作为self；PC3-PC4转发两个参数；PC5返回全部返回值；PC6-PC7位于无条件return之后，不可达。
+- `SL:Schedule(callback,time)`签名由`新框架(3_40_xx).zip`中的SL.md确认。
+- 修正prototype_index中该原型原先指向错误候选文件的问题，并将其补入函数状态CSV。
+- 完整静态恢复数更新为108/110（98.2%）；运行时验证仍为0。剩余两个未完成原型为Nested_Anonymous与根模块MainLeftBottom_Module。
