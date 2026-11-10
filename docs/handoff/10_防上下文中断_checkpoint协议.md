@@ -2798,3 +2798,12 @@ Nested_match：
 - AnonymousHelper_32按两个捕获及首个显式参数转发；ScheduleOnce保留SL self并返回全部结果；AnonymousHelper_54按PCallHelper(fileName,firstArg)调用；GetMapData2DPtr按Chebyshev距离限幅恢复，UP0活动路径未读取。
 - 完整静态恢复仍为108/110，运行时验证0；本批仅增加主文件中的明文主体，不虚增静态恢复数。
 - 下一步先整合GetStorageItemData（77条）、FindBlacklistPlayer（35条）和其他短函数，再处理复杂函数与根级装配。
+
+
+## 检查点 #230（2026-11-10）：简单函数明文整合
+
+- 按用户要求继续先处理简单明文，复杂内容后置。
+- 已向主恢复源码实际整合root.children[1] GetStorageItemData（77条，捕获父T[4]，回调名保留notify）；root.children[49] PCallHelper_2 / AnonymousHelper_49（父5条，含Nested_FriendProxy子原型9条，pcall保护FriendProxy检索）；root.children[51] FindBlacklistPlayer（35条，UP[0]=PCallHelper_2）。
+- FindBlacklistPlayer逻辑：安全取得FriendProxy；检查_blacklistData和首个vararg targetId；先按targetId查，再按ACTOR_MASTER_ID查主人ID；命中返回true与entry.Name，否则false。
+- 完整静态恢复仍108/110，运行时验证0。本批只是把已完成静态恢复的简单函数实际集中到主文件，不增加原型完成数。
+- 下一批继续筛选短函数和短闭包，优先root.children[33] AnonymousHelper_33、root.children[56]/[57]及其他简单原型；中大型函数和根级闭包装配继续后置。
