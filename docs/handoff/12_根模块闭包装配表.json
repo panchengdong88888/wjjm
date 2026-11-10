@@ -10301,5 +10301,25 @@
     "structure_tree_file": "docs/handoff/13_原型结构树.md",
     "next_action": "检查点258：按PC1-PC412将root_MainLeftBottom_Module.lua的分段根模块草稿整合为连续可读的模块主体，复用已恢复的58个子原型，不重复分析子函数。"
   },
-  "root_structure_tree_file": "docs/handoff/13_原型结构树.md"
+  "root_structure_tree_file": "docs/handoff/13_原型结构树.md",
+  "root_assembly_checkpoint_258": {
+    "date": "2026-11-10",
+    "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
+    "final_return": "return MainLeftBottomRecovered.root_module",
+    "returned_object": "MainLeftBottom table",
+    "registry_scope": "MainLeftBottomRecovered is local to the recovery chunk; no _G.MainLeftBottomRecovered extra global export",
+    "root_register_semantics": {
+      "T[0]": "MainLeftBottom.a UI/configuration state table at all listed capture PCs, including InstallDamageHook and doInit_UI",
+      "T[1]": "MainLeftBottom.b button map",
+      "T[2]": "MainLeftBottom.z feature state table",
+      "T[3]": "timerState"
+    },
+    "correction_notes": [
+      "InstallDamageHook.UP0 captures T[0]=MainLeftBottom.a, not the outer MainLeftBottom table",
+      "BlacklistPlayerDetection.UP0 captures T[2]=MainLeftBottom.z, not the outer MainLeftBottom table",
+      "Nested_Anonymous T0/T1/T2 fixed-parameter slots are resolved at checkpoint235"
+    ],
+    "status": "Static source integration only; Lua parser/compiler and target host runtime not executed",
+    "next_action": "检查点259：继续把root模块PC1-PC412分段记录与58个已绑定子原型整合成连续可读模块主体；优先检查PC43-PC85闭包创建/导出顺序与模块字段最终状态。"
+  }
 }
