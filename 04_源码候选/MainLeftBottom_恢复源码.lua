@@ -1,8 +1,8 @@
 --[[
 MainLeftBottom(2).lua 明文恢复整合稿（静态候选）
-生成：2026-11-10 | GitHub checkpoint 272
+生成：2026-11-10 | GitHub checkpoint 275
 用途：按110原型索引和PC级证据整合普通Lua候选、根模块状态及58个直接子闭包。
-当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配；PC43-PC85、PC181-PC258及PC297-PC388闭包已按VM创建顺序整合；检查点261修正采集状态表跨词法块引用；检查点262按寄存器生命周期重建PC1-PC42初始化；检查点263显式恢复PC43-PC85的T[4..8]创建、覆写、捕获及导出顺序；检查点264恢复PC86-PC211采集闭包及T[14..22]共享cell注入；检查点265补齐PC212-PC296 UI闭包校验、模块字段身份及PC275全局模块表重读；检查点266按T[44..51]恢复PC297-PC315配置包装链并用于doInit_UI捕获注入；检查点267复核PC350-PC388黑名单闭包对象身份、T[57] live cell及全局导出落点；检查点268核对PC389 T[59]模块表重读与PC411写入目标；检查点269逐槽核对doInit_UI的20项捕获并将UP[8]修正为gatherConfig；检查点270清理已被后续版本覆盖的重复源码词法块，纠正doInit_UI来源标记；检查点271保留MainLoop共享cell工厂版本，删除两个普通值旧草稿，并清理root22重复注册；检查点272全量核对53个源码注册键唯一、37个字面sourceFunction调用全部命中已注册来源与导出符号，22个bindDirect引用亦全部命中。
+当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配；PC43-PC85、PC181-PC258及PC297-PC388闭包已按VM创建顺序整合；检查点261修正采集状态表跨词法块引用；检查点262按寄存器生命周期重建PC1-PC42初始化；检查点263显式恢复PC43-PC85的T[4..8]创建、覆写、捕获及导出顺序；检查点264恢复PC86-PC211采集闭包及T[14..22]共享cell注入；检查点265补齐PC212-PC296 UI闭包校验、模块字段身份及PC275全局模块表重读；检查点266按T[44..51]恢复PC297-PC315配置包装链并用于doInit_UI捕获注入；检查点267复核PC350-PC388黑名单闭包对象身份、T[57] live cell及全局导出落点；检查点268核对PC389 T[59]模块表重读与PC411写入目标；检查点269逐槽核对doInit_UI的20项捕获并将UP[8]修正为gatherConfig；检查点270清理已被后续版本覆盖的重复源码词法块，纠正doInit_UI来源标记；检查点271保留MainLoop共享cell工厂版本，删除两个普通值旧草稿，并清理root22重复注册；检查点272全量核对53个源码注册键唯一、37个字面sourceFunction调用全部命中已注册来源与导出符号，22个bindDirect引用亦全部命中；检查点273增加PC1-PC42根表/初始table身份断言；检查点274强化PC43-PC85的LuaSendMsg必需闭包保护与寄存器导出身份；检查点275核对58个根直接闭包均有fail-fast必需性校验。
 重要：
 - 根模块初始化与闭包创建仍采用明确标注的恢复适配结构，不冒充原作者逐字源码。
 - 所有函数体仍按原型路径保留；根装配按OP_387捕获顺序绑定共享cell和状态表。
@@ -5776,6 +5776,10 @@ do
     local rootPrototypes = {}
     local missing = {}
 
+    -- 检查点275：对照closure_sites核对全部58个root直接子原型。
+    -- 36个捕获工厂与22个无捕获闭包均在创建/绑定后经过requireRecoveredClosure；
+    -- 每个名称恰好对应一个根直接子原型，避免两侧nil相等导致身份断言假通过。
+
     -- 检查点263：PC43-PC85根模块首批闭包装配。
     -- rootRegisters是恢复适配层的父T寄存器影子表，不是原作者的数据结构。
     -- T[0..3]的值已由PC1-PC42初始化段建立；此处显式记录T[4..8]的创建和覆写。
@@ -6587,7 +6591,7 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 274,
+        checkpoint = 275,
         root_pc86_pc211_ordered = true,
         root_pc181_pc258_ordered = true,
         root_pc297_pc357_ordered = true,
@@ -6612,6 +6616,10 @@ do
         checkpoint272_bind_direct_references_resolved = true,
         checkpoint273_root_initial_table_identity_checked = true,
         checkpoint274_pc43_pc85_register_export_identity_checked = true,
+        checkpoint275_all_58_root_closures_fail_fast = true,
+        checkpoint275_captured_factories_guarded = 36,
+        checkpoint275_direct_bindings_guarded = 22,
+        checkpoint275_required_closure_names_unique = 58,
         source_registry_registration_count = 53,
         source_registry_unique_key_count = 53,
         source_function_literal_reference_count = 37,
