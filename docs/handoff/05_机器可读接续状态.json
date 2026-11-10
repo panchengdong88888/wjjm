@@ -3545,14 +3545,15 @@
   "last_checkpoint": 268,
   "checkpoint": 268,
   "drafts": 33,
-  "next": "检查点269：对整个MainLeftBottom_恢复源码.lua做结构/语法层静态审计：检查do/end配对、来源注册词法块、重复导出、重复模块字段写入、未使用的局部适配变量、残留过时PC注释；探测可用Lua解释器/语法工具。若环境没有Lua/luac，明确记录未能编译，不得把静态审计标成运行时验证。",
+  "next": "检查点269：逐项复核root PC389-PC412最终段的全部20项doInit_UI捕获值、T[59]模块表重读、PC411字段写入及PC412返回对象；重点把closure_sites与register_value_timeline逐槽交叉核对，避免只修UP1-UP3而遗漏其他寄存器身份。完成后继续整理根模块连续可读源码组织，保持恢复适配结构与作者原始源码的边界标注。",
   "recent_checkpoint": {
     "number": 268,
     "date": "2026-11-10",
     "artifacts": [
+      "02_基础索引/MainLeftBottom_vm_dump.json",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "04_源码候选/root_MainLeftBottom_Module.lua",
-      "docs/audit/检查点268_PC390-PC412最终UI入口导出账本与根模块返回校验.md",
+      "docs/audit/检查点268_PC389-T59模块表重读与doInit捕获校正.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
@@ -3564,7 +3565,7 @@
     "runtime_verified": 0,
     "root_direct_closures_source_bound": 58,
     "root_direct_closures_expected": 58,
-    "notes": "PC390 doInit_UI创建点、PC391-PC410 20项捕获顺序、PC411模块doInit字段写入、PC412返回根表已核对；21项全局导出与26条模块/嵌套字段账本复核，其中根表直接字段10项。未执行Lua编译/游戏运行验证。"
+    "notes": "PC389 T59全局模块表重读与PC411 T59.doInit写入目标按原始VM Dump确认；doInit_UI的UP1/UP2/UP3仍分别是z/timerState/a。未执行Lua编译或游戏运行验证。"
   },
   "latest_checkpoint": 261,
   "complete_static_reconstruction_count": 109,
@@ -3739,12 +3740,13 @@
     "root_pc297_pc315_register_order": "static_pc_timeline_aligned",
     "root_pc350_pc388_capture_identity": "static_pc_timeline_aligned",
     "root_pc350_pc388_blacklist_chain": "static_pc_timeline_aligned",
-    "root_pc390_pc412_capture_and_return": "static_pc_timeline_aligned"
+    "root_pc390_pc412_capture_and_return": "static_pc_timeline_aligned",
+    "root_pc389_pc411_t59": "raw_vm_dump_aligned"
   },
   "latest": {
     "checkpoint": "268",
-    "summary": "PC390-PC412最终UI入口与模块返回已核对。doInit_UI在PC390创建，PC391-PC410按20项父T寄存器顺序捕获；PC411写入MainLeftBottom.doInit并增加身份断言；PC412返回MainLeftBottom根模块表。全局导出账本21项逐PC复核；模块字段账本26条，其中根表直接字段10项、a/z嵌套字段15项，另含PC2根表导出记录。保留PC275重读_ENV.MainLeftBottom语义。恢复注册容器不外泄为原模块或全局变量。",
-    "audit_file": "docs/audit/检查点268_PC390-PC412最终UI入口导出账本与根模块返回校验.md",
+    "summary": "回查02_基础索引/MainLeftBottom_vm_dump.json原始root.ins PC389-PC412。PC389原始指令[82,137,59,'MainLeftBottom',null]将_ENV.MainLeftBottom读入独立T[59]；PC392/393/394分别捕获T[2]/T[3]/T[0]，其身份仍为MainLeftBottom.z、timerState、MainLeftBottom.a。PC411原始指令[144,268,59,'doInit',60]写入T[59].doInit。主恢复稿现于工厂创建前读取local doInitModule=_G.MainLeftBottom，并将PC411写入doInitModule.doInit；原有UP1=z、UP2=timerState、UP3=a注入保持不变。修正closure_sites错误value并补充T59原始事件。",
+    "audit_file": "docs/audit/检查点268_PC389-T59模块表重读与doInit捕获校正.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3811,5 +3813,6 @@
   "root_pc212_pc296_module_fields_guarded": true,
   "root_pc297_pc315_config_registers_ordered": true,
   "root_pc350_pc388_blacklist_chain_guarded": true,
-  "root_pc390_pc412_final_export_return_checked": true
+  "root_pc390_pc412_final_export_return_checked": true,
+  "root_pc389_t59_reread_preserved": true
 }
