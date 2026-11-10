@@ -3160,3 +3160,14 @@ Nested_match：
 - 以上为源码静态整合和引用核对；未执行Lua解释器/luac，也未在游戏宿主运行。
 - 当前统计仍为完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0。
 - 下一步检查点259：继续按PC1-PC412整合root模块连续主体，优先处理PC43-PC85的辅助闭包创建与导出时序；不重复恢复已完成的子函数体。
+
+
+## 检查点 #259（2026-11-10）：PC43-PC85根模块闭包顺序整合
+
+- 主恢复文件`04_源码候选/MainLeftBottom_恢复源码.lua`已将PC43-PC85的首批闭包按VM创建顺序接入：PrintLog、ShowLocalNoticeByType、LuaSendMsg、ScheduleOnce、Schedule、GetMapId、GetMapName、PlayerPos、GetDroppedItems、MoveTo、DiuItems、GetAvailableStoragePage、GetStorageItemData、StorageItems、TakeItems、PickUpItems。
+- PC45/55/57/59/61/63/67/70/73/78/82/85对应的全局导出按PC顺序写入；LuaSendMsg在PC51写入`MainLeftBottom.a.LuaSendMsg`。
+- 原先22项directBindings提前批量绑定的实现已改为按PC分段绑定；PC212 IsInWhitelistMap、PC259 MoveItemToQuickUse、PC297 GetWritablePath、PC352 PCallHelper_2分别移至对应创建区间。
+- 删除重复的LuaSendMsg、GetAvailableStoragePage、GetStorageItemData、StorageItems、TakeItems、PickUpItems工厂装配块。
+- 22项bindDirect来源路径/符号全部在source registry静态核验存在；58/58根直接闭包集合未改变。
+- 未执行Lua编译器/luac，未进行目标游戏运行时验证。完整静态恢复109、普通Lua草稿72、运行时验证0。
+- 下一步检查点260：按PC顺序继续整合root PC86-PC211，重点处理采集配置、奖励表、共享状态cell、FormatStateChange、PC184-PC193辅助闭包及PC194-PC211采集闭包。
