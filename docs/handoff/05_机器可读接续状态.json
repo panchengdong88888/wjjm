@@ -3542,34 +3542,29 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 275,
+  "last_checkpoint": 276,
   "checkpoint": 275,
   "drafts": 33,
-  "next": "检查点276：继续检查PC86-PC211共享cell注入及PC212-PC315字段/配置链：对照closure_sites核对工厂实参数量、顺序和寄存器来源；检查OP_387同一父寄存器是否只创建一个cell且不同寄存器不共用；检查UI字段hide/show/destroy/main的写入对象及PC275模块重读目标；检查T[44..51]配置包装链；对身份断言做nil安全性审计，类型/必需闭包断言必须先于相等断言。",
+  "next": "检查点277：审计主恢复文件PC86-PC211共享cell注入及PC212-PC315字段/配置链：逐一对照closure_sites核对工厂实参数量、顺序和父T寄存器来源；核对同一父T寄存器只共享一个cell、不同寄存器不共用；检查hide/show/destroy/main字段的写入对象与PC275模块重读目标；检查T[44..51]配置包装链；对所有身份断言做nil安全性审计，先做类型/必需闭包检查再做相等比较。",
   "recent_checkpoint": {
-    "number": 275,
+    "number": 276,
     "date": "2026-11-10",
-    "audit_file": "docs/audit/检查点275_根模块58个直接闭包必需性保护覆盖核对.md",
+    "audit_file": "docs/handoff/13_MainLeftBottom_原型结构树.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "main_recovery_sha": "e7cfeefdf7ead3b4d3450d5bbec48fe75459a7c4",
     "metrics": {
-      "root_direct_children_expected": 58,
-      "captured_factories_expected": 36,
-      "captured_factories_fail_fast_guarded": 36,
-      "direct_bindings_expected": 22,
-      "direct_bindings_fail_fast_guarded": 22,
-      "unique_required_closure_names": 58,
-      "missing_required_guards": 0,
-      "extra_required_names": 0,
-      "duplicate_required_names": 0,
-      "required_guard_before_assignment_order_issues": 0,
-      "static_complete_functions": 109,
+      "prototypes": 110,
+      "physical_instructions": 5580,
+      "root_direct_children": 58,
+      "root_closure_sites": 58,
+      "root_capture_descriptors": 135,
+      "complete_static_reconstruction": 109,
       "ordinary_lua_drafts": 72,
       "runtime_verified": 0
     },
-    "notes": "检查点274已修复LuaSendMsg可能两侧nil相等而误通过的问题；本批新增注释与覆盖核对，未运行Lua/luac。"
+    "notes": "从原型总索引、函数状态CSV、根闭包装配表和闭包映射生成完整110节点父子结构树；规范零基路径、proto编号、父子关系、参数数、指令数、常量数、偏移、创建PC、根级父T捕获寄存器及静态状态已列出。调用图与闭包父子树明确区分，未凭名称推导调用边。未改写业务函数体，未运行Lua/luac。"
   },
-  "latest_checkpoint": 275,
+  "latest_checkpoint": 276,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3578,7 +3573,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 276,
+  "next_checkpoint": 277,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3754,9 +3749,9 @@
     "checkpoint275_all_root_direct_closures_fail_fast": "passed_static"
   },
   "latest": {
-    "checkpoint": "275",
-    "summary": "从closure_sites核对58个root直接子原型：36个捕获工厂、22个无捕获闭包。主恢复文件有58个唯一requireRecoveredClosure必需性校验名称，与58个root直接子原型集合完全一致；缺失0、额外0、重复0；58处校验均位于对应rootPrototypes首次赋值之后。LuaSendMsg在检查点274补上require后，PC43-PC85的8个捕获工厂全部进入fail-fast保护。静态审计不代表运行时成功。",
-    "audit_file": "docs/audit/检查点275_根模块58个直接闭包必需性保护覆盖核对.md",
+    "checkpoint": "276",
+    "summary": "新增docs/handoff/13_MainLeftBottom_原型结构树.md，按仓库真实原型索引生成110/110节点父子树；附58个根级闭包创建点、135项OP_387捕获描述统计、参数/指令/常量/offset/创建PC及静态恢复状态。调用图与父子嵌套关系区分，未将猜测关系写成事实。",
+    "audit_file": "docs/handoff/13_MainLeftBottom_原型结构树.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3855,5 +3850,18 @@
   "root_pc399_up8_gather_config_corrected": true,
   "main_recovery_source_duplicate_blocks_cleaned": true,
   "mainloop_shared_cell_factory_unique": true,
-  "root22_factory_unique": true
+  "root22_factory_unique": true,
+  "structure_tree": {
+    "file": "docs/handoff/13_MainLeftBottom_原型结构树.md",
+    "nodes": 110,
+    "root_direct_children": 58,
+    "root_closure_sites": 58,
+    "root_capture_descriptors": 135,
+    "all_nodes_from": "02_基础索引/02_原型总索引.json",
+    "capture_sources": [
+      "docs/handoff/04_闭包捕获映射.json",
+      "docs/handoff/12_根模块闭包装配表.json"
+    ],
+    "call_graph_status": "尚未形成完整逐边调用图；父子原型树不等于调用图"
+  }
 }
