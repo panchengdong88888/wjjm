@@ -3171,3 +3171,5 @@ Nested_match：
 - 22项bindDirect来源路径/符号全部在source registry静态核验存在；58/58根直接闭包集合未改变。
 - 未执行Lua编译器/luac，未进行目标游戏运行时验证。完整静态恢复109、普通Lua草稿72、运行时验证0。
 - 下一步检查点260：按PC顺序继续整合root PC86-PC211，重点处理采集配置、奖励表、共享状态cell、FormatStateChange、PC184-PC193辅助闭包及PC194-PC211采集闭包。
+
+- 检查点259补充：模块尾部重复globalExports表已删除；Builtsetting和ClearBlacklistItems分别在PC258/PC388即时导出，其余根级全局入口也按对应PC创建点写入，PC412前不再集中二次赋值。
