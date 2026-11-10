@@ -673,3 +673,12 @@ end
 -- PC389-PC410：doInit_UI捕获20项，顺序为[T4,T2,T3,T0,T1,T41,T48,T7,T8,T50,T49,T5,T44,T42,T51,T43,T47,T11,T12,T9]；具体身份见12_根模块闭包装配表.json。
 -- PC411：MainLeftBottom.doInit=doInit_UI；PC412：return根模块表。
 -- 至此PC341-PC412的根级创建/捕获/模块字段/全局导出时序已对账；这不代表所有子函数均已达到完整静态恢复，也不代表根模块整体源码已装配完成。
+
+
+-- 检查点245：根模块PC1-PC412全局导出与模块字段总账（跨区间合并复核）。
+-- PC1-PC85：_G.MainLeftBottom；_G.log；_G.GetMapId；_G.GetMapName；_G.PlayerPos；_G.GetDroppedItems；_G.MoveTo；_G.DiuItems；_G.GetAvailableStoragePage；_G.GetStorageItemData；_G.StorageItems；_G.TakeItems；_G.PickUpItems。MainLeftBottom.a字段包括version/screenW/screenH/Blocklist/SendHookList/RecvHookList/isHidden/hidebut/LuaSendMsg；另建立b空表、z状态表。
+-- PC86-PC211：复核未发现新的根级全局导出或MainLeftBottom根表字段写入；此区间是局部配置、共享状态和闭包创建。
+-- PC212-PC340：_G.IsInWhitelistMap、_G.MainLoop、_G.InitGatherMonsters、_G.StopGatherMonsters、_G.Builtsetting、_G.MoveItemToQuickUse；模块字段hide/show/destroy/main/blacklist。
+-- PC341-PC412：MainLeftBottom.onDamageMsg；_G.BlacklistItems；_G.ClearBlacklistItems；MainLeftBottom.doInit。
+-- 总账将全局导出与模块字段分开统计；局部函数创建不等于导出。ShowLocalNoticeByType、ScheduleOnce、Schedule在已审PC段未发现根级导出。
+-- 完整机器可读明细见docs/handoff/12_根模块闭包装配表.json的root_complete_module_ledger。
