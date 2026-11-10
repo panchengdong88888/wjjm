@@ -37,7 +37,13 @@
       42,
       43,
       44,
+      45,
+      46,
+      47,
+      48,
+      49,
       50,
+      51,
       52,
       53,
       55,
@@ -45,9 +51,9 @@
       57,
       58
     ],
-    "register_timelines_completed_count": 22,
-    "register_timelines_remaining": 35,
-    "last_timeline_checkpoint": 239
+    "register_timelines_completed_count": 28,
+    "register_timelines_remaining": 29,
+    "last_timeline_checkpoint": 240
   },
   "closure_sites": [
     {
@@ -4392,17 +4398,203 @@
         ]
       }
     ],
+    "45": [
+      {
+        "pc_one_based": 298,
+        "event": "create root.children[9] ReadNumericConfig closure",
+        "value": "ReadNumericConfig(GetWritablePath)",
+        "note": "PC299 captures T[44]=GetWritablePath as UP[0]."
+      },
+      {
+        "pc_one_based": 305,
+        "event": "capture parent T[45] live cell",
+        "child_path": "root/49",
+        "child_name": "AnonymousHelper_49",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 304
+      },
+      {
+        "pc_one_based": 311,
+        "event": "capture parent T[45] live cell",
+        "child_path": "root/33",
+        "child_name": "AnonymousHelper_33",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 310
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "ReadNumericConfig closure",
+        "semantic_role": "numeric text-file reader factory",
+        "capture_count": 2,
+        "notes": [
+          "T[45] is created at PC298 and is not overwritten before PC305/PC311 captures.",
+          "It captures T[44]=GetWritablePath at PC299."
+        ]
+      }
+    ],
+    "46": [
+      {
+        "pc_one_based": 300,
+        "event": "create root.children[17] PCallHelper closure",
+        "value": "PCallHelper(GetWritablePath)",
+        "note": "PC301 captures T[44]=GetWritablePath as UP[0]."
+      },
+      {
+        "pc_one_based": 308,
+        "event": "capture parent T[46] live cell",
+        "child_path": "root/32",
+        "child_name": "AnonymousHelper_32",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 307
+      },
+      {
+        "pc_one_based": 314,
+        "event": "capture parent T[46] live cell",
+        "child_path": "root/54",
+        "child_name": "AnonymousHelper_54",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 313
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "PCallHelper closure",
+        "semantic_role": "pcall-protected FileUtils write wrapper",
+        "capture_count": 2,
+        "notes": [
+          "PCallHelper's nested closure calls FileUtils:writeStringToFile and its parent normalizes pcall/result false to false; other successful results return true.",
+          "The captured outer helper is T[44]=GetWritablePath."
+        ]
+      }
+    ],
+    "47": [
+      {
+        "pc_one_based": 302,
+        "event": "create root.children[0] FileExistCheck_pcall_wrapper closure",
+        "value": "FileExistCheck_pcall_wrapper(GetWritablePath)",
+        "note": "PC303 captures T[44]=GetWritablePath as UP[0]."
+      },
+      {
+        "pc_one_based": 303,
+        "event": "capture parent T[44] live cell",
+        "child_path": "root/0",
+        "child_name": "FileExistCheck_pcall_wrapper",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 302
+      },
+      {
+        "pc_one_based": 407,
+        "event": "capture parent T[47] live cell",
+        "child_path": "root/42",
+        "child_name": "doInit_UI",
+        "upvalue_index": 16,
+        "closure_pc_one_based": 390
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "FileExistCheck_pcall_wrapper closure",
+        "semantic_role": "file existence / remove-and-recheck helper",
+        "capture_count": 1,
+        "notes": [
+          "The wrapper resolves the path through GetWritablePath, returns true/path when present, otherwise pcall-removes and checks again.",
+          "doInit_UI receives this closure as UP[16]."
+        ]
+      }
+    ],
+    "48": [
+      {
+        "pc_one_based": 304,
+        "event": "create root.children[49] AnonymousHelper_49 closure",
+        "value": "AnonymousHelper_49(ReadNumericConfig, 'blacklist_distance.txt')",
+        "note": "PC305/306 capture T[45] and T[42] in that order."
+      },
+      {
+        "pc_one_based": 305,
+        "event": "capture parent T[45] live cell",
+        "child_path": "root/49",
+        "child_name": "AnonymousHelper_49",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 304
+      },
+      {
+        "pc_one_based": 306,
+        "event": "capture parent T[42] live cell",
+        "child_path": "root/49",
+        "child_name": "AnonymousHelper_49",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 304
+      },
+      {
+        "pc_one_based": 397,
+        "event": "capture parent T[48] live cell",
+        "child_path": "root/42",
+        "child_name": "doInit_UI",
+        "upvalue_index": 6,
+        "closure_pc_one_based": 390
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "AnonymousHelper_49(ReadNumericConfig, 'blacklist_distance.txt')",
+        "semantic_role": "zero-argument blacklist-distance config reader",
+        "capture_count": 1,
+        "notes": [
+          "Calls ReadNumericConfig with the captured fixed filename and forwards its return values.",
+          "doInit_UI receives this closure as UP[6]."
+        ]
+      }
+    ],
+    "49": [
+      {
+        "pc_one_based": 307,
+        "event": "create root.children[32] AnonymousHelper_32 closure",
+        "value": "AnonymousHelper_32(PCallHelper, 'blacklist_distance.txt')",
+        "note": "PC308/309 capture T[46] and T[42] in that order."
+      },
+      {
+        "pc_one_based": 308,
+        "event": "capture parent T[46] live cell",
+        "child_path": "root/32",
+        "child_name": "AnonymousHelper_32",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 307
+      },
+      {
+        "pc_one_based": 309,
+        "event": "capture parent T[42] live cell",
+        "child_path": "root/32",
+        "child_name": "AnonymousHelper_32",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 307
+      },
+      {
+        "pc_one_based": 401,
+        "event": "capture parent T[49] live cell",
+        "child_path": "root/42",
+        "child_name": "doInit_UI",
+        "upvalue_index": 10,
+        "closure_pc_one_based": 390
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "AnonymousHelper_32(PCallHelper, 'blacklist_distance.txt')",
+        "semantic_role": "one-argument blacklist-distance config writer wrapper",
+        "capture_count": 1,
+        "notes": [
+          "Calls PCallHelper(capturedFileName, firstArg) and forwards all returned values.",
+          "doInit_UI receives this closure as UP[10]."
+        ]
+      }
+    ],
     "50": [
       {
         "pc_one_based": 310,
-        "event": "创建root.children[33] / legacy root/34 AnonymousHelper_34闭包",
+        "event": "创建root.children[33] / legacy root/34 AnonymousHelper_33闭包",
         "value": "ReadNumericConfig + gather_monster_count.txt",
         "note": "PC311捕获T[45] ReadNumericConfig；PC312捕获T[43]文件名。闭包调用时等价于ReadNumericConfig('gather_monster_count.txt')。"
       },
       {
         "pc_one_based": 400,
         "event": "capture parent T[50] live cell",
-        "value": "AnonymousHelper_34(ReadNumericConfig, 'gather_monster_count.txt')",
+        "value": "AnonymousHelper_33(ReadNumericConfig, 'gather_monster_count.txt')",
         "note": "root.children[42] doInit_UI UP[9]。"
       },
       {
@@ -4411,7 +4603,49 @@
         "semantic_role": "读取引怪数量配置的零参数包装器",
         "capture_count": 1,
         "notes": [
-          "闭包本身不等于底层ReadNumericConfig；是AnonymousHelper_34对回调及固定参数的封装。"
+          "闭包本身不等于底层ReadNumericConfig；是AnonymousHelper_33对回调及固定参数的封装。"
+        ]
+      }
+    ],
+    "51": [
+      {
+        "pc_one_based": 313,
+        "event": "create root.children[54] AnonymousHelper_54 closure",
+        "value": "AnonymousHelper_54(PCallHelper, 'gather_monster_count.txt')",
+        "note": "PC314/315 capture T[46] and T[43] in that order."
+      },
+      {
+        "pc_one_based": 314,
+        "event": "capture parent T[46] live cell",
+        "child_path": "root/54",
+        "child_name": "AnonymousHelper_54",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 313
+      },
+      {
+        "pc_one_based": 315,
+        "event": "capture parent T[43] live cell",
+        "child_path": "root/54",
+        "child_name": "AnonymousHelper_54",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 313
+      },
+      {
+        "pc_one_based": 405,
+        "event": "capture parent T[51] live cell",
+        "child_path": "root/42",
+        "child_name": "doInit_UI",
+        "upvalue_index": 14,
+        "closure_pc_one_based": 390
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "AnonymousHelper_54(PCallHelper, 'gather_monster_count.txt')",
+        "semantic_role": "one-argument gather-count config writer wrapper",
+        "capture_count": 1,
+        "notes": [
+          "Calls PCallHelper(capturedFileName, firstArg) and forwards all returned values.",
+          "doInit_UI receives this closure as UP[14]."
         ]
       }
     ],
