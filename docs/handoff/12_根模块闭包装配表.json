@@ -1,0 +1,3348 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "source_disassembly_blob": "f4fac41485efd9f0c891449549d30845293ecb5f",
+  "source_proto_dump": "02_基础索引/MainLeftBottom_vm_dump.json",
+  "root_prototype": {
+    "path": "root",
+    "physical_instructions": 412,
+    "constant_count": 109,
+    "direct_child_count": 58,
+    "fixed_param_count": 0
+  },
+  "vm_capture_semantics": {
+    "opcode": "OP_387",
+    "rule": "M() creates each child upvalue proxy with a backing pair {parent_T_table, register_index}; proxy __index reads parent_T[register_index] and __newindex writes parent_T[register_index].",
+    "consequence": "OP_387 captures a live shared register cell, not a snapshot value. Later writes to the parent register are visible through every closure capturing that cell."
+  },
+  "summary": {
+    "direct_children": 58,
+    "closure_creation_sites": 58,
+    "total_capture_descriptors": 135,
+    "all_descriptors_are_OP_387": true,
+    "distinct_parent_registers": 57
+  },
+  "closure_sites": [
+    {
+      "child_path": "root/16",
+      "legacy_path": "root/17",
+      "name": "PrintLog",
+      "fixed_param_count": 1,
+      "physical_instructions": 38,
+      "child_count": 0,
+      "closure_pc_zero_based": 42,
+      "closure_pc_one_based": 43,
+      "opcode": 27,
+      "destination_parent_T_register": 4,
+      "child_index": 16,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/20",
+      "legacy_path": "root/21",
+      "name": "ShowLocalNoticeByType",
+      "fixed_param_count": 1,
+      "physical_instructions": 15,
+      "child_count": 0,
+      "closure_pc_zero_based": 45,
+      "closure_pc_one_based": 46,
+      "opcode": 27,
+      "destination_parent_T_register": 5,
+      "child_index": 20,
+      "capture_count": 1,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 47,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 0
+        }
+      ],
+      "captured_parent_T_registers": [
+        0
+      ]
+    },
+    {
+      "child_path": "root/12",
+      "legacy_path": "root/13",
+      "name": "LuaSendMsg",
+      "fixed_param_count": 0,
+      "physical_instructions": 92,
+      "child_count": 0,
+      "closure_pc_zero_based": 47,
+      "closure_pc_one_based": 48,
+      "opcode": 154,
+      "destination_parent_T_register": 6,
+      "child_index": 12,
+      "capture_count": 2,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 49,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 0
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 50,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        }
+      ],
+      "captured_parent_T_registers": [
+        0,
+        4
+      ]
+    },
+    {
+      "child_path": "root/53",
+      "legacy_path": "root/54",
+      "name": "ScheduleOnce",
+      "fixed_param_count": 2,
+      "physical_instructions": 7,
+      "child_count": 0,
+      "closure_pc_zero_based": 51,
+      "closure_pc_one_based": 52,
+      "opcode": 27,
+      "destination_parent_T_register": 6,
+      "child_index": 53,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/34",
+      "legacy_path": "root/35",
+      "name": "Schedule",
+      "fixed_param_count": 2,
+      "physical_instructions": 7,
+      "child_count": 0,
+      "closure_pc_zero_based": 52,
+      "closure_pc_one_based": 53,
+      "opcode": 154,
+      "destination_parent_T_register": 7,
+      "child_index": 34,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/13",
+      "legacy_path": "root/14",
+      "name": "GetMapId",
+      "fixed_param_count": 0,
+      "physical_instructions": 9,
+      "child_count": 0,
+      "closure_pc_zero_based": 53,
+      "closure_pc_one_based": 54,
+      "opcode": 154,
+      "destination_parent_T_register": 8,
+      "child_index": 13,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/30",
+      "legacy_path": "root/31",
+      "name": "GetMapName",
+      "fixed_param_count": 0,
+      "physical_instructions": 9,
+      "child_count": 0,
+      "closure_pc_zero_based": 55,
+      "closure_pc_one_based": 56,
+      "opcode": 27,
+      "destination_parent_T_register": 8,
+      "child_index": 30,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/57",
+      "legacy_path": "root/58",
+      "name": "PlayerPos",
+      "fixed_param_count": 0,
+      "physical_instructions": 10,
+      "child_count": 0,
+      "closure_pc_zero_based": 57,
+      "closure_pc_one_based": 58,
+      "opcode": 27,
+      "destination_parent_T_register": 8,
+      "child_index": 57,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/4",
+      "legacy_path": "root/5",
+      "name": "GetDroppedItems",
+      "fixed_param_count": 0,
+      "physical_instructions": 8,
+      "child_count": 0,
+      "closure_pc_zero_based": 59,
+      "closure_pc_one_based": 60,
+      "opcode": 27,
+      "destination_parent_T_register": 8,
+      "child_index": 4,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/3",
+      "legacy_path": "root/4",
+      "name": "MoveTo",
+      "fixed_param_count": 3,
+      "physical_instructions": 51,
+      "child_count": 0,
+      "closure_pc_zero_based": 61,
+      "closure_pc_one_based": 62,
+      "opcode": 27,
+      "destination_parent_T_register": 8,
+      "child_index": 3,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/46",
+      "legacy_path": "root/47",
+      "name": "DiuItems",
+      "fixed_param_count": 0,
+      "physical_instructions": 169,
+      "child_count": 1,
+      "closure_pc_zero_based": 63,
+      "closure_pc_one_based": 64,
+      "opcode": 27,
+      "destination_parent_T_register": 8,
+      "child_index": 46,
+      "capture_count": 2,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 65,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 2
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 66,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 5
+        }
+      ],
+      "captured_parent_T_registers": [
+        2,
+        5
+      ]
+    },
+    {
+      "child_path": "root/36",
+      "legacy_path": "root/37",
+      "name": "GetAvailableStoragePage",
+      "fixed_param_count": 0,
+      "physical_instructions": 51,
+      "child_count": 0,
+      "closure_pc_zero_based": 67,
+      "closure_pc_one_based": 68,
+      "opcode": 27,
+      "destination_parent_T_register": 8,
+      "child_index": 36,
+      "capture_count": 1,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 69,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        }
+      ],
+      "captured_parent_T_registers": [
+        4
+      ]
+    },
+    {
+      "child_path": "root/1",
+      "legacy_path": "root/2",
+      "name": "GetStorageItemData",
+      "fixed_param_count": 0,
+      "physical_instructions": 77,
+      "child_count": 0,
+      "closure_pc_zero_based": 70,
+      "closure_pc_one_based": 71,
+      "opcode": 154,
+      "destination_parent_T_register": 8,
+      "child_index": 1,
+      "capture_count": 1,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 72,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        }
+      ],
+      "captured_parent_T_registers": [
+        4
+      ]
+    },
+    {
+      "child_path": "root/50",
+      "legacy_path": "root/51",
+      "name": "StorageItems",
+      "fixed_param_count": 0,
+      "physical_instructions": 224,
+      "child_count": 2,
+      "closure_pc_zero_based": 73,
+      "closure_pc_one_based": 74,
+      "opcode": 27,
+      "destination_parent_T_register": 8,
+      "child_index": 50,
+      "capture_count": 3,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 75,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 2
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 76,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        },
+        {
+          "upvalue_index": 2,
+          "pc_one_based": 77,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 5
+        }
+      ],
+      "captured_parent_T_registers": [
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "child_path": "root/5",
+      "legacy_path": "root/6",
+      "name": "TakeItems",
+      "fixed_param_count": 0,
+      "physical_instructions": 99,
+      "child_count": 0,
+      "closure_pc_zero_based": 78,
+      "closure_pc_one_based": 79,
+      "opcode": 154,
+      "destination_parent_T_register": 8,
+      "child_index": 5,
+      "capture_count": 2,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 80,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 2
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 81,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 5
+        }
+      ],
+      "captured_parent_T_registers": [
+        2,
+        5
+      ]
+    },
+    {
+      "child_path": "root/21",
+      "legacy_path": "root/22",
+      "name": "PickUpItems",
+      "fixed_param_count": 0,
+      "physical_instructions": 172,
+      "child_count": 2,
+      "closure_pc_zero_based": 82,
+      "closure_pc_one_based": 83,
+      "opcode": 154,
+      "destination_parent_T_register": 8,
+      "child_index": 21,
+      "capture_count": 1,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 84,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 5
+        }
+      ],
+      "captured_parent_T_registers": [
+        5
+      ]
+    },
+    {
+      "child_path": "root/8",
+      "legacy_path": "root/9",
+      "name": "FormatStateChange",
+      "fixed_param_count": 1,
+      "physical_instructions": 10,
+      "child_count": 0,
+      "closure_pc_zero_based": 180,
+      "closure_pc_one_based": 181,
+      "opcode": 154,
+      "destination_parent_T_register": 23,
+      "child_index": 8,
+      "capture_count": 2,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 182,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 183,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 14
+        }
+      ],
+      "captured_parent_T_registers": [
+        4,
+        14
+      ]
+    },
+    {
+      "child_path": "root/35",
+      "legacy_path": "root/36",
+      "name": "SetTargetID",
+      "fixed_param_count": 1,
+      "physical_instructions": 26,
+      "child_count": 0,
+      "closure_pc_zero_based": 183,
+      "closure_pc_one_based": 184,
+      "opcode": 154,
+      "destination_parent_T_register": 24,
+      "child_index": 35,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/56",
+      "legacy_path": "root/57",
+      "name": "ClearTargetID_2",
+      "fixed_param_count": 0,
+      "physical_instructions": 22,
+      "child_count": 0,
+      "closure_pc_zero_based": 184,
+      "closure_pc_one_based": 185,
+      "opcode": 154,
+      "destination_parent_T_register": 25,
+      "child_index": 56,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/39",
+      "legacy_path": "root/40",
+      "name": "GetMainPlayerID",
+      "fixed_param_count": 0,
+      "physical_instructions": 6,
+      "child_count": 0,
+      "closure_pc_zero_based": 185,
+      "closure_pc_one_based": 186,
+      "opcode": 154,
+      "destination_parent_T_register": 26,
+      "child_index": 39,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/18",
+      "legacy_path": "root/19",
+      "name": "GetPlayerPosition",
+      "fixed_param_count": 0,
+      "physical_instructions": 19,
+      "child_count": 0,
+      "closure_pc_zero_based": 186,
+      "closure_pc_one_based": 187,
+      "opcode": 154,
+      "destination_parent_T_register": 27,
+      "child_index": 18,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/44",
+      "legacy_path": "root/45",
+      "name": "GetPlayerMapPosition",
+      "fixed_param_count": 1,
+      "physical_instructions": 17,
+      "child_count": 0,
+      "closure_pc_zero_based": 187,
+      "closure_pc_one_based": 188,
+      "opcode": 27,
+      "destination_parent_T_register": 28,
+      "child_index": 44,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/11",
+      "legacy_path": "root/12",
+      "name": "DistanceCalculation",
+      "fixed_param_count": 2,
+      "physical_instructions": 25,
+      "child_count": 0,
+      "closure_pc_zero_based": 188,
+      "closure_pc_one_based": 189,
+      "opcode": 154,
+      "destination_parent_T_register": 29,
+      "child_index": 11,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/29",
+      "legacy_path": "root/30",
+      "name": "IsDie",
+      "fixed_param_count": 1,
+      "physical_instructions": 7,
+      "child_count": 0,
+      "closure_pc_zero_based": 189,
+      "closure_pc_one_based": 190,
+      "opcode": 27,
+      "destination_parent_T_register": 30,
+      "child_index": 29,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/7",
+      "legacy_path": "root/8",
+      "name": "GetOwnerIDText",
+      "fixed_param_count": 2,
+      "physical_instructions": 31,
+      "child_count": 0,
+      "closure_pc_zero_based": 190,
+      "closure_pc_one_based": 191,
+      "opcode": 27,
+      "destination_parent_T_register": 31,
+      "child_index": 7,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/38",
+      "legacy_path": "root/39",
+      "name": "GetOwnerID",
+      "fixed_param_count": 2,
+      "physical_instructions": 31,
+      "child_count": 0,
+      "closure_pc_zero_based": 191,
+      "closure_pc_one_based": 192,
+      "opcode": 154,
+      "destination_parent_T_register": 32,
+      "child_index": 38,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/43",
+      "legacy_path": "root/44",
+      "name": "GetOwnerDescription",
+      "fixed_param_count": 2,
+      "physical_instructions": 20,
+      "child_count": 0,
+      "closure_pc_zero_based": 192,
+      "closure_pc_one_based": 193,
+      "opcode": 27,
+      "destination_parent_T_register": 33,
+      "child_index": 43,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/28",
+      "legacy_path": "root/29",
+      "name": "FindMonsterCandidates",
+      "fixed_param_count": 0,
+      "physical_instructions": 102,
+      "child_count": 1,
+      "closure_pc_zero_based": 193,
+      "closure_pc_one_based": 194,
+      "opcode": 27,
+      "destination_parent_T_register": 34,
+      "child_index": 28,
+      "capture_count": 5,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 195,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 27
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 196,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 30
+        },
+        {
+          "upvalue_index": 2,
+          "pc_one_based": 197,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 28
+        },
+        {
+          "upvalue_index": 3,
+          "pc_one_based": 198,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 29
+        },
+        {
+          "upvalue_index": 4,
+          "pc_one_based": 199,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 8
+        }
+      ],
+      "captured_parent_T_registers": [
+        27,
+        30,
+        28,
+        29,
+        8
+      ]
+    },
+    {
+      "child_path": "root/26",
+      "legacy_path": "root/27",
+      "name": "ResetGatherMonsterData",
+      "fixed_param_count": 0,
+      "physical_instructions": 20,
+      "child_count": 0,
+      "closure_pc_zero_based": 199,
+      "closure_pc_one_based": 200,
+      "opcode": 154,
+      "destination_parent_T_register": 35,
+      "child_index": 26,
+      "capture_count": 9,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 201,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 15
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 202,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 16
+        },
+        {
+          "upvalue_index": 2,
+          "pc_one_based": 203,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 17
+        },
+        {
+          "upvalue_index": 3,
+          "pc_one_based": 204,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 25
+        },
+        {
+          "upvalue_index": 4,
+          "pc_one_based": 205,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 19
+        },
+        {
+          "upvalue_index": 5,
+          "pc_one_based": 206,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 20
+        },
+        {
+          "upvalue_index": 6,
+          "pc_one_based": 207,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 21
+        },
+        {
+          "upvalue_index": 7,
+          "pc_one_based": 208,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 22
+        },
+        {
+          "upvalue_index": 8,
+          "pc_one_based": 209,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        }
+      ],
+      "captured_parent_T_registers": [
+        15,
+        16,
+        17,
+        25,
+        19,
+        20,
+        21,
+        22,
+        4
+      ]
+    },
+    {
+      "child_path": "root/14",
+      "legacy_path": "root/15",
+      "name": "FindMonsterInCurrViewField",
+      "fixed_param_count": 0,
+      "physical_instructions": 27,
+      "child_count": 0,
+      "closure_pc_zero_based": 209,
+      "closure_pc_one_based": 210,
+      "opcode": 154,
+      "destination_parent_T_register": 36,
+      "child_index": 14,
+      "capture_count": 1,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 211,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 30
+        }
+      ],
+      "captured_parent_T_registers": [
+        30
+      ]
+    },
+    {
+      "child_path": "root/31",
+      "legacy_path": "root/32",
+      "name": "IsInWhitelistMap",
+      "fixed_param_count": 0,
+      "physical_instructions": 28,
+      "child_count": 0,
+      "closure_pc_zero_based": 211,
+      "closure_pc_one_based": 212,
+      "opcode": 154,
+      "destination_parent_T_register": 37,
+      "child_index": 31,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/45",
+      "legacy_path": "root/46",
+      "name": "MainLoop",
+      "fixed_param_count": 0,
+      "physical_instructions": 417,
+      "child_count": 0,
+      "closure_pc_zero_based": 213,
+      "closure_pc_one_based": 214,
+      "opcode": 27,
+      "destination_parent_T_register": 37,
+      "child_index": 45,
+      "capture_count": 22,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 215,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 18
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 216,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 14
+        },
+        {
+          "upvalue_index": 2,
+          "pc_one_based": 217,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 13
+        },
+        {
+          "upvalue_index": 3,
+          "pc_one_based": 218,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        },
+        {
+          "upvalue_index": 4,
+          "pc_one_based": 219,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 23
+        },
+        {
+          "upvalue_index": 5,
+          "pc_one_based": 220,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 35
+        },
+        {
+          "upvalue_index": 6,
+          "pc_one_based": 221,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 26
+        },
+        {
+          "upvalue_index": 7,
+          "pc_one_based": 222,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 34
+        },
+        {
+          "upvalue_index": 8,
+          "pc_one_based": 223,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 15
+        },
+        {
+          "upvalue_index": 9,
+          "pc_one_based": 224,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 32
+        },
+        {
+          "upvalue_index": 10,
+          "pc_one_based": 225,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 17
+        },
+        {
+          "upvalue_index": 11,
+          "pc_one_based": 226,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 16
+        },
+        {
+          "upvalue_index": 12,
+          "pc_one_based": 227,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 19
+        },
+        {
+          "upvalue_index": 13,
+          "pc_one_based": 228,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 20
+        },
+        {
+          "upvalue_index": 14,
+          "pc_one_based": 229,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 22
+        },
+        {
+          "upvalue_index": 15,
+          "pc_one_based": 230,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 36
+        },
+        {
+          "upvalue_index": 16,
+          "pc_one_based": 231,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 21
+        },
+        {
+          "upvalue_index": 17,
+          "pc_one_based": 232,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 31
+        },
+        {
+          "upvalue_index": 18,
+          "pc_one_based": 233,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 30
+        },
+        {
+          "upvalue_index": 19,
+          "pc_one_based": 234,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 33
+        },
+        {
+          "upvalue_index": 20,
+          "pc_one_based": 235,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 24
+        },
+        {
+          "upvalue_index": 21,
+          "pc_one_based": 236,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 8
+        }
+      ],
+      "captured_parent_T_registers": [
+        18,
+        14,
+        13,
+        4,
+        23,
+        35,
+        26,
+        34,
+        15,
+        32,
+        17,
+        16,
+        19,
+        20,
+        22,
+        36,
+        21,
+        31,
+        30,
+        33,
+        24,
+        8
+      ]
+    },
+    {
+      "child_path": "root/19",
+      "legacy_path": "root/20",
+      "name": "InitGatherMonsters",
+      "fixed_param_count": 0,
+      "physical_instructions": 36,
+      "child_count": 1,
+      "closure_pc_zero_based": 237,
+      "closure_pc_one_based": 238,
+      "opcode": 27,
+      "destination_parent_T_register": 37,
+      "child_index": 19,
+      "capture_count": 7,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 239,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 3
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 240,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 18
+        },
+        {
+          "upvalue_index": 2,
+          "pc_one_based": 241,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 23
+        },
+        {
+          "upvalue_index": 3,
+          "pc_one_based": 242,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 13
+        },
+        {
+          "upvalue_index": 4,
+          "pc_one_based": 243,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 35
+        },
+        {
+          "upvalue_index": 5,
+          "pc_one_based": 244,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 8
+        },
+        {
+          "upvalue_index": 6,
+          "pc_one_based": 245,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        }
+      ],
+      "captured_parent_T_registers": [
+        3,
+        18,
+        23,
+        13,
+        35,
+        8,
+        4
+      ]
+    },
+    {
+      "child_path": "root/27",
+      "legacy_path": "root/28",
+      "name": "StopGatherMonsters",
+      "fixed_param_count": 0,
+      "physical_instructions": 25,
+      "child_count": 0,
+      "closure_pc_zero_based": 246,
+      "closure_pc_one_based": 247,
+      "opcode": 27,
+      "destination_parent_T_register": 37,
+      "child_index": 27,
+      "capture_count": 7,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 248,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 18
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 249,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 3
+        },
+        {
+          "upvalue_index": 2,
+          "pc_one_based": 250,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 25
+        },
+        {
+          "upvalue_index": 3,
+          "pc_one_based": 251,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 23
+        },
+        {
+          "upvalue_index": 4,
+          "pc_one_based": 252,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 13
+        },
+        {
+          "upvalue_index": 5,
+          "pc_one_based": 253,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 35
+        },
+        {
+          "upvalue_index": 6,
+          "pc_one_based": 254,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        }
+      ],
+      "captured_parent_T_registers": [
+        18,
+        3,
+        25,
+        23,
+        13,
+        35,
+        4
+      ]
+    },
+    {
+      "child_path": "root/23",
+      "legacy_path": "root/24",
+      "name": "Builtsetting",
+      "fixed_param_count": 0,
+      "physical_instructions": 55,
+      "child_count": 0,
+      "closure_pc_zero_based": 255,
+      "closure_pc_one_based": 256,
+      "opcode": 154,
+      "destination_parent_T_register": 37,
+      "child_index": 23,
+      "capture_count": 1,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 257,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 5
+        }
+      ],
+      "captured_parent_T_registers": [
+        5
+      ]
+    },
+    {
+      "child_path": "root/41",
+      "legacy_path": "root/42",
+      "name": "MoveItemToQuickUse",
+      "fixed_param_count": 2,
+      "physical_instructions": 133,
+      "child_count": 0,
+      "closure_pc_zero_based": 258,
+      "closure_pc_one_based": 259,
+      "opcode": 154,
+      "destination_parent_T_register": 37,
+      "child_index": 41,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/37",
+      "legacy_path": "root/38",
+      "name": "DestroyUI",
+      "fixed_param_count": 0,
+      "physical_instructions": 31,
+      "child_count": 0,
+      "closure_pc_zero_based": 260,
+      "closure_pc_one_based": 261,
+      "opcode": 154,
+      "destination_parent_T_register": 37,
+      "child_index": 37,
+      "capture_count": 3,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 262,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 0
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 263,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 3
+        },
+        {
+          "upvalue_index": 2,
+          "pc_one_based": 264,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 1
+        }
+      ],
+      "captured_parent_T_registers": [
+        0,
+        3,
+        1
+      ]
+    },
+    {
+      "child_path": "root/10",
+      "legacy_path": "root/11",
+      "name": "SetButtonVisibilityState",
+      "fixed_param_count": 0,
+      "physical_instructions": 15,
+      "child_count": 0,
+      "closure_pc_zero_based": 265,
+      "closure_pc_one_based": 266,
+      "opcode": 27,
+      "destination_parent_T_register": 37,
+      "child_index": 10,
+      "capture_count": 2,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 267,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 0
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 268,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 1
+        }
+      ],
+      "captured_parent_T_registers": [
+        0,
+        1
+      ]
+    },
+    {
+      "child_path": "root/40",
+      "legacy_path": "root/41",
+      "name": "ShowHideAllButtons",
+      "fixed_param_count": 0,
+      "physical_instructions": 47,
+      "child_count": 0,
+      "closure_pc_zero_based": 269,
+      "closure_pc_one_based": 270,
+      "opcode": 154,
+      "destination_parent_T_register": 37,
+      "child_index": 40,
+      "capture_count": 3,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 271,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 3
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 272,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 1
+        },
+        {
+          "upvalue_index": 2,
+          "pc_one_based": 273,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 0
+        }
+      ],
+      "captured_parent_T_registers": [
+        3,
+        1,
+        0
+      ]
+    },
+    {
+      "child_path": "root/55",
+      "legacy_path": "root/56",
+      "name": "AccountIDValidation",
+      "fixed_param_count": 0,
+      "physical_instructions": 64,
+      "child_count": 2,
+      "closure_pc_zero_based": 275,
+      "closure_pc_one_based": 276,
+      "opcode": 27,
+      "destination_parent_T_register": 38,
+      "child_index": 55,
+      "capture_count": 2,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 277,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 278,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 5
+        }
+      ],
+      "captured_parent_T_registers": [
+        4,
+        5
+      ]
+    },
+    {
+      "child_path": "root/2",
+      "legacy_path": "root/3",
+      "name": "GetWritablePath",
+      "fixed_param_count": 1,
+      "physical_instructions": 10,
+      "child_count": 0,
+      "closure_pc_zero_based": 296,
+      "closure_pc_one_based": 297,
+      "opcode": 154,
+      "destination_parent_T_register": 44,
+      "child_index": 2,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/9",
+      "legacy_path": "root/10",
+      "name": "ReadNumericConfig",
+      "fixed_param_count": 1,
+      "physical_instructions": 45,
+      "child_count": 0,
+      "closure_pc_zero_based": 297,
+      "closure_pc_one_based": 298,
+      "opcode": 27,
+      "destination_parent_T_register": 45,
+      "child_index": 9,
+      "capture_count": 1,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 299,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 44
+        }
+      ],
+      "captured_parent_T_registers": [
+        44
+      ]
+    },
+    {
+      "child_path": "root/17",
+      "legacy_path": "root/18",
+      "name": "PCallHelper",
+      "fixed_param_count": 2,
+      "physical_instructions": 14,
+      "child_count": 1,
+      "closure_pc_zero_based": 299,
+      "closure_pc_one_based": 300,
+      "opcode": 27,
+      "destination_parent_T_register": 46,
+      "child_index": 17,
+      "capture_count": 1,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 301,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 44
+        }
+      ],
+      "captured_parent_T_registers": [
+        44
+      ]
+    },
+    {
+      "child_path": "root/0",
+      "legacy_path": "root/1",
+      "name": "FileExistCheck_pcall_wrapper",
+      "fixed_param_count": 1,
+      "physical_instructions": 32,
+      "child_count": 1,
+      "closure_pc_zero_based": 301,
+      "closure_pc_one_based": 302,
+      "opcode": 154,
+      "destination_parent_T_register": 47,
+      "child_index": 0,
+      "capture_count": 1,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 303,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 44
+        }
+      ],
+      "captured_parent_T_registers": [
+        44
+      ]
+    },
+    {
+      "child_path": "root/49",
+      "legacy_path": "root/50",
+      "name": "AnonymousHelper_49",
+      "fixed_param_count": 0,
+      "physical_instructions": 5,
+      "child_count": 0,
+      "closure_pc_zero_based": 303,
+      "closure_pc_one_based": 304,
+      "opcode": 154,
+      "destination_parent_T_register": 48,
+      "child_index": 49,
+      "capture_count": 2,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 305,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 45
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 306,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 42
+        }
+      ],
+      "captured_parent_T_registers": [
+        45,
+        42
+      ]
+    },
+    {
+      "child_path": "root/32",
+      "legacy_path": "root/33",
+      "name": "AnonymousHelper_32",
+      "fixed_param_count": 1,
+      "physical_instructions": 6,
+      "child_count": 0,
+      "closure_pc_zero_based": 306,
+      "closure_pc_one_based": 307,
+      "opcode": 27,
+      "destination_parent_T_register": 49,
+      "child_index": 32,
+      "capture_count": 2,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 308,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 46
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 309,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 42
+        }
+      ],
+      "captured_parent_T_registers": [
+        46,
+        42
+      ]
+    },
+    {
+      "child_path": "root/33",
+      "legacy_path": "root/34",
+      "name": "AnonymousHelper_33",
+      "fixed_param_count": 0,
+      "physical_instructions": 5,
+      "child_count": 0,
+      "closure_pc_zero_based": 309,
+      "closure_pc_one_based": 310,
+      "opcode": 154,
+      "destination_parent_T_register": 50,
+      "child_index": 33,
+      "capture_count": 2,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 311,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 45
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 312,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 43
+        }
+      ],
+      "captured_parent_T_registers": [
+        45,
+        43
+      ]
+    },
+    {
+      "child_path": "root/54",
+      "legacy_path": "root/55",
+      "name": "AnonymousHelper_54",
+      "fixed_param_count": 1,
+      "physical_instructions": 6,
+      "child_count": 0,
+      "closure_pc_zero_based": 312,
+      "closure_pc_one_based": 313,
+      "opcode": 27,
+      "destination_parent_T_register": 51,
+      "child_index": 54,
+      "capture_count": 2,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 314,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 46
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 315,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 43
+        }
+      ],
+      "captured_parent_T_registers": [
+        46,
+        43
+      ]
+    },
+    {
+      "child_path": "root/22",
+      "legacy_path": "root/23",
+      "name": "GetMapData2DPtr",
+      "fixed_param_count": 5,
+      "physical_instructions": 144,
+      "child_count": 0,
+      "closure_pc_zero_based": 349,
+      "closure_pc_one_based": 350,
+      "opcode": 154,
+      "destination_parent_T_register": 53,
+      "child_index": 22,
+      "capture_count": 1,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 351,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 52
+        }
+      ],
+      "captured_parent_T_registers": [
+        52
+      ]
+    },
+    {
+      "child_path": "root/48",
+      "legacy_path": "root/49",
+      "name": "PCallHelper_2",
+      "fixed_param_count": 0,
+      "physical_instructions": 10,
+      "child_count": 1,
+      "closure_pc_zero_based": 351,
+      "closure_pc_one_based": 352,
+      "opcode": 154,
+      "destination_parent_T_register": 54,
+      "child_index": 48,
+      "capture_count": 0,
+      "capture_descriptors": [],
+      "captured_parent_T_registers": []
+    },
+    {
+      "child_path": "root/51",
+      "legacy_path": "root/52",
+      "name": "FindBlacklistPlayer",
+      "fixed_param_count": 1,
+      "physical_instructions": 35,
+      "child_count": 0,
+      "closure_pc_zero_based": 352,
+      "closure_pc_one_based": 353,
+      "opcode": 154,
+      "destination_parent_T_register": 55,
+      "child_index": 51,
+      "capture_count": 1,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 354,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 54
+        }
+      ],
+      "captured_parent_T_registers": [
+        54
+      ]
+    },
+    {
+      "child_path": "root/24",
+      "legacy_path": "root/25",
+      "name": "UseItemByIndex",
+      "fixed_param_count": 0,
+      "physical_instructions": 33,
+      "child_count": 0,
+      "closure_pc_zero_based": 354,
+      "closure_pc_one_based": 355,
+      "opcode": 154,
+      "destination_parent_T_register": 56,
+      "child_index": 24,
+      "capture_count": 1,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 356,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 37
+        }
+      ],
+      "captured_parent_T_registers": [
+        37
+      ]
+    },
+    {
+      "child_path": "root/52",
+      "legacy_path": "root/53",
+      "name": "onDamageMsg",
+      "fixed_param_count": 2,
+      "physical_instructions": 72,
+      "child_count": 1,
+      "closure_pc_zero_based": 356,
+      "closure_pc_one_based": 357,
+      "opcode": 27,
+      "destination_parent_T_register": 57,
+      "child_index": 52,
+      "capture_count": 1,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 358,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 41
+        }
+      ],
+      "captured_parent_T_registers": [
+        41
+      ]
+    },
+    {
+      "child_path": "root/6",
+      "legacy_path": "root/7",
+      "name": "InstallDamageHook",
+      "fixed_param_count": 0,
+      "physical_instructions": 40,
+      "child_count": 1,
+      "closure_pc_zero_based": 359,
+      "closure_pc_one_based": 360,
+      "opcode": 27,
+      "destination_parent_T_register": 57,
+      "child_index": 6,
+      "capture_count": 2,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 361,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 0
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 362,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        }
+      ],
+      "captured_parent_T_registers": [
+        0,
+        4
+      ]
+    },
+    {
+      "child_path": "root/25",
+      "legacy_path": "root/26",
+      "name": "DeathAutoBlacklist",
+      "fixed_param_count": 0,
+      "physical_instructions": 47,
+      "child_count": 1,
+      "closure_pc_zero_based": 362,
+      "closure_pc_one_based": 363,
+      "opcode": 27,
+      "destination_parent_T_register": 58,
+      "child_index": 25,
+      "capture_count": 4,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 364,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 41
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 365,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        },
+        {
+          "upvalue_index": 2,
+          "pc_one_based": 366,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 55
+        },
+        {
+          "upvalue_index": 3,
+          "pc_one_based": 367,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 5
+        }
+      ],
+      "captured_parent_T_registers": [
+        41,
+        4,
+        55,
+        5
+      ]
+    },
+    {
+      "child_path": "root/47",
+      "legacy_path": "root/48",
+      "name": "BlacklistPlayerDetection",
+      "fixed_param_count": 0,
+      "physical_instructions": 216,
+      "child_count": 0,
+      "closure_pc_zero_based": 367,
+      "closure_pc_one_based": 368,
+      "opcode": 154,
+      "destination_parent_T_register": 59,
+      "child_index": 47,
+      "capture_count": 13,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 369,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 2
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 370,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 57
+        },
+        {
+          "upvalue_index": 2,
+          "pc_one_based": 371,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 41
+        },
+        {
+          "upvalue_index": 3,
+          "pc_one_based": 372,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 58
+        },
+        {
+          "upvalue_index": 4,
+          "pc_one_based": 373,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 55
+        },
+        {
+          "upvalue_index": 5,
+          "pc_one_based": 374,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 53
+        },
+        {
+          "upvalue_index": 6,
+          "pc_one_based": 375,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 38
+        },
+        {
+          "upvalue_index": 7,
+          "pc_one_based": 376,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        },
+        {
+          "upvalue_index": 8,
+          "pc_one_based": 377,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 56
+        },
+        {
+          "upvalue_index": 9,
+          "pc_one_based": 378,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 39
+        },
+        {
+          "upvalue_index": 10,
+          "pc_one_based": 379,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 5
+        },
+        {
+          "upvalue_index": 11,
+          "pc_one_based": 380,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 40
+        },
+        {
+          "upvalue_index": 12,
+          "pc_one_based": 381,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 37
+        }
+      ],
+      "captured_parent_T_registers": [
+        2,
+        57,
+        41,
+        58,
+        55,
+        53,
+        38,
+        4,
+        56,
+        39,
+        5,
+        40,
+        37
+      ]
+    },
+    {
+      "child_path": "root/15",
+      "legacy_path": "root/16",
+      "name": "ClearBlacklistItems",
+      "fixed_param_count": 0,
+      "physical_instructions": 63,
+      "child_count": 1,
+      "closure_pc_zero_based": 382,
+      "closure_pc_one_based": 383,
+      "opcode": 27,
+      "destination_parent_T_register": 59,
+      "child_index": 15,
+      "capture_count": 4,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 384,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 54
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 385,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        },
+        {
+          "upvalue_index": 2,
+          "pc_one_based": 386,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 5
+        },
+        {
+          "upvalue_index": 3,
+          "pc_one_based": 387,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 41
+        }
+      ],
+      "captured_parent_T_registers": [
+        54,
+        4,
+        5,
+        41
+      ]
+    },
+    {
+      "child_path": "root/42",
+      "legacy_path": "root/43",
+      "name": "doInit_UI",
+      "fixed_param_count": 0,
+      "physical_instructions": 419,
+      "child_count": 23,
+      "closure_pc_zero_based": 389,
+      "closure_pc_one_based": 390,
+      "opcode": 27,
+      "destination_parent_T_register": 60,
+      "child_index": 42,
+      "capture_count": 20,
+      "capture_descriptors": [
+        {
+          "upvalue_index": 0,
+          "pc_one_based": 391,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 4
+        },
+        {
+          "upvalue_index": 1,
+          "pc_one_based": 392,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 2
+        },
+        {
+          "upvalue_index": 2,
+          "pc_one_based": 393,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 3
+        },
+        {
+          "upvalue_index": 3,
+          "pc_one_based": 394,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 0
+        },
+        {
+          "upvalue_index": 4,
+          "pc_one_based": 395,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 1
+        },
+        {
+          "upvalue_index": 5,
+          "pc_one_based": 396,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 41
+        },
+        {
+          "upvalue_index": 6,
+          "pc_one_based": 397,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 48
+        },
+        {
+          "upvalue_index": 7,
+          "pc_one_based": 398,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 7
+        },
+        {
+          "upvalue_index": 8,
+          "pc_one_based": 399,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 8
+        },
+        {
+          "upvalue_index": 9,
+          "pc_one_based": 400,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 50
+        },
+        {
+          "upvalue_index": 10,
+          "pc_one_based": 401,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 49
+        },
+        {
+          "upvalue_index": 11,
+          "pc_one_based": 402,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 5
+        },
+        {
+          "upvalue_index": 12,
+          "pc_one_based": 403,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 44
+        },
+        {
+          "upvalue_index": 13,
+          "pc_one_based": 404,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 42
+        },
+        {
+          "upvalue_index": 14,
+          "pc_one_based": 405,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 51
+        },
+        {
+          "upvalue_index": 15,
+          "pc_one_based": 406,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 43
+        },
+        {
+          "upvalue_index": 16,
+          "pc_one_based": 407,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 47
+        },
+        {
+          "upvalue_index": 17,
+          "pc_one_based": 408,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 11
+        },
+        {
+          "upvalue_index": 18,
+          "pc_one_based": 409,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 12
+        },
+        {
+          "upvalue_index": 19,
+          "pc_one_based": 410,
+          "opcode": 387,
+          "mode": "capture_parent_T_cell",
+          "parent_register": 9
+        }
+      ],
+      "captured_parent_T_registers": [
+        4,
+        2,
+        3,
+        0,
+        1,
+        41,
+        48,
+        7,
+        8,
+        50,
+        49,
+        5,
+        44,
+        42,
+        51,
+        43,
+        47,
+        11,
+        12,
+        9
+      ]
+    }
+  ],
+  "parent_register_fanout": {
+    "0": {
+      "capture_count": 7,
+      "captured_by": [
+        {
+          "child_path": "root/6",
+          "name": "InstallDamageHook",
+          "upvalue_index": 0,
+          "closure_pc": 360,
+          "descriptor_pc": 361
+        },
+        {
+          "child_path": "root/10",
+          "name": "SetButtonVisibilityState",
+          "upvalue_index": 0,
+          "closure_pc": 266,
+          "descriptor_pc": 267
+        },
+        {
+          "child_path": "root/12",
+          "name": "LuaSendMsg",
+          "upvalue_index": 0,
+          "closure_pc": 48,
+          "descriptor_pc": 49
+        },
+        {
+          "child_path": "root/20",
+          "name": "ShowLocalNoticeByType",
+          "upvalue_index": 0,
+          "closure_pc": 46,
+          "descriptor_pc": 47
+        },
+        {
+          "child_path": "root/37",
+          "name": "DestroyUI",
+          "upvalue_index": 0,
+          "closure_pc": 261,
+          "descriptor_pc": 262
+        },
+        {
+          "child_path": "root/40",
+          "name": "ShowHideAllButtons",
+          "upvalue_index": 2,
+          "closure_pc": 270,
+          "descriptor_pc": 273
+        },
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 3,
+          "closure_pc": 390,
+          "descriptor_pc": 394
+        }
+      ]
+    },
+    "1": {
+      "capture_count": 4,
+      "captured_by": [
+        {
+          "child_path": "root/10",
+          "name": "SetButtonVisibilityState",
+          "upvalue_index": 1,
+          "closure_pc": 266,
+          "descriptor_pc": 268
+        },
+        {
+          "child_path": "root/37",
+          "name": "DestroyUI",
+          "upvalue_index": 2,
+          "closure_pc": 261,
+          "descriptor_pc": 264
+        },
+        {
+          "child_path": "root/40",
+          "name": "ShowHideAllButtons",
+          "upvalue_index": 1,
+          "closure_pc": 270,
+          "descriptor_pc": 272
+        },
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 4,
+          "closure_pc": 390,
+          "descriptor_pc": 395
+        }
+      ]
+    },
+    "2": {
+      "capture_count": 5,
+      "captured_by": [
+        {
+          "child_path": "root/5",
+          "name": "TakeItems",
+          "upvalue_index": 0,
+          "closure_pc": 79,
+          "descriptor_pc": 80
+        },
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 1,
+          "closure_pc": 390,
+          "descriptor_pc": 392
+        },
+        {
+          "child_path": "root/46",
+          "name": "DiuItems",
+          "upvalue_index": 0,
+          "closure_pc": 64,
+          "descriptor_pc": 65
+        },
+        {
+          "child_path": "root/47",
+          "name": "BlacklistPlayerDetection",
+          "upvalue_index": 0,
+          "closure_pc": 368,
+          "descriptor_pc": 369
+        },
+        {
+          "child_path": "root/50",
+          "name": "StorageItems",
+          "upvalue_index": 0,
+          "closure_pc": 74,
+          "descriptor_pc": 75
+        }
+      ]
+    },
+    "3": {
+      "capture_count": 5,
+      "captured_by": [
+        {
+          "child_path": "root/19",
+          "name": "InitGatherMonsters",
+          "upvalue_index": 0,
+          "closure_pc": 238,
+          "descriptor_pc": 239
+        },
+        {
+          "child_path": "root/27",
+          "name": "StopGatherMonsters",
+          "upvalue_index": 1,
+          "closure_pc": 247,
+          "descriptor_pc": 249
+        },
+        {
+          "child_path": "root/37",
+          "name": "DestroyUI",
+          "upvalue_index": 1,
+          "closure_pc": 261,
+          "descriptor_pc": 263
+        },
+        {
+          "child_path": "root/40",
+          "name": "ShowHideAllButtons",
+          "upvalue_index": 0,
+          "closure_pc": 270,
+          "descriptor_pc": 271
+        },
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 2,
+          "closure_pc": 390,
+          "descriptor_pc": 393
+        }
+      ]
+    },
+    "4": {
+      "capture_count": 15,
+      "captured_by": [
+        {
+          "child_path": "root/1",
+          "name": "GetStorageItemData",
+          "upvalue_index": 0,
+          "closure_pc": 71,
+          "descriptor_pc": 72
+        },
+        {
+          "child_path": "root/6",
+          "name": "InstallDamageHook",
+          "upvalue_index": 1,
+          "closure_pc": 360,
+          "descriptor_pc": 362
+        },
+        {
+          "child_path": "root/8",
+          "name": "FormatStateChange",
+          "upvalue_index": 0,
+          "closure_pc": 181,
+          "descriptor_pc": 182
+        },
+        {
+          "child_path": "root/12",
+          "name": "LuaSendMsg",
+          "upvalue_index": 1,
+          "closure_pc": 48,
+          "descriptor_pc": 50
+        },
+        {
+          "child_path": "root/15",
+          "name": "ClearBlacklistItems",
+          "upvalue_index": 1,
+          "closure_pc": 383,
+          "descriptor_pc": 385
+        },
+        {
+          "child_path": "root/19",
+          "name": "InitGatherMonsters",
+          "upvalue_index": 6,
+          "closure_pc": 238,
+          "descriptor_pc": 245
+        },
+        {
+          "child_path": "root/25",
+          "name": "DeathAutoBlacklist",
+          "upvalue_index": 1,
+          "closure_pc": 363,
+          "descriptor_pc": 365
+        },
+        {
+          "child_path": "root/26",
+          "name": "ResetGatherMonsterData",
+          "upvalue_index": 8,
+          "closure_pc": 200,
+          "descriptor_pc": 209
+        },
+        {
+          "child_path": "root/27",
+          "name": "StopGatherMonsters",
+          "upvalue_index": 6,
+          "closure_pc": 247,
+          "descriptor_pc": 254
+        },
+        {
+          "child_path": "root/36",
+          "name": "GetAvailableStoragePage",
+          "upvalue_index": 0,
+          "closure_pc": 68,
+          "descriptor_pc": 69
+        },
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 0,
+          "closure_pc": 390,
+          "descriptor_pc": 391
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 3,
+          "closure_pc": 214,
+          "descriptor_pc": 218
+        },
+        {
+          "child_path": "root/47",
+          "name": "BlacklistPlayerDetection",
+          "upvalue_index": 7,
+          "closure_pc": 368,
+          "descriptor_pc": 376
+        },
+        {
+          "child_path": "root/50",
+          "name": "StorageItems",
+          "upvalue_index": 1,
+          "closure_pc": 74,
+          "descriptor_pc": 76
+        },
+        {
+          "child_path": "root/55",
+          "name": "AccountIDValidation",
+          "upvalue_index": 0,
+          "closure_pc": 276,
+          "descriptor_pc": 277
+        }
+      ]
+    },
+    "5": {
+      "capture_count": 10,
+      "captured_by": [
+        {
+          "child_path": "root/5",
+          "name": "TakeItems",
+          "upvalue_index": 1,
+          "closure_pc": 79,
+          "descriptor_pc": 81
+        },
+        {
+          "child_path": "root/15",
+          "name": "ClearBlacklistItems",
+          "upvalue_index": 2,
+          "closure_pc": 383,
+          "descriptor_pc": 386
+        },
+        {
+          "child_path": "root/21",
+          "name": "PickUpItems",
+          "upvalue_index": 0,
+          "closure_pc": 83,
+          "descriptor_pc": 84
+        },
+        {
+          "child_path": "root/23",
+          "name": "Builtsetting",
+          "upvalue_index": 0,
+          "closure_pc": 256,
+          "descriptor_pc": 257
+        },
+        {
+          "child_path": "root/25",
+          "name": "DeathAutoBlacklist",
+          "upvalue_index": 3,
+          "closure_pc": 363,
+          "descriptor_pc": 367
+        },
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 11,
+          "closure_pc": 390,
+          "descriptor_pc": 402
+        },
+        {
+          "child_path": "root/46",
+          "name": "DiuItems",
+          "upvalue_index": 1,
+          "closure_pc": 64,
+          "descriptor_pc": 66
+        },
+        {
+          "child_path": "root/47",
+          "name": "BlacklistPlayerDetection",
+          "upvalue_index": 10,
+          "closure_pc": 368,
+          "descriptor_pc": 379
+        },
+        {
+          "child_path": "root/50",
+          "name": "StorageItems",
+          "upvalue_index": 2,
+          "closure_pc": 74,
+          "descriptor_pc": 77
+        },
+        {
+          "child_path": "root/55",
+          "name": "AccountIDValidation",
+          "upvalue_index": 1,
+          "closure_pc": 276,
+          "descriptor_pc": 278
+        }
+      ]
+    },
+    "7": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 7,
+          "closure_pc": 390,
+          "descriptor_pc": 398
+        }
+      ]
+    },
+    "8": {
+      "capture_count": 4,
+      "captured_by": [
+        {
+          "child_path": "root/19",
+          "name": "InitGatherMonsters",
+          "upvalue_index": 5,
+          "closure_pc": 238,
+          "descriptor_pc": 244
+        },
+        {
+          "child_path": "root/28",
+          "name": "FindMonsterCandidates",
+          "upvalue_index": 4,
+          "closure_pc": 194,
+          "descriptor_pc": 199
+        },
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 8,
+          "closure_pc": 390,
+          "descriptor_pc": 399
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 21,
+          "closure_pc": 214,
+          "descriptor_pc": 236
+        }
+      ]
+    },
+    "9": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 19,
+          "closure_pc": 390,
+          "descriptor_pc": 410
+        }
+      ]
+    },
+    "11": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 17,
+          "closure_pc": 390,
+          "descriptor_pc": 408
+        }
+      ]
+    },
+    "12": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 18,
+          "closure_pc": 390,
+          "descriptor_pc": 409
+        }
+      ]
+    },
+    "13": {
+      "capture_count": 3,
+      "captured_by": [
+        {
+          "child_path": "root/19",
+          "name": "InitGatherMonsters",
+          "upvalue_index": 3,
+          "closure_pc": 238,
+          "descriptor_pc": 242
+        },
+        {
+          "child_path": "root/27",
+          "name": "StopGatherMonsters",
+          "upvalue_index": 4,
+          "closure_pc": 247,
+          "descriptor_pc": 252
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 2,
+          "closure_pc": 214,
+          "descriptor_pc": 217
+        }
+      ]
+    },
+    "14": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/8",
+          "name": "FormatStateChange",
+          "upvalue_index": 1,
+          "closure_pc": 181,
+          "descriptor_pc": 183
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 1,
+          "closure_pc": 214,
+          "descriptor_pc": 216
+        }
+      ]
+    },
+    "15": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/26",
+          "name": "ResetGatherMonsterData",
+          "upvalue_index": 0,
+          "closure_pc": 200,
+          "descriptor_pc": 201
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 8,
+          "closure_pc": 214,
+          "descriptor_pc": 223
+        }
+      ]
+    },
+    "16": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/26",
+          "name": "ResetGatherMonsterData",
+          "upvalue_index": 1,
+          "closure_pc": 200,
+          "descriptor_pc": 202
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 11,
+          "closure_pc": 214,
+          "descriptor_pc": 226
+        }
+      ]
+    },
+    "17": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/26",
+          "name": "ResetGatherMonsterData",
+          "upvalue_index": 2,
+          "closure_pc": 200,
+          "descriptor_pc": 203
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 10,
+          "closure_pc": 214,
+          "descriptor_pc": 225
+        }
+      ]
+    },
+    "18": {
+      "capture_count": 3,
+      "captured_by": [
+        {
+          "child_path": "root/19",
+          "name": "InitGatherMonsters",
+          "upvalue_index": 1,
+          "closure_pc": 238,
+          "descriptor_pc": 240
+        },
+        {
+          "child_path": "root/27",
+          "name": "StopGatherMonsters",
+          "upvalue_index": 0,
+          "closure_pc": 247,
+          "descriptor_pc": 248
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 0,
+          "closure_pc": 214,
+          "descriptor_pc": 215
+        }
+      ]
+    },
+    "19": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/26",
+          "name": "ResetGatherMonsterData",
+          "upvalue_index": 4,
+          "closure_pc": 200,
+          "descriptor_pc": 205
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 12,
+          "closure_pc": 214,
+          "descriptor_pc": 227
+        }
+      ]
+    },
+    "20": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/26",
+          "name": "ResetGatherMonsterData",
+          "upvalue_index": 5,
+          "closure_pc": 200,
+          "descriptor_pc": 206
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 13,
+          "closure_pc": 214,
+          "descriptor_pc": 228
+        }
+      ]
+    },
+    "21": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/26",
+          "name": "ResetGatherMonsterData",
+          "upvalue_index": 6,
+          "closure_pc": 200,
+          "descriptor_pc": 207
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 16,
+          "closure_pc": 214,
+          "descriptor_pc": 231
+        }
+      ]
+    },
+    "22": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/26",
+          "name": "ResetGatherMonsterData",
+          "upvalue_index": 7,
+          "closure_pc": 200,
+          "descriptor_pc": 208
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 14,
+          "closure_pc": 214,
+          "descriptor_pc": 229
+        }
+      ]
+    },
+    "23": {
+      "capture_count": 3,
+      "captured_by": [
+        {
+          "child_path": "root/19",
+          "name": "InitGatherMonsters",
+          "upvalue_index": 2,
+          "closure_pc": 238,
+          "descriptor_pc": 241
+        },
+        {
+          "child_path": "root/27",
+          "name": "StopGatherMonsters",
+          "upvalue_index": 3,
+          "closure_pc": 247,
+          "descriptor_pc": 251
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 4,
+          "closure_pc": 214,
+          "descriptor_pc": 219
+        }
+      ]
+    },
+    "24": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 20,
+          "closure_pc": 214,
+          "descriptor_pc": 235
+        }
+      ]
+    },
+    "25": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/26",
+          "name": "ResetGatherMonsterData",
+          "upvalue_index": 3,
+          "closure_pc": 200,
+          "descriptor_pc": 204
+        },
+        {
+          "child_path": "root/27",
+          "name": "StopGatherMonsters",
+          "upvalue_index": 2,
+          "closure_pc": 247,
+          "descriptor_pc": 250
+        }
+      ]
+    },
+    "26": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 6,
+          "closure_pc": 214,
+          "descriptor_pc": 221
+        }
+      ]
+    },
+    "27": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/28",
+          "name": "FindMonsterCandidates",
+          "upvalue_index": 0,
+          "closure_pc": 194,
+          "descriptor_pc": 195
+        }
+      ]
+    },
+    "28": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/28",
+          "name": "FindMonsterCandidates",
+          "upvalue_index": 2,
+          "closure_pc": 194,
+          "descriptor_pc": 197
+        }
+      ]
+    },
+    "29": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/28",
+          "name": "FindMonsterCandidates",
+          "upvalue_index": 3,
+          "closure_pc": 194,
+          "descriptor_pc": 198
+        }
+      ]
+    },
+    "30": {
+      "capture_count": 3,
+      "captured_by": [
+        {
+          "child_path": "root/14",
+          "name": "FindMonsterInCurrViewField",
+          "upvalue_index": 0,
+          "closure_pc": 210,
+          "descriptor_pc": 211
+        },
+        {
+          "child_path": "root/28",
+          "name": "FindMonsterCandidates",
+          "upvalue_index": 1,
+          "closure_pc": 194,
+          "descriptor_pc": 196
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 18,
+          "closure_pc": 214,
+          "descriptor_pc": 233
+        }
+      ]
+    },
+    "31": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 17,
+          "closure_pc": 214,
+          "descriptor_pc": 232
+        }
+      ]
+    },
+    "32": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 9,
+          "closure_pc": 214,
+          "descriptor_pc": 224
+        }
+      ]
+    },
+    "33": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 19,
+          "closure_pc": 214,
+          "descriptor_pc": 234
+        }
+      ]
+    },
+    "34": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 7,
+          "closure_pc": 214,
+          "descriptor_pc": 222
+        }
+      ]
+    },
+    "35": {
+      "capture_count": 3,
+      "captured_by": [
+        {
+          "child_path": "root/19",
+          "name": "InitGatherMonsters",
+          "upvalue_index": 4,
+          "closure_pc": 238,
+          "descriptor_pc": 243
+        },
+        {
+          "child_path": "root/27",
+          "name": "StopGatherMonsters",
+          "upvalue_index": 5,
+          "closure_pc": 247,
+          "descriptor_pc": 253
+        },
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 5,
+          "closure_pc": 214,
+          "descriptor_pc": 220
+        }
+      ]
+    },
+    "36": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/45",
+          "name": "MainLoop",
+          "upvalue_index": 15,
+          "closure_pc": 214,
+          "descriptor_pc": 230
+        }
+      ]
+    },
+    "37": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/24",
+          "name": "UseItemByIndex",
+          "upvalue_index": 0,
+          "closure_pc": 355,
+          "descriptor_pc": 356
+        },
+        {
+          "child_path": "root/47",
+          "name": "BlacklistPlayerDetection",
+          "upvalue_index": 12,
+          "closure_pc": 368,
+          "descriptor_pc": 381
+        }
+      ]
+    },
+    "38": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/47",
+          "name": "BlacklistPlayerDetection",
+          "upvalue_index": 6,
+          "closure_pc": 368,
+          "descriptor_pc": 375
+        }
+      ]
+    },
+    "39": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/47",
+          "name": "BlacklistPlayerDetection",
+          "upvalue_index": 9,
+          "closure_pc": 368,
+          "descriptor_pc": 378
+        }
+      ]
+    },
+    "40": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/47",
+          "name": "BlacklistPlayerDetection",
+          "upvalue_index": 11,
+          "closure_pc": 368,
+          "descriptor_pc": 380
+        }
+      ]
+    },
+    "41": {
+      "capture_count": 5,
+      "captured_by": [
+        {
+          "child_path": "root/15",
+          "name": "ClearBlacklistItems",
+          "upvalue_index": 3,
+          "closure_pc": 383,
+          "descriptor_pc": 387
+        },
+        {
+          "child_path": "root/25",
+          "name": "DeathAutoBlacklist",
+          "upvalue_index": 0,
+          "closure_pc": 363,
+          "descriptor_pc": 364
+        },
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 5,
+          "closure_pc": 390,
+          "descriptor_pc": 396
+        },
+        {
+          "child_path": "root/47",
+          "name": "BlacklistPlayerDetection",
+          "upvalue_index": 2,
+          "closure_pc": 368,
+          "descriptor_pc": 371
+        },
+        {
+          "child_path": "root/52",
+          "name": "onDamageMsg",
+          "upvalue_index": 0,
+          "closure_pc": 357,
+          "descriptor_pc": 358
+        }
+      ]
+    },
+    "42": {
+      "capture_count": 3,
+      "captured_by": [
+        {
+          "child_path": "root/32",
+          "name": "AnonymousHelper_32",
+          "upvalue_index": 1,
+          "closure_pc": 307,
+          "descriptor_pc": 309
+        },
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 13,
+          "closure_pc": 390,
+          "descriptor_pc": 404
+        },
+        {
+          "child_path": "root/49",
+          "name": "AnonymousHelper_49",
+          "upvalue_index": 1,
+          "closure_pc": 304,
+          "descriptor_pc": 306
+        }
+      ]
+    },
+    "43": {
+      "capture_count": 3,
+      "captured_by": [
+        {
+          "child_path": "root/33",
+          "name": "AnonymousHelper_33",
+          "upvalue_index": 1,
+          "closure_pc": 310,
+          "descriptor_pc": 312
+        },
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 15,
+          "closure_pc": 390,
+          "descriptor_pc": 406
+        },
+        {
+          "child_path": "root/54",
+          "name": "AnonymousHelper_54",
+          "upvalue_index": 1,
+          "closure_pc": 313,
+          "descriptor_pc": 315
+        }
+      ]
+    },
+    "44": {
+      "capture_count": 4,
+      "captured_by": [
+        {
+          "child_path": "root/0",
+          "name": "FileExistCheck_pcall_wrapper",
+          "upvalue_index": 0,
+          "closure_pc": 302,
+          "descriptor_pc": 303
+        },
+        {
+          "child_path": "root/9",
+          "name": "ReadNumericConfig",
+          "upvalue_index": 0,
+          "closure_pc": 298,
+          "descriptor_pc": 299
+        },
+        {
+          "child_path": "root/17",
+          "name": "PCallHelper",
+          "upvalue_index": 0,
+          "closure_pc": 300,
+          "descriptor_pc": 301
+        },
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 12,
+          "closure_pc": 390,
+          "descriptor_pc": 403
+        }
+      ]
+    },
+    "45": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/33",
+          "name": "AnonymousHelper_33",
+          "upvalue_index": 0,
+          "closure_pc": 310,
+          "descriptor_pc": 311
+        },
+        {
+          "child_path": "root/49",
+          "name": "AnonymousHelper_49",
+          "upvalue_index": 0,
+          "closure_pc": 304,
+          "descriptor_pc": 305
+        }
+      ]
+    },
+    "46": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/32",
+          "name": "AnonymousHelper_32",
+          "upvalue_index": 0,
+          "closure_pc": 307,
+          "descriptor_pc": 308
+        },
+        {
+          "child_path": "root/54",
+          "name": "AnonymousHelper_54",
+          "upvalue_index": 0,
+          "closure_pc": 313,
+          "descriptor_pc": 314
+        }
+      ]
+    },
+    "47": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 16,
+          "closure_pc": 390,
+          "descriptor_pc": 407
+        }
+      ]
+    },
+    "48": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 6,
+          "closure_pc": 390,
+          "descriptor_pc": 397
+        }
+      ]
+    },
+    "49": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 10,
+          "closure_pc": 390,
+          "descriptor_pc": 401
+        }
+      ]
+    },
+    "50": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 9,
+          "closure_pc": 390,
+          "descriptor_pc": 400
+        }
+      ]
+    },
+    "51": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/42",
+          "name": "doInit_UI",
+          "upvalue_index": 14,
+          "closure_pc": 390,
+          "descriptor_pc": 405
+        }
+      ]
+    },
+    "52": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/22",
+          "name": "GetMapData2DPtr",
+          "upvalue_index": 0,
+          "closure_pc": 350,
+          "descriptor_pc": 351
+        }
+      ]
+    },
+    "53": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/47",
+          "name": "BlacklistPlayerDetection",
+          "upvalue_index": 5,
+          "closure_pc": 368,
+          "descriptor_pc": 374
+        }
+      ]
+    },
+    "54": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/15",
+          "name": "ClearBlacklistItems",
+          "upvalue_index": 0,
+          "closure_pc": 383,
+          "descriptor_pc": 384
+        },
+        {
+          "child_path": "root/51",
+          "name": "FindBlacklistPlayer",
+          "upvalue_index": 0,
+          "closure_pc": 353,
+          "descriptor_pc": 354
+        }
+      ]
+    },
+    "55": {
+      "capture_count": 2,
+      "captured_by": [
+        {
+          "child_path": "root/25",
+          "name": "DeathAutoBlacklist",
+          "upvalue_index": 2,
+          "closure_pc": 363,
+          "descriptor_pc": 366
+        },
+        {
+          "child_path": "root/47",
+          "name": "BlacklistPlayerDetection",
+          "upvalue_index": 4,
+          "closure_pc": 368,
+          "descriptor_pc": 373
+        }
+      ]
+    },
+    "56": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/47",
+          "name": "BlacklistPlayerDetection",
+          "upvalue_index": 8,
+          "closure_pc": 368,
+          "descriptor_pc": 377
+        }
+      ]
+    },
+    "57": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/47",
+          "name": "BlacklistPlayerDetection",
+          "upvalue_index": 1,
+          "closure_pc": 368,
+          "descriptor_pc": 370
+        }
+      ]
+    },
+    "58": {
+      "capture_count": 1,
+      "captured_by": [
+        {
+          "child_path": "root/47",
+          "name": "BlacklistPlayerDetection",
+          "upvalue_index": 3,
+          "closure_pc": 368,
+          "descriptor_pc": 372
+        }
+      ]
+    }
+  },
+  "known_semantic_maps": {
+    "root.children[45]": "docs/handoff/04_闭包捕获映射.json#root45",
+    "root.children[46]": "docs/handoff/04_闭包捕获映射.json#root46",
+    "root.children[47]": "docs/handoff/04_闭包捕获映射.json#root47"
+  },
+  "limitations": [
+    "This manifest records creation PCs, destination registers and raw capture cells only. It does not by itself prove the business meaning of every parent register.",
+    "Root module field/global assignments and shared-cell initial values still require PC-level dataflow reconciliation."
+  ]
+}
