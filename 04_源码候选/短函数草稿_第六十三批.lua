@@ -1,7 +1,7 @@
 --[[
 函数：doInit_UI | 原型索引52 | root.children[42] | legacy root/43
 物理指令419 | 常量105 | 子原型23 | vararg_flag=0
-普通Lua主体草稿（检查点187首版、199分支复审、200按钮闭包/每日回调整合、201合并Nested_Anonymous与Nested_FFFF00资源统计工厂及子依赖）；未运行时验证。Attach_UITop七参数、Nested_Anonymous的T槽及unknown哨兵仍待核验。
+普通Lua主体草稿（检查点187首版、199分支复审、200按钮闭包/每日回调整合、201合并Nested_Anonymous与Nested_FFFF00资源统计工厂及子依赖、203纠正调用参数展开并追踪Nested_Anonymous调用链）；未运行时验证。Attach_UITop的T[7]实参来源、Nested_Anonymous的T槽及unknown哨兵仍待核验。
 本文件已内嵌Nested_find、Nested_Anonymous及Nested_FFFF00资源统计相关闭包工厂；其余子原型继续复用独立候选。
 ]]
 -- root.children[42].children[0] / Nested_find：46条，无捕获。
@@ -128,8 +128,12 @@ end
 -- ---------------------------------------------------------------------------
 local function make_Nested_Anonymous(PrintLog)
     return function Nested_Anonymous(...)
-        -- The observed callers supply promptText and callbackClosure. Keep their
-        -- values visible, but do not assign them to T[0]/T[1]/T[2] without proof.
+        -- Caller chain traced at checkpoint 203:
+        -- doInit_UI PC250 creates root/43/12 with this closure as UP[0].
+        -- root/43/19 PC27 invokes that wrapper with an empty argument range;
+        -- root/43/12 PC11 then forwards its own T[1]..T[2] to this function.
+        -- Do not assume the two forwarded slots are initialized prompt/callback
+        -- values: their call-frame provenance is not established yet.
         local argument1, argument2 = ...
 
         -- Checkpoint 202 usage-level roles (producer cells still unresolved):
@@ -1063,4 +1067,21 @@ return doInit_UI
 -- 这证明两个调用共享同一参数槽区间及顺序，但不能证明七槽业务名称、
 -- 值类型或最初生产者；缺少明确写槽证据前不命名、不改写。
 -- GUI.Attach_UITop的宿主实现/签名未随仓库迁移，七参数语义仍待外部证据。
+-- ---------------------------------------------------------------------------
+
+
+-- ---------------------------------------------------------------------------
+-- 检查点203：调用参数展开规则纠正及Nested_Anonymous调用链。
+-- U(T,A+1,B)按unpack(start,end)解释，B是结束下标，不是参数数量。
+-- 因此PC180/PC183的A=6、B=7只展开T[7]一个实参；两次调用传递同一T[7]。
+-- T[7]在本原型PC133的多返回值调用(OP_233 A=5 C=7)处被写入T[5]..T[7]；
+-- 这是调用前最后一个静态可见的T[7]写入点。其具体运行时值仍未确认。
+-- PC143的OP_339只写T[8]..T[9]，不改变T[7]。
+--
+-- Nested_Anonymous调用链：
+-- doInit_UI PC250创建root/43/12，捕获R[18]（Nested_Anonymous）为UP[0]；
+-- root/43/19 PC27以A=1、B=1调用该包装器，U(T,2,1)为空参数区间；
+-- root/43/12 PC11随后以A=0、B=2调用UP[0]，转发其T[1]..T[2]。
+-- 该链确认了调用端原型与转发位置，但不证明T[0]/T[1]/T[2]的值、
+-- 类型或业务映射；保留占位，不升级完整静态恢复。
 -- ---------------------------------------------------------------------------
