@@ -3,10 +3,9 @@
 -- Complete static reconstruction from corrected phase-3 disassembly.
 -- Only the first vararg is read; callers pass one path/file name.
 
-local function GetWritablePath(...)
+local function GetWritablePath(path)
     local fileUtils = cc.FileUtils:getInstance()
     local writablePath = fileUtils:getWritablePath()
-    local path = ...
 
     -- PC8 concatenates T[1] .. R2: writablePath .. path.
     return writablePath .. path
