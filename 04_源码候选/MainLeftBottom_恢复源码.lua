@@ -127,6 +127,17 @@ MainLeftBottomRecovered.prototype_index = {
   ["root.children[42]"] = { name="doInit_UI", status="first_pass_draft_revised_checkpoint_187_pending_attach_arguments_and_remaining_capture_review_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=419, runtime_verified=false },
   ["root.children[41]"] = { name="MoveItemToQuickUse", status="first_pass_ordinary_lua_body_draft_recovered_checkpoint_191_caller_arguments_closed_proxy_boolean_semantics_host_runtime_pending", source_file="04_源码候选/短函数草稿_第六十一批.lua", instructions=133, runtime_verified=false },
   ["root"] = { name="MainLeftBottom_Module", status="partial_ordinary_lua_draft", source_file="04_源码候选/root_MainLeftBottom_Module.lua", instructions=412, runtime_verified=false },
+  ["root.children[6].children[0]"] = { name="Nested_onDamageMsg", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第三十九批.lua", instructions=18, runtime_verified=false },
+  ["root.children[14]"] = { name="FindMonsterInCurrViewField", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第十三批.lua", instructions=27, runtime_verified=false },
+  ["root.children[34]"] = { name="AnonymousHelper_33", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua", instructions=7, runtime_verified=false },
+  ["root.children[42].children[3]"] = { name="Nested_FFFF00", status="ordinary_lua_draft_pending_host_semantics", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=320, runtime_verified=false },
+  ["root.children[42].children[18]"] = { name="Nested_Helper_10", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=39, runtime_verified=false },
+  ["root.children[49]"] = { name="AnonymousHelper_49", status="complete_static_reconstruction_not_runtime_verified", source_file="", instructions=5, runtime_verified=false },
+  ["root.children[51]"] = { name="FindBlacklistPlayer", status="complete_static_reconstruction_not_runtime_verified", source_file="", instructions=35, runtime_verified=false },
+  ["root.children[53]"] = { name="ScheduleOnce", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/verified_helpers_batches_1_3.lua", instructions=7, runtime_verified=false },
+  ["root.children[54]"] = { name="AnonymousHelper_54", status="complete_static_reconstruction_not_runtime_verified", source_file="", instructions=6, runtime_verified=false },
+  ["root.children[56]"] = { name="ClearTargetID_2", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/root56_root57_short_functions.lua", instructions=22, runtime_verified=false },
+
 }
 
 -- ============================================================================
