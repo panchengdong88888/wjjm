@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点255：先完成BlacklistPlayerDetection的13项捕获身份复核，再静态装配；T[57]必须是PC360创建并覆盖写入的InstallDamageHook live cell，T[58]为DeathAutoBlacklist；UP[1]不得错误绑定onDamageMsg。doInit_UI留到最后。",
+  "next_action": "检查点256：处理最后一个root.children[42] doInit_UI（20项捕获、23个子原型）。先核对PC390-PC410每个捕获寄存器生产者及模块字段/配置常量；按依赖顺序装配Nested_Helper_10、匿名UI回调与timer闭包，不能把未确认槽位强行命名或用nil函数填充。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2806,14 +2806,14 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "254",
+    "checkpoint": "255",
     "targets": [
-      "root.children[32] AnonymousHelper_32",
-      "root.children[33] AnonymousHelper_33"
+      "root.children[47] BlacklistPlayerDetection"
     ],
-    "status": "两个短闭包按准确原型路径装配：AnonymousHelper_32(T[46]=PCallHelper,T[42]=blacklistDistanceConfigFile)调用PCallHelper(fileName,arg1)；AnonymousHelper_33(T[45]=ReadNumericConfig,T[43]=gatherMonsterCountConfigFile)调用ReadNumericConfig(fileName)。累计34/36，剩余2；运行时验证0。",
-    "audit_file": "docs/audit/检查点254_匿名配置包装闭包装配.md",
-    "source_commit_sha": "4b5e169bdc9a42ed1af0ca97c83ddbadeedc9a10"
+    "status": "按PC368捕获顺序静态实例化13项：T2 MainLeftBottom模块表、T57 InstallDamageHook live-cell、T41 blacklistState、T58 DeathAutoBlacklist、T55 FindBlacklistPlayer、T53 GetMapData2DPtr、T38 2.0、T4 PrintLog、T56 UseItemByIndex、T39 0.01、T5 ShowLocalNoticeByType、T40 30.0、T37 randomTeleportItemNames。UP1通过rootCells[57].value读取同一InstallDamageHook闭包。累计35/36，剩余doInit_UI；运行时验证0。",
+    "audit_file": "docs/audit/检查点255_BlacklistPlayerDetection十三项捕获与T57_live_cell.md",
+    "source_commit_sha": "6f3965bebeff03b741f29d4e617cecf51c91d29b",
+    "candidate_commit_sha": "e97468aa3e86c00158b87b6da3f59e72ba00030d"
   },
   "corrections": [
     {
@@ -3535,31 +3535,31 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 254,
-  "checkpoint": 254,
+  "last_checkpoint": 255,
+  "checkpoint": 255,
   "drafts": 33,
-  "next": "检查点255：BlacklistPlayerDetection先核对root T[57] live-cell生产/覆盖生命周期（PC360 InstallDamageHook，PC368捕获）、T[58] DeathAutoBlacklist及其余11项稳定捕获；再按13项原顺序实例化。doInit_UI最后处理。",
+  "next": "检查点256：最后处理doInit_UI。核对20项捕获顺序[T4,T2,T3,T0,T1,T41,T48,T7,T8,T50,T49,T5,T44,T42,T51,T43,T47,T11,T12,T9]；已有工厂依赖优先复用，未恢复子原型保留显式缺失，不要制造空函数或伪造UI行为。",
   "recent_checkpoint": {
-    "number": 254,
+    "number": 255,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
+      "04_源码候选/root47_BlacklistPlayerDetection.lua",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
       "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点254_匿名配置包装闭包装配.md"
+      "docs/audit/检查点255_BlacklistPlayerDetection十三项捕获与T57_live_cell.md"
     ],
     "complete_static_reconstructions": 109,
     "ordinary_lua_drafts": 72,
     "runtime_verified": 0,
-    "captured_factory_bindings": 34,
-    "captured_factory_pending": 2,
-    "notes": "两个短匿名配置转发器按root T[46]/[42]及T[45]/[43]正确实例化；原型规范名称与候选函数名已按CSV及PC捕获映射区分。",
-    "source_commit_sha": "4b5e169bdc9a42ed1af0ca97c83ddbadeedc9a10"
+    "captured_factory_bindings": 35,
+    "captured_factory_pending": 1,
+    "notes": "完成BlacklistPlayerDetection的13项捕获静态装配，按PC360/368将UP1接入InstallDamageHook共享T57 cell；仅doInit_UI剩余。",
+    "source_commit_sha": "6f3965bebeff03b741f29d4e617cecf51c91d29b"
   },
-  "latest_checkpoint": 254,
+  "latest_checkpoint": 255,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3568,7 +3568,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 255,
+  "next_checkpoint": 256,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3726,12 +3726,11 @@
     "runtime_verified": false
   },
   "latest": {
-    "checkpoint": "254",
-    "summary": "完成root.children[32] AnonymousHelper_32与root.children[33] AnonymousHelper_33两个匿名转发工厂；分别捕获PCallHelper+blacklist_distance.txt，以及ReadNumericConfig+gather_monster_count.txt。累计34/36个有捕获工厂静态装配，剩余BlacklistPlayerDetection与doInit_UI，运行时验证0。",
-    "audit_file": "docs/audit/检查点254_匿名配置包装闭包装配.md",
+    "checkpoint": "255",
+    "summary": "完成BlacklistPlayerDetection的13项捕获工厂静态装配；特别修正UP1：按PC360/368将T[57]绑定到InstallDamageHook共享live-cell，而不是旧候选注释中的onDamageMsg。累计35/36，剩余仅doInit_UI，运行时验证0。",
+    "audit_file": "docs/audit/检查点255_BlacklistPlayerDetection十三项捕获与T57_live_cell.md",
     "unresolved": [
-      "2个有捕获直接子原型尚未装配：BlacklistPlayerDetection、doInit_UI",
-      "BlacklistPlayerDetection的T[57] live-cell与T[58]回调仍需按PC360/368独立复核",
+      "最后一个有捕获工厂doInit_UI尚未装配，包含20项捕获与23个子原型依赖",
       "运行时验证为0"
     ]
   },
@@ -3743,13 +3742,13 @@
     "capture_semantics": "OP_387 stores a live cell reference {parent_T_table, register_index}; the upvalue proxy __index/__newindex reads/writes the parent T register dynamically. Later parent writes are visible to closures."
   },
   "root_assembly": {
-    "checkpoint": 254,
+    "checkpoint": 255,
     "direct_child_closures_expected": 22,
     "bound_at_source_level": 22,
     "runtime_verified": false,
     "captured_factory_closures_expected": 36,
-    "captured_factory_closures_bound": 34,
-    "captured_factory_closures_pending": 2,
+    "captured_factory_closures_bound": 35,
+    "captured_factory_closures_pending": 1,
     "bound_factory_names": [
       "ShowLocalNoticeByType",
       "DiuItems",
@@ -3784,8 +3783,9 @@
       "onDamageMsg",
       "ClearBlacklistItems",
       "AnonymousHelper_32",
-      "AnonymousHelper_33"
+      "AnonymousHelper_33",
+      "BlacklistPlayerDetection"
     ],
-    "note": "22个无捕获直接子原型已接入；34个有捕获工厂已静态实例化。仅剩BlacklistPlayerDetection和doInit_UI两个有捕获工厂；所有绑定均未运行时验证。"
+    "note": "22个无捕获直接子原型已接入；35个有捕获工厂已静态实例化。BlacklistPlayerDetection.UP1通过rootCells[57]捕获PC360写入的InstallDamageHook；仅doInit_UI尚未装配。所有绑定均未运行时验证。"
   }
 }
