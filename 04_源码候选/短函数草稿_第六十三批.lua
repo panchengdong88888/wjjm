@@ -121,6 +121,90 @@ local function make_Nested_Helper_7(
     end
 end
 
+-- ---------------------------------------------------------------------------
+-- root.children[42].children[22] / Nested_Anonymous (第七十八批主体并入)
+-- 8条父原型指令；child0 Nested_str 27条；其内含4条 Nested_Helper_11。
+-- T[0]/T[1]/T[2]的具体来源仍未闭合，故明确保留占位，不作为可运行实现。
+-- ---------------------------------------------------------------------------
+local function make_Nested_Anonymous(PrintLog)
+    return function Nested_Anonymous(...)
+        -- The observed callers supply promptText and callbackClosure. Keep their
+        -- values visible, but do not assign them to T[0]/T[1]/T[2] without proof.
+        local argument1, argument2 = ...
+
+        -- TODO(checkpoint 201): T[0]/T[1]/T[2] capture-cell producers remain
+        -- unresolved. T[2] is invoked as the delayed error-notice callback.
+        local T0_SLOT_UNRESOLVED = nil
+        local T1_SLOT_UNRESOLVED = nil
+        local T2_SLOT_UNRESOLVED = nil
+
+        -- Child root.children[42].children[22].children[0] capture order:
+        -- UP[0] <- current T[0]
+        -- UP[1] <- current UP[0] (PrintLog)
+        -- UP[2] <- current T[2]
+        -- UP[3] <- current T[1]
+        local function Nested_str(...)
+            local optionalSuffix = ...
+
+            local dialogParams = {
+                btnType = 2,
+                showEdit = true,
+                editParams = {
+                    inputMode = 2,
+                    maxLength = 6,
+                },
+            }
+
+            local initialText = T0_SLOT_UNRESOLVED
+            if optionalSuffix then
+                initialText = initialText .. "\n" .. optionalSuffix
+            end
+            dialogParams.str = initialText
+
+            local function Nested_match(status, result)
+                if status ~= 1 then
+                    return
+                end
+
+                local editStr = result and result.editStr or ""
+                local normalized = tostring(editStr):gsub("%s", "")
+                local isDigits = string.match(normalized, "^%d+$")
+                local numericValue
+
+                if isDigits then
+                    numericValue = tonumber(normalized)
+                end
+
+                if numericValue then
+                    T1_SLOT_UNRESOLVED(numericValue)
+                    return
+                end
+
+                PrintLog(
+                    "%s：参数格式不对（%s）",
+                    initialText,
+                    tostring(editStr)
+                )
+
+                local function Nested_Helper_11()
+                    -- Existing child prototype; its sole capture is Nested_match UP[2].
+                    T2_SLOT_UNRESOLVED("参数格式不对，请输入数字")
+                end
+
+                SL:ScheduleOnce(Nested_Helper_11, 0.1)
+            end
+
+            dialogParams.callback = Nested_match
+            SL:OpenCommonTipsPop(dialogParams)
+        end
+
+        -- PC6-PC7 copy the just-created child closure and invoke it with zero args.
+        -- Therefore Nested_str's optional vararg suffix is absent on this path.
+        Nested_str()
+        return
+    end
+end
+
 local function make_Nested_StopGatherMonsters(
     timerState, notify, canStartGather, logNotice,
     openThresholdInput, applyGatherState
@@ -527,9 +611,9 @@ local function doInit_UI()
         UPVALUE_8, UPVALUE_9
     )
 
-    -- PC248：child22 Nested_Anonymous仅捕获UP0；其包装器主体仍待合并。
+    -- PC248：child22 Nested_Anonymous仅捕获UP0(PrintLog)；主体已并入上方工厂，T[0]/T[1]/T[2]仍待追踪。
     -- PC250-PC258：child11 Nested_Helper_4捕获[R18,UP10,UP11,UP0,UP12,UP13,R16,R15]。
-    local nestedAnonymous = make_Nested_Anonymous(UPVALUE_0) -- TODO: child22主体未合并
+    local nestedAnonymous = make_Nested_Anonymous(UPVALUE_0) -- child22主体已并入；三个T捕获槽仍是未解析占位
     local openBlacklistDistanceInput = make_Nested_Helper_4(
         nestedAnonymous, UPVALUE_10, UPVALUE_11, UPVALUE_0,
         UPVALUE_12, UPVALUE_13, blacklistTimerCallback, syncButtonState
