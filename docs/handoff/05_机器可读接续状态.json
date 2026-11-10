@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点248：按root T寄存器与OP_387捕获顺序，继续装配不依赖可变标量cell的工厂。优先核对GetAvailableStoragePage、GetStorageItemData、TakeItems、PickUpItems、StorageItems的表/代理捕获来源；任何标量状态捕获先实现显式cell读写适配，不得按值快照传入。",
+  "next_action": "检查点249：继续装配剩余稳定捕获工厂。优先处理root.children[23] Builtsetting（T[5]=ShowLocalNoticeByType）、root.children[8] FormatStateChange（PrintLog+currentState live cell需特殊处理）、root.children[26] ResetGatherMonsterData（9个捕获，含多个共享标量cell）。在进入MainLoop/doInit_UI前，先实现并验证通用live-cell适配接口。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2806,20 +2806,24 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "247",
+    "checkpoint": "248",
     "targets": [
-      "root.children[46] DiuItems factory binding",
-      "root.children[28] FindMonsterCandidates factory binding",
-      "MainLeftBottom_恢复源码.lua anonymous-function syntax correction"
+      "root.children[12] LuaSendMsg",
+      "root.children[36] GetAvailableStoragePage",
+      "root.children[1] GetStorageItemData",
+      "root.children[5] TakeItems",
+      "root.children[21] PickUpItems",
+      "root.children[50] StorageItems"
     ],
-    "status": "新增2个稳定捕获工厂的静态实例化；修正主汇总源码中19处非法命名匿名函数表达式。完整静态函数数不变，运行时验证仍为0。",
-    "audit_file": "docs/audit/检查点247_稳定捕获工厂绑定与源码语法校正.md",
+    "status": "新增6个稳定捕获工厂静态实例化；修正StorageItems嵌套工厂跨词法块引用；修正PickUpItems两个比较器子闭包作用域及匿名函数表达式。捕获工厂累计9/36，尚余27；运行时验证0。",
+    "audit_file": "docs/audit/检查点248_物品与仓库稳定捕获工厂装配.md",
     "findings": [
-      "DiuItems UP[0]=root T[2]=MainLeftBottom.z（isDiuing状态表），UP[1]=root T[5]=ShowLocalNoticeByType；ShowLocalNoticeByType自身捕获root T[0]=MainLeftBottom.a。",
-      "FindMonsterCandidates五个捕获按OP_387顺序绑定：GetPlayerPosition、IsDie、GetPlayerMapPosition、DistanceCalculation、gatherConfig。",
-      "MainLeftBottomRecovered.root_prototypes新增DiuItems与FindMonsterCandidates；DiuItems按字节码PC67导出全局_DiuItems。",
-      "其余34个有捕获直接子原型仍待装配；复杂共享标量cell尚未绑定。",
-      "19处return function Name(...)改为合法匿名函数表达式；不改变函数体控制流。"
+      "LuaSendMsg捕获MainLeftBottom.a与PrintLog，写入MainLeftBottom.a.LuaSendMsg，不导出为全局。",
+      "GetAvailableStoragePage与GetStorageItemData均捕获PrintLog并按字节码PC70/73导出。",
+      "TakeItems捕获MainLeftBottom.z与ShowLocalNoticeByType；PickUpItems捕获ShowLocalNoticeByType。",
+      "StorageItems捕获MainLeftBottom.z、PrintLog、ShowLocalNoticeByType；其两个嵌套原型工厂改为显式参数注入。",
+      "纠正检查点247捕获工厂统计遗漏：ShowLocalNoticeByType本身也计入，故检查点247时应为3/36，而不是2/36。",
+      "PickUpItems两个比较器局部闭包移动至父函数体内，避免Nested_dist在定义前被解析为全局。"
     ]
   },
   "corrections": [
@@ -3542,31 +3546,32 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 247,
-  "checkpoint": 247,
+  "last_checkpoint": 248,
+  "checkpoint": 248,
   "drafts": 33,
-  "next": "检查点248：从root.children[36] GetAvailableStoragePage与root.children[1] GetStorageItemData开始，先闭合T[4]捕获对象身份及其父root寄存器生产者；随后评估root.children[5] TakeItems、root.children[21] PickUpItems和root.children[50] StorageItems的稳定表/代理捕获。保留OP_387 live-cell语义；暂不绑定MainLoop(22项)、doInit_UI(20项)等含可变标量cell的复杂工厂。",
+  "next": "检查点249：先核对root.children[23] Builtsetting的单一T[5]捕获并接入；再评估root.children[8] FormatStateChange、root.children[26] ResetGatherMonsterData及root.children[19]/[27]采集启停闭包。所有捕获必须按OP_387共享cell语义，不能把currentState、计数器、标志等可变标量复制成普通值。",
   "recent_checkpoint": {
-    "number": 247,
+    "number": 248,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "04_源码候选/root28_FindMonsterCandidates.lua",
-      "04_源码候选/root46_DiuItems.lua",
+      "04_源码候选/短函数草稿_第六十批.lua",
+      "04_源码候选/PickUpItems_拾取流程_第十批.lua",
+      "04_源码候选/短函数草稿_第五十七批.lua",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
-      "docs/audit/检查点247_稳定捕获工厂绑定与源码语法校正.md"
+      "docs/audit/检查点248_物品与仓库稳定捕获工厂装配.md"
     ],
     "complete_static_reconstructions": 109,
     "ordinary_lua_drafts": 72,
     "runtime_verified": 0,
-    "captured_factory_bindings": 2,
-    "captured_factory_pending": 34,
-    "notes": "根模块结构账本覆盖PC1-PC412；本批新增2个稳定捕获工厂静态实例化。未进行目标Lua运行时验证。"
+    "captured_factory_bindings": 9,
+    "captured_factory_pending": 27,
+    "notes": "本批新增6个捕获工厂实例；ShowLocalNoticeByType计入捕获工厂总数，修正检查点247统计为3/36。"
   },
-  "latest_checkpoint": 247,
+  "latest_checkpoint": 248,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3575,7 +3580,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 248,
+  "next_checkpoint": 249,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3680,7 +3685,7 @@
     }
   ],
   "source_syntax_review": {
-    "named_function_expression_fixes": 48,
+    "named_function_expression_fixes": 49,
     "missing_end_fixes": 1,
     "explicit_capture_factories": [
       "MainLoop(22 captures)",
@@ -3733,12 +3738,13 @@
     "runtime_verified": false
   },
   "latest": {
-    "checkpoint": "247",
-    "summary": "在22个无捕获直接子原型绑定基础上，新增DiuItems与FindMonsterCandidates两个稳定捕获工厂的静态实例化；主汇总源码修正19处非法命名匿名函数表达式。捕获工厂累计2/36，尚余34；运行时验证0。",
-    "audit_file": "docs/audit/检查点247_稳定捕获工厂绑定与源码语法校正.md",
+    "checkpoint": "248",
+    "summary": "在根模块22个无捕获直接子原型绑定基础上，累计静态实例化9/36个有捕获工厂：ShowLocalNoticeByType、DiuItems、FindMonsterCandidates、LuaSendMsg、GetAvailableStoragePage、GetStorageItemData、TakeItems、PickUpItems、StorageItems。修正StorageItems嵌套工厂词法引用及PickUpItems比较器作用域。运行时验证0。",
+    "audit_file": "docs/audit/检查点248_物品与仓库稳定捕获工厂装配.md",
     "unresolved": [
-      "34个有捕获直接子原型尚未装配",
-      "含可变标量cell的闭包需要显式live-cell读写适配",
+      "27个有捕获直接子原型尚未装配",
+      "含可变标量cell的闭包需要live-cell读写适配",
+      "StorageItems仍为普通Lua草稿等级",
       "完整根模块仍非作者原文逐字恢复",
       "运行时验证为0"
     ]
@@ -3751,17 +3757,24 @@
     "capture_semantics": "OP_387 stores a live cell reference {parent_T_table, register_index}; the upvalue proxy __index/__newindex reads/writes the parent T register dynamically. Later parent writes are visible to closures."
   },
   "root_assembly": {
-    "checkpoint": 247,
+    "checkpoint": 248,
     "direct_child_closures_expected": 22,
     "bound_at_source_level": 22,
     "runtime_verified": false,
     "captured_factory_closures_expected": 36,
-    "captured_factory_closures_bound": 2,
-    "captured_factory_closures_pending": 34,
+    "captured_factory_closures_bound": 9,
+    "captured_factory_closures_pending": 27,
     "bound_factory_names": [
+      "ShowLocalNoticeByType",
       "DiuItems",
-      "FindMonsterCandidates"
+      "FindMonsterCandidates",
+      "LuaSendMsg",
+      "GetAvailableStoragePage",
+      "GetStorageItemData",
+      "TakeItems",
+      "PickUpItems",
+      "StorageItems"
     ],
-    "note": "22个无捕获直接子原型已接入；另有DiuItems与FindMonsterCandidates两个稳定捕获工厂已按OP_387顺序实例化。尚余34个捕获工厂待处理；所有绑定均未运行时验证。"
+    "note": "22个无捕获直接子原型已接入；9个有捕获直接子原型工厂已按OP_387顺序静态实例化，尚余27个。所有绑定均未运行时验证。"
   }
 }
