@@ -2975,13 +2975,18 @@
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
-      "README.md"
+      "README.md",
+      "04_源码候选/root46_DiuItems.lua",
+      "04_源码候选/root47_BlacklistPlayerDetection.lua",
+      "04_源码候选/短函数草稿_第六十三批.lua",
+      "04_源码候选/短函数草稿_第六十批.lua",
+      "04_源码候选/root28_FindMonsterCandidates.lua"
     ],
     "draft_prototypes_touched": 0,
     "draft_prototype_total": 72,
     "complete_static_reconstructions": 103,
     "runtime_verified": 0,
-    "notes": "将12份现有源码候选集中到MainLeftBottom_恢复源码.lua，原型索引按完整结构树补齐110项；新建框架API对照，区分脚本包装函数与宿主API。没有新增函数完成计数，未做运行时验证。"
+    "notes": "将12份现有源码候选集中到MainLeftBottom_恢复源码.lua，原型索引按完整结构树补齐110项；新建框架API对照，区分脚本包装函数与宿主API。没有新增函数完成计数，未做运行时验证。 另修正29处非法命名匿名函数写法，补Nested_Helper_3缺失end，并将doInit_UI 20项捕获显式工厂化；汇总稿及5份原候选通过词法块平衡检查，但未进行完整Lua编译。"
   },
   "drafts": 33,
   "next": "检查点213：继续把剩余源码候选逐批纳入MainLeftBottom_恢复源码.lua；优先补齐目前只有索引/审计、尚未进入集中源码的原型。随后继续把根模块PC42-PC412的闭包创建、捕获和导出从注释转成普通Lua；按新框架API对照复核接收者形式与参数数量。未闭合处保留TODO，不虚构实现。",
@@ -2995,17 +3000,22 @@
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
-      "README.md"
+      "README.md",
+      "04_源码候选/root46_DiuItems.lua",
+      "04_源码候选/root47_BlacklistPlayerDetection.lua",
+      "04_源码候选/短函数草稿_第六十三批.lua",
+      "04_源码候选/短函数草稿_第六十批.lua",
+      "04_源码候选/root28_FindMonsterCandidates.lua"
     ],
     "draft_prototypes_touched": 0,
     "draft_prototype_total": 72,
     "complete_static_reconstructions": 103,
     "runtime_verified": 0,
-    "notes": "将12份现有源码候选集中到MainLeftBottom_恢复源码.lua，原型索引按完整结构树补齐110项；新建框架API对照，区分脚本包装函数与宿主API。没有新增函数完成计数，未做运行时验证。"
+    "notes": "将12份现有源码候选集中到MainLeftBottom_恢复源码.lua，原型索引按完整结构树补齐110项；新建框架API对照，区分脚本包装函数与宿主API。没有新增函数完成计数，未做运行时验证。 另修正29处非法命名匿名函数写法，补Nested_Helper_3缺失end，并将doInit_UI 20项捕获显式工厂化；汇总稿及5份原候选通过词法块平衡检查，但未进行完整Lua编译。"
   },
   "latest_checkpoint": {
     "checkpoint": "212",
-    "summary": "集中整理12份源码候选，建立110原型索引，并核对新框架43份文档；确认GetMainPlayerID是脚本包装函数，底层控制器方法未在开发包文档中出现。",
+    "summary": "集中整理12份源码候选，建立110原型索引，并核对新框架43份文档；确认GetMainPlayerID是脚本包装函数，底层控制器方法未在开发包文档中出现。；另修复29处命名匿名函数写法及Nested_Helper_3缺失end，doInit_UI转为20项捕获工厂。",
     "audit_file": "docs/audit/检查点212_新框架API对照与恢复源码汇总.md",
     "unresolved": [
       "剩余源码候选尚未全部纳入汇总文件",
@@ -3013,7 +3023,8 @@
       "MainLoop及各工厂闭包尚未全部在根模块实例化",
       "FindMonsterCandidates调用接收者形式需对照PC窗口复核",
       "GUI.Attach_UITop文档签名与字节码实参数量存在差异",
-      "未进行Lua解释器语法检查或目标游戏运行时验证"
+      "未进行Lua解释器语法检查或目标游戏运行时验证",
+      "环境无lua/luac/Lua parser，当前仅通过词法块平衡检查，尚未完成完整Lua编译语法验证"
     ]
   },
   "complete_static_reconstruction_count": 103,
@@ -3066,5 +3077,25 @@
         "该文件不是最终可运行脚本；不增加72项草稿或103项静态恢复计数。"
       ]
     }
-  ]
+  ],
+  "source_syntax_review": {
+    "named_function_expression_fixes": 29,
+    "missing_end_fixes": 1,
+    "explicit_capture_factories": [
+      "MainLoop(22 captures)",
+      "doInit_UI(20 captures)",
+      "FindMonsterCandidates(5 dependencies)"
+    ],
+    "checked_files": [
+      "04_源码候选/MainLeftBottom_恢复源码.lua",
+      "04_源码候选/root46_DiuItems.lua",
+      "04_源码候选/root47_BlacklistPlayerDetection.lua",
+      "04_源码候选/短函数草稿_第六十三批.lua",
+      "04_源码候选/短函数草稿_第六十批.lua",
+      "04_源码候选/root28_FindMonsterCandidates.lua"
+    ],
+    "lexical_block_balance": "passed",
+    "full_lua_compiler_available": false,
+    "runtime_verified": false
+  }
 }
