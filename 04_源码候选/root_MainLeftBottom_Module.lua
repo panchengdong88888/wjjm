@@ -535,3 +535,40 @@ end
 -- 3. 不存在或未恢复的键不会被覆盖，也不会自动填入空函数。
 -- 4. 本接口只解决“已恢复闭包接回根模块”的装配问题；根模块PC1-PC412
 --    的完整逐语句源码重建仍未完成。
+
+
+-- ============================================================================
+-- 检查点237：高复用root寄存器值生命周期表（按OP_387 live cell语义）
+--
+-- 本节以corrected phase3 root反汇编的直接写入PC为边界。OP_387捕获父T表
+-- 与寄存器编号组成的live cell，因此捕获时必须读取该PC之前最后一次写入的值。
+-- 详细机器表：docs/handoff/12_根模块闭包装配表.json / register_value_timeline。
+--
+-- T[0]：PC1创建MainLeftBottom模块表并于PC2导出；PC3将寄存器T[0]改写为
+--       a配置表，PC5写入MainLeftBottom.a。后续捕获的都是a表，不是模块根表。
+-- T[1]：PC17临时构造Blocklist数组并于PC23写入a.Blocklist；PC24/26分别
+--       重置为SendHookList/RecvHookList并于PC25/27赋值；PC30最终重置为b表，
+--       PC32写入MainLeftBottom.b。所有闭包捕获都发生在PC30之后。
+-- T[2]：PC18的1.0先用于PC22构造Blocklist；PC31短暂读入模块表，PC33立即
+--       覆盖为z状态表，PC35写入MainLeftBottom.z，PC36-PC41初始化六个状态位。
+--       后续五个捕获点取得的均是z表。
+-- T[3]：PC19的9.0先用于Blocklist；PC42覆盖为新的timer-state表。后续五个
+--       捕获点都在PC42之后；业务角色沿用已复核的ShowHideAllButtons映射。
+-- T[4]：PC20的10.0先用于Blocklist；PC43创建PrintLog并写入T[4]，PC45导出
+--       _G.log。PC72 GetStorageItemData捕获的就是PrintLog，通知回调身份现已确定。
+-- T[5]：PC21的60000.0先用于Blocklist；PC44临时写入_G，PC46覆盖为
+--       ShowLocalNoticeByType闭包。后续十个捕获点均取得该通知回调。
+-- T[37]：PC212-PC270依次复用为多个临时闭包；PC275写入MainLeftBottom，
+--       PC280重置为空表，PC281-PC282构造{"随机传送石"}。PC356 UseItemByIndex
+--       和PC381 BlacklistPlayerDetection捕获的都是该一元素数组。
+-- T[41]：PC286创建黑名单状态表，PC287-PC293初始化lastAttacker=nil、
+--       lastHp=nil、deathHandled=false、alertAt=0、nextTryAt=0、
+--       noStoneWarned=false、distance=nil；PC294赋给MainLeftBottom.blacklist。
+--       五个捕获点共享此同一状态表。
+-- T[57]：PC327-PC349先作为八向数值表中的一个二元素子表{1,1}；
+--       PC357改写为onDamageMsg并于PC359存入MainLeftBottom.onDamageMsg；
+--       PC360再改写为InstallDamageHook。PC370的唯一捕获因此是
+--       BlacklistPlayerDetection.UP[1]=InstallDamageHook。
+--
+-- 本批已闭合9个高复用/关键寄存器的值生命周期与捕获时值；其余寄存器继续
+-- 按fanout与写入复用顺序复核。此表是根模块装配证据，不代表根模块整体完成。
