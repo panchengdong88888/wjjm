@@ -2921,3 +2921,15 @@ Nested_match：
 - 本批不新增函数静态完成数量；根模块字段/全局导出逐PC总账与PC1-PC412普通Lua装配仍未完成。
 - 下一步检查点241从root PC1-PC85建立模块字段和全局导出账本，再继续剩余29个寄存器生命周期。
 
+
+
+## 检查点 #241（2026-11-10）：root PC1-PC85模块字段与全局导出对账
+
+- 按corrected phase3反汇编root PC1-PC85逐PC核对模块根表创建、a/b/z字段赋值和闭包导出。
+- PC1创建MainLeftBottom根表，PC2导出_G.MainLeftBottom；PC3-PC5创建并挂入a表。
+- a字段：version="10000"；screenW/screenH来自SL:GetMetaValue；Blocklist={1.0,9.0,10.0,60000.0}；SendHookList/RecvHookList为空表；isHidden=true；hidebut=nil；PC51将LuaSendMsg闭包写入a.LuaSendMsg。
+- PC30-PC32创建b空表；PC33-PC35创建z表；PC36-PC41初始化六个false状态字段。
+- PC43-PC85闭合PrintLog、ShowLocalNoticeByType、LuaSendMsg、ScheduleOnce、Schedule、GetMapId、GetMapName、PlayerPos、GetDroppedItems、MoveTo、DiuItems、GetAvailableStoragePage、GetStorageItemData、StorageItems、TakeItems、PickUpItems的创建/捕获/导出时序。
+- 确认13项全局导出：_G.MainLeftBottom、_G.log、_G.GetMapId、_G.GetMapName、_G.PlayerPos、_G.GetDroppedItems、_G.MoveTo、_G.DiuItems、_G.GetAvailableStoragePage、_G.GetStorageItemData、_G.StorageItems、_G.TakeItems、_G.PickUpItems。LuaSendMsg写入MainLeftBottom.a字段，不是全局导出；ShowLocalNoticeByType、ScheduleOnce、Schedule在本区间未导出。
+- 静态完整109/110，运行时验证0；本批没有新增函数静态恢复数量。
+- 下一步检查点242继续root PC86-PC211模块字段/闭包/导出对账，并继续剩余29个父寄存器生命周期。
