@@ -1162,7 +1162,7 @@ do
 
 local function make_BlacklistPlayerDetection(
     featureState,
-    onDamageMsg,
+    installDamageHook,
     blacklistState,
     onDeathAutoBlacklist,
     findBlacklistActor,
@@ -1177,7 +1177,7 @@ local function make_BlacklistPlayerDetection(
 )
     local function BlacklistPlayerDetection()
         featureState.isBlacklisting = true
-        onDamageMsg()
+        installDamageHook()
 
         local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
         if not mainActorID then
