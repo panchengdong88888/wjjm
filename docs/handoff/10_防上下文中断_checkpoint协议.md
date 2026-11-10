@@ -2574,3 +2574,11 @@ Nested_match：
 - 对照发现两个待核对差异：FindMonsterCandidates候选点调用与文档冒号签名不同；GUI.Attach_UITop文档为零参而检查点208字节码窗口有一个显式实参。两处均未凭猜测修改。
 - 本批不新增函数完成计数：普通Lua草稿72、完整静态恢复103、运行时验证0。
 - 下一批：继续将剩余源码候选纳入汇总稿，优先完成根模块PC42-PC412的普通Lua闭包创建/捕获/导出，再按开发包核对调用形式。
+
+
+### 检查点212补充：候选源码语法规范化
+- 汇总稿中发现并修正29处 `return function Name(...)` 非法命名匿名函数表达式，改为局部命名函数定义并显式返回闭包；同步修正 root46_DiuItems、root47_BlacklistPlayerDetection、短函数草稿第六十三批、第六十批及 root28_FindMonsterCandidates 原候选。
+- 修复第六十三批 `make_Nested_Helper_3` 缺少的工厂闭合 `end`。
+- 将 `doInit_UI` 20项父捕获改为显式 `make_doInit_UI(UPVALUE_0,...,UPVALUE_19)` 工厂，按已确认的捕获顺序构造恢复适配层UP表。
+- 汇总稿和5份受影响原候选通过词法块平衡检查；当前环境无Lua/luac或Lua parser，不能声称已完成完整Lua编译验证。
+- 函数计数不变：普通Lua草稿72、完整静态恢复103、运行时验证0。
