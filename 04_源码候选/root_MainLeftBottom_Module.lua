@@ -2,8 +2,8 @@
 -- 原型：root / MainLeftBottom_Module
 -- 规范路径：root
 -- 规模：412条物理指令、109常量、58个直接子原型
--- 检查点192：仅恢复并整理PC1-PC41；不是完整根模块源码。
--- 状态：分段普通Lua草稿；已整理PC1-PC200中的已闭合片段，PC201-PC412仍待恢复；未运行时验证。
+-- 检查点192-197：根模块分段普通Lua草稿，已整理PC1-PC340中的已闭合片段；PC341-PC412仍待恢复。
+-- 状态：不是完整根模块源码，尚未运行时验证。
 
 local MainLeftBottom = {}
 _G.MainLeftBottom = MainLeftBottom
@@ -201,3 +201,73 @@ local resetSlot22 = ""
 -- PC269：将闭包R37写入当前模块表的show字段。
 -- PC270：创建root.children[40] / ShowHideAllButtons，捕获数3；
 -- 后续捕获描述跨出本批范围，留待下一检查点继续核对（PC271起）。
+
+
+-- 检查点197：PC271-PC340，UI导出、账号验证闭包、黑名单状态及配置初始化。
+-- PC271-PC273：ShowHideAllButtons（root.children[40]）的三个捕获描述，
+-- 按序捕获父root T[3]、T[1]、T[0]；对应定时器状态、按钮映射表、UI状态对象。
+-- 该顺序与子函数已静态恢复的UPVALUE[0..2]一致。
+-- PC274：将该闭包写入模块表的destroy字段（R0为MainLeftBottom模块表）。
+-- 因此当前已确认模块表的hide/show/destroy三个字段分别在PC265/269/274写入。
+
+-- PC275：重新读取_ENV.MainLeftBottom。
+-- PC276-PC278：创建root.children[55] / AccountIDValidation，捕获父root T[4]与T[5]；
+-- 即PrintLog与ShowLocalNoticeByType两个已建立的回调闭包。
+-- PC279：将AccountIDValidation闭包写入MainLeftBottom.main字段。
+-- 这里仅记录字段赋值和捕获关系，不推断main字段是否为唯一入口或具体触发时机。
+
+-- PC280-PC282：构造单元素名称数组，内容为“随机传送石”。
+-- 该数组后续在PC355-PC356被捕获给root.children[24] / UseItemByIndex。
+local randomTeleportItemNames = { "随机传送石" }
+
+-- PC283-PC285：装载三个数值常量：2.0、0.01、30.0。
+-- 它们在PC368-PC381被BlacklistPlayerDetection按UPVALUE[6]/[9]/[11]捕获；
+-- 机器状态与闭包映射已将其用途分别记录为节流阈值、短重试延迟、无道具重试延迟。
+local blacklistAlertThreshold = 2.0
+local blacklistShortRetryDelay = 0.01
+local blacklistNoItemRetryDelay = 30.0
+
+-- PC286-PC293：创建黑名单运行状态表并初始化字段。
+-- PC294将同一表写入MainLeftBottom.blacklist；root.children[47] BlacklistPlayerDetection
+-- 后续捕获该表为UPVALUE[2]，onDamageMsg也共享同一状态表。
+local blacklistState = {
+    lastAttacker = nil,   -- VM dump 的 ["unknown",2] 是 nil 序列化标记
+    lastHp = nil,
+    deathHandled = false,
+    alertAt = 0.0,
+    nextTryAt = 0.0,
+    noStoneWarned = false,
+    distance = nil
+}
+
+-- PC295-PC296：两个配置文件名常量。
+local blacklistDistanceConfigFile = "blacklist_distance.txt"
+local gatherMonsterCountConfigFile = "gather_monster_count.txt"
+
+-- PC297：创建root.children[2] / GetWritablePath（无捕获）。
+-- PC298-PC299：创建root.children[9] / ReadNumericConfig，捕获R44=GetWritablePath。
+-- PC300-PC301：创建root.children[17] / PCallHelper，捕获同一R44；
+-- 子原型及其嵌套写文件回调的完整语义见函数状态CSV和既有审计。
+-- PC302-PC303：创建root.children[0] / FileExistCheck_pcall_wrapper，捕获R44。
+-- 上述三个闭包捕获的是同一父帧寄存器值；此处不把捕获描述重复写成普通业务调用。
+
+-- PC304-PC306：创建root.children[49] / AnonymousHelper_49；
+-- UPVALUE[0]=R45（ReadNumericConfig闭包），UPVALUE[1]=R42（blacklist_distance.txt）。
+-- 该辅助闭包调用ReadNumericConfig并转发结果，细节见检查点178。
+
+-- PC307-PC309：创建root.children[32]，捕获R46与R42。
+-- PC310-PC312：创建root.children[33]，捕获R45与R43。
+-- 这两个短闭包的寄存器捕获关系按物理PC记录；其槽位用途不在本批扩大推断。
+-- PC313-PC315：创建root.children[54] / AnonymousHelper_54；
+-- UPVALUE[0]=R46（PCallHelper），UPVALUE[1]=R43（gather_monster_count.txt）。
+-- 其调用参数顺序及多返回值转发已由检查点125闭合。
+
+-- PC316-PC340：开始构造R52所指向的二维数值表。
+-- 已观察到六个二元素子表依次由寄存器构造：
+--   {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}。
+-- 本段只记录字节码直接构造出的数值，不擅自赋予方向、坐标偏移等业务含义。
+-- PC341-PC348还需补齐后两个二元素子表，PC349再组装外层八项数组；
+-- 因此本检查点不将R52标记为完整初始化。
+-- PC350将R52捕获给root.children[22]；该函数UPVALUE在其活动路径中未读取
+-- （检查点184），不据此推断该表参与距离计算。
+
