@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点253：继续处理剩余9个有捕获工厂，优先复核Blacklist相关依赖链：DeathAutoBlacklist、onDamageMsg、ClearBlacklistItems、BlacklistPlayerDetection；先确保InstallDamageHook、FindBlacklistPlayer、PCallHelper_2、ShowLocalNoticeByType及blacklistState等捕获来源身份一致，再处理T[57] live-cell覆盖关系。",
+  "next_action": "检查点254：处理剩余4个有捕获工厂。先复核root.children[32]/[33]两个匿名包装器的规范原型名与捕获顺序；再对BlacklistPlayerDetection逐槽核对PC360覆盖T[57]=InstallDamageHook、T[58]=DeathAutoBlacklist以及T[41]/[55]/[53]/[38]/[4]/[56]/[39]/[5]/[40]/[37]生产者；doInit_UI放最后，因其20项捕获和23个子原型依赖最多。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2806,20 +2806,17 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "252",
+    "checkpoint": "253",
     "targets": [
-      "root.children[9] ReadNumericConfig",
-      "root.children[17] PCallHelper",
-      "root.children[0] FileExistCheck_pcall_wrapper",
-      "root.children[22] GetMapData2DPtr",
-      "root.children[51] FindBlacklistPlayer",
-      "root.children[24] UseItemByIndex"
+      "root.children[49] AnonymousHelper_49",
+      "root.children[54] AnonymousHelper_54",
+      "root.children[25] DeathAutoBlacklist",
+      "root.children[52] onDamageMsg",
+      "root.children[15] ClearBlacklistItems"
     ],
-    "status": "六个工厂静态实例化；前三者严格复用rootPrototypes.GetWritablePath同一函数引用；GetMapData2DPtr传入rootSource.opaquePairTable（其活动路径不读取）；FindBlacklistPlayer复用rootPrototypes.PCallHelper_2；UseItemByIndex复用rootSource.randomTeleportItemNames。累计27/36，剩余9；运行时验证0。",
-    "audit_file": "docs/audit/检查点252_稳定捕获辅助闭包装配.md",
-    "source_commit_sha": "928f00f5402b73a082d316d95906305b1dabda9e",
-    "standalone_mainloop_commit_sha": "4ea81ee6b5722a479e033cf3dd91fc61cbd50322",
-    "syntax_correction": "GetMapData2DPtr与MainLoop的return function Name(...)已改为return function(...)；只做文本核对，未运行Lua编译器。"
+    "status": "五个工厂已静态实例化；匿名包装器按R45/R42与R46/R43传入；DeathAutoBlacklist按[T41,T4,T55,T5]；onDamageMsg按[T41]并挂模块字段；ClearBlacklistItems按[T54,T4,T5,T41]并导出全局。MainLeftBottom.blacklist与rootSource.blacklistState确认同一表对象。累计32/36，剩余4；运行时验证0。",
+    "audit_file": "docs/audit/检查点253_黑名单前置闭包与配置包装器装配.md",
+    "source_commit_sha": "4739332add6824848a92429a073150ac3568db1a"
   },
   "corrections": [
     {
@@ -3541,31 +3538,34 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 252,
-  "checkpoint": 252,
+  "last_checkpoint": 253,
+  "checkpoint": 253,
   "drafts": 33,
-  "next": "检查点253：先装配DeathAutoBlacklist与onDamageMsg/ClearBlacklistItems等可由已绑定稳定函数/表完成的闭包；随后复核BlacklistPlayerDetection 13项捕获。T[57]必须按PC360覆盖为InstallDamageHook的live cell，不能绑定成onDamageMsg；T[58]为DeathAutoBlacklist。",
+  "next": "检查点254：不要按旧注释把BlacklistPlayerDetection.UP1接到onDamageMsg。机器寄存器账本显示PC360将InstallDamageHook写入T[57]，PC368捕获的是该live cell；UP3=T[58] DeathAutoBlacklist。先复核两个AnonymousHelper命名错位，再完成BlackList检测闭包；doInit_UI最后处理。",
   "recent_checkpoint": {
-    "number": 252,
+    "number": 253,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
+      "04_源码候选/root_MainLeftBottom_Module.lua",
+      "04_源码候选/root25_DeathAutoBlacklist.lua",
+      "04_源码候选/root52_onDamageMsg.lua",
+      "04_源码候选/短函数草稿_第五十四批.lua",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
       "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点252_稳定捕获辅助闭包装配.md"
+      "docs/audit/检查点253_黑名单前置闭包与配置包装器装配.md"
     ],
     "complete_static_reconstructions": 109,
     "ordinary_lua_drafts": 72,
     "runtime_verified": 0,
-    "captured_factory_bindings": 27,
-    "captured_factory_pending": 9,
-    "notes": "本批装配六个稳定捕获工厂；GetWritablePath同一函数引用、PCallHelper_2和两个根模块捕获表均按原顺序注入；完整静态恢复计数不变。；检查点252补正GetMapData2DPtr和MainLoop匿名函数表达式语法。",
-    "source_commit_sha": "928f00f5402b73a082d316d95906305b1dabda9e",
-    "standalone_mainloop_commit_sha": "4ea81ee6b5722a479e033cf3dd91fc61cbd50322"
+    "captured_factory_bindings": 32,
+    "captured_factory_pending": 4,
+    "notes": "装配五个配置/黑名单前置工厂；补齐PC294 MainLeftBottom.blacklist同一表赋值；PC359 onDamageMsg模块字段与PC388 ClearBlacklistItems全局导出按字节码接入。",
+    "source_commit_sha": "4739332add6824848a92429a073150ac3568db1a"
   },
-  "latest_checkpoint": 252,
+  "latest_checkpoint": 253,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3574,7 +3574,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 253,
+  "next_checkpoint": 254,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3732,12 +3732,12 @@
     "runtime_verified": false
   },
   "latest": {
-    "checkpoint": "252",
-    "summary": "继续装配六个稳定捕获工厂：ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper共用T[44] GetWritablePath；GetMapData2DPtr保留T[52]捕获（活动路径不读取）；FindBlacklistPlayer捕获PCallHelper_2；UseItemByIndex捕获T[37]随机传送物品名表。累计27/36个有捕获工厂静态装配，运行时验证0。；并修正GetMapData2DPtr与MainLoop候选中的命名匿名函数表达式，恢复为合法Lua匿名函数语法。",
-    "audit_file": "docs/audit/检查点252_稳定捕获辅助闭包装配.md",
+    "checkpoint": "253",
+    "summary": "完成AnonymousHelper_49、AnonymousHelper_54、DeathAutoBlacklist、onDamageMsg、ClearBlacklistItems五个捕获工厂静态实例化；共享blacklistState从根模块同一词法块导出，并按PC294挂入MainLeftBottom.blacklist，onDamageMsg按PC359挂入MainLeftBottom.onDamageMsg，ClearBlacklistItems按PC388导出全局。累计32/36，运行时验证0。",
+    "audit_file": "docs/audit/检查点253_黑名单前置闭包与配置包装器装配.md",
     "unresolved": [
-      "9个有捕获直接子原型尚未装配",
-      "完整根模块仍非作者原文逐字恢复",
+      "4个有捕获直接子原型尚未装配：AnonymousHelper_32、AnonymousHelper_33、BlacklistPlayerDetection、doInit_UI",
+      "BlacklistPlayerDetection的T[57]/T[58]捕获仍需独立复核后装配",
       "运行时验证为0"
     ]
   },
@@ -3749,13 +3749,13 @@
     "capture_semantics": "OP_387 stores a live cell reference {parent_T_table, register_index}; the upvalue proxy __index/__newindex reads/writes the parent T register dynamically. Later parent writes are visible to closures."
   },
   "root_assembly": {
-    "checkpoint": 252,
+    "checkpoint": 253,
     "direct_child_closures_expected": 22,
     "bound_at_source_level": 22,
     "runtime_verified": false,
     "captured_factory_closures_expected": 36,
-    "captured_factory_closures_bound": 27,
-    "captured_factory_closures_pending": 9,
+    "captured_factory_closures_bound": 32,
+    "captured_factory_closures_pending": 4,
     "bound_factory_names": [
       "ShowLocalNoticeByType",
       "DiuItems",
@@ -3783,8 +3783,13 @@
       "FileExistCheck_pcall_wrapper",
       "GetMapData2DPtr",
       "FindBlacklistPlayer",
-      "UseItemByIndex"
+      "UseItemByIndex",
+      "AnonymousHelper_49",
+      "AnonymousHelper_54",
+      "DeathAutoBlacklist",
+      "onDamageMsg",
+      "ClearBlacklistItems"
     ],
-    "note": "22个无捕获直接子原型已接入；27个有捕获工厂已静态实例化。T[14..22]共享cell、UI共享表引用保持；T[44]三个工厂复用同一GetWritablePath函数；所有绑定均未运行时验证。"
+    "note": "22个无捕获直接子原型已接入；32个有捕获工厂已静态实例化。blacklistState同一表对象导出并挂入MainLeftBottom.blacklist；onDamageMsg挂入模块字段；所有绑定均未运行时验证。"
   }
 }
