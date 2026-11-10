@@ -3196,3 +3196,15 @@ Nested_match：
 - 更新：`04_源码候选/MainLeftBottom_恢复源码.lua`、`02_基础索引/03_函数状态清单.csv`、`docs/handoff/05_机器可读接续状态.json`、`docs/handoff/13_原型结构树.md`及本协议。
 - 静态恢复仍为109/110，普通Lua草稿72，根直接闭包源码层绑定58/58，运行时验证0；未执行Lua解释器/luac。
 - 下一步检查点262：核查PC1-PC42初始化代码的源码注册及词法作用域，随后继续把PC43-PC412分段闭包/字段/导出整理为连续恢复适配执行体，不将其冒充作者原始逐字源码。
+
+
+## 检查点 #262（2026-11-10）：PC1-PC42根模块初始化顺序恢复
+
+- 依据`docs/handoff/12_根模块闭包装配表.json`的`register_value_timeline`与`root_complete_module_ledger`，将根模块PC1-PC42从概括式表构造改为按寄存器时间线顺序的Lua恢复适配语句。
+- PC1创建模块表、PC2写入`_G.MainLeftBottom`；PC3创建a表、PC5挂入根表；PC6/11/16依次写入version/screenW/screenH。SCREEN_WIDTH/SCREEN_HEIGHT继续使用开发文档明确的`SL:GetMetaValue(...)`冒号调用。
+- PC17-PC23构造Blocklist并挂入a；PC24-PC25、PC26-PC27分别创建并挂入SendHookList/RecvHookList；PC28-PC29写入isHidden=true/hidebut=nil。
+- PC30创建b表，PC31重新读取`_G.MainLeftBottom`，PC32挂入b；PC33创建z表，PC35挂入z；PC36-PC41按序初始化六个false状态字段；PC42创建timerState。
+- 重要寄存器身份：T[0]在PC3从模块根表覆写为a表；T[1]经历Blocklist/SendHookList/RecvHookList后在PC30成为b表；T[2]在PC31临时读取模块根表、PC33覆写为z表；T[3]在PC42成为timerState。后续闭包捕获均按这些最终身份注入。
+- 已同步`04_源码候选/root_MainLeftBottom_Module.lua`与`04_源码候选/MainLeftBottom_恢复源码.lua`中的内嵌root段。新建审计`docs/audit/检查点262_PC1-PC42根模块初始化顺序恢复.md`。
+- 结构树110/110；完整静态恢复109/110；普通Lua草稿72；根直接闭包58/58源码层绑定；运行时验证0。未执行Lua解释器/luac，未进行游戏宿主运行验证。
+- 下一步检查点263：将PC43-PC85闭包创建、OP_387捕获、寄存器复用、全局导出和a.LuaSendMsg字段写入转为连续恢复适配语句，重点按时间线核对T[4]/T[5]/T[6]/T[8]复用；不重复反汇编子函数主体。
