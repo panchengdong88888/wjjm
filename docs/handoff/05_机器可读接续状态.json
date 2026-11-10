@@ -3542,17 +3542,17 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 267,
-  "checkpoint": 267,
+  "last_checkpoint": 268,
+  "checkpoint": 268,
   "drafts": 33,
-  "next": "检查点268：最后核对PC390-PC412的doInit_UI 20项捕获、PC411模块字段写入和PC412根表返回；交叉核对全局导出21项与模块字段10项的PC位置，确认没有提前写入、漏写、重复导出或返回恢复注册容器。doInit_UI子函数主体已完整静态恢复，本批只核对父级装配。",
+  "next": "检查点269：对整个MainLeftBottom_恢复源码.lua做结构/语法层静态审计：检查do/end配对、来源注册词法块、重复导出、重复模块字段写入、未使用的局部适配变量、残留过时PC注释；探测可用Lua解释器/语法工具。若环境没有Lua/luac，明确记录未能编译，不得把静态审计标成运行时验证。",
   "recent_checkpoint": {
-    "number": 267,
+    "number": 268,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "04_源码候选/root_MainLeftBottom_Module.lua",
-      "docs/audit/检查点267_PC350-PC388黑名单闭包链与T57身份恢复.md",
+      "docs/audit/检查点268_PC390-PC412最终UI入口导出账本与根模块返回校验.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
@@ -3564,7 +3564,7 @@
     "runtime_verified": 0,
     "root_direct_closures_source_bound": 58,
     "root_direct_closures_expected": 58,
-    "notes": "PC350-PC388黑名单链按捕获顺序装配；onDamageMsg与InstallDamageHook保持不同函数身份，T[57] live cell保存InstallDamageHook并由BlacklistPlayerDetection捕获。T[52]数值表逐项断言；必需工厂均受requireRecoveredClosure保护。PC382/388导出及模块字段挂接均增加身份断言。未执行Lua编译或游戏运行验证。"
+    "notes": "PC390 doInit_UI创建点、PC391-PC410 20项捕获顺序、PC411模块doInit字段写入、PC412返回根表已核对；21项全局导出与26条模块/嵌套字段账本复核，其中根表直接字段10项。未执行Lua编译/游戏运行验证。"
   },
   "latest_checkpoint": 261,
   "complete_static_reconstruction_count": 109,
@@ -3575,7 +3575,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 268,
+  "next_checkpoint": 269,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3738,12 +3738,13 @@
     "root_pc212_pc296_module_fields": "static_pc_timeline_aligned",
     "root_pc297_pc315_register_order": "static_pc_timeline_aligned",
     "root_pc350_pc388_capture_identity": "static_pc_timeline_aligned",
-    "root_pc350_pc388_blacklist_chain": "static_pc_timeline_aligned"
+    "root_pc350_pc388_blacklist_chain": "static_pc_timeline_aligned",
+    "root_pc390_pc412_capture_and_return": "static_pc_timeline_aligned"
   },
   "latest": {
-    "checkpoint": "267",
-    "summary": "PC350-PC388黑名单闭包链已按PC顺序保护：GetMapData2DPtr捕获T[52]；PCallHelper_2→FindBlacklistPlayer；UseItemByIndex捕获随机传送物品表；PC357 onDamageMsg写入MainLeftBottom.onDamageMsg；PC360 InstallDamageHook写入T[57]独立live cell；DeathAutoBlacklist与BlacklistPlayerDetection按捕获顺序装配；PC382/388导出BlacklistItems/ClearBlacklistItems。增加T[52]八组二元表逐项断言、T[57]唯一cell和InstallDamageHook身份断言、onDamageMsg与InstallDamageHook区分断言，以及模块字段/全局导出身份断言。doInit_UI必需工厂也增加保护。",
-    "audit_file": "docs/audit/检查点267_PC350-PC388黑名单闭包链与T57身份恢复.md",
+    "checkpoint": "268",
+    "summary": "PC390-PC412最终UI入口与模块返回已核对。doInit_UI在PC390创建，PC391-PC410按20项父T寄存器顺序捕获；PC411写入MainLeftBottom.doInit并增加身份断言；PC412返回MainLeftBottom根模块表。全局导出账本21项逐PC复核；模块字段账本26条，其中根表直接字段10项、a/z嵌套字段15项，另含PC2根表导出记录。保留PC275重读_ENV.MainLeftBottom语义。恢复注册容器不外泄为原模块或全局变量。",
+    "audit_file": "docs/audit/检查点268_PC390-PC412最终UI入口导出账本与根模块返回校验.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3803,11 +3804,12 @@
     "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。",
     "checkpoint261_gather_status_scope_fixed": true
   },
-  "root_assembly_checkpoint": 267,
+  "root_assembly_checkpoint": 268,
   "root_pc1_pc42_sequential_source_restored": true,
   "root_pc43_pc85_register_ordered": true,
   "root_pc86_pc211_cells_capture_ordered": true,
   "root_pc212_pc296_module_fields_guarded": true,
   "root_pc297_pc315_config_registers_ordered": true,
-  "root_pc350_pc388_blacklist_chain_guarded": true
+  "root_pc350_pc388_blacklist_chain_guarded": true,
+  "root_pc390_pc412_final_export_return_checked": true
 }
