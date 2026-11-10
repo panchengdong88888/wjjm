@@ -7181,17 +7181,18 @@ do
     end
 
     -- 检查点255：BlacklistPlayerDetection的13项捕获按root PC368顺序注入。
-    -- T[57]是PC360刚写入的InstallDamageHook闭包；以唯一cell包装后传入UP1，
-    -- 不得将旧候选注释中的onDamageMsg误接到此槽。
-    rootCells[57] = newLiveCell(rootPrototypes.InstallDamageHook)
+    -- UP[0]=root T[2]=MainLeftBottom.z状态表；UP[1]=PC360写入T[57]的
+    -- InstallDamageHook闭包（PC368捕获时该寄存器值已确定）；UP[2]=共享blacklistState。
+    -- T[57]在捕获前已覆盖，且后续无再写入，故此处传入其函数值，不传cell包装表。
+    -- 特别注意：不能将UP[0]误接为整个MainLeftBottom模块表，也不能将UP[1]接成onDamageMsg。
     local makeBlacklistPlayerDetection = sourceFunction(
         "04_源码候选/root47_BlacklistPlayerDetection.lua",
         "make_BlacklistPlayerDetection"
     )
     if makeBlacklistPlayerDetection then
         rootPrototypes.BlacklistPlayerDetection = makeBlacklistPlayerDetection(
-            rootModule,
-            rootCells[57],
+            rootModule.z,
+            rootPrototypes.InstallDamageHook,
             rootSource.blacklistState,
             rootPrototypes.DeathAutoBlacklist,
             rootPrototypes.FindBlacklistPlayer,
