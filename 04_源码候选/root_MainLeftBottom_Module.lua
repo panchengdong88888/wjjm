@@ -69,7 +69,7 @@ local timerState = {}
 -- 本段没有观察到其全局导出，暂不臆测其最终持有位置。
 -- PC48-PC51：创建 root.children[12] LuaSendMsg 闭包，捕获父 T[0]、T[4]，
 -- 并将该闭包写入 PC3-PC5 创建的 MainLeftBottom.a.LuaSendMsg。
--- PC52-PC54：依次创建 ScheduleOnce、Schedule、GetMapId 三个闭包；
+-- PC52-PC53：创建 ScheduleOnce、Schedule；PC54创建GetMapId；
 -- GetMapId 在 PC55 导出为全局 GetMapId。ScheduleOnce/Schedule 在此段未见全局赋值。
 -- PC56-PC63：创建并导出全局 GetMapName、PlayerPos、GetDroppedItems、MoveTo。
 -- PC64-PC67：创建 root.children[46] DiuItems，按捕获描述捕获父 T[2]、T[5]，
@@ -85,7 +85,16 @@ local timerState = {}
 -- PC83-PC85：创建 root.children[21] PickUpItems，捕获父 T[5]，
 -- 并导出为全局 PickUpItems。
 --
--- 注意：OP_387 后续记录是闭包捕获描述，不是独立业务语句。
+-- 检查点263：主恢复稿装配段以rootRegisters影子表显式模拟T[4..8]的复用：
+-- T[4]=PrintLog；T[5]先为_G（PC44/45写_G.log），PC46后为ShowLocalNoticeByType；
+-- T[6]先为LuaSendMsg并于PC51写入a.LuaSendMsg，PC52再覆写为ScheduleOnce；
+-- T[7]=Schedule；T[8]按PC54/56/58/60/62/64/68/71/74/79/83依次复用为
+-- GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems/
+-- GetAvailableStoragePage/GetStorageItemData/StorageItems/TakeItems/PickUpItems，
+-- 每次全局导出均在下一次T[8]覆写前完成。
+-- rootRegisters是恢复适配影子表，不是原作者源码中的真实table。
+--
+-- 注意：OP_387后续记录是闭包捕获描述，不是独立业务语句。
 -- 所有子原型实现均保留在各自源码文件；本根模块只记录闭包创建、
 -- 捕获顺序和导出位置。
 
