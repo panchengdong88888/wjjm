@@ -1088,3 +1088,11 @@ return doInit_UI
 -- 该链确认了调用端原型与转发位置，但不证明T[0]/T[1]/T[2]的值、
 -- 类型或业务映射；保留占位，不升级完整静态恢复。
 -- ---------------------------------------------------------------------------
+
+
+-- Checkpoint 205: T[6] producer narrowed to doInit_UI PC90 OP_359.
+-- PC90 calls the function in R4 with the single argument T[5] and stores returns in T[4..T[6]].
+-- PC133 later reads T[6] as its sole argument to ipairs. No explicit T[6] write was found
+-- between PC90 and PC133. Thus T[6] is PC90's third return value, not an arbitrary stale slot.
+-- If ENV.ipairs has standard Lua semantics and the call completes, its third return is 0;
+-- the concrete host/runtime value is not promoted to verified without confirming ENV.ipairs.
