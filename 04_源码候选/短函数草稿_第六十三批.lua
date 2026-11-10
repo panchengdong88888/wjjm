@@ -1,7 +1,7 @@
 --[[
 函数：doInit_UI | 原型索引52 | root.children[42] | legacy root/43
 物理指令419 | 常量105 | 子原型23 | vararg_flag=0
-首版普通Lua草稿；未运行时验证。父级捕获身份、GUI融合参数、ScheduleOnce参数及子闭包契约待复核。
+普通Lua草稿（检查点187修订）；未运行时验证。已修正资源快照键与来源、Schedule参数顺序、UI父节点及按钮创建实参；Attach_UITop七参数仍以占位标记保留。
 本文件只恢复父函数骨架；23个子原型继续复用独立候选，不重复展开。
 ]]
 local function doInit_UI()
@@ -55,15 +55,13 @@ local function doInit_UI()
             if id then
                 local count = moneyProxy:GetMoneyCountById(id)
                 if count == nil then count = 0 end
-                UPVALUE_1.initSnapshot[id] = count
+                UPVALUE_1.initSnapshot[name] = count
             end
         end
+        -- 第二组是背包资源，不走MoneyProxy：PC92-PC97调用child0 Nested_find(name)，
+        -- 并以资源名称作为initSnapshot键；Nested_find在BAG_DATA缺失时返回0。
         for _, name in ipairs(resourceNames) do
-            local id = moneyProxy:GetMoneyIdByName(name)
-            if id then
-                local count = moneyProxy:GetMoneyCountById(id)
-                UPVALUE_1.initSnapshot[id] = count
-            end
+            UPVALUE_1.initSnapshot[name] = Nested_find(name)
         end
     end
 
@@ -108,7 +106,7 @@ local function doInit_UI()
         UPVALUE_2.cruiseTimer = {"unknown", 2}
     end
     local dailyCallback = Nested_04d_02d_02d
-    UPVALUE_2.cruiseTimer = SL:Schedule(1.0, dailyCallback)
+    UPVALUE_2.cruiseTimer = SL:Schedule(dailyCallback, 1.0)
 
     -- PC167-PC180：NPCStorageProxy请求仓库数据。
     local storageProxy = global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)
@@ -116,8 +114,23 @@ local function doInit_UI()
         storageProxy:RequestStorageData()
     end
 
-    -- PC181-PC195：顶部UI挂接与mini-chat位置/尺寸读取。
-    -- Attach_UITop的准确参数尚未从融合载荷完整还原。
+    -- PC181-PC183：调用GUI.Attach_UITop，物理调用栈传入7个显式实参；
+    -- 目前七个实参的业务来源/顺序尚未闭合，以下仅为明确标记的占位值，
+    -- 不能据此运行。调用返回值保留为后续Button_Create的父节点T[6]。
+    local ATTACH_UI_TOP_ARG_1 = nil -- TODO: trace parent-frame producer
+    local ATTACH_UI_TOP_ARG_2 = nil -- TODO: trace parent-frame producer
+    local ATTACH_UI_TOP_ARG_3 = nil -- TODO: trace parent-frame producer
+    local ATTACH_UI_TOP_ARG_4 = nil -- TODO: trace parent-frame producer
+    local ATTACH_UI_TOP_ARG_5 = nil -- TODO: trace parent-frame producer
+    local ATTACH_UI_TOP_ARG_6 = nil -- TODO: trace parent-frame producer
+    local ATTACH_UI_TOP_ARG_7 = nil -- TODO: trace parent-frame producer
+    local uiParent = GUI:Attach_UITop(
+        ATTACH_UI_TOP_ARG_1, ATTACH_UI_TOP_ARG_2, ATTACH_UI_TOP_ARG_3,
+        ATTACH_UI_TOP_ARG_4, ATTACH_UI_TOP_ARG_5, ATTACH_UI_TOP_ARG_6,
+        ATTACH_UI_TOP_ARG_7
+    )
+
+    -- PC184-PC195：读取mini-chat位置/尺寸；xBase/yBase随后由T[22]/T[23]捕获。
     local mainProperty = MainProperty
     local miniChat = mainProperty._ui.Panel_mini_chat
     local miniChatPosition = miniChat:getWorldPosition()
@@ -160,8 +173,9 @@ local function doInit_UI()
         moneybut = Nested_FFFF00,               -- child3, PC330-PC335
         xiaotuibut = Nested_OnGameLeaveWorld,   -- child4, PC336-PC337
     }
-    -- PC338-PC345：建立按钮创建闭包。其三个参数为配置记录、列索引、行偏移；
-    -- 捕获xBase=miniChatRight-10、yBase=miniChatY+1、buttonMap=UPVALUE_4及buttonHandlers。
+    -- PC338-PC345：创建child9工厂闭包，捕获顺序为：
+    -- T[6]=Attach_UITop返回的uiParent，T[22]=xBase，T[23]=yBase，
+    -- UP[4]=buttonMap，T[21]=buttonHandlers。其三个显式参数为config/列索引/行偏移。
     local xBase = miniChatRight - 10
     local yBase = miniChatY + 1
     local buttonMap = UPVALUE_4
@@ -169,34 +183,39 @@ local function doInit_UI()
     local function createButton(config, columnIndex, rowOffset)
         local x = xBase - 85 * columnIndex
         local y = yBase + rowOffset
-        local button = GUI.Button_Create(
-            config.key, x, y, "res/public/fuzhu_btn.png"
+
+        -- child9 PC1-PC50：GUI:Button_Create(uiParent,key,x,y,texture)。
+        local button = GUI:Button_Create(
+            uiParent, config.key, x, y, "res/public/fuzhu_btn.png"
         )
         if not button then
             return
         end
 
         buttonMap[config.key] = button
-        GUI.Button_setTitleText(button, config.name)
-        GUI.Button_setTitleFontSize(button, 18.0)
-        GUI.Button_setTitleFontName(button, "res/public/kaiti2.ttf")
-        GUI.Button_setTitleColor(button, "#ffffff")
+        GUI:Button_setTitleText(button, config.name)
+        GUI:Button_setTitleFontSize(button, 18.0)
+        GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
+        GUI:Button_setTitleColor(button, "#ffffff")
 
-        -- child0点击闭包读取buttonHandlers[config.key]并执行对应功能，
-        -- 更新config.toggled，再切换按钮文字与颜色（开启红色/关闭白色）。
+        -- toggle项由child9创建child0回调；child0按buttonHandlers[key]门控。
         if config.toggle then
             config.toggled = false
-            GUI.addOnClickEvent(button, function()
-                local handler = buttonHandlers[config.key]
-                if handler then
-                    handler()
+            GUI:addOnClickEvent(button, function()
+                local gate = buttonHandlers[config.key]
+                local allowed = true
+                if gate then
+                    allowed = gate()
+                end
+                if allowed == false then
+                    return
                 end
                 config.toggled = not config.toggled
-                GUI.Button_setTitleText(
+                GUI:Button_setTitleText(
                     button,
                     config.toggled and config.toggle or config.name
                 )
-                GUI.Button_setTitleColor(
+                GUI:Button_setTitleColor(
                     button,
                     config.toggled and "#ff0000" or "#ffffff"
                 )
@@ -204,8 +223,7 @@ local function doInit_UI()
         end
     end
 
-    -- PC346-PC378：依次遍历三组按钮，行偏移分别为40、0、80；
-    -- child9内部按xBase-85*列索引、yBase+行偏移计算坐标。
+    -- PC346-PC378：三组配置分别以40、0、80为行偏移，列索引从ipairs返回。
     for columnIndex, config in ipairs(buttonGroups[1]) do
         createButton(config, columnIndex, 40.0)
     end
@@ -217,14 +235,14 @@ local function doInit_UI()
     end
 
     -- PC379-PC418：创建“隐 藏”按钮，设置标题、字号、字体并绑定点击闭包。
-    local hideButton = GUI.Button_Create(
-        "hidebut", 0, 0, "res/public/fuzhu_btn.png"
+    local hideButton = GUI:Button_Create(
+        uiParent, "hidebut", 0.0, 0.0, "res/public/fuzhu_btn.png"
     )
     if hideButton then
-        GUI.Button_setTitleText(hideButton, "隐 藏")
-        GUI.Button_setTitleFontSize(hideButton, 18.0)
-        GUI.Button_setTitleFontName(hideButton, "res/public/kaiti2.ttf")
-        GUI.addOnClickEvent(hideButton, Nested_Helper_9)
+        GUI:Button_setTitleText(hideButton, "隐 藏")
+        GUI:Button_setTitleFontSize(hideButton, 18.0)
+        GUI:Button_setTitleFontName(hideButton, "res/public/kaiti2.ttf")
+        GUI:addOnClickEvent(hideButton, Nested_Helper_9)
     end
 end
 return doInit_UI
