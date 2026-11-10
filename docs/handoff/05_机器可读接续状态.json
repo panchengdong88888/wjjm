@@ -49,9 +49,9 @@
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
     "root.children[12]": "LuaSendMsg（92条）检查点190修订普通Lua草稿：固定六参，arg1为Blocklist/SendHookList键，arg2..5为param1..4，arg6为msgId；table.find命中只跳过日志；SendHookList函数经pcall(hook,arg1,arg6,message)，成功且返回true才拦截；否则networkCtl:SendMsg原六参转发。捕获root T[0]/T[4]业务原名与宿主语义待验证。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
-    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192恢复PC1-PC41初始化；检查点193恢复PC42-PC85闭包创建/导出；检查点194恢复PC86-PC167：PC86-PC89创建gatherConfig，FindMonsterCandidates捕获为UP4；PC90-PC95计算floor(3600/0.2)=18000，root PC408将其捕获为doInit_UI UP17，UI用途未明；PC96-PC167构造14项奖励记录数组，root PC409捕获为doInit_UI UP18。检查点195恢复PC168-PC200：状态文字表IDLE/GATHERING/ATTACKING，T14=currentState初值IDLE；T15-T22共享槽初值；PC181 FormatStateChange捕获PrintLog/currentState；PC184-PC193创建10个无捕获辅助闭包；PC194 FindMonsterCandidates捕获GetPlayerPosition/IsDie/GetPlayerMapPosition/DistanceCalculation/gatherConfig；PC200 ResetGatherMonsterData捕获T15/T16/T17/T25/T19/T20/T21/T22/T4。根模块仍为分段草稿，PC201-PC412待恢复，未运行时验证。"
+    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192恢复PC1-PC41；193恢复PC42-PC85；194恢复PC86-PC167；195恢复PC168-PC200；196恢复PC201-PC270。PC210创建ClearBlacklistItems并捕获T30；PC212-PC213创建/导出IsInWhitelistMap；PC214-PC237创建MainLoop并按序捕获22项，PC237导出；PC238-PC246创建/导出InitGatherMonsters，捕获[T3,T18,T23,T13,T35,T8,T4]；PC247-PC255创建/导出StopGatherMonsters，捕获[T18,T3,T25,T23,T13,T35,T4]；PC256-PC258创建/导出Builtsetting捕获T5；PC259-PC260创建/导出MoveItemToQuickUse无捕获；PC261-PC264创建DestroyUI捕获[T0,T3,T1]；PC265/269将闭包写入模块hide/show字段；PC266创建SetButtonVisibilityState捕获[T0,T1]；PC270创建ShowHideAllButtons，捕获数3、来源待PC271后续描述确认。根模块仍为分段草稿，PC271-PC412待恢复，未运行时验证。"
   },
-  "next_action": "检查点195已恢复root PC168-PC200状态单元与辅助闭包注册，且复用检查点162/177/3/4等既有子函数和捕获审计。下一步继续root PC201-PC270：闭合PC210-PC214后续辅助闭包创建/导出、MainLoop的22项捕获描述，以及InitGatherMonsters、StopGatherMonsters、UseItemByIndex、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons等闭包创建与捕获位置；不重复恢复已完成子原型函数体。",
+  "next_action": "检查点196已恢复root PC201-PC270闭包创建、捕获与导出关系。下一步继续root PC271-PC340，闭合ShowHideAllButtons三项捕获来源及后续UI闭包创建/导出；复用已有子函数主体审计，不重复恢复函数体或底层VM分析。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2238,26 +2238,28 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "195",
+    "checkpoint": "196",
     "targets": [
-      "root PC168-PC200"
+      "root PC201-PC270"
     ],
-    "status": "Restored state constants, shared state initializers, helper closure creation and verified capture ordering; root remains a partial draft.",
-    "audit_file": "docs/audit/检查点195_root模块PC168-PC200状态单元与辅助闭包注册.md",
+    "status": "Closed root-frame helper registrations, MainLoop 22-capture sequence, InitGatherMonsters/StopGatherMonsters registrations and UI helper closure sites; root remains a segmented draft.",
+    "audit_file": "docs/audit/检查点196_root模块PC201-PC270闭包注册与捕获关系.md",
     "files": [
       "04_源码候选/root_MainLeftBottom_Module.lua",
-      "docs/audit/检查点195_root模块PC168-PC200状态单元与辅助闭包注册.md",
-      "docs/audit/检查点194_root模块PC86-PC137配置初始化与奖励记录表恢复.md",
+      "docs/audit/检查点196_root模块PC201-PC270闭包注册与捕获关系.md",
       "02_基础索引/03_函数状态清单.csv",
+      "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "findings": [
-      "PC168-PC172 creates IDLE/GATHERING/ATTACKING labels and initializes shared currentState to IDLE.",
-      "PC173-PC180 initializes shared T15-T22 slots; only confirmed uses are named.",
-      "PC181 creates FormatStateChange capturing PrintLog (T4) and shared currentState (T14).",
-      "PC184-PC193 creates ten no-capture helpers in exact prototype-index order.",
-      "PC194-PC199 creates FindMonsterCandidates capturing T27/T30/T28/T29/T8 = GetPlayerPosition/IsDie/GetPlayerMapPosition/DistanceCalculation/gatherConfig.",
-      "PC200-PC209 creates ResetGatherMonsterData capturing T15/T16/T17/T25/T19/T20/T21/T22/T4; matches checkpoint 162."
+      "PC210 creates ClearBlacklistItems capturing root T30 (IsDie).",
+      "PC212-PC213 creates and exports IsInWhitelistMap.",
+      "PC214-PC237 creates MainLoop and captures root T registers [18,14,13,4,23,35,26,34,15,32,17,16,19,20,22,36,21,31,30,33,24,8] in order; global export at PC237.",
+      "PC238-PC246 creates/exports InitGatherMonsters with captures [T3,T18,T23,T13,T35,T8,T4].",
+      "PC247-PC255 creates/exports StopGatherMonsters with captures [T18,T3,T25,T23,T13,T35,T4].",
+      "PC256-PC258 creates/exports Builtsetting capturing T5; PC259-PC260 creates/exports MoveItemToQuickUse with no captures.",
+      "PC261-PC264 creates DestroyUI capturing [T0,T3,T1]; PC265/269 assign module hide/show fields; PC266 creates SetButtonVisibilityState capturing [T0,T1].",
+      "PC270 creates ShowHideAllButtons with three captures; source descriptors begin PC271 and remain next batch."
     ]
   },
   "corrections": [
@@ -2962,8 +2964,8 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": "195",
-  "checkpoint": "195",
+  "last_checkpoint": "196",
+  "checkpoint": "196",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
@@ -2999,5 +3001,5 @@
     "complete_static_reconstruction": 103,
     "runtime_verified": 0
   },
-  "next_checkpoint": "root PC201-PC270"
+  "next_checkpoint": "root PC271-PC340"
 }
