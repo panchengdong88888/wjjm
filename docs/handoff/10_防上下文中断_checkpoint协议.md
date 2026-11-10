@@ -1998,3 +1998,12 @@
 - 修正root47源码候选：移除循环后聚合目标，动作逻辑放回循环体；加入distance配置缺失时绕过helper及显示0的分支。
 - 统计：普通Lua草稿72；完整静态恢复101/110；运行时验证0。
 - 下一步：合并复核root.children[47] PC1-PC73及PC142-PC216全CFG，再决定是否升级完整静态恢复。
+
+
+## 检查点 #185：FIND_IN_VIEW_PLAYER_LIST 双返回值与循环上界纠错
+
+- root.children[47] PC63-PC65取得SL:GetMetaValue("FIND_IN_VIEW_PLAYER_LIST")；PC66 OP_233捕获两个返回值players和playerCount。
+- PC67检查players truthy；PC69检查playerCount truthy；PC71检查playerCount<=0；各失败路径均return。
+- PC74-PC77以1为起始、playerCount为上界、1为步长初始化数字循环；PC215推进循环。
+- 旧草稿使用#players计算上界不符合字节码，现改为local players, playerCount = SL:GetMetaValue(...)并直接循环至playerCount。
+- 主函数仍为普通Lua草稿，等待PC1-PC73与PC142-PC216全CFG合并复核；统计维持普通Lua草稿72、完整静态恢复101/110、运行时验证0。
