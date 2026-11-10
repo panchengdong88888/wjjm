@@ -3416,3 +3416,17 @@ Nested_match：
 - 新增文件：`docs/handoff/13_MainLeftBottom_原型结构树.md`。
 - 本批提交：结构树 `b2cec530`；机器状态 `77aa9370`；函数CSV `bf6f5ed6`；主恢复源码 `b115fa45`；root候选 `96b88b17`。
 - 下一步检查点 #277：审计主恢复文件PC86-PC211共享cell注入及PC212-PC315字段/配置链：逐一对照closure_sites核对工厂实参数量、顺序和父T寄存器来源；核对同一父T寄存器只共享一个cell、不同寄存器不共用；检查hide/show/destroy/main字段写入对象与PC275模块重读目标；检查T[44..51]配置包装链；对身份断言进行nil安全性审计，类型/必需闭包断言必须先于相等比较。
+
+
+## 检查点 #277（2026-11-10）：根模块PC86-PC315共享cell与字段链复核
+
+- 新建 `docs/audit/检查点277_PC86-PC315共享cell与字段链复核.md`。
+- 静态对照root闭包捕获表，复核PC181 FormatStateChange、PC194 FindMonsterCandidates、PC200 ResetGatherMonsterData、PC210 FindMonsterInCurrViewField、PC214 MainLoop、PC238 InitGatherMonsters、PC247 StopGatherMonsters的工厂参数顺序。
+- T[14..22]共9个共享cell分别创建且对象身份互异；FormatStateChange/MainLoop、ResetGatherMonsterData/MainLoop、InitGatherMonsters/StopGatherMonsters对同一父T寄存器复用同一个cell对象。
+- 复核PC212-PC296的IsInWhitelistMap、Builtsetting、MoveItemToQuickUse、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons、AccountIDValidation闭包及hide/show/destroy/main字段写入目标。
+- 复核PC297-PC315的GetWritablePath、ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper、AnonymousHelper_49/32/33/54捕获来源与T[44..51]配置包装链；doInit_UI相关槽位注入顺序一致。
+- 复核根装配关键身份断言的nil安全顺序；先检查来源对象/函数类型，再访问字段或比较身份。
+- 发现并明确记录PC275/PC389环境表达差异：VM Dump均为OP_137读取全局名MainLeftBottom；当前适配器写作`_G.MainLeftBottom`。只有`_ENV`与`_G`为同一环境表时才严格等价。已在主恢复源码中标注此假设，暂无宿主证据，故未擅自改写。
+- 本批没有提升静态恢复函数数量；root仍是唯一未完整静态恢复原型。未执行Lua/luac，运行时验证仍0。
+- 本批提交：审计 `02ee6c46`；主恢复源码环境差异注记 `73b87249`；机器状态 `36ddcbe3`；函数CSV `bce27b65`；主恢复源码检查点索引 `60f0d834`。
+- 下一步检查点 #278：从PC级证据回到root模块可读源码收敛，优先将PC1-PC42、PC86-PC180常量/状态初始化、PC280-PC296黑名单状态、PC316-PC349数值表按PC顺序整合为连续执行体；闭包工厂按既有捕获顺序装配，保持来源词法块与装配词法块边界；PC275/389的`_ENV`与`_G`差异继续显式待核。
