@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点229：转入根模块MainLeftBottom_Module（412条）的根级闭包装配与共享Upvalue cell接线。Nested_Anonymous两个已知调用点均只传两个显式参数，T[2]没有显式第三实参来源；仍须先核对VM帧基址/槽位初始化语义，不能猜成nil或虚构回调。",
+  "next_action": "检查点230：继续从已完整静态恢复但尚未进入集中源码的短原型入手，优先整合GetStorageItemData（77条）、FindBlacklistPlayer（35条）及其他短匿名转发/定时包装；之后再处理PickUpItems、doInit_UI和根级闭包装配。复杂根模块装配继续后置。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -3512,50 +3512,47 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 228,
+  "last_checkpoint": 229,
   "checkpoint": {
-    "number": 227,
+    "number": 229,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/root35_AnonymousHelper_33_ScheduleWrapper.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点227_AnonymousHelper_33_Schedule包装函数.md",
+      "docs/audit/检查点229_短函数明文优先整合.md",
       "docs/handoff/05_机器可读接续状态.json",
-      "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
-    "draft_prototypes_touched": 1,
+    "draft_prototypes_touched": 4,
     "draft_prototype_total": 72,
     "complete_static_reconstructions": 108,
     "runtime_verified": 0,
-    "notes": "补齐prototype_index中漏出状态清单的root.children[34]（7条）短函数，恢复为SL:Schedule(callback,interval)转发包装器。此前prototype_index已标记完整但source_file指向错误候选；现更新为专用来源文件。完整静态恢复108/110，运行时验证0。"
+    "notes": "按用户要求调整顺序：暂缓根模块PC1-PC412大型闭包装配，先把已完整静态恢复且未进入集中源码的短函数/简单逻辑整合进主恢复源码。本批整合AnonymousHelper_32（6条）、ScheduleOnce（7条）、AnonymousHelper_54（6条）、GetMapData2DPtr（144条记录但仅PC1-PC37可达）。没有增加完整静态恢复计数；运行时验证仍为0。"
   },
   "drafts": 33,
-  "next": "检查点213：继续把剩余源码候选逐批纳入MainLeftBottom_恢复源码.lua；优先补齐目前只有索引/审计、尚未进入集中源码的原型。随后继续把根模块PC42-PC412的闭包创建、捕获和导出从注释转成普通Lua；按新框架API对照复核接收者形式与参数数量。未闭合处保留TODO，不虚构实现。",
+  "next": "检查点230：继续优先整合简单明文，随后处理中等函数；复杂大函数与根级装配最后处理。",
   "recent_checkpoint": {
-    "number": 227,
+    "number": 229,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/root35_AnonymousHelper_33_ScheduleWrapper.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点227_AnonymousHelper_33_Schedule包装函数.md",
+      "docs/audit/检查点229_短函数明文优先整合.md",
       "docs/handoff/05_机器可读接续状态.json",
-      "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
-    "draft_prototypes_touched": 1,
+    "draft_prototypes_touched": 4,
     "draft_prototype_total": 72,
     "complete_static_reconstructions": 108,
     "runtime_verified": 0,
-    "notes": "补齐prototype_index中漏出状态清单的root.children[34]（7条）短函数，恢复为SL:Schedule(callback,interval)转发包装器。此前prototype_index已标记完整但source_file指向错误候选；现更新为专用来源文件。完整静态恢复108/110，运行时验证0。"
+    "notes": "按用户要求调整顺序：暂缓根模块PC1-PC412大型闭包装配，先把已完整静态恢复且未进入集中源码的短函数/简单逻辑整合进主恢复源码。本批整合AnonymousHelper_32（6条）、ScheduleOnce（7条）、AnonymousHelper_54（6条）、GetMapData2DPtr（144条记录但仅PC1-PC37可达）。没有增加完整静态恢复计数；运行时验证仍为0。"
   },
   "latest_checkpoint": {
-    "checkpoint": "227",
-    "summary": "补齐root.children[34]漏登记短原型：7条指令、零捕获、两个参数，直接转发SL:Schedule并返回全部返回值。",
-    "audit_file": "docs/audit/检查点227_AnonymousHelper_33_Schedule包装函数.md",
+    "checkpoint": "229",
+    "summary": "按简单明文优先，向主恢复源码实际合入三个短闭包/包装函数及一个活动路径短小的距离判断函数。",
+    "audit_file": "docs/audit/检查点229_短函数明文优先整合.md",
     "unresolved": [
-      "Nested_Anonymous（8条父原型、27条Nested_str、50条Nested_match及4条Nested_Helper_11）T2生产者和T槽映射仍未闭合",
-      "MainLeftBottom根模块PC1-PC412已有分段记录，但根级工厂实例化、共享Upvalue cell和所有导出绑定未完成",
+      "GetStorageItemData等已恢复但未集中整合的函数待后续批量纳入",
+      "Nested_Anonymous的T[2]帧槽来源仍待VM帧语义证据",
+      "根模块PC1-PC412的闭包实例化/共享Upvalue cell/导出绑定仍待恢复",
       "未进行Lua解释器或目标游戏运行时验证"
     ]
   },
@@ -3567,7 +3564,7 @@
     "complete_static_reconstruction": 108,
     "runtime_verified": 0
   },
-  "next_checkpoint": 229,
+  "next_checkpoint": 230,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
