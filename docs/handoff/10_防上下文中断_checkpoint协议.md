@@ -3137,3 +3137,14 @@ Nested_match：
 - 本批修正doInit_UI候选中Nested_Anonymous的非法命名匿名函数表达式，改为合法Lua匿名函数表达式；仍未执行Lua编译器。
 - 完整静态恢复109、普通Lua草稿72、运行时验证0。
 - 下一步检查点257：统一审计58个根直接闭包的工厂源、依赖引用、全局/模块字段导出、T[14..22]/T[57]共享cell身份；Nested_Anonymous固定参数槽已闭合。审计后转入唯一未完整恢复的root根模块主体，继续把PC1-PC412分段账本整合成可读源码。
+
+
+## 检查点 #257（2026-11-10）：根模块110原型结构树与58个直接闭包统一审计
+
+- 新增`docs/handoff/13_原型结构树.md`：递归对照VM Dump和prototype_index，110/110路径一一对应；root包含58个直接子原型、51个更深层嵌套原型。结构树列出原型路径/层级、名称、物理指令数、常量数、固定参数数、子原型数、字节码偏移、源码候选及静态状态；root直接子原型另列精确捕获数和父T寄存器序列。
+- 统一审计确认root直接子原型58个：22个无捕获、36个有捕获；主恢复源码directBindings=22、captured_factory_names_bound=36，与closure_sites集合完全一致，缺失0、额外0。
+- 核对根级21项全局导出和26项模块字段；全局导出与MainLeftBottom字段分层记录。MainLeftBottom.a、b、z及timerState是不同对象：T[0]=a、T[1]=b、T[2]=z、T[3]=timerState。
+- 核对T[14..22]每个父寄存器只建立一个共享cell，并由FormatStateChange、ResetGatherMonsterData、MainLoop、InitGatherMonsters、StopGatherMonsters按捕获关系复用；T[57]通过rootCells[57]保存InstallDamageHook live cell，BlackListPlayerDetection工厂内部.value()读取。onDamageMsg仍独立挂MainLeftBottom.onDamageMsg。
+- 更正Nested_Anonymous旧注释：检查点235已确认fixed_param_count=2，两个调用包装器传入(promptText, successCallback)，分别进入T[0]/T[1]；T[2]无写入确定为nil。错误分支调用nil的原始行为保留，不再把它列为未解析T槽。
+- 根直接闭包58/58仅表示源码层捕获装配完成；完整静态恢复109/110、普通Lua草稿72、运行时验证0。未执行Lua编译器或目标游戏宿主。
+- 下一步检查点258：以root_MainLeftBottom_Module.lua为唯一根模块主体，按PC1-PC412把分段初始化、状态/配置表、闭包创建、模块字段和全局导出时序整合成连续可读Lua模块；复用58个已恢复子原型，不重复分析其函数体。
