@@ -1,7 +1,7 @@
 -- root.children[47] / legacy root/48
 -- Reconstruction name: BlacklistPlayerDetection
 -- 216 physical VM instructions; no child prototypes.
--- Status: expanded readable Lua draft; static review in progress; NOT runtime-validated.
+-- Status: complete static reconstruction (checkpoint 186); NOT runtime-validated.
 -- Local names are reconstruction labels, not recovered original identifiers.
 --
 -- Captures (checkpoint 146):
