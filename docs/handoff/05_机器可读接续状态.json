@@ -22,7 +22,7 @@
     "root.children[6]": "InstallDamageHook：40条父指令+18条子指令；检查点133闭合父级PC31-PC36元数据对象链及提示回调，子闭包pcall/原处理器返回闭合；完整静态恢复，未运行时验证。",
     "root.children[15]": "ClearBlacklistItems：63条父指令+13条子指令；检查点133确认pairs首返回值key、子回调捕获entryKey/friendProxy、异步删除索引及ScheduleOnce延迟；完整静态恢复，未运行时验证。",
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
-    "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。",
+    "root.children[23]": "Builtsetting：55条；检查点215闭合六组CHANGE_SETTING参数、顺序、中文提示及单一捕获回调契约；原回调业务名称未知但不影响函数体静态恢复。完整静态恢复，未运行时验证。",
     "root.children[47]": "BlacklistPlayerDetection：216条，检查点186完成全部CFG与13项父捕获闭合，升级完整静态恢复（未运行时验证）。PC1-PC73入口/HP状态机/白名单/双返回玩家列表；PC74-PC141玩家循环/UP4双返回值/距离配置门槛；PC142-PC216日志节流、nextTryAt、随机传送成功失败及循环尾部全部闭合。第一个通过距离门槛的黑名单玩家进入处理后退出本次回调；距离配置false/nil绕过helper并以0显示，helper nil继续下一玩家。",
     "root.children[50]": "StorageItems（224条）检查点189、206：普通Lua主体草稿位于04_源码候选/短函数草稿_第六十批.lua；PC1-PC224复审，互斥/仓库可用页检查/分页占用快照/18项特殊名称/待定过滤项/BAG_DATA/MakeIndex去重/ITEM_IS_BIND过滤/两组ipairs匹配/UseItemByIndex/child0门控/child1找页/七项LuaSendMsg/本地记账/复位提示均已映射。检查点206修正PC151-PC176：每次特殊名称匹配后立即检查Nested_isOutputted返回值，任一false/nil立即跳过当前物品；无匹配也不存仓。三个UPVALUE仅按用途临时命名；999999999协议含义、服务端第四字段定义、宿主API未验证。仍为普通Lua草稿，不升级完整静态恢复，未运行时验证。审计docs/audit/检查点206_StorageItems普通Lua草稿复审与控制流修正.md。",
     "root.children[50].children[1]": "Nested_Anonymous_2：27条；检查点173独立静态复审完成。父StorageItems PC54-PC58捕获maxPage/pageCapacity/openSize/storedPageData；父PC37-PC53逐页构建计数表（#pageData或0）；子函数升序遍历，末页容量按openSize剩余空间裁剪，返回首个可用页码或nil；父PC177-PC179零参调用并消费页码/nil。完整静态恢复，未运行时验证。",
@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点215：优先整理并核对短小辅助函数（如FormatStateChange、GetWritablePath及其他无子原型函数）的集中源码与状态；随后从剩余首版草稿中挑选少捕获、控制流简单的函数。复杂UI初始化、资源窗口和状态机函数留到最后。",
+  "next_action": "检查点216：继续处理短小、少捕获、重复调用结构的剩余函数；优先复核FormatStateChange与ReadNumericConfig等已有独立审计的短函数，随后处理其他简单首版草稿。复杂UI、资源刷新链和状态机留到最后。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -128,7 +128,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "214"
+    "last_checkpoint": "215"
   },
   "static_recovered_functions": [
     {
@@ -2278,31 +2278,47 @@
         "PC5-PC6位于PC4无条件return之后，是不可达尾部。",
         "完整静态恢复；未运行时验证。"
       ]
+    },
+    {
+      "path": "root.children[23]",
+      "legacy_path": "root/24",
+      "name": "Builtsetting",
+      "source_file": "04_源码候选/短函数草稿_第四十五批.lua",
+      "audit_file": "docs/audit/检查点215_Builtsetting完整静态复审.md",
+      "status": "complete_static_reconstruction",
+      "physical_instructions": 55,
+      "constant_count": 15,
+      "child_count": 0,
+      "capture_count": 1,
+      "runtime_verified": false,
+      "notes": [
+        "根PC256创建闭包，PC257捕获root R5；其原始业务名称未知，但调用契约为单个中文提示文本回调。",
+        "六组CHANGE_SETTING编号/单元素数组依次为27:{0}、52:{0}、1002:{0}、57:{1}、58:{1}、2005:{0}；每组后调用捕获回调输出对应提示。",
+        "55条指令全部映射，无显式参数、无子原型；完整静态恢复，未运行时验证。"
+      ]
     }
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "214",
+    "checkpoint": "215",
     "targets": [
-      "root.children[52].children[0] Nested_JsonDecode（6条，无子原型，1项捕获）"
+      "root.children[23] Builtsetting（55条、无子原型、1项捕获）"
     ],
-    "status": "完成六指令子闭包静态恢复；纠正集中源码中JSON解码器接收者形式，将父函数改为显式使用该闭包工厂。",
-    "audit_file": "docs/audit/检查点214_Nested_JsonDecode完整静态复审.md",
+    "status": "完成六组设置逻辑的完整静态恢复；捕获回调以中性名称表示，未猜测业务身份。",
+    "audit_file": "docs/audit/检查点215_Builtsetting完整静态复审.md",
     "files": [
-      "04_源码候选/短函数草稿_第四十批.lua",
+      "04_源码候选/短函数草稿_第四十五批.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点214_Nested_JsonDecode完整静态复审.md",
-      "docs/handoff/11_新框架API映射.md",
+      "docs/audit/检查点215_Builtsetting完整静态复审.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "findings": [
-      "PC1-PC4闭合SL.JsonDecode点调用和唯一捕获JSON文本。",
-      "PC4为无条件return，PC5-PC6不可达。",
-      "父onDamageMsg以pcall调用子闭包，JSON解析异常路径由父层pcall处理。",
-      "开发包通用示例虽写SL:JsonDecode，但此具体字节码没有传入SL作为self，故保留SL.JsonDecode(jsonText)。",
-      "完整静态恢复数由103更新为104；运行时验证仍为0。"
+      "六组CHANGE_SETTING调用的ID与数组值按PC顺序闭合。",
+      "每组设置后调用唯一UPVALUE回调，传入对应中文提示文本。",
+      "原始回调业务名称未知，使用onSettingMessage中性名称；不影响函数体控制流恢复。",
+      "完整静态恢复数更新为105/110（95.5%）；运行时验证仍为0。"
     ]
   },
   "corrections": [
@@ -2532,19 +2548,19 @@
       "legacy_path": "root/24",
       "name": "Builtsetting",
       "source_file": "04_源码候选/短函数草稿_第四十五批.lua",
-      "audit_file": "docs/audit/检查点69_Builtsetting首版草稿.md",
-      "status": "first_pass_draft_UPVALUE_0_business_semantics_pending_not_runtime_verified",
+      "audit_file": "docs/audit/检查点215_Builtsetting完整静态复审.md",
+      "status": "complete_static_reconstruction",
       "physical_instructions": 55,
       "constant_count": 15,
       "child_count": 0,
       "vararg_flag": 0,
       "notes": [
-        "Root PC256 creates closure; capture instruction PC257 is OP_387 B=5, so UPVALUE_0 <- root R5",
-        "No explicit arguments, child prototypes, or explicit return",
-        "Six CHANGE_SETTING calls with exact IDs and one-element 0/1 arrays: 27/0, 52/0, 1002/0, 57/1, 58/1, 2005/0",
-        "After each setting call UPVALUE_0 receives the corresponding Chinese status string",
-        "Root R5 business identity remains unresolved; no runtime validation"
-      ]
+        "根PC256创建闭包，PC257捕获root R5；其原始业务名称未知，但调用契约为单个中文提示文本回调。",
+        "六组CHANGE_SETTING编号/单元素数组依次为27:{0}、52:{0}、1002:{0}、57:{1}、58:{1}、2005:{0}；每组后调用捕获回调输出对应提示。",
+        "55条指令全部映射，无显式参数、无子原型；完整静态恢复，未运行时验证。"
+      ],
+      "capture_count": 1,
+      "runtime_verified": false
     },
     {
       "path": "root.children[42].children[1]",
@@ -3008,65 +3024,64 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 214,
+  "last_checkpoint": 215,
   "checkpoint": {
-    "number": 214,
+    "number": 215,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/短函数草稿_第四十批.lua",
+      "04_源码候选/短函数草稿_第四十五批.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点214_Nested_JsonDecode完整静态复审.md",
-      "docs/handoff/11_新框架API映射.md",
+      "docs/audit/检查点215_Builtsetting完整静态复审.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 72,
-    "complete_static_reconstructions": 104,
+    "complete_static_reconstructions": 105,
     "runtime_verified": 0,
-    "notes": "Nested_JsonDecode（root.children[52].children[0]）6条指令全部闭合。父级捕获T[3]，PC1-PC4为SL.JsonDecode点调用并返回解码结果，PC5-PC6不可达。修正MainLeftBottom集中源码的JSON解码调用形式，静态完整数更新为104/110；没有运行时验证。"
+    "notes": "Builtsetting（root.children[23]）55条指令完成静态恢复。六组CHANGE_SETTING编号、数组值、顺序、提示文本及唯一捕获回调调用契约均已闭合。回调原始业务名称未知，保留中性参数名。更新集中源码和状态清单；未运行时验证。"
   },
   "drafts": 33,
   "next": "检查点213：继续把剩余源码候选逐批纳入MainLeftBottom_恢复源码.lua；优先补齐目前只有索引/审计、尚未进入集中源码的原型。随后继续把根模块PC42-PC412的闭包创建、捕获和导出从注释转成普通Lua；按新框架API对照复核接收者形式与参数数量。未闭合处保留TODO，不虚构实现。",
   "recent_checkpoint": {
-    "number": 214,
+    "number": 215,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/短函数草稿_第四十批.lua",
+      "04_源码候选/短函数草稿_第四十五批.lua",
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点214_Nested_JsonDecode完整静态复审.md",
-      "docs/handoff/11_新框架API映射.md",
+      "docs/audit/检查点215_Builtsetting完整静态复审.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 72,
-    "complete_static_reconstructions": 104,
+    "complete_static_reconstructions": 105,
     "runtime_verified": 0,
-    "notes": "Nested_JsonDecode（root.children[52].children[0]）6条指令全部闭合。父级捕获T[3]，PC1-PC4为SL.JsonDecode点调用并返回解码结果，PC5-PC6不可达。修正MainLeftBottom集中源码的JSON解码调用形式，静态完整数更新为104/110；没有运行时验证。"
+    "notes": "Builtsetting（root.children[23]）55条指令完成静态恢复。六组CHANGE_SETTING编号、数组值、顺序、提示文本及唯一捕获回调调用契约均已闭合。回调原始业务名称未知，保留中性参数名。更新集中源码和状态清单；未运行时验证。"
   },
   "latest_checkpoint": {
-    "checkpoint": "214",
-    "summary": "完成Nested_JsonDecode六指令完整静态恢复，确认父级捕获、pcall调用和SL.JsonDecode点调用；修正集中源码中此前错误的冒号调用。",
-    "audit_file": "docs/audit/检查点214_Nested_JsonDecode完整静态复审.md",
+    "checkpoint": "215",
+    "summary": "完成Builtsetting 55指令完整静态恢复，闭合六组设置调用及提示回调顺序，并整合进集中源码。",
+    "audit_file": "docs/audit/检查点215_Builtsetting完整静态复审.md",
     "unresolved": [
-      "onDamageMsg父函数其余参数/元数据分支仍有未决项",
+      "原UPVALUE[0]提示回调的业务名称未知",
+      "onDamageMsg父函数剩余参数/元数据分支仍有未决项",
       "根模块PC42-PC412仍需从分段注释转为普通Lua闭包创建/捕获/导出",
       "复杂UI与状态机主体仍需后续恢复",
       "未进行Lua解释器语法检查或目标游戏运行时验证"
     ]
   },
-  "complete_static_reconstruction_count": 104,
-  "complete_static_reconstruction": "104/110 (94.5%)",
+  "complete_static_reconstruction_count": 105,
+  "complete_static_reconstruction": "105/110 (95.5%)",
   "progress_reconciled": true,
   "counts": {
     "ordinary_lua_drafts": 72,
-    "complete_static_reconstruction": 104,
+    "complete_static_reconstruction": 105,
     "runtime_verified": 0
   },
-  "next_checkpoint": 215,
+  "next_checkpoint": 216,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3125,7 +3140,8 @@
       "04_源码候选/短函数草稿_第六十批.lua",
       "04_源码候选/root28_FindMonsterCandidates.lua",
       "04_源码候选/root2_GetWritablePath.lua",
-      "04_源码候选/短函数草稿_第四十批.lua"
+      "04_源码候选/短函数草稿_第四十批.lua",
+      "04_源码候选/短函数草稿_第四十五批.lua"
     ],
     "lexical_block_balance": "passed",
     "full_lua_compiler_available": false,
