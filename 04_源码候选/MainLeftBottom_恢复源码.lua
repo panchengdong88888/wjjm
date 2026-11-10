@@ -8050,7 +8050,7 @@ do
     )
     if makeMainLoop then
         rootPrototypes.MainLoop = makeMainLoop(
-            rootCells[18], rootCells[14], gatherStatusText,
+            rootCells[18], rootCells[14], rootSource.gatherStatusText,
             rootPrototypes.PrintLog, rootPrototypes.FormatStateChange,
             rootPrototypes.ResetGatherMonsterData,
             rootPrototypes.GetMainPlayerID, rootPrototypes.FindMonsterCandidates,
@@ -8071,7 +8071,7 @@ do
     if makeInitGather then
         rootPrototypes.InitGatherMonsters = makeInitGather(
             rootSource.timerState, rootCells[18],
-            rootPrototypes.FormatStateChange, gatherStatusText,
+            rootPrototypes.FormatStateChange, rootSource.gatherStatusText,
             rootPrototypes.ResetGatherMonsterData, rootSource.gatherConfig,
             rootPrototypes.PrintLog
         )
@@ -8085,7 +8085,7 @@ do
         rootPrototypes.StopGatherMonsters = makeStopGather(
             rootCells[18], rootSource.timerState,
             rootPrototypes.ClearTargetID_2, rootPrototypes.FormatStateChange,
-            gatherStatusText, rootPrototypes.ResetGatherMonsterData,
+            rootSource.gatherStatusText, rootPrototypes.ResetGatherMonsterData,
             rootPrototypes.PrintLog
         )
         _G.StopGatherMonsters = rootPrototypes.StopGatherMonsters
