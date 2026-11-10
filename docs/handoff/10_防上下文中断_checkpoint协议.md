@@ -2665,3 +2665,13 @@ Nested_match：
 本批重点集中短函数：PrintLog、PCallHelper/Nested_tostring、GetPlayerPosition、ShowLocalNoticeByType、Nested_MainLoop、Nested_RequestAddBlacklistByName、Nested_OnGameLeaveWorld、Nested_Helper_6、Nested_FriendProxy、AnonymousHelper_33/34、PCallHelper_2、GetPlayerMapPosition、Nested_dist/Nested_dist_2、IsDie、关键词匹配工厂等。
 
 本批仅整合现有候选，不增加静态恢复计数；复杂PickUpItems主函数（172条）未处理，按用户要求留到复杂函数批次。运行时验证仍为0。
+
+
+## 检查点 #219（2026-11-10）：MoveTo / InstallDamageHook 集中整合与状态对账
+
+- 将 `root.children[3]` MoveTo（51条、零捕获）及 `root.children[6]` InstallDamageHook（40条父指令+18条子指令、2项捕获）独立源码整合进 `MainLeftBottom_恢复源码.lua`。
+- MoveTo按检查点132保留x/y/range转换、Facade接收者、PlayerPos的X/Y返回顺序和两轴比较极性。
+- InstallDamageHook按检查点133保留入口保护、幂等检查、处理器替换、原处理器元数据写回及可选回调pcall后转发原处理器结果。
+- 发现机器状态JSON的部分 `draft_recovered_functions` 仍保留旧pending状态，与函数状态CSV的“完整静态恢复”冲突。本批以CSV中106个完整静态条目为准，统一JSON状态记录。
+- 完整静态恢复数量保持106/110（95.5%），这是状态对账，不是新增恢复计数；运行时验证仍为0。
+- 下一批优先处理短子原型/少捕获函数；复杂UI、资源刷新、MainLoop及地图遍历函数最后处理。
