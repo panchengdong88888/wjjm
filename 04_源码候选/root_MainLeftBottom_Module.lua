@@ -151,7 +151,7 @@ local resetSlot22 = ""
 
 -- PC200-PC209：创建root.children[26] / ResetGatherMonsterData并捕获九个共享单元：
 -- UPVALUE[0]=root T[15] 空表；[1]=T[16]初值0；[2]=T[17]初值0；
--- [3]=T[25]预停止回调（业务身份保留中性名）；
+-- [3]=T[25] ClearTargetID_2闭包（清除当前目标）；
 -- [4]=T[19]初值false；[5]=T[20]初值0；[6]=T[21]初值nil；
 -- [7]=T[22]初值空字符串；[8]=T[4] PrintLog。
 -- 该子原型的复位写入顺序和回调调用契约已在检查点162独立闭合。
@@ -161,8 +161,8 @@ local resetSlot22 = ""
 -- PC201-PC209：ResetGatherMonsterData的九项捕获描述，见检查点195/162；
 -- 此处不将捕获描述误写成业务语句。
 
--- PC210：创建root.children[14] / ClearBlacklistItems，捕获数1；
--- PC211：捕获父帧T[30]（IsDie闭包）。子函数主体已独立恢复，不在根模块重复转写。
+-- PC210：创建root.children[14] / FindMonsterInCurrViewField，捕获数1；
+-- PC211：捕获父帧T[30]（IsDie闭包）。ClearBlacklistItems实际是root.children[15]，在PC383创建。
 
 -- PC212-PC213：创建root.children[31] / IsInWhitelistMap（无捕获），
 -- 并将闭包导出为全局IsInWhitelistMap。
@@ -621,3 +621,21 @@ end
 -- TakeItems->_G.TakeItems(PC82)；PickUpItems->_G.PickUpItems(PC85)。
 -- LuaSendMsg在PC51进入MainLeftBottom.a字段；ShowLocalNoticeByType、ScheduleOnce、
 -- Schedule在本区间创建但没有全局导出。逐PC账本见检查点241审计和12_根模块闭包装配表。
+
+
+-- 检查点242：root PC86-PC211寄存器生命周期闭合与PC210名称纠错。
+-- T7=Schedule（PC53创建，PC398由doInit_UI UP[7]捕获）。
+-- T9=0.2（PC90；PC410由doInit_UI UP[19]捕获，具体UI用途未命名）。
+-- T11=math.floor(3600/0.2)=18000（PC95；PC408由doInit_UI UP[17]捕获）。
+-- T12=14项奖励记录表（PC96-PC167构造；PC409由doInit_UI UP[18]捕获）。
+-- T13=gatherStatusText；T14=currentState共享cell，初值IDLE。
+-- T15=目标ID集合；T16=自己归属计数；T17=扫描游标；T18=isGatherRunning；
+-- T19=等待标记；T20=等待截止时间；T21=等待目标ID；T22=等待目标名称。
+-- T23=FormatStateChange；T24=SetTargetID；T25=ClearTargetID_2；
+-- T26=GetMainPlayerID；T27=GetPlayerPosition；T28=GetPlayerMapPosition；
+-- T29=DistanceCalculation；T30=IsDie；T31=GetOwnerIDText；T32=GetOwnerID；
+-- T33=GetOwnerDescription；T34=FindMonsterCandidates；
+-- T35=ResetGatherMonsterData；T36=FindMonsterInCurrViewField。
+-- PC210实际创建FindMonsterInCurrViewField并于PC211捕获T30=IsDie；
+-- ClearBlacklistItems是root.children[15]，实际创建PC383。此前PC210注释中的名称错误已纠正。
+-- 上述28个新增寄存器时间线及每个捕获槽见12_根模块闭包装配表.json。
