@@ -130,7 +130,7 @@ local function make_Nested_Anonymous(PrintLog)
     return function Nested_Anonymous(...)
         -- Checkpoint 204: PC130 builds R4 from T[5]..T[8]; PC133 calls ipairs with T[6],
         -- then writes the third return value into T[7]. The runtime value of T[6]
-        -- and therefore the concrete T[7] value remain unresolved; do not assign a semantic name.
+        -- and therefore the concrete T[7] value remain unresolved; do not assign a semantic name. No later explicit T[7] write was found through PC183.
         -- Caller chain traced at checkpoint 203:
         -- doInit_UI PC250 creates root/43/12 with this closure as UP[0].
         -- root/43/19 PC27 invokes that wrapper with an empty argument range;
