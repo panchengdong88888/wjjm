@@ -3184,3 +3184,15 @@ Nested_match：
 - 删除重复的AnonymousHelper_32/33/49/54装配块；根直接闭包仍58/58源码层绑定。静态恢复109、普通Lua草稿72、运行时验证0。
 - 未执行Lua解释器/luac，未进行游戏宿主运行时验证。
 - 下一步检查点261：审计PC1-PC412全局导出、模块字段和寄存器生命周期，核对PC86-PC180 rootSource字段与T[8]/T[11]/T[12]/T[13]/T[14..22]映射，以及PC390-PC412最终返回路径。
+
+
+## 检查点 #261（2026-11-10）：根模块字段、寄存器与最终返回路径审计
+
+- 依据原型结构树、根闭包装配表、root候选及主恢复文件，交叉核对PC86-PC180的T[8]/T[11]/T[12]/T[13]/T[14..22]字段映射。
+- 确认root source候选通过`__exports`导出`gatherStatusText`；它在来源文件独立词法块中是local，不能由另一个装配词法块直接按同名标识符访问。
+- 发现主恢复文件中MainLoop、InitGatherMonsters、StopGatherMonsters三个工厂调用直接传入`gatherStatusText`，会解析为全局nil。已全部改为`rootSource.gatherStatusText`，并重新从GitHub读取确认。
+- PC390-PC410的doInit_UI 20项捕获参数顺序与根闭包账本一致；PC411写入`MainLeftBottom.doInit`；PC412返回`MainLeftBottom`模块表。恢复注册容器不作为模块返回值或额外全局导出。
+- PC1-PC412全局导出21项、根表字段10项的总账沿用检查点245/结构树核对结果；本批未发现需新增的导出或字段。
+- 更新：`04_源码候选/MainLeftBottom_恢复源码.lua`、`02_基础索引/03_函数状态清单.csv`、`docs/handoff/05_机器可读接续状态.json`、`docs/handoff/13_原型结构树.md`及本协议。
+- 静态恢复仍为109/110，普通Lua草稿72，根直接闭包源码层绑定58/58，运行时验证0；未执行Lua解释器/luac。
+- 下一步检查点262：核查PC1-PC42初始化代码的源码注册及词法作用域，随后继续把PC43-PC412分段闭包/字段/导出整理为连续恢复适配执行体，不将其冒充作者原始逐字源码。
