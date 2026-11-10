@@ -4,19 +4,26 @@
 规范路径：root.children[41]
 legacy路径：root/42
 物理指令：133
-状态：首版普通 Lua 草稿；未运行时验证。
+常量：26
+子原型：0
+vararg_flag：2
+状态：普通Lua主体草稿（检查点191复原并校正调用契约）；未运行时验证。
 
-恢复边界：
-1. 已确认使用 Facade.retrieveProxy 获取 QuickUseProxy 与 Bag。
-2. 已确认目标快捷栏位置按 1..GetQuickUseSize() 校验。
-3. 已确认扫描 GetQuickUseData()，通过条目 Index 查找目标物品是否已在快捷栏。
-4. 已确认区分“快捷栏交换”与“背包物品移入快捷栏”两条主路径。
-5. SetQuickUsePosData / addItemData / DelItemData 的参数顺序及返回值尚未全部闭合；
-   下面将其保留为结构化占位调用，不视为可直接替换上线的协议实现。
-6. 两个入参暂命名为 itemIndex、targetPos；由寄存器使用位置推断，仍需调用点核验。
+参数：
+  itemIndex：待移动物品的索引。调用点root.children[42] PC131-PC145通过
+             SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)取得，并作为第1实参。
+  targetPos：目标快捷栏位置。调用点传slotConfig.slot，作为第2实参。
+调用方接收(success, message)，把message传给PrintLog；success truthy时停止尝试同组后续名称。
+
+恢复原则：
+  - 按133条物理PC顺序表达所有可达路径。
+  - 保留SetQuickUsePosData的原始实参顺序和布尔值，不为布尔值编造业务含义。
+  - 不把代理方法调用结果当作成功确认；本函数的success来自字节码中的显式布尔常量。
+  - 宿主代理API尚未运行时验证。
 ]]
 
 local function MoveItemToQuickUse(itemIndex, targetPos)
+    -- PC1-PC14：分别取得QuickUseProxy与Bag代理。
     local quickUseProxy = global.Facade:retrieveProxy(
         global.ProxyTable.QuickUseProxy
     )
@@ -24,91 +31,113 @@ local function MoveItemToQuickUse(itemIndex, targetPos)
         global.ProxyTable.Bag
     )
 
+    -- PC15-PC21：任一代理缺失均返回false和固定提示。
     if not quickUseProxy or not bagProxy then
         return false, "参数无效"
     end
 
+    -- PC22-PC30：检查目标位置范围[1, GetQuickUseSize()]。
     local quickUseSize = quickUseProxy:GetQuickUseSize()
-
     if targetPos < 1 or targetPos > quickUseSize then
         return false, "目标位置超出范围"
     end
 
+    -- PC31-PC35：取得快捷栏数据，按pairs遍历位置与条目。
     local quickUseData = quickUseProxy:GetQuickUseData()
 
-    -- 先检查该背包物品是否已经存在于快捷栏。
-    for position, entry in pairs(quickUseData) do
-        if entry.Index == itemIndex then
+    -- PC36-PC90：查找物品是否已经存在于快捷栏。
+    for position, quickUseEntry in pairs(quickUseData) do
+        if quickUseEntry.Index == itemIndex then
+            -- PC42-PC46：物品已经处于目标位置。
             if position == targetPos then
                 return false, "物品已在目标位置"
             end
 
-            -- 已在其他位置：进入快捷栏位置交换分支。
-            -- 原指令在这里分别读取目标位数据，并对两个位置调用
-            -- SetQuickUsePosData；具体参数槽位/返回契约待核。
+            -- PC47-PC49：读取目标位置当前条目。
             local targetEntry =
                 quickUseProxy:GetQucikUseDataByPos(targetPos)
 
+            -- PC50-PC54：先按原始调用顺序写回当前位置条目。
+            -- 第三个显式参数为true；其宿主含义未知，按原值保留。
             quickUseProxy:SetQuickUsePosData(
                 position,
-                targetEntry,
-                false -- 占位：原始布尔参数含义待核
+                quickUseEntry,
+                true
             )
 
+            if targetEntry then
+                -- PC55-PC66：目标位置已有条目，执行双位置交换。
+                quickUseProxy:SetQuickUsePosData(
+                    targetPos,
+                    quickUseEntry,
+                    false
+                )
+                quickUseProxy:SetQuickUsePosData(
+                    position,
+                    targetEntry,
+                    false
+                )
+
+                -- PC67-PC74：返回成功状态及“交换”格式提示。
+                return true, string.format(
+                    "快捷栏交换: %d ↔ %d",
+                    position,
+                    targetPos
+                )
+            end
+
+            -- PC75-PC88：目标位置无条目，写入目标位置并返回移动提示。
             quickUseProxy:SetQuickUsePosData(
                 targetPos,
-                entry,
-                false -- 占位：原始布尔参数含义待核
+                quickUseEntry,
+                true
             )
-
-            -- 原型使用 string.format("快捷栏交换: %d ↔ %d", ...)
-            -- 最终格式化实参顺序仍需结合调用点复核。
-            local message = string.format(
-                "快捷栏交换: %d ↔ %d",
+            return true, string.format(
+                "快捷栏移动: %d → %d",
                 position,
                 targetPos
             )
-            -- 通知调用的具体目标由寄存器数据流确认，接口名尚未映射。
-            return true, message
         end
     end
 
-    -- 尚未存在于快捷栏：从背包按物品索引读取物品。
-    local itemData = bagProxy:GetItemDataByItemIndex(itemIndex)
-    if not itemData then
+    -- PC89-PC103：快捷栏中未找到该Index，转查背包。
+    local itemDataList =
+        bagProxy:GetItemDataByItemIndex(itemIndex)
+
+    -- PC94-PC103：不仅检查返回值truthy，还调用next确认表非空。
+    if not itemDataList or not next(itemDataList) then
         return false, "物品不存在"
     end
 
+    -- PC104-PC106：读取目标快捷栏位置原有条目。
     local targetEntry =
         quickUseProxy:GetQucikUseDataByPos(targetPos)
 
     if targetEntry then
-        -- 目标位原本有数据：原指令包含 SetQuickUsePosData、
-        -- Bag:addItemData、QuickUseProxy:DelItemData 等操作。
-        -- 当前只保留已确认的操作顺序，不伪造其参数/返回语义。
+        -- PC107-PC116：目标位置原有条目时，按原始顺序写入并退回背包。
         quickUseProxy:SetQuickUsePosData(
             targetPos,
-            itemData,
-            true -- 占位：原始布尔参数含义待核
+            targetEntry,
+            true
         )
         bagProxy:addItemData(targetEntry)
-        quickUseProxy:DelItemData(targetEntry.Index)
-    else
-        -- 目标位为空：只设置快捷栏位置数据。
-        quickUseProxy:SetQuickUsePosData(
-            targetPos,
-            itemData,
-            true -- 占位：原始布尔参数含义待核
-        )
     end
 
-    local message = string.format(
+    -- PC117-PC125：取返回表的第1项，按原始顺序删除并写入目标位置。
+    -- 保留itemDataList[1]，不擅自改写为.Index或MakeIndex。
+    local itemEntry = itemDataList[1]
+    quickUseProxy:DelItemData(itemEntry)
+    quickUseProxy:SetQuickUsePosData(
+        targetPos,
+        itemEntry,
+        false
+    )
+
+    -- PC126-PC132：返回成功状态及背包移入快捷栏提示。
+    return true, string.format(
         "已从背包移动到快捷栏位置%d",
         targetPos
     )
-
-    -- 指令末端存在格式化提示及返回；消息实际发送/显示入口待核。
-    return true, message
 end
 
 return MoveItemToQuickUse
