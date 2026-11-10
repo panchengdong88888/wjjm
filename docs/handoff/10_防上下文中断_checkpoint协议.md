@@ -2853,3 +2853,14 @@ Nested_match：
 - 确认root.children[33]、[34]、[56]、[57]及其他简单函数已在主文件；检查点230-233完成了短函数合入和状态对账。
 - 当前真正未完成仅两项：Nested_Anonymous的T[2]错误提示回调槽生产者/VM帧初始化语义；MainLeftBottom_Module根级闭包实例化、共享Upvalue cell和导出装配。
 - 完整静态恢复仍108/110，运行时验证0。下一批先追查Nested_Anonymous的T[2]证据，之后处理根模块装配。
+
+
+## 检查点235（2026-11-10）：原始VM调用帧与固定参数计数语义纠错
+
+- 在01_原始资料/MainLeftBottom(2).lua中找到原型解析器F()和VM执行器M(W,D,S)。F()将D()写入原型tuple[3]；M()读取W[3]作为固定参数数量V。
+- 每次调用M()都创建新T={}与X={}；实参索引0..V-1写入T[0..V-1]；索引V及之后的额外实参写入X，不进入T。故原型索引旧字段vararg_flag是误命名，实际语义为fixed_param_count。02_基础索引/02_原型总索引.json为全部110个原型增加fixed_param_count，保留旧字段仅作兼容。
+- Nested_Anonymous（root.children[42].children[22]）fixed_param_count=2；两个调用实参写入T[0]=promptText、T[1]=successCallback；T[2]没有任何写入，因T是每次新建的空表，故确定为nil。Nested_str捕获顺序T[0]/PrintLog/T[2]/T[1]；Nested_match两固定参数；Nested_Helper_11零固定参数。
+- Nested_Anonymous错误路径直接调用T[2]，因此会attempt-to-call-nil；这是原始字节码行为，不能补造第三回调或增加保护。
+- 按固定参数数量修正GetWritablePath、ReadNumericConfig、FindBlacklistPlayer、GetMapData2DPtr、onDamageMsg、AnonymousHelper_32、AnonymousHelper_54等源码签名。
+- Nested_Anonymous及doInit_UI全部子原型完成静态恢复，完整静态恢复109/110（99.1%）；唯一未完成为MainLeftBottom_Module根级闭包装配。运行时验证0。
+- 下一批开始根模块装配：按root PC1-PC412闭合closure-site、Upvalue cell共享、模块字段赋值和导出表；不得凭名称猜测绑定。
