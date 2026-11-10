@@ -3105,3 +3105,35 @@ Nested_match：
 - 主汇总源码已按上述顺序接入，并按PC382导出全局BlacklistItems。此处仅为静态装配，不代表运行时验证。
 - 有捕获工厂累计35/36，剩余最后一个doInit_UI；无捕获直接子原型22/22。完整静态恢复109、普通Lua草稿72、运行时验证0。
 - 下一步检查点256：处理doInit_UI的20项捕获与23个子原型依赖，保留未知槽位及缺失依赖，不伪造空函数。
+
+
+## 检查点 #256（2026-11-10）：doInit_UI二十项捕获与根闭包全量装配
+
+- 完成最后一个有捕获根直接子原型root.children[42] doInit_UI的静态实例化；20项捕获按PC390-PC410严格顺序注入：
+  1. T[4] PrintLog
+  2. T[2] MainLeftBottom.z功能状态表
+  3. T[3] timerState
+  4. T[0] MainLeftBottom.a UI状态表
+  5. T[1] MainLeftBottom.b按钮映射表
+  6. T[41] blacklistState
+  7. T[48] AnonymousHelper_49
+  8. T[7] Schedule
+  9. T[8] FindMonsterInCurrViewField
+  10. T[50] AnonymousHelper_33
+  11. T[49] AnonymousHelper_32
+  12. T[5] ShowLocalNoticeByType
+  13. T[44] GetWritablePath
+  14. T[42] blacklistDistanceConfigFile
+  15. T[51] AnonymousHelper_54
+  16. T[43] gatherMonsterCountConfigFile
+  17. T[47] FileExistCheck_pcall_wrapper
+  18. T[11] = 18000（PC90-PC95计算结果）
+  19. T[12] loginAndOnlineRewardEntries
+  20. T[9] = 0.2
+- 已将工厂实例化结果挂入MainLeftBottom.doInit，对应PC411字段写入。
+- 纠正UP槽身份：T[2]=MainLeftBottom.z（DiuItems同一状态表）；T[0]=MainLeftBottom.a；T[3]=timerState；T[1]=MainLeftBottom.b。BlacklistPlayerDetection.UP0同样是MainLeftBottom.z，而非根模块最外层表。
+- 根模块直接子闭包已达到58/58源代码层绑定：22个无捕获闭包、36个有捕获工厂。此数字只表示捕获装配已接入，不表示运行时验证或作者级逐字恢复。
+- doInit_UI内部23个子原型/回调构造代码随候选工厂一并保留；Nested_Anonymous child22的T[0]/T[1]/T[2]来源仍有未解析占位，不能将其宣称为全部完整。
+- 本批修正doInit_UI候选中Nested_Anonymous的非法命名匿名函数表达式，改为合法Lua匿名函数表达式；仍未执行Lua编译器。
+- 完整静态恢复109、普通Lua草稿72、运行时验证0。
+- 下一步检查点257：统一审计58个根直接闭包的工厂源、依赖引用、全局/模块字段导出、T[14..22]/T[57]共享cell身份；随后继续解析Nested_Anonymous未确认T槽。
