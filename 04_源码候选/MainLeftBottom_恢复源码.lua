@@ -607,15 +607,16 @@ _G.MoveItemToQuickUse = MoveItemToQuickUse
 
 
 ----------------------------------------------------------------
--- 检查点210：第一阶段根模块装配接口（可执行普通Lua骨架）
+-- 检查点210：早期根模块装配兼容接口（保留，不作为当前主装配入口）
 --
--- 用途：把已单独恢复的子原型接回根模块的真实导出位置。
+-- 用途：供外部测试/旧接续脚本把已绑定的子原型接回根模块字段。
+-- 当前正式恢复稿在文件末尾的root_assembly_checkpoint=256区段按PC顺序
+-- 完成全部58个根直接闭包绑定；本函数不被当前主装配流程调用。
 -- prototypes中的函数必须是已完成父级捕获绑定的闭包实例；本接口不
 -- 伪造VM upvalue，也不代替各子原型的函数体。
 -- 未提供的项目保持原样，不以空函数冒充恢复结果。
 --
--- 这是第一阶段装配骨架，不是完整原始模块；尚未完成的父级闭包创建、
--- 部分本地辅助函数和宿主运行时验证仍需后续补齐。
+-- 此函数是恢复适配器，不是原作者源码中的独立函数。
 local function AttachRecoveredPrototypes(prototypes)
     assert(type(prototypes) == "table",
         "AttachRecoveredPrototypes expects a table of recovered closures")
