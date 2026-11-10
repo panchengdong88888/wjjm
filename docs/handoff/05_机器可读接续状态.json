@@ -23,7 +23,7 @@
     "root.children[15]": "ClearBlacklistItems：63条父指令+13条子指令；检查点133确认pairs首返回值key、子回调捕获entryKey/friendProxy、异步删除索引及ScheduleOnce延迟；完整静态恢复，未运行时验证。",
     "root.children[5]": "TakeItems：99条；检查点134完成完整静态恢复。UP0=root T[2]状态对象，UP1=root T[5]文本回调；PC42-PC64过滤循环不可达；LuaSendMsg七项参数顺序、发送后计数、状态复位及完成提示均已闭合；未运行时验证。",
     "root.children[23]": "Builtsetting：55条；检查点134完成完整静态恢复。UP0捕获root R5，调用契约为提示文本回调但业务名称未知；六组CHANGE_SETTING编号/数组值/提示文本顺序已闭合；未运行时验证。",
-    "root.children[47]": "BlacklistPlayerDetection：216条；检查点183纠正距离辅助函数结论：UP5=root.children[22]（legacy root/23），调用五实参mainX/mainY/candidateX/candidateY/blacklistState.distance；其可达路径仅PC1-PC37，计算Chebyshev max(abs(dx),abs(dy))，输入无效/非正范围/距离超限时返回nil，PC37无条件return；PC38-PC144不可达，包含的sceneManager/mapData/isObstacle不能算作活动地图障碍检查。主函数PC136-PC141仅接受非nil距离。仍为普通Lua草稿，未运行时验证。",
+    "root.children[47]": "BlacklistPlayerDetection（216条）仍为普通Lua草稿。检查点184闭合PC74-PC141玩家扫描：数字循环跳过nil/自身；UP4首返回truthy作为命中，第二返回名优先，否则ACTOR_NAME/默认名；distance配置false/nil时绕过坐标/helper并以0显示，truthy时五参调用Chebyshev helper，nil结果继续下一玩家。日志/重试/随机传送在循环体内；第一个通过距离门槛的黑名单玩家处理后本次回调退出。仍待PC1-PC73及PC142-PC216全CFG合并复审。",
     "root.children[50]": "StorageItems：检查点144闭合子原型1（root/51/2）逐页容量算法：普通页上限pageCapacity，末页上限min(pageCapacity,openSize-(maxPage-1)*pageCapacity)，读取storedPageData[page]，返回首个未满页码；PC37-PC53建立每页物品数量表（#pageData，不存在记0）。PC206-PC211融合链闭合：R12[MakeIndex]=true（已处理索引集合），storedPageData[targetPage]递增，R13成功发送计数递增。LuaSendMsg第4参数在调用点承载目标仓库页码，服务端协议正式字段名仍待接收端验证。",
     "root.children[50].children[1]": "Nested_Anonymous_2：27条；检查点173独立静态复审完成。父StorageItems PC54-PC58捕获maxPage/pageCapacity/openSize/storedPageData；父PC37-PC53逐页构建计数表（#pageData或0）；子函数升序遍历，末页容量按openSize剩余空间裁剪，返回首个可用页码或nil；父PC177-PC179零参调用并消费页码/nil。完整静态恢复，未运行时验证。",
     "root.children[7]": "GetOwnerIDText：检查点151新增04_源码候选/root7_GetOwnerIDText.lua。nil/空串/-1返回false；string分支ownerID==tostring(ownerID)；非string分支ownerID==第二参数。首版普通Lua草稿，待静态复审，未运行时验证。",
@@ -44,9 +44,10 @@
     "root.children[50].children[0]": "Nested_isOutputted：52条；检查点174独立静态复审完成。父StorageItems PC102创建闭包，PC103/PC104捕获父UP0共享输出状态对象及父UP1输出回调；父PC154-PC170闭合ipairs迭代、Name匹配和两参数调用（item=R19,itemText=R25），PC171消费返回值。子函数纯文本查找聚灵珠、首次命中置位并两次回调输出物品/详情，校验Dura/DuraMax并返回布尔值。完整静态恢复，未运行时验证；更上层捕获原名未知。",
     "root.children[6].children[0]": "Nested_onDamageMsg：18条；检查点179闭合父InstallDamageHook捕获：UP0=MainLeftBottom模块表（root T[0]），UP1=原始MSG_SC_DAMAGE_HP处理函数（父R2）。若模块表.onDamageMsg为function则pcall(callback,arg1,arg2)但丢弃结果；所有路径随后均调用原处理器并转发其多返回值；回调异常由pcall保护，不阻断原处理器。PC17-PC18不可达，额外vararg不读取。完整静态恢复，未运行时验证。",
     "root.children[52]": "onDamageMsg：72条；检查点180闭合UP0=root T[41]黑名单状态表、Nested_JsonDecode捕获首个JSON参数T[1]、pcall/表类型门槛、MAIN_ACTOR_ID/UserID/AttackUserID过滤、ACTOR_IS_HERO/MASTER_ID/NAME查询及分身纯文本过滤；最终写入blacklistState.lastAttacker={id,name}。完整静态恢复，未运行时验证；仅记录攻击者，不直接执行加黑请求。",
-    "root.children[25]": "DeathAutoBlacklist：47条+子原型6条；检查点181闭合UP0=root T[41]黑名单状态表、UP1=T[4] PrintLog、UP2=T[55] FindBlacklistPlayer、UP3=T[5] ShowLocalNoticeByType。取出lastAttacker后清空共享字段；检查记录/name及黑名单命中；未命中时输出日志/本地通知，并按0..5循环以0.5*index安排6次ScheduleOnce，子闭包捕获记录表并调用RequestAddBlacklistByName(record.name)。完整静态恢复，未运行时验证。"
+    "root.children[25]": "DeathAutoBlacklist：47条+子原型6条；检查点181闭合UP0=root T[41]黑名单状态表、UP1=T[4] PrintLog、UP2=T[55] FindBlacklistPlayer、UP3=T[5] ShowLocalNoticeByType。取出lastAttacker后清空共享字段；检查记录/name及黑名单命中；未命中时输出日志/本地通知，并按0..5循环以0.5*index安排6次ScheduleOnce，子闭包捕获记录表并调用RequestAddBlacklistByName(record.name)。完整静态恢复，未运行时验证。",
+    "root.children[22]": "GetMapData2DPtr（144条，UP0捕获root T[52]但活动路径不读取）：检查点184确认PC1-PC37是唯一可达路径；检查五实参、相同坐标返回0、maxDistance<=0返回nil、计算Chebyshev max(abs(dx),abs(dy))、超限返回nil否则返回距离；PC37无条件return，PC38-PC144不可达死尾部。完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点183已纠正root.children[22]距离辅助函数：PC37无条件返回，PC38-PC144是不可达尾部；实际可达路径仅计算Chebyshev距离并按第五实参范围门槛返回数值或nil。下一步对root.children[47] PC74-PC141玩家扫描循环进行逐指令CFG复核，尤其核实自身ID跳过、黑名单helper双返回值和多玩家命中时目标覆盖规则；运行时验证仍为0。",
+  "next_action": "检查点184已完成root.children[22] GetMapData2DPtr活动CFG完整恢复，并重写root.children[47]玩家循环体：距离配置false/nil时绕过helper；helper nil继续下一玩家；第一个通过距离门槛的黑名单玩家进入日志/重试/传送后退出本次回调。下一步合并复核root.children[47] PC1-PC73与PC142-PC216全CFG，确认入口HP状态机和通知/重试所有跳转，再决定是否升级完整静态恢复；运行时验证仍为0。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -119,7 +120,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "183"
+    "last_checkpoint": "184"
   },
   "static_recovered_functions": [
     {
@@ -2217,28 +2218,29 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "183",
+    "checkpoint": "184",
     "targets": [
       "root.children[22]",
       "root.children[47]"
     ],
-    "status": "Corrected checkpoint 182: root.children[22] unconditionally returns at PC37; PC38-PC144 is unreachable tail code. Reachable behavior is Chebyshev distance with maxDistance validation; no active map/obstacle test.",
-    "audit_file": "docs/audit/检查点183_DistanceCalculation不可达尾部纠错.md",
+    "status": "Promoted root.children[22] to complete static reconstruction of its reachable CFG; corrected BlacklistPlayerDetection to process the first eligible blacklisted actor inside the scan loop and return after retry/success/failure.",
+    "audit_file": "docs/audit/检查点184_距离辅助函数与BlacklistPlayerDetection玩家循环CFG闭合.md",
     "files": [
+      "04_源码候选/root22_GetMapData2DPtr.lua",
       "04_源码候选/root47_BlacklistPlayerDetection.lua",
-      "docs/audit/检查点182_BlacklistPlayerDetection地图障碍距离门槛阶段复核.md",
-      "docs/audit/检查点183_DistanceCalculation不可达尾部纠错.md",
+      "docs/audit/检查点184_距离辅助函数与BlacklistPlayerDetection玩家循环CFG闭合.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "findings": [
-      "PC37 OP_220 is an unconditional return on every reachable branch.",
-      "No jump from PC1-PC37 targets PC38 or later; PC38-PC144 cannot execute from entry.",
-      "The reachable helper calculates max(abs(dx),abs(dy)) and applies a positive max-distance gate.",
-      "BlacklistPlayerDetection PC136-PC141 uses the helper's non-nil return as the candidate acceptance gate."
+      "root.children[22] reachable CFG is PC1-PC37; PC38-PC144 is unreachable after unconditional return.",
+      "The helper computes Chebyshev distance and applies maxDistance; its captured UP0 is unused on reachable code.",
+      "BlacklistPlayerDetection action path is inside the numeric player loop, not after it.",
+      "When configured distance is false/nil, coordinate/helper calls are bypassed and displayed distance defaults to 0.",
+      "A nil helper result continues to the next actor; the first eligible actor exits the callback after retry check or teleport success/failure."
     ],
     "counts": {
-      "ordinary_lua_drafts": 73,
-      "complete_static_reconstruction": 100,
+      "ordinary_lua_drafts": 72,
+      "complete_static_reconstruction": 101,
       "runtime_verified": 0
     }
   },
@@ -2909,52 +2911,52 @@
       ]
     }
   ],
-  "draft_function_count": 73,
-  "ordinary_lua_draft_functions": 73,
-  "last_checkpoint": "183",
-  "checkpoint": "183",
+  "draft_function_count": 72,
+  "ordinary_lua_draft_functions": 72,
+  "last_checkpoint": "184",
+  "checkpoint": "184",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 183,
+    "number": 184,
     "date": "2026-11-10",
     "artifacts": [
+      "04_源码候选/root22_GetMapData2DPtr.lua",
       "04_源码候选/root47_BlacklistPlayerDetection.lua",
-      "docs/audit/检查点183_DistanceCalculation不可达尾部纠错.md",
-      "docs/audit/检查点182_BlacklistPlayerDetection地图障碍距离门槛阶段复核.md",
+      "docs/audit/检查点184_距离辅助函数与BlacklistPlayerDetection玩家循环CFG闭合.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "draft_prototypes_touched": 1,
-    "draft_prototype_total": 73,
-    "complete_static_reconstructions": 100,
+    "draft_prototype_total": 72,
+    "complete_static_reconstructions": 101,
     "runtime_verified": 0,
-    "notes": "撤销#182中对root.children[22] PC38-PC144地图/障碍代码的活动路径解释；PC37无条件return使其不可达。实际可达路径PC1-PC37为Chebyshev距离和maxDistance门槛。"
+    "notes": "root.children[22]活动PC1-PC37恢复，PC38-PC144死尾部；root.children[47]扫描/动作CFG修正，动作在循环内，第一个通过距离门槛的目标处理后退出。"
   },
   "latest_checkpoint": {
-    "checkpoint": "183",
-    "summary": "纠正检查点182误判：root.children[22] PC37无条件return，PC38-PC144不可达；可达逻辑只计算Chebyshev距离并按正距离上限返回数值或nil，不执行map/obstacle检查。",
-    "audit_file": "docs/audit/检查点183_DistanceCalculation不可达尾部纠错.md",
+    "checkpoint": "184",
+    "summary": "完成root.children[22] GetMapData2DPtr活动CFG（PC1-PC37）静态恢复，确认PC38-PC144不可达；修正BlacklistPlayerDetection玩家循环：动作位于循环体内，第一个通过距离门槛的黑名单玩家被处理后退出回调，距离nil才继续扫描。",
+    "audit_file": "docs/audit/检查点184_距离辅助函数与BlacklistPlayerDetection玩家循环CFG闭合.md",
     "unresolved": [
-      "root.children[47] PC74-PC141玩家扫描循环完整CFG",
+      "root.children[47] PC1-PC73与PC142-PC216合并全CFG复核",
       "目标宿主运行时验证"
     ]
   },
-  "complete_static_reconstruction_count": 100,
+  "complete_static_reconstruction_count": 101,
   "complete_static_reconstruction": "95/110 (86.4%)",
   "progress_reconciled": {
-    "source_of_counts": "以02_基础索引/03_函数状态清单.csv的函数状态列为统计依据；精选索引数组不作为完整计数器。",
-    "ordinary_lua_draft_functions": 73,
-    "complete_static_reconstruction_functions": 100,
+    "source_of_counts": "以02_基础索引/03_函数状态清单.csv函数状态列为统计依据。",
+    "ordinary_lua_draft_functions": 72,
+    "complete_static_reconstruction_functions": 101,
     "runtime_verified_functions": 0,
-    "note": "检查点183纠正距离helper误判：root.children[22] PC37无条件return，PC38-PC144不可达；可达逻辑仅为Chebyshev距离及范围门槛。",
-    "checkpoint": 183,
-    "ordinary_lua_drafts": 73,
-    "complete_static_reconstruction": 100,
+    "checkpoint": 184,
+    "note": "检查点184：root.children[22]活动CFG完整恢复；root.children[47]玩家循环/动作路径修正，仍待全CFG合并复审。",
+    "ordinary_lua_drafts": 72,
+    "complete_static_reconstruction": 101,
     "runtime_verified": 0
   },
   "counts": {
-    "ordinary_lua_drafts": 73,
-    "complete_static_reconstruction": 100,
+    "ordinary_lua_drafts": 72,
+    "complete_static_reconstruction": 101,
     "runtime_verified": 0
   }
 }
