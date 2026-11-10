@@ -2055,3 +2055,16 @@
 - Nested_FFFF00仍为普通Lua草稿，不升级完整静态恢复；GUI宿主标志语义/尾参、MoneyProxy返回语义、unknown哨兵仍待验证。
 - 统计：普通Lua草稿71；完整静态恢复102/110（92.7%）；运行时验证0。
 - 下一步：转向`root.children[50]` StorageItems（224条）父函数，复核剩余记账表达式、过滤循环与LuaSendMsg参数；复用已完成的两个子原型。
+
+
+## 检查点 #189（2026-11-10）：StorageItems普通Lua主体批量恢复
+
+- 对象：`root.children[50]` / `StorageItems`（224条、57常量、2子原型）。更新`04_源码候选/短函数草稿_第六十批.lua`，新增审计`docs/audit/检查点189_StorageItems普通Lua主体批量恢复.md`，同步函数CSV与机器状态。
+- 将原注释骨架改为可读普通Lua主体：互斥状态、仓库可用页预检、页数/容量/openSize、逐页占用统计、18项特殊名称表、单项过滤表、BAG_DATA读取、MakeIndex去重、ITEM_IS_BIND过滤、两组名称匹配、child0结果门控、child1目标页查找、LuaSendMsg七项实参、本地记账和完成提示。
+- 父函数三个UPVALUE以使用角色临时命名：状态表、前置提示/child0回调、过程输出回调；原始更上层业务名未确认。
+- 复用已完成子函数：Nested_isOutputted捕获[storageState,notify]；Nested_Anonymous_2捕获[maxPage,pageCapacity,openSize,storedPageData]。未重复分析这两个子原型。
+- PC175 truthy路径继续存仓，false/nil跳过当前物品；保留该分支极性。
+- LuaSendMsg七项参数顺序已按调用点写入代码；第4实参来自目标页helper返回值。服务端正式字段名称/编码与999999999含义未证实。
+- PC211计数在LuaSendMsg调用返回后递增，但无服务端确认分支；代码命名为queuedCount，不称为服务端成功数。
+- 状态仍为普通Lua草稿，不升级完整静态恢复。统计：普通Lua草稿71；完整静态恢复102/110（92.7%）；运行时验证0。
+- 下一步：转向`root.children[22]` GetMapData2DPtr（144条）已有首版草稿，优先恢复可读主体，保留vararg/障碍物/返回契约未知项。
