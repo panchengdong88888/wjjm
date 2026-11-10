@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点252：继续处理剩余15个有捕获工厂，优先处理捕获稳定函数/表的短辅助闭包（ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper、GetMapData2DPtr、FindBlacklistPlayer、UseItemByIndex等）；对T[44]等共享捕获先核对创建顺序和写入点，不得按值误绑定。",
+  "next_action": "检查点253：继续处理剩余9个有捕获工厂，优先复核Blacklist相关依赖链：DeathAutoBlacklist、onDamageMsg、ClearBlacklistItems、BlacklistPlayerDetection；先确保InstallDamageHook、FindBlacklistPlayer、PCallHelper_2、ShowLocalNoticeByType及blacklistState等捕获来源身份一致，再处理T[57] live-cell覆盖关系。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2806,15 +2806,18 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "251",
+    "checkpoint": "252",
     "targets": [
-      "root.children[37] DestroyUI",
-      "root.children[10] SetButtonVisibilityState",
-      "root.children[40] ShowHideAllButtons"
+      "root.children[9] ReadNumericConfig",
+      "root.children[17] PCallHelper",
+      "root.children[0] FileExistCheck_pcall_wrapper",
+      "root.children[22] GetMapData2DPtr",
+      "root.children[51] FindBlacklistPlayer",
+      "root.children[24] UseItemByIndex"
     ],
-    "status": "三项UI闭包按捕获顺序静态实例化：DestroyUI(T0 UI状态,T3定时器,T1按钮映射)写入MainLeftBottom.hide；SetButtonVisibilityState(T0,T1)写入MainLeftBottom.show；ShowHideAllButtons(T3,T1,T0)写入MainLeftBottom.destroy。三者复用根模块已有表对象，不复制状态。累计21/36，剩余15；运行时验证0。",
-    "audit_file": "docs/audit/检查点251_UI闭包共享模块表装配.md",
-    "source_commit_sha": "75ce40af4a08f55a96d338b1de40d24e017de205"
+    "status": "六个工厂静态实例化；前三者严格复用rootPrototypes.GetWritablePath同一函数引用；GetMapData2DPtr传入rootSource.opaquePairTable（其活动路径不读取）；FindBlacklistPlayer复用rootPrototypes.PCallHelper_2；UseItemByIndex复用rootSource.randomTeleportItemNames。累计27/36，剩余9；运行时验证0。",
+    "audit_file": "docs/audit/检查点252_稳定捕获辅助闭包装配.md",
+    "source_commit_sha": "f423d301a95892b6f3549385e31391f9bf7ee631"
   },
   "corrections": [
     {
@@ -3536,12 +3539,12 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 251,
-  "checkpoint": 251,
+  "last_checkpoint": 252,
+  "checkpoint": 252,
   "drafts": 33,
-  "next": "检查点252：优先装配剩余有捕获短函数。先核对root T[44] GetWritablePath闭包是否已在source registry可用，再依序实例化ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper；继续处理T[52]不读取捕获的GetMapData2DPtr、T[54] PCallHelper_2与FindBlacklistPlayer、T[37] randomTeleportItemNames与UseItemByIndex。",
+  "next": "检查点253：先装配DeathAutoBlacklist与onDamageMsg/ClearBlacklistItems等可由已绑定稳定函数/表完成的闭包；随后复核BlacklistPlayerDetection 13项捕获。T[57]必须按PC360覆盖为InstallDamageHook的live cell，不能绑定成onDamageMsg；T[58]为DeathAutoBlacklist。",
   "recent_checkpoint": {
-    "number": 251,
+    "number": 252,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
@@ -3549,17 +3552,17 @@
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
       "02_基础索引/03_函数状态清单.csv",
-      "docs/audit/检查点251_UI闭包共享模块表装配.md"
+      "docs/audit/检查点252_稳定捕获辅助闭包装配.md"
     ],
     "complete_static_reconstructions": 109,
     "ordinary_lua_drafts": 72,
     "runtime_verified": 0,
-    "captured_factory_bindings": 21,
-    "captured_factory_pending": 15,
-    "notes": "本批静态实例化三个UI闭包，按父T寄存器捕获顺序复用模块a/b表和timerState；完整静态恢复、普通草稿和运行时验证计数均不变。",
-    "source_commit_sha": "75ce40af4a08f55a96d338b1de40d24e017de205"
+    "captured_factory_bindings": 27,
+    "captured_factory_pending": 9,
+    "notes": "本批装配六个稳定捕获工厂；GetWritablePath同一函数引用、PCallHelper_2和两个根模块捕获表均按原顺序注入；完整静态恢复计数不变。",
+    "source_commit_sha": "f423d301a95892b6f3549385e31391f9bf7ee631"
   },
-  "latest_checkpoint": 251,
+  "latest_checkpoint": 252,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3568,7 +3571,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 252,
+  "next_checkpoint": 253,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3726,11 +3729,11 @@
     "runtime_verified": false
   },
   "latest": {
-    "checkpoint": "251",
-    "summary": "完成DestroyUI、SetButtonVisibilityState、ShowHideAllButtons三个UI闭包静态实例化，按父寄存器捕获顺序共享MainLeftBottom.a、MainLeftBottom.b与timerState，并写入hide/show/destroy模块字段；累计21/36个有捕获工厂静态装配，运行时验证0。",
-    "audit_file": "docs/audit/检查点251_UI闭包共享模块表装配.md",
+    "checkpoint": "252",
+    "summary": "继续装配六个稳定捕获工厂：ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper共用T[44] GetWritablePath；GetMapData2DPtr保留T[52]捕获（活动路径不读取）；FindBlacklistPlayer捕获PCallHelper_2；UseItemByIndex捕获T[37]随机传送物品名表。累计27/36个有捕获工厂静态装配，运行时验证0。",
+    "audit_file": "docs/audit/检查点252_稳定捕获辅助闭包装配.md",
     "unresolved": [
-      "15个有捕获直接子原型尚未装配",
+      "9个有捕获直接子原型尚未装配",
       "完整根模块仍非作者原文逐字恢复",
       "运行时验证为0"
     ]
@@ -3743,13 +3746,13 @@
     "capture_semantics": "OP_387 stores a live cell reference {parent_T_table, register_index}; the upvalue proxy __index/__newindex reads/writes the parent T register dynamically. Later parent writes are visible to closures."
   },
   "root_assembly": {
-    "checkpoint": 251,
+    "checkpoint": 252,
     "direct_child_closures_expected": 22,
     "bound_at_source_level": 22,
     "runtime_verified": false,
     "captured_factory_closures_expected": 36,
-    "captured_factory_closures_bound": 21,
-    "captured_factory_closures_pending": 15,
+    "captured_factory_closures_bound": 27,
+    "captured_factory_closures_pending": 9,
     "bound_factory_names": [
       "ShowLocalNoticeByType",
       "DiuItems",
@@ -3771,8 +3774,14 @@
       "FindMonsterInCurrViewField",
       "DestroyUI",
       "SetButtonVisibilityState",
-      "ShowHideAllButtons"
+      "ShowHideAllButtons",
+      "ReadNumericConfig",
+      "PCallHelper",
+      "FileExistCheck_pcall_wrapper",
+      "GetMapData2DPtr",
+      "FindBlacklistPlayer",
+      "UseItemByIndex"
     ],
-    "note": "22个无捕获直接子原型已接入；21个有捕获工厂已静态实例化。T[14..22]共享cell适配不变；UI闭包共享MainLeftBottom.a、MainLeftBottom.b、timerState表引用。所有绑定均未运行时验证。"
+    "note": "22个无捕获直接子原型已接入；27个有捕获工厂已静态实例化。T[14..22]共享cell、UI共享表引用保持；T[44]三个工厂复用同一GetWritablePath函数；所有绑定均未运行时验证。"
   }
 }
