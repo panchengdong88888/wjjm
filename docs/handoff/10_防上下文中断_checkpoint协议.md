@@ -2812,3 +2812,8 @@ Nested_match：
 ### 检查点230补充校正：FindBlacklistPlayer参数形式
 
 复核原型索引中的 `vararg_flag=1` 后，将 `FindBlacklistPlayer` 的内层函数签名从固定形参写法改为 `function(...) local targetId = ...`，准确保留“零固定参数、从首个可变参数读取targetId”的原型形式。同步主恢复源码与独立候选；不改变业务分支，也不增加恢复统计。另在主文件prototype_index中登记其9条指令的Nested_FriendProxy子原型。
+
+
+### 检查点230补充校正：相邻原型路径
+
+再次按原型总索引的0-based children路径核对：PCallHelper_2=`root.children[48]`（legacy root/49），Nested_FriendProxy=`root.children[48].children[0]`；AnonymousHelper_49=`root.children[49]`（legacy root/50），为blacklist_distance.txt读取包装闭包。FindBlacklistPlayer=`root.children[51]`捕获的是root.children[48] PCallHelper_2。本次已修正主文件prototype_index、FindBlacklistPlayer注释、CSV和审计记录，删除错误添加的root.children[49].children[0]索引，并避免对PCallHelper_2重复定义。
