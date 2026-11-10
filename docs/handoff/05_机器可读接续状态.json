@@ -49,13 +49,13 @@
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
     "root.children[12]": "LuaSendMsg（92条）检查点190、205：普通Lua草稿PC1-PC92已独立静态复审；固定六参/message字段、Blocklist仅抑制日志、SendHookList按第1参取hook、pcall(hook,arg1,arg6,message)且仅严格true拦截、否则networkCtl:SendMsg原六参转发均与corrected反汇编一致。草稿仍保留UP0/UP1临时名；作者原名与宿主API语义未证实；未运行时验证。源码04_源码候选/短函数草稿_第五十批.lua；审计docs/audit/检查点205_LuaSendMsg普通Lua草稿独立复审.md。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
-    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点241-244已完成PC1-PC412根级字段/导出/闭包创建捕获分段对账；父寄存器生命周期57/57、捕获描述符135项。根模块整体普通Lua源码装配仍未完成；静态完整109/110，普通Lua草稿72，运行时0。",
+    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点241-245已完成PC1-PC412分段闭包创建/捕获/全局导出/模块字段总账；21项全局导出（含MainLeftBottom根表），根表字段入口a/b/z/hide/show/destroy/main/blacklist/onDamageMsg/doInit；父寄存器57/57、捕获描述符135项。根模块整体普通Lua源码装配仍未完成；静态完整109/110，普通Lua草稿72，运行时0。",
     "root.children[42].children[3]": "Nested_FFFF00（320条父指令、72常量、5个子原型、4项捕获）：检查点225已完成PC1-PC320及5个子原型静态恢复；捕获顺序moduleState/printLog/timerState/initState。Win_Create等GUI调用参数已与新框架43份文档核对；五组Text_Create结果均先做truthy门控。K[28]=['unknown',2]已确认是nil的VM dump序列化占位，resTimer清理写nil。MoneyProxy方法未文档化，保留原调用，不反汇编其内部。完整静态恢复，未运行时验证。",
     "root.children[42].children[22]": "Nested_Anonymous（8条父指令；Nested_str 27条、Nested_match 50条、Nested_Helper_11 4条）已完整静态恢复。原始VM M()每次新建T={}和X={}；fixed_param_count=2；两实参写入T[0]/T[1]；额外实参进入X；T[2]无写入保持nil。Nested_str捕获T[0]/PrintLog/T[2]/T[1]；无效数字路径按原字节码调用nil，保留attempt-to-call-nil行为。未运行时验证。",
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点245：对照58个子原型清单与函数状态CSV定位唯一未完整静态恢复原型，先恢复其简单可读部分；同时开始把已完成子函数按真实父T寄存器live-cell捕获顺序逐批接入root模块候选。跨PC区间字段导出账本需做最终交叉检查。",
+  "next_action": "检查点246：以58个直接子原型为清单，核对已恢复工厂函数的源码位置、捕获参数顺序和root实例化点；优先将无捕获及简单捕获闭包接入根模块普通Lua候选，再逐步处理共享cell与嵌套闭包。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -3540,8 +3540,8 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 244,
-  "checkpoint": 244,
+  "last_checkpoint": 245,
+  "checkpoint": 245,
   "drafts": 33,
   "next": "检查点243：继续root PC212-PC340，复核并结构化IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、界面控制闭包、账号验证闭包及黑名单状态初始化的模块字段/全局导出；同时复核唯一剩余T54（PCallHelper_2）生产者和捕获时值。",
   "recent_checkpoint": {
@@ -3618,7 +3618,7 @@
     ],
     "notes": "闭合PC86-PC211涉及的T7、T9、T11-T36共28个寄存器生命周期；纠正PC210实际为FindMonsterInCurrViewField而非ClearBlacklistItems，T25确认是ClearTargetID_2。累计56/57个父寄存器生命周期闭合。"
   },
-  "latest_checkpoint": 244,
+  "latest_checkpoint": 245,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3627,7 +3627,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 245,
+  "next_checkpoint": 246,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3785,12 +3785,11 @@
     "runtime_verified": false
   },
   "latest": {
-    "checkpoint": "244",
-    "summary": "root PC341-PC412最终闭包/模块字段/全局导出账本完成：onDamageMsg挂入MainLeftBottom，BlacklistItems与ClearBlacklistItems全局导出，doInit_UI挂入MainLeftBottom.doInit，PC412返回模块表。",
-    "audit_file": "docs/audit/检查点244_root_PC341_PC412最终闭包与模块装配.md",
+    "checkpoint": "245",
+    "summary": "完成root PC1-PC412跨区间全局导出与模块字段总账：21项全局导出（含_MainLeftBottom），根表字段a/b/z/hide/show/destroy/main/blacklist/onDamageMsg/doInit；PC86-PC211无新增根级导出。",
+    "audit_file": "docs/audit/检查点245_root_PC1_PC412全局导出与模块字段总账.md",
     "unresolved": [
       "根模块整体普通Lua源码装配仍未完成",
-      "唯一未完整静态恢复原型需定位并补齐",
       "运行时验证为0"
     ]
   },
