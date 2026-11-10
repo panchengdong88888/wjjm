@@ -4334,7 +4334,8 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
     local function doInit_UI()
     -- PC390在root创建本闭包时明确捕获20个父级T寄存器。
     -- UP[0..19]依次对应父root的T[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。
-    -- 可直接确认的身份：UP[0]=PrintLog函数；UP[1]与UP[3]均引用MainLeftBottom模块表；
+    -- 可直接确认的身份：UP[0]=PrintLog函数；UP[1]=MainLeftBottom.z功能状态表；
+    -- UP[3]=MainLeftBottom.a UI状态表；PC389模块根表读取写入独立T[59]，不覆盖T[2]/T[0]；
     -- UP[2]是root PC42创建的独立状态表，本函数在其中读写cruiseTimer；
     -- UP[5]是root创建并挂到MainLeftBottom.blacklist的黑名单状态表；
     -- UP[8]是含GATHER_THRESHOLD/CHECK_INTERVAL/ATTACK_WAIT_TIME的配置表；
@@ -8618,6 +8619,12 @@ do
     assert(_G.ClearBlacklistItems == rootPrototypes.ClearBlacklistItems,
         "PC388 ClearBlacklistItems global export mismatch")
 
+    -- PC389：原始OP_137将_ENV.MainLeftBottom读取到独立临时寄存器T[59]。
+    -- T[2]/T[0]不被覆写；PC392/PC394仍分别捕获MainLeftBottom.z/a。
+    local doInitModule = _G.MainLeftBottom
+    assert(type(doInitModule) == "table",
+        "PC389 reread _ENV.MainLeftBottom did not return a table")
+
     -- 检查点256：最后一个root.children[42]工厂，20项捕获严格按PC390-PC410顺序注入。
     local makeDoInitUI = sourceFunction(
         "04_源码候选/短函数草稿_第六十三批.lua", "make_doInit_UI"
@@ -8647,10 +8654,10 @@ do
         )
     end
     rootPrototypes.doInit_UI = requireRecoveredClosure("doInit_UI", rootPrototypes.doInit_UI)
-    -- PC411：将doInit_UI闭包写入原模块字段MainLeftBottom.doInit。
-    rootModule.doInit = rootPrototypes.doInit_UI
-    assert(rootModule.doInit == rootPrototypes.doInit_UI,
-        "PC411 MainLeftBottom.doInit attachment failed")
+    -- PC411：写入PC389重读后保存在T[59]中的模块表。
+    doInitModule.doInit = rootPrototypes.doInit_UI
+    assert(doInitModule.doInit == rootPrototypes.doInit_UI,
+        "PC411 doInit attachment to PC389 module reread failed")
 
     -- 根级全局导出已在各自PC创建点写入；不在模块尾部重复赋值。
     MainLeftBottomRecovered.root_module = rootModule
@@ -8670,6 +8677,7 @@ do
         checkpoint266_root_pc297_pc315_config_registers_ordered = true,
         checkpoint267_root_pc350_pc388_blacklist_chain_guarded = true,
         checkpoint268_root_pc390_pc412_final_export_return_checked = true,
+        checkpoint268_root_pc389_t59_reread_preserved = true,
         root_late_direct_bindings_at_pc = { IsInWhitelistMap = 212, MoveItemToQuickUse = 259, GetWritablePath = 297, PCallHelper_2 = 352 },
         direct_child_closures_expected = 22,
         direct_child_closures_bound = 22 - #missing,
