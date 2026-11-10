@@ -49,7 +49,7 @@
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
     "root.children[12]": "LuaSendMsg（92条）检查点190、205：普通Lua草稿PC1-PC92已独立静态复审；固定六参/message字段、Blocklist仅抑制日志、SendHookList按第1参取hook、pcall(hook,arg1,arg6,message)且仅严格true拦截、否则networkCtl:SendMsg原六参转发均与corrected反汇编一致。草稿仍保留UP0/UP1临时名；作者原名与宿主API语义未证实；未运行时验证。源码04_源码候选/短函数草稿_第五十批.lua；审计docs/audit/检查点205_LuaSendMsg普通Lua草稿独立复审.md。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
-    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192-PC1-PC41；193-PC42-PC85；194-PC86-PC167；195-PC168-PC200；196-PC201-PC270；197-PC271-PC340；198-PC341-PC412。PC341-PC349完成R52八个二元素数组构造；PC350-PC359创建GetMapData2DPtr/PCallHelper_2/FindBlacklistPlayer/UseItemByIndex/onDamageMsg并写MainLeftBottom.onDamageMsg；PC360-PC362创建InstallDamageHook捕获[T0,T4]；PC363-PC367创建DeathAutoBlacklist捕获[T41,T4,T55,T5]；PC368-PC381创建BlacklistPlayerDetection捕获13项并PC382导出BlacklistItems；PC383-PC388创建/导出ClearBlacklistItems；PC389-PC411创建doInit_UI并按序捕获20项，写入MainLeftBottom.doInit；PC412 return。根模块PC1-PC412均有分段普通Lua记录，但仍非作者级完整源码，doInit_UI及部分槽位待复审，未运行时验证。",
+    "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192-PC1-PC41；193-PC42-PC85；194-PC86-PC167；195-PC168-PC200；196-PC201-PC270；197-PC271-PC340；198-PC341-PC412。检查点211已将root.children[41] MoveItemToQuickUse（133条、0项upvalue）主体内嵌根模块，并按PC259-PC260导出全局函数；其余闭包创建/捕获和主体整合仍未完成。根模块仍非作者级完整源码，未运行时验证。",
     "root.children[42].children[3]": "Nested_FFFF00（320条）检查点188/201/207：PC1-PC320逐条对照corrected反汇编；修正五处Text_Create结果门控，PC139/173/201/229/257在节点返回false/nil时跳过setAnchorPoint。资源窗口创建/关闭、布局、两组资源行、MoneyProxy获取、刷新闭包立即调用与1秒Schedule主体均已映射。unknown哨兵、GUI布尔/尾参宿主语义、MoneyProxy快照写入name/读取moneyId差异仍未验证；保持普通Lua草稿，不升级完整静态恢复，未运行时验证。审计docs/audit/检查点207_Nested_FFFF00_PC1-PC320普通Lua草稿复审.md。",
     "root.children[42].children[22]": "Nested_Anonymous（8条父原型；child0 Nested_str 27条；Nested_match 50条；Nested_Helper_11 4条）检查点201/209：PC1创建child0，捕获顺序UP[0]=T[0]、UP[1]=UP[0](PrintLog)、UP[2]=T[2]、UP[3]=T[1]；PC6-PC7零参调用Nested_str，PC8返回。Nested_str构造btnType=2/showEdit/editParams(inputMode=2,maxLength=6)，str取父T[0]，将Nested_match挂入callback并调用SL.OpenCommonTipsPop。Nested_match严格要求status==1；editStr缺省空串，tostring后gsub删除空白，匹配^%d+$并tonumber；数字truthy时调用父T[1](number)；否则PrintLog记录格式错误，并ScheduleOnce(0.1)调用Nested_Helper_11，后者调用父T[2]('参数格式不对，请输入数字')。调用链：doInit_UI PC248创建本闭包捕获PrintLog；PC250创建Nested_Helper_4并将本闭包置于其UP0；Nested_Helper_10回调PC27零参调用Nested_Helper_4；Nested_Helper_4可读主体向openDialog传入两项显式值（prompt及Nested_Helper_5成功回调）。T[0]/T[1]用途可由读写位置判定，但VM帧槽偏移仍待验证；T[2]确实被作为延迟错误提示回调调用，但追踪到的包装器仅显式传两参，未找到第三实参生产者，保留占位。普通Lua草稿，不升级完整静态恢复，未运行时验证。审计docs/audit/检查点209_Nested_Anonymous调用帧复审.md。"
   },
@@ -3004,9 +3004,9 @@
     "summary": "将MoveItemToQuickUse无捕获主体内嵌根模块并按PC259-PC260导出。函数主体仍为第一阶段普通Lua草稿；根模块其他闭包创建/捕获未完成。",
     "audit_file": "docs/audit/检查点211_MoveItemToQuickUse无捕获主体接入根模块.md",
     "unresolved": [
-      "根模块PC42-PC412中其他子闭包创建与捕获仍需转为普通Lua代码",
-      "SetQuickUsePosData布尔参数和Bag返回列表第1项语义未验证",
+      "根模块PC42-PC412中大量子闭包创建和捕获仍需转为实际普通Lua代码",
       "子原型工厂与父级upvalue绑定尚未全部整合",
+      "SetQuickUsePosData布尔参数及Bag返回表第1项的业务语义未验证",
       "GUI宿主语义和若干未知VM槽位仍未验证",
       "未进行Lua解释器或游戏客户端运行时验证"
     ]
