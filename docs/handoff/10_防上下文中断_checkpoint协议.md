@@ -3173,3 +3173,14 @@ Nested_match：
 - 下一步检查点260：按PC顺序继续整合root PC86-PC211，重点处理采集配置、奖励表、共享状态cell、FormatStateChange、PC184-PC193辅助闭包及PC194-PC211采集闭包。
 
 - 检查点259补充：模块尾部重复globalExports表已删除；Builtsetting和ClearBlacklistItems分别在PC258/PC388即时导出，其余根级全局入口也按对应PC创建点写入，PC412前不再集中二次赋值。
+
+
+## 检查点 #260（2026-11-10）：PC86-PC211及PC297-PC388根模块顺序整合
+
+- root PC86-PC180的配置、奖励记录、采集状态及T[14..22]初值在root候选中按PC顺序初始化；主装配从PC181开始创建FormatStateChange，再按PC184-PC193绑定十个辅助闭包、PC194 FindMonsterCandidates、PC200 ResetGatherMonsterData、PC210 FindMonsterInCurrViewField、PC212 IsInWhitelistMap、PC214-PC258采集控制闭包。
+- T[14..22]各自只建立一个共享cell，FormatStateChange/ResetGatherMonsterData/MainLoop/InitGatherMonsters/StopGatherMonsters复用对应cell。
+- PC297-PC315顺序为GetWritablePath、ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper、AnonymousHelper_49、AnonymousHelper_32、AnonymousHelper_33、AnonymousHelper_54。
+- PC350-PC388顺序为GetMapData2DPtr、PCallHelper_2、FindBlacklistPlayer、UseItemByIndex、onDamageMsg、InstallDamageHook、DeathAutoBlacklist、BlacklistPlayerDetection、ClearBlacklistItems。T[57] live cell只创建一次；onDamageMsg独立写入MainLeftBottom.onDamageMsg。
+- 删除重复的AnonymousHelper_32/33/49/54装配块；根直接闭包仍58/58源码层绑定。静态恢复109、普通Lua草稿72、运行时验证0。
+- 未执行Lua解释器/luac，未进行游戏宿主运行时验证。
+- 下一步检查点261：审计PC1-PC412全局导出、模块字段和寄存器生命周期，核对PC86-PC180 rootSource字段与T[8]/T[11]/T[12]/T[13]/T[14..22]映射，以及PC390-PC412最终返回路径。
