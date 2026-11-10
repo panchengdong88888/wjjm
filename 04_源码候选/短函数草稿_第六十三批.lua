@@ -386,6 +386,7 @@ local function make_Nested_Helper_3(
             )
         end
     end
+end
 
 -- 父原型Nested_FFFF00：320条，捕获[moduleState,printLog,timerState,initState]。检查点207逐PC复审PC1-PC320，修正五处Text_Create返回值门控。
 local function make_Nested_FFFF00(moduleState, printLog, timerState, initState)
