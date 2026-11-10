@@ -3545,14 +3545,14 @@
   "last_checkpoint": 267,
   "checkpoint": 267,
   "drafts": 33,
-  "next": "检查点268：从函数状态清单筛选仍未完整静态恢复的普通Lua原型，优先短小、无子原型、控制流简单且有完整反汇编证据者；先确认109/110中唯一未完整项的真实原型路径及其当前草稿，不凭总数猜测。将真实函数体批量整合到主恢复稿并同步状态。",
+  "next": "检查点268：最后核对PC390-PC412的doInit_UI 20项捕获、PC411模块字段写入和PC412根表返回；交叉核对全局导出21项与模块字段10项的PC位置，确认没有提前写入、漏写、重复导出或返回恢复注册容器。doInit_UI子函数主体已完整静态恢复，本批只核对父级装配。",
   "recent_checkpoint": {
     "number": 267,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
       "04_源码候选/root_MainLeftBottom_Module.lua",
-      "docs/audit/检查点267_PC350-PC388黑名单闭包链与导出身份核对.md",
+      "docs/audit/检查点267_PC350-PC388黑名单闭包链与T57身份恢复.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
@@ -3564,7 +3564,7 @@
     "runtime_verified": 0,
     "root_direct_closures_source_bound": 58,
     "root_direct_closures_expected": 58,
-    "notes": "PC350-PC388黑名单闭包身份已静态对照账本并加入适配断言；PC357 onDamageMsg与PC360 InstallDamageHook严格区分，T57 live cell值为InstallDamageHook。未执行Lua编译或游戏运行验证。"
+    "notes": "PC350-PC388黑名单链按捕获顺序装配；onDamageMsg与InstallDamageHook保持不同函数身份，T[57] live cell保存InstallDamageHook并由BlacklistPlayerDetection捕获。T[52]数值表逐项断言；必需工厂均受requireRecoveredClosure保护。PC382/388导出及模块字段挂接均增加身份断言。未执行Lua编译或游戏运行验证。"
   },
   "latest_checkpoint": 261,
   "complete_static_reconstruction_count": 109,
@@ -3737,12 +3737,13 @@
     "root_pc86_pc211_capture_order": "static_pc_timeline_aligned",
     "root_pc212_pc296_module_fields": "static_pc_timeline_aligned",
     "root_pc297_pc315_register_order": "static_pc_timeline_aligned",
-    "root_pc350_pc388_capture_identity": "static_pc_timeline_aligned"
+    "root_pc350_pc388_capture_identity": "static_pc_timeline_aligned",
+    "root_pc350_pc388_blacklist_chain": "static_pc_timeline_aligned"
   },
   "latest": {
     "checkpoint": "267",
-    "summary": "PC350-PC388黑名单闭包链已按父寄存器捕获顺序核对。GetMapData2DPtr(T52)、PCallHelper_2、FindBlacklistPlayer(T54)、UseItemByIndex(T37)、onDamageMsg(T41并挂MainLeftBottom.onDamageMsg)、InstallDamageHook(T0/T4并写T57 live cell)、DeathAutoBlacklist(T41/T4/T55/T5)、BlacklistPlayerDetection(13项捕获并导出_G.BlacklistItems)、ClearBlacklistItems(4项捕获并导出_G.ClearBlacklistItems)均已接入。新增状态对象、T57 cell值、PC359模块字段及PC382/PC388全局导出的身份断言。严格区分PC357 onDamageMsg与PC360 InstallDamageHook；前者不是T57捕获值。",
-    "audit_file": "docs/audit/检查点267_PC350-PC388黑名单闭包链与导出身份核对.md",
+    "summary": "PC350-PC388黑名单闭包链已按PC顺序保护：GetMapData2DPtr捕获T[52]；PCallHelper_2→FindBlacklistPlayer；UseItemByIndex捕获随机传送物品表；PC357 onDamageMsg写入MainLeftBottom.onDamageMsg；PC360 InstallDamageHook写入T[57]独立live cell；DeathAutoBlacklist与BlacklistPlayerDetection按捕获顺序装配；PC382/388导出BlacklistItems/ClearBlacklistItems。增加T[52]八组二元表逐项断言、T[57]唯一cell和InstallDamageHook身份断言、onDamageMsg与InstallDamageHook区分断言，以及模块字段/全局导出身份断言。doInit_UI必需工厂也增加保护。",
+    "audit_file": "docs/audit/检查点267_PC350-PC388黑名单闭包链与T57身份恢复.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
