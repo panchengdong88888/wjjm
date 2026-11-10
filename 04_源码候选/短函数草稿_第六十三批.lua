@@ -389,7 +389,7 @@ local function make_Nested_Helper_3(
         end
     end
 
--- 父原型Nested_FFFF00：320条，捕获[moduleState,printLog,timerState,initState]。
+-- 父原型Nested_FFFF00：320条，捕获[moduleState,printLog,timerState,initState]。检查点207逐PC复审PC1-PC320，修正五处Text_Create返回值门控。
 local function make_Nested_FFFF00(moduleState, printLog, timerState, initState)
     return function Nested_FFFF00()
         local gui = GUI
@@ -447,33 +447,43 @@ local function make_Nested_FFFF00(moduleState, printLog, timerState, initState)
         local titleText = gui:Text_Create(
             titleCell, "titleText", 0.5, 15, 20, "#FF0000", "资源统计"
         )
-        gui:setAnchorPoint(titleText, 0.5, 0.5)
+        if titleText then
+            gui:setAnchorPoint(titleText, 0.5, 0.5)
+        end
 
         local initTimeCell = gui:Layout_Create(resList, "initTimeCell", 0, 0, 1, 30, 1)
         local initTimeText = gui:Text_Create(
             initTimeCell, "initTimeText", 0.5, 15, 20, "#00FF00",
             "初始时间:" .. tostring(initState.initTimeStr or "--")
         )
-        gui:setAnchorPoint(initTimeText, 0.5, 0.5)
+        if initTimeText then
+            gui:setAnchorPoint(initTimeText, 0.5, 0.5)
+        end
 
         local curTimeCell = gui:Layout_Create(resList, "curTimeCell", 0, 0, 1, 30, 1)
         local curTimeText = gui:Text_Create(
             curTimeCell, "curTimeText", 0.5, 15, 20, "#00FF00", "当前时间:--"
         )
-        gui:setAnchorPoint(curTimeText, 0.5, 0.5)
+        if curTimeText then
+            gui:setAnchorPoint(curTimeText, 0.5, 0.5)
+        end
 
         local durTimeCell = gui:Layout_Create(resList, "durTimeCell", 0, 0, 1, 30, 1)
         local durTimeText = gui:Text_Create(
             durTimeCell, "durTimeText", 0.5, 15, 20, "#00FF00", "历时:--"
         )
-        gui:setAnchorPoint(durTimeText, 0.5, 0.5)
+        if durTimeText then
+            gui:setAnchorPoint(durTimeText, 0.5, 0.5)
+        end
 
         local noteCell = gui:Layout_Create(resList, "noteCell", 0, 0, 1, 30, 1)
         local noteText = gui:Text_Create(
             noteCell, "noteText", 0.5, 15, 20, "#FFFF00",
             "（括号内数量为非绑定资源的收益）"
         )
-        gui:setAnchorPoint(noteText, 0.5, 0.5)
+        if noteText then
+            gui:setAnchorPoint(noteText, 0.5, 0.5)
+        end
 
         -- PC265-PC267创建child2：捕获resList与listWidth。
         local updateResourceRows = make_Nested_FFFFFF(resList, listWidth)
