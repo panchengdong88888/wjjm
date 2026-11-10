@@ -404,12 +404,12 @@ local function make_Nested_FFFF00(moduleState, printLog, timerState, initState)
         local gui = GUI
         local sl = SL
 
-        -- PC1-PC27：窗口已存在则关闭；resTimer取消后清为nil；K[28]=["unknown",2]是nil的VM dump序列化占位。
+        -- PC1-PC27：窗口已存在则关闭；resTimer取消后清为nil；检查点225确认K[28]=["unknown",2]是nil的VM dump序列化占位。
         if gui:Win_IsNotNull(moduleState.resWin) then
             printLog("关闭资源信息窗口")
             if timerState.resTimer then
                 sl:UnSchedule(timerState.resTimer)
-                timerState.resTimer = UNKNOWN_VALUE_SENTINEL
+                timerState.resTimer = nil
             end
             gui:Win_Close(moduleState.resWin)
             return
