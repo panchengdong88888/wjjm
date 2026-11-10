@@ -2844,3 +2844,12 @@ Nested_match：
 - 这些函数主体此前已在主源码，不重复添加；CSV本来就已标记完整静态恢复，因此总数仍108/110，运行时验证0。
 - DeathAutoBlacklist和onDamageMsg同步为主文件实际使用的独立source_file路径。
 - 下一批只处理真实未闭合问题，不重复分析CSV/审计已完整闭合的函数。
+
+
+## 检查点234（2026-11-10）：剩余未闭合原型盘点
+
+- GetMapData2DPtr（root.children[22]）PC1-PC37为完整可达路径，PC37无条件return，PC38-PC144均不可达；完整静态恢复，prototype_index旧状态已同步。
+- MoveItemToQuickUse（root.children[41]）133条活动路径及返回路径已由检查点191/222和函数状态CSV闭合；SetQuickUsePosData布尔实参与调用顺序保留字节码原样，不猜宿主语义；prototype_index旧状态已同步。
+- 确认root.children[33]、[34]、[56]、[57]及其他简单函数已在主文件；检查点230-233完成了短函数合入和状态对账。
+- 当前真正未完成仅两项：Nested_Anonymous的T[2]错误提示回调槽生产者/VM帧初始化语义；MainLeftBottom_Module根级闭包实例化、共享Upvalue cell和导出装配。
+- 完整静态恢复仍108/110，运行时验证0。下一批先追查Nested_Anonymous的T[2]证据，之后处理根模块装配。
