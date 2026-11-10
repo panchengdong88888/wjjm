@@ -6,7 +6,7 @@
 --
 -- Captures (checkpoint 146):
 --   UP[0]  module feature state (isBlacklisting)
---   UP[1]  root.children[52] onDamageMsg callback
+--   UP[1]  root T[57] live cell; PC360 writes InstallDamageHook before PC368 captures it
 --   UP[2]  blacklist-player state table
 --   UP[3]  death -> auto-blacklist callback
 --   UP[4]  blacklist actor lookup helper (returns match flag and display name)
@@ -28,7 +28,7 @@
 
 local function make_BlacklistPlayerDetection(
     featureState,
-    onDamageMsg,
+    installDamageHookCell,
     blacklistState,
     onDeathAutoBlacklist,
     findBlacklistActor,
@@ -43,7 +43,8 @@ local function make_BlacklistPlayerDetection(
 )
     local function BlacklistPlayerDetection()
         featureState.isBlacklisting = true
-        onDamageMsg()
+        -- Dereference the same parent T[57] cell captured at PC368.
+        installDamageHookCell.value()
 
         local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
         if not mainActorID then
