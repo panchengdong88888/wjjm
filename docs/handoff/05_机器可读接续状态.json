@@ -3542,16 +3542,16 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 270,
-  "checkpoint": 270,
+  "last_checkpoint": 271,
+  "checkpoint": 271,
   "drafts": 33,
-  "next": "检查点271：核查主恢复稿剩余root45_MainLoop.lua三处与root22_GetMapData2DPtr.lua两处sources注册语句，区分多段导出和重复词法块；对所有sources键做唯一性审计，确认sourceFunction实际读取的最终版本。之后继续root PC1-PC412连续初始化/返回源码收敛，保持作者源码与恢复适配层明确分离。",
+  "next": "检查点272：对MainLeftBottom_恢复源码.lua所有MainLeftBottomRecovered.sources注册键做全量重复扫描；确认没有同名键后写入覆盖，并逐一核对根装配区sourceFunction调用只依赖唯一来源块。完成后回到根模块PC1-PC412连续可读源码组织与局部变量/字段赋值顺序收敛。",
   "recent_checkpoint": {
-    "number": 270,
+    "number": 271,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点270_主恢复稿重复词法块清理.md",
+      "docs/audit/检查点271_MainLoop共享cell版本与root22注册去重.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
       "docs/handoff/12_根模块闭包装配表.json",
@@ -3563,7 +3563,7 @@
     "runtime_verified": 0,
     "root_direct_closures_source_bound": 58,
     "root_direct_closures_expected": 58,
-    "notes": "只清理被后续sources注册覆盖的旧词法块及错误来源标题；没有将删除重复副本计为新增函数恢复。"
+    "notes": "MainLoop唯一注册版本与rootCells[15]/[17]共享cell参数契约一致；root22工厂唯一注册。静态完成数不变，未执行Lua/luac或游戏运行。"
   },
   "latest_checkpoint": 261,
   "complete_static_reconstruction_count": 109,
@@ -3574,7 +3574,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 271,
+  "next_checkpoint": 272,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3741,12 +3741,14 @@
     "root_pc390_pc412_capture_and_return": "static_pc_timeline_aligned",
     "root_pc389_pc411_t59": "raw_vm_dump_aligned",
     "doInit_ui_capture_20_slots": "static_register_timeline_aligned",
-    "shadowed_source_blocks": "four_obsolete_blocks_removed;remaining_root45_and_root22_registry_multiplicity_pending"
+    "shadowed_source_blocks": "four_obsolete_blocks_removed;remaining_root45_and_root22_registry_multiplicity_pending",
+    "root45_mainloop_shared_cell": "checkpoint250_factory_preserved",
+    "source_registry_duplicate_audit": "root45_and_root22_duplicates_removed;global_scan_pending"
   },
   "latest": {
-    "checkpoint": "270",
-    "summary": "清理MainLeftBottom_恢复源码.lua中被后续版本覆盖的旧词法块：删除短函数草稿_第六十三批旧块、root47_BlacklistPlayerDetection旧块、root25_DeathAutoBlacklist完全重复块、root52_onDamageMsg旧块；保留每个来源的最新注册版本。纠正doInit_UI源块错误标记（原误标root28，实际注册键为短函数草稿_第六十三批）。删除约55,193字符；主恢复稿约293,891字符/7,258行。未修改保留函数的业务逻辑，静态完成数不变。仍需调查root45_MainLoop三次与root22_GetMapData2DPtr两次注册语句。",
-    "audit_file": "docs/audit/检查点270_主恢复稿重复词法块清理.md",
+    "checkpoint": "271",
+    "summary": "清理root45_MainLoop三个来源注册版本中的两个旧普通Lua草稿，保留检查点250共享cell工厂版本。根装配传入rootCells[15]/rootCells[17]，保留版本通过UPVALUE_8.value/UPVALUE_10.value读写，两个旧版把cell当普通table/number使用，会覆盖正确版本并破坏装配。另删除root22_GetMapData2DPtr后续重复注册块，保留首个带PC范围说明的工厂。清理后root45和root22来源键各一处；MainLoop工厂与GetMapData2DPtr工厂定义各一处。",
+    "audit_file": "docs/audit/检查点271_MainLoop共享cell版本与root22注册去重.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3806,7 +3808,7 @@
     "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。",
     "checkpoint261_gather_status_scope_fixed": true
   },
-  "root_assembly_checkpoint": 270,
+  "root_assembly_checkpoint": 271,
   "root_pc1_pc42_sequential_source_restored": true,
   "root_pc43_pc85_register_ordered": true,
   "root_pc86_pc211_cells_capture_ordered": true,
@@ -3817,5 +3819,7 @@
   "root_pc389_t59_reread_preserved": true,
   "root_pc390_pc410_capture_slots_verified": true,
   "root_pc399_up8_gather_config_corrected": true,
-  "main_recovery_source_duplicate_blocks_cleaned": true
+  "main_recovery_source_duplicate_blocks_cleaned": true,
+  "mainloop_shared_cell_factory_unique": true,
+  "root22_factory_unique": true
 }
