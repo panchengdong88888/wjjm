@@ -123,49 +123,34 @@ local resetCounterD = 0
 local resetOptionalValue = nil
 local resetTextValue = ""
 
--- PC181：FormatStateChange闭包捕获PrintLog(root T[4])与currentState(root T[14])。
--- 子函数在PrintLog正常返回后写回currentState共享单元。
-local formatStateChange = make_FormatStateChange(PrintLog, currentState)
+-- PC181：创建root.children[8] / FormatStateChange闭包。
+-- UPVALUE[0]捕获root T[4]=PrintLog；UPVALUE[1]捕获root T[14]=currentState共享单元。
+-- 子原型在PrintLog正常返回后写回该共享单元；不得用值传参的独立局部变量替代共享cell。
 
--- PC184-PC193：创建无捕获辅助闭包，供后续模块函数引用。
-local setTargetID = make_SetTargetID()
-local clearTargetID = make_ClearTargetID_2()
-local getMainPlayerID = make_GetMainPlayerID()
-local getPlayerPosition = make_GetPlayerPosition()
-local getPlayerMapPosition = make_GetPlayerMapPosition()
-local distanceCalculation = make_DistanceCalculation()
-local isDie = make_IsDie()
-local getOwnerIDText = make_GetOwnerIDText()
-local getOwnerID = make_GetOwnerID()
-local getOwnerDescription = make_GetOwnerDescription()
+-- PC184-PC193：依序创建无捕获辅助闭包：
+-- PC184 root.children[35] SetTargetID
+-- PC185 root.children[56] ClearTargetID_2
+-- PC186 root.children[39] GetMainPlayerID
+-- PC187 root.children[18] GetPlayerPosition
+-- PC188 root.children[44] GetPlayerMapPosition
+-- PC189 root.children[11] DistanceCalculation
+-- PC190 root.children[29] IsDie
+-- PC191 root.children[7] GetOwnerIDText
+-- PC192 root.children[38] GetOwnerID
+-- PC193 root.children[43] GetOwnerDescription
+-- 这些闭包在root帧中创建为寄存器值，后续由MainLoop/其他闭包捕获；
+-- 本文件不虚构它们的定义或全局导出。
 
--- PC194-PC199：创建FindMonsterCandidates并按序捕获：
--- UPVALUE[0]=GetPlayerPosition、[1]=IsDie、[2]=GetPlayerMapPosition、
--- [3]=DistanceCalculation、[4]=gatherConfig。
-local findMonsterCandidates = make_FindMonsterCandidates(
-    getPlayerPosition,
-    isDie,
-    getPlayerMapPosition,
-    distanceCalculation,
-    gatherConfig
-)
+-- PC194-PC199：创建root.children[28] / FindMonsterCandidates并按序捕获：
+-- UPVALUE[0]=root T[27] GetPlayerPosition；
+-- UPVALUE[1]=root T[30] IsDie；
+-- UPVALUE[2]=root T[28] GetPlayerMapPosition；
+-- UPVALUE[3]=root T[29] DistanceCalculation；
+-- UPVALUE[4]=root T[8] gatherConfig。
 
--- PC200-PC209：创建ResetGatherMonsterData并捕获九个共享单元：
--- [0]=resettableTable，[1]=resetCounterA，[2]=resetCounterB，
--- [3]=root T[25]预停止回调（业务身份保留中性名），
--- [4]=resetCounterC，[5]=resetCounterD，[6]=resetOptionalValue，
--- [7]=resetTextValue，[8]=PrintLog。
-local resetGatherMonsterData = make_ResetGatherMonsterData(
-    resettableTable,
-    resetCounterA,
-    resetCounterB,
-    preStopAction,
-    resetCounterC,
-    resetCounterD,
-    resetOptionalValue,
-    resetTextValue,
-    PrintLog
-)
-
--- 上述make_*仅用于表达root层闭包创建/捕获关系；并非此文件内已实现的函数定义。
--- 对应子原型源码见各自候选文件；本根模块仍是分段草稿，未做运行时验证。
+-- PC200-PC209：创建root.children[26] / ResetGatherMonsterData并捕获九个共享单元：
+-- UPVALUE[0]=root T[15] 空表；[1]=T[16]初值0；[2]=T[17]初值0；
+-- [3]=T[25]预停止回调（业务身份保留中性名）；
+-- [4]=T[19]初值false；[5]=T[20]初值0；[6]=T[21]初值nil；
+-- [7]=T[22]初值空字符串；[8]=T[4] PrintLog。
+-- 该子原型的复位写入顺序和回调调用契约已在检查点162独立闭合。
