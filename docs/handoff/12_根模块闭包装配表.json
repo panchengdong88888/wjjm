@@ -12084,5 +12084,23 @@
     ],
     "runtime_verified": 0,
     "notes": "静态顺序/来源核对；新增断言未执行，未运行Lua/luac或目标游戏。"
+  },
+  "root_assembly_checkpoint_275": {
+    "date": "2026-11-10",
+    "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
+    "main_recovery_blob_sha": "e7cfeefdf7ead3b4d3450d5bbec48fe75459a7c4",
+    "audit_file": "docs/audit/检查点275_根模块58个直接闭包必需性保护覆盖核对.md",
+    "root_direct_child_closures_expected": 58,
+    "captured_factory_closures_expected": 36,
+    "captured_factory_closures_fail_fast_guarded": 36,
+    "no_capture_direct_bindings_expected": 22,
+    "no_capture_direct_bindings_fail_fast_guarded": 22,
+    "require_recovered_closure_unique_names": 58,
+    "missing_required_guards": 0,
+    "extra_required_names": 0,
+    "duplicate_required_names": 0,
+    "guard_before_first_assignment_order_issues": 0,
+    "runtime_verified": 0,
+    "notes": "所有58个根直接闭包在源码中均有requireRecoveredClosure保护；LuaSendMsg保护已在检查点274补齐。静态审计不等于运行时成功。"
   }
 }
