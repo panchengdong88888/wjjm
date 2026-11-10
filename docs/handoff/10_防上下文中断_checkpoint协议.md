@@ -2686,3 +2686,15 @@ Nested_match：
 - 其余已静态完成函数包括仓库空页查找、目标ID清理、账号ID验证及两个子闭包、采集初始化。
 - 本批只做源码集中整合，不增加完整静态恢复数量；运行时验证仍为0。
 - 下一批先处理剩余短原型Nested_Anonymous（8条），再处理LuaSendMsg、MoveItemToQuickUse、StorageItems和两个大模块。
+
+
+## 检查点 #221（2026-11-10）：LuaSendMsg 92指令完整静态恢复
+
+- 原型：`root.children[12]`（legacy `root/13`），92条物理指令、34常量、无子原型、2项捕获、6个固定参数。
+- 参数顺序：`hookKey,param1,param2,param3,param4,messageId`；构造消息表包含`recog=0`、`msgId`及四个param字段。
+- UPVALUE[0]为包含Blocklist/SendHookList的状态表；UPVALUE[1]为日志回调。业务原名未知，保留中性命名，不虚构API身份。
+- `table.find(Blocklist,tonumber(hookKey))`命中只跳过日志构造，不阻止后续hook或网络发送。
+- 未命中时按ipairs遍历param1..param4；字符串加单引号，其他值tostring，table.concat后调用日志回调。
+- PC63-PC70对`SendHookList[hookKey]`执行两次索引：第一次truthy存在性门控，第二次读取hook并进行type检查；候选源码已按此修正。
+- 对function类型hook执行`pcall(hook,hookKey,messageId,message)`；只有pcall成功且第二返回值严格为true才提前拦截，否则通过`global.networkCtl:SendMsg`原六参数转发。
+- 92条指令完整静态恢复；完整静态数量更新为103/110（93.6%）；运行时验证仍为0。
