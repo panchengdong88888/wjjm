@@ -7662,7 +7662,7 @@
     "binding_policy": "Only capture_count=0 direct children; captured factories remain pending until shared live-cell bindings are implemented.",
     "runtime_verified": false
   },
-  "next_action": "检查点268：核对PC390-PC412的doInit_UI 20项父捕获、PC411写入MainLeftBottom.doInit、PC412返回根模块表，并复核21项全局导出/10项模块字段的PC位置。",
+  "next_action": "检查点268：核对PC390-PC412的doInit_UI 20项父捕获、PC411写入MainLeftBottom.doInit、PC412返回根模块表，并复核21项全局导出及10项模块字段的PC写入位置。",
   "root_assembly_checkpoint_247": {
     "direct_child_closures_expected": 22,
     "direct_child_closures_source_bound": 22,
@@ -11570,7 +11570,7 @@
       }
     ],
     "distinct_function_identities": {
-      "PC357": "onDamageMsg message-handler closure; module field only",
+      "PC357": "onDamageMsg message-handler closure; assigned to MainLeftBottom.onDamageMsg at PC359",
       "PC360": "InstallDamageHook installer closure; parent T[57] value",
       "PC368_UP1": "captures rootCells[57] live cell containing InstallDamageHook, not onDamageMsg"
     },
