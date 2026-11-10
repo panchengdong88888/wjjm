@@ -3250,3 +3250,16 @@ Nested_match：
 - 新建`docs/audit/检查点265_PC212-PC296模块字段与UI闭包挂接恢复.md`；更新主恢复稿、根候选、机器状态、闭包装配表、函数状态CSV和原型结构树。
 - 完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或游戏运行。
 - 下一步检查点266：核对PC297-PC340配置文件读写包装工厂及T[44..51]捕获身份；PC316-PC349二维数值表按字节码原值保留，不猜测用途。
+
+
+## 检查点 #266（2026-11-10）：PC297-PC315配置包装链与寄存器捕获恢复
+
+- 主恢复文件新增`rootConfigRegisters`适配影子表，按PC297-PC315明确模拟T[42..51]。
+- T[42]/T[43]分别为blacklist_distance.txt与gather_monster_count.txt；PC297 GetWritablePath写T[44]；PC298 ReadNumericConfig捕获T[44]写T[45]；PC300 PCallHelper捕获T[44]写T[46]；PC302 FileExistCheck_pcall_wrapper捕获T[44]写T[47]。
+- PC304 AnonymousHelper_49捕获[T45,T42]写T48；PC307 AnonymousHelper_32捕获[T46,T42]写T49；PC310 AnonymousHelper_33捕获[T45,T43]写T50；PC313 AnonymousHelper_54捕获[T46,T43]写T51。
+- 八个函数/工厂结果全部经`requireRecoveredClosure`校验；缺少工厂时中止装配，不将nil或上一个寄存器值错误注入。
+- doInit_UI的PC390-PC410捕获UP[6]/UP[9]/UP[10]/UP[12]/UP[14]/UP[16]改为从rootConfigRegisters[48]/[50]/[49]/[44]/[51]/[47]读取，保持PC创建的函数对象身份。
+- rootConfigRegisters只是恢复适配影子表，不声称为原作者Lua数据结构；函数体仍位于各自候选来源。
+- 新建`docs/audit/检查点266_PC297-PC315配置包装链与寄存器捕获恢复.md`；更新主恢复稿、根候选注释、机器状态、闭包装配表、函数状态CSV及结构树。
+- 完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或游戏运行。
+- 下一步检查点267：恢复PC350-PC388黑名单闭包链，区分onDamageMsg处理函数与InstallDamageHook闭包及T[57] live cell，核对BlacklistPlayerDetection的13项捕获。
