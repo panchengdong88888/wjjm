@@ -4,10 +4,9 @@
 -- “代理与回调短函数_第四批.lua”词法块中定义，不在此重复实现。
 
 -- root.children[51] / legacy root/52 / FindBlacklistPlayer
--- UP[0] = PCallHelper_2；vararg_flag=1，零固定参数，只读取首个可变参数。
+-- UP[0] = PCallHelper_2；fixed_param_count=1，targetId为唯一固定参数。
 local function make_FindBlacklistPlayer(getFriendProxySafely)
-    return function(...)
-        local targetId = ...
+    return function(targetId)
         local friendProxy = getFriendProxySafely()
         if not friendProxy then
             return false
