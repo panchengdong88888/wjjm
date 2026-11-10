@@ -5076,3 +5076,91 @@ end
 
   MainLeftBottomRecovered.sources["04_源码候选/root35_AnonymousHelper_33_ScheduleWrapper.lua"] = { AnonymousHelper_33_Schedule = AnonymousHelper_33_Schedule }
 end
+
+
+-- ============================================================================
+-- 检查点229：优先补入已完整静态恢复的短函数/简单闭包
+-- 本批仅按现有PC级审计与原型索引整合；未进行目标运行时验证。
+-- ============================================================================
+
+do
+    -- root.children[32] / legacy root/33 / AnonymousHelper_32
+    -- 6条指令；UP[0]捕获root T[46]，UP[1]捕获root T[42]。
+    -- PC1-PC4：调用UP[0](UP[1], 第一个显式参数)并返回全部结果。
+    -- PC5-PC6位于直接return之后，不可达。
+    local function make_AnonymousHelper_32(upvalue0, upvalue1)
+        return function(arg1, ...)
+            return upvalue0(upvalue1, arg1)
+        end
+    end
+
+    MainLeftBottomRecovered.sources["root/33_AnonymousHelper_32.lua"] = {
+        make_AnonymousHelper_32 = make_AnonymousHelper_32
+    }
+end
+
+do
+    -- root.children[53] / legacy root/54 / ScheduleOnce
+    -- 7条指令；零Upvalue；两个显式参数callback与delay。
+    -- PC1-PC2读取SL.ScheduleOnce并保留SL作为self；
+    -- PC3-PC5转发两个参数并返回全部调用结果；PC6-PC7不可达。
+    local function ScheduleOnce(callback, delay)
+        return SL:ScheduleOnce(callback, delay)
+    end
+
+    MainLeftBottomRecovered.sources["root/54_ScheduleOnce.lua"] = {
+        ScheduleOnce = ScheduleOnce
+    }
+end
+
+do
+    -- root.children[54] / legacy root/55 / AnonymousHelper_54
+    -- 6条指令；UP[0]=PCallHelper闭包，UP[1]="gather_monster_count.txt"。
+    -- PC1-PC4调用PCallHelper(fileName, firstArg)，原样转发全部返回值；
+    -- PC5-PC6位于直接return之后，不可达。
+    local function make_AnonymousHelper_54(pcallHelper, fileName)
+        return function(firstArg, ...)
+            return pcallHelper(fileName, firstArg)
+        end
+    end
+
+    MainLeftBottomRecovered.sources["root/55_AnonymousHelper_54.lua"] = {
+        make_AnonymousHelper_54 = make_AnonymousHelper_54
+    }
+end
+
+do
+    -- root.children[22] / legacy root/23 / GetMapData2DPtr
+    -- 144条物理指令，但PC38-PC144均位于PC37无条件return之后；
+    -- 可达行为仅为坐标有效性检查、相同坐标返回0、Chebyshev距离限幅。
+    -- UP[0]由root PC350捕获，但活动路径从未读取，工厂参数仅保留捕获位置。
+    local function make_GetMapData2DPtr(unusedCapturedValue)
+        return function GetMapData2DPtr(x1, y1, x2, y2, maxDistance, ...)
+            if not x1 or not y1 or not x2 or not y2 or not maxDistance then
+                return nil
+            end
+
+            if x1 == x2 and y1 == y2 then
+                return 0.0
+            end
+
+            if maxDistance <= 0 then
+                return nil
+            end
+
+            local dx = math.abs(x2 - x1)
+            local dy = math.abs(y2 - y1)
+            local distance = math.max(dx, dy)
+
+            if maxDistance < distance then
+                return nil
+            end
+
+            return distance
+        end
+    end
+
+    MainLeftBottomRecovered.sources["04_源码候选/root22_GetMapData2DPtr.lua"] = {
+        make_GetMapData2DPtr = make_GetMapData2DPtr
+    }
+end
