@@ -5,7 +5,7 @@
 -- This source models the reachable behavior only; it is not runtime-validated.
 
 local function make_GetMapData2DPtr(unusedCapturedValue)
-    return function GetMapData2DPtr(x1, y1, x2, y2, maxDistance)
+    return function(x1, y1, x2, y2, maxDistance)
         -- PC1-PC10: all four coordinates and maxDistance must be truthy.
         if not x1 or not y1 or not x2 or not y2 or not maxDistance then
             return nil
