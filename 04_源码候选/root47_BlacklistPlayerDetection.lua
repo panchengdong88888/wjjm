@@ -10,8 +10,8 @@
 --   UP[2]  blacklist-player state table
 --   UP[3]  death -> auto-blacklist callback
 --   UP[4]  blacklist actor lookup helper (returns match flag and display name)
---   UP[5]  distance calculation helper (five arguments; exact argument semantics
---          still require final independent call-site audit)
+--   UP[5]  root.children[22] helper (VM index label GetMapData2DPtr);
+--          reachable PC1-PC37 computes a Chebyshev distance with maxDistance
 --   UP[6]  2.0 second alert threshold
 --   UP[7]  PrintLog wrapper
 --   UP[8]  random-teleport item lookup/use helper
@@ -22,9 +22,9 @@
 --
 -- Important: the VM dump's ["unknown",2] is a serialized nil sentinel, not
 -- a literal string. This draft uses nil in the corresponding comparisons.
--- PC 74-141 has a mapped player scan, but the exact five-argument distance
--- helper contract and two-value blacklist helper consumption remain marked
--- provisional below. Do not treat this draft as author-original source.
+-- The complete 216-PC control flow and 13 parent captures were reconciled
+-- at checkpoint 186. Local identifiers remain reconstruction labels, not
+-- recovered author-original names. Do not treat this as runtime-validated.
 
 local function make_BlacklistPlayerDetection(
     featureState,
@@ -183,7 +183,7 @@ local function make_BlacklistPlayerDetection(
 end
 
 
--- Review notes (checkpoint 184):
+-- Review notes (checkpoint 186):
 -- * PC63-PC73 captures both returns from FIND_IN_VIEW_PLAYER_LIST: the player list and its explicit count; PC74-PC77 loops from 1 through that returned count.
 -- * Nil actors and actorID == mainActorID are skipped.
 -- * UP[4](actorID) supplies (isBlacklisted, displayName); only the first
@@ -199,7 +199,8 @@ end
 --   also exit the callback; they do not continue scanning later actors.
 -- * Only actors rejected by the distance helper continue to the next loop
 --   iteration. There is no post-loop aggregation/currentTarget cache.
--- * root.children[22] has a reachable PC1-PC37 Chebyshev-distance path;
---   PC37 returns unconditionally, making PC38-PC144 unreachable.
--- * Still a static candidate, not runtime-validated; other parent/host
+-- * UP[5] points to root.children[22], whose reachable PC1-PC37 path computes
+--   Chebyshev distance and applies maxDistance; its PC38-PC144 tail is dead.
+-- * All 216 physical PCs and the 13 parent captures have been reconciled.
+-- * This is complete static reconstruction, not runtime-validated; host
 --   contracts and full-project integration remain untested.
