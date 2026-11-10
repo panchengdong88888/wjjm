@@ -2,8 +2,7 @@
 -- Prototype: root.children[45] (legacy root/46)
 -- 417 physical VM instructions; 41 constants; no child prototypes.
 --
--- STATUS: first-pass ordinary Lua draft. This is NOT original author source,
--- NOT a complete CFG proof, and NOT runtime validated.
+-- STATUS: complete static reconstruction candidate; checkpoint250 adds shared-cell factory adaptation. This is NOT original author source and NOT runtime validated. The 417-PC CFG was statically closed at checkpoints152-158.
 -- Confirmed parent-capture mapping (zero-based UPVALUE slots):
 --   UPVALUE_0  = running flag (root T[18], InitGatherMonsters sets true,
 --                StopGatherMonsters sets false)
@@ -35,14 +34,16 @@
 -- The identities above are grounded in root closure descriptors, helper creation
 -- sites, function-state records, and the root/19 + root/27 state-helper captures.
 
-local function MainLoop()
-    if not UPVALUE_0 then
+-- Checkpoint250: shared-cell factory; mutable captured parent registers are passed by identity.
+local function make_MainLoop(UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALUE_4, UPVALUE_5, UPVALUE_6, UPVALUE_7, UPVALUE_8, UPVALUE_9, UPVALUE_10, UPVALUE_11, UPVALUE_12, UPVALUE_13, UPVALUE_14, UPVALUE_15, UPVALUE_16, UPVALUE_17, UPVALUE_18, UPVALUE_19, UPVALUE_20, UPVALUE_21)
+    return function MainLoop()
+    if not UPVALUE_0.value then
         return
     end
 
     -- White-list map: leave the gather state machine and reset its data.
     if IsInWhitelistMap() then
-        if UPVALUE_1 ~= UPVALUE_2.IDLE then
+        if UPVALUE_1.value ~= UPVALUE_2.IDLE then
             UPVALUE_3("在白名单地图, 停止引怪")
             UPVALUE_4(UPVALUE_2.IDLE)
             UPVALUE_5()
@@ -53,7 +54,7 @@ local function MainLoop()
     --------------------------------------------------------------------------
     -- IDLE: collect candidate monster IDs.
     --------------------------------------------------------------------------
-    if UPVALUE_1 == UPVALUE_2.IDLE then
+    if UPVALUE_1.value == UPVALUE_2.IDLE then
         UPVALUE_3("扫描怪物中")
 
         local candidates = UPVALUE_7()
@@ -62,24 +63,24 @@ local function MainLoop()
             return
         end
 
-        UPVALUE_8 = {}
+        UPVALUE_8.value = {}
         local mainPlayerID = UPVALUE_6()
 
         for _, actor in ipairs(candidates) do
             -- Preserve the captured GetOwnerID predicate and its truth value.
             if not UPVALUE_9(actor, mainPlayerID) then
-                table.insert(UPVALUE_8, actor:GetID())
+                table.insert(UPVALUE_8.value, actor:GetID())
             end
         end
 
-        if #UPVALUE_8 == 0 then
+        if #UPVALUE_8.value == 0 then
             UPVALUE_3("没有可攻击的怪物")
             return
         end
 
-        UPVALUE_10 = 1
-        UPVALUE_11 = 0
-        UPVALUE_3(string.format("开始引怪，目标数量: %d", #UPVALUE_8))
+        UPVALUE_10.value = 1
+        UPVALUE_11.value = 0
+        UPVALUE_3(string.format("开始引怪，目标数量: %d", #UPVALUE_8.value))
         UPVALUE_4(UPVALUE_2.GATHERING)
         return
     end
@@ -87,58 +88,58 @@ local function MainLoop()
     --------------------------------------------------------------------------
     -- GATHERING: resume a pending owner wait, then scan the target list.
     --------------------------------------------------------------------------
-    if UPVALUE_1 == UPVALUE_2.GATHERING then
+    if UPVALUE_1.value == UPVALUE_2.GATHERING then
         UPVALUE_3("引怪中")
 
-        if UPVALUE_12 then
+        if UPVALUE_12.value then
             local now = os.time()
 
-            if now < UPVALUE_13 then
+            if now < UPVALUE_13.value then
                 UPVALUE_3(string.format(
                     "等待归属变更中: %s (还剩 %d 秒)",
-                    UPVALUE_14,
-                    UPVALUE_13 - now
+                    UPVALUE_14.value,
+                    UPVALUE_13.value - now
                 ))
                 return
             end
 
             -- Confirmed helper: FindMonsterInCurrViewField has no formal
             -- parameters and returns an ID-keyed actor map. This call site passes
-            -- UPVALUE_12 as an extra argument; the helper does not read it.
+            -- UPVALUE_12.value as an extra argument; the helper does not read it.
             -- The VM call site supplies two register slots here; their values are not
             -- semantically consumed by the zero-parameter helper. Keep the
             -- recovered helper invocation itself argument-free in this draft.
             local actorMap = UPVALUE_15()
-            local actor = actorMap and actorMap[UPVALUE_16]
+            local actor = actorMap and actorMap[UPVALUE_16.value]
             local mainPlayerID = UPVALUE_6()
 
             if actor and UPVALUE_17(actor, mainPlayerID) then
                 UPVALUE_3(string.format(
                     "怪物 %s 归属已变更为自己",
-                    UPVALUE_14
+                    UPVALUE_14.value
                 ))
             else
                 UPVALUE_3(string.format(
                     "怪物 %s 归属未变更或已离开视野",
-                    UPVALUE_14
+                    UPVALUE_14.value
                 ))
             end
 
-            UPVALUE_12 = false
-            UPVALUE_13 = 0
-            UPVALUE_16 = 0
-            UPVALUE_14 = ""
-            UPVALUE_10 = UPVALUE_10 + 1
+            UPVALUE_12.value = false
+            UPVALUE_13.value = 0
+            UPVALUE_16.value = 0
+            UPVALUE_14.value = ""
+            UPVALUE_10.value = UPVALUE_10.value + 1
         end
 
-        -- PC159-PC160 passes UPVALUE_12 as one extra argument. The helper has
+        -- PC159-PC160 passes UPVALUE_12.value as one extra argument. The helper has
         -- no formal parameters and ignores it, but retain the call-site value.
-        local actorMap = UPVALUE_15(UPVALUE_12)
+        local actorMap = UPVALUE_15(UPVALUE_12.value)
         local mainPlayerID = UPVALUE_6()
         local allOwnersResolved = true -- PC161; PC263 clears this on an unowned target.
 
-        for index = UPVALUE_10, #UPVALUE_8 do
-            local targetID = UPVALUE_8[index]
+        for index = UPVALUE_10.value, #UPVALUE_8.value do
+            local targetID = UPVALUE_8.value[index]
             local actor = actorMap and actorMap[targetID]
 
             if not actor then
@@ -147,7 +148,7 @@ local function MainLoop()
                     index,
                     tostring(targetID)
                 ))
-                UPVALUE_10 = index + 1
+                UPVALUE_10.value = index + 1
 
             elseif not UPVALUE_18(actor) then
                 -- This wrapper is truthy for a living actor in this call path.
@@ -156,7 +157,7 @@ local function MainLoop()
                     index,
                     tostring(targetID)
                 ))
-                UPVALUE_10 = index + 1
+                UPVALUE_10.value = index + 1
 
             else
                 local monsterName = actor:GetName()
@@ -176,7 +177,7 @@ local function MainLoop()
                         tostring(ownerID),
                         tostring(ownerDescription)
                     ))
-                    UPVALUE_10 = index + 1
+                    UPVALUE_10.value = index + 1
 
                 elseif UPVALUE_17(actor, mainPlayerID) then
                     UPVALUE_3(string.format(
@@ -187,15 +188,15 @@ local function MainLoop()
                         tostring(ownerID),
                         tostring(ownerDescription)
                     ))
-                    UPVALUE_11 = UPVALUE_11 + 1
-                    UPVALUE_10 = index + 1
+                    UPVALUE_11.value = UPVALUE_11.value + 1
+                    UPVALUE_10.value = index + 1
 
                 else
                     allOwnersResolved = false
 
                     -- PC264 stores the current index before attempting to lock;
                     -- PC310-PC311 advance it after either the success or failure path.
-                    UPVALUE_10 = index
+                    UPVALUE_10.value = index
                     UPVALUE_3(string.format(
                         "锁定怪物 %d: %s (ID: %s, 归属: %s)",
                         index,
@@ -210,11 +211,11 @@ local function MainLoop()
                     local accepted = UPVALUE_20(targetID)
 
                     if accepted then
-                        UPVALUE_12 = true
-                        UPVALUE_13 = os.time()
+                        UPVALUE_12.value = true
+                        UPVALUE_13.value = os.time()
                             + UPVALUE_21.ATTACK_WAIT_TIME
-                        UPVALUE_16 = targetID
-                        UPVALUE_14 = monsterName
+                        UPVALUE_16.value = targetID
+                        UPVALUE_14.value = monsterName
 
                         UPVALUE_3(string.format(
                             "开始等待 %s 归属变更 (等待 %d 秒)",
@@ -230,23 +231,23 @@ local function MainLoop()
 
                     -- Both SetTargetID outcomes advance the cursor and let the
                     -- numeric for-loop continue; neither branch returns here.
-                    UPVALUE_10 = index + 1
+                    UPVALUE_10.value = index + 1
                 end
             end
         end
 
-        -- PC166 prepares the numeric loop counter (UPVALUE_10 - 1); PC313
+        -- PC166 prepares the numeric loop counter (UPVALUE_10.value - 1); PC313
         -- increments/tests it and repeats at PC167. The loop therefore visits
-        -- UPVALUE_10..#UPVALUE_8. The R2 flag starts true at PC161 and is cleared
+        -- UPVALUE_10.value..#UPVALUE_8.value. The R2 flag starts true at PC161 and is cleared
         -- at PC263 when an unowned target is encountered.
         if allOwnersResolved then
-            if UPVALUE_10 > #UPVALUE_8 then
+            if UPVALUE_10.value > #UPVALUE_8.value then
                 UPVALUE_3("所有怪物归属已获取，切换到攻击状态")
-                UPVALUE_10 = 1
+                UPVALUE_10.value = 1
                 UPVALUE_4(UPVALUE_2.ATTACKING)
                 return
             end
-        elseif UPVALUE_10 > #UPVALUE_8 then
+        elseif UPVALUE_10.value > #UPVALUE_8.value then
             UPVALUE_3("怪物列表处理完毕但未全部获取归属，重新扫描")
             UPVALUE_4(UPVALUE_2.IDLE)
             UPVALUE_5()
@@ -259,15 +260,15 @@ local function MainLoop()
     --------------------------------------------------------------------------
     -- ATTACKING: locate the next surviving actor by its stored target ID.
     --------------------------------------------------------------------------
-    if UPVALUE_1 == UPVALUE_2.ATTACKING then
+    if UPVALUE_1.value == UPVALUE_2.ATTACKING then
         UPVALUE_3("攻击中")
 
         local actorMap = UPVALUE_15()
         -- PC354 initializes the no-living-target flag; PC359/405 form the
-        -- numeric for-loop over UPVALUE_10..#UPVALUE_8.
+        -- numeric for-loop over UPVALUE_10.value..#UPVALUE_8.value.
 
-        for index = UPVALUE_10, #UPVALUE_8 do
-            local targetID = UPVALUE_8[index]
+        for index = UPVALUE_10.value, #UPVALUE_8.value do
+            local targetID = UPVALUE_8.value[index]
             local actor = actorMap and actorMap[targetID]
 
             if actor and UPVALUE_18(actor) then
@@ -294,7 +295,7 @@ local function MainLoop()
                 index,
                 tostring(targetID)
             ))
-            UPVALUE_10 = index + 1
+            UPVALUE_10.value = index + 1
         end
 
         UPVALUE_3("所有目标怪物已死亡或离开视野，切换到空闲状态")
@@ -304,4 +305,7 @@ local function MainLoop()
     end
 end
 
-return MainLoop
+    end
+end
+
+return make_MainLoop
