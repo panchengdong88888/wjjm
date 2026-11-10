@@ -4,6 +4,7 @@
 -- 规模：412条物理指令、109常量、58个直接子原型
 -- 检查点192-198：根模块分段普通Lua草稿，PC1-PC412均已建立分段记录；非作者原文逐字恢复，未运行时验证。
 -- 状态：不是完整根模块源码，尚未运行时验证。
+-- 检查点236：58个直接子原型闭包创建点与135个OP_387 live-cell捕获已建表，见docs/handoff/12_根模块闭包装配表.json。
 
 local MainLeftBottom = {}
 _G.MainLeftBottom = MainLeftBottom
