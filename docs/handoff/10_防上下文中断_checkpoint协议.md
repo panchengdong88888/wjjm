@@ -2151,3 +2151,20 @@
 - PC270创建ShowHideAllButtons（3项捕获），捕获描述从PC271开始，下一批继续。
 - 统计维持普通Lua草稿72、完整静态恢复103/110（93.6%）、运行时验证0。
 - 下一步：root PC271-PC340；复用已完成函数体审计，不重复分析。
+
+
+## 检查点 #197（2026-11-10）：根模块 PC271-PC340
+
+- 依据：GitHub 默认分支 main 当前版本的 corrected phase3 反汇编、原型索引、闭包映射、机器状态与函数状态 CSV；没有重复执行 LZW、VM dump、原型统计或闭包基础映射。
+- 源码文件：`04_源码候选/root_MainLeftBottom_Module.lua`，已追加本批分段普通 Lua 注释/表达式。
+- PC271-PC273：ShowHideAllButtons 捕获父 T[3]、T[1]、T[0]，与子函数已恢复的 timerState/buttonMap/UI state 顺序一致；PC274 写入模块 `destroy` 字段。
+- PC276-PC279：AccountIDValidation 捕获 T[4]=PrintLog、T[5]=ShowLocalNoticeByType，并写入 `MainLeftBottom.main`。
+- PC280-PC282：构造单元素 `{"随机传送石"}` 名称数组，后续由 UseItemByIndex 捕获。
+- PC283-PC285：装载 2.0、0.01、30.0，后续由 BlacklistPlayerDetection 捕获。
+- PC286-PC294：初始化 lastAttacker/lastHp/deathHandled/alertAt/nextTryAt/noStoneWarned/distance 状态表，并写入 `MainLeftBottom.blacklist`。
+- PC295-PC303：确认 blacklist_distance.txt、gather_monster_count.txt 两个文件名，以及 GetWritablePath、ReadNumericConfig、PCallHelper、FileExistCheck 闭包的创建/捕获。
+- PC304-PC315：补录两个文件读取辅助闭包及其他短闭包的父寄存器捕获来源；未超出已有函数审计结论推断业务语义。
+- PC316-PC340：构造 R52 二维数值表的前六个二元素项：`{1,0}`、`{-1,0}`、`{0,1}`、`{0,-1}`、`{1,1}`、`{1,-1}`。不推断其业务名称；PC341-PC349尚需补齐最后两项并组装外层数组。
+- 状态：根模块仍为分段普通 Lua 草稿；本批不增加完整静态恢复数量或运行时验证数量。
+- 下一步：PC341-PC349，随后 PC350-PC412。
+- 持久化验证：源码、CSV、机器状态 JSON 均在各自更新后重新 fetch，确认新 SHA 和内容可读。
