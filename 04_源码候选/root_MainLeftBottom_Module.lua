@@ -79,6 +79,7 @@ local gatherConfig = {
 }
 
 -- PC90-PC95：计算 math.floor(3600 / 0.2)，结果为18000。
+local rootRegister11 = math.floor(3600 / 0.2)
 -- root PC408将该值捕获给doInit_UI的UPVALUE[17]；其在UI中的具体用途尚未闭合。
 
 -- PC96-PC167：先创建空表，再逐项构造14条三元素奖励记录。
