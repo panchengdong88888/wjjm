@@ -13,7 +13,7 @@
   "major_targets": {
     "root.children[45]": "MainLoop：417条；检查点152-158形成并完成完整静态恢复（未运行时验证）。CFG报告统计314个入口可达节点、103个静态不可达节点。全部22个upvalue父root T寄存器生产者已闭合：运行标记、当前状态/常量、PrintLog、FormatStateChange、ResetGatherMonsterData、GetMainPlayerID、FindMonsterCandidates、目标ID数组、GetOwnerID、扫描游标/自己归属计数、等待状态字段、FindMonsterInCurrViewField、GetOwnerIDText、IsDie、GetOwnerDescription、SetTargetID、配置表。检查点153/154闭合GATHERING/ATTACKING循环；155/156校正入口等待与未归属锁定路径；157完成全CFG分区总账。静态完整，未运行时验证。",
     "root.children[46]": "DiuItems：169条；普通Lua草稿已独立复审并标记完整静态恢复（未运行时验证）；源码04_源码候选/root46_DiuItems.lua；不计运行时验证。",
-    "root.children[42]": "419-instruction doInit_UI; legacy root/43; first-pass ordinary Lua draft; 10 parent upvalue identities recognized; Nested_Anonymous call sites from Nested_Helper_4/7 confirmed (prompt text + callback closure), but mapping to T[0]/T[1]/T[2] and T[2] producer remain unresolved; Nested_FFFF00 remaining 320 instructions and Nested_Helper_3 refresh closure remain next.",
+    "root.children[42]": "doInit_UI：419条、23个子原型；检查点88首版普通Lua草稿，检查点187修订MoneyProxy快照键为名称、第二组资源由Nested_find(name)计数、SL:Schedule(callback,1.0)顺序、Attach_UITop七参数占位及Button_Create父节点/坐标捕获。仍为普通Lua草稿，未运行时验证；20个UPVALUE中部分身份未确认，Nested_Anonymous的T[0]/T[1]/T[2]生产者/帧映射未决。Nested_FFFF00（child[3]，320条）主体仍待批量恢复；Nested_Helper_3（child[3].children[3]，168条）已完整静态恢复，不重复处理。",
     "root.children[8]": "FormatStateChange：10条；检查点176逐指令闭合格式化、单参回调及回调后状态写回；检查点177交叉root初始化、MainLoop捕获映射/调用点及PrintLog本体，确认UP0=PrintLog（root T[4]），UP1=MainLoop共享currentState单元（root T[14]，初值IDLE）。完整静态恢复，未运行时验证；PrintLog的SL.Print分支无调用指令，不推断可见输出。",
     "root.children[9]": "ReadNumericConfig：45条；检查点130闭合三类失败分支均清理返回槽后返回nil，纯数字字符串才tonumber；检查点178闭合UP0=GetWritablePath（root.children[2]）及root/50 AnonymousHelper_49以blacklist_distance.txt调用并转发返回值。完整静态恢复，未运行时验证；GetWritablePath拼接顺序已由检查点127独立闭合。",
     "root.children[14]": "FindMonsterInCurrViewField：27条；检查点131完成27条PC映射，确认捕获root.children[29] IsDie包装器对存活actor返回truthy，完成静态恢复，未运行时验证。",
@@ -47,7 +47,7 @@
     "root.children[25]": "DeathAutoBlacklist：47条+子原型6条；检查点181闭合UP0=root T[41]黑名单状态表、UP1=T[4] PrintLog、UP2=T[55] FindBlacklistPlayer、UP3=T[5] ShowLocalNoticeByType。取出lastAttacker后清空共享字段；检查记录/name及黑名单命中；未命中时输出日志/本地通知，并按0..5循环以0.5*index安排6次ScheduleOnce，子闭包捕获记录表并调用RequestAddBlacklistByName(record.name)。完整静态恢复，未运行时验证。",
     "root.children[22]": "GetMapData2DPtr（144条，UP0捕获root T[52]但活动路径不读取）：检查点184确认PC1-PC37是唯一可达路径；检查五实参、相同坐标返回0、maxDistance<=0返回nil、计算Chebyshev max(abs(dx),abs(dy))、超限返回nil否则返回距离；PC37无条件return，PC38-PC144不可达死尾部。完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点186已完成BlacklistPlayerDetection（root.children[47]）216条指令全CFG及13项捕获闭合，升级完整静态恢复；运行时验证仍为0。MainLoop（root.children[45]）在函数状态CSV中已是完整静态恢复（检查点152-158），不应作为下一待办重复分析。下一步转向root.children[42] doInit_UI（419条，23个子原型）现有首版普通Lua草稿，重点继续核查Nested_Anonymous的T[0]/T[1]/T[2]捕获生产者、Nested_FFFF00剩余320条及Nested_Helper_3刷新闭包；先定位已有草稿文件并按未闭合区段续做。",
+  "next_action": "检查点187已修订root.children[42] doInit_UI既有普通Lua草稿，纠正货币/背包快照数据流、Schedule参数顺序及UI父节点实参。下一批优先恢复root.children[42].children[3] Nested_FFFF00（320条）父函数普通Lua主体；复用已完成的Nested_FFFFFF、Nested_Helper_3、Nested_string、Nested_Helper_2、Nested_UnSchedule等子原型，不重复反汇编。Nested_Anonymous的T[0]/T[1]/T[2]继续保留未决。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -120,7 +120,7 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "186"
+    "last_checkpoint": "187"
   },
   "static_recovered_functions": [
     {
@@ -2218,28 +2218,24 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "186",
+    "checkpoint": "187",
     "targets": [
-      "root.children[47]"
+      "root.children[42]"
     ],
-    "status": "Promoted BlacklistPlayerDetection to complete static reconstruction after reconciling all 216 physical instructions, 13 parent captures, both player-list returns, HP state machine, scan-loop branches, alert/retry and teleport paths.",
-    "audit_file": "docs/audit/检查点186_BlacklistPlayerDetection216条指令完整静态复核.md",
+    "status": "Revised existing doInit_UI ordinary Lua draft: corrected money snapshot key, inventory resource counter source, Schedule callback/interval order, Attach_UITop placeholder call and Button_Create parent argument.",
+    "audit_file": "docs/audit/检查点187_doInit_UI草稿数据流与GUI参数校正.md",
     "files": [
-      "04_源码候选/root47_BlacklistPlayerDetection.lua",
-      "docs/audit/检查点186_BlacklistPlayerDetection216条指令完整静态复核.md",
-      "02_基础索引/03_函数状态清单.csv"
+      "04_源码候选/短函数草稿_第六十三批.lua",
+      "02_基础索引/03_函数状态清单.csv",
+      "docs/audit/检查点187_doInit_UI草稿数据流与GUI参数校正.md"
     ],
     "findings": [
-      "13 upvalues mapped from root T[2],T[57],T[41],T[58],T[55],T[53],T[38],T[4],T[56],T[39],T[5],T[40],T[37].",
-      "FIND_IN_VIEW_PLAYER_LIST returns both players and playerCount; playerCount is the numeric loop upper bound.",
-      "A false/nil configured distance bypasses coordinate reads and the helper; helper nil skips only the current actor.",
-      "Alert/retry/teleport logic is inside the scan loop; the first eligible blacklisted actor causes the callback to return after retry/success/failure."
-    ],
-    "counts": {
-      "ordinary_lua_drafts": 71,
-      "complete_static_reconstruction": 102,
-      "runtime_verified": 0
-    }
+      "PC59-PC85 stores MoneyProxy counts in initSnapshot[name], not initSnapshot[moneyId].",
+      "PC92-PC97 obtains the second resource group count through child[0] Nested_find(name), then stores it under the resource name.",
+      "PC158-PC166 Schedule call order is callback then 1.0-second interval.",
+      "PC181-PC183 calls Attach_UITop with seven explicit arguments; their producers remain unresolved and are represented by non-runnable TODO placeholders.",
+      "Button factory captures uiParent/xBase/yBase/buttonMap/buttonHandlers and calls Button_Create with uiParent,key,x,y,texture."
+    ]
   },
   "corrections": [
     {
@@ -2784,16 +2780,16 @@
       "legacy_path": "root/43",
       "name": "doInit_UI",
       "source_file": "04_源码候选/短函数草稿_第六十三批.lua",
-      "audit_file": "docs/audit/检查点88_doInit_UI首版草稿.md",
-      "status": "first_pass_draft_pending_parent_capture_gui_argument_and_child_closure_contract_review_not_runtime_verified",
+      "audit_file": "docs/audit/检查点187_doInit_UI草稿数据流与GUI参数校正.md",
+      "status": "first_pass_draft_revised_checkpoint_187_pending_attach_arguments_and_remaining_capture_review_not_runtime_verified",
       "physical_instructions": 419,
       "constant_count": 105,
       "child_count": 23,
       "notes": [
-        "PC1-PC3 plugin initialization notice; PC19-PC58 initTime/initTimeStr and pcall-protected os.time/os.date; PC59-PC99 MoneyProxy initial snapshot loops.",
-        "PC100 Builtsetting; PC102-PC145 button config and ScheduleOnce child closure; PC146-PC166 cruiseTimer replacement and 1.0-second Schedule; PC167-PC180 NPCStorageProxy RequestStorageData.",
-        "PC181-PC195 Attach_UITop and MainProperty._ui.Panel_mini_chat position/size reads; PC196-PC340 button configuration and child closure wiring; PC379-PC418 hide button creation and click callback.",
-        "Parent upvalue identities, exact nested table shape, ScheduleOnce/GUI argument stacks, child capture values and button layout formula remain provisional; no runtime validation."
+        "419条父函数主体普通Lua草稿；检查点187修正PC59-PC85 MoneyProxy数量快照按名称保存，PC92-PC97第二组资源由Nested_find(name)统计并按名称保存。",
+        "PC158-PC166调用SL:Schedule(callback,1.0)；PC181-PC183确认Attach_UITop七个实参但其来源未闭合，草稿用TODO占位，不可运行。",
+        "PC338-PC345闭合child9捕获uiParent/xBase/yBase/buttonMap/buttonHandlers，Button_Create显式接收uiParent、key、x、y、texture；三组行偏移40/0/80。",
+        "20个父捕获中部分业务身份未确认；Nested_Anonymous T[0]/T[1]/T[2]来源/帧映射未决；未运行时验证。"
       ]
     },
     {
@@ -2910,41 +2906,45 @@
   ],
   "draft_function_count": 71,
   "ordinary_lua_draft_functions": 71,
-  "last_checkpoint": "186",
-  "checkpoint": "186",
+  "last_checkpoint": "187",
+  "checkpoint": "187",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 186,
+    "number": 187,
     "date": "2026-11-10",
     "artifacts": [
-      "04_源码候选/root47_BlacklistPlayerDetection.lua",
-      "docs/audit/检查点186_BlacklistPlayerDetection216条指令完整静态复核.md",
+      "04_源码候选/短函数草稿_第六十三批.lua",
+      "docs/audit/检查点187_doInit_UI草稿数据流与GUI参数校正.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
     "draft_prototypes_touched": 1,
     "draft_prototype_total": 71,
     "complete_static_reconstructions": 102,
     "runtime_verified": 0,
-    "notes": "完成root.children[47] 216条指令全CFG和13项捕获；确认FIND_IN_VIEW_PLAYER_LIST双返回值、distance配置false/nil旁路、循环内首个目标处理后return。"
+    "notes": "修订doInit_UI既有草稿的数据流与GUI实参；草稿总数不增加，完整静态恢复数量不变，运行时验证仍为0。"
   },
   "latest_checkpoint": {
-    "checkpoint": "186",
-    "summary": "BlacklistPlayerDetection 216条指令全CFG、13项父捕获、双返回玩家列表、HP死亡状态机、循环内首个目标处理与退出分支全部闭合，升级完整静态恢复（未运行时验证）。",
-    "audit_file": "docs/audit/检查点186_BlacklistPlayerDetection216条指令完整静态复核.md",
+    "checkpoint": "187",
+    "summary": "doInit_UI首版普通Lua草稿数据流/GUI参数校正：货币快照按名称保存，第二组背包资源使用Nested_find，Schedule参数顺序修正，Attach_UITop七参数保留TODO，Button_Create补回uiParent实参；不升级完整静态恢复。",
+    "audit_file": "docs/audit/检查点187_doInit_UI草稿数据流与GUI参数校正.md",
     "unresolved": [
-      "目标宿主运行时验证"
+      "Attach_UITop七个实参的生产者与业务含义",
+      "Nested_Anonymous T[0]/T[1]/T[2]捕获来源及VM帧映射",
+      "doInit_UI其余未识别UPVALUE及GUI宿主运行时语义",
+      "Nested_FFFF00 320条父函数主体的普通Lua恢复",
+      "宿主运行时验证"
     ]
   },
   "complete_static_reconstruction_count": 102,
-  "complete_static_reconstruction": "95/110 (86.4%)",
+  "complete_static_reconstruction": "102/110 (92.7%)",
   "progress_reconciled": {
     "source_of_counts": "以02_基础索引/03_函数状态清单.csv函数状态列为统计依据。",
     "ordinary_lua_draft_functions": 71,
     "complete_static_reconstruction_functions": 102,
     "runtime_verified_functions": 0,
-    "checkpoint": 186,
-    "note": "检查点186完成BlacklistPlayerDetection 216条指令全CFG与13项捕获闭合；升级完整静态恢复，未运行时验证。",
+    "checkpoint": 187,
+    "note": "检查点187修订doInit_UI既有草稿，不新增草稿函数、不升级完整静态恢复；纠正货币/背包快照数据流、Schedule参数顺序及UI父节点实参。",
     "ordinary_lua_drafts": 71,
     "complete_static_reconstruction": 102,
     "runtime_verified": 0
