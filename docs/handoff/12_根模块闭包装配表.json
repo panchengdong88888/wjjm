@@ -11870,5 +11870,31 @@
     ],
     "correction": "UP8 is gatherConfig, not FindMonsterInCurrViewField. doInit_UI passes UP8 and UP9 to Nested_InitGatherMonsters(config,getThreshold), whose body writes config.GATHER_THRESHOLD. The main assembly now injects rootSource.gatherConfig and asserts its three bytecode-derived fields.",
     "runtime_verified": false
+  },
+  "root_assembly_checkpoint_272": {
+    "date": "2026-11-10",
+    "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
+    "main_recovery_blob_sha": "29cd8400e8d34d918fe7b71246b446f41af4965d",
+    "audit_file": "docs/audit/检查点272_源码注册表唯一性与闭包工厂来源核对.md",
+    "source_registry_assignments": 53,
+    "source_registry_unique_paths": 53,
+    "duplicate_source_registry_paths": 0,
+    "source_function_literal_calls": 37,
+    "source_function_distinct_paths": 31,
+    "unresolved_source_function_paths": 0,
+    "unresolved_source_function_symbols": 0,
+    "bind_direct_calls": 22,
+    "unresolved_bind_direct_paths_or_symbols": 0,
+    "duplicate_explicit_exports_within_source_block": 0,
+    "notes": [
+      "扫描覆盖sources[path]=__exports和sources[path]={...}两种注册形式。",
+      "不同do/end来源词法块的同名local函数由path/symbol隔离，不构成同一词法作用域覆盖。",
+      "不修改业务函数体；本次是静态源码文本核对，未执行Lua/luac或目标游戏运行。"
+    ],
+    "static_complete_functions": 109,
+    "ordinary_lua_drafts": 72,
+    "root_direct_closures_source_bound": 58,
+    "runtime_verified": 0,
+    "next_action": "检查点273：核对root PC1-PC42初始化与主装配入口的对象身份和词法作用域，再继续将PC1-PC412可确认语句收敛为连续恢复适配执行体。"
   }
 }
