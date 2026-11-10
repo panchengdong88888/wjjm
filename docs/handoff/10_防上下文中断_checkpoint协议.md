@@ -2041,3 +2041,17 @@
 - 状态仍为首版普通Lua草稿（已修订），不升级完整静态恢复，不新增草稿函数数。
 - 统计：普通Lua草稿71；完整静态恢复102/110（92.7%）；运行时验证0。
 - 下一步：优先批量恢复`root.children[42].children[3]` / `Nested_FFFF00`（320条）父函数普通Lua主体，复用已完成的子原型候选。
+
+
+## 检查点 #188（2026-11-10）：Nested_FFFF00捕获工厂与资源刷新链调用契约校正
+
+- 对象：`root.children[42].children[3]` / `Nested_FFFF00`（320条、72常量、5子原型）；复用检查点87/93/94/95/96/97/118/119已有反汇编和复核，不重复VM提取。
+- 更新：`04_源码候选/短函数草稿_第六十二批.lua`、`04_源码候选/短函数草稿_第五十六批.lua`、`04_源码候选/资源统计刷新链_第六十四批.lua`、`02_基础索引/03_函数状态清单.csv`，新增审计`docs/audit/检查点188_Nested_FFFF00捕获工厂与资源刷新链调用契约校正.md`。
+- Nested_FFFF00父捕获四项按doInit_UI PC330-PC334映射为[moduleState,printLog,timerState,initState]，源码改为工厂参数，不再引用未定义UP[]。
+- child4/child2/child3分别以已核实捕获创建：`make_Nested_UnSchedule(printLog,timerState,moduleState)`、`make_Nested_FFFFFF(resList,screenW*0.6)`、`make_Nested_Helper_3(moduleState,timerState,curTimeText,durTimeText,initState,moneyProxy,moneyRows,formatNumber,itemRows,Nested_string)`。
+- Nested_FFFFFF 65条指令候选改为显式两项捕获工厂，按layoutOption分组，恢复cell/text名称、索引公式、坐标、锚点及返回映射。
+- Nested_FFFF00 PC20-PC21在取消resTimer后写入`['unknown',2]`标记；草稿改用UNKNOWN_VALUE_SENTINEL，不误写nil。
+- 跨函数差异：doInit_UI PC85写`initSnapshot[name]`，Nested_Helper_3 PC106读`initSnapshot[moneyId]`。没有MoneyProxy实现可证明两者等价；保留两端指令表达，不自行修复。
+- Nested_FFFF00仍为普通Lua草稿，不升级完整静态恢复；GUI宿主标志语义/尾参、MoneyProxy返回语义、unknown哨兵仍待验证。
+- 统计：普通Lua草稿71；完整静态恢复102/110（92.7%）；运行时验证0。
+- 下一步：转向`root.children[50]` StorageItems（224条）父函数，复核剩余记账表达式、过滤循环与LuaSendMsg参数；复用已完成的两个子原型。
