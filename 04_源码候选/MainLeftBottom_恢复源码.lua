@@ -3302,3 +3302,572 @@ end
 -- 尚未做：全部候选函数的最终去重/根级闭包实例化/全局导出调用链集成、
 -- Lua解释器语法检查、引擎环境运行验证。不要把本文件误当作最终可执行脚本。
 return MainLeftBottomRecovered
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/root9_ReadNumericConfig.lua
+-- 短函数/辅助闭包集中整合；各工厂参数按对应原型捕获顺序注入。
+-- 本段只表示独立原型源码，不代表已完成根模块所有闭包实例化。
+-- ============================================================================
+do
+-- root.children[9] / legacy root/10
+-- Reconstruction name: ReadNumericConfig
+-- 45 physical instructions; complete static reconstruction, not runtime-validated.
+-- UP[0] = GetWritablePath closure (root.children[2]), captured at root PC298.
+
+local function make_ReadNumericConfig(GetWritablePath)
+    return function(fileName, ...)
+        -- PC 1-4: acquire the FileUtils singleton before resolving the path.
+        local fileUtils = cc.FileUtils:getInstance()
+
+        -- PC 5-7: resolve the supplied path through the captured helper.
+        local fullPath = GetWritablePath(fileName)
+
+        local fileExists = fileUtils:isFileExist(fullPath)
+        if not fileExists then
+            -- PC 11-14: clear the return slot and return nil.
+            return nil
+        end
+
+        -- PC 15-20: read the file contents and inspect its Lua type.
+        local content = fileUtils:getStringFromFile(fullPath)
+        if type(content) ~= "string" then
+            -- PC 21-24: clear the return slot and return nil.
+            return nil
+        end
+
+        -- PC 25-36: remove all Lua whitespace, then test for ASCII digits only.
+        local normalized = string.gsub(content, "%s", "")
+        local isUnsignedInteger = string.match(normalized, "^%d+$")
+
+        -- PC 41-43: a matching digit string is converted and returned as a number.
+        if isUnsignedInteger then
+            return tonumber(normalized)
+        end
+
+        -- PC 37-40: failed pattern match clears the return slot and returns nil.
+        return nil
+    end
+end
+
+-- Static reconstruction notes:
+-- * Parent root PC297 creates GetWritablePath (root.children[2]) with no captures;
+--   root PC298 creates this closure and PC299 captures that helper as UP[0].
+-- * Root PC295 supplies the filename "blacklist_distance.txt" to a wrapper
+--   closure created at root PC304. That wrapper captures this function and the
+--   filename at PC305-PC306, then calls ReadNumericConfig(fileName) and forwards
+--   its return values. The wrapper is root.children[49] / AnonymousHelper_49.
+-- * The false isFileExist branch, non-string file-read branch, and failed
+--   digit-pattern branch each clear the return slot before returning nil.
+-- * Only a non-empty sequence of ASCII decimal digits reaches tonumber.
+-- * The prototype is vararg-capable, but extra varargs are not read.
+-- * GetWritablePath is independently complete-static at checkpoint 127: it returns writablePath .. fileName.
+-- * No target-runtime validation; FileUtils behavior remains host-dependent.
+
+  local __exports = {}
+  if make_ReadNumericConfig ~= nil then __exports["make_ReadNumericConfig"] = make_ReadNumericConfig end
+  MainLeftBottomRecovered.sources["04_源码候选/root9_ReadNumericConfig.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/短函数草稿_第十二批.lua
+-- 短函数/辅助闭包集中整合；各工厂参数按对应原型捕获顺序注入。
+-- 本段只表示独立原型源码，不代表已完成根模块所有闭包实例化。
+-- ============================================================================
+do
+-- MainLeftBottom(2).lua - short helper drafts, batch 12
+-- Contains mixed-status helper reconstructions; see each function's status comment. None are runtime-validated.
+-- Local names are reconstruction names, not claimed original identifiers.
+
+-- root.children[11] / legacy root/12 / DistanceCalculation
+-- Status: complete static reconstruction; not runtime-validated.
+-- 25 physical instruction records; PC1-PC23 active path is fully mapped, PC24-PC25 are unreachable tail returns.
+-- Returns a large sentinel when either point is absent.
+local function DistanceCalculation(pointA, pointB)
+    if not pointA then
+        return 99999
+    end
+    if not pointB then
+        return 99999
+    end
+
+    local dx = math.abs(pointA.x - pointB.x)
+    local dy = math.abs(pointA.y - pointB.y)
+    return math.max(dx, dy)
+end
+
+-- root.children[14] / legacy root/15 / FindMonsterInCurrViewField
+-- Intentionally not drafted in this batch: its captured predicate's identity
+-- and the precise SL method contract need a separate pass.
+
+-- root.children[31] / legacy root/32 / IsInWhitelistMap
+-- Status: complete static reconstruction; not runtime-validated.
+-- 28 physical instruction records; PC1-PC27 active path, PC28 is a tail return after PC27.
+-- The explicit whitelist contains only 土城.
+local function IsInWhitelistMap()
+    if SL:GetMetaValue("IN_SAFE_AREA") then
+        return true
+    end
+
+    local mapName = SL:GetMetaValue("MAP_NAME")
+    local whitelist = { "土城" }
+
+    for _, allowedMapName in ipairs(whitelist) do
+        if mapName == allowedMapName then
+            return true
+        end
+    end
+
+    return false
+end
+
+-- root.children[35] / legacy root/36 / SetTargetID
+-- Status: complete static reconstruction; not runtime-validated.
+-- Vararg flag is set, but only the first argument is read by the body.
+local function SetTargetID(targetID)
+    if not global.Facade then
+        return false
+    end
+
+    local playerInputProxy =
+        global.Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)
+
+    if not playerInputProxy then
+        return false
+    end
+
+    playerInputProxy:SetTargetID(
+        targetID,
+        global.MMO.SELETE_TARGET_TYPE_FIND
+    )
+    return true
+end
+
+  local __exports = {}
+  if DistanceCalculation ~= nil then __exports["DistanceCalculation"] = DistanceCalculation end
+  if IsInWhitelistMap ~= nil then __exports["IsInWhitelistMap"] = IsInWhitelistMap end
+  if SetTargetID ~= nil then __exports["SetTargetID"] = SetTargetID end
+  MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第十二批.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/短函数草稿_第十三批.lua
+-- 短函数/辅助闭包集中整合；各工厂参数按对应原型捕获顺序注入。
+-- 本段只表示独立原型源码，不代表已完成根模块所有闭包实例化。
+-- ============================================================================
+do
+-- MainLeftBottom(2).lua - short function drafts, batch 13
+-- Status: first-pass readable Lua drafts; static review pending; not runtime-validated.
+-- Canonical paths use zero-based root.children[n].
+-- Captured values are represented by factory parameters where their original local names
+-- are not established. These are reconstruction names, not recovered source identifiers.
+
+-- root.children[10] / legacy root/11 / SetButtonVisibilityState
+-- Status: complete static reconstruction; not runtime-validated.
+-- Captures: UP[0]=root T[0] (state object), UP[1]=root T[1] (button map).
+local function make_SetButtonVisibilityState(moduleState, buttonMap)
+    return function()
+        -- PC 1-2: set the captured module/UI state flag.
+        moduleState.isHidden = true
+
+        -- PC 3-14: walk buttonMap keys and make each mapped GUI element visible.
+        for key in pairs(buttonMap) do
+            GUI:setVisible(buttonMap[key], true)
+        end
+    end
+end
+
+-- root.children[26] / legacy root/27 / ResetGatherMonsterData
+-- Status: complete static reconstruction; not runtime-validated.
+-- Captures (in slot order): root T[15], T[16], T[17], T[25], T[19],
+-- T[20], T[21], T[22], T[4]. T[4] is PrintLog; most state-cell names remain neutral.
+local function make_ResetGatherMonsterData(
+    resetTableCell,
+    zeroCell1,
+    zeroCell2,
+    resetAction,
+    zeroCell3,
+    zeroCell4,
+    zeroCell5,
+    emptyStringCell,
+    printLog
+)
+    return function()
+        -- PC 1-2: replace the captured table with a fresh table.
+        resetTableCell = {}
+
+        -- PC 3-6 and PC 10-17: clear captured numeric/string cells.
+        zeroCell1 = 0
+        zeroCell2 = 0
+
+        -- PC 7-8: invoke the captured no-argument reset action.
+        resetAction()
+
+        zeroCell3 = 0
+        zeroCell4 = 0
+        zeroCell5 = 0
+        emptyStringCell = ""
+
+        -- PC 18-20: report completion.
+        printLog("数据已重置")
+    end
+end
+
+-- root.children[27] / legacy root/28 / StopGatherMonsters
+-- Status: complete static reconstruction; not runtime-validated.
+-- Captures (in slot order): root T[18], T[3], T[25], T[23], T[13], T[35], T[4].
+local function make_StopGatherMonsters(
+    runningFlag,
+    timerState,
+    preStopAction,
+    setGatherState,
+    gatherStates,
+    resetGatherMonsterData,
+    printLog
+)
+    return function()
+        -- PC 1-2: clear the captured running flag.
+        runningFlag = false
+
+        -- PC 3-13: cancel and clear the gather timer if one exists.
+        local timer = timerState.gatherTimer
+        if timer then
+            SL:UnSchedule(timer)
+            timerState.gatherTimer = nil
+        end
+
+        -- PC 14-24: reset related state, transition to IDLE, and notify.
+        preStopAction()
+        setGatherState(gatherStates.IDLE)
+        resetGatherMonsterData()
+        printLog("引怪功能已停止")
+    end
+end
+
+-- root.children[14] / legacy root/15 / FindMonsterInCurrViewField
+-- Captures UP[0]=root T[30], which is the previously reconstructed IsDie helper.
+local function make_FindMonsterInCurrViewField(isAlive)
+    return function()
+        -- PC 1-8: request the current view-field list; false/nil becomes an empty list.
+        local monsters = SL:FindMonsterInCurrViewField(true, true)
+        if not monsters then
+            monsters = {}
+        end
+
+        -- PC 9-26: retain actors accepted by the captured predicate and with a truthy ID.
+        local result = {}
+        for _, actor in ipairs(monsters) do
+            if isAlive(actor) then
+                local actorID = actor:GetID()
+                if actorID then
+                    result[actorID] = actor
+                end
+            end
+        end
+
+        return result
+    end
+end
+
+-- Review notes:
+-- * SetButtonVisibilityState's captured table is traversed with pairs; GUI:setVisible
+--   receives the mapped value and true. The captured names are intentionally generic.
+-- * ResetGatherMonsterData performs captured-cell assignments in VM slot order.
+--   resetAction and notify are retained as generic callbacks because their business
+--   identities are not proven by this prototype alone.
+-- * StopGatherMonsters clears the running flag, conditionally cancels gatherTimer,
+--   invokes the captured pre-stop action, sets IDLE, calls the reset helper, then notifies.
+-- * FindMonsterInCurrViewField calls SL:FindMonsterInCurrViewField(true, true), applies
+--   captured IsDie (whose established truthy result denotes an alive actor), then indexes
+--   the result by actor:GetID().
+-- * SetButtonVisibilityState, ResetGatherMonsterData, and StopGatherMonsters remain
+--   first-pass drafts. FindMonsterInCurrViewField was independently checked against
+--   all 27 physical PCs and its captured IsDie helper; it is complete static
+--   reconstruction (not runtime-validated). Original local names are not claimed.
+
+  local __exports = {}
+  if make_SetButtonVisibilityState ~= nil then __exports["make_SetButtonVisibilityState"] = make_SetButtonVisibilityState end
+  if make_ResetGatherMonsterData ~= nil then __exports["make_ResetGatherMonsterData"] = make_ResetGatherMonsterData end
+  if make_StopGatherMonsters ~= nil then __exports["make_StopGatherMonsters"] = make_StopGatherMonsters end
+  if make_FindMonsterInCurrViewField ~= nil then __exports["make_FindMonsterInCurrViewField"] = make_FindMonsterInCurrViewField end
+  MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第十三批.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/短函数草稿_第十四批.lua
+-- 短函数/辅助闭包集中整合；各工厂参数按对应原型捕获顺序注入。
+-- 本段只表示独立原型源码，不代表已完成根模块所有闭包实例化。
+-- ============================================================================
+do
+-- MainLeftBottom(2).lua - short function drafts, batch 14
+-- Status: readable first-pass reconstruction. Static review pending; not runtime-validated.
+-- Canonical zero-based paths are shown alongside legacy one-based labels.
+-- Generic upvalue parameter names are deliberate where closure slots are not fully named.
+
+-- root.children[36] / legacy root/37 / GetAvailableStoragePage
+-- 51条指令；1项捕获：root PC68捕获父root T[4]，此处按用途命名为notify。
+-- 检查点190：PC1-PC51完整静态复核；未运行时验证。
+local function make_GetAvailableStoragePage(notify)
+    return function GetAvailableStoragePage()
+        local storageProxy = NPCStorageProxy
+        if not storageProxy then
+            notify("仓库代理未初始化")
+            return
+        end
+
+        local maxPage = storageProxy:GetMaxPage()
+
+        -- PC15-PC48：升序扫描每一页，返回第一个仍有可用格子的页码。
+        for page = 1, maxPage do
+            local pageData = storageProxy:GetStorageDataByPage(page)
+            local currentCount = 0
+            if pageData then
+                currentCount = #pageData
+            end
+
+            -- 每轮均读取配置容量；配置为假值时回退MMO的单页容量常量。
+            local pageCapacity = GUIDefine.STORAGE_PER_PAGE_MAX
+            if not pageCapacity then
+                pageCapacity = global.MMO.NPC_STORAGE_MAX_PAGE
+            end
+
+            local openSize = storageProxy:GetOpenSize()
+            local remainingOpenSize =
+                openSize - (page - 1) * pageCapacity
+
+            -- PC39-PC41：单页上限=min(单页配置容量, 尚余开放格数)。
+            local pageLimit = remainingOpenSize
+            if pageCapacity < remainingOpenSize then
+                pageLimit = pageCapacity
+            end
+
+            -- PC42-PC47：页上限必须大于0，且必须大于当前占用数；
+            -- 命中后立即返回当前页码。
+            if pageLimit > 0 and pageLimit > currentCount then
+                return page
+            end
+        end
+
+        -- PC49-PC51：遍历耗尽时无显式返回值（nil）。
+        return
+    end
+end
+
+-- root.children[37] / legacy root/38 / DestroyUI
+-- Status: complete static reconstruction; not runtime-validated.
+-- Captures: UP[0]=root T[0] UI state; UP[1]=root T[3] timer state;
+-- UP[2]=root T[1] button map.
+local function make_DestroyUI(uiState, timerState, buttonMap)
+    return function()
+        uiState.isHidden = false
+
+        local timer = timerState.resTimer
+        if timer then
+            SL:UnSchedule(timer)
+            timerState.resTimer = nil
+        end
+
+        uiState.resWin = nil
+        GUI:Win_CloseAll()
+
+        for key in pairs(buttonMap) do
+            GUI:setVisible(buttonMap[key], true)
+        end
+    end
+end
+
+-- root.children[40] / legacy root/41 / ShowHideAllButtons
+-- Status: complete static reconstruction; not runtime-validated.
+-- Captures: UP[0]=root T[3] timer state; UP[1]=root T[1] button map;
+-- UP[2]=root T[0] UI state containing the single hidebut control.
+local function make_ShowHideAllButtons(timerState, buttonMap, uiState)
+    return function()
+        if timerState.rewardTimer then
+            SL:UnSchedule(timerState.rewardTimer)
+            timerState.rewardTimer = nil
+        end
+
+        if timerState.cruiseTimer then
+            SL:UnSchedule(timerState.cruiseTimer)
+            timerState.cruiseTimer = nil
+        end
+
+        for key in pairs(buttonMap) do
+            GUI:setVisible(buttonMap[key], true)
+        end
+
+        if uiState.hidebut then
+            GUI:setVisible(uiState.hidebut, false)
+            uiState.hidebut = nil
+        end
+    end
+end
+
+-- Review notes:
+-- * GetAvailableStoragePage在检查点190已逐PC闭合：逐页取#pageData或0，按min(pageCapacity,openSize-(page-1)*pageCapacity)计算页上限，首个pageLimit>currentCount且pageLimit>0的页码立即返回；无可用页返回nil。
+-- * DestroyUI's instruction order is clear: clear isHidden; cancel resTimer if
+--   present; nil resTimer/resWin; GUI:Win_CloseAll(); iterate UP[1] and set
+--   each mapped control visible.
+-- * ShowHideAllButtons cancels rewardTimer and cruiseTimer independently,
+--   restores the UP[1] control map, then conditionally hides controls in UP[2]
+--   when hidebut is truthy and clears hidebut.
+-- * DestroyUI与ShowHideAllButtons保持各自原有静态状态；GetAvailableStoragePage在检查点190升级为完整静态恢复。三者均未运行时验证。
+
+  local __exports = {}
+  if make_GetAvailableStoragePage ~= nil then __exports["make_GetAvailableStoragePage"] = make_GetAvailableStoragePage end
+  if make_DestroyUI ~= nil then __exports["make_DestroyUI"] = make_DestroyUI end
+  if make_ShowHideAllButtons ~= nil then __exports["make_ShowHideAllButtons"] = make_ShowHideAllButtons end
+  MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第十四批.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/短函数草稿_第三十一批.lua
+-- 短函数/辅助闭包集中整合；各工厂参数按对应原型捕获顺序注入。
+-- 本段只表示独立原型源码，不代表已完成根模块所有闭包实例化。
+-- ============================================================================
+do
+-- 第三十一批：UseItemByIndex
+-- 规范路径：root.children[24]
+-- 旧标签：root/25
+-- 原型索引：32；物理指令：33；常量：8；子原型：0
+-- 状态：完整静态恢复；尚未运行时验证。
+--
+-- 闭包捕获：
+--   UP[0] <- 父级 root 的 T[37]（闭包创建点 PC355 后的捕获描述 PC356）。
+--   捕获表的业务来源/完整内容仍未追踪；这里使用中性名称 itemNameList。
+--
+-- 静态控制流：
+--   ipairs 遍历捕获表；每项分别查询 ITEM_INDEX_BY_NAME 和 ITEM_COUNT；
+--   数量经 tonumber 转换，nil/false 路径归零；
+--   只有索引存在且数量大于 0 时才调用 UseItemByIndex；
+--   调用后返回当前 itemName；循环耗尽则无值返回。
+
+local function make_UseItemByIndex(itemNameList)
+    return function()
+        for _, itemName in ipairs(itemNameList) do
+            local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)
+            local itemCount = tonumber(
+                SL:GetMetaValue("ITEM_COUNT", itemName)
+            ) or 0
+
+            if itemIndex and itemCount > 0 then
+                SL:UseItemByIndex(itemIndex)
+                return itemName
+            end
+        end
+    end
+end
+
+  local __exports = {}
+  if make_UseItemByIndex ~= nil then __exports["make_UseItemByIndex"] = make_UseItemByIndex end
+  MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第三十一批.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/短函数草稿_第三十四批.lua
+-- 短函数/辅助闭包集中整合；各工厂参数按对应原型捕获顺序注入。
+-- 本段只表示独立原型源码，不代表已完成根模块所有闭包实例化。
+-- ============================================================================
+do
+-- 第三十四批：Nested_isOutputted
+-- 规范路径：root.children[50].children[0]
+-- 旧标签：root/51/1
+-- 原型索引：98；物理指令：52；常量：15；子原型：0
+-- 状态：完整静态恢复（检查点174）；52条指令、2项捕获和父级调用点已闭合。
+-- 尚未运行时验证；父级 UP[0]/UP[1] 的更上层业务原名仍未知。
+--
+-- 捕获：
+--   子 UP[0] = 父 StorageItems 的 UP[0]：具有 isOutputted 字段的共享状态对象。
+--   子 UP[1] = 父 StorageItems 的 UP[1]：输出回调。
+--   StorageItems PC102 创建闭包，PC103/PC104 按上述顺序捕获父 UP[0]/UP[1]。
+--
+-- 参数：
+--   父 StorageItems PC167-PC170 调用闭包，显式传入当前物品记录 R19 和当前
+--   ipairs(R8) 迭代值 R25；对应 item 与 itemText。子原型没有读取额外 vararg。
+
+local function make_Nested_isOutputted(outputState, outputCallback)
+    return function Nested_isOutputted(item, itemText)
+        if not string.find(itemText, "聚灵珠", 1, true) then
+            return true
+        end
+
+        if not outputState.isOutputted then
+            outputState.isOutputted = true
+            outputCallback(item)
+
+            local info = "聚灵珠信息: "
+                .. tostring(item.Name)
+                .. " StdMode=" .. tostring(item.StdMode)
+                .. " Dura=" .. tostring(item.Dura)
+                .. " DuraMax=" .. tostring(item.DuraMax)
+
+            outputCallback(info)
+        end
+
+        if not item.Dura then
+            return false
+        end
+
+        if not item.DuraMax then
+            return false
+        end
+
+        return item.Dura <= item.DuraMax
+    end
+end
+
+  local __exports = {}
+  if make_Nested_isOutputted ~= nil then __exports["make_Nested_isOutputted"] = make_Nested_isOutputted end
+  MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第三十四批.lua"] = __exports
+end
+
+
+-- ============================================================================
+-- 来源文件：04_源码候选/短函数草稿_第十五批.lua
+-- 短函数/辅助闭包集中整合；各工厂参数按对应原型捕获顺序注入。
+-- 本段只表示独立原型源码，不代表已完成根模块所有闭包实例化。
+-- ============================================================================
+do
+-- MainLeftBottom(2).lua 普通 Lua 草稿
+-- 第十五批：4 个短闭包
+-- Nested_Helper_11已于检查点112完成静态恢复（未运行时验证）；本文件其他函数仍按各自状态管理。
+-- 说明：UPVALUE_n 是闭包捕获槽位占位名，不代表已确认的业务变量名。
+
+-- 原型：root.children[0].children[0]
+-- legacy：root/1/1；物理指令：5
+-- 检查点171：父root/1 PC17创建闭包，PC18捕获R1=FileUtils实例，
+-- PC19捕获R2=路径参数；捕获顺序及两个生产者均已闭合。
+-- 子函数仅调用 FileUtils:removeFile(path)，不保留方法返回值。
+local function make_Nested_removeFile(fileUtils, path)
+    return function Nested_removeFile()
+        fileUtils:removeFile(path)
+    end
+end
+
+-- 原型：root.children[15].children[0]
+-- legacy：root/16/1；物理指令：13
+-- 检查点170：父 ClearBlacklistItems PC52 创建闭包，PC53 捕获 R8=当前 entryKey，
+-- PC54 捕获 R0=FriendProxy；两个捕获槽位顺序已闭合。
+-- 子函数先调用 SL:RequestOutBlacklist(entryKey)，再在 FriendProxy._blacklistData
+-- 存在时删除该 key；删除操作是本地数据清理，不改变 RequestOutBlacklist 的参数。
+local function make_Nested_SL(entryKey, friendProxy)
+    return function Nested_SL()
+        SL:RequestOutBlacklist(entryKey)
+
+        if friendProxy._blacklistData then
+            friendProxy._blacklistData[entryKey] = nil
+        end
+    end
+end
+
+
+  local __exports = {}
+  if make_Nested_removeFile ~= nil then __exports["make_Nested_removeFile"] = make_Nested_removeFile end
+  if make_Nested_SL ~= nil then __exports["make_Nested_SL"] = make_Nested_SL end
+  MainLeftBottomRecovered.sources["04_源码候选/短函数草稿_第十五批.lua"] = __exports
+end
