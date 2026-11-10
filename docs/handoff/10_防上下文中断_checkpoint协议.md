@@ -2104,3 +2104,17 @@
 - PC42-PC412未转写，不计完整静态恢复；未做运行时验证。
 - 统计：普通Lua草稿72；完整静态恢复103/110（93.6%）；运行时验证0。
 - 下一步：继续root PC42-PC137，闭合早期辅助函数注册与模块初始化；复用已存在子原型源码和闭包映射，不重做底层VM分析。
+
+
+## 检查点 #193（2026-11-10）：root模块PC42-PC85闭包创建与导出
+
+- 源码：`04_源码候选/root_MainLeftBottom_Module.lua`；审计：`docs/audit/检查点193_root模块PC42-PC85闭包创建与全局导出.md`。
+- PC43-PC45：创建PrintLog闭包并赋给`_G.log`。
+- PC46：创建ShowLocalNoticeByType闭包，捕获父T[0]；此段未见全局赋值。
+- PC48-PC51：创建LuaSendMsg闭包，捕获父T[0]/T[4]，写入`MainLeftBottom.a.LuaSendMsg`。
+- PC52-PC54：创建ScheduleOnce、Schedule、GetMapId；PC55导出GetMapId。
+- PC56-PC63：导出GetMapName、PlayerPos、GetDroppedItems、MoveTo。
+- PC64-PC85：创建并导出DiuItems、GetAvailableStoragePage、GetStorageItemData、StorageItems、TakeItems、PickUpItems；按字节码顺序保留各捕获描述。
+- PC86-PC137未处理，不能将本批描述扩展为完整根模块恢复。
+- 统计：普通Lua草稿72；完整静态恢复103/110（93.6%）；运行时验证0。
+- 下一步：root PC86-PC137，优先核清配置表、奖励/在线时长数据结构及其持有关系。
