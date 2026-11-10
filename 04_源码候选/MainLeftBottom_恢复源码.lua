@@ -1,6 +1,6 @@
 --[[
 MainLeftBottom(2).lua 作者级明文恢复汇总稿
-生成：2026-11-10 | GitHub checkpoint 212
+生成：2026-11-10 | GitHub checkpoint 226（状态同步）
 用途：将现有普通Lua候选集中到一个文件，并建立110原型的权威路径/状态索引。
 重要：这是“源码恢复汇总稿/静态候选集”，不是已验证可直接运行的最终脚本。
 - 根模块主体仍有分段记录；闭包工厂必须按真实upvalue顺序绑定。
@@ -130,7 +130,7 @@ MainLeftBottomRecovered.prototype_index = {
   ["root.children[6].children[0]"] = { name="Nested_onDamageMsg", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第三十九批.lua", instructions=18, runtime_verified=false },
   ["root.children[14]"] = { name="FindMonsterInCurrViewField", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第十三批.lua", instructions=27, runtime_verified=false },
   ["root.children[34]"] = { name="AnonymousHelper_33", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua", instructions=7, runtime_verified=false },
-  ["root.children[42].children[3]"] = { name="Nested_FFFF00", status="ordinary_lua_draft_pending_host_semantics", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=320, runtime_verified=false },
+  ["root.children[42].children[3]"] = { name="Nested_FFFF00", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=320, runtime_verified=false },
   ["root.children[42].children[18]"] = { name="Nested_Helper_10", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十三批.lua", instructions=39, runtime_verified=false },
   ["root.children[49]"] = { name="AnonymousHelper_49", status="complete_static_reconstruction_not_runtime_verified", source_file="", instructions=5, runtime_verified=false },
   ["root.children[51]"] = { name="FindBlacklistPlayer", status="complete_static_reconstruction_not_runtime_verified", source_file="", instructions=35, runtime_verified=false },
@@ -1841,7 +1841,7 @@ local function make_Nested_UnSchedule(printLog, timerState, moduleState)
 
         if timerState.resTimer then
             SL:UnSchedule(timerState.resTimer)
-            -- VM dump中的['unknown',2]尚未确认等价nil；保留占位。
+            -- 检查点225确认该VM dump标记是nil的序列化占位。
             timerState.resTimer = nil -- K[28]=["unknown",2] is the VM dump's nil serialization placeholder
         end
 
