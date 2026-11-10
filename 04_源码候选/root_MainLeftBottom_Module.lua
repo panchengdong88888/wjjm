@@ -2,42 +2,57 @@
 -- 原型：root / MainLeftBottom_Module
 -- 规范路径：root
 -- 规模：412条物理指令、109常量、58个直接子原型
--- 检查点192-198：根模块分段普通Lua草稿，PC1-PC412均已建立分段记录；非作者原文逐字恢复，未运行时验证。
+-- 检查点192-198、262：根模块分段普通Lua草稿，PC1-PC412均已建立分段记录；非作者原文逐字恢复，未运行时验证。
 -- 状态：不是完整根模块源码，尚未运行时验证。
 -- 检查点236：58个直接子原型闭包创建点与135个OP_387 live-cell捕获已建表，见docs/handoff/12_根模块闭包装配表.json。
 
 local MainLeftBottom = {}
 _G.MainLeftBottom = MainLeftBottom
 
--- PC3-PC5：先创建a状态表，再挂入模块根表。
-MainLeftBottom.a = {}
+-- PC3-PC5：T[0]先创建a状态表，再于PC5挂入模块根表。
+local a = {}
+MainLeftBottom.a = a
 
 -- PC6：版本字段。
-MainLeftBottom.a.version = "10000"
+a.version = "10000"
 
 -- PC7-PC11：读取屏幕宽度并写入a.screenW。
-MainLeftBottom.a.screenW = SL:GetMetaValue("SCREEN_WIDTH")
+a.screenW = SL:GetMetaValue("SCREEN_WIDTH")
 
 -- PC12-PC16：读取屏幕高度并写入a.screenH。
-MainLeftBottom.a.screenH = SL:GetMetaValue("SCREEN_HEIGHT")
+a.screenH = SL:GetMetaValue("SCREEN_HEIGHT")
 
--- PC17-PC29：a表中的钩子容器和界面状态。
-MainLeftBottom.a.Blocklist = {1.0, 9.0, 10.0, 60000.0}
-MainLeftBottom.a.SendHookList = {}
-MainLeftBottom.a.RecvHookList = {}
-MainLeftBottom.a.isHidden = true
-MainLeftBottom.a.hidebut = nil
+-- PC17-PC23：T[1]临时构造Blocklist数组，完成后挂入a表。
+local blocklist = {1.0, 9.0, 10.0, 60000.0}
+a.Blocklist = blocklist
 
--- PC30-PC41：建立b表、z表，并初始化六个状态字段。
-MainLeftBottom.b = {}
-MainLeftBottom.z = {
-    isPaused = false,
-    isRunning = false,
-    isStoring = false,
-    isTaking = false,
-    isDiuing = false,
-    isOutputted = false
-}
+-- PC24-PC25：创建并挂入发送钩子列表。
+local sendHookList = {}
+a.SendHookList = sendHookList
+
+-- PC26-PC27：创建并挂入接收钩子列表。
+local recvHookList = {}
+a.RecvHookList = recvHookList
+
+-- PC28-PC29：界面初始显示状态字段。
+a.isHidden = true
+a.hidebut = nil
+
+-- PC30-PC32：T[1]创建b映射表，再挂入模块根表。
+local b = {}
+MainLeftBottom.b = b
+
+-- PC33-PC35：T[2]创建z状态表，再挂入模块根表。
+local z = {}
+MainLeftBottom.z = z
+
+-- PC36-PC41：按PC顺序初始化六个状态字段。
+z.isPaused = false
+z.isRunning = false
+z.isStoring = false
+z.isTaking = false
+z.isDiuing = false
+z.isOutputted = false
 
 -- PC42：创建供各定时器闭包共享的空状态表（T[3]）。
 local timerState = {}
