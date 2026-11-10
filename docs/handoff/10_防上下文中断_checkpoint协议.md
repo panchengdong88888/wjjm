@@ -3321,3 +3321,15 @@ Nested_match：
 - 修正`docs/handoff/12_根模块闭包装配表.json`中doInit_UI的UP1/UP2/UP3 value旧错误，并新增T[59]原始事件记录；新建`docs/audit/检查点268_PC389-T59模块表重读与doInit捕获校正.md`。
 - 静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或游戏运行。
 - 下一步检查点269：将root PC389-PC412全部20项捕获与register_value_timeline逐槽对账，并确认PC411/PC412返回链；不能把适配器静态校验标成运行时验证。
+
+
+## 检查点 #269（2026-11-10）：doInit_UI二十项捕获逐槽对账与UP8修正
+
+- 对照原始VM Dump、`register_value_timeline`、root closure ledger和主恢复稿，逐槽核对PC390-PC410的20项捕获。
+- UP0..UP7、UP9..UP19均与捕获时父T寄存器最后有效值一致；PC389 T59模块表重读与PC411写入目标沿用检查点268结论。
+- 发现UP8=T8在PC86-PC89构造为gatherConfig；PC399捕获时仍为该配置表。原主恢复稿误注入FindMonsterInCurrViewField。
+- doInit_UI主体将UP8/UP9传给`Nested_InitGatherMonsters(config,getThreshold)`，该子函数写入`config.GATHER_THRESHOLD`，因此UP8必须是配置表。
+- 主恢复稿现将UP8改为`rootSource.gatherConfig`，并断言GATHER_THRESHOLD=10、CHECK_INTERVAL=0.5、ATTACK_WAIT_TIME=1。
+- 更正`docs/handoff/12_根模块闭包装配表.json`的doInit_UI UP8值，新增完整20槽逐项账本；新建`docs/audit/检查点269_doInit_UI二十项捕获逐槽对账与T8配置表修正.md`。
+- 完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或游戏运行。
+- 下一步检查点270：整理根模块连续可读源码组织，核对doInit_UI及长函数在主恢复稿中的词法作用域、重复定义和依赖注册，不把适配器拼装误称作者原始源码。
