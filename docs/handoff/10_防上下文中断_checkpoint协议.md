@@ -3222,3 +3222,18 @@ Nested_match：
 - 新建`docs/audit/检查点263_PC43-PC85父寄存器复用与闭包导出恢复.md`；更新根候选注释、主恢复文件、机器状态、闭包装配表、函数状态CSV和原型结构树。
 - 完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或目标游戏运行验证。
 - 下一步检查点264：按PC顺序整合PC86-PC211采集状态与采集闭包创建捕获，维护T[14..22]共享cell唯一性；不重复恢复子函数主体。
+
+
+## 检查点 #264（2026-11-10）：PC86-PC211采集闭包与共享cell恢复
+
+- 主恢复文件`04_源码候选/MainLeftBottom_恢复源码.lua`已按PC181-PC211创建顺序整合采集控制前置闭包。
+- T[14..22]分别由`newLiveCell`创建独立cell，并用`seenRootCells`静态断言确保不同父寄存器不共用同一代理对象；初值依次来自currentState、resettableTable、resetSlot16、resetSlot17、isGatherRunning、resetSlot19、resetSlot20、resetSlot21、resetSlot22。
+- PC181创建FormatStateChange，捕获T[4]=PrintLog与T[14]共享cell。
+- PC184-PC193按顺序绑定SetTargetID、ClearTargetID_2、GetMainPlayerID、GetPlayerPosition、GetPlayerMapPosition、DistanceCalculation、IsDie、GetOwnerIDText、GetOwnerID、GetOwnerDescription十个无捕获辅助闭包；均不产生根级全局导出。
+- PC194 FindMonsterCandidates注入[T27,T30,T28,T29,T8]；PC200 ResetGatherMonsterData注入[T15,T16,T17,T25,T19,T20,T21,T22,T4]；PC210 FindMonsterInCurrViewField注入T30=IsDie。
+- MainLoop（PC214）22项捕获、InitGatherMonsters（PC238）7项捕获、StopGatherMonsters（PC247）7项捕获均与闭包装配表和对应工厂参数顺序一致。
+- FormatStateChange、十个辅助闭包、FindMonsterCandidates、ResetGatherMonsterData、FindMonsterInCurrViewField、IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters均使用`requireRecoveredClosure`保护；必需来源/工厂缺失时中止，不静默跳过。
+- 修正主恢复汇总稿的旧PC210注释：PC210是FindMonsterInCurrViewField（root.children[14]）；ClearBlacklistItems是root.children[15]，PC383创建。
+- 新建`docs/audit/检查点264_PC86-PC211采集闭包与共享cell恢复.md`；更新主恢复稿、根候选、机器状态、闭包装配表、CSV和结构树。
+- 完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或游戏运行。
+- 下一步检查点265：继续PC212-PC296，核对UI控制闭包与模块字段挂接，并给Builtsetting、MoveItemToQuickUse、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons、AccountIDValidation等必要工厂增加来源校验。
