@@ -2864,3 +2864,13 @@ Nested_match：
 - 按固定参数数量修正GetWritablePath、ReadNumericConfig、FindBlacklistPlayer、GetMapData2DPtr、onDamageMsg、AnonymousHelper_32、AnonymousHelper_54等源码签名。
 - Nested_Anonymous及doInit_UI全部子原型完成静态恢复，完整静态恢复109/110（99.1%）；唯一未完成为MainLeftBottom_Module根级闭包装配。运行时验证0。
 - 下一批开始根模块装配：按root PC1-PC412闭合closure-site、Upvalue cell共享、模块字段赋值和导出表；不得凭名称猜测绑定。
+
+
+## 检查点236（2026-11-10）：根模块闭包创建点与共享cell清单
+
+- 基于corrected phase3反汇编和原型总索引，解析root的58/58个直接子原型闭包创建点，覆盖OP_027/OP_154；全部135个捕获描述符均为OP_387。
+- 新增docs/handoff/12_根模块闭包装配表.json，包含创建PC、目标T寄存器、子原型、固定参数数、捕获槽顺序及parent-register fanout；docs/handoff/04_闭包捕获映射.json同步增加root_closure_sites与root_register_fanout。
+- 原始VM M()中OP_387保存{parent_T_table,register_index} live cell；代理__index/__newindex动态读写父T寄存器。闭包捕获不是值快照。
+- 纠正T[57]复用：PC357创建onDamageMsg并于PC359写入MainLeftBottom.onDamageMsg；PC360覆盖同一T[57]为InstallDamageHook；PC368创建BlacklistPlayerDetection并捕获T[57] live cell，因此UP[1]=InstallDamageHook。已修正主源码工厂参数名、root47捕获映射、检查点146/186和CSV。
+- 本批只闭合创建点/捕获寄存器与一个关键寄存器复用，不代表根模块源码装配完成。静态恢复109/110，运行时验证0。
+- 下一批按fanout从高到低建立root T[0..60]寄存器值生命周期表，特别核对T[4]/T[5]/T[0]/T[2]/T[3]/T[41]/T[57]/T[37]，再装配模块字段和全局导出。
