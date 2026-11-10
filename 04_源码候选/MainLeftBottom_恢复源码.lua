@@ -7997,6 +7997,9 @@ do
         rootPrototypes.Builtsetting =
             makeBuiltsetting(rootPrototypes.ShowLocalNoticeByType)
     end
+    if rootPrototypes.Builtsetting then
+        _G.Builtsetting = rootPrototypes.Builtsetting
+    end
 
     -- AccountIDValidation：UP[0]=root T[4]=PrintLog，UP[1]=root T[5]=ShowLocalNoticeByType。
     -- 内部Nested_ID与Nested_Panel_mini_chat工厂保留在同一来源词法块。
@@ -8300,6 +8303,9 @@ do
             rootSource.blacklistState
         )
     end
+    if rootPrototypes.ClearBlacklistItems then
+        _G.ClearBlacklistItems = rootPrototypes.ClearBlacklistItems
+    end
 
     -- 检查点255：BlacklistPlayerDetection的13项捕获按root PC368顺序注入。
     -- UP[0]=root T[2]=MainLeftBottom.z状态表；UP[1]=root T[57]共享live cell，
@@ -8360,33 +8366,7 @@ do
         rootModule.doInit = rootPrototypes.doInit_UI
     end
 
-    -- 仅导出字节码明确写入_ENV的全局入口；其他辅助闭包留在rootPrototypes。
-    local globalExports = {
-        log = "PrintLog",
-        DiuItems = "DiuItems",
-        GetAvailableStoragePage = "GetAvailableStoragePage",
-        GetStorageItemData = "GetStorageItemData",
-        StorageItems = "StorageItems",
-        TakeItems = "TakeItems",
-        PickUpItems = "PickUpItems",
-        Builtsetting = "Builtsetting",
-        GetMapId = "GetMapId",
-        GetMapName = "GetMapName",
-        PlayerPos = "PlayerPos",
-        GetDroppedItems = "GetDroppedItems",
-        MoveTo = "MoveTo",
-        IsInWhitelistMap = "IsInWhitelistMap",
-        MoveItemToQuickUse = "MoveItemToQuickUse",
-        ClearBlacklistItems = "ClearBlacklistItems",
-        BlacklistItems = "BlacklistPlayerDetection"
-    }
-    for globalName, prototypeName in pairs(globalExports) do
-        local fn = rootPrototypes[prototypeName]
-        if fn then
-            _G[globalName] = fn
-        end
-    end
-
+    -- 根级全局导出已在各自PC创建点写入；不在模块尾部重复赋值。
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
