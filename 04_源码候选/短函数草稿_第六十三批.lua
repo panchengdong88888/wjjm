@@ -1,9 +1,26 @@
 --[[
 函数：doInit_UI | 原型索引52 | root.children[42] | legacy root/43
 物理指令419 | 常量105 | 子原型23 | vararg_flag=0
-普通Lua草稿（检查点187修订）；未运行时验证。已修正资源快照键与来源、Schedule参数顺序、UI父节点及按钮创建实参；Attach_UITop七参数仍以占位标记保留。
+普通Lua草稿（检查点187首版，检查点199独立复审修订）；未运行时验证。已修正资源快照分支、false/nil归一和子闭包依赖说明；Attach_UITop七参数仍以占位标记保留。
 本文件只恢复父函数骨架；23个子原型继续复用独立候选，不重复展开。
 ]]
+-- root.children[42].children[0] / Nested_find：46条，无捕获。
+-- 从BAG_DATA按pairs遍历，纯文本匹配名称，排除绑定物品，累计OverLap or 1。
+local function Nested_find(searchText)
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then return 0 end
+
+    local totalCount = 0
+    for _, item in pairs(bagData) do
+        if item and item.Name and item.MakeIndex
+            and string.find(item.Name, searchText, 1, true)
+            and not SL:GetMetaValue("ITEM_IS_BIND", item) then
+            totalCount = totalCount + (item.OverLap or 1)
+        end
+    end
+    return totalCount
+end
+
 local function doInit_UI()
     -- PC390在root创建本闭包时明确捕获20个父级T寄存器。
     -- UP[0..19]依次对应父root的T[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。
@@ -54,15 +71,18 @@ local function doInit_UI()
             local id = moneyProxy:GetMoneyIdByName(name)
             if id then
                 local count = moneyProxy:GetMoneyCountById(id)
-                if count == nil then count = 0 end
+                -- PC82-PC85：false和nil均进入0回退分支。
+                if not count then count = 0 end
                 UPVALUE_1.initSnapshot[name] = count
             end
         end
-        -- 第二组是背包资源，不走MoneyProxy：PC92-PC97调用child0 Nested_find(name)，
-        -- 并以资源名称作为initSnapshot键；Nested_find在BAG_DATA缺失时返回0。
-        for _, name in ipairs(resourceNames) do
-            UPVALUE_1.initSnapshot[name] = Nested_find(name)
-        end
+    end
+
+    -- PC88-PC99是独立的第二个ipairs循环，不受MoneyProxy是否存在的门控。
+    -- 第二组是背包资源，不走MoneyProxy：调用无捕获child0 Nested_find(name)，
+    -- 并以资源名称作为initSnapshot键；BAG_DATA缺失时返回0。
+    for _, name in ipairs(resourceNames) do
+        UPVALUE_1.initSnapshot[name] = Nested_find(name)
     end
 
     -- PC100-PC101。
@@ -105,7 +125,11 @@ local function doInit_UI()
         SL:UnSchedule(UPVALUE_2.cruiseTimer)
         UPVALUE_2.cruiseTimer = {"unknown", 2}
     end
-    local dailyCallback = Nested_04d_02d_02d
+    -- child12 Nested_04d_02d_02d是父帧闭包，不能当作全局函数。
+    -- 已知捕获：父帧R5日期标记、UPVALUE_3模块表（发送对象）、UPVALUE_0通知/日志回调。
+    -- 其43条主体静态恢复见函数状态CSV/检查点111；R5生产者仍需追踪。
+    -- TODO: 将独立make_Nested_04d_02d_02d工厂与R5实际cell接入最终合并源码。
+    local dailyCallback = Nested_04d_02d_02d -- 未在本文件定义的闭包依赖，当前草稿不可单文件运行
     UPVALUE_2.cruiseTimer = SL:Schedule(dailyCallback, 1.0)
 
     -- PC167-PC180：NPCStorageProxy请求仓库数据。
@@ -170,7 +194,7 @@ local function doInit_UI()
         takebut = Nested_TakeItems,             -- child19, PC313-PC318
         shiqubut = Nested_shiquTimer,           -- child10, PC319-PC323
         diuqibut = Nested_dropTimer,             -- child21, PC324-PC329
-        moneybut = Nested_FFFF00,               -- child3, PC330-PC335
+        moneybut = make_Nested_FFFF00(UPVALUE_3, UPVALUE_0, UPVALUE_2, UPVALUE_1), -- child3，复用第六十二批工厂
         xiaotuibut = Nested_OnGameLeaveWorld,   -- child4, PC336-PC337
     }
     -- PC338-PC345：创建child9工厂闭包，捕获顺序为：
@@ -242,7 +266,8 @@ local function doInit_UI()
         GUI:Button_setTitleText(hideButton, "隐 藏")
         GUI:Button_setTitleFontSize(hideButton, 18.0)
         GUI:Button_setTitleFontName(hideButton, "res/public/kaiti2.ttf")
-        GUI:addOnClickEvent(hideButton, Nested_Helper_9)
+        -- child15捕获UPVALUE_3（模块状态）与UPVALUE_0（PrintLog）；工厂依赖尚未并入本文件。
+        GUI:addOnClickEvent(hideButton, make_Nested_Helper_9(UPVALUE_3, UPVALUE_0))
     end
 end
 return doInit_UI
