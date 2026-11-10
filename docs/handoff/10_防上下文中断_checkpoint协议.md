@@ -2646,3 +2646,22 @@ Nested_match：
 - `短函数草稿_第十五批.lua`：Nested_removeFile、Nested_SL
 
 本批仅集中已存在的静态候选，不增加完整静态恢复计数。带可变标量Upvalue的工厂（例如ResetGatherMonsterData、StopGatherMonsters）仍需在根模块用共享cell正确装配；不能将独立工厂参数值误当作已与父闭包共享的可变Upvalue。运行时验证仍为0。下一批继续短小、简单函数，复杂UI/资源刷新/状态机最后处理。
+
+
+## 检查点 #218（2026-11-10）：短辅助函数与比较闭包来源集中整合
+
+将以下9份候选来源加入 `MainLeftBottom_恢复源码.lua`，每份保留独立词法块与来源登记：
+
+- `04_源码候选/小型辅助函数_首批草稿.lua`：IsDie、CompareDistance、MakeContainsAnyKeyword
+- `04_源码候选/PrintLog_日志辅助函数_第七批.lua`：PrintLog
+- `04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua`：make_PCallHelper
+- `04_源码候选/位置读取函数_第五批草稿.lua`：GetPlayerPosition
+- `04_源码候选/其他短辅助函数_第二批草稿.lua`：make_ShowLocalNoticeByType
+- `04_源码候选/短闭包辅助函数_第三批草稿.lua`：Nested_MainLoop、make_Nested_RequestAddBlacklistByName、Nested_OnGameLeaveWorld、make_Nested_ClearBlacklistItems
+- `04_源码候选/代理与回调短函数_第四批.lua`：Nested_FriendProxy、make_AnonymousHelper_33、make_AnonymousHelper_34、PCallHelper_2
+- `04_源码候选/短函数草稿_第三十七批.lua`：GetPlayerMapPosition
+- `04_源码候选/PickUpItems_距离比较闭包_第九批.lua`：Nested_dist、Nested_dist_2
+
+本批重点集中短函数：PrintLog、PCallHelper/Nested_tostring、GetPlayerPosition、ShowLocalNoticeByType、Nested_MainLoop、Nested_RequestAddBlacklistByName、Nested_OnGameLeaveWorld、Nested_Helper_6、Nested_FriendProxy、AnonymousHelper_33/34、PCallHelper_2、GetPlayerMapPosition、Nested_dist/Nested_dist_2、IsDie、关键词匹配工厂等。
+
+本批仅整合现有候选，不增加静态恢复计数；复杂PickUpItems主函数（172条）未处理，按用户要求留到复杂函数批次。运行时验证仍为0。
