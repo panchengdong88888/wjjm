@@ -42,3 +42,8 @@
 ## 下一步
 
 继续处理简单/中等短函数状态中仍标为first-pass的条目，优先复核ReadNumericConfig（45条，重点确认vararg入口与调用参数契约），再看DeathAutoBlacklist、MoveTo、ClearBlacklistItems和onDamageMsg。大型PickUpItems、doInit_UI及根模块闭包装配继续后置。
+
+
+## 检查点235参数元数据纠正
+
+原始VM实现M()证明GetWritablePath原型固定参数数量为1，正确入口是function(path)，不是function(...)后读取首个vararg。主源码与候选文件已修正。
