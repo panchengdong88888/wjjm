@@ -587,3 +587,18 @@ end
 -- T52=PC349构造的8元素表，PC351被GetMapData2DPtr捕获；其可达源码路径不读取该UPVALUE。
 -- T53=GetMapData2DPtr；T55=FindBlacklistPlayer；T56=UseItemByIndex(itemNameList)；T58=DeathAutoBlacklist。
 -- BlacklistPlayerDetection的UP3/4/5/6/8/9/11与上述捕获身份/常量逐项对齐。详见docs/handoff/12_根模块闭包装配表.json及检查点239审计。
+
+
+-- 检查点240：root PC298-PC315配置文件读写包装链与doInit_UI捕获槽闭合。
+-- T[45]=root.children[9] ReadNumericConfig(GetWritablePath)，PC298创建，PC299捕获T[44]；
+-- PC305由AnonymousHelper_49捕获为UP[0]，PC311由AnonymousHelper_33捕获为UP[0]。
+-- T[46]=root.children[17] PCallHelper(GetWritablePath)，PC300创建，PC301捕获T[44]；
+-- PC308由AnonymousHelper_32捕获为UP[0]，PC314由AnonymousHelper_54捕获为UP[0]。
+-- T[47]=root.children[0] FileExistCheck_pcall_wrapper，PC302创建、PC303捕获T[44]；
+-- T[48]=AnonymousHelper_49(ReadNumericConfig,"blacklist_distance.txt")；
+-- T[49]=AnonymousHelper_32(PCallHelper,"blacklist_distance.txt")；
+-- T[50]=AnonymousHelper_33(ReadNumericConfig,"gather_monster_count.txt")；
+-- T[51]=AnonymousHelper_54(PCallHelper,"gather_monster_count.txt")。
+-- PC390 doInit_UI捕获：UP[6]=T48、UP[9]=T50、UP[10]=T49、UP[12]=T44、
+-- UP[14]=T51、UP[16]=T47。注意root.children[33]的恢复名是AnonymousHelper_33；
+-- legacy root/34是路径标签，不是函数名。完整寄存器时间线见12_根模块闭包装配表。
