@@ -2933,3 +2933,19 @@ Nested_match：
 - 确认13项全局导出：_G.MainLeftBottom、_G.log、_G.GetMapId、_G.GetMapName、_G.PlayerPos、_G.GetDroppedItems、_G.MoveTo、_G.DiuItems、_G.GetAvailableStoragePage、_G.GetStorageItemData、_G.StorageItems、_G.TakeItems、_G.PickUpItems。LuaSendMsg写入MainLeftBottom.a字段，不是全局导出；ShowLocalNoticeByType、ScheduleOnce、Schedule在本区间未导出。
 - 静态完整109/110，运行时验证0；本批没有新增函数静态恢复数量。
 - 下一步检查点242继续root PC86-PC211模块字段/闭包/导出对账，并继续剩余29个父寄存器生命周期。
+
+
+## 检查点 #242（2026-11-10）：root PC86-PC211父寄存器生命周期闭合
+
+- 复用检查点194（PC86-PC167配置/奖励表）、195（PC168-PC200状态/辅助闭包）、196（PC201-PC270闭包创建与捕获）的既有静态证据，不重复反汇编子函数主体。
+- 新增闭合T7、T9、T11、T12、T13-T36共28个父寄存器生命周期；累计56/57，仅剩T54待闭合。
+- T7=Schedule，PC53创建，PC398由doInit_UI UP7捕获。
+- T9=0.2，PC90创建，PC410由doInit_UI UP19捕获；具体UI用途未知，不擅自命名。
+- T11=math.floor(3600/0.2)=18000，PC95写入，PC408由doInit_UI UP17捕获；UI具体用途未确认。
+- T12=PC96-PC167构造的14项奖励记录表，PC409由doInit_UI UP18捕获。保留原始顺序与三列值，不臆测协议字段含义。
+- T13=gatherStatusText；T14=currentState共享cell，初值IDLE；T15目标ID集合；T16自己归属计数；T17扫描游标；T18运行标记；T19等待标记；T20等待截止时间；T21等待目标ID；T22等待名称。
+- T23=FormatStateChange；T24=SetTargetID；T25=ClearTargetID_2；T26=GetMainPlayerID；T27=GetPlayerPosition；T28=GetPlayerMapPosition；T29=DistanceCalculation；T30=IsDie；T31=GetOwnerIDText；T32=GetOwnerID；T33=GetOwnerDescription；T34=FindMonsterCandidates；T35=ResetGatherMonsterData；T36=FindMonsterInCurrViewField。
+- 纠正历史注释：PC210创建root.children[14] FindMonsterInCurrViewField，PC211捕获T30=IsDie；ClearBlacklistItems是root.children[15]，在PC383创建。T25是ClearTargetID_2，不是未知预停止回调。
+- 运行时验证仍为0；完整静态恢复仍109/110。
+- 下一步检查点243继续root PC212-PC340模块字段/全局导出对账，并核对剩余T54。
+
