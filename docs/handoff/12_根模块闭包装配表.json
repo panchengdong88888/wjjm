@@ -7662,7 +7662,7 @@
     "binding_policy": "Only capture_count=0 direct children; captured factories remain pending until shared live-cell bindings are implemented.",
     "runtime_verified": false
   },
-  "next_action": "检查点249：继续装配剩余稳定捕获工厂。优先处理root.children[23] Builtsetting（T[5]=ShowLocalNoticeByType）、root.children[8] FormatStateChange（PrintLog+currentState live cell需特殊处理）、root.children[26] ResetGatherMonsterData（9个捕获，含多个共享标量cell）。在进入MainLoop/doInit_UI前，先实现并验证通用live-cell适配接口。",
+  "next_action": "检查点250：建立并核对共享live-cell适配层，重点处理root T[14]=currentState以及T[15..22]采集状态字段；随后装配FormatStateChange、ResetGatherMonsterData、InitGatherMonsters、StopGatherMonsters与MainLoop。必须确保多个闭包读写同一个cell对象，不得用各自的值副本。",
   "root_assembly_checkpoint_247": {
     "direct_child_closures_expected": 22,
     "direct_child_closures_source_bound": 22,
@@ -7831,5 +7831,59 @@
     ],
     "runtime_verified": false,
     "next_action": "检查点249：继续装配剩余稳定捕获工厂。优先处理root.children[23] Builtsetting（T[5]=ShowLocalNoticeByType）、root.children[8] FormatStateChange（PrintLog+currentState live cell需特殊处理）、root.children[26] ResetGatherMonsterData（9个捕获，含多个共享标量cell）。在进入MainLoop/doInit_UI前，先实现并验证通用live-cell适配接口。"
+  },
+  "root_assembly_checkpoint_249": {
+    "direct_child_closures_expected": 22,
+    "direct_child_closures_source_bound": 22,
+    "captured_factory_closures_expected": 36,
+    "captured_factory_closures_bound": 12,
+    "captured_factory_closures_pending": 24,
+    "captured_factory_bindings": [
+      {
+        "prototype": "root.children[23]",
+        "name": "Builtsetting",
+        "capture_count": 1,
+        "captured_parent_T_registers": [
+          5
+        ],
+        "bindings": [
+          "ShowLocalNoticeByType"
+        ],
+        "global_export": "Builtsetting",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[55]",
+        "name": "AccountIDValidation",
+        "capture_count": 2,
+        "captured_parent_T_registers": [
+          4,
+          5
+        ],
+        "bindings": [
+          "PrintLog",
+          "ShowLocalNoticeByType"
+        ],
+        "module_field": "MainLeftBottom.main",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[6]",
+        "name": "InstallDamageHook",
+        "capture_count": 2,
+        "captured_parent_T_registers": [
+          0,
+          4
+        ],
+        "bindings": [
+          "MainLeftBottom.a",
+          "PrintLog"
+        ],
+        "stored_as": "rootPrototypes.InstallDamageHook",
+        "runtime_verified": false
+      }
+    ],
+    "runtime_verified": false,
+    "next_action": "检查点250：建立并核对共享live-cell适配层，重点处理root T[14]=currentState以及T[15..22]采集状态字段；随后装配FormatStateChange、ResetGatherMonsterData、InitGatherMonsters、StopGatherMonsters与MainLoop。必须确保多个闭包读写同一个cell对象，不得用各自的值副本。"
   }
 }
