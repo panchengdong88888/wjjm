@@ -3344,5 +3344,43 @@
   "limitations": [
     "This manifest records creation PCs, destination registers and raw capture cells only. It does not by itself prove the business meaning of every parent register.",
     "Root module field/global assignments and shared-cell initial values still require PC-level dataflow reconciliation."
+  ],
+  "register_value_timeline": {
+    "57": [
+      {
+        "pc_one_based": 357,
+        "event": "create root.children[52] onDamageMsg closure",
+        "value": "onDamageMsg message handler closure",
+        "note": "Captures T[41]; PC359 assigns this closure to MainLeftBottom.onDamageMsg."
+      },
+      {
+        "pc_one_based": 360,
+        "event": "create root.children[6] InstallDamageHook closure",
+        "value": "InstallDamageHook closure",
+        "note": "Writes the new closure into the same parent register T[57], replacing the previous register value."
+      },
+      {
+        "pc_one_based": 368,
+        "event": "create root.children[47] BlacklistPlayerDetection closure",
+        "value": "InstallDamageHook closure",
+        "note": "OP_387 captures the live T[57] cell; UP[1] therefore resolves to InstallDamageHook, not the earlier onDamageMsg handler."
+      }
+    ]
+  },
+  "verified_cell_reuse_findings": [
+    {
+      "register": 57,
+      "closure": "root.children[47] BlacklistPlayerDetection",
+      "upvalue_index": 1,
+      "actual_value_at_capture": "root.children[6] InstallDamageHook",
+      "superseded_value": "root.children[52] onDamageMsg",
+      "proof_pcs": [
+        357,
+        359,
+        360,
+        368
+      ],
+      "status": "verified_from_root_disassembly_and_M_live_cell_semantics"
+    }
   ]
 }
