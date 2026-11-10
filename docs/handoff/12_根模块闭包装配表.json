@@ -7662,5 +7662,56 @@
     "binding_policy": "Only capture_count=0 direct children; captured factories remain pending until shared live-cell bindings are implemented.",
     "runtime_verified": false
   },
-  "next_action": "检查点247：逐项解决root直接子原型的源码注册缺口；随后按可变/不可变cell分类，优先装配捕获仅为稳定对象/函数的工厂，特别是FormatStateChange与MainLoop等共享状态cell不得复制快照。"
+  "next_action": "检查点248：按root T寄存器与OP_387捕获顺序，继续装配不依赖可变标量cell的工厂。优先核对GetAvailableStoragePage、GetStorageItemData、TakeItems、PickUpItems、StorageItems的表/代理捕获来源；任何标量状态捕获先实现显式cell读写适配，不得按值快照传入。",
+  "root_assembly_checkpoint_247": {
+    "direct_child_closures_expected": 22,
+    "direct_child_closures_source_bound": 22,
+    "captured_factory_closures_expected": 36,
+    "captured_factory_closures_bound": 2,
+    "captured_factory_closures_pending": 34,
+    "captured_factory_bindings": [
+      {
+        "prototype": "root.children[46]",
+        "name": "DiuItems",
+        "capture_count": 2,
+        "captured_parent_T_registers": [
+          2,
+          5
+        ],
+        "bindings": [
+          "MainLeftBottom.z",
+          "ShowLocalNoticeByType"
+        ],
+        "status": "static_factory_instantiated",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[28]",
+        "name": "FindMonsterCandidates",
+        "capture_count": 5,
+        "captured_parent_T_registers": [
+          27,
+          30,
+          28,
+          29,
+          8
+        ],
+        "bindings": [
+          "GetPlayerPosition",
+          "IsDie",
+          "GetPlayerMapPosition",
+          "DistanceCalculation",
+          "gatherConfig"
+        ],
+        "status": "static_factory_instantiated",
+        "runtime_verified": false
+      }
+    ],
+    "syntax_corrections": {
+      "invalid_named_anonymous_return_expressions_fixed": 19,
+      "remaining_matches": 0
+    },
+    "runtime_verified": false,
+    "next_action": "检查点248：按root T寄存器与OP_387捕获顺序，继续装配不依赖可变标量cell的工厂。优先核对GetAvailableStoragePage、GetStorageItemData、TakeItems、PickUpItems、StorageItems的表/代理捕获来源；任何标量状态捕获先实现显式cell读写适配，不得按值快照传入。"
+  }
 }
