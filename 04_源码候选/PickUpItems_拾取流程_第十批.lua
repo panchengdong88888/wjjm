@@ -1,6 +1,8 @@
 -- root.children[21] / legacy root/22 / PickUpItems
 -- 172 physical instructions; one captured callback; two comparator child closures.
 -- Complete static reconstruction. Not validated in the target game runtime.
+-- Checkpoint 248: comparator child closures are scoped inside the returned body;
+-- the anonymous function expression is valid Lua.
 --
 -- The captured callback is root initializer T[5]. Its exact original local
 -- identifier is not recoverable from the child prototype alone, so notify is
@@ -10,14 +12,19 @@
 -- prototype. The matching loop is retained because it is present in the VM
 -- control flow; consequently preferredItems remains empty in this function.
 
--- Child comparator root.children[21].children[1]:
---   dist ascending.
-local function Nested_dist_2(a, b)
-    return a.dist < b.dist
-end
-
 local function make_PickUpItems(notify)
-    return function PickUpItems()
+    return function()
+        -- Child comparator root.children[21].children[1]: dist ascending.
+        local function Nested_dist_2(a, b)
+            return a.dist < b.dist
+        end
+        -- Child comparator root.children[21].children[0]: kIdx, then dist.
+        local function Nested_dist(a, b)
+            if a.kIdx ~= b.kIdx then
+                return a.kIdx < b.kIdx
+            end
+            return a.dist < b.dist
+        end
         local nameRules = {}
         local droppedItems, droppedCount = GetDroppedItems()
 
@@ -106,14 +113,5 @@ local function make_PickUpItems(notify)
             notify("拾取: " .. target.item.mName)
         end
     end
-end
-
--- Child comparator root.children[21].children[0]:
---   kIdx ascending; on equal kIdx, dist ascending.
-local function Nested_dist(a, b)
-    if a.kIdx ~= b.kIdx then
-        return a.kIdx < b.kIdx
-    end
-    return a.dist < b.dist
 end
 
