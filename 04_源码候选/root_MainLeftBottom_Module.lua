@@ -639,3 +639,19 @@ end
 -- PC210实际创建FindMonsterInCurrViewField并于PC211捕获T30=IsDie；
 -- ClearBlacklistItems是root.children[15]，实际创建PC383。此前PC210注释中的名称错误已纠正。
 -- 上述28个新增寄存器时间线及每个捕获槽见12_根模块闭包装配表.json。
+
+
+-- 检查点243：PC212-PC340根模块字段与全局导出复核。
+-- PC212-PC213：root.children[31] IsInWhitelistMap无捕获，导出全局IsInWhitelistMap。
+-- PC214-PC237：root.children[45] MainLoop按既有22项捕获序列创建，PC237导出全局MainLoop。
+-- PC238-PC246：InitGatherMonsters捕获[T3,T18,T23,T13,T35,T8,T4]，PC246全局导出。
+-- PC247-PC255：StopGatherMonsters捕获[T18,T3,T25,T23,T13,T35,T4]，PC255全局导出。
+-- PC256-PC258：Builtsetting捕获T5，PC258全局导出。
+-- PC259-PC260：MoveItemToQuickUse无捕获，PC260全局导出。
+-- PC261-PC265：DestroyUI捕获[T0,T3,T1]，写入MainLeftBottom.hide。
+-- PC266-PC269：SetButtonVisibilityState捕获[T0,T1]，写入MainLeftBottom.show。
+-- PC270-PC274：ShowHideAllButtons捕获[T3,T1,T0]，写入MainLeftBottom.destroy。
+-- PC276-PC279：AccountIDValidation捕获[T4,T5]（PrintLog、ShowLocalNoticeByType），写入MainLeftBottom.main。
+-- PC286-PC294：创建blacklistState并初始化lastAttacker=nil、lastHp=nil、deathHandled=false、alertAt=0、nextTryAt=0、noStoneWarned=false、distance=nil；同一表写入MainLeftBottom.blacklist。
+-- T54：PC318临时数值/表构造用途在PC349前结束；PC352最终写入PCallHelper_2；PC354与PC384分别被FindBlacklistPlayer UP0和ClearBlacklistItems UP0捕获。两次捕获均取到PCallHelper_2，之后T54无再写入。
+-- 该段为父模块创建/捕获/赋值账本，不替代子原型主体；PC341-PC412仍待对账。
