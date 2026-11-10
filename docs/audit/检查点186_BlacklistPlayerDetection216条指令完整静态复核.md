@@ -12,7 +12,7 @@ root PC367创建本闭包，PC368-PC381按序捕获以下父root T寄存器：
 | UP槽 | 父T寄存器 | 业务用途 |
 |---:|---:|---|
 | UP[0] | T[2] | 模块功能状态表，写入isBlacklisting=true |
-| UP[1] | T[57] | root.children[52] onDamageMsg |
+| UP[1] | T[57] | root.children[6] InstallDamageHook（PC360覆盖T[57]后PC368捕获） |
 | UP[2] | T[41] | 黑名单状态表：lastAttacker/lastHp/deathHandled/alertAt/nextTryAt/noStoneWarned/distance |
 | UP[3] | T[58] | root.children[25] DeathAutoBlacklist |
 | UP[4] | T[55] | root.children[51] FindBlacklistPlayer/actor查询闭包，返回匹配标志和显示名 |
@@ -79,3 +79,8 @@ root PC367创建本闭包，PC368-PC381按序捕获以下父root T寄存器：
 源码：04_源码候选/root47_BlacklistPlayerDetection.lua
 统计：普通Lua草稿71；完整静态恢复102/110；运行时验证0。
 下一步：转向下一项未完整恢复的高优先级原型；优先检查root.children[45] MainLoop既有源码候选及未闭合CFG，不重复已完成区段。
+
+
+## 检查点236寄存器复用纠正：UP[1]实际为InstallDamageHook
+
+root.children[47]的UP[1]捕获父root T[57]。根反汇编显示：PC357创建root.children[52] onDamageMsg消息处理器并捕获T[41]；PC359将其写入MainLeftBottom.onDamageMsg；PC360随后在同一个T[57]寄存器写入root.children[6] InstallDamageHook闭包；PC368才创建BlacklistPlayerDetection并捕获T[57]。原始VM OP_387捕获的是live register cell，因此UP[1]在调用时解析为InstallDamageHook，而不是先前写入模块字段的onDamageMsg消息处理器。BlacklistPlayerDetection入口零参调用UP[1]的实际行为是安装/确认伤害钩子。本次已同步主源码工厂参数名与调用。
