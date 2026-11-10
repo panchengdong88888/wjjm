@@ -1,18 +1,19 @@
 --[[
-MainLeftBottom(2).lua 作者级明文恢复汇总稿
-生成：2026-11-10 | GitHub checkpoint 256（持续整合）
-用途：将现有普通Lua候选集中到一个文件，并建立110原型的权威路径/状态索引。
-重要：这是“源码恢复汇总稿/静态候选集”，不是已验证可直接运行的最终脚本。
-- 根模块主体仍有分段记录；闭包工厂必须按真实upvalue顺序绑定。
-- 已恢复的函数体保留为独立词法块，供后续按prototype_index合并到根作用域。
-- 未完成函数不伪造空实现；未闭合槽位保留TODO/占位。
-- runtime_verified 全部为 false；没有进行目标游戏运行时验证。
+MainLeftBottom(2).lua 明文恢复整合稿（静态候选）
+生成：2026-11-10 | GitHub checkpoint 258
+用途：按110原型索引和PC级证据整合普通Lua候选、根模块状态及58个直接子闭包。
+当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配。
+重要：
+- 根模块初始化与闭包创建仍采用明确标注的恢复适配结构，不冒充原作者逐字源码。
+- 所有函数体仍按原型路径保留；根装配按OP_387捕获顺序绑定共享cell和状态表。
+- 唯一未完整静态恢复的是root模块主体本身；未恢复逻辑不伪造空函数。
+- 本文件PC412返回MainLeftBottom模块表；MainLeftBottomRecovered仅是本文件局部恢复注册容器，不作为额外全局导出。
+- runtime_verified 全部为 false；未执行Lua编译器，也未进行目标游戏运行时验证。
 - 新框架API以《新框架(3_40_xx).zip》为接口参考；只将文档明确的API标为DOCUMENTED。
 - 诸如 actor:GetOwnerID()/actor:IsDie()/global.gamePlayerController:GetMainPlayerID()
   是脚本中观察到的宿主对象方法；开发包未检索到这些精确方法名，不擅自宣称文档已定义。
 ]]
 local MainLeftBottomRecovered = { sources = {}, prototype_index = {} }
-_G.MainLeftBottomRecovered = MainLeftBottomRecovered
 
 -- API调用边界：
 -- DOCUMENTED：SL:GetMetaValue及元变量MAP_ID/MAP_NAME/IN_SAFE_AREA/SCREEN_WIDTH/
