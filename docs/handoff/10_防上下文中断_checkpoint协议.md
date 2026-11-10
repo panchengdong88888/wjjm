@@ -2522,3 +2522,36 @@ Nested_match：
 - 新增本审计文件。
 
 状态仍为普通Lua草稿，不升级完整静态恢复或运行时验证。
+
+
+---
+
+# 检查点210：根模块第一阶段装配接口
+
+日期：2026-11-10  
+对象：`root` / `MainLeftBottom_Module`（412条物理指令、58个直接子原型）  
+源码：`04_源码候选/root_MainLeftBottom_Module.lua`
+
+## 本批实际变更
+
+新增可执行普通Lua函数 `AttachRecoveredPrototypes(prototypes)`，将已经单独恢复、并由调用方按父级捕获顺序绑定完成的闭包实例，接回根模块在反汇编中明确记录的导出位置。
+
+已接入的映射包括：
+
+- 全局基础函数：GetMapId、GetMapName、PlayerPos、GetDroppedItems、MoveTo、DiuItems。
+- 全局仓库/物品函数：GetAvailableStoragePage、GetStorageItemData、StorageItems、TakeItems、PickUpItems。
+- 模块字段：`MainLeftBottom.a.LuaSendMsg`、`hide`、`show`、`destroy`、`main`、`onDamageMsg`、`doInit`。
+- 全局采集入口：IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、MoveItemToQuickUse。
+- 全局黑名单入口：BlacklistItems、ClearBlacklistItems。
+
+## 边界与限制
+
+1. `prototypes`只接收已经完成父级upvalue绑定的闭包实例；本函数不伪造VM捕获关系。
+2. 未提供的原型键保持原样，不创建空函数，也不把未恢复函数伪装成已恢复函数。
+3. 这是装配接口，不是作者原始根模块的完整恢复。
+4. 根模块PC42-PC412中大量闭包创建、捕获和初始化语句仍以分段说明为主，下一批继续将这些说明转为普通Lua代码。
+5. 本批不增加普通Lua草稿函数计数，不增加完整静态恢复数量；未进行Lua宿主/游戏客户端运行时验证。
+
+## 下一步
+
+优先继续恢复根模块PC42-PC412的可确定语句和父级闭包注册；疑难捕获使用中性占位并继续推进其他代码，不因单个未决槽位阻塞整体覆盖。
