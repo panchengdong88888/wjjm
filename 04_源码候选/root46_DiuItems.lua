@@ -2,6 +2,8 @@
 -- Reconstruction name: DiuItems
 -- 169 physical VM instructions; one nested keyword-matcher prototype.
 -- Status: complete static reconstruction after independent review (checkpoint 89).
+-- Checkpoint 247: aggregate root assembly binds this factory with MainLeftBottom.z and
+-- ShowLocalNoticeByType in the two OP_387 capture slots; not runtime-validated.
 -- Not original source text; not runtime-validated. Names such as state/candidates are
 -- readable reconstruction names, not recovered original local-variable identifiers.
 
