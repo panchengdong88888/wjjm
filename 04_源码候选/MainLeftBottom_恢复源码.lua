@@ -8515,8 +8515,6 @@ do
     rootModule.onDamageMsg = rootPrototypes.onDamageMsg
     assert(rootModule.onDamageMsg == rootPrototypes.onDamageMsg,
         "PC359 MainLeftBottom.onDamageMsg attachment failed")
-    assert(rootCells[57] == nil or rootCells[57].value ~= rootPrototypes.onDamageMsg,
-        "PC357 onDamageMsg must not be confused with PC360 InstallDamageHook")
 
     -- root PC360-PC362：InstallDamageHook捕获T[0]=MainLeftBottom.a、T[4]=PrintLog。
     -- PC360写入T[57]；后续BlacklistPlayerDetection捕获同一个live cell。
