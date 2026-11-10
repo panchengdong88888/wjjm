@@ -2,7 +2,7 @@
 -- 原型：root / MainLeftBottom_Module
 -- 规范路径：root
 -- 规模：412条物理指令、109常量、58个直接子原型
--- 检查点192-197：根模块分段普通Lua草稿，已整理PC1-PC340中的已闭合片段；PC341-PC412仍待恢复。
+-- 检查点192-198：根模块分段普通Lua草稿，PC1-PC412均已建立分段记录；非作者原文逐字恢复，未运行时验证。
 -- 状态：不是完整根模块源码，尚未运行时验证。
 
 local MainLeftBottom = {}
@@ -33,7 +33,7 @@ MainLeftBottom.z = {
     isOutputted = false
 }
 
--- 后续PC42-PC340已按检查点193-197分段整理；PC341-PC412尚待恢复。
+-- PC42-PC412已按检查点193-198分段整理。
 -- 本文件不是完整、可直接运行的原始Lua文件。
 
 
@@ -271,3 +271,49 @@ local gatherMonsterCountConfigFile = "gather_monster_count.txt"
 -- PC350将R52捕获给root.children[22]；该函数UPVALUE在其活动路径中未读取
 -- （检查点184），不据此推断该表参与距离计算。
 
+
+
+-- 检查点198：PC341-PC412，根模块剩余数组、黑名单闭包及doInit_UI注册。
+-- PC341-PC348完成R52最后两个二元素子表，PC349组装八项外层表。
+-- 以下数值完全按字节码构造顺序记录；R52业务用途未知，不命名为方向/寻路表。
+local opaquePairTable = {
+    {  1,  0 }, { -1,  0 },
+    {  0,  1 }, {  0, -1 },
+    {  1,  1 }, {  1, -1 },
+    { -1,  1 }, { -1, -1 }
+}
+
+-- PC350-PC351：创建root.children[22] / GetMapData2DPtr，捕获R52。
+-- 检查点184确认该子函数活动路径不读取此UPVALUE。
+-- PC352：创建root.children[48] / PCallHelper_2（无捕获）。
+-- PC353-PC354：创建root.children[51] / FindBlacklistPlayer，捕获PCallHelper_2。
+-- PC355-PC356：创建root.children[24] / UseItemByIndex，捕获randomTeleportItemNames。
+-- PC357-PC358：创建root.children[52] / onDamageMsg，捕获blacklistState。
+-- PC359：MainLeftBottom.onDamageMsg = onDamageMsg。
+
+-- PC360-PC362：创建root.children[6] / InstallDamageHook，捕获父T[0]、T[4]。
+-- 这两个父级捕获槽位按顺序保留；子闭包Nested_onDamageMsg的捕获另见检查点179。
+-- PC363-PC367：创建root.children[25] / DeathAutoBlacklist，捕获：
+-- [T[41], T[4], T[55], T[5]]。
+-- PC368-PC381：创建root.children[47] / BlacklistPlayerDetection，按序捕获：
+-- [T[2], T[57], T[41], T[58], T[55], T[53], T[38],
+--  T[4], T[56], T[39], T[5], T[40], T[37]]。
+-- PC382：将该闭包导出为全局BlacklistItems。
+-- 13项捕获的逐槽用途见检查点186；此处不重复展开已恢复函数主体。
+
+-- PC383-PC387：创建root.children[15] / ClearBlacklistItems，捕获：
+-- [T[54], T[4], T[5], T[41]]。
+-- PC388：导出全局ClearBlacklistItems。
+
+-- PC389：重新读取全局MainLeftBottom。
+-- PC390-PC410：创建root.children[42] / doInit_UI，捕获20项父root寄存器：
+-- [T[4], T[2], T[3], T[0], T[1], T[41], T[48], T[7], T[8], T[50],
+--  T[49], T[5], T[44], T[42], T[51], T[43], T[47], T[11], T[12], T[9]]。
+-- 这是父级捕获顺序，不代表所有槽位业务身份均已确认。
+-- doInit_UI本体419条，已有首版普通Lua草稿（检查点187）；
+-- GUI宿主语义、Attach_UITop七实参、Nested_Anonymous三个T槽来源等仍待复审。
+-- PC411：MainLeftBottom.doInit = doInit_UI。
+-- PC412：根模块return。
+
+-- 根模块PC1-PC412至此均有分段源码记录。
+-- “PC范围已覆盖”不等于根模块已完成作者级源码恢复，也不等于运行时验证。
