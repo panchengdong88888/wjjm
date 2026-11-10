@@ -7662,7 +7662,7 @@
     "binding_policy": "Only capture_count=0 direct children; captured factories remain pending until shared live-cell bindings are implemented.",
     "runtime_verified": false
   },
-  "next_action": "检查点263：按PC43-PC85顺序整合闭包创建、OP_387捕获、寄存器覆盖、全局导出和MainLeftBottom.a.LuaSendMsg字段写入；重点审计T[4]/T[5]/T[6]/T[8]的每次覆写与导出先后。",
+  "next_action": "检查点264：整合root PC86-PC211的采集状态、FindMonsterCandidates、FormatStateChange、ResetGatherMonsterData、FindMonsterInCurrViewField及MainLoop/InitGatherMonsters/StopGatherMonsters的创建捕获顺序；重点维护T[14..22]每个共享cell唯一性。",
   "root_assembly_checkpoint_247": {
     "direct_child_closures_expected": 22,
     "direct_child_closures_source_bound": 22,
@@ -10620,5 +10620,227 @@
       "The individual root candidate and embedded main recovery copy were synchronized."
     ],
     "runtime_verified": false
+  },
+  "root_assembly_checkpoint_263": {
+    "date": "2026-11-10",
+    "root_pc_range": "43-85",
+    "source_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
+    "root_candidate_notes": "04_源码候选/root_MainLeftBottom_Module.lua",
+    "adapter": "rootRegisters",
+    "adapter_is_original_source": false,
+    "register_values": {
+      "T[4]": "PC43 PrintLog; remains stable through later captures",
+      "T[5]": "PC44 _G; PC45 _G.log=T[4]; PC46 ShowLocalNoticeByType; stable through PC85",
+      "T[6]": "PC48 LuaSendMsg; PC51 assign a.LuaSendMsg; PC52 overwrite with ScheduleOnce",
+      "T[7]": "PC53 Schedule",
+      "T[8]": "sequentially overwritten by closures created at PC54,56,58,60,62,64,68,71,74,79,83"
+    },
+    "closures": [
+      {
+        "pc": 43,
+        "name": "PrintLog",
+        "prototype": "root.children[16]",
+        "captures": [],
+        "register": 4,
+        "export": {
+          "pc": 45,
+          "target": "_G.log"
+        }
+      },
+      {
+        "pc": 46,
+        "name": "ShowLocalNoticeByType",
+        "prototype": "root.children[20]",
+        "captures": [
+          0
+        ],
+        "register": 5,
+        "export": null
+      },
+      {
+        "pc": 48,
+        "name": "LuaSendMsg",
+        "prototype": "root.children[12]",
+        "captures": [
+          0,
+          4
+        ],
+        "register": 6,
+        "module_field": {
+          "pc": 51,
+          "target": "MainLeftBottom.a.LuaSendMsg"
+        }
+      },
+      {
+        "pc": 52,
+        "name": "ScheduleOnce",
+        "prototype": "root.children[53]",
+        "captures": [],
+        "register": 6,
+        "export": null
+      },
+      {
+        "pc": 53,
+        "name": "Schedule",
+        "prototype": "root.children[34]",
+        "captures": [],
+        "register": 7,
+        "export": null
+      },
+      {
+        "pc": 54,
+        "name": "GetMapId",
+        "prototype": "root.children[13]",
+        "captures": [],
+        "register": 8,
+        "export": {
+          "pc": 55,
+          "target": "_G.GetMapId"
+        }
+      },
+      {
+        "pc": 56,
+        "name": "GetMapName",
+        "prototype": "root.children[30]",
+        "captures": [],
+        "register": 8,
+        "export": {
+          "pc": 57,
+          "target": "_G.GetMapName"
+        }
+      },
+      {
+        "pc": 58,
+        "name": "PlayerPos",
+        "prototype": "root.children[57]",
+        "captures": [],
+        "register": 8,
+        "export": {
+          "pc": 59,
+          "target": "_G.PlayerPos"
+        }
+      },
+      {
+        "pc": 60,
+        "name": "GetDroppedItems",
+        "prototype": "root.children[4]",
+        "captures": [],
+        "register": 8,
+        "export": {
+          "pc": 61,
+          "target": "_G.GetDroppedItems"
+        }
+      },
+      {
+        "pc": 62,
+        "name": "MoveTo",
+        "prototype": "root.children[3]",
+        "captures": [],
+        "register": 8,
+        "export": {
+          "pc": 63,
+          "target": "_G.MoveTo"
+        }
+      },
+      {
+        "pc": 64,
+        "name": "DiuItems",
+        "prototype": "root.children[46]",
+        "captures": [
+          2,
+          5
+        ],
+        "register": 8,
+        "export": {
+          "pc": 67,
+          "target": "_G.DiuItems"
+        }
+      },
+      {
+        "pc": 68,
+        "name": "GetAvailableStoragePage",
+        "prototype": "root.children[36]",
+        "captures": [
+          4
+        ],
+        "register": 8,
+        "export": {
+          "pc": 70,
+          "target": "_G.GetAvailableStoragePage"
+        }
+      },
+      {
+        "pc": 71,
+        "name": "GetStorageItemData",
+        "prototype": "root.children[1]",
+        "captures": [
+          4
+        ],
+        "register": 8,
+        "export": {
+          "pc": 73,
+          "target": "_G.GetStorageItemData"
+        }
+      },
+      {
+        "pc": 74,
+        "name": "StorageItems",
+        "prototype": "root.children[50]",
+        "captures": [
+          2,
+          4,
+          5
+        ],
+        "register": 8,
+        "export": {
+          "pc": 78,
+          "target": "_G.StorageItems"
+        }
+      },
+      {
+        "pc": 79,
+        "name": "TakeItems",
+        "prototype": "root.children[5]",
+        "captures": [
+          2,
+          5
+        ],
+        "register": 8,
+        "export": {
+          "pc": 82,
+          "target": "_G.TakeItems"
+        }
+      },
+      {
+        "pc": 83,
+        "name": "PickUpItems",
+        "prototype": "root.children[21]",
+        "captures": [
+          5
+        ],
+        "register": 8,
+        "export": {
+          "pc": 85,
+          "target": "_G.PickUpItems"
+        }
+      }
+    ],
+    "source_checks": {
+      "registered_symbols_found": true,
+      "get_storage_item_data_registry_key": "04_源码候选/短函数草稿_第五十六批.lua#GetStorageItemData",
+      "required_closure_guard": "requireRecoveredClosure",
+      "stale_T8_export_prevented": true
+    },
+    "verified_against": [
+      "closure_sites PC43-PC85",
+      "register_value_timeline keys 0,2,4,5,6,7,8",
+      "root_prefix_export_ledger"
+    ],
+    "runtime_verified": false,
+    "caveats": [
+      "rootRegisters is a reconstruction adapter shadowing VM parent registers; it is not claimed to be the author's original table.",
+      "Subprototype bodies remain in their individual candidate source blocks.",
+      "No Lua interpreter or target game runtime validation has been performed."
+    ]
   }
 }
