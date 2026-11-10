@@ -7662,7 +7662,7 @@
     "binding_policy": "Only capture_count=0 direct children; captured factories remain pending until shared live-cell bindings are implemented.",
     "runtime_verified": false
   },
-  "next_action": "检查点258：按PC1-PC412将root_MainLeftBottom_Module.lua的分段根模块草稿整合为连续可读的模块主体，复用已恢复的58个子原型，不重复分析子函数。",
+  "next_action": "检查点263：按PC43-PC85顺序整合闭包创建、OP_387捕获、寄存器覆盖、全局导出和MainLeftBottom.a.LuaSendMsg字段写入；重点审计T[4]/T[5]/T[6]/T[8]的每次覆写与导出先后。",
   "root_assembly_checkpoint_247": {
     "direct_child_closures_expected": 22,
     "direct_child_closures_source_bound": 22,
@@ -10572,5 +10572,53 @@
     "runtime_verified": 0,
     "status": "Static PC-order integration; Lua compiler and target game runtime not executed",
     "next_action": "检查点261：核对root PC1-PC412全局导出、模块字段和局部寄存器生命周期在主恢复文件中的无遗漏情况；重点审查PC86-PC180的rootSource初始化字段与T[8]/T[11]/T[12]/T[13]/T[14..22]对应关系，以及PC390-PC412 doInit_UI最终返回路径。然后评估能否把root状态初始化与闭包装配适配层合并成单一连续模块执行体。"
+  },
+  "root_assembly_checkpoint_262": {
+    "date": "2026-11-10",
+    "root_pc_range": "1-42",
+    "source_files": [
+      "04_源码候选/root_MainLeftBottom_Module.lua",
+      "04_源码候选/MainLeftBottom_恢复源码.lua"
+    ],
+    "register_lifecycle_alignment": {
+      "T[0]": "PC1 module table; PC3 new a table; PC5 assign MainLeftBottom.a; later closure captures use a table",
+      "T[1]": "PC17 Blocklist temporary; PC24 SendHookList; PC26 RecvHookList; PC30 final b table; PC32 assign MainLeftBottom.b",
+      "T[2]": "PC31 reload _G.MainLeftBottom; PC33 new z table; PC35 assign MainLeftBottom.z; PC36-PC41 initialize six boolean fields",
+      "T[3]": "PC42 timerState table"
+    },
+    "ordered_source_statements": [
+      "PC1 create MainLeftBottom root table",
+      "PC2 export _G.MainLeftBottom",
+      "PC3 create local a table",
+      "PC5 assign MainLeftBottom.a",
+      "PC6 a.version='10000'",
+      "PC11 a.screenW=SL:GetMetaValue('SCREEN_WIDTH')",
+      "PC16 a.screenH=SL:GetMetaValue('SCREEN_HEIGHT')",
+      "PC17-PC22 construct Blocklist; PC23 assign a.Blocklist",
+      "PC24-PC25 create/assign SendHookList",
+      "PC26-PC27 create/assign RecvHookList",
+      "PC28-PC29 assign isHidden=true and hidebut=nil",
+      "PC30 create b table; PC31 reload _G.MainLeftBottom; PC32 assign .b",
+      "PC33 create z table; PC35 assign .z",
+      "PC36-PC41 assign isPaused/isRunning/isStoring/isTaking/isDiuing/isOutputted=false",
+      "PC42 create timerState table"
+    ],
+    "api_classification": {
+      "SL:GetMetaValue": "DOCUMENTED; retain colon receiver syntax; screen width/height keys are documented",
+      "MainLeftBottom module initialization": "SCRIPT_ROOT_MODULE",
+      "timerState": "root register T[3] table; semantic role inherited from reviewed closure captures"
+    },
+    "verified_against": [
+      "register_value_timeline keys 0,1,2,3",
+      "root_prefix_export_ledger.module_fields",
+      "root_prefix_export_ledger.global_exports",
+      "root_complete_module_ledger.segments[0]"
+    ],
+    "caveats": [
+      "This is a source-level reconstruction adapter, not the original author source verbatim.",
+      "The PC ranges are anchored to the current repository ledger; no runtime execution has been performed.",
+      "The individual root candidate and embedded main recovery copy were synchronized."
+    ],
+    "runtime_verified": false
   }
 }
