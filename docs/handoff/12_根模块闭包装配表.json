@@ -9733,6 +9733,521 @@
     },
     "root_direct_closure_status": "58/58 source-level bindings; not runtime-verified",
     "runtime_verified": false,
-    "next_action": "检查点257：对根模块58个直接子闭包做统一装配一致性审计，随后处理doInit_UI内部Nested_Anonymous未解析T槽。"
+    "next_action": "检查点257：对根模块58个直接子闭包做统一装配一致性审计，随后处理doInit_UI内部Nested_Anonymous未解析T槽。",
+    "bound_factory_names": [
+      "ShowLocalNoticeByType",
+      "DiuItems",
+      "FindMonsterCandidates",
+      "LuaSendMsg",
+      "GetAvailableStoragePage",
+      "GetStorageItemData",
+      "TakeItems",
+      "PickUpItems",
+      "StorageItems",
+      "Builtsetting",
+      "AccountIDValidation",
+      "InstallDamageHook",
+      "FormatStateChange",
+      "ResetGatherMonsterData",
+      "MainLoop",
+      "InitGatherMonsters",
+      "StopGatherMonsters",
+      "FindMonsterInCurrViewField",
+      "DestroyUI",
+      "SetButtonVisibilityState",
+      "ShowHideAllButtons",
+      "ReadNumericConfig",
+      "PCallHelper",
+      "FileExistCheck_pcall_wrapper",
+      "GetMapData2DPtr",
+      "FindBlacklistPlayer",
+      "UseItemByIndex",
+      "AnonymousHelper_49",
+      "AnonymousHelper_54",
+      "DeathAutoBlacklist",
+      "onDamageMsg",
+      "ClearBlacklistItems",
+      "AnonymousHelper_32",
+      "AnonymousHelper_33",
+      "BlacklistPlayerDetection",
+      "doInit_UI"
+    ],
+    "all_bound_factories": [
+      {
+        "prototype": "root.children[20]",
+        "name": "ShowLocalNoticeByType",
+        "capture_count": 1,
+        "captured_parent_T_registers": [
+          0
+        ],
+        "bindings": [
+          "MainLeftBottom.a"
+        ],
+        "status": "static_factory_instantiated",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[46]",
+        "name": "DiuItems",
+        "capture_count": 2,
+        "captured_parent_T_registers": [
+          2,
+          5
+        ],
+        "bindings": [
+          "MainLeftBottom.z",
+          "ShowLocalNoticeByType"
+        ],
+        "status": "static_factory_instantiated",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[28]",
+        "name": "FindMonsterCandidates",
+        "capture_count": 5,
+        "captured_parent_T_registers": [
+          27,
+          30,
+          28,
+          29,
+          8
+        ],
+        "bindings": [
+          "GetPlayerPosition",
+          "IsDie",
+          "GetPlayerMapPosition",
+          "DistanceCalculation",
+          "gatherConfig"
+        ],
+        "status": "static_factory_instantiated",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[12]",
+        "name": "LuaSendMsg",
+        "capture_count": 2,
+        "captured_parent_T_registers": [
+          0,
+          4
+        ],
+        "bindings": [
+          "MainLeftBottom.a",
+          "PrintLog"
+        ],
+        "module_field": "MainLeftBottom.a.LuaSendMsg",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[36]",
+        "name": "GetAvailableStoragePage",
+        "capture_count": 1,
+        "captured_parent_T_registers": [
+          4
+        ],
+        "bindings": [
+          "PrintLog"
+        ],
+        "global_export": "GetAvailableStoragePage",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[1]",
+        "name": "GetStorageItemData",
+        "capture_count": 1,
+        "captured_parent_T_registers": [
+          4
+        ],
+        "bindings": [
+          "PrintLog"
+        ],
+        "global_export": "GetStorageItemData",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[5]",
+        "name": "TakeItems",
+        "capture_count": 2,
+        "captured_parent_T_registers": [
+          2,
+          5
+        ],
+        "bindings": [
+          "MainLeftBottom.z",
+          "ShowLocalNoticeByType"
+        ],
+        "global_export": "TakeItems",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[21]",
+        "name": "PickUpItems",
+        "capture_count": 1,
+        "captured_parent_T_registers": [
+          5
+        ],
+        "bindings": [
+          "ShowLocalNoticeByType"
+        ],
+        "global_export": "PickUpItems",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[50]",
+        "name": "StorageItems",
+        "capture_count": 3,
+        "captured_parent_T_registers": [
+          2,
+          4,
+          5
+        ],
+        "bindings": [
+          "MainLeftBottom.z",
+          "PrintLog",
+          "ShowLocalNoticeByType"
+        ],
+        "nested_factories": [
+          "make_Nested_isOutputted",
+          "make_FindAvailableStoragePage"
+        ],
+        "global_export": "StorageItems",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[23]",
+        "name": "Builtsetting",
+        "capture_count": 1,
+        "captured_parent_T_registers": [
+          5
+        ],
+        "bindings": [
+          "ShowLocalNoticeByType"
+        ],
+        "global_export": "Builtsetting",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[55]",
+        "name": "AccountIDValidation",
+        "capture_count": 2,
+        "captured_parent_T_registers": [
+          4,
+          5
+        ],
+        "bindings": [
+          "PrintLog",
+          "ShowLocalNoticeByType"
+        ],
+        "module_field": "MainLeftBottom.main",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[6]",
+        "name": "InstallDamageHook",
+        "capture_count": 2,
+        "captured_parent_T_registers": [
+          0,
+          4
+        ],
+        "bindings": [
+          "MainLeftBottom.a",
+          "PrintLog"
+        ],
+        "stored_as": "rootPrototypes.InstallDamageHook",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[8]",
+        "name": "FormatStateChange",
+        "capture_count": 2,
+        "bindings": [
+          "PrintLog",
+          "rootCells[14]"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[26]",
+        "name": "ResetGatherMonsterData",
+        "capture_count": 9,
+        "bindings": [
+          "rootCells[15]",
+          "rootCells[16]",
+          "rootCells[17]",
+          "ClearTargetID_2",
+          "rootCells[19]",
+          "rootCells[20]",
+          "rootCells[21]",
+          "rootCells[22]",
+          "PrintLog"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[45]",
+        "name": "MainLoop",
+        "capture_count": 22,
+        "bindings": [
+          "rootCells[18]",
+          "rootCells[14]",
+          "gatherStatusText",
+          "PrintLog",
+          "FormatStateChange",
+          "ResetGatherMonsterData",
+          "GetMainPlayerID",
+          "FindMonsterCandidates",
+          "rootCells[15]",
+          "GetOwnerID",
+          "rootCells[17]",
+          "rootCells[16]",
+          "rootCells[19]",
+          "rootCells[20]",
+          "rootCells[22]",
+          "FindMonsterInCurrViewField",
+          "rootCells[21]",
+          "GetOwnerIDText",
+          "IsDie",
+          "GetOwnerDescription",
+          "SetTargetID",
+          "gatherConfig"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[19]",
+        "name": "InitGatherMonsters",
+        "capture_count": 7,
+        "bindings": [
+          "timerState",
+          "rootCells[18]",
+          "FormatStateChange",
+          "gatherStatusText",
+          "ResetGatherMonsterData",
+          "gatherConfig",
+          "PrintLog"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[27]",
+        "name": "StopGatherMonsters",
+        "capture_count": 7,
+        "bindings": [
+          "rootCells[18]",
+          "timerState",
+          "ClearTargetID_2",
+          "FormatStateChange",
+          "gatherStatusText",
+          "ResetGatherMonsterData",
+          "PrintLog"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[14]",
+        "name": "FindMonsterInCurrViewField",
+        "capture_count": 1,
+        "bindings": [
+          "IsDie"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[37]",
+        "name": "DestroyUI",
+        "capture_count": 3,
+        "bindings": [
+          "rootSource.uiState (MainLeftBottom.a)",
+          "rootSource.timerState (root T[3])",
+          "rootSource.buttonMap (MainLeftBottom.b)"
+        ],
+        "module_field": "MainLeftBottom.hide",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[10]",
+        "name": "SetButtonVisibilityState",
+        "capture_count": 2,
+        "bindings": [
+          "rootSource.uiState (MainLeftBottom.a)",
+          "rootSource.buttonMap (MainLeftBottom.b)"
+        ],
+        "module_field": "MainLeftBottom.show",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[40]",
+        "name": "ShowHideAllButtons",
+        "capture_count": 3,
+        "bindings": [
+          "rootSource.timerState (root T[3])",
+          "rootSource.buttonMap (MainLeftBottom.b)",
+          "rootSource.uiState (MainLeftBottom.a)"
+        ],
+        "module_field": "MainLeftBottom.destroy",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[9]",
+        "name": "ReadNumericConfig",
+        "capture_count": 1,
+        "bindings": [
+          "GetWritablePath (root.children[2], root T[44])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[17]",
+        "name": "PCallHelper",
+        "capture_count": 1,
+        "bindings": [
+          "GetWritablePath (root.children[2], root T[44])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[0]",
+        "name": "FileExistCheck_pcall_wrapper",
+        "capture_count": 1,
+        "bindings": [
+          "GetWritablePath (root.children[2], root T[44])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[22]",
+        "name": "GetMapData2DPtr",
+        "capture_count": 1,
+        "bindings": [
+          "opaquePairTable (root T[52], captured but not read on reachable CFG)"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[51]",
+        "name": "FindBlacklistPlayer",
+        "capture_count": 1,
+        "bindings": [
+          "PCallHelper_2 (root.children[48])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[24]",
+        "name": "UseItemByIndex",
+        "capture_count": 1,
+        "bindings": [
+          "randomTeleportItemNames (root T[37])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[49]",
+        "name": "AnonymousHelper_49",
+        "capture_count": 2,
+        "bindings": [
+          "ReadNumericConfig (root.children[9])",
+          "blacklistDistanceConfigFile (root T[42])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[54]",
+        "name": "AnonymousHelper_54",
+        "capture_count": 2,
+        "bindings": [
+          "PCallHelper (root.children[17])",
+          "gatherMonsterCountConfigFile (root T[43])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[25]",
+        "name": "DeathAutoBlacklist",
+        "capture_count": 4,
+        "bindings": [
+          "blacklistState (root T[41])",
+          "PrintLog (root T[4])",
+          "FindBlacklistPlayer (root T[55])",
+          "ShowLocalNoticeByType (root T[5])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[52]",
+        "name": "onDamageMsg",
+        "capture_count": 1,
+        "bindings": [
+          "blacklistState (root T[41])"
+        ],
+        "module_field": "MainLeftBottom.onDamageMsg",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[15]",
+        "name": "ClearBlacklistItems",
+        "capture_count": 4,
+        "bindings": [
+          "PCallHelper_2 (root T[54])",
+          "PrintLog (root T[4])",
+          "ShowLocalNoticeByType (root T[5])",
+          "blacklistState (root T[41])"
+        ],
+        "global_export": "ClearBlacklistItems",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[32]",
+        "name": "AnonymousHelper_32",
+        "capture_count": 2,
+        "bindings": [
+          "PCallHelper (root T[46])",
+          "blacklistDistanceConfigFile (root T[42])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[33]",
+        "name": "AnonymousHelper_33",
+        "capture_count": 2,
+        "bindings": [
+          "ReadNumericConfig (root T[45])",
+          "gatherMonsterCountConfigFile (root T[43])"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[47]",
+        "name": "BlacklistPlayerDetection",
+        "capture_count": 13,
+        "bindings": [
+          "T[2] MainLeftBottom.z feature-state table",
+          "T[57] OP_387 live cell (rootCells[57]); PC360 value=InstallDamageHook; factory reads .value()",
+          "T[41] blacklistState (rootSource.blacklistState)",
+          "T[58] DeathAutoBlacklist",
+          "T[55] FindBlacklistPlayer",
+          "T[53] GetMapData2DPtr",
+          "T[38] blacklistAlertThreshold=2.0",
+          "T[4] PrintLog",
+          "T[56] UseItemByIndex",
+          "T[39] blacklistShortRetryDelay=0.01",
+          "T[5] ShowLocalNoticeByType",
+          "T[40] blacklistNoItemRetryDelay=30.0",
+          "T[37] randomTeleportItemNames"
+        ],
+        "global_export": "BlacklistItems",
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[42]",
+        "name": "doInit_UI",
+        "capture_count": 20,
+        "bindings": [
+          "按上方PC390-PC410顺序全部20项注入"
+        ],
+        "module_field": "MainLeftBottom.doInit",
+        "runtime_verified": false
+      }
+    ],
+    "all_bound_factories_count": 36
   }
 }
