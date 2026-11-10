@@ -2981,11 +2981,19 @@ local function __root1_1(removeFile, path)
     return removeFile(path)
 end
 
--- root/3：构造可写目录路径前缀。
-local function GetWritablePath(prefix)
+-- root.children[2] / legacy root/3：构造可写目录路径。
+-- PC7读取首个可变参数；PC8拼接顺序为 writablePath .. path；PC9返回。
+-- vararg_flag=1，额外参数未读取，保留原可变参数形式。
+local function GetWritablePath(...)
     local fileUtils = cc.FileUtils:getInstance()
     local writablePath = fileUtils:getWritablePath()
-    return prefix .. writablePath
+    local path = ...
+    return writablePath .. path
+end
+
+do
+    local __exports = { GetWritablePath = GetWritablePath }
+    MainLeftBottomRecovered.sources["04_源码候选/root2_GetWritablePath.lua"] = __exports
 end
 
 -- root/5：取得当前视野中的全部地面掉落物；返回管理器接口给出的两个返回值。
