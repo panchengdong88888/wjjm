@@ -13,7 +13,7 @@
   "major_targets": {
     "root.children[45]": "MainLoop：417条；检查点152-158形成并完成完整静态恢复（未运行时验证）。CFG报告统计314个入口可达节点、103个静态不可达节点。全部22个upvalue父root T寄存器生产者已闭合：运行标记、当前状态/常量、PrintLog、FormatStateChange、ResetGatherMonsterData、GetMainPlayerID、FindMonsterCandidates、目标ID数组、GetOwnerID、扫描游标/自己归属计数、等待状态字段、FindMonsterInCurrViewField、GetOwnerIDText、IsDie、GetOwnerDescription、SetTargetID、配置表。检查点153/154闭合GATHERING/ATTACKING循环；155/156校正入口等待与未归属锁定路径；157完成全CFG分区总账。静态完整，未运行时验证。",
     "root.children[46]": "DiuItems：169条；普通Lua草稿已独立复审并标记完整静态恢复（未运行时验证）；源码04_源码候选/root46_DiuItems.lua；不计运行时验证。",
-    "root.children[42]": "doInit_UI（419条、105常量、23子原型）：检查点88首版普通Lua主体草稿；检查点187校正MoneyProxy四项货币快照、第二组资源由Nested_find统计、cruiseTimer的SL:Schedule(callback,1.0)参数顺序、Attach_UITop七实参占位、child9 Button_Create父节点及坐标捕获；检查点199独立复审确认PC66-PC87 MoneyProxy truthy门控只包围moneyNames循环，PC88-PC99 resourceNames循环独立执行；GetMoneyCountById false/nil均归零；将无捕获child0 Nested_find主体加入普通Lua草稿。PC338-PC345 child9捕获顺序uiParent/xBase/yBase/UP[4] buttonMap/T[21] buttonHandlers。moneybut依赖make_Nested_FFFF00(moduleState,PrintLog,timerState,initState)；hide按钮child15依赖make_Nested_Helper_9(UP[3],UP[0])；child12 daily callback依赖父R5日期标记cell、UP[3]模块发送对象、UP[0]通知/日志回调，R5生产者未闭合。20项UPVALUE其余槽位和GUI宿主语义仍有未决项；Attach_UITop七个实参未闭合。当前仍是普通Lua主体草稿，不是完整静态恢复，未运行时验证，子闭包工厂尚未合并为单文件。",
+    "root.children[42]": "doInit_UI（419条、105常量、23子原型）：检查点88首版；187校正主流程与GUI参数；199复审PC66-PC99资源快照分支（MoneyProxy只门控moneyNames；resourceNames独立执行；false/nil数量归零；补Nested_find）；200将PC269-PC337的12个按钮回调闭包捕获工厂并入第六十三批草稿，补child11 Nested_Helper_4/child14 Nested_Helper_7包装器及child5 syncButtonState、child7 InitGatherMonsters、child17 blacklistTimer的捕获关系；child12每日巡航回调工厂并入，R5日期cell在PC145清nil后捕获，22:00:05-22:00:08含边界、YYYYMMDD同日去重、先写标记再LuaSendMsg(9002,55556,1,2,3,'',0)、后通知。当前仍为普通Lua主体草稿；make_Nested_Anonymous父包装器和Nested_FFFF00资源统计工厂仍为独立依赖，Attach_UITop七实参未闭合，若干UPVALUE业务身份及GUI宿主语义未确认；未运行时验证。",
     "root.children[8]": "FormatStateChange：10条；检查点176逐指令闭合格式化、单参回调及回调后状态写回；检查点177交叉root初始化、MainLoop捕获映射/调用点及PrintLog本体，确认UP0=PrintLog（root T[4]），UP1=MainLoop共享currentState单元（root T[14]，初值IDLE）。完整静态恢复，未运行时验证；PrintLog的SL.Print分支无调用指令，不推断可见输出。",
     "root.children[9]": "ReadNumericConfig：45条；检查点130闭合三类失败分支均清理返回槽后返回nil，纯数字字符串才tonumber；检查点178闭合UP0=GetWritablePath（root.children[2]）及root/50 AnonymousHelper_49以blacklist_distance.txt调用并转发返回值。完整静态恢复，未运行时验证；GetWritablePath拼接顺序已由检查点127独立闭合。",
     "root.children[14]": "FindMonsterInCurrViewField：27条；检查点131完成27条PC映射，确认捕获root.children[29] IsDie包装器对存活actor返回truthy，完成静态恢复，未运行时验证。",
@@ -51,7 +51,7 @@
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
     "root": "MainLeftBottom_Module（412条、109常量、58子原型）：检查点192-PC1-PC41；193-PC42-PC85；194-PC86-PC167；195-PC168-PC200；196-PC201-PC270；197-PC271-PC340；198-PC341-PC412。PC341-PC349完成R52八个二元素数组构造；PC350-PC359创建GetMapData2DPtr/PCallHelper_2/FindBlacklistPlayer/UseItemByIndex/onDamageMsg并写MainLeftBottom.onDamageMsg；PC360-PC362创建InstallDamageHook捕获[T0,T4]；PC363-PC367创建DeathAutoBlacklist捕获[T41,T4,T55,T5]；PC368-PC381创建BlacklistPlayerDetection捕获13项并PC382导出BlacklistItems；PC383-PC388创建/导出ClearBlacklistItems；PC389-PC411创建doInit_UI并按序捕获20项，写入MainLeftBottom.doInit；PC412 return。根模块PC1-PC412均有分段普通Lua记录，但仍非作者级完整源码，doInit_UI及部分槽位待复审，未运行时验证。"
   },
-  "next_action": "检查点199已独立复审doInit_UI的PC66-PC99资源快照分支，并修正false/nil回退；下一批继续扩展doInit_UI普通Lua主体，优先批量补齐按钮回调子闭包的显式捕获工厂（PC269-PC337），复用现有子原型源码/CSV捕获描述；随后恢复child12每日定时回调并追踪父R5日期标记来源。Attach_UITop七实参继续保留TODO，不阻断其余草稿整理。保持普通草稿、完整静态恢复、运行时验证三项计数独立。",
+  "next_action": "检查点200已把PC269-PC337的12个闭包创建/捕获关系接入普通Lua工厂/handler表，并补齐child11/14输入包装器及其Nested_Helper_5/8校验子闭包；child12每日巡航回调主体并入，R5 cell清空后nil初始化，22:00:05-22:00:08窗口/同日去重/发送参数/先写日期后发送均按检查点111落实。下一批优先恢复root.children[42].children[22] Nested_Anonymous父包装器（复用已恢复Nested_str/Nested_match/Nested_Helper_11），从而闭合Helper_4/7 openDialog依赖；再将Nested_FFFF00及其已完成子函数工厂依赖合并到统一候选文件。随后继续Attach_UITop七实参来源和剩余UPVALUE业务身份。不要将外部依赖占位误报为可运行源码。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2238,12 +2238,13 @@
   ],
   "latest_batch": {
     "date": "2026-11-10",
-    "checkpoint": "199",
+    "checkpoint": "200",
     "targets": [
-      "root.children[42] doInit_UI PC66-PC99 independent review and ordinary Lua draft correction"
+      "root.children[42] doInit_UI PC236-PC337 child closure integration",
+      "root.children[42].children[12] daily cruise callback factory"
     ],
-    "status": "Corrected MoneyProxy branch scope, confirmed independent resourceNames/Nested_find loop, normalized false/nil money counts to zero, embedded the no-upvalue Nested_find ordinary Lua body, and made unresolved child closure factory dependencies explicit. doInit_UI remains a draft.",
-    "audit_file": "docs/audit/检查点199_doInit_UI_PC66-PC99资源快照分支复审.md",
+    "status": "Integrated explicit closure factories for the 12 parent closures created across PC269-PC337; added Helper_4/Helper_7 wrappers and their Helper_5/Helper_8 validator factories; embedded the daily cruise callback body from checkpoint 111 and connected its parent R5 date cell, sender and notification captures. The draft remains non-runnable due to the separate Nested_Anonymous and Nested_FFFF00 dependencies and unresolved Attach_UITop arguments.",
+    "audit_file": "docs/audit/检查点200_doInit_UI_PC269-PC337闭包工厂与每日巡航回调整合.md",
     "files": [
       "04_源码候选/短函数草稿_第六十三批.lua",
       "02_基础索引/03_函数状态清单.csv",
@@ -2251,11 +2252,12 @@
       "docs/handoff/10_防上下文中断_checkpoint协议.md"
     ],
     "findings": [
-      "PC66-PC87 MoneyProxy truthy guard encloses only moneyNames loop.",
-      "PC88-PC99 resourceNames loop is independent of MoneyProxy availability.",
-      "GetMoneyCountById false/nil values both normalize to zero before storing initSnapshot[name].",
-      "Added ordinary Lua body for root.children[42].children[0] Nested_find: BAG_DATA pairs, plain Name matching, bound-item exclusion, OverLap or 1 accumulation.",
-      "moneybut and hide-button handlers now name explicit factory dependencies; child12 daily callback remains an unresolved parent-frame closure dependency."
+      "PC269-PC337 child captures were integrated in parent creation order: children 6,2,20,1,13,18,8,19,10,21,3,4.",
+      "Added factories for child 6 StopGatherMonsters, child 2 clear-monster, child 20 clear-distance, child 1 reward, child 13 clear-blacklist, child 18 blacklist toggle, child 8 storage, child 19 take-items, child 10 pickup timer, child 21 drop timer, child 3 resource statistics call site, and child 4 leave-world.",
+      "Added Helper_4 and Helper_7 wrappers plus nested Helper_5/Helper_8 validation callbacks; their openDialog dependency is the still-unmerged Nested_Anonymous wrapper.",
+      "Child 12 daily callback factory now implements os.date('*t'), inclusive 22:00:05-22:00:08 window, YYYYMMDD deduplication, marker write before send, LuaSendMsg(9002,55556,1,2,3,'',0), then notification.",
+      "PC145 clears parent T5 before PC160 child 12 captures it, so the date marker cell begins nil.",
+      "No new prototype count, no change to static-complete count, and no runtime validation."
     ]
   },
   "corrections": [
@@ -2978,15 +2980,15 @@
       "PC350-PC412 remaining closure creation, capture and export map"
     ]
   },
-  "checkpoint": "199",
+  "checkpoint": "200",
   "drafts": 33,
   "next": "检查点151新增root.children[7] GetOwnerIDText与root.children[38] GetOwnerID两个普通Lua草稿，草稿数81；完整静态恢复76/110、运行时验证0不变。下一步继续从函数状态CSV筛选“部分静态核验/阶段分析中、尚无独立Lua草稿”的短函数，批量形成第一层草稿。之后再集中复核owner helper的逐PC跳转和参数来源。",
   "recent_checkpoint": {
-    "number": 199,
+    "number": 200,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/短函数草稿_第六十三批.lua",
-      "docs/audit/检查点199_doInit_UI_PC66-PC99资源快照分支复审.md",
+      "docs/audit/检查点200_doInit_UI_PC269-PC337闭包工厂与每日巡航回调整合.md",
       "02_基础索引/03_函数状态清单.csv",
       "docs/handoff/05_机器可读接续状态.json"
     ],
@@ -2994,19 +2996,18 @@
     "draft_prototype_total": 72,
     "complete_static_reconstructions": 103,
     "runtime_verified": 0,
-    "notes": "修订既有doInit_UI草稿并补入其无捕获Nested_find子函数普通Lua主体；未增加普通Lua函数计数、完整静态恢复数量或运行时验证数量。"
+    "notes": "doInit_UI既有419条主体草稿扩展并整合多个已完成子原型工厂；不增加草稿函数计数，不增加完整静态恢复或运行时验证计数。"
   },
   "latest_checkpoint": {
-    "checkpoint": "199",
-    "summary": "doInit_UI（root.children[42]）419条首版普通Lua主体于检查点199独立复审PC66-PC99：MoneyProxy truthy门控仅包moneyNames循环；resourceNames/Nested_find循环独立；GetMoneyCountById false/nil归零；补入Nested_find普通Lua实现。显式标记moneybut make_Nested_FFFF00、hide按钮 make_Nested_Helper_9工厂依赖；child12每日回调R5日期cell来源待追踪。doInit_UI仍是草稿，Attach_UITop七实参/GUI宿主语义未闭合，未运行时验证。",
-    "audit_file": "docs/audit/检查点199_doInit_UI_PC66-PC99资源快照分支复审.md",
+    "checkpoint": "200",
+    "summary": "doInit_UI PC269-PC337的12个子闭包已接入显式工厂/handler表；补齐Helper_4/7包装器和Helper_5/8校验回调工厂。child12每日巡航回调主体并入，捕获R5/UP3/UP0，R5在PC145清空后nil初始化；按检查点111落实22:00:05-22:00:08含边界、YYYYMMDD同日去重、先写标记再发送LuaSendMsg(9002,55556,1,2,3,'',0)、随后通知。doInit_UI仍是草稿，Nested_Anonymous父包装器、Nested_FFFF00工厂和Attach_UITop七实参仍未闭合。",
+    "audit_file": "docs/audit/检查点200_doInit_UI_PC269-PC337闭包工厂与每日巡航回调整合.md",
     "unresolved": [
-      "PC269-PC337各按钮回调子闭包的捕获工厂需要批量接入",
-      "child12每日回调父R5日期标记cell的生产者/初值需追踪",
-      "Attach_UITop七个实参来源和含义未闭合",
-      "doInit_UI 20项UPVALUE中其余业务身份及GUI宿主语义未完全确认",
-      "子闭包工厂依赖尚未合并为单一可运行文件",
-      "目标Lua/游戏运行时验证"
+      "Nested_Anonymous root.children[42].children[22]父包装器主体未并入，Helper_4/Helper_7 openDialog依赖因此未闭合",
+      "Nested_FFFF00 root.children[42].children[3]父函数工厂主体及其外部依赖仍在第六十二批独立候选",
+      "Attach_UITop七个实参来源/含义未闭合",
+      "doInit_UI 20项UPVALUE中若干业务身份和GUI宿主语义未完全确认",
+      "doInit_UI仍为普通Lua草稿，尚未进行完整静态复审/运行时验证"
     ]
   },
   "complete_static_reconstruction_count": 103,
@@ -3017,5 +3018,5 @@
     "complete_static_reconstruction": 103,
     "runtime_verified": 0
   },
-  "next_checkpoint": "root.children[42] doInit_UI PC269-PC337按钮回调闭包捕获工厂与child12每日回调"
+  "next_checkpoint": "root.children[42] Nested_Anonymous父包装器与Attach_UITop七实参来源；合并Nested_FFFF00资源统计工厂依赖"
 }
