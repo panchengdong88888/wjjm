@@ -8625,6 +8625,13 @@ do
     assert(type(doInitModule) == "table",
         "PC389 reread _ENV.MainLeftBottom did not return a table")
 
+    -- PC399：T[8]仍是PC86-PC89构造的gatherConfig表，并未被FindMonsterInCurrViewField覆写。
+    assert(type(rootSource.gatherConfig) == "table"
+        and rootSource.gatherConfig.GATHER_THRESHOLD == 10
+        and rootSource.gatherConfig.CHECK_INTERVAL == 0.5
+        and rootSource.gatherConfig.ATTACK_WAIT_TIME == 1,
+        "PC399 doInit_UI UP[8] gatherConfig identity/value mismatch")
+
     -- 检查点256：最后一个root.children[42]工厂，20项捕获严格按PC390-PC410顺序注入。
     local makeDoInitUI = sourceFunction(
         "04_源码候选/短函数草稿_第六十三批.lua", "make_doInit_UI"
@@ -8639,7 +8646,7 @@ do
             rootSource.blacklistState,                        -- UP5 <- T[41]
             rootConfigRegisters[48],                       -- UP6 <- T[48]
             rootPrototypes.Schedule,                          -- UP7 <- T[7]
-            rootPrototypes.FindMonsterInCurrViewField,        -- UP8 <- T[8]
+            rootSource.gatherConfig,                         -- UP8 <- T[8]
             rootConfigRegisters[50],                       -- UP9 <- T[50]
             rootConfigRegisters[49],                       -- UP10 <- T[49]
             rootPrototypes.ShowLocalNoticeByType,             -- UP11 <- T[5]
