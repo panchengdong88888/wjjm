@@ -10481,5 +10481,96 @@
     "status": "Static ordered assembly only; no Lua compiler or game runtime validation",
     "next_action": "检查点260：按PC顺序继续整合root PC86-PC211，尤其配置/奖励/状态cell/辅助闭包创建顺序。",
     "global_export_policy": "All root global exports are assigned at their original PC creation sites; the former end-of-module duplicate globalExports table was removed. Builtsetting at PC258 and ClearBlacklistItems at PC388 are assigned immediately."
+  },
+  "root_assembly_checkpoint_260": {
+    "date": "2026-11-10",
+    "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
+    "main_recovery_blob_sha": "cd8804843576e79f8849b52145def225ee90229d",
+    "audit_file": "docs/audit/检查点260_PC86-PC211及PC297-PC388根模块顺序整合.md",
+    "pc86_pc180_values": [
+      {
+        "pc": "86-89",
+        "name": "gatherConfig"
+      },
+      {
+        "pc": "90-95",
+        "name": "rootRegister11=18000"
+      },
+      {
+        "pc": "96-167",
+        "name": "loginAndOnlineRewardEntries (14 entries)"
+      },
+      {
+        "pc": "168-172",
+        "name": "gatherStatusText/currentState"
+      },
+      {
+        "pc": "173-180",
+        "name": "resettableTable/resetSlot16/17/isGatherRunning/resetSlot19/20/21/22"
+      }
+    ],
+    "pc181_pc258_order": [
+      "FormatStateChange",
+      "SetTargetID",
+      "ClearTargetID_2",
+      "GetMainPlayerID",
+      "GetPlayerPosition",
+      "GetPlayerMapPosition",
+      "DistanceCalculation",
+      "IsDie",
+      "GetOwnerIDText",
+      "GetOwnerID",
+      "GetOwnerDescription",
+      "FindMonsterCandidates",
+      "ResetGatherMonsterData",
+      "FindMonsterInCurrViewField",
+      "IsInWhitelistMap",
+      "MainLoop",
+      "InitGatherMonsters",
+      "StopGatherMonsters",
+      "Builtsetting",
+      "MoveItemToQuickUse",
+      "DestroyUI",
+      "SetButtonVisibilityState",
+      "ShowHideAllButtons",
+      "AccountIDValidation"
+    ],
+    "pc297_pc388_order": [
+      "GetWritablePath",
+      "ReadNumericConfig",
+      "PCallHelper",
+      "FileExistCheck_pcall_wrapper",
+      "AnonymousHelper_49",
+      "AnonymousHelper_32",
+      "AnonymousHelper_33",
+      "AnonymousHelper_54",
+      "GetMapData2DPtr",
+      "PCallHelper_2",
+      "FindBlacklistPlayer",
+      "UseItemByIndex",
+      "onDamageMsg",
+      "InstallDamageHook",
+      "DeathAutoBlacklist",
+      "BlacklistPlayerDetection",
+      "ClearBlacklistItems"
+    ],
+    "shared_cell_checks": {
+      "T14_to_T22": "one shared cell per parent register; reused by five closure families",
+      "T57": "one cell initialized with InstallDamageHook; captured by BlacklistPlayerDetection"
+    },
+    "duplicate_factory_counts": {
+      "AnonymousHelper_32": 1,
+      "AnonymousHelper_33": 1,
+      "AnonymousHelper_49": 1,
+      "AnonymousHelper_54": 1,
+      "T57_cell_initializations": 1
+    },
+    "root_direct_closures_source_bound": 58,
+    "root_direct_closures_expected": 58,
+    "static_complete_functions": 109,
+    "ordinary_lua_drafts": 72,
+    "runtime_verified": 0,
+    "status": "Static PC-order integration; Lua compiler and target game runtime not executed",
+    "next_action": "检查点261：核对root PC1-PC412全局导出、模块字段和局部寄存器生命周期在主恢复文件中的无遗漏情况；重点审查PC86-PC180的rootSource初始化字段与T[8]/T[11]/T[12]/T[13]/T[14..22]对应关系，以及PC390-PC412 doInit_UI最终返回路径。然后评估能否把root状态初始化与闭包装配适配层合并成单一连续模块执行体。"
   }
 }
