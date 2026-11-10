@@ -3,7 +3,7 @@
 -- 规范路径：root
 -- 规模：412条物理指令、109常量、58个直接子原型
 -- 检查点192：仅恢复并整理PC1-PC41；不是完整根模块源码。
--- 状态：分段普通Lua草稿；PC42-PC412尚未写入普通Lua主体；未运行时验证。
+-- 状态：分段普通Lua草稿；已整理PC1-PC200中的已闭合片段，PC201-PC412仍待恢复；未运行时验证。
 
 local MainLeftBottom = {}
 _G.MainLeftBottom = MainLeftBottom
@@ -33,8 +33,7 @@ MainLeftBottom.z = {
     isOutputted = false
 }
 
--- 后续PC42-PC412仍需逐段恢复：日志/代理辅助闭包、全局函数注册、
--- 物品/地图/仓库/拾取/黑名单流程、共享状态表、main与doInit注册。
+-- 后续PC201-PC412仍需逐段恢复：其余闭包注册、全局初始化及main/doInit注册。
 -- 本文件不是完整、可直接运行的原始Lua文件。
 
 
@@ -63,10 +62,10 @@ MainLeftBottom.z = {
 --
 -- 注意：OP_387 后续记录是闭包捕获描述，不是独立业务语句。
 -- 所有子原型实现均保留在各自源码文件；本根模块只记录闭包创建、
--- 捕获顺序和导出位置。PC86以后仍待恢复。
+-- 捕获顺序和导出位置。
 
 
--- 检查点194：PC86-PC137 配置表与奖励记录表构造。
+-- 检查点194：PC86-PC167 配置表与奖励记录表构造。
 -- PC86-PC89：创建供采集逻辑读取的配置表；root.children[28] FindMonsterCandidates
 -- 在父root PC194创建时捕获该表为UPVALUE[4]，因此这里按已核实用途命名。
 local gatherConfig = {
@@ -76,7 +75,7 @@ local gatherConfig = {
 }
 
 -- PC90-PC95：计算 math.floor(3600 / 0.2)，结果为18000。
--- 该值暂留为独立初始化表达式；在其最终用途闭合前不赋予业务名称。
+-- root PC408将该值捕获给doInit_UI的UPVALUE[17]；其在UI中的具体用途尚未闭合。
 
 -- PC96-PC167：先创建空表，再逐项构造14条三元素奖励记录。
 -- 前7项为累计登录天数记录，后7项为在线时长记录。
@@ -102,3 +101,71 @@ local loginAndOnlineRewardEntries = {
 
 -- 上述奖励表由doInit_UI闭包捕获；其GUI展示/领取语义及三列字段的
 -- 宿主协议含义仍待结合doInit_UI调用点与运行环境验证。
+
+
+-- 检查点195：PC168-PC200，采集状态、共享状态单元及辅助闭包注册。
+-- PC168-PC171：状态文字常量表；PC172以IDLE作为currentState初值。
+local gatherStatusText = {
+    IDLE = "空闲状态",
+    GATHERING = "引怪中",
+    ATTACKING = "攻击中"
+}
+local currentState = gatherStatusText.IDLE
+
+-- PC173-PC180：根模块共享状态单元的初始值。
+-- 仅将后续已闭合用途的槽位命名；其余保持中性名称，避免猜测业务字段。
+local resettableTable = {}
+local resetCounterA = 0
+local resetCounterB = 0
+local isGatherRunning = false
+local resetCounterC = false
+local resetCounterD = 0
+local resetOptionalValue = nil
+local resetTextValue = ""
+
+-- PC181：FormatStateChange闭包捕获PrintLog(root T[4])与currentState(root T[14])。
+-- 子函数在PrintLog正常返回后写回currentState共享单元。
+local formatStateChange = make_FormatStateChange(PrintLog, currentState)
+
+-- PC184-PC193：创建无捕获辅助闭包，供后续模块函数引用。
+local setTargetID = make_SetTargetID()
+local clearTargetID = make_ClearTargetID_2()
+local getMainPlayerID = make_GetMainPlayerID()
+local getPlayerPosition = make_GetPlayerPosition()
+local getPlayerMapPosition = make_GetPlayerMapPosition()
+local distanceCalculation = make_DistanceCalculation()
+local isDie = make_IsDie()
+local getOwnerIDText = make_GetOwnerIDText()
+local getOwnerID = make_GetOwnerID()
+local getOwnerDescription = make_GetOwnerDescription()
+
+-- PC194-PC199：创建FindMonsterCandidates并按序捕获：
+-- UPVALUE[0]=GetPlayerPosition、[1]=IsDie、[2]=GetPlayerMapPosition、
+-- [3]=DistanceCalculation、[4]=gatherConfig。
+local findMonsterCandidates = make_FindMonsterCandidates(
+    getPlayerPosition,
+    isDie,
+    getPlayerMapPosition,
+    distanceCalculation,
+    gatherConfig
+)
+
+-- PC200-PC209：创建ResetGatherMonsterData并捕获九个共享单元：
+-- [0]=resettableTable，[1]=resetCounterA，[2]=resetCounterB，
+-- [3]=root T[25]预停止回调（业务身份保留中性名），
+-- [4]=resetCounterC，[5]=resetCounterD，[6]=resetOptionalValue，
+-- [7]=resetTextValue，[8]=PrintLog。
+local resetGatherMonsterData = make_ResetGatherMonsterData(
+    resettableTable,
+    resetCounterA,
+    resetCounterB,
+    preStopAction,
+    resetCounterC,
+    resetCounterD,
+    resetOptionalValue,
+    resetTextValue,
+    PrintLog
+)
+
+-- 上述make_*仅用于表达root层闭包创建/捕获关系；并非此文件内已实现的函数定义。
+-- 对应子原型源码见各自候选文件；本根模块仍是分段草稿，未做运行时验证。
