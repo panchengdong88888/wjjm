@@ -1936,7 +1936,7 @@ end
 -- ---------------------------------------------------------------------------
 -- root.children[42].children[22] / Nested_Anonymous (第七十八批主体并入)
 -- 8条父原型指令；child0 Nested_str 27条；其内含4条 Nested_Helper_11。
--- T[0]/T[1]/T[2]的具体来源仍未闭合，故明确保留占位，不作为可运行实现。
+-- 检查点235已闭合固定参数帧：fixed_param_count=2，调用实参(promptText, successCallback)分别写入T[0]/T[1]；T[2]无写入，确定为nil。错误分支直接调用T[2]的attempt-to-call-nil行为按字节码保留。
 -- ---------------------------------------------------------------------------
 local function make_Nested_Anonymous(PrintLog)
     return function(promptText, successCallback)
@@ -2711,9 +2711,9 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
         UPVALUE_8, UPVALUE_9
     )
 
-    -- PC248：child22 Nested_Anonymous仅捕获UP0(PrintLog)；主体已并入上方工厂，T[0]/T[1]/T[2]仍待追踪。
+    -- PC248：child22 Nested_Anonymous仅捕获UP0(PrintLog)；检查点235确认固定参数为promptText/successCallback，分别映射T[0]/T[1]，T[2]=nil。
     -- PC250-PC258：child11 Nested_Helper_4捕获[R18,UP10,UP11,UP0,UP12,UP13,R16,R15]。
-    local nestedAnonymous = make_Nested_Anonymous(UPVALUE_0) -- child22主体已并入；三个T捕获槽仍是未解析占位
+    local nestedAnonymous = make_Nested_Anonymous(UPVALUE_0) -- child22主体已并入；固定参数槽已由检查点235闭合：T[0]=promptText、T[1]=successCallback、T[2]=nil；错误分支的nil调用按原字节码保留。
     local openBlacklistDistanceInput = make_Nested_Helper_4(
         nestedAnonymous, UPVALUE_10, UPVALUE_11, UPVALUE_0,
         UPVALUE_12, UPVALUE_13, blacklistTimerCallback, syncButtonState
@@ -4465,7 +4465,7 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
 
     -- PC248：child22 Nested_Anonymous仅捕获UP0(PrintLog)；主体已并入上方工厂。fixed_param_count=2，T[0]/T[1]分别对应两个调用实参，T[2]=nil。
     -- PC250-PC258：child11 Nested_Helper_4捕获[R18,UP10,UP11,UP0,UP12,UP13,R16,R15]。
-    local nestedAnonymous = make_Nested_Anonymous(UPVALUE_0) -- child22主体已并入；三个T捕获槽仍是未解析占位
+    local nestedAnonymous = make_Nested_Anonymous(UPVALUE_0) -- child22主体已并入；固定参数槽已由检查点235闭合：T[0]=promptText、T[1]=successCallback、T[2]=nil；错误分支的nil调用按原字节码保留。
     local openBlacklistDistanceInput = make_Nested_Helper_4(
         nestedAnonymous, UPVALUE_10, UPVALUE_11, UPVALUE_0,
         UPVALUE_12, UPVALUE_13, blacklistTimerCallback, syncButtonState
