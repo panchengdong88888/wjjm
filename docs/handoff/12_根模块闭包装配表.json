@@ -11939,5 +11939,150 @@
     ],
     "runtime_verified": 0,
     "notes": "新增身份断言尚未执行；本检查点为静态源码核对，不增加函数恢复计数。"
+  },
+  "root_assembly_checkpoint_274": {
+    "date": "2026-11-10",
+    "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
+    "main_recovery_blob_sha": "12bf29d45bbc06a2618a68f0537b16b3c8274128",
+    "audit_file": "docs/audit/检查点274_PC43-PC85寄存器复用与导出身份核对.md",
+    "closure_sites_checked": 16,
+    "ordered_closures": [
+      {
+        "pc": "PC43",
+        "name": "PrintLog",
+        "destination_parent_T_register": 4,
+        "captured_parent_T_registers": []
+      },
+      {
+        "pc": "PC46",
+        "name": "ShowLocalNoticeByType",
+        "destination_parent_T_register": 5,
+        "captured_parent_T_registers": [
+          0
+        ]
+      },
+      {
+        "pc": "PC48",
+        "name": "LuaSendMsg",
+        "destination_parent_T_register": 6,
+        "captured_parent_T_registers": [
+          0,
+          4
+        ]
+      },
+      {
+        "pc": "PC52",
+        "name": "ScheduleOnce",
+        "destination_parent_T_register": 6,
+        "captured_parent_T_registers": []
+      },
+      {
+        "pc": "PC53",
+        "name": "Schedule",
+        "destination_parent_T_register": 7,
+        "captured_parent_T_registers": []
+      },
+      {
+        "pc": "PC54",
+        "name": "GetMapId",
+        "destination_parent_T_register": 8,
+        "captured_parent_T_registers": []
+      },
+      {
+        "pc": "PC56",
+        "name": "GetMapName",
+        "destination_parent_T_register": 8,
+        "captured_parent_T_registers": []
+      },
+      {
+        "pc": "PC58",
+        "name": "PlayerPos",
+        "destination_parent_T_register": 8,
+        "captured_parent_T_registers": []
+      },
+      {
+        "pc": "PC60",
+        "name": "GetDroppedItems",
+        "destination_parent_T_register": 8,
+        "captured_parent_T_registers": []
+      },
+      {
+        "pc": "PC62",
+        "name": "MoveTo",
+        "destination_parent_T_register": 8,
+        "captured_parent_T_registers": []
+      },
+      {
+        "pc": "PC64",
+        "name": "DiuItems",
+        "destination_parent_T_register": 8,
+        "captured_parent_T_registers": [
+          2,
+          5
+        ]
+      },
+      {
+        "pc": "PC68",
+        "name": "GetAvailableStoragePage",
+        "destination_parent_T_register": 8,
+        "captured_parent_T_registers": [
+          4
+        ]
+      },
+      {
+        "pc": "PC71",
+        "name": "GetStorageItemData",
+        "destination_parent_T_register": 8,
+        "captured_parent_T_registers": [
+          4
+        ]
+      },
+      {
+        "pc": "PC74",
+        "name": "StorageItems",
+        "destination_parent_T_register": 8,
+        "captured_parent_T_registers": [
+          2,
+          4,
+          5
+        ]
+      },
+      {
+        "pc": "PC79",
+        "name": "TakeItems",
+        "destination_parent_T_register": 8,
+        "captured_parent_T_registers": [
+          2,
+          5
+        ]
+      },
+      {
+        "pc": "PC83",
+        "name": "PickUpItems",
+        "destination_parent_T_register": 8,
+        "captured_parent_T_registers": [
+          5
+        ]
+      }
+    ],
+    "register_lifetimes": {
+      "T[4]": "PrintLog",
+      "T[5]": "_G at PC44-PC45; ShowLocalNoticeByType after PC47",
+      "T[6]": "LuaSendMsg through PC51 field write; ScheduleOnce after PC52",
+      "T[7]": "Schedule",
+      "T[8]": "GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems/GetAvailableStoragePage/GetStorageItemData/StorageItems/TakeItems/PickUpItems in PC order"
+    },
+    "fixes_and_guards": [
+      "LuaSendMsg now passes requireRecoveredClosure before the PC51 module-field identity assertion.",
+      "Added PC43-PC85 T[4..8] final register identity assertions.",
+      "Added PC54-PC82 global export identity assertions."
+    ],
+    "direct_source_table_reads": 2,
+    "direct_source_table_read_paths": [
+      "04_源码候选/root_MainLeftBottom_Module.lua",
+      "04_源码候选/短函数草稿_第五十六批.lua#GetStorageItemData"
+    ],
+    "runtime_verified": 0,
+    "notes": "静态顺序/来源核对；新增断言未执行，未运行Lua/luac或目标游戏。"
   }
 }
