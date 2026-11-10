@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点275：继续核对PC86-PC211的T[14..22]共享cell、PC212-PC296 UI字段挂接和PC297-PC315配置寄存器的词法作用域与身份连续性。重点检查每个工厂调用是否在缺失时fail-fast、是否存在两个nil相等而误通过的身份断言。",
+  "next_action": "检查点276：继续检查PC86-PC211共享cell注入及PC212-PC315字段/配置链：对照closure_sites核对工厂实参数量、顺序和寄存器来源；检查OP_387同一父寄存器是否只创建一个cell且不同寄存器不共用；检查UI字段hide/show/destroy/main的写入对象及PC275模块重读目标；检查T[44..51]配置包装链；对身份断言做nil安全性审计，类型/必需闭包断言必须先于相等断言。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -3542,30 +3542,34 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 274,
-  "checkpoint": 274,
+  "last_checkpoint": 275,
+  "checkpoint": 275,
   "drafts": 33,
-  "next": "检查点275：继续核对PC86-PC211的T[14..22]共享cell、PC212-PC296 UI字段挂接和PC297-PC315配置寄存器的词法作用域与身份连续性。重点检查每个工厂调用是否在缺失时fail-fast、是否存在两个nil相等而误通过的身份断言。",
+  "next": "检查点276：继续检查PC86-PC211共享cell注入及PC212-PC315字段/配置链：对照closure_sites核对工厂实参数量、顺序和寄存器来源；检查OP_387同一父寄存器是否只创建一个cell且不同寄存器不共用；检查UI字段hide/show/destroy/main的写入对象及PC275模块重读目标；检查T[44..51]配置包装链；对身份断言做nil安全性审计，类型/必需闭包断言必须先于相等断言。",
   "recent_checkpoint": {
-    "number": 274,
+    "number": 275,
     "date": "2026-11-10",
-    "audit_file": "docs/audit/检查点274_PC43-PC85寄存器复用与导出身份核对.md",
+    "audit_file": "docs/audit/检查点275_根模块58个直接闭包必需性保护覆盖核对.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
-    "main_recovery_sha": "12bf29d45bbc06a2618a68f0537b16b3c8274128",
+    "main_recovery_sha": "e7cfeefdf7ead3b4d3450d5bbec48fe75459a7c4",
     "metrics": {
-      "pc43_pc85_closure_sites_checked": 16,
-      "source_table_direct_reads": 2,
-      "source_table_direct_read_paths_unresolved": 0,
-      "lua_send_msg_required_guard_added": true,
-      "t4_to_t8_identity_assertions_added": true,
+      "root_direct_children_expected": 58,
+      "captured_factories_expected": 36,
+      "captured_factories_fail_fast_guarded": 36,
+      "direct_bindings_expected": 22,
+      "direct_bindings_fail_fast_guarded": 22,
+      "unique_required_closure_names": 58,
+      "missing_required_guards": 0,
+      "extra_required_names": 0,
+      "duplicate_required_names": 0,
+      "required_guard_before_assignment_order_issues": 0,
       "static_complete_functions": 109,
       "ordinary_lua_drafts": 72,
-      "root_direct_closures_source_bound": 58,
       "runtime_verified": 0
     },
-    "notes": "新增的requireRecoveredClosure和身份断言均未实际执行；本批是静态源码核对，不是Lua/luac或游戏运行时验证。"
+    "notes": "检查点274已修复LuaSendMsg可能两侧nil相等而误通过的问题；本批新增注释与覆盖核对，未运行Lua/luac。"
   },
-  "latest_checkpoint": 274,
+  "latest_checkpoint": 275,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3574,7 +3578,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 275,
+  "next_checkpoint": 276,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3746,12 +3750,13 @@
     "source_registry_duplicate_audit": "root45_and_root22_duplicates_removed;global_scan_pending",
     "checkpoint272_source_registry_static_audit": "passed",
     "checkpoint273_root_initial_identity_static_review": "passed",
-    "checkpoint274_pc43_pc85_static_order_review": "passed"
+    "checkpoint274_pc43_pc85_static_order_review": "passed",
+    "checkpoint275_all_root_direct_closures_fail_fast": "passed_static"
   },
   "latest": {
-    "checkpoint": "274",
-    "summary": "对照闭包装配表逐项核对PC43-PC85的16个闭包创建点、目标T寄存器和捕获父寄存器；确认T[5]先暂存_G后变为ShowLocalNoticeByType，T[6]先承载LuaSendMsg并在写入a.LuaSendMsg后覆写为ScheduleOnce，T[7]=Schedule，T[8]按PC顺序复用并即时导出。发现LuaSendMsg字段相等断言可能在两侧均nil时误通过，已增加requireRecoveredClosure fail-fast；增加T[4..8]及PC54-PC82全局导出身份断言。直接sources[path]读取2处均命中唯一注册键。",
-    "audit_file": "docs/audit/检查点274_PC43-PC85寄存器复用与导出身份核对.md",
+    "checkpoint": "275",
+    "summary": "从closure_sites核对58个root直接子原型：36个捕获工厂、22个无捕获闭包。主恢复文件有58个唯一requireRecoveredClosure必需性校验名称，与58个root直接子原型集合完全一致；缺失0、额外0、重复0；58处校验均位于对应rootPrototypes首次赋值之后。LuaSendMsg在检查点274补上require后，PC43-PC85的8个捕获工厂全部进入fail-fast保护。静态审计不代表运行时成功。",
+    "audit_file": "docs/audit/检查点275_根模块58个直接闭包必需性保护覆盖核对.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3763,7 +3768,7 @@
     "capture_semantics": "OP_387 stores a live cell reference {parent_T_table, register_index}; the upvalue proxy __index/__newindex reads/writes the parent T register dynamically. Later parent writes are visible to closures."
   },
   "root_assembly": {
-    "checkpoint": 274,
+    "checkpoint": 275,
     "direct_child_closures_expected": 22,
     "bound_at_source_level": 22,
     "runtime_verified": false,
@@ -3808,7 +3813,7 @@
       "BlacklistPlayerDetection",
       "doInit_UI"
     ],
-    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。 检查点272全量核对53个sources注册键唯一、37个sourceFunction字面调用及22个bindDirect调用全部命中来源路径与符号；未执行Lua解释器/luac。 检查点273核对PC1-PC42根表及a/b/z/timerState来源导出身份，主装配区新增6组静态适配断言；未执行Lua，断言未运行。 检查点274核对PC43-PC85的16个闭包创建点及T[4..8]复用；LuaSendMsg增加requireRecoveredClosure必需性校验，新增T[4..8]与全局导出身份断言；断言未运行。",
+    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。 检查点272全量核对53个sources注册键唯一、37个sourceFunction字面调用及22个bindDirect调用全部命中来源路径与符号；未执行Lua解释器/luac。 检查点273核对PC1-PC42根表及a/b/z/timerState来源导出身份，主装配区新增6组静态适配断言；未执行Lua，断言未运行。 检查点274核对PC43-PC85的16个闭包创建点及T[4..8]复用；LuaSendMsg增加requireRecoveredClosure必需性校验，新增T[4..8]与全局导出身份断言；断言未运行。 检查点275静态核对58个根直接闭包均有requireRecoveredClosure保护，36个捕获工厂+22个无捕获绑定，缺失/额外/重复名称均0；Lua未运行。",
     "checkpoint261_gather_status_scope_fixed": true,
     "checkpoint272_source_registry_keys_unique": true,
     "source_registry_registration_count": 53,
@@ -3831,9 +3836,13 @@
     "lua_send_msg_required_guard_added": true,
     "t4_to_t8_identity_assertions_added": true,
     "source_table_direct_reads": 2,
-    "source_table_direct_read_paths_unresolved": 0
+    "source_table_direct_read_paths_unresolved": 0,
+    "checkpoint275_all_58_root_closures_fail_fast": true,
+    "checkpoint275_captured_factories_guarded": 36,
+    "checkpoint275_direct_bindings_guarded": 22,
+    "checkpoint275_required_closure_names_unique": 58
   },
-  "root_assembly_checkpoint": 274,
+  "root_assembly_checkpoint": 275,
   "root_pc1_pc42_sequential_source_restored": true,
   "root_pc43_pc85_register_ordered": true,
   "root_pc86_pc211_cells_capture_ordered": true,
