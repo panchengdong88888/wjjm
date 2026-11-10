@@ -8221,7 +8221,7 @@ do
         )
     end
 
-        local makeAnonymousHelper54 = sourceFunction(
+    local makeAnonymousHelper54 = sourceFunction(
         "root/55_AnonymousHelper_54.lua", "make_AnonymousHelper_54"
     )
     if makeAnonymousHelper54 and rootPrototypes.PCallHelper then
@@ -8263,51 +8263,7 @@ do
             makeUseItemByIndex(rootSource.randomTeleportItemNames)
     end
 
-    -- 检查点254：两个匿名转发器按规范root.children[32]/[33]工厂装配。
-    local makeAnonymousHelper32 = sourceFunction(
-        "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
-        "make_AnonymousHelper_32"
-    )
-    if makeAnonymousHelper32 and rootPrototypes.PCallHelper then
-        rootPrototypes.AnonymousHelper_32 = makeAnonymousHelper32(
-            rootPrototypes.PCallHelper,
-            rootSource.blacklistDistanceConfigFile
-        )
-    end
-
-    local makeAnonymousHelper33 = sourceFunction(
-        "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
-        "make_AnonymousHelper_33"
-    )
-    if makeAnonymousHelper33 and rootPrototypes.ReadNumericConfig then
-        rootPrototypes.AnonymousHelper_33 = makeAnonymousHelper33(
-            rootPrototypes.ReadNumericConfig,
-            rootSource.gatherMonsterCountConfigFile
-        )
-    end
-
-    -- 检查点253：黑名单前置闭包按root PC顺序装配。
-    local makeAnonymousHelper49 = sourceFunction(
-        "04_源码候选/root49_AnonymousHelper_49.lua", "make_AnonymousHelper_49"
-    )
-    if makeAnonymousHelper49 and rootPrototypes.ReadNumericConfig then
-        rootPrototypes.AnonymousHelper_49 = makeAnonymousHelper49(
-            rootPrototypes.ReadNumericConfig,
-            rootSource.blacklistDistanceConfigFile
-        )
-    end
-
-    local makeAnonymousHelper54 = sourceFunction(
-        "root/55_AnonymousHelper_54.lua", "make_AnonymousHelper_54"
-    )
-    if makeAnonymousHelper54 and rootPrototypes.PCallHelper then
-        rootPrototypes.AnonymousHelper_54 = makeAnonymousHelper54(
-            rootPrototypes.PCallHelper,
-            rootSource.gatherMonsterCountConfigFile
-        )
-    end
-
-    local makeOnDamageMsg = sourceFunction(
+        local makeOnDamageMsg = sourceFunction(
         "04_源码候选/root52_onDamageMsg.lua", "make_onDamageMsg"
     )
     if makeOnDamageMsg then
@@ -8346,7 +8302,6 @@ do
     -- PC360已将其值覆盖为InstallDamageHook；UP[2]=共享blacklistState。
     -- 用rootCells[57]保留OP_387 cell语义，工厂内部通过.value()读取并调用当前函数值。
     -- 特别注意：不能将UP[0]误接为整个MainLeftBottom模块表，也不能将UP[1]接成onDamageMsg。
-    rootCells[57] = newLiveCell(rootPrototypes.InstallDamageHook)
     local makeBlacklistPlayerDetection = sourceFunction(
         "04_源码候选/root47_BlacklistPlayerDetection.lua",
         "make_BlacklistPlayerDetection"
