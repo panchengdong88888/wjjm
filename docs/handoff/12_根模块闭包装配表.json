@@ -30,15 +30,24 @@
       5,
       8,
       37,
+      38,
+      39,
+      40,
       41,
       42,
       43,
       44,
-      57
+      50,
+      52,
+      53,
+      55,
+      56,
+      57,
+      58
     ],
-    "register_timelines_completed_count": 13,
-    "register_timelines_remaining": 44,
-    "last_timeline_checkpoint": 238
+    "register_timelines_completed_count": 22,
+    "register_timelines_remaining": 35,
+    "last_timeline_checkpoint": 239
   },
   "closure_sites": [
     {
@@ -4102,6 +4111,75 @@
         ]
       }
     ],
+    "38": [
+      {
+        "pc_one_based": 283,
+        "event": "写入root数值常量",
+        "value": "2.0",
+        "note": "该值在后续闭包捕获前未见覆盖。"
+      },
+      {
+        "pc_one_based": 375,
+        "event": "capture parent T[38] live cell",
+        "value": "2.0",
+        "note": "root.children[47] BlacklistPlayerDetection UP[6]。"
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "2.0",
+        "semantic_role": "BlacklistPlayerDetection告警间隔秒数",
+        "capture_count": 1,
+        "notes": [
+          "捕获点与root/48的UPVALUE读取顺序一致；单位/用途由BlacklistPlayerDetection源码及常量调用上下文交叉确认。"
+        ]
+      }
+    ],
+    "39": [
+      {
+        "pc_one_based": 284,
+        "event": "写入root数值常量",
+        "value": "0.01",
+        "note": "该值在后续闭包捕获前未见覆盖。"
+      },
+      {
+        "pc_one_based": 378,
+        "event": "capture parent T[39] live cell",
+        "value": "0.01",
+        "note": "root.children[47] BlacklistPlayerDetection UP[9]。"
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "0.01",
+        "semantic_role": "成功使用随机传送道具后的重试延迟",
+        "capture_count": 1,
+        "notes": [
+          "捕获点与root/48的UPVALUE读取顺序一致；单位/用途由BlacklistPlayerDetection源码及常量调用上下文交叉确认。"
+        ]
+      }
+    ],
+    "40": [
+      {
+        "pc_one_based": 285,
+        "event": "写入root数值常量",
+        "value": "30.0",
+        "note": "该值在后续闭包捕获前未见覆盖。"
+      },
+      {
+        "pc_one_based": 380,
+        "event": "capture parent T[40] live cell",
+        "value": "30.0",
+        "note": "root.children[47] BlacklistPlayerDetection UP[11]。"
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "30.0",
+        "semantic_role": "没有可用随机传送道具时的重试延迟",
+        "capture_count": 1,
+        "notes": [
+          "捕获点与root/48的UPVALUE读取顺序一致；单位/用途由BlacklistPlayerDetection源码及常量调用上下文交叉确认。"
+        ]
+      }
+    ],
     "41": [
       {
         "pc_one_based": 286,
@@ -4314,6 +4392,129 @@
         ]
       }
     ],
+    "50": [
+      {
+        "pc_one_based": 310,
+        "event": "创建root.children[33] / legacy root/34 AnonymousHelper_34闭包",
+        "value": "ReadNumericConfig + gather_monster_count.txt",
+        "note": "PC311捕获T[45] ReadNumericConfig；PC312捕获T[43]文件名。闭包调用时等价于ReadNumericConfig('gather_monster_count.txt')。"
+      },
+      {
+        "pc_one_based": 400,
+        "event": "capture parent T[50] live cell",
+        "value": "AnonymousHelper_34(ReadNumericConfig, 'gather_monster_count.txt')",
+        "note": "root.children[42] doInit_UI UP[9]。"
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "ReadNumericConfig('gather_monster_count.txt')包装闭包",
+        "semantic_role": "读取引怪数量配置的零参数包装器",
+        "capture_count": 1,
+        "notes": [
+          "闭包本身不等于底层ReadNumericConfig；是AnonymousHelper_34对回调及固定参数的封装。"
+        ]
+      }
+    ],
+    "52": [
+      {
+        "pc_one_based": 349,
+        "event": "构造8元素表并写入T[52]",
+        "value": "table(T[53]..T[60]当时值)",
+        "note": "PC350随后复用T[53]创建GetMapData2DPtr闭包；因此表中第1项不是后续创建的GetMapData2DPtr闭包。"
+      },
+      {
+        "pc_one_based": 351,
+        "event": "capture parent T[52] live cell",
+        "value": "8元素表（元素来自PC349时T[53]..T[60]）",
+        "note": "root.children[22] GetMapData2DPtr UP[0]。现有可达PC1-PC37源码不读取该Upvalue。"
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "PC349构造的8元素表",
+        "semantic_role": "GetMapData2DPtr的未使用捕获值；表项业务含义不作臆测",
+        "capture_count": 1,
+        "notes": [
+          "此处明确保留寄存器复用时序：PC349先建表，PC350再覆盖T[53]。",
+          "由于UP[0]在已恢复的可达路径未被读取，本批不为8个表项臆造业务名称。"
+        ]
+      }
+    ],
+    "53": [
+      {
+        "pc_one_based": 350,
+        "event": "创建root.children[22] / legacy root/23 GetMapData2DPtr闭包",
+        "value": "GetMapData2DPtr",
+        "note": "PC351捕获T[52]为UP[0]；现有静态恢复显示该UPVALUE在可达PC1-PC37路径未读取。"
+      },
+      {
+        "pc_one_based": 374,
+        "event": "capture parent T[53] live cell",
+        "value": "GetMapData2DPtr闭包",
+        "note": "root.children[47] BlacklistPlayerDetection UP[5]，作为坐标距离计算函数。"
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "GetMapData2DPtr闭包",
+        "semantic_role": "坐标距离/范围判断辅助函数",
+        "capture_count": 1,
+        "notes": [
+          "函数可达路径执行Chebyshev距离计算；PC38-PC144位于无条件return之后。"
+        ]
+      }
+    ],
+    "55": [
+      {
+        "pc_one_based": 353,
+        "event": "创建root.children[51] / legacy root/52 FindBlacklistPlayer闭包",
+        "value": "FindBlacklistPlayer",
+        "note": "PC354捕获T[54] PCallHelper_2为UP[0]。"
+      },
+      {
+        "pc_one_based": 366,
+        "event": "capture parent T[55] live cell",
+        "value": "FindBlacklistPlayer闭包",
+        "note": "root.children[25] DeathAutoBlacklist UP[2]。"
+      },
+      {
+        "pc_one_based": 373,
+        "event": "capture parent T[55] live cell",
+        "value": "FindBlacklistPlayer闭包",
+        "note": "root.children[47] BlacklistPlayerDetection UP[4]。"
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "FindBlacklistPlayer闭包",
+        "semantic_role": "黑名单玩家查询函数",
+        "capture_count": 2,
+        "notes": [
+          "PC353重新写入T[55]，覆盖了PC319-PC328期间的临时寄存器复用值。",
+          "两个捕获点均发生在PC353之后。"
+        ]
+      }
+    ],
+    "56": [
+      {
+        "pc_one_based": 355,
+        "event": "创建root.children[24] / legacy root/25 UseItemByIndex闭包",
+        "value": "UseItemByIndex(itemNameList)",
+        "note": "PC356捕获T[37]随机传送道具名称列表。该闭包遍历名称列表，查询ITEM_INDEX_BY_NAME/ITEM_COUNT，有可用物品时调用SL:UseItemByIndex并返回物品名称。"
+      },
+      {
+        "pc_one_based": 377,
+        "event": "capture parent T[56] live cell",
+        "value": "UseItemByIndex闭包",
+        "note": "root.children[47] BlacklistPlayerDetection UP[8]；在该业务上下文中作为随机传送道具使用包装器。"
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "UseItemByIndex闭包",
+        "semantic_role": "按候选道具名称查找并使用随机传送道具",
+        "capture_count": 1,
+        "notes": [
+          "捕获身份由PC355的child-index=24与结构树/短函数源码交叉确认。"
+        ]
+      }
+    ],
     "57": [
       {
         "pc_one_based": 327,
@@ -4384,6 +4585,29 @@
           "The earlier pair-table value is part of the opaque eight-pair array and is superseded before the only T[57] capture.",
           "onDamageMsg remains stored in MainLeftBottom.onDamageMsg after T[57] is overwritten; overwriting the register does not erase the module-table field.",
           "The capture is a live cell, so its value at PC368 is the PC360 InstallDamageHook closure."
+        ]
+      }
+    ],
+    "58": [
+      {
+        "pc_one_based": 363,
+        "event": "创建root.children[25] / legacy root/26 DeathAutoBlacklist闭包",
+        "value": "DeathAutoBlacklist",
+        "note": "PC364-PC367依次捕获T[41] blacklistState、T[4] PrintLog、T[55] FindBlacklistPlayer、T[5] ShowLocalNotice。"
+      },
+      {
+        "pc_one_based": 372,
+        "event": "capture parent T[58] live cell",
+        "value": "DeathAutoBlacklist闭包",
+        "note": "root.children[47] BlacklistPlayerDetection UP[3]。"
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "DeathAutoBlacklist闭包",
+        "semantic_role": "死亡后自动拉黑流程",
+        "capture_count": 1,
+        "notes": [
+          "PC363创建点与root.children[25]原型索引一致；捕获顺序与root25_DeathAutoBlacklist.lua源码工厂参数一致。"
         ]
       }
     ]
