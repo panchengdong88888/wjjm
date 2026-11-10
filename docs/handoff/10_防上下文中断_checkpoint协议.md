@@ -2978,3 +2978,13 @@ Nested_match：
 - PC390 doInit_UI按序捕获20项[T4,T2,T3,T0,T1,T41,T48,T7,T8,T50,T49,T5,T44,T42,T51,T43,T47,T11,T12,T9]；PC411挂入MainLeftBottom.doInit；PC412返回模块表。
 - root PC341-PC412根级闭包创建/捕获/模块字段/全局导出账本已完成。父寄存器57/57闭合、捕获描述符135项；完整静态109/110、普通Lua草稿72、运行时验证0。
 - 下一步检查点245定位唯一未完整静态恢复原型，并推进真实捕获顺序下的根模块普通Lua装配；不得把装配脚手架标为完整恢复。
+
+
+## 检查点 #245（2026-11-10）：root PC1-PC412全局导出与模块字段总账
+
+- 跨区间合并检查点241的PC1-PC85、PC212-PC340和检查点244的PC341-PC412账本；逐段复核PC86-PC211，未发现新增全局导出或MainLeftBottom根表字段写入。
+- 根级全局导出共21项（含_MainLeftBottom）：MainLeftBottom、log、GetMapId、GetMapName、PlayerPos、GetDroppedItems、MoveTo、DiuItems、GetAvailableStoragePage、GetStorageItemData、StorageItems、TakeItems、PickUpItems、IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、MoveItemToQuickUse、BlacklistItems、ClearBlacklistItems。
+- MainLeftBottom根表入口字段为a/b/z/hide/show/destroy/main/blacklist/onDamageMsg/doInit；a和z内部字段继续分层保存。
+- 21项导出与模块字段分离；ShowLocalNoticeByType、ScheduleOnce、Schedule未观察到根级导出。
+- 父寄存器57/57闭合、135个OP_387捕获描述符；静态完整109/110、普通Lua草稿72、运行时0。
+- 下一步检查点246：以58个直接子原型为清单，核对函数工厂源码与root实例化点，优先接入无捕获/简单捕获闭包。
