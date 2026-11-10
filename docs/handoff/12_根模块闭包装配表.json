@@ -20,7 +20,21 @@
     "closure_creation_sites": 58,
     "total_capture_descriptors": 135,
     "all_descriptors_are_OP_387": true,
-    "distinct_parent_registers": 57
+    "distinct_parent_registers": 57,
+    "register_timelines_completed": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      37,
+      41,
+      57
+    ],
+    "register_timelines_completed_count": 9,
+    "register_timelines_remaining": 48,
+    "last_timeline_checkpoint": 237
   },
   "closure_sites": [
     {
@@ -3346,24 +3360,804 @@
     "Root module field/global assignments and shared-cell initial values still require PC-level dataflow reconciliation."
   ],
   "register_value_timeline": {
+    "0": [
+      {
+        "pc_one_based": 1,
+        "event": "create MainLeftBottom module table",
+        "value": "{}",
+        "note": "PC2 exports this table as _G.MainLeftBottom."
+      },
+      {
+        "pc_one_based": 3,
+        "event": "overwrite T[0] with a new table",
+        "value": "MainLeftBottom.a",
+        "note": "PC5 assigns this table to MainLeftBottom.a; subsequent PC6/11/16 and PC23/25/27/28/29 populate its fields."
+      },
+      {
+        "pc_one_based": 47,
+        "event": "capture parent T[0] live cell",
+        "child_path": "root/20",
+        "child_name": "ShowLocalNoticeByType",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 46
+      },
+      {
+        "pc_one_based": 49,
+        "event": "capture parent T[0] live cell",
+        "child_path": "root/12",
+        "child_name": "LuaSendMsg",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 48
+      },
+      {
+        "pc_one_based": 262,
+        "event": "capture parent T[0] live cell",
+        "child_path": "root/37",
+        "child_name": "DestroyUI",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 261
+      },
+      {
+        "pc_one_based": 267,
+        "event": "capture parent T[0] live cell",
+        "child_path": "root/10",
+        "child_name": "SetButtonVisibilityState",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 266
+      },
+      {
+        "pc_one_based": 273,
+        "event": "capture parent T[0] live cell",
+        "child_path": "root/40",
+        "child_name": "ShowHideAllButtons",
+        "upvalue_index": 2,
+        "closure_pc_one_based": 270
+      },
+      {
+        "pc_one_based": 361,
+        "event": "capture parent T[0] live cell",
+        "child_path": "root/6",
+        "child_name": "InstallDamageHook",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 360
+      },
+      {
+        "pc_one_based": 394,
+        "event": "capture parent T[0] live cell",
+        "child_path": "root/42",
+        "child_name": "doInit_UI",
+        "upvalue_index": 3,
+        "closure_pc_one_based": 390
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "MainLeftBottom.a table",
+        "semantic_role": "UI/configuration state table",
+        "capture_count": 7,
+        "notes": [
+          "Do not confuse the original module table created at PC1 (which remains in _G.MainLeftBottom) with the replacement T[0] table created at PC3.",
+          "Captured closures observe the T[0] cell, whose value remains the a table through all listed capture PCs."
+        ]
+      }
+    ],
+    "1": [
+      {
+        "pc_one_based": 17,
+        "event": "create temporary Blocklist table",
+        "value": "{}",
+        "note": "PC18-PC21 load 1, 9, 10 and 60000; PC22 builds the four-value array; PC23 assigns it to MainLeftBottom.a.Blocklist."
+      },
+      {
+        "pc_one_based": 24,
+        "event": "overwrite T[1] with SendHookList table",
+        "value": "{}",
+        "note": "PC25 assigns it to MainLeftBottom.a.SendHookList."
+      },
+      {
+        "pc_one_based": 26,
+        "event": "overwrite T[1] with RecvHookList table",
+        "value": "{}",
+        "note": "PC27 assigns it to MainLeftBottom.a.RecvHookList."
+      },
+      {
+        "pc_one_based": 30,
+        "event": "overwrite T[1] with module b table",
+        "value": "MainLeftBottom.b",
+        "note": "PC32 assigns it to MainLeftBottom.b; this is the value visible to later closure captures."
+      },
+      {
+        "pc_one_based": 264,
+        "event": "capture parent T[1] live cell",
+        "child_path": "root/37",
+        "child_name": "DestroyUI",
+        "upvalue_index": 2,
+        "closure_pc_one_based": 261
+      },
+      {
+        "pc_one_based": 268,
+        "event": "capture parent T[1] live cell",
+        "child_path": "root/10",
+        "child_name": "SetButtonVisibilityState",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 266
+      },
+      {
+        "pc_one_based": 272,
+        "event": "capture parent T[1] live cell",
+        "child_path": "root/40",
+        "child_name": "ShowHideAllButtons",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 270
+      },
+      {
+        "pc_one_based": 395,
+        "event": "capture parent T[1] live cell",
+        "child_path": "root/42",
+        "child_name": "doInit_UI",
+        "upvalue_index": 4,
+        "closure_pc_one_based": 390
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "MainLeftBottom.b table",
+        "semantic_role": "button mapping/configuration table (per existing ShowHideAllButtons capture mapping)",
+        "capture_count": 4,
+        "notes": [
+          "The scalar values initially held in T[2..5] are consumed to build Blocklist before T[1] is reused for SendHookList, RecvHookList and finally b.",
+          "T[1] is captured only after PC30, so later closures see MainLeftBottom.b, not the earlier tables."
+        ]
+      }
+    ],
+    "2": [
+      {
+        "pc_one_based": 18,
+        "event": "load Blocklist scalar",
+        "value": 1,
+        "note": "Consumed by PC22 while building MainLeftBottom.a.Blocklist."
+      },
+      {
+        "pc_one_based": 31,
+        "event": "temporarily load _G.MainLeftBottom",
+        "value": "MainLeftBottom module table",
+        "note": "Immediately overwritten at PC33 before any closure captures T[2]."
+      },
+      {
+        "pc_one_based": 33,
+        "event": "overwrite T[2] with a new table",
+        "value": "MainLeftBottom.z",
+        "note": "PC35 assigns it to MainLeftBottom.z; PC36-PC41 initialize six boolean state fields."
+      },
+      {
+        "pc_one_based": 65,
+        "event": "capture parent T[2] live cell",
+        "child_path": "root/46",
+        "child_name": "DiuItems",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 64
+      },
+      {
+        "pc_one_based": 75,
+        "event": "capture parent T[2] live cell",
+        "child_path": "root/50",
+        "child_name": "StorageItems",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 74
+      },
+      {
+        "pc_one_based": 80,
+        "event": "capture parent T[2] live cell",
+        "child_path": "root/5",
+        "child_name": "TakeItems",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 79
+      },
+      {
+        "pc_one_based": 369,
+        "event": "capture parent T[2] live cell",
+        "child_path": "root/47",
+        "child_name": "BlacklistPlayerDetection",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 368
+      },
+      {
+        "pc_one_based": 392,
+        "event": "capture parent T[2] live cell",
+        "child_path": "root/42",
+        "child_name": "doInit_UI",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 390
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "MainLeftBottom.z table",
+        "semantic_role": "module state table",
+        "capture_count": 5,
+        "notes": [
+          "All five closure capture sites occur after PC33; no closure in the manifest captures the initial 1.0 scalar or temporary module-table value.",
+          "The six initialized fields are isPaused, isRunning, isStoring, isTaking, isDiuing and isOutputted."
+        ]
+      }
+    ],
+    "3": [
+      {
+        "pc_one_based": 19,
+        "event": "load Blocklist scalar",
+        "value": 9,
+        "note": "Consumed by PC22 while building MainLeftBottom.a.Blocklist."
+      },
+      {
+        "pc_one_based": 42,
+        "event": "overwrite T[3] with a new table",
+        "value": "timer state table",
+        "note": "Existing root40/ShowHideAllButtons mapping identifies this captured cell as timer state; no later direct T[3] overwrite appears before its capture sites."
+      },
+      {
+        "pc_one_based": 239,
+        "event": "capture parent T[3] live cell",
+        "child_path": "root/19",
+        "child_name": "InitGatherMonsters",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 238
+      },
+      {
+        "pc_one_based": 249,
+        "event": "capture parent T[3] live cell",
+        "child_path": "root/27",
+        "child_name": "StopGatherMonsters",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 247
+      },
+      {
+        "pc_one_based": 263,
+        "event": "capture parent T[3] live cell",
+        "child_path": "root/37",
+        "child_name": "DestroyUI",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 261
+      },
+      {
+        "pc_one_based": 271,
+        "event": "capture parent T[3] live cell",
+        "child_path": "root/40",
+        "child_name": "ShowHideAllButtons",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 270
+      },
+      {
+        "pc_one_based": 393,
+        "event": "capture parent T[3] live cell",
+        "child_path": "root/42",
+        "child_name": "doInit_UI",
+        "upvalue_index": 2,
+        "closure_pc_one_based": 390
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "timer state table",
+        "semantic_role": "timer/timer-handle state table",
+        "capture_count": 5,
+        "notes": [
+          "The earlier 9.0 scalar is consumed in Blocklist and is not the value captured by later closures.",
+          "The timer-state semantic label is inherited from the already-reviewed ShowHideAllButtons capture mapping; do not infer additional fields without child-body evidence."
+        ]
+      }
+    ],
+    "4": [
+      {
+        "pc_one_based": 20,
+        "event": "load Blocklist scalar",
+        "value": 10,
+        "note": "Consumed by PC22 while building MainLeftBottom.a.Blocklist."
+      },
+      {
+        "pc_one_based": 43,
+        "event": "overwrite T[4] with root.children[16] PrintLog closure",
+        "value": "PrintLog",
+        "note": "PC45 exports this closure as _G.log; no later direct T[4] overwrite occurs before captures."
+      },
+      {
+        "pc_one_based": 50,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/12",
+        "child_name": "LuaSendMsg",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 48
+      },
+      {
+        "pc_one_based": 69,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/36",
+        "child_name": "GetAvailableStoragePage",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 68
+      },
+      {
+        "pc_one_based": 72,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/1",
+        "child_name": "GetStorageItemData",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 71
+      },
+      {
+        "pc_one_based": 76,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/50",
+        "child_name": "StorageItems",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 74
+      },
+      {
+        "pc_one_based": 182,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/8",
+        "child_name": "FormatStateChange",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 181
+      },
+      {
+        "pc_one_based": 209,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/26",
+        "child_name": "ResetGatherMonsterData",
+        "upvalue_index": 8,
+        "closure_pc_one_based": 200
+      },
+      {
+        "pc_one_based": 218,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/45",
+        "child_name": "MainLoop",
+        "upvalue_index": 3,
+        "closure_pc_one_based": 214
+      },
+      {
+        "pc_one_based": 245,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/19",
+        "child_name": "InitGatherMonsters",
+        "upvalue_index": 6,
+        "closure_pc_one_based": 238
+      },
+      {
+        "pc_one_based": 254,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/27",
+        "child_name": "StopGatherMonsters",
+        "upvalue_index": 6,
+        "closure_pc_one_based": 247
+      },
+      {
+        "pc_one_based": 277,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/55",
+        "child_name": "AccountIDValidation",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 276
+      },
+      {
+        "pc_one_based": 362,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/6",
+        "child_name": "InstallDamageHook",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 360
+      },
+      {
+        "pc_one_based": 365,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/25",
+        "child_name": "DeathAutoBlacklist",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 363
+      },
+      {
+        "pc_one_based": 376,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/47",
+        "child_name": "BlacklistPlayerDetection",
+        "upvalue_index": 7,
+        "closure_pc_one_based": 368
+      },
+      {
+        "pc_one_based": 385,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/15",
+        "child_name": "ClearBlacklistItems",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 383
+      },
+      {
+        "pc_one_based": 391,
+        "event": "capture parent T[4] live cell",
+        "child_path": "root/42",
+        "child_name": "doInit_UI",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 390
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "PrintLog closure",
+        "semantic_role": "logging callback",
+        "capture_count": 15,
+        "notes": [
+          "At PC72 GetStorageItemData captures this exact T[4] live cell; therefore its notification callback is PrintLog, not an unknown callback.",
+          "The 10.0 scalar is consumed into Blocklist before T[4] is overwritten by PrintLog."
+        ]
+      }
+    ],
+    "5": [
+      {
+        "pc_one_based": 21,
+        "event": "load Blocklist scalar",
+        "value": 60000,
+        "note": "Consumed by PC22 while building MainLeftBottom.a.Blocklist."
+      },
+      {
+        "pc_one_based": 44,
+        "event": "overwrite T[5] with _G",
+        "value": "global environment",
+        "note": "PC45 writes _G.log = T[4]."
+      },
+      {
+        "pc_one_based": 46,
+        "event": "overwrite T[5] with root.children[20] ShowLocalNoticeByType closure",
+        "value": "ShowLocalNoticeByType",
+        "note": "The closure captures T[0] and replaces the temporary _G value in T[5]."
+      },
+      {
+        "pc_one_based": 66,
+        "event": "capture parent T[5] live cell",
+        "child_path": "root/46",
+        "child_name": "DiuItems",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 64
+      },
+      {
+        "pc_one_based": 77,
+        "event": "capture parent T[5] live cell",
+        "child_path": "root/50",
+        "child_name": "StorageItems",
+        "upvalue_index": 2,
+        "closure_pc_one_based": 74
+      },
+      {
+        "pc_one_based": 81,
+        "event": "capture parent T[5] live cell",
+        "child_path": "root/5",
+        "child_name": "TakeItems",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 79
+      },
+      {
+        "pc_one_based": 84,
+        "event": "capture parent T[5] live cell",
+        "child_path": "root/21",
+        "child_name": "PickUpItems",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 83
+      },
+      {
+        "pc_one_based": 257,
+        "event": "capture parent T[5] live cell",
+        "child_path": "root/23",
+        "child_name": "Builtsetting",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 256
+      },
+      {
+        "pc_one_based": 278,
+        "event": "capture parent T[5] live cell",
+        "child_path": "root/55",
+        "child_name": "AccountIDValidation",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 276
+      },
+      {
+        "pc_one_based": 367,
+        "event": "capture parent T[5] live cell",
+        "child_path": "root/25",
+        "child_name": "DeathAutoBlacklist",
+        "upvalue_index": 3,
+        "closure_pc_one_based": 363
+      },
+      {
+        "pc_one_based": 379,
+        "event": "capture parent T[5] live cell",
+        "child_path": "root/47",
+        "child_name": "BlacklistPlayerDetection",
+        "upvalue_index": 10,
+        "closure_pc_one_based": 368
+      },
+      {
+        "pc_one_based": 386,
+        "event": "capture parent T[5] live cell",
+        "child_path": "root/15",
+        "child_name": "ClearBlacklistItems",
+        "upvalue_index": 2,
+        "closure_pc_one_based": 383
+      },
+      {
+        "pc_one_based": 402,
+        "event": "capture parent T[5] live cell",
+        "child_path": "root/42",
+        "child_name": "doInit_UI",
+        "upvalue_index": 11,
+        "closure_pc_one_based": 390
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "ShowLocalNoticeByType closure",
+        "semantic_role": "user-facing notice callback",
+        "capture_count": 10,
+        "notes": [
+          "All listed captures occur after PC46 and therefore see ShowLocalNoticeByType.",
+          "The 60000.0 scalar is consumed into Blocklist before T[5] is reused."
+        ]
+      }
+    ],
+    "37": [
+      {
+        "pc_one_based": 212,
+        "event": "write root.children[32] AnonymousHelper_32 closure",
+        "value": "AnonymousHelper_32"
+      },
+      {
+        "pc_one_based": 214,
+        "event": "overwrite with root.children[45] MainLoop closure",
+        "value": "MainLoop"
+      },
+      {
+        "pc_one_based": 238,
+        "event": "overwrite with root.children[19] InitGatherMonsters closure",
+        "value": "InitGatherMonsters"
+      },
+      {
+        "pc_one_based": 247,
+        "event": "overwrite with root.children[27] StopGatherMonsters closure",
+        "value": "StopGatherMonsters"
+      },
+      {
+        "pc_one_based": 256,
+        "event": "overwrite with root.children[23] Builtsetting closure",
+        "value": "Builtsetting"
+      },
+      {
+        "pc_one_based": 259,
+        "event": "overwrite with root.children[42] doInit_UI closure",
+        "value": "doInit_UI"
+      },
+      {
+        "pc_one_based": 261,
+        "event": "overwrite with root.children[37] DestroyUI closure",
+        "value": "DestroyUI"
+      },
+      {
+        "pc_one_based": 266,
+        "event": "overwrite with root.children[10] SetButtonVisibilityState closure",
+        "value": "SetButtonVisibilityState"
+      },
+      {
+        "pc_one_based": 270,
+        "event": "overwrite with root.children[40] ShowHideAllButtons closure",
+        "value": "ShowHideAllButtons"
+      },
+      {
+        "pc_one_based": 275,
+        "event": "overwrite with _G.MainLeftBottom module table",
+        "value": "MainLeftBottom module table"
+      },
+      {
+        "pc_one_based": 280,
+        "event": "overwrite with a new temporary array table",
+        "value": "{}"
+      },
+      {
+        "pc_one_based": 281,
+        "event": "load first array element",
+        "value": "随机传送石"
+      },
+      {
+        "pc_one_based": 282,
+        "event": "construct one-element array in T[37]",
+        "value": "{\"随机传送石\"}",
+        "note": "PC282 array-construction opcode copies T[38] into the new T[37] array."
+      },
+      {
+        "pc_one_based": 356,
+        "event": "capture parent T[37] live cell",
+        "child_path": "root/24",
+        "child_name": "UseItemByIndex",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 355
+      },
+      {
+        "pc_one_based": 381,
+        "event": "capture parent T[37] live cell",
+        "child_path": "root/47",
+        "child_name": "BlacklistPlayerDetection",
+        "upvalue_index": 12,
+        "closure_pc_one_based": 368
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "one-element item-name array {\"随机传送石\"}",
+        "semantic_role": "random teleport item-name list",
+        "capture_count": 2,
+        "notes": [
+          "The earlier closure values in T[37] are temporary register reuse; PC275 and PC280 replace them before the two capture sites.",
+          "Both UseItemByIndex (UP[0]) and BlacklistPlayerDetection (UP[12]) capture the final array cell, not any earlier closure or module table."
+        ]
+      }
+    ],
+    "41": [
+      {
+        "pc_one_based": 286,
+        "event": "create blacklist state table",
+        "value": "{}"
+      },
+      {
+        "pc_one_based": 287,
+        "event": "initialize lastAttacker",
+        "value": "nil"
+      },
+      {
+        "pc_one_based": 288,
+        "event": "initialize lastHp",
+        "value": "nil"
+      },
+      {
+        "pc_one_based": 289,
+        "event": "initialize deathHandled",
+        "value": "false"
+      },
+      {
+        "pc_one_based": 290,
+        "event": "initialize alertAt",
+        "value": "0.0"
+      },
+      {
+        "pc_one_based": 291,
+        "event": "initialize nextTryAt",
+        "value": "0.0"
+      },
+      {
+        "pc_one_based": 292,
+        "event": "initialize noStoneWarned",
+        "value": "false"
+      },
+      {
+        "pc_one_based": 293,
+        "event": "initialize distance",
+        "value": "nil"
+      },
+      {
+        "pc_one_based": 294,
+        "event": "assign same table to MainLeftBottom.blacklist",
+        "value": "blacklist state table"
+      },
+      {
+        "pc_one_based": 358,
+        "event": "capture parent T[41] live cell",
+        "child_path": "root/52",
+        "child_name": "onDamageMsg",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 357
+      },
+      {
+        "pc_one_based": 364,
+        "event": "capture parent T[41] live cell",
+        "child_path": "root/25",
+        "child_name": "DeathAutoBlacklist",
+        "upvalue_index": 0,
+        "closure_pc_one_based": 363
+      },
+      {
+        "pc_one_based": 371,
+        "event": "capture parent T[41] live cell",
+        "child_path": "root/47",
+        "child_name": "BlacklistPlayerDetection",
+        "upvalue_index": 2,
+        "closure_pc_one_based": 368
+      },
+      {
+        "pc_one_based": 387,
+        "event": "capture parent T[41] live cell",
+        "child_path": "root/15",
+        "child_name": "ClearBlacklistItems",
+        "upvalue_index": 3,
+        "closure_pc_one_based": 383
+      },
+      {
+        "pc_one_based": 396,
+        "event": "capture parent T[41] live cell",
+        "child_path": "root/42",
+        "child_name": "doInit_UI",
+        "upvalue_index": 5,
+        "closure_pc_one_based": 390
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "blacklist state table",
+        "semantic_role": "blacklist/death-detection shared state",
+        "capture_count": 5,
+        "notes": [
+          "The nil values at lastAttacker, lastHp and distance correspond to the VM dump's nil serialization placeholder.",
+          "The five capture sites share this same live table cell; they do not receive independent table snapshots."
+        ]
+      }
+    ],
     "57": [
       {
+        "pc_one_based": 327,
+        "event": "load temporary scalar",
+        "value": 1
+      },
+      {
+        "pc_one_based": 330,
+        "event": "overwrite temporary scalar",
+        "value": 0
+      },
+      {
+        "pc_one_based": 333,
+        "event": "create temporary pair table",
+        "value": "{}"
+      },
+      {
+        "pc_one_based": 336,
+        "event": "construct pair table",
+        "value": "{1.0, 1.0}",
+        "note": "T[58] and T[59] are the two values consumed by the array-construction opcode."
+      },
+      {
+        "pc_one_based": 349,
+        "event": "consume T[57] as one child pair in outer T[52] table",
+        "value": "{1.0, 1.0}",
+        "note": "The eight-pair opaque table is assembled at PC349; T[57] is not captured by any closure at this point."
+      },
+      {
         "pc_one_based": 357,
-        "event": "create root.children[52] onDamageMsg closure",
-        "value": "onDamageMsg message handler closure",
-        "note": "Captures T[41]; PC359 assigns this closure to MainLeftBottom.onDamageMsg."
+        "event": "overwrite T[57] with root.children[52] onDamageMsg closure",
+        "value": "onDamageMsg"
+      },
+      {
+        "pc_one_based": 359,
+        "event": "assign onDamageMsg closure to MainLeftBottom.onDamageMsg",
+        "value": "MainLeftBottom.onDamageMsg = onDamageMsg"
       },
       {
         "pc_one_based": 360,
-        "event": "create root.children[6] InstallDamageHook closure",
-        "value": "InstallDamageHook closure",
-        "note": "Writes the new closure into the same parent register T[57], replacing the previous register value."
+        "event": "overwrite T[57] with root.children[6] InstallDamageHook closure",
+        "value": "InstallDamageHook"
       },
       {
         "pc_one_based": 368,
-        "event": "create root.children[47] BlacklistPlayerDetection closure",
-        "value": "InstallDamageHook closure",
-        "note": "OP_387 captures the live T[57] cell; UP[1] therefore resolves to InstallDamageHook, not the earlier onDamageMsg handler."
+        "event": "create BlacklistPlayerDetection closure",
+        "value": "InstallDamageHook is current T[57] value"
+      },
+      {
+        "pc_one_based": 370,
+        "event": "capture T[57] live cell as BlacklistPlayerDetection UP[1]",
+        "value": "InstallDamageHook"
+      },
+      {
+        "pc_one_based": 370,
+        "event": "capture parent T[57] live cell",
+        "child_path": "root/47",
+        "child_name": "BlacklistPlayerDetection",
+        "upvalue_index": 1,
+        "closure_pc_one_based": 368
+      },
+      {
+        "event": "REGISTER_SUMMARY",
+        "final_value_at_capture": "InstallDamageHook closure",
+        "semantic_role": "damage-hook installer captured by BlacklistPlayerDetection UP[1]",
+        "capture_count": 1,
+        "notes": [
+          "The earlier pair-table value is part of the opaque eight-pair array and is superseded before the only T[57] capture.",
+          "onDamageMsg remains stored in MainLeftBottom.onDamageMsg after T[57] is overwritten; overwriting the register does not erase the module-table field.",
+          "The capture is a live cell, so its value at PC368 is the PC360 InstallDamageHook closure."
+        ]
       }
     ]
   },
