@@ -3899,8 +3899,8 @@
     "37": [
       {
         "pc_one_based": 212,
-        "event": "write root.children[32] AnonymousHelper_32 closure",
-        "value": "AnonymousHelper_32"
+        "event": "write root.children[31] IsInWhitelistMap closure",
+        "value": "IsInWhitelistMap"
       },
       {
         "pc_one_based": 214,
@@ -3924,8 +3924,8 @@
       },
       {
         "pc_one_based": 259,
-        "event": "overwrite with root.children[42] doInit_UI closure",
-        "value": "doInit_UI"
+        "event": "overwrite with root.children[41] MoveItemToQuickUse closure",
+        "value": "MoveItemToQuickUse"
       },
       {
         "pc_one_based": 261,
