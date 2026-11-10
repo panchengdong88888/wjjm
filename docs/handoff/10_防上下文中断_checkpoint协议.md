@@ -2836,3 +2836,11 @@ Nested_match：
 - VM dump提供vararg标记，但不提供固定形参数量；调用链只证明AnonymousHelper_49传入一个文件名。源码保守统一为`function(...) local fileName = ...`，只读取首个传入值，不额外断言固定参数数量。
 - 同步主恢复源码、独立候选、函数状态CSV、机器状态和审计。升级为完整静态恢复（未运行时验证）；总体108/110不变，运行时验证0。
 - 下一批优先DeathAutoBlacklist、MoveTo、ClearBlacklistItems和onDamageMsg的未决点。
+
+
+## 检查点233（2026-11-10）：已完成函数索引状态对账
+
+- 对照函数状态CSV、已有PC级审计和主恢复源码，将DeathAutoBlacklist（47+6）、MoveTo（51）、ClearBlacklistItems（63+13）、onDamageMsg（72+6）、TakeItems（99）、BlacklistPlayerDetection（216）的prototype_index过时first-pass状态统一为完整静态恢复（未运行时验证）。
+- 这些函数主体此前已在主源码，不重复添加；CSV本来就已标记完整静态恢复，因此总数仍108/110，运行时验证0。
+- DeathAutoBlacklist和onDamageMsg同步为主文件实际使用的独立source_file路径。
+- 下一批只处理真实未闭合问题，不重复分析CSV/审计已完整闭合的函数。
