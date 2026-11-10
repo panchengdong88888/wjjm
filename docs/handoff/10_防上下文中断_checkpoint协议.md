@@ -2224,3 +2224,13 @@
 - 更新并回读验证：第六十三批源码、第七十八批状态说明、函数状态CSV、机器接续状态JSON、本审计报告。
 - 统计维持普通Lua草稿72、完整静态恢复103/110、运行时验证0；本批不增加原型计数。
 - 下一步：回溯doInit_UI PC181-PC183 GUI:Attach_UITop七个显式实参的寄存器生产者/顺序；继续追踪Nested_Anonymous T[0]/T[1]/T[2]cell来源；复核UNKNOWN_VALUE_SENTINEL和GUI宿主参数语义。doInit_UI仍为普通Lua草稿，不得宣称可运行。
+
+
+## 检查点 #202（2026-11-10）：Attach_UITop七参数槽与Nested_Anonymous捕获用途复核
+
+- doInit_UI PC178-PC180：取得NPCStorageProxy.RequestStorageData，并由OP_358 A=6 B=7传入当前帧T[7]..T[13]七个显式实参。
+- PC181-PC183：取得GUI.Attach_UITop，并由OP_068 A=6 B=7传入同一组T[7]..T[13]七槽。确认两次调用参数槽区间与顺序相同；七槽值的业务名称、类型和最初生产者仍未闭合，不擅自命名。
+- Nested_Anonymous的T[0]/T[1]/T[2]按实际使用点可分别标注为对话文本、数字成功回调、错误提示回调；这只是用途级识别，调用端生产者和准确声明类型仍未知。UP[0]=PrintLog保持已确认。
+- 更新第六十三批源码候选、函数状态CSV、机器可读接续状态JSON和本审计报告；不增加源码原型计数或完整静态恢复数量。
+- 统计：普通Lua草稿72；完整静态恢复103/110；运行时验证0。
+- 下一步：追踪T[7]..T[13]写入点/入口实参及Nested_Anonymous调用端；继续查unknown哨兵宿主值与GUI方法签名。
