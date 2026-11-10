@@ -682,3 +682,13 @@ end
 -- PC341-PC412：MainLeftBottom.onDamageMsg；_G.BlacklistItems；_G.ClearBlacklistItems；MainLeftBottom.doInit。
 -- 总账将全局导出与模块字段分开统计；局部函数创建不等于导出。ShowLocalNoticeByType、ScheduleOnce、Schedule在已审PC段未发现根级导出。
 -- 完整机器可读明细见docs/handoff/12_根模块闭包装配表.json的root_complete_module_ledger。
+
+
+-- ============================================================================
+-- 检查点246：无捕获子原型实际接入记录
+--
+-- 主装配代码位于 MainLeftBottom_恢复源码.lua 末尾的
+-- root_assembly_checkpoint=246 区段。该文件作为独立候选保留根表构造与
+-- PC级证据；22个无捕获闭包按原型身份接入root_prototypes。
+-- 有捕获闭包暂不在此处伪造实例，必须使用OP_387共享cell语义。
+-- ============================================================================
