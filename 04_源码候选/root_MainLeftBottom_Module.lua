@@ -717,7 +717,7 @@ end
 -- PC382：全局导出BlacklistItems=BlacklistPlayerDetection。
 -- PC383-PC387：ClearBlacklistItems捕获[T54 PCallHelper_2,T4 PrintLog,T5 ShowLocalNoticeByType,T41 blacklistState]。
 -- PC388：全局导出ClearBlacklistItems。
--- PC389-PC410：doInit_UI捕获20项，顺序为[T4,T2,T3,T0,T1,T41,T48,T7,T8,T50,T49,T5,T44,T42,T51,T43,T47,T11,T12,T9]；具体身份见12_根模块闭包装配表.json。
+-- PC390-PC410：doInit_UI在PC390创建，PC391-PC410依序捕获20项，顺序为[T4,T2,T3,T0,T1,T41,T48,T7,T8,T50,T49,T5,T44,T42,T51,T43,T47,T11,T12,T9]；具体身份见12_根模块闭包装配表.json。
 -- PC411：MainLeftBottom.doInit=doInit_UI；PC412：return根模块表。
 -- 至此PC341-PC412的根级创建/捕获/模块字段/全局导出时序已对账；这不代表所有子函数均已达到完整静态恢复，也不代表根模块整体源码已装配完成。
 
