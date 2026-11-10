@@ -1,6 +1,6 @@
 -- MainLeftBottom(2).lua 普通 Lua 草稿
 -- 第二十一批：拉怪初始化判断与伤害消息包装回调
--- 状态：Nested_InitGatherMonsters已完成静态恢复；Nested_onDamageMsg仍为普通Lua草稿；均未运行时验证。
+-- 状态：Nested_InitGatherMonsters与Nested_onDamageMsg均已完成静态恢复；未运行时验证。
 -- 捕获变量采用按访问行为命名的临时名，父级原始局部变量名尚未恢复。
 
 -- 原型：root.children[42].children[7]
@@ -27,20 +27,21 @@ local function Nested_InitGatherMonsters(refreshFlag)
 end
 
 -- 原型：root.children[6].children[0]
--- legacy：root/7/1；物理指令：18；子原型：0
--- UPVALUE_0：包含 onDamageMsg 字段的消息/控制器对象。
--- UPVALUE_1：原始消息处理函数（父级安装包装器前从消息处理表取出）。
-local function Nested_onDamageMsg(arg1, arg2)
+-- legacy：root/7/1；物理指令：18；子原型：0；vararg_flag=2
+-- UPVALUE_0：MainLeftBottom 模块表（root T[0]），其 onDamageMsg 字段保存自定义消息回调。
+-- UPVALUE_1：原始 MSG_SC_DAMAGE_HP 消息处理函数（父 InstallDamageHook 的 R2）。
+local function Nested_onDamageMsg(arg1, arg2, ...)
     local callback = UPVALUE_0.onDamageMsg
 
+    -- PC5-PC12：若自定义回调是函数，则保护调用；pcall的状态和返回值均丢弃。
     if type(callback) == "function" then
-        return pcall(callback, arg1, arg2)
+        pcall(callback, arg1, arg2)
     end
 
+    -- PC13-PC16：无论自定义回调是否存在/是否报错，都调用原始处理器并转发其返回值。
     return UPVALUE_1(arg1, arg2)
-
-    -- PC17-18 位于上述 return 之后；按当前物理控制流属于不可达尾部。
 end
+
 
 -- 复核说明：
 -- Nested_InitGatherMonsters：PC1-6 读取参数标志；标志为假时调用捕获回调，
@@ -49,12 +50,15 @@ end
 -- 其捕获槽位由 root/43 PC245 的子闭包创建记录确认：捕获数为2；
 -- 创建点后续捕获描述对应父级 UP8、UP9。父级 UP8/UP9 的原始语义名称未证实。
 --
--- Nested_onDamageMsg：PC1-4 读取 onDamageMsg 并调用 type 检查；
--- PC5-6 判断是否为函数。是函数时 PC7-12 执行 pcall(callback,arg1,arg2)，
--- 并原样返回 pcall 的多返回值；否则 PC13-16 调用原始处理函数
--- UPVALUE_1(arg1,arg2) 并返回其多返回值。PC17-18 是其后的尾部返回指令。
--- 父级 root/7 PC30 创建此闭包，捕获数为2；父级先取出消息处理表中的原处理值，
--- 再将新闭包安装为消息处理入口。UPVALUE_0/1 的父级寄存器语义已按此使用关系命名，
--- 但不推断其原始局部变量名。
+-- Nested_onDamageMsg：PC1-PC4读取UPVALUE_0.onDamageMsg并检查type；
+-- PC5-PC6仅在其为function时进入pcall路径；PC7-PC12执行pcall(callback,arg1,arg2)，
+-- 但调用结果不被接收。随后PC13-PC16仍会调用UPVALUE_1(arg1,arg2)，
+-- 并将原始处理器的多返回值原样返回。若自定义回调不存在/非函数，则直接跳至PC13；
+-- 若回调报错，pcall会保护错误并继续进入原始处理器调用。PC17-PC18位于PC16无条件
+-- return之后，不可达。额外vararg不读取，也不向两个回调转发。
+-- 父InstallDamageHook的UPVALUE_0捕获root T[0]，即MainLeftBottom模块表；
+-- 子闭包UPVALUE_0捕获该父UPVALUE_0。父PC22取得的R2是原消息处理函数，
+-- 子闭包UPVALUE_1捕获该R2。父PC33将新闭包安装到mNetMsgHandle对应消息键。
 --
--- 两个函数均只计入普通 Lua 草稿，不计入完整静态恢复；未运行时验证。
+-- Nested_InitGatherMonsters维持完整静态恢复；Nested_onDamageMsg本批升级为完整静态恢复。
+-- 两者均未运行时验证。
