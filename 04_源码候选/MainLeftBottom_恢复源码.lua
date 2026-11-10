@@ -754,7 +754,7 @@ do
 
 -- Checkpoint250: shared-cell factory; mutable captured parent registers are passed by identity.
 local function make_MainLoop(UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALUE_4, UPVALUE_5, UPVALUE_6, UPVALUE_7, UPVALUE_8, UPVALUE_9, UPVALUE_10, UPVALUE_11, UPVALUE_12, UPVALUE_13, UPVALUE_14, UPVALUE_15, UPVALUE_16, UPVALUE_17, UPVALUE_18, UPVALUE_19, UPVALUE_20, UPVALUE_21)
-    return function MainLoop()
+    return function()
     if not UPVALUE_0.value then
         return
     end
@@ -1073,7 +1073,7 @@ do
 
 -- Checkpoint250 adapter: captured mutable parent registers are shared cell objects.
 local function make_MainLoop(UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALUE_4, UPVALUE_5, UPVALUE_6, UPVALUE_7, UPVALUE_8, UPVALUE_9, UPVALUE_10, UPVALUE_11, UPVALUE_12, UPVALUE_13, UPVALUE_14, UPVALUE_15, UPVALUE_16, UPVALUE_17, UPVALUE_18, UPVALUE_19, UPVALUE_20, UPVALUE_21)
-    return function MainLoop()
+    return function()
     if not UPVALUE_0 then
         return
     end
