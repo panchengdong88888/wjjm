@@ -1,7 +1,7 @@
 --[[
 函数：doInit_UI | 原型索引52 | root.children[42] | legacy root/43
 物理指令419 | 常量105 | 子原型23 | vararg_flag=0
-普通Lua主体草稿（检查点187首版、199分支复审、200按钮闭包/每日回调整合、201合并Nested_Anonymous与Nested_FFFF00资源统计工厂及子依赖、203纠正调用参数展开并追踪Nested_Anonymous调用链）；未运行时验证。Attach_UITop的T[7]实参来源、Nested_Anonymous的T槽及unknown哨兵仍待核验。
+普通Lua主体草稿（检查点187首版、199分支复审、200按钮闭包/每日回调整合、201合并Nested_Anonymous与Nested_FFFF00资源统计工厂及子依赖、203纠正调用参数展开并追踪Nested_Anonymous调用链）；未运行时验证。Attach_UITop的T[7]实参来源、Nested_Anonymous的T槽及unknown哨兵仍待核验。检查点204补充：PC133 OP_233的第三返回值写入T[7]；其输入T[6]的运行时来源仍未闭合。
 本文件已内嵌Nested_find、Nested_Anonymous及Nested_FFFF00资源统计相关闭包工厂；其余子原型继续复用独立候选。
 ]]
 -- root.children[42].children[0] / Nested_find：46条，无捕获。
@@ -128,6 +128,9 @@ end
 -- ---------------------------------------------------------------------------
 local function make_Nested_Anonymous(PrintLog)
     return function Nested_Anonymous(...)
+        -- Checkpoint 204: PC130 builds R4 from T[5]..T[8]; PC133 calls ipairs with T[6],
+        -- then writes the third return value into T[7]. The runtime value of T[6]
+        -- and therefore the concrete T[7] value remain unresolved; do not assign a semantic name.
         -- Caller chain traced at checkpoint 203:
         -- doInit_UI PC250 creates root/43/12 with this closure as UP[0].
         -- root/43/19 PC27 invokes that wrapper with an empty argument range;
