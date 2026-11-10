@@ -2812,8 +2812,10 @@
     ],
     "status": "20项捕获按PC390-PC410严格顺序装配：T4 PrintLog、T2 MainLeftBottom.z、T3 timerState、T0 MainLeftBottom.a、T1 MainLeftBottom.b、T41 blacklistState、T48 AnonymousHelper_49、T7 Schedule、T8 FindMonsterInCurrViewField、T50 AnonymousHelper_33、T49 AnonymousHelper_32、T5 ShowLocalNoticeByType、T44 GetWritablePath、T42 blacklistDistanceConfigFile、T51 AnonymousHelper_54、T43 gatherMonsterCountConfigFile、T47 FileExistCheck_pcall_wrapper、T11=18000、T12奖励表、T9=0.2。rootModule.doInit接入；根模块有捕获工厂36/36、无捕获22/22，运行时验证0。",
     "audit_file": "docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md",
-    "source_commit_sha": "752ece5e1d8da71cbaf6391198b8dbd7278a5d12",
-    "candidate_commit_sha": "d6ca0c98acf0f751ed336aed18094efebca2844b"
+    "source_commit_sha": "b74bac4fefd693b5a7c353f39e771bdc9de57c84",
+    "candidate_commit_sha": "d6ca0c98acf0f751ed336aed18094efebca2844b",
+    "root_module_candidate_commit_sha": "ff42eb1eb283a82fd07f6a3bdbf698e2f719be62",
+    "doInit_candidate_commit_sha": "d6ca0c98acf0f751ed336aed18094efebca2844b"
   },
   "corrections": [
     {
@@ -3558,7 +3560,9 @@
     "captured_factory_bindings": 36,
     "captured_factory_pending": 0,
     "notes": "doInit_UI 20项捕获按根PC390-PC410顺序装配，写入MainLeftBottom.doInit；根直接子闭包58/58源代码层绑定。内部Nested_Anonymous仍保留未解析T槽，不宣称作者级/运行时完成。",
-    "source_commit_sha": "752ece5e1d8da71cbaf6391198b8dbd7278a5d12"
+    "source_commit_sha": "b74bac4fefd693b5a7c353f39e771bdc9de57c84",
+    "root_module_candidate_commit_sha": "ff42eb1eb283a82fd07f6a3bdbf698e2f719be62",
+    "doInit_candidate_commit_sha": "d6ca0c98acf0f751ed336aed18094efebca2844b"
   },
   "latest_checkpoint": 256,
   "complete_static_reconstruction_count": 109,
