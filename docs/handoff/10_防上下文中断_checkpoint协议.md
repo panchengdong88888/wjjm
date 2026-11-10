@@ -3133,7 +3133,7 @@ Nested_match：
 - 已将工厂实例化结果挂入MainLeftBottom.doInit，对应PC411字段写入。
 - 纠正UP槽身份：T[2]=MainLeftBottom.z（DiuItems同一状态表）；T[0]=MainLeftBottom.a；T[3]=timerState；T[1]=MainLeftBottom.b。BlacklistPlayerDetection.UP0同样是MainLeftBottom.z，而非根模块最外层表。
 - 根模块直接子闭包已达到58/58源代码层绑定：22个无捕获闭包、36个有捕获工厂。此数字只表示捕获装配已接入，不表示运行时验证或作者级逐字恢复。
-- doInit_UI内部23个子原型/回调构造代码随候选工厂一并保留；Nested_Anonymous child22的T[0]/T[1]/T[2]来源仍有未解析占位，不能将其宣称为全部完整。
+- doInit_UI内部23个子原型/回调构造代码随候选工厂一并保留。Nested_Anonymous child22固定参数槽已由检查点235闭合：fixed_param_count=2，Helper_4/Helper_7分别传入(promptText, successCallback)，对应T[0]/T[1]；T[2]无写入，确定为nil。错误分支调用T[2]的nil错误行为按原字节码保留，不属于待恢复槽位。
 - 本批修正doInit_UI候选中Nested_Anonymous的非法命名匿名函数表达式，改为合法Lua匿名函数表达式；仍未执行Lua编译器。
 - 完整静态恢复109、普通Lua草稿72、运行时验证0。
-- 下一步检查点257：统一审计58个根直接闭包的工厂源、依赖引用、全局/模块字段导出、T[14..22]/T[57]共享cell身份；随后继续解析Nested_Anonymous未确认T槽。
+- 下一步检查点257：统一审计58个根直接闭包的工厂源、依赖引用、全局/模块字段导出、T[14..22]/T[57]共享cell身份；Nested_Anonymous固定参数槽已闭合。审计后转入唯一未完整恢复的root根模块主体，继续把PC1-PC412分段账本整合成可读源码。
