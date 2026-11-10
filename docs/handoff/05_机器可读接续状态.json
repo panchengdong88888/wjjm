@@ -3542,19 +3542,18 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 260,
-  "checkpoint": 260,
+  "last_checkpoint": 261,
+  "checkpoint": 261,
   "drafts": 33,
-  "next": "检查点261：核对root PC1-PC412全局导出、模块字段和局部寄存器生命周期在主恢复文件中的无遗漏情况；重点审查PC86-PC180的rootSource初始化字段与T[8]/T[11]/T[12]/T[13]/T[14..22]对应关系，以及PC390-PC412 doInit_UI最终返回路径。然后评估能否把root状态初始化与闭包装配适配层合并成单一连续模块执行体。",
+  "next": "检查点262：检查root PC1-PC42初始化代码与主恢复文件的源码注册/执行词法作用域，确认模块表、a/b/z、timerState的引用可供后续装配使用；随后继续将PC43-PC412闭包创建、捕获、字段写入和全局导出收敛为单一连续恢复适配执行体。不得将适配结构冒充作者原始逐字源码。",
   "recent_checkpoint": {
-    "number": 260,
+    "number": 261,
     "date": "2026-11-10",
     "artifacts": [
       "04_源码候选/MainLeftBottom_恢复源码.lua",
-      "docs/audit/检查点260_PC86-PC211及PC297-PC388根模块顺序整合.md",
+      "docs/audit/检查点261_根模块字段寄存器与最终返回路径审计.md",
       "docs/handoff/05_机器可读接续状态.json",
       "docs/handoff/10_防上下文中断_checkpoint协议.md",
-      "docs/handoff/12_根模块闭包装配表.json",
       "docs/handoff/13_原型结构树.md",
       "02_基础索引/03_函数状态清单.csv"
     ],
@@ -3563,9 +3562,9 @@
     "runtime_verified": 0,
     "root_direct_closures_source_bound": 58,
     "root_direct_closures_expected": 58,
-    "notes": "PC86-PC211及PC297-PC388的闭包/字段顺序已按PC证据整合；共享cell唯一性静态核验。"
+    "notes": "完成PC86-PC180字段/寄存器映射与PC390-PC412返回链核对。发现主装配块跨词法块直接引用local gatherStatusText，已将MainLoop、InitGatherMonsters、StopGatherMonsters三处修正为rootSource.gatherStatusText。静态恢复数量不变；未执行luac或游戏运行时验证。"
   },
-  "latest_checkpoint": 260,
+  "latest_checkpoint": 261,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3574,7 +3573,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 257,
+  "next_checkpoint": 262,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3729,12 +3728,13 @@
     ],
     "lexical_block_balance": "passed",
     "full_lua_compiler_available": false,
-    "runtime_verified": false
+    "runtime_verified": false,
+    "checkpoint261_scope_review": "passed_static_after_fix"
   },
   "latest": {
-    "checkpoint": "260",
-    "summary": "PC86-PC211闭包与状态槽、PC297-PC388配置及黑名单闭包顺序已进一步按VM PC整理；PC357 onDamageMsg先于PC360 InstallDamageHook，PC368 BlacklistPlayerDetection、PC383 ClearBlacklistItems顺序正确。匿名工厂各仅保留一次，T57 live cell仅创建一次。完整静态恢复109/110、草稿72、根闭包58/58、运行时验证0。",
-    "audit_file": "docs/audit/检查点260_PC86-PC211及PC297-PC388根模块顺序整合.md",
+    "checkpoint": "261",
+    "summary": "PC86-PC180的T[8]/T[11]/T[12]/T[13]/T[14..22]与rootSource字段逐项核对；PC390-PC412的doInit_UI 20项捕获顺序、MainLeftBottom.doInit挂接及PC412返回模块表已核对。修复三处gatherStatusText跨词法块引用。完整静态恢复109/110、普通Lua草稿72、根闭包58/58源码层绑定、运行时验证0。",
+    "audit_file": "docs/audit/检查点261_根模块字段寄存器与最终返回路径审计.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua"
   },
   "parameter_metadata_semantics": {
@@ -3745,7 +3745,7 @@
     "capture_semantics": "OP_387 stores a live cell reference {parent_T_table, register_index}; the upvalue proxy __index/__newindex reads/writes the parent T register dynamically. Later parent writes are visible to closures."
   },
   "root_assembly": {
-    "checkpoint": 256,
+    "checkpoint": 261,
     "direct_child_closures_expected": 22,
     "bound_at_source_level": 22,
     "runtime_verified": false,
@@ -3790,6 +3790,7 @@
       "BlacklistPlayerDetection",
       "doInit_UI"
     ],
-    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。"
+    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。",
+    "checkpoint261_gather_status_scope_fixed": true
   }
 }
