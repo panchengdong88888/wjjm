@@ -7058,17 +7058,17 @@
           {
             "upvalue": 1,
             "parent_T": 2,
-            "value": "MainLeftBottom module table"
+            "value": "MainLeftBottom.z"
           },
           {
             "upvalue": 2,
             "parent_T": 3,
-            "value": "MainLeftBottom.a"
+            "value": "timerState table"
           },
           {
             "upvalue": 3,
             "parent_T": 0,
-            "value": "MainLeftBottom module table"
+            "value": "MainLeftBottom.a"
           },
           {
             "upvalue": 4,
@@ -7162,7 +7162,10 @@
       {
         "pc": 411,
         "target": "MainLeftBottom.doInit",
-        "value": "doInit_UI"
+        "value": "doInit_UI",
+        "target_register": 59,
+        "target_reread_pc": 389,
+        "target_semantics": "PC389 OP_137 loads _ENV.MainLeftBottom into independent T[59]; PC411 writes T[59].doInit"
       }
     ],
     "global_exports": [
@@ -7180,7 +7183,38 @@
     "return": {
       "pc": 412,
       "value": "return MainLeftBottom module"
-    }
+    },
+    "temporary_register_events": [
+      {
+        "pc": 389,
+        "register": 59,
+        "event": "read _ENV.MainLeftBottom",
+        "value": "MainLeftBottom module table",
+        "opcode": 137,
+        "raw_instruction": [
+          82,
+          137,
+          59,
+          "MainLeftBottom",
+          null
+        ]
+      },
+      {
+        "pc": 411,
+        "register": 59,
+        "event": "write field doInit",
+        "value": "doInit_UI closure",
+        "opcode": 268,
+        "raw_instruction": [
+          144,
+          268,
+          59,
+          "doInit",
+          60
+        ]
+      }
+    ],
+    "capture_correction": "PC389 writes the global MainLeftBottom table to temporary T[59], not to T[2], T[3], or T[0]. Therefore doInit_UI captures UP1=T[2]=MainLeftBottom.z, UP2=T[3]=timerState, UP3=T[0]=MainLeftBottom.a. PC411 writes the doInit closure to T[59].doInit. The prior values in this ledger for UP1/UP2/UP3 were incorrect; register_value_timeline for T[2]/T[3]/T[0] and raw PC389/411 instructions establish the corrected mapping."
   },
   "root_complete_module_ledger": {
     "pc_range": "1-412",
@@ -11652,209 +11686,58 @@
   },
   "root_assembly_checkpoint_268": {
     "date": "2026-11-10",
-    "root_pc_range": "390-412",
-    "source_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
-    "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
-    "closure": {
-      "pc_zero_based": 389,
-      "pc_one_based": 390,
-      "prototype": "root.children[42]",
-      "name": "doInit_UI",
-      "fixed_param_count": 0,
-      "capture_count": 20,
-      "capture_parent_T_registers": [
-        4,
-        2,
-        3,
+    "root_pc_range": "389-411",
+    "raw_vm_instructions": {
+      "PC389": [
+        82,
+        137,
+        59,
+        "MainLeftBottom",
+        null
+      ],
+      "PC390": [
         0,
-        1,
-        41,
-        48,
-        7,
-        8,
-        50,
-        49,
-        5,
-        44,
+        27,
+        60,
         42,
-        51,
-        43,
-        47,
-        11,
-        12,
-        9
+        20
       ],
-      "capture_pc_range": "391-410",
-      "injection_order": [
-        "rootPrototypes.PrintLog",
-        "rootModule.z",
-        "rootSource.timerState",
-        "rootModule.a",
-        "rootModule.b",
-        "rootSource.blacklistState",
-        "rootConfigRegisters[48]",
-        "rootPrototypes.Schedule",
-        "rootPrototypes.FindMonsterInCurrViewField",
-        "rootConfigRegisters[50]",
-        "rootConfigRegisters[49]",
-        "rootPrototypes.ShowLocalNoticeByType",
-        "rootConfigRegisters[44]",
-        "rootSource.blacklistDistanceConfigFile",
-        "rootConfigRegisters[51]",
-        "rootSource.gatherMonsterCountConfigFile",
-        "rootConfigRegisters[47]",
-        "rootSource.rootRegister11",
-        "rootSource.loginAndOnlineRewardEntries",
-        "0.2"
+      "PC392": [
+        192,
+        387,
+        0,
+        2,
+        0
+      ],
+      "PC393": [
+        0,
+        387,
+        0,
+        3,
+        0
+      ],
+      "PC394": [
+        0,
+        387,
+        0,
+        0,
+        0
+      ],
+      "PC411": [
+        144,
+        268,
+        59,
+        "doInit",
+        60
       ]
     },
-    "module_field": {
-      "pc": 411,
-      "target": "MainLeftBottom.doInit",
-      "value": "doInit_UI",
-      "assertion": "rootModule.doInit == rootPrototypes.doInit_UI"
+    "verified_capture_values": {
+      "UP[1]": "T[2]=MainLeftBottom.z",
+      "UP[2]": "T[3]=timerState table",
+      "UP[3]": "T[0]=MainLeftBottom.a"
     },
-    "return": {
-      "pc": 412,
-      "expression": "return recoveredRootModule",
-      "source": "MainLeftBottomRecovered.root_module",
-      "identity": "same rootModule table created at PC1",
-      "adapter_container_exported_globally": false
-    },
-    "global_exports_total": 21,
-    "global_exports": [
-      {
-        "pc": 2,
-        "target": "_G.MainLeftBottom"
-      },
-      {
-        "pc": 45,
-        "target": "_G.log"
-      },
-      {
-        "pc": 55,
-        "target": "_G.GetMapId"
-      },
-      {
-        "pc": 57,
-        "target": "_G.GetMapName"
-      },
-      {
-        "pc": 59,
-        "target": "_G.PlayerPos"
-      },
-      {
-        "pc": 61,
-        "target": "_G.GetDroppedItems"
-      },
-      {
-        "pc": 63,
-        "target": "_G.MoveTo"
-      },
-      {
-        "pc": 67,
-        "target": "_G.DiuItems"
-      },
-      {
-        "pc": 70,
-        "target": "_G.GetAvailableStoragePage"
-      },
-      {
-        "pc": 73,
-        "target": "_G.GetStorageItemData"
-      },
-      {
-        "pc": 78,
-        "target": "_G.StorageItems"
-      },
-      {
-        "pc": 82,
-        "target": "_G.TakeItems"
-      },
-      {
-        "pc": 85,
-        "target": "_G.PickUpItems"
-      },
-      {
-        "pc": 213,
-        "target": "_G.IsInWhitelistMap"
-      },
-      {
-        "pc": 237,
-        "target": "_G.MainLoop"
-      },
-      {
-        "pc": 246,
-        "target": "_G.InitGatherMonsters"
-      },
-      {
-        "pc": 255,
-        "target": "_G.StopGatherMonsters"
-      },
-      {
-        "pc": 258,
-        "target": "_G.Builtsetting"
-      },
-      {
-        "pc": 260,
-        "target": "_G.MoveItemToQuickUse"
-      },
-      {
-        "pc": 382,
-        "target": "_G.BlacklistItems"
-      },
-      {
-        "pc": 388,
-        "target": "_G.ClearBlacklistItems"
-      }
-    ],
-    "module_field_ledger_total": 26,
-    "root_direct_module_fields_total": 10,
-    "root_direct_module_fields": [
-      "MainLeftBottom.a",
-      "MainLeftBottom.b",
-      "MainLeftBottom.z",
-      "MainLeftBottom.hide",
-      "MainLeftBottom.show",
-      "MainLeftBottom.destroy",
-      "_ENV.MainLeftBottom.main (PC275 reread; PC279 assignment)",
-      "MainLeftBottom.blacklist",
-      "MainLeftBottom.onDamageMsg",
-      "MainLeftBottom.doInit"
-    ],
-    "nested_fields_total": 15,
-    "nested_field_groups": {
-      "MainLeftBottom.a": [
-        "version",
-        "screenW",
-        "screenH",
-        "Blocklist",
-        "SendHookList",
-        "RecvHookList",
-        "isHidden",
-        "hidebut",
-        "LuaSendMsg"
-      ],
-      "MainLeftBottom.z": [
-        "isPaused",
-        "isRunning",
-        "isStoring",
-        "isTaking",
-        "isDiuing",
-        "isOutputted"
-      ]
-    },
-    "special_semantics": [
-      "PC275 rereads _ENV.MainLeftBottom; AccountIDValidation is written to that reread table at PC279.",
-      "PC412 returns the original MainLeftBottom root table, not MainLeftBottomRecovered or rootPrototypes.",
-      "ShowLocalNoticeByType, ScheduleOnce and Schedule are not root-level global exports in the audited PC ranges."
-    ],
-    "caveats": [
-      "The 21 global export count includes _G.MainLeftBottom itself.",
-      "The 26 module ledger entries comprise the root-table export, 10 direct root fields, and 15 nested a/z fields.",
-      "This remains a static recovery adapter, not author-original source.",
-      "No Lua compiler or game runtime validation has been performed."
-    ],
+    "module_target": "T[59] is loaded from _ENV.MainLeftBottom at PC389; PC411 writes T[59].doInit=doInit_UI",
+    "correction": "PC389 does not overwrite T[2]/T[3]/T[0]; it writes a separate temporary T[59].",
     "runtime_verified": false
   }
 }
