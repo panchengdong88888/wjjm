@@ -52,3 +52,8 @@ end
 - 状态升级为完整静态恢复（未运行时验证）。
 - 本次不进行游戏宿主运行时验证；runtime_verified仍为false。
 - 完整静态恢复总数仍为108/110，本批只是对已有恢复函数的参数入口校正与状态同步，不增加总数。
+
+
+## 检查点235参数元数据纠正
+
+检查点232曾将原型tuple[3]误解为vararg标志，并将ReadNumericConfig改成function(...) local fileName=...。原始VM实现M()证明该字段实际是固定参数数量；root.children[9]的值为1，因此正确入口应为function(fileName)。主源码与候选文件已恢复为单一固定参数形式。额外实参会进入X表，但本函数不读取它们。
