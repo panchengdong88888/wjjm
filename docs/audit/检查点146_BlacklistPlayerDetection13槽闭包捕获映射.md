@@ -9,7 +9,7 @@
 | upvalue槽位 | 父root寄存器 | 映射身份 | 依据 |
 |---|---:|---|---|
 | UP[0] | R2 | 主模块状态表 | 根PC36-PC41初始化isPaused/isRunning/isStoring/isTaking/isDiuing/isOutputted；本函数PC1写isBlacklisting |
-| UP[1] | R57 | root/53回调，挂到R41.onDamageMsg | 根PC357创建root/53；PC359赋给R41.onDamageMsg；本函数PC3-PC4零参调用 |
+| UP[1] | R57 | root.children[6] InstallDamageHook | PC357创建onDamageMsg并于PC359写入MainLeftBottom.onDamageMsg；PC360将T57覆盖为InstallDamageHook；PC368捕获该live cell；本函数PC3-PC4零参调用安装器 |
 | UP[2] | R41 | 黑名单玩家状态表 | 根PC286-PC293初始化lastAttacker/lastHp/deathHandled/alertAt/nextTryAt/noStoneWarned/distance |
 | UP[3] | R58 | root/26死亡后自动拉黑处理闭包 | 根PC363创建；本函数PC54在检测到死亡状态转移时零参调用；root/26内部可调用SL.RequestAddBlacklistByName |
 | UP[4] | R55 | root/52黑名单actor查询辅助闭包 | 根PC353创建；内部检查`_blacklistData`、ACTOR_MASTER_ID及名称，返回匹配状态与名称；本函数PC85-PC87接收两个返回值 |
@@ -31,3 +31,8 @@
 - 将PC1-PC216全路径整理成作者级普通Lua候选并逐段交叉审计。
 
 统计：普通Lua草稿78；完整静态恢复76/110；运行时验证0。
+
+
+## 检查点236纠正：R57是可变共享cell，UP[1]=InstallDamageHook
+
+PC357创建的onDamageMsg闭包在PC359被写入MainLeftBottom.onDamageMsg字段；随后PC360把同一父寄存器T[57]改写为InstallDamageHook闭包。BlacklistPlayerDetection在PC368通过OP_387捕获T[57]，而OP_387在VM M()中保存父T表与寄存器索引的live cell引用。因此UP[1]最终读到InstallDamageHook。旧版将其标为onDamageMsg callback的解释已废止。
