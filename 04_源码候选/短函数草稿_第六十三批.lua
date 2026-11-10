@@ -132,8 +132,12 @@ local function make_Nested_Anonymous(PrintLog)
         -- values visible, but do not assign them to T[0]/T[1]/T[2] without proof.
         local argument1, argument2 = ...
 
-        -- TODO(checkpoint 201): T[0]/T[1]/T[2] capture-cell producers remain
-        -- unresolved. T[2] is invoked as the delayed error-notice callback.
+        -- Checkpoint 202 usage-level roles (producer cells still unresolved):
+        -- T[0] supplies dialogParams.str, so it is the prompt/title text value.
+        -- T[1] is invoked with the validated number, so it is the success callback.
+        -- T[2] is invoked by Nested_Helper_11 with the fixed format-error text,
+        -- so it is the delayed error-notice callback.
+        -- Their caller-side producers and exact declared types remain unproven.
         local T0_SLOT_UNRESOLVED = nil
         local T1_SLOT_UNRESOLVED = nil
         local T2_SLOT_UNRESOLVED = nil
@@ -1048,3 +1052,15 @@ local function doInit_UI()
     end
 end
 return doInit_UI
+
+
+-- ---------------------------------------------------------------------------
+-- 检查点202：Attach_UITop调用实参复核（root.children[42] PC181-PC183）。
+-- PC181-PC182先取GUI.Attach_UITop方法；PC183为OP_068 A=6 B=7，
+-- 因而按VM调用约定传递当前帧T[7]..T[13]共七个显式实参。
+-- 紧邻的PC178-PC180先取NPCStorageProxy.RequestStorageData，
+-- PC180同样以OP_358 A=6 B=7调用，消费同一组T[7]..T[13]。
+-- 这证明两个调用共享同一参数槽区间及顺序，但不能证明七槽业务名称、
+-- 值类型或最初生产者；缺少明确写槽证据前不命名、不改写。
+-- GUI.Attach_UITop的宿主实现/签名未随仓库迁移，七参数语义仍待外部证据。
+-- ---------------------------------------------------------------------------
