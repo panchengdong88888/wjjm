@@ -11,7 +11,8 @@ local function make_onDamageMsg(blacklistState)
 
         -- PC 6-16: decode the JSON under pcall; require a table result.
         local function decodeMessage()
-            return SL:JsonDecode(messageJson)
+            local jsonDecode = SL.JsonDecode
+            return jsonDecode(messageJson)
         end
 
         local decodeOk, message = pcall(decodeMessage)
