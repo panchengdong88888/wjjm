@@ -338,6 +338,8 @@ local opaquePairTable = {
 -- PC359：MainLeftBottom.onDamageMsg = onDamageMsg，实际消息处理器保存在模块字段。
 -- PC360-PC362：创建root.children[6] / InstallDamageHook，捕获父T[0]=MainLeftBottom.a、T[4]=PrintLog，并覆盖同一父寄存器T[57]。
 -- PC368创建BlacklistPlayerDetection时捕获T[57]的live cell；因此其UP[1]是PC360写入的InstallDamageHook，不是PC357创建的onDamageMsg处理器。
+-- 检查点267：主恢复稿分别保留PC357 onDamageMsg模块字段与PC360 InstallDamageHook/T[57]共享cell，
+-- 并对二者函数身份作静态断言；T[52]八组二元数值按PC316-PC349原值逐项核对。
 -- 这两个父级捕获槽位按顺序保留；子闭包Nested_onDamageMsg的捕获另见检查点179。
 -- PC363-PC367：创建root.children[25] / DeathAutoBlacklist，捕获：
 -- [T[41], T[4], T[55], T[5]]。
