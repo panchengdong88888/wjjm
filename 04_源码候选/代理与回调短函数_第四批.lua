@@ -13,8 +13,8 @@ end
 -- Two captured upvalues are forwarded as a function and its first argument;
 -- remaining varargs are forwarded unchanged. Capture identities need parent review.
 local function make_AnonymousHelper_33(callback, wrappedFunction)
-    return function(...)
-        return callback(wrappedFunction, ...)
+    return function(arg1)
+        return callback(wrappedFunction, arg1)
     end
 end
 
