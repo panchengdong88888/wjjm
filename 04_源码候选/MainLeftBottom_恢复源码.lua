@@ -185,9 +185,10 @@ a.RecvHookList = recvHookList
 a.isHidden = true
 a.hidebut = nil
 
--- PC30-PC32：T[1]创建b映射表，再挂入模块根表。
+-- PC30-PC32：T[1]创建b映射表；PC31重新读取模块根表，PC32挂入b。
 local b = {}
-MainLeftBottom.b = b
+local moduleForB = _G.MainLeftBottom
+moduleForB.b = b
 
 -- PC33-PC35：T[2]创建z状态表，再挂入模块根表。
 local z = {}
