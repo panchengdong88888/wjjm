@@ -7662,7 +7662,7 @@
     "binding_policy": "Only capture_count=0 direct children; captured factories remain pending until shared live-cell bindings are implemented.",
     "runtime_verified": false
   },
-  "next_action": "检查点266：核对PC297-PC340配置文件读写包装工厂及T[44..51]寄存器/捕获身份；保持PC316-PC349二维数值表字面原值，不推断其业务语义。",
+  "next_action": "检查点267：恢复PC350-PC388黑名单闭包链，重点区分onDamageMsg与InstallDamageHook及T[57] live cell，并核对BlacklistPlayerDetection的13项捕获。",
   "root_assembly_checkpoint_247": {
     "direct_child_closures_expected": 22,
     "direct_child_closures_source_bound": 22,
@@ -11319,6 +11319,136 @@
       "The assertions and requireRecoveredClosure calls are recovery-adapter safeguards, not original author source statements.",
       "Module fields are attached at their PC-ordered write locations.",
       "No runtime verification has been performed."
+    ],
+    "runtime_verified": false
+  },
+  "root_assembly_checkpoint_266": {
+    "date": "2026-11-10",
+    "root_pc_range": "297-315",
+    "source_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
+    "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
+    "adapter": "rootConfigRegisters",
+    "adapter_is_original_source": false,
+    "initial_values": {
+      "T[42]": "blacklist_distance.txt",
+      "T[43]": "gather_monster_count.txt"
+    },
+    "closures": [
+      {
+        "pc": 297,
+        "name": "GetWritablePath",
+        "prototype": "root.children[2]",
+        "captures": [],
+        "register": 44,
+        "source": "04_源码候选/verified_helpers_batches_1_3.lua"
+      },
+      {
+        "pc": 298,
+        "name": "ReadNumericConfig",
+        "prototype": "root.children[9]",
+        "captures": [
+          44
+        ],
+        "register": 45,
+        "source": "04_源码候选/root9_ReadNumericConfig.lua"
+      },
+      {
+        "pc": 300,
+        "name": "PCallHelper",
+        "prototype": "root.children[17]",
+        "captures": [
+          44
+        ],
+        "register": 46,
+        "source": "04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua"
+      },
+      {
+        "pc": 302,
+        "name": "FileExistCheck_pcall_wrapper",
+        "prototype": "root.children[0]",
+        "captures": [
+          44
+        ],
+        "register": 47,
+        "source": "04_源码候选/短函数草稿_第三十八批.lua"
+      },
+      {
+        "pc": 304,
+        "name": "AnonymousHelper_49",
+        "prototype": "root.children[49]",
+        "captures": [
+          45,
+          42
+        ],
+        "register": 48,
+        "source": "04_源码候选/root49_AnonymousHelper_49.lua"
+      },
+      {
+        "pc": 307,
+        "name": "AnonymousHelper_32",
+        "prototype": "root.children[32]",
+        "captures": [
+          46,
+          42
+        ],
+        "register": 49,
+        "source": "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua"
+      },
+      {
+        "pc": 310,
+        "name": "AnonymousHelper_33",
+        "prototype": "root.children[33]",
+        "captures": [
+          45,
+          43
+        ],
+        "register": 50,
+        "source": "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua"
+      },
+      {
+        "pc": 313,
+        "name": "AnonymousHelper_54",
+        "prototype": "root.children[54]",
+        "captures": [
+          46,
+          43
+        ],
+        "register": 51,
+        "source": "root/55_AnonymousHelper_54.lua"
+      }
+    ],
+    "doInit_UI_later_captures": {
+      "pc_range": "390-410",
+      "upvalue_to_parent_register": {
+        "UP[6]": 48,
+        "UP[9]": 50,
+        "UP[10]": 49,
+        "UP[12]": 44,
+        "UP[14]": 51,
+        "UP[16]": 47
+      },
+      "adapter_reads": "rootConfigRegisters",
+      "preserves_function_identity": true
+    },
+    "guards": [
+      "requireRecoveredClosure(GetWritablePath)",
+      "requireRecoveredClosure(ReadNumericConfig)",
+      "requireRecoveredClosure(PCallHelper)",
+      "requireRecoveredClosure(FileExistCheck_pcall_wrapper)",
+      "requireRecoveredClosure(AnonymousHelper_49)",
+      "requireRecoveredClosure(AnonymousHelper_32)",
+      "requireRecoveredClosure(AnonymousHelper_33)",
+      "requireRecoveredClosure(AnonymousHelper_54)"
+    ],
+    "verified_against": [
+      "register_value_timeline T[42..51]",
+      "closure_sites PC297-PC315",
+      "doInit_UI closure capture mapping PC390-PC410"
+    ],
+    "caveats": [
+      "rootConfigRegisters is a reconstruction adapter shadowing VM parent registers, not an original source table.",
+      "The closures' bodies remain in their individual source candidate blocks.",
+      "No runtime validation has been performed."
     ],
     "runtime_verified": false
   }
