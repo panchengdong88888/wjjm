@@ -3037,3 +3037,16 @@ Nested_match：
 - 更正StorageItems状态说明：检查点223已将root.children[50]父原型及两个子原型完成完整静态恢复；检查点248仅修正嵌套工厂跨词法块引用的装配适配，不改变其恢复等级。
 - 有捕获工厂累计12/36，尚余24；无捕获直接子原型22/22保持源码层绑定；完整静态恢复109、普通Lua草稿72、运行时验证0均不变。
 - 下一批：建立共享live-cell适配，优先处理T[14] currentState及T[15..22]采集状态；之后装配FormatStateChange、ResetGatherMonsterData、InitGatherMonsters、StopGatherMonsters与MainLoop。
+
+
+## 检查点 #250（2026-11-10）：采集状态共享LiveCell与MainLoop装配
+
+- 主汇总源码新增OP_387共享cell适配层：每个父root T寄存器T[14..22]只创建一个`{value=...}`对象，所有捕获同一父寄存器的闭包复用该对象。此结构是恢复装配适配，不宣称原作者源码采用此数据结构。
+- T[14] currentState：FormatStateChange.UP[1]与MainLoop.UP[1]共享`rootCells[14]`；格式化日志成功返回后将新状态写入`.value`。
+- T[15..22]采集状态：ResetGatherMonsterData与MainLoop分别共享目标数组、归属计数、游标、等待标志、截止时间、等待目标ID和等待名称对应cell；T[15]的整体新表赋值也写回同一cell。
+- T[18]运行标记：MainLoop.UP[0]、InitGatherMonsters.UP[1]、StopGatherMonsters.UP[0]复用`rootCells[18]`；启动写true、停止写false、主循环读取同一值。
+- 已实际静态实例化FormatStateChange、ResetGatherMonsterData、MainLoop、InitGatherMonsters、StopGatherMonsters，并补齐MainLoop依赖FindMonsterInCurrViewField（捕获IsDie）。
+- root T[3]定时器状态表、gatherStatusText及T[14..22]初值从根模块同一词法块导出给装配器；没有把nil的T[21]伪造为其他值。
+- 有捕获工厂累计18/36，剩余18；无捕获直接子原型22/22；完整静态恢复109、普通Lua草稿72、运行时验证0。此批只完成装配，不增加完整静态函数计数。
+- 静态检查确认MainLoop工厂中九个可变捕获槽均经`.value`读写，独立MainLoop候选与汇总源码保持同步；未声称Lua编译或目标运行时通过。
+- 下一步检查点251：优先装配剩余稳定函数/表捕获闭包；任何新增可变标量捕获必须先建立同一父寄存器唯一cell，不允许按值快照。
