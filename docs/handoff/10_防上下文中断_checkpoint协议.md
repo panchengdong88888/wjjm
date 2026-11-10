@@ -3333,3 +3333,15 @@ Nested_match：
 - 更正`docs/handoff/12_根模块闭包装配表.json`的doInit_UI UP8值，新增完整20槽逐项账本；新建`docs/audit/检查点269_doInit_UI二十项捕获逐槽对账与T8配置表修正.md`。
 - 完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或游戏运行。
 - 下一步检查点270：整理根模块连续可读源码组织，核对doInit_UI及长函数在主恢复稿中的词法作用域、重复定义和依赖注册，不把适配器拼装误称作者原始源码。
+
+
+## 检查点 #270（2026-11-10）：主恢复稿重复词法块清理
+
+- 主恢复稿删除四个被后续版本覆盖的旧来源块：短函数草稿_第六十三批、root47_BlacklistPlayerDetection、root25_DeathAutoBlacklist、root52_onDamageMsg。
+- root47两个块主体仅2处注释不同，新版把UP1正确标为T[57] live cell；旧版错误写成onDamageMsg。root25两个块主体逐行相同。doInit_UI旧块只注册make_doInit_UI，新块包含同一工厂及完整子闭包工厂注册。onDamageMsg旧块存在过期Nested_JsonDecode声明，新块保留make_onDamageMsg及嵌套解码闭包。
+- 修正doInit_UI源块标题：原错误标为root28_FindMonsterCandidates，但实际sources注册键是短函数草稿_第六十三批.lua；真实root28块保留。
+- 共删除约55,193字符；主恢复稿约293,891字符/7,258行。无业务函数主体改写，无新增完整静态恢复计数。
+- 审计文件：`docs/audit/检查点270_主恢复稿重复词法块清理.md`。
+- 剩余root45_MainLoop三次、root22_GetMapData2DPtr两次sources注册语句仍待核对，禁止只按次数删除。
+- 运行时验证仍0；未执行Lua/luac。
+- 下一步检查点271：核查上述剩余注册语句并审计所有sources键的唯一性，之后继续根模块连续源码收敛。
