@@ -144,11 +144,12 @@ local function make_BlacklistPlayerDetection(
                     )
 
                     -- UP[5] is root.children[22] (legacy root/23), a 144-PC
-                    -- map-aware distance helper. Confirmed contract:
-                    -- five args x1,y1,x2,y2,maxDistance; Chebyshev distance
-                    -- max(abs(dx),abs(dy)); positive range and map checks;
-                    -- target-cell and route-sample obstacle checks. The exact
-                    -- interpolation/sample loop remains under review.
+                    -- helper whose reachable entry path ends at PC37.
+                    -- It computes Chebyshev distance max(abs(dx),abs(dy)):
+                    -- nil inputs / non-positive range are rejected; distance
+                    -- greater than maxDistance returns nil; otherwise the
+                    -- numeric distance is returned. PC38-PC144 are
+                    -- unreachable tail code, not active map/obstacle checks.
                     -- PC136-PC141 accepts only a non-nil helper result.
                     if distance ~= nil then
                         currentTargetName = actorName
@@ -230,9 +231,10 @@ end
 -- 4. UP[5] is root.children[22] (legacy root/23), called with mainX, mainY,
 --    candidateX, candidateY, and blacklistState.distance. The first four
 --    arguments are coordinates; the fifth is a positive maximum Chebyshev
---    range, not an actor ID. It also checks map bounds and obstacle state;
---    its exact route-sampling formula remains under review.
--- 5. PC136-PC141 accepts only a non-nil result from the map-aware distance
+--    range, not an actor ID. The reachable helper path computes the Chebyshev
+--    distance and returns nil only when the input/range gate rejects it.
+--    Its PC38-PC144 map/obstacle code is unreachable after PC37 return.
+-- 5. PC136-PC141 accepts only a non-nil result from the Chebyshev distance
 --    helper; nil rejects the candidate before notification/teleportation.
 -- 6. UP[1] is root.children[53]. PC1-PC5 checks the second formal argument
 --    and returns immediately when it is nil/false; this zero-argument call
