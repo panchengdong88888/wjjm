@@ -739,3 +739,10 @@ end
 -- PC级证据；22个无捕获闭包按原型身份接入root_prototypes。
 -- 有捕获闭包暂不在此处伪造实例，必须使用OP_387共享cell语义。
 -- ============================================================================
+
+
+-- 检查点267：PC350-PC388黑名单闭包身份复核。
+-- PC357 onDamageMsg捕获T41并写MainLeftBottom.onDamageMsg；PC360 InstallDamageHook捕获T0/T4并写T57。
+-- PC368 BlacklistPlayerDetection.UP1捕获T57 live cell，捕获时cell.value为InstallDamageHook，不能接成onDamageMsg。
+-- PC382/388分别导出_G.BlacklistItems与_G.ClearBlacklistItems；主恢复稿已增加对象身份断言。
+-- 详细逐PC来源与函数主体边界见docs/audit/检查点267_PC350-PC388黑名单闭包链与导出身份核对.md。
