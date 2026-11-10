@@ -317,3 +317,88 @@ local opaquePairTable = {
 
 -- 根模块PC1-PC412至此均有分段源码记录。
 -- “PC范围已覆盖”不等于根模块已完成作者级源码恢复，也不等于运行时验证。
+
+
+----------------------------------------------------------------
+-- 检查点210：第一阶段根模块装配接口（可执行普通Lua骨架）
+--
+-- 用途：把已单独恢复的子原型接回根模块的真实导出位置。
+-- prototypes中的函数必须是已完成父级捕获绑定的闭包实例；本接口不
+-- 伪造VM upvalue，也不代替各子原型的函数体。
+-- 未提供的项目保持原样，不以空函数冒充恢复结果。
+--
+-- 这是第一阶段装配骨架，不是完整原始模块；尚未完成的父级闭包创建、
+-- 部分本地辅助函数和宿主运行时验证仍需后续补齐。
+local function AttachRecoveredPrototypes(prototypes)
+    assert(type(prototypes) == "table",
+        "AttachRecoveredPrototypes expects a table of recovered closures")
+
+    local function exportGlobal(globalName, prototypeName)
+        local fn = prototypes[prototypeName]
+        if fn ~= nil then
+            _G[globalName] = fn
+        end
+    end
+
+    -- root PC43-PC85：基础辅助函数和物品/仓库流程导出。
+    exportGlobal("GetMapId", "GetMapId")
+    exportGlobal("GetMapName", "GetMapName")
+    exportGlobal("PlayerPos", "PlayerPos")
+    exportGlobal("GetDroppedItems", "GetDroppedItems")
+    exportGlobal("MoveTo", "MoveTo")
+    exportGlobal("DiuItems", "DiuItems")
+    exportGlobal("GetAvailableStoragePage", "GetAvailableStoragePage")
+    exportGlobal("GetStorageItemData", "GetStorageItemData")
+    exportGlobal("StorageItems", "StorageItems")
+    exportGlobal("TakeItems", "TakeItems")
+    exportGlobal("PickUpItems", "PickUpItems")
+
+    if prototypes.LuaSendMsg ~= nil then
+        MainLeftBottom.a.LuaSendMsg = prototypes.LuaSendMsg
+    end
+
+    -- root PC212-PC258：采集控制相关全局入口。
+    exportGlobal("IsInWhitelistMap", "IsInWhitelistMap")
+    exportGlobal("MainLoop", "MainLoop")
+    exportGlobal("InitGatherMonsters", "InitGatherMonsters")
+    exportGlobal("StopGatherMonsters", "StopGatherMonsters")
+    exportGlobal("Builtsetting", "Builtsetting")
+
+    -- root PC259-PC274：模块表上的界面控制闭包。
+    if prototypes.DestroyUI ~= nil then
+        MainLeftBottom.hide = prototypes.DestroyUI
+    end
+    if prototypes.SetButtonVisibilityState ~= nil then
+        MainLeftBottom.show = prototypes.SetButtonVisibilityState
+    end
+    if prototypes.ShowHideAllButtons ~= nil then
+        MainLeftBottom.destroy = prototypes.ShowHideAllButtons
+    end
+    exportGlobal("MoveItemToQuickUse", "MoveItemToQuickUse")
+
+    -- root PC275-PC279：账号验证入口。
+    if prototypes.AccountIDValidation ~= nil then
+        MainLeftBottom.main = prototypes.AccountIDValidation
+    end
+
+    -- root PC350-PC388：伤害回调与黑名单功能入口。
+    if prototypes.onDamageMsg ~= nil then
+        MainLeftBottom.onDamageMsg = prototypes.onDamageMsg
+    end
+    exportGlobal("BlacklistItems", "BlacklistPlayerDetection")
+    exportGlobal("ClearBlacklistItems", "ClearBlacklistItems")
+
+    -- root PC389-PC411：主界面初始化入口。
+    if prototypes.doInit_UI ~= nil then
+        MainLeftBottom.doInit = prototypes.doInit_UI
+    end
+
+    return MainLeftBottom
+end
+
+-- 第一阶段接入约定：
+-- 1. prototypes的键使用本文件中列出的重建名称。
+-- 2. 带父级upvalue的子原型必须由调用方先按反汇编捕获顺序绑定。
+-- 3. 不存在或未恢复的键不会被覆盖，也不会自动填入空函数。
+-- 4. 本接口只解决“已恢复闭包接回根模块”的装配问题；根模块PC1-PC412
+--    的完整逐语句源码重建仍未完成。
