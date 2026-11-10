@@ -3294,3 +3294,18 @@ Nested_match：
 - 新建`docs/audit/检查点267_PC350-PC388黑名单闭包链与T57身份恢复.md`；更新主恢复稿、根候选、机器状态、闭包装配表、函数状态CSV和结构树。
 - 完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或目标游戏运行。
 - 下一步检查点268：核对PC390-PC412 doInit_UI 20项捕获、PC411模块字段写入和PC412根表返回，并复核21项全局导出及10项模块字段的PC写入位置。
+
+
+## 检查点 #268（2026-11-10）：PC390-PC412最终UI入口、导出账本与根模块返回校验
+
+- doInit_UI为root.children[42]，零基创建PC389、物理创建PC390；PC391-PC410依序捕获20项父T寄存器`[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]`。
+- 主恢复稿的make_doInit_UI调用20个实参与该顺序逐项一致；T[44..51]通过rootConfigRegisters影子表注入，不从语义相近变量重新猜测。
+- PC411将doInit_UI写入MainLeftBottom.doInit，并增加对象身份断言。
+- PC412最终返回PC1创建的MainLeftBottom根表；MainLeftBottomRecovered.root_module只是内部恢复注册容器，不作为模块返回值或全局导出。
+- 全局导出账本21项，包含`_G.MainLeftBottom`及20个全局函数/入口；所有名称按PC2/45/55/57/59/61/63/67/70/73/78/82/85/213/237/246/255/258/260/382/388逐项核对。
+- 模块字段账本26条：其中根表直接字段10项（a/b/z/hide/show/destroy/main/blacklist/onDamageMsg/doInit），a/z嵌套字段15项，另含PC2根表全局导出记录1项。a/z内部字段和LuaSendMsg字段保留各自PC赋值位置。
+- PC275重读`_ENV.MainLeftBottom`并于PC279写入main字段的特殊语义继续保留；不将其简化为无条件写rootModule.main。
+- 更正root候选旧注释：doInit_UI物理创建点是PC390（closure_pc_zero_based=389），PC391-PC410为20项捕获，不再笼统写作PC389-PC410。
+- 新建`docs/audit/检查点268_PC390-PC412最终UI入口导出账本与根模块返回校验.md`；更新主恢复稿、root候选、机器状态、闭包装配表、CSV和结构树。
+- 完整静态恢复109/110、普通Lua草稿72、根直接闭包58/58源码层绑定、运行时验证0；未执行Lua解释器/luac或游戏运行。
+- 下一步检查点269：对主恢复文件做结构/语法层静态审计，检查词法块、do/end、注册表边界、重复字段/导出、过时PC注释和适配变量；探测可用Lua/luac工具。
