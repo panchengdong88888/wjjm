@@ -2815,7 +2815,8 @@
     "source_commit_sha": "b74bac4fefd693b5a7c353f39e771bdc9de57c84",
     "candidate_commit_sha": "d6ca0c98acf0f751ed336aed18094efebca2844b",
     "root_module_candidate_commit_sha": "ff42eb1eb283a82fd07f6a3bdbf698e2f719be62",
-    "doInit_candidate_commit_sha": "d6ca0c98acf0f751ed336aed18094efebca2844b"
+    "doInit_candidate_commit_sha": "d6ca0c98acf0f751ed336aed18094efebca2844b",
+    "manifest_commit_sha": "db1f43462326443074ff8c51f04aaa6dba48f479"
   },
   "corrections": [
     {
@@ -3562,7 +3563,8 @@
     "notes": "doInit_UI 20项捕获按根PC390-PC410顺序装配，写入MainLeftBottom.doInit；根直接子闭包58/58源代码层绑定。内部Nested_Anonymous仍保留未解析T槽，不宣称作者级/运行时完成。",
     "source_commit_sha": "b74bac4fefd693b5a7c353f39e771bdc9de57c84",
     "root_module_candidate_commit_sha": "ff42eb1eb283a82fd07f6a3bdbf698e2f719be62",
-    "doInit_candidate_commit_sha": "d6ca0c98acf0f751ed336aed18094efebca2844b"
+    "doInit_candidate_commit_sha": "d6ca0c98acf0f751ed336aed18094efebca2844b",
+    "manifest_commit_sha": "db1f43462326443074ff8c51f04aaa6dba48f479"
   },
   "latest_checkpoint": 256,
   "complete_static_reconstruction_count": 109,
