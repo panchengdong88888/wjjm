@@ -110,7 +110,7 @@ MainLeftBottomRecovered.prototype_index = {
   ["root.children[6]"] = { name="InstallDamageHook", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第三十九批.lua", audit_file="docs/audit/检查点231_短函数复核_GetWritablePath与InstallDamageHook.md", instructions=40, runtime_verified=false },
   ["root.children[52].children[0]"] = { name="Nested_JsonDecode", status="complete_static_reconstruction", source_file="04_源码候选/短函数草稿_第四十批.lua", audit_file="docs/audit/检查点214_Nested_JsonDecode完整静态复审.md", instructions=6, runtime_verified=false },
   ["root.children[2]"] = { name="GetWritablePath", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/root2_GetWritablePath.lua", audit_file="docs/audit/检查点231_短函数复核_GetWritablePath与InstallDamageHook.md", instructions=10, runtime_verified=false },
-  ["root.children[42].children[22]"] = { name="Nested_Anonymous", status="first_pass_draft_pending_VM_T_slot_mapping_and_T2_producer_not_runtime_verified", source_file="04_源码候选/Nested_Anonymous_第七十八批.lua", instructions=8, runtime_verified=false },
+  ["root.children[42].children[22]"] = { name="Nested_Anonymous", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/Nested_Anonymous_第七十八批.lua", audit_file="docs/audit/检查点235_VM调用帧初始化与固定参数计数纠错.md", instructions=8, runtime_verified=false },
   ["root.children[8]"] = { name="FormatStateChange", status="complete_static_reconstruction", source_file="04_源码候选/root8_FormatStateChange.lua", audit_file="docs/audit/检查点177_FormatStateChange父级捕获身份与状态共享链闭合.md", instructions=10, runtime_verified=false },
   ["root.children[9]"] = { name="ReadNumericConfig", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/root9_ReadNumericConfig.lua", audit_file="docs/audit/检查点232_ReadNumericConfig首参数与vararg入口复核.md", instructions=45, runtime_verified=false },
   ["root.children[23]"] = { name="Builtsetting", status="complete_static_reconstruction", source_file="04_源码候选/短函数草稿_第四十五批.lua", audit_file="docs/audit/检查点215_Builtsetting完整静态复审.md", instructions=55, runtime_verified=false },
@@ -124,7 +124,7 @@ MainLeftBottomRecovered.prototype_index = {
   ["root.children[5]"] = { name="TakeItems", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第五十七批.lua", audit_file="docs/audit/检查点233_已完成函数索引状态对账.md", instructions=99, runtime_verified=false },
   ["root.children[47]"] = { name="BlacklistPlayerDetection", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第五十九批.lua", audit_file="docs/audit/检查点233_已完成函数索引状态对账.md", instructions=216, runtime_verified=false },
   ["root.children[50]"] = { name="StorageItems", status="complete_static_reconstruction", source_file="04_源码候选/短函数草稿_第六十批.lua", audit_file="docs/audit/检查点223_StorageItems完整静态复审.md", instructions=224, runtime_verified=false },
-  ["root.children[42]"] = { name="doInit_UI", status="complete_static_reconstruction_parent_419_PCs_child_Nested_Anonymous_separately_pending", source_file="04_源码候选/短函数草稿_第六十三批.lua", audit_file="docs/audit/检查点226_doInit_UI完整静态复审.md", instructions=419, runtime_verified=false },
+  ["root.children[42]"] = { name="doInit_UI", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十三批.lua", audit_file="docs/audit/检查点235_VM调用帧初始化与固定参数计数纠错.md", instructions=419, runtime_verified=false },
   ["root.children[41]"] = { name="MoveItemToQuickUse", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第六十一批.lua", audit_file="docs/audit/检查点234_剩余未闭合原型盘点.md", instructions=133, runtime_verified=false },
   ["root"] = { name="MainLeftBottom_Module", status="partial_ordinary_lua_draft", source_file="04_源码候选/root_MainLeftBottom_Module.lua", instructions=412, runtime_verified=false },
   ["root.children[6].children[0]"] = { name="Nested_onDamageMsg", status="complete_static_reconstruction_not_runtime_verified", source_file="04_源码候选/短函数草稿_第三十九批.lua", instructions=18, runtime_verified=false },
@@ -1420,7 +1420,8 @@ do
 local make_Nested_JsonDecode
 
 local function make_onDamageMsg(blacklistState)
-    return function(messageJson, ...)
+    return function(messageJson)
+        -- fixed_param_count=1; additional arguments are not read.
         -- PC 1-5: reject a false/nil or empty first argument.
         if not messageJson or messageJson == "" then
             return
@@ -1630,45 +1631,23 @@ local function make_Nested_Helper_7(
 end
 
 -- ---------------------------------------------------------------------------
--- root.children[42].children[22] / Nested_Anonymous (第七十八批主体并入)
--- 8条父原型指令；child0 Nested_str 27条；其内含4条 Nested_Helper_11。
--- T[0]/T[1]/T[2]的具体来源仍未闭合，故明确保留占位，不作为可运行实现。
+-- root.children[42].children[22] / Nested_Anonymous
+-- 8条父原型指令；fixed_param_count=2；child0 Nested_str 27条，内含Nested_match与Nested_Helper_11。
+-- 原始VM调用帧已证明T[0]=promptText、T[1]=successCallback、T[2]=nil。
 -- ---------------------------------------------------------------------------
 local function make_Nested_Anonymous(PrintLog)
-    local function Nested_Anonymous(...)
-        -- Checkpoint 204: PC130 builds R4 from T[5]..T[8]; PC133 calls ipairs with T[6],
-        -- then writes the third return value into T[7]. The runtime value of T[6]
-        -- and therefore the concrete T[7] value remain unresolved; do not assign a semantic name. No later explicit T[7] write was found through PC183.
-        -- Checkpoint 228: caller sites were re-read from corrected phase3.
-        -- doInit_UI PC248 creates root/43/23 and captures UP[0]=PrintLog.
-        -- doInit_UI PC250 creates root/43/12 (blacklist-distance dialog wrapper),
-        -- passing the Nested_Anonymous closure as its UP[0].
-        -- root/43/12 PC11 calls UP[0] with exactly T[1]..T[2] (two explicit args):
-        -- promptText and the Nested_Helper_5 success callback.
-        -- doInit_UI PC259 creates root/43/15 (gather-threshold dialog wrapper),
-        -- also passing the same Nested_Anonymous closure as UP[0].
-        -- root/43/15 PC11 likewise calls UP[0] with exactly T[1]..T[2].
-        -- Thus both known call sites supply two explicit arguments; neither has a
-        -- third explicit argument producer. The nested child captures current-frame
-        -- T[0], T[2], T[1] in that order around the PrintLog upvalue. T[0]/T[1]
-        -- appear to carry prompt/success-callback roles from their downstream use,
-        -- but exact VM frame-slot base mapping is not yet proven.
-        -- T[2] is later invoked by Nested_Helper_11 as the delayed error-notice
-        -- callback. Its value/producer cannot be inferred from the two call sites;
-        -- do not replace it with nil or invent a callback until frame semantics
-        -- and any implicit VM slot initialization are established.
-        local T0_SLOT_UNRESOLVED = nil
-        local T1_SLOT_UNRESOLVED = nil
-        local T2_SLOT_UNRESOLVED = nil
+    return function Nested_Anonymous(promptText, successCallback)
+        -- 原始VM调用帧M已确认：本原型fixed_param_count=2。
+        -- 两个固定参数分别进入新建帧表T[0]、T[1]；额外实参进入独立X表。
+        -- T[2]没有任何写入指令，因此该槽确定为nil。
+        local T0_SLOT = promptText
+        local T1_SLOT = successCallback
+        local T2_SLOT = nil
 
-        -- Child root.children[42].children[22].children[0] capture order:
-        -- UP[0] <- current T[0]
-        -- UP[1] <- current UP[0] (PrintLog)
-        -- UP[2] <- current T[2]
-        -- UP[3] <- current T[1]
-        local function Nested_str(...)
-            local optionalSuffix = ...
-
+        -- child0 Nested_str捕获顺序：
+        -- UP[0] <- T[0]；UP[1] <- 父UP[0](PrintLog)；
+        -- UP[2] <- T[2](nil)；UP[3] <- T[1](successCallback)。
+        local function Nested_str(optionalSuffix)
             local dialogParams = {
                 btnType = 2,
                 showEdit = true,
@@ -1678,7 +1657,7 @@ local function make_Nested_Anonymous(PrintLog)
                 },
             }
 
-            local initialText = T0_SLOT_UNRESOLVED
+            local initialText = T0_SLOT
             if optionalSuffix then
                 initialText = initialText .. "\n" .. optionalSuffix
             end
@@ -1699,7 +1678,7 @@ local function make_Nested_Anonymous(PrintLog)
                 end
 
                 if numericValue then
-                    T1_SLOT_UNRESOLVED(numericValue)
+                    T1_SLOT(numericValue)
                     return
                 end
 
@@ -1710,8 +1689,10 @@ local function make_Nested_Anonymous(PrintLog)
                 )
 
                 local function Nested_Helper_11()
-                    -- Existing child prototype; its sole capture is Nested_match UP[2].
-                    T2_SLOT_UNRESOLVED("参数格式不对，请输入数字")
+                    -- 保留原字节码的直接调用。T[2]确定为nil，
+                    -- 因而该错误提示分支会触发attempt-to-call-nil；
+                    -- 不补造第三回调，也不增加原字节码没有的保护。
+                    T2_SLOT("参数格式不对，请输入数字")
                 end
 
                 SL:ScheduleOnce(Nested_Helper_11, 0.1)
@@ -1721,13 +1702,12 @@ local function make_Nested_Anonymous(PrintLog)
             SL:OpenCommonTipsPop(dialogParams)
         end
 
-        -- PC6-PC7 copy the just-created child closure and invoke it with zero args.
-        -- Therefore Nested_str's optional vararg suffix is absent on this path.
+        -- Nested_str固定参数数为1，但PC6-PC7以空实参区间调用它，optionalSuffix=nil。
         Nested_str()
         return
     end
-    return Nested_Anonymous
 end
+
 
 
 -- ---------------------------------------------------------------------------
@@ -2451,7 +2431,7 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
         UPVALUE_8, UPVALUE_9
     )
 
-    -- PC248：child22 Nested_Anonymous仅捕获UP0(PrintLog)；主体已并入上方工厂，T[0]/T[1]/T[2]仍待追踪。
+    -- PC248：child22 Nested_Anonymous仅捕获UP0(PrintLog)；主体已并入上方工厂。fixed_param_count=2，T[0]/T[1]分别对应两个调用实参，T[2]=nil。
     -- PC250-PC258：child11 Nested_Helper_4捕获[R18,UP10,UP11,UP0,UP12,UP13,R16,R15]。
     local nestedAnonymous = make_Nested_Anonymous(UPVALUE_0) -- child22主体已并入；三个T捕获槽仍是未解析占位
     local openBlacklistDistanceInput = make_Nested_Helper_4(
@@ -2620,8 +2600,8 @@ end -- make_doInit_UI
 -- doInit_UI PC250创建root/43/12，捕获R[18]（Nested_Anonymous）为UP[0]；
 -- root/43/19 PC27以A=1、B=1调用该包装器，U(T,2,1)为空参数区间；
 -- root/43/12 PC11随后以A=0、B=2调用UP[0]，转发其T[1]..T[2]。
--- 该链确认了调用端原型与转发位置，但不证明T[0]/T[1]/T[2]的值、
--- 类型或业务映射；保留占位，不升级完整静态恢复。
+-- 原始VM调用帧M将前两个固定参数写入T[0]/T[1]，额外参数写入独立X表；
+-- 因此T[0]=promptText、T[1]=successCallback，T[2]从新建T表中保持nil。
 -- ---------------------------------------------------------------------------
 
 
@@ -2923,10 +2903,9 @@ end
 -- root.children[2] / legacy root/3：构造可写目录路径。
 -- PC7读取首个可变参数；PC8拼接顺序为 writablePath .. path；PC9返回。
 -- vararg_flag=1，额外参数未读取，保留原可变参数形式。
-local function GetWritablePath(...)
+local function GetWritablePath(path)
     local fileUtils = cc.FileUtils:getInstance()
     local writablePath = fileUtils:getWritablePath()
-    local path = ...
     return writablePath .. path
 end
 
@@ -3252,10 +3231,8 @@ do
 -- UP[0] = GetWritablePath closure (root.children[2]), captured at root PC298.
 
 local function make_ReadNumericConfig(GetWritablePath)
-    return function(...)
-        -- The VM prototype is vararg-capable; only the first supplied value is read as fileName.
-        -- This avoids asserting an unavailable fixed-parameter count.
-        local fileName = ...
+    return function(fileName)
+        -- fixed_param_count=1; fileName is the sole fixed parameter.
 
         -- PC 1-4: acquire the FileUtils singleton before resolving the path.
         local fileUtils = cc.FileUtils:getInstance()
@@ -3300,7 +3277,7 @@ end
 -- * The false isFileExist branch, non-string file-read branch, and failed
 --   digit-pattern branch each clear the return slot before returning nil.
 -- * Only a non-empty sequence of ASCII decimal digits reaches tonumber.
--- * The prototype is vararg-capable, but extra varargs are not read.
+-- * fixed_param_count=1; fileName is the sole fixed parameter; additional arguments are unused.
 -- * GetWritablePath is independently complete-static at checkpoint 127: it returns writablePath .. fileName.
 -- * No target-runtime validation; FileUtils behavior remains host-dependent.
 
@@ -5093,7 +5070,7 @@ do
     -- PC1-PC4：调用UP[0](UP[1], 第一个显式参数)并返回全部结果。
     -- PC5-PC6位于直接return之后，不可达。
     local function make_AnonymousHelper_32(upvalue0, upvalue1)
-        return function(arg1, ...)
+        return function(arg1)
             return upvalue0(upvalue1, arg1)
         end
     end
@@ -5123,7 +5100,7 @@ do
     -- PC1-PC4调用PCallHelper(fileName, firstArg)，原样转发全部返回值；
     -- PC5-PC6位于直接return之后，不可达。
     local function make_AnonymousHelper_54(pcallHelper, fileName)
-        return function(firstArg, ...)
+        return function(firstArg)
             return pcallHelper(fileName, firstArg)
         end
     end
@@ -5139,7 +5116,7 @@ do
     -- 可达行为仅为坐标有效性检查、相同坐标返回0、Chebyshev距离限幅。
     -- UP[0]由root PC350捕获，但活动路径从未读取，工厂参数仅保留捕获位置。
     local function make_GetMapData2DPtr(unusedCapturedValue)
-        return function GetMapData2DPtr(x1, y1, x2, y2, maxDistance, ...)
+        return function GetMapData2DPtr(x1, y1, x2, y2, maxDistance)
             if not x1 or not y1 or not x2 or not y2 or not maxDistance then
                 return nil
             end
@@ -5233,10 +5210,9 @@ do
     -- root.children[51] / legacy root/52 / FindBlacklistPlayer
     -- 35条指令，UP[0]为root.children[48] PCallHelper_2。
     -- PCallHelper_2及其Nested_FriendProxy子原型已在前文“代理与回调短函数”词法块中恢复。
-    -- 原型vararg_flag=1：零固定参数，从首个可变参数读取targetId。
+    -- fixed_param_count=1：targetId是唯一固定参数。
     local function make_FindBlacklistPlayer(getFriendProxySafely)
-        return function(...)
-            local targetId = ...
+        return function(targetId)
             local friendProxy = getFriendProxySafely()
             if not friendProxy then
                 return false
