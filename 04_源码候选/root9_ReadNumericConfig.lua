@@ -49,4 +49,5 @@ end
 --   digit-pattern branch each clear the return slot before returning nil.
 -- * Only a non-empty sequence of ASCII decimal digits reaches tonumber.
 -- * The prototype is vararg-capable, but extra varargs are not read.
--- * No runtime validation; FileUtils/GetWritablePath behavior remains host-dependent.
+-- * GetWritablePath is independently complete-static at checkpoint 127: it returns writablePath .. fileName.
+-- * No target-runtime validation; FileUtils behavior remains host-dependent.
