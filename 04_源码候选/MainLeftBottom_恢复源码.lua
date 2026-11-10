@@ -5297,3 +5297,12 @@ end
 -- 更正：PC210创建的是FindMonsterInCurrViewField，PC211捕获T30=IsDie；
 -- ClearBlacklistItems实际在PC383创建（root.children[15]），不是PC210。
 -- 所有捕获按OP_387共享live cell与PC顺序核对；无运行时验证。
+
+
+-- 根模块装配账本补充（检查点243，静态证据：corrected phase3 root PC212-PC340）。
+-- 全局导出：IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、MoveItemToQuickUse。
+-- MainLeftBottom字段：hide=DestroyUI、show=SetButtonVisibilityState、destroy=ShowHideAllButtons、main=AccountIDValidation、blacklist=blacklistState。
+-- UI控制闭包捕获顺序：DestroyUI[T0,T3,T1]；SetButtonVisibilityState[T0,T1]；ShowHideAllButtons[T3,T1,T0]。
+-- AccountIDValidation捕获PrintLog与ShowLocalNoticeByType；blacklistState在PC286-PC293初始化并于PC294挂入MainLeftBottom.blacklist。
+-- 根寄存器时间线至检查点243为57/57闭合；T54最终为PCallHelper_2，分别于PC354/PC384捕获给FindBlacklistPlayer/ClearBlacklistItems。
+-- 该账本不是根模块完整普通Lua装配，PC341-PC412仍待复核；本文件所有恢复仍未运行时验证。
