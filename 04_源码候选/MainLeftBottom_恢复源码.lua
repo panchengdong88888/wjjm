@@ -8169,9 +8169,9 @@ do
             rootPrototypes.GetOwnerDescription, rootPrototypes.SetTargetID,
             rootSource.gatherConfig
         )
-        rootPrototypes.MainLoop = requireRecoveredClosure("MainLoop", rootPrototypes.MainLoop)
-        _G.MainLoop = rootPrototypes.MainLoop
     end
+    rootPrototypes.MainLoop = requireRecoveredClosure("MainLoop", rootPrototypes.MainLoop)
+    _G.MainLoop = rootPrototypes.MainLoop
 
     local makeInitGather = sourceFunction(
         "04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua",
@@ -8184,11 +8184,11 @@ do
             rootPrototypes.ResetGatherMonsterData, rootSource.gatherConfig,
             rootPrototypes.PrintLog
         )
-        rootPrototypes.InitGatherMonsters = requireRecoveredClosure(
-            "InitGatherMonsters", rootPrototypes.InitGatherMonsters
-        )
-        _G.InitGatherMonsters = rootPrototypes.InitGatherMonsters
     end
+    rootPrototypes.InitGatherMonsters = requireRecoveredClosure(
+        "InitGatherMonsters", rootPrototypes.InitGatherMonsters
+    )
+    _G.InitGatherMonsters = rootPrototypes.InitGatherMonsters
 
     local makeStopGather = sourceFunction(
         "04_源码候选/短函数草稿_第十三批.lua", "make_StopGatherMonsters"
@@ -8200,11 +8200,11 @@ do
             rootSource.gatherStatusText, rootPrototypes.ResetGatherMonsterData,
             rootPrototypes.PrintLog
         )
-        rootPrototypes.StopGatherMonsters = requireRecoveredClosure(
-            "StopGatherMonsters", rootPrototypes.StopGatherMonsters
-        )
-        _G.StopGatherMonsters = rootPrototypes.StopGatherMonsters
     end
+    rootPrototypes.StopGatherMonsters = requireRecoveredClosure(
+        "StopGatherMonsters", rootPrototypes.StopGatherMonsters
+    )
+    _G.StopGatherMonsters = rootPrototypes.StopGatherMonsters
 
     -- Builtsetting：UP[0]=root T[5]=ShowLocalNoticeByType；PC258导出全局。
     local makeBuiltsetting = sourceFunction(
