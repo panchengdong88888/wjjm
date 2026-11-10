@@ -8281,6 +8281,11 @@ do
     )
     rootModule.destroy = rootPrototypes.ShowHideAllButtons
 
+    -- PC275：按字节码重新读取_ENV.MainLeftBottom；PC276-PC278创建AccountIDValidation。
+    local accountValidationModule = _G.MainLeftBottom
+    assert(type(accountValidationModule) == "table",
+        "PC275 _ENV.MainLeftBottom is not a table")
+
     -- AccountIDValidation：UP[0]=root T[4]=PrintLog，UP[1]=root T[5]=ShowLocalNoticeByType。
     -- 内部Nested_ID与Nested_Panel_mini_chat工厂保留在同一来源词法块。
     local makeAccountIDValidation = sourceFunction(
@@ -8296,7 +8301,8 @@ do
     rootPrototypes.AccountIDValidation = requireRecoveredClosure(
         "AccountIDValidation", rootPrototypes.AccountIDValidation
     )
-    rootModule.main = rootPrototypes.AccountIDValidation
+    -- PC279：字段写入目标是PC275重新读取的_ENV.MainLeftBottom。
+    accountValidationModule.main = rootPrototypes.AccountIDValidation
 
     -- PC280-PC296的模块状态和配置常量来自root来源词法块。
     assert(type(rootSource.randomTeleportItemNames) == "table"
@@ -8306,6 +8312,10 @@ do
     assert(type(rootSource.blacklistState) == "table"
         and rootModule.blacklist == rootSource.blacklistState,
         "PC286-PC294 blacklistState identity mismatch")
+    assert(rootSource.blacklistAlertThreshold == 2.0
+        and rootSource.blacklistShortRetryDelay == 0.01
+        and rootSource.blacklistNoItemRetryDelay == 30.0,
+        "PC283-PC285 blacklist timing constants mismatch")
     assert(type(rootSource.blacklistDistanceConfigFile) == "string"
         and type(rootSource.gatherMonsterCountConfigFile) == "string",
         "PC295-PC296 configuration file names missing")
