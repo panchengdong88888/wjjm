@@ -62,3 +62,8 @@ Nested_match：
 - 新增本审计文件。
 
 状态仍为普通Lua草稿，不升级完整静态恢复或运行时验证。
+
+
+## 检查点235纠正：调用帧初始化已找到
+
+原始VM函数M()每次新建T={}和X={}；固定参数数V来自原型tuple[3]，前V个实参写入T[0..V-1]，额外实参进入X。Nested_Anonymous的V=2，两个调用实参映射为T[0]=promptText、T[1]=successCallback；T[2]没有写入且新表初始为空，故确定为nil。其错误路径对T[2]的无保护调用会触发attempt-to-call-nil，按原字节码保留。
