@@ -3025,5 +3025,15 @@ Nested_match：
 - StorageItems原候选跨多个词法块直接引用`make_Nested_isOutputted`与`make_FindAvailableStoragePage`，在独立`do`块中不是可见局部变量。本批将两个子原型工厂作为额外的装配注入参数显式传入；这两个参数属于源码适配层，不计入原型真实Upvalue数量。
 - PickUpItems原候选中的`Nested_dist`定义在工厂之后，导致工厂体内引用可能解析为全局；本批将两个比较器子闭包移入返回的PickUpItems函数体内，并将`return function PickUpItems()`改为合法匿名函数表达式。
 - 更正检查点247统计：ShowLocalNoticeByType本身是root.children[20]的1项捕获闭包，且此前已实例化。因此检查点247应计3/36，而非2/36；本批完成后累计9/36，尚余27。
-- 完整静态恢复109、普通Lua草稿72、运行时验证0均不变；StorageItems仍保持普通Lua草稿等级。
+- 完整静态恢复109、普通Lua草稿72、运行时验证0均不变；StorageItems父原型已由检查点223完成完整静态恢复（未运行时验证），本批只修正其装配适配层。
 - 下一批：优先处理Builtsetting的单捕获；随后建立共享标量cell适配，再推进FormatStateChange、ResetGatherMonsterData及采集启停闭包。
+
+
+## 检查点 #249（2026-11-10）：设置、账号验证与伤害钩子工厂装配
+
+- Builtsetting（root.children[23]）：UP[0]=root T[5]=ShowLocalNoticeByType；已静态实例化并按PC258导出全局Builtsetting。
+- AccountIDValidation（root.children[55]）：UP[0]=root T[4]=PrintLog，UP[1]=root T[5]=ShowLocalNoticeByType；已静态实例化并按PC279写入MainLeftBottom.main。Nested_ID与Nested_Panel_mini_chat保持在同一来源词法块中。
+- InstallDamageHook（root.children[6]）：UP[0]=root T[0]=MainLeftBottom.a，UP[1]=root T[4]=PrintLog；已静态实例化为rootPrototypes.InstallDamageHook，供BlacklistPlayerDetection后续捕获，不作为全局导出。
+- 更正StorageItems状态说明：检查点223已将root.children[50]父原型及两个子原型完成完整静态恢复；检查点248仅修正嵌套工厂跨词法块引用的装配适配，不改变其恢复等级。
+- 有捕获工厂累计12/36，尚余24；无捕获直接子原型22/22保持源码层绑定；完整静态恢复109、普通Lua草稿72、运行时验证0均不变。
+- 下一批：建立共享live-cell适配，优先处理T[14] currentState及T[15..22]采集状态；之后装配FormatStateChange、ResetGatherMonsterData、InitGatherMonsters、StopGatherMonsters与MainLoop。
