@@ -7662,7 +7662,7 @@
     "binding_policy": "Only capture_count=0 direct children; captured factories remain pending until shared live-cell bindings are implemented.",
     "runtime_verified": false
   },
-  "next_action": "检查点250：建立并核对共享live-cell适配层，重点处理root T[14]=currentState以及T[15..22]采集状态字段；随后装配FormatStateChange、ResetGatherMonsterData、InitGatherMonsters、StopGatherMonsters与MainLoop。必须确保多个闭包读写同一个cell对象，不得用各自的值副本。",
+  "next_action": "检查点251：继续处理剩余18个有捕获工厂，优先稳定函数/表捕获；保持T[14..22]共享cell对象并逐项核对闭包创建时的寄存器值。",
   "root_assembly_checkpoint_247": {
     "direct_child_closures_expected": 22,
     "direct_child_closures_source_bound": 22,
@@ -7885,5 +7885,198 @@
     ],
     "runtime_verified": false,
     "next_action": "检查点250：建立并核对共享live-cell适配层，重点处理root T[14]=currentState以及T[15..22]采集状态字段；随后装配FormatStateChange、ResetGatherMonsterData、InitGatherMonsters、StopGatherMonsters与MainLoop。必须确保多个闭包读写同一个cell对象，不得用各自的值副本。"
+  },
+  "root_assembly_checkpoint_250": {
+    "direct_child_closures_expected": 22,
+    "direct_child_closures_source_bound": 22,
+    "captured_factory_closures_expected": 36,
+    "captured_factory_closures_bound": 18,
+    "captured_factory_closures_pending": 18,
+    "shared_live_cells": {
+      "14": {
+        "name": "currentState",
+        "initial": "gatherStatusText.IDLE",
+        "shared_by": [
+          "FormatStateChange.UP[1]",
+          "MainLoop.UP[1]"
+        ],
+        "cell_key": "rootCells[14]"
+      },
+      "15": {
+        "name": "targetIDs/resettableTable",
+        "initial": "{}",
+        "shared_by": [
+          "ResetGatherMonsterData.UP[0]",
+          "MainLoop.UP[8]"
+        ],
+        "cell_key": "rootCells[15]",
+        "reassignable": true
+      },
+      "16": {
+        "name": "selfOwnerCount/resetSlot16",
+        "initial": 0,
+        "shared_by": [
+          "ResetGatherMonsterData.UP[1]",
+          "MainLoop.UP[11]"
+        ],
+        "cell_key": "rootCells[16]"
+      },
+      "17": {
+        "name": "scanCursor/resetSlot17",
+        "initial": 0,
+        "shared_by": [
+          "ResetGatherMonsterData.UP[2]",
+          "MainLoop.UP[10]"
+        ],
+        "cell_key": "rootCells[17]"
+      },
+      "18": {
+        "name": "isGatherRunning",
+        "initial": false,
+        "shared_by": [
+          "InitGatherMonsters.UP[1]",
+          "StopGatherMonsters.UP[0]",
+          "MainLoop.UP[0]"
+        ],
+        "cell_key": "rootCells[18]"
+      },
+      "19": {
+        "name": "waitFlag/resetSlot19",
+        "initial": false,
+        "shared_by": [
+          "ResetGatherMonsterData.UP[4]",
+          "MainLoop.UP[12]"
+        ],
+        "cell_key": "rootCells[19]"
+      },
+      "20": {
+        "name": "waitDeadline/resetSlot20",
+        "initial": 0,
+        "shared_by": [
+          "ResetGatherMonsterData.UP[5]",
+          "MainLoop.UP[13]"
+        ],
+        "cell_key": "rootCells[20]"
+      },
+      "21": {
+        "name": "waitTargetID/resetSlot21",
+        "initial": null,
+        "shared_by": [
+          "ResetGatherMonsterData.UP[6]",
+          "MainLoop.UP[16]"
+        ],
+        "cell_key": "rootCells[21]"
+      },
+      "22": {
+        "name": "waitName/resetSlot22",
+        "initial": "",
+        "shared_by": [
+          "ResetGatherMonsterData.UP[7]",
+          "MainLoop.UP[14]"
+        ],
+        "cell_key": "rootCells[22]"
+      }
+    },
+    "bound_factories": [
+      {
+        "prototype": "root.children[8]",
+        "name": "FormatStateChange",
+        "capture_count": 2,
+        "bindings": [
+          "PrintLog",
+          "rootCells[14]"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[26]",
+        "name": "ResetGatherMonsterData",
+        "capture_count": 9,
+        "bindings": [
+          "rootCells[15]",
+          "rootCells[16]",
+          "rootCells[17]",
+          "ClearTargetID_2",
+          "rootCells[19]",
+          "rootCells[20]",
+          "rootCells[21]",
+          "rootCells[22]",
+          "PrintLog"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[45]",
+        "name": "MainLoop",
+        "capture_count": 22,
+        "bindings": [
+          "rootCells[18]",
+          "rootCells[14]",
+          "gatherStatusText",
+          "PrintLog",
+          "FormatStateChange",
+          "ResetGatherMonsterData",
+          "GetMainPlayerID",
+          "FindMonsterCandidates",
+          "rootCells[15]",
+          "GetOwnerID",
+          "rootCells[17]",
+          "rootCells[16]",
+          "rootCells[19]",
+          "rootCells[20]",
+          "rootCells[22]",
+          "FindMonsterInCurrViewField",
+          "rootCells[21]",
+          "GetOwnerIDText",
+          "IsDie",
+          "GetOwnerDescription",
+          "SetTargetID",
+          "gatherConfig"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[19]",
+        "name": "InitGatherMonsters",
+        "capture_count": 7,
+        "bindings": [
+          "timerState",
+          "rootCells[18]",
+          "FormatStateChange",
+          "gatherStatusText",
+          "ResetGatherMonsterData",
+          "gatherConfig",
+          "PrintLog"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[27]",
+        "name": "StopGatherMonsters",
+        "capture_count": 7,
+        "bindings": [
+          "rootCells[18]",
+          "timerState",
+          "ClearTargetID_2",
+          "FormatStateChange",
+          "gatherStatusText",
+          "ResetGatherMonsterData",
+          "PrintLog"
+        ],
+        "runtime_verified": false
+      },
+      {
+        "prototype": "root.children[14]",
+        "name": "FindMonsterInCurrViewField",
+        "capture_count": 1,
+        "bindings": [
+          "IsDie"
+        ],
+        "runtime_verified": false
+      }
+    ],
+    "adapter_note": "恢复适配层以每个父T寄存器唯一的{value=...}对象表示OP_387共享cell；这不是原作者源码的数据结构断言。MainLoop和状态工厂按.value读写，T[15]也经cell.value整体替换。",
+    "runtime_verified": false,
+    "next_action": "检查点251：从剩余18个捕获工厂中优先装配稳定函数/表捕获闭包；新增可变标量捕获必须登记共享cell。"
   }
 }
