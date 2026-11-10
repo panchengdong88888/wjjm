@@ -289,9 +289,9 @@ local opaquePairTable = {
 -- PC353-PC354：创建root.children[51] / FindBlacklistPlayer，捕获PCallHelper_2。
 -- PC355-PC356：创建root.children[24] / UseItemByIndex，捕获randomTeleportItemNames。
 -- PC357-PC358：创建root.children[52] / onDamageMsg，捕获blacklistState。
--- PC359：MainLeftBottom.onDamageMsg = onDamageMsg。
-
--- PC360-PC362：创建root.children[6] / InstallDamageHook，捕获父T[0]、T[4]。
+-- PC359：MainLeftBottom.onDamageMsg = onDamageMsg，实际消息处理器保存在模块字段。
+-- PC360-PC362：创建root.children[6] / InstallDamageHook，捕获父T[0]、T[4]，并覆盖同一父寄存器T[57]。
+-- PC368创建BlacklistPlayerDetection时捕获T[57]的live cell；因此其UP[1]是PC360写入的InstallDamageHook，不是PC357创建的onDamageMsg处理器。
 -- 这两个父级捕获槽位按顺序保留；子闭包Nested_onDamageMsg的捕获另见检查点179。
 -- PC363-PC367：创建root.children[25] / DeathAutoBlacklist，捕获：
 -- [T[41], T[4], T[55], T[5]]。
