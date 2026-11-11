@@ -1,10 +1,11 @@
--- MainLeftBottom(2).lua 根模块首段普通 Lua 草稿
+-- MainLeftBottom(2).lua 根模块普通 Lua 功能等价复刻候选
 -- 原型：root / MainLeftBottom_Module
 -- 规范路径：root
 -- 规模：412条物理指令、109常量、58个直接子原型
 -- 检查点192-198、262-269：根模块分段普通Lua草稿，PC1-PC412均已建立分段记录；非作者原文逐字恢复；检查点273核对PC1-PC42根表/a/b/z/timerState创建顺序及来源导出身份；检查点276新增docs/handoff/13_MainLeftBottom_原型结构树.md，汇总110个原型节点及根级58个闭包创建点；未运行时验证。
 -- 状态：不是完整根模块源码，尚未运行时验证。
 -- 检查点236：58个直接子原型闭包创建点与135个OP_387 live-cell捕获已建表，见docs/handoff/12_根模块闭包装配表.json。
+-- 检查点278：第一批11个地图/坐标/玩家辅助函数已在本文件中整理为可读函数主体；静态证据完整，未运行时验证。
 
 local MainLeftBottom = {}
 _G.MainLeftBottom = MainLeftBottom
