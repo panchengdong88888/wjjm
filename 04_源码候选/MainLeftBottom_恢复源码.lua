@@ -2323,7 +2323,7 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
                 if itemIndex then
                     local succeeded, message =
                         MoveItemToQuickUse(itemIndex, slotConfig.slot)
-                    PrintLog(message)
+                    UPVALUE_0(message)
                     if succeeded then
                         return
                     end
