@@ -1636,6 +1636,9 @@ local function AccountIDValidation()
     local scheduledCallback = function()
         local mainProperty = MainProperty
         if mainProperty and mainProperty._ui and mainProperty._ui.Panel_mini_chat then
+            -- VM子原型明确把validationResult传给UnSchedule，而不是Schedule返回句柄。
+            -- validationResult来自Nested_ID的布尔返回值；与文档scheduleID契约存在疑点，
+            -- 先保留原始调用，不凭推测改写，需目标宿主运行验证。
             SL:UnSchedule(validationResult)
             MainLeftBottom.doInit()
         end
@@ -2851,6 +2854,8 @@ local function make_Nested_SL_2(timerState, notify, modulus, messageEntries, sch
 
         notify("开启奖励功能")
         local callback = make_Nested_LuaSendMsg(0, modulus, messageEntries)
+        -- VM子原型PC20-PC30明确传入(0, callback, scheduleContext)三个显式参数；
+        -- 与开发文档的通用SL:Schedule(callback, time)签名不同，保留字节码调用形态待运行验证。
         timerState.rewardTimer = SL:Schedule(0, callback, scheduleContext)
         return true
     end
@@ -3338,6 +3343,9 @@ local function doInit_UI()
     local hideButton = GUI:Button_Create(
         uiParent, "hidebut", 0.0, 0.0, "res/public/fuzhu_btn.png"
     )
+    -- PC388：无论按钮创建成功与否，都将返回值写入MainLeftBottom.a.hidebut。
+    -- 该字段随后由隐藏按钮回调读取，并由ShowHideAllButtons清理。
+    uiState.hidebut = hideButton
     if hideButton then
         GUI:Button_setTitleText(hideButton, "隐 藏")
         GUI:Button_setTitleFontSize(hideButton, 18.0)

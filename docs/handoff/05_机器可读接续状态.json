@@ -5,21 +5,22 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 310,
-  "next_checkpoint": 311,
+  "latest_checkpoint": 311,
+  "next_checkpoint": 312,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "prototype": "root / MainLeftBottom_Module",
-    "function": "PC389-PC412 doInit_UI界面初始化主体、按钮构建及模块入口挂接复核",
-    "physical_pc": "root PC389-PC412；root.children[42] / doInit_UI",
+    "prototype": "root / MainLeftBottom_Module + root.children[42] / doInit_UI",
+    "function": "入口与UI链全量静态复核：doInit_UI主原型、23个直接子原型、AccountIDValidation与PC1-PC412模块返回",
+    "physical_pc": "root PC1-PC412；root.children[55]；root.children[42]及其23个子原型",
     "focus": [
-      "直接整理doInit_UI主体中尚未闭合的简单功能段，复杂/宿主语义不明部分保留明确TODO",
-      "核对20项捕获、PC411 MainLeftBottom.doInit挂接与PC412根模块返回",
-      "重点核对GUI父容器、主界面属性栏读取、按钮创建/事件回调与定时器生命周期"
+      "完成doInit_UI及23个子原型逐项与VM控制流/捕获/调用参数对照",
+      "核对AccountIDValidation的验证分支、轮询等待和MainLeftBottom.main入口",
+      "确认主模块字段、全局导出、doInit挂接及最终return的顺序",
+      "将静态匹配与开发文档签名冲突/宿主运行时疑点分开登记"
     ],
-    "next": "定点检查唯一主源码doInit_UI函数后续段落与root.children[42]相关VM证据；优先完成控制流清晰的简单UI代码，不重复反分析已确认的框架API。",
-    "progress": "检查点310完成并修正AccountIDValidation：root.children[55]父函数64条指令及两个子原型逐项核对。Nested_ID命中路径调用PrintLog记录局部成功提示并返回true；未命中路径通过ShowLocalNoticeByType发送包含UID的动态失败文本并返回false；父函数随后根据返回值分别PrintLog“[验证成功] 账号ID验证通过”或“[验证失败] 账号ID未在允许列表中”。原候选将动态失败通知误写为PrintLog、将静态失败通知错误放入父函数，并遗漏父级成功/失败状态日志，现已按VM修正。PC276捕获PrintLog/ShowLocalNoticeByType、PC279写入MainLeftBottom.main及0.5秒Schedule调用保持原有形态。未执行Lua 5.1语法检查或游戏运行验证。"
+    "next": "继续核对doInit_UI的23个子原型及入口等待闭包，优先排查主源码遗漏字段、错误捕获、调用接收者和实参；入口/UI范围完成前不转向其他业务函数。",
+    "progress": "检查点311：逐PC核对doInit_UI根子原型PC379-PC418，发现原候选漏掉PC388将hideButton返回值写入UP[3].hidebut；现补入uiState.hidebut=hideButton，且位置在按钮truthy判断之前，与VM一致。AccountIDValidation、doInit_UI、20项捕获及模块字段main/doInit挂接已建立对应关系，正在继续对23个子原型及入口调用细节做最终静态复核。另将两个必须保留但有文档契约疑点的原始调用显式注释：AccountIDValidation将布尔validationResult传给UnSchedule；奖励定时器调用SL:Schedule(0,callback,scheduleContext)三个显式参数。均未做游戏运行验证。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -46,7 +47,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点310：root.children[55]及两个嵌套子原型逐条核对。修正Nested_ID命中/未命中分支的回调接收者、消息字符串与返回值，并补齐父函数根据布尔返回值记录的成功/失败状态日志；PC276两项捕获、PC279模块main字段挂接及SL:Schedule(callback,0.5)与VM一致。",
+    "static_source_review": "检查点311：doInit_UI PC379-PC418逐PC核对，补齐PC388缺失的uiState.hidebut=hideButton字段写入；该赋值在if hideButton之前，保留nil写入语义。入口/UI范围其余部分继续核对中，暂不宣称全量无误。",
     "lua_syntax_check": "未执行：容器未找到lua5.1/luac5.1/lua/luac命令；未安装或改动用户环境。",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
@@ -70,6 +71,6 @@
       "使用unpack而非table.unpack；避免table.pack/table.move/bit32/utf8/package.searchpath等5.2+接口",
       "确认闭包、变长参数、多返回值、迭代器及元表行为均符合Lua 5.1"
     ],
-    "current_review": "检查点310新增Nested_ID局部函数，仅使用Lua 5.1兼容的局部函数、ipairs、tostring、字符串拼接和普通if/return；尚未执行Lua 5.1解释器语法检查。"
+    "current_review": "检查点311新增字段赋值与注释，不引入新语法；仍为Lua 5.1兼容写法。未执行Lua 5.1语法检查。"
   }
 }
