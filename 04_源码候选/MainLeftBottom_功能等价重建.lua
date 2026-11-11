@@ -2093,9 +2093,6 @@ local function ClearBlacklistItems()
     blacklistState.lastAttacker = nil
 end
 
-rootEnvironment.FindBlacklistPlayer = FindBlacklistPlayer
-rootEnvironment.InstallDamageHook = InstallDamageHook
-rootEnvironment.DeathAutoBlacklist = DeathAutoBlacklist
 rootEnvironment.ClearBlacklistItems = ClearBlacklistItems
 
 local function CallRootFunction(name, ...)
@@ -3322,6 +3319,26 @@ return MainLeftBottom
 -- 与PC1-PC412寄存器时间线一致：这些赋值发生在函数定义后、物品功能前；
 -- 不覆盖MainLeftBottom.blacklist、MainLeftBottom.onDamageMsg及doInit既有挂接。
 -- Lua语法和宿主运行仍未验证。
+-- ============================================================================
+
+-- ============================================================================
+-- 功能等价复刻 · 第五批：导出边界与入口依赖核对（检查点289）
+--
+-- 对照root PC43-PC412全局导出账本，移除此前为内部调用方便而增加的三个
+-- 非原始全局导出：FindBlacklistPlayer、InstallDamageHook、DeathAutoBlacklist。
+-- 三者仍是本chunk局部闭包，由BlacklistPlayerDetection/DeathAutoBlacklist
+-- 直接按词法身份调用；原始根模块只在PC382导出BlacklistItems，
+-- PC388导出ClearBlacklistItems。
+--
+-- 静态核对结果：
+-- * doInit_UI按钮包装器的六个CallRootFunction目标均有对应ENV导出：
+--   StorageItems、TakeItems、PickUpItems、DiuItems、BlacklistItems、
+--   ClearBlacklistItems。
+-- * PC212-PC279的五个全局导出及hide/show/destroy/main四个模块字段均已挂接。
+-- * MainLeftBottom根表字段已具备a/b/z/blacklist/onDamageMsg/hide/show/destroy/main/doInit。
+-- * PrintLog仍只写ENV["_G"].log；LuaSendMsg仍只挂a.LuaSendMsg。
+--
+-- 此批只校正导出边界，不改变内部函数主体。Lua语法与游戏运行仍未验证。
 -- ============================================================================
 
 
