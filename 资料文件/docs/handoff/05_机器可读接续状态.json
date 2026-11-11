@@ -7,16 +7,34 @@
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "prototype": "root / MainLeftBottom_Module + root.children[55] + root.children[42] / doInit_UI",
-    "function": "入口与UI链全量静态复核已完成；收尾检查Lua 5.1语法兼容性及明确遗留运行时风险",
-    "physical_pc": "root PC1-PC412；root.children[55]及其嵌套原型；root.children[42]及23个直接子原型",
-    "focus": [
-      "只做入口/UI代码的Lua 5.1兼容性收尾和已知VM/文档冲突记录",
-      "不改写有明确VM证据的调用接收者、实参、nil/false或闭包捕获",
-      "若无Lua 5.1解释器可用，明确保留未编译状态，不转去其他功能模块"
+    "status": "进行中；本任务完成前禁止转入其他功能模块",
+    "title": "优先核对唯一交付源码中的入口函数与全部 UI 相关函数",
+    "prototype": "root / MainLeftBottom_Module + root.children[55] / AccountIDValidation + root.children[42] / doInit_UI 及其 UI 子原型",
+    "scope": [
+      "入口模块 root PC1-PC412：模块环境、MainLeftBottom 根表、a/b/z/timerState 初始化、函数与闭包创建、全局导出、main/doInit 挂接、捕获顺序和模块返回",
+      "AccountIDValidation root.children[55]：主体、等待/延迟链、嵌套回调、输入校验和所有 UI 交互相关路径",
+      "doInit_UI root.children[42]：419 条主体指令及 23 个直接子原型，包含资源统计窗口、按钮创建与点击回调、输入框及多级闭包、隐藏按钮和界面初始化顺序",
+      "对照唯一交付文件与已有 VM/原型/捕获/API 证据，逐项核实函数实现、参数、receiver、返回值、闭包捕获、执行顺序和 Lua 5.1 兼容性"
     ],
-    "next": "完成入口/UI专项审计总结；语法编译工具仍不可用时明确告知用户，后续等待用户环境编译/运行结果再修正。",
-    "progress": "检查点323：入口与UI链全量静态复核完成。root主原型412条指令、root.children[55]账号验证64条及嵌套回调、root.children[42] doInit_UI 419条及23个直接子原型均有对应源码实现；root PC1-PC412模块创建、全局导出、MainLeftBottom.main/doInit字段挂接、20项doInit捕获顺序和PC412模块返回与VM一致。root PC1-PC211初始化/配置/共享状态在检查点322复核；PC212-PC279模块字段/账号入口此前已复核；PC280-PC388闭包与导出已在既有检查点复核；PC389-PC412捕获和返回本批复核。doInit_UI资源统计窗口320条及5子原型、按钮/点击回调、输入框三级闭包、隐藏按钮均已静态对照。修正rewardSequenceModulus注释，明确18000作为奖励轮询回调取模基数。Lua 5.1关键禁用语法/API扫描未发现禁用项；自制词法块结构扫描function/if/do/repeat与end/until配对无不平衡。没有Lua5.1/luac5.1/lua/luac/luajit或luaparser，未执行真正语法编译；目标游戏运行时验证未执行。"
+    "focus": [
+      "当前唯一任务是入口函数与 UI 相关函数的核对、必要修正和验证记录",
+      "入口与 UI 核对完成前，不得开始物品、背包、仓库、地图、战斗或其他功能模块",
+      "发现明确错误时，直接修正根目录 MainLeftBottom_唯一交付文件.lua；不另建源码副本",
+      "没有足够证据的细节标注 TODO/待运行验证，不编造 API 或宿主行为",
+      "保持 Lua 5.1 兼容；保留 VM 已证实的调用接收者、参数顺序、多返回值、nil/false、闭包捕获和执行顺序",
+      "静态核对、Lua 5.1 编译、目标游戏运行验证分开记录，不得把静态核对说成编译或运行通过"
+    ],
+    "completion_criteria": [
+      "root 入口模块 PC1-PC412 对应实现逐段核对并记录结果",
+      "AccountIDValidation 主体及全部嵌套回调逐项核对",
+      "doInit_UI 主体 419 条指令及 23 个直接子原型逐项核对",
+      "入口与 UI 涉及的所有明确源码错误已修正到唯一交付文件",
+      "Lua 5.1 禁用语法/API 扫描与可执行的语法验证状态已记录；无法编译时明确标记未编译",
+      "所有未能静态确认的宿主/API冲突与运行风险已单独列明",
+      "只有以上项目全部完成，才允许把当前任务改为下一功能模块"
+    ],
+    "next": "从唯一交付源码开始，按 root 入口、AccountIDValidation、doInit_UI 三组顺序逐段复核；每完成一组立即更新本状态文件和 AI_START_HERE.md 并提交 main。不得提前分析或编写其他功能函数。",
+    "progress": "检查点323的历史记录显示入口与 UI 链曾完成一轮全量静态复核，但用户明确要求先把唯一交付文件中的入口函数和 UI 相关函数核对完毕。因此当前重新锁定为入口/UI专项核对任务；此前检查结果作为参考，不视为本轮任务已完成。本轮逐项核对结果须按 completion_criteria 为准。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
@@ -89,5 +107,16 @@
     ],
     "status": "项目文件和接续规则已统一到 main；两个旧 Git 分支尚未删除。当前连接可读取、创建提交和更新分支，但没有删除 Git ref 的操作权限/工具。",
     "user_action_required": "在 GitHub 仓库页面进入 Branches，分别删除 backup/pre-functional-rewrite-2026-11-11 和 work/functional-equivalent-rebuild-2026-11-11。删除前无需再复制文件；来源索引和资料已保存在资料文件/分支归档/。"
+  },
+  "task_change_policy": {
+    "source_of_truth": "本文件 current_task 是所有新旧对话的最高优先级任务指令；AI_START_HERE.md 必须同步展示当前任务。",
+    "immediate_recording": [
+      "用户提出任务变更、优先级变化或暂停/恢复要求时，先更新本 JSON 的 current_task、focus、next 和 updated_at，再继续其他工作",
+      "同一批任务开始、完成一个入口/UI子组、发现重大阻塞或改变下一步时，立即更新本 JSON 和 AI_START_HERE.md 并提交 main",
+      "每次更新状态后尽快提交到唯一分支 main；不得等到上下文限制或对话结束前才记录",
+      "若暂时无法写入 GitHub，必须在当前回复明确说明未备份，并在继续实质工作前重试；不得声称已记录",
+      "新对话必须先读 AI_START_HERE.md 和本 JSON，以本 JSON 当前任务为准；不得根据旧源码注释、旧检查点或旧聊天内容自行切换任务"
+    ],
+    "task_change_authority": "只有用户明确要求，或当前任务完成标准全部满足后，才能改变 current_task；AI不得自行提前切换到其他模块。"
   }
 }
