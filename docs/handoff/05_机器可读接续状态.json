@@ -5,21 +5,21 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 300,
-  "next_checkpoint": 301,
+  "latest_checkpoint": 301,
+  "next_checkpoint": 302,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
     "prototype": "root / MainLeftBottom_Module",
-    "function": "PC214-PC255采集状态机入口与共享状态调用契约复核",
-    "physical_pc": "PC214-PC255",
+    "function": "PC1-PC85基础闭包导出与Lua 5.1语法检查准备",
+    "physical_pc": "PC1-PC85",
     "focus": [
-      "继续核对MainLoop各分支与FindMonsterInCurrViewField调用实参是否符合原型主体",
-      "确认InitGatherMonsters/StopGatherMonsters对timerState.gatherTimer、isGatherRunning共享cell及SL定时器API的调用顺序",
-      "检查采集状态机循环游标、等待状态写回和定时器取消路径，明确差异直接修正唯一主源码"
+      "核对基础辅助闭包的实际定义、接收者形式和rootEnvironment导出落点",
+      "检查MainLeftBottom.a.LuaSendMsg及ENV['_G'].log的对象身份，不重复分析已确认主体",
+      "寻找可用Lua 5.1解释器/语法检查器；若环境无工具，只记录未验证，不安装或改动用户环境"
     ],
-    "next": "继续核对MainLoop剩余调用点与采集状态机循环边界；随后检查PC212-PC255入口导出和Lua 5.1语法检查准备。",
-    "progress": "检查点300完成：对照历史恢复稿root.children[45] make_MainLoop，修正GATHERING分支中等待归属变更到期后的第一次FindMonsterInCurrViewField调用。原型主体该调用不传参数；原先主源码误传resetSlot19。紧随其后的PC159-PC160常规扫描调用仍保留resetSlot19额外实参，未误删。InitGatherMonsters/StopGatherMonsters的定时器接收者、timerState.gatherTimer共享表、isGatherRunning共享cell及顺序核对未发现明确差异，保持不动。"
+    "next": "定点核对PC1-PC85基础闭包导出与模块字段引用；保持Lua 5.1兼容，之后再做可执行语法检查。",
+    "progress": "检查点301完成：静态核对PC212-PC255入口区，IsInWhitelistMap/MainLoop/InitGatherMonsters/StopGatherMonsters均各有一次rootEnvironment全局导出；MainLeftBottom.hide/show/destroy/main模块字段写入与PC265/269/274/279相符。MainLoop的等待确认、常规扫描、攻击态视野查询及Init/Stop定时器调用顺序对照恢复稿未发现新的明确差异。补充Lua数值for循环边界注释，说明resetSlot17的写入只影响下一次回调游标。对唯一主源码扫描未发现goto/标签或table.unpack/table.pack/table.move/bit32/utf8/package.searchpath；_ENV只出现在注释。当前执行环境未发现lua5.1/luac5.1/lua/luac命令，未运行语法检查。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -46,8 +46,8 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点300：对照历史恢复稿root.children[45] MainLoop主体，修正等待归属变更到期后的FindMonsterInCurrViewField调用实参；并对照root.children[19] InitGatherMonsters与root.children[27] StopGatherMonsters工厂主体，确认SL:UnSchedule(timer)、SL:Schedule(MainLoop, config.CHECK_INTERVAL)、timerState.gatherTimer写入/清空、isGatherRunning共享cell写入及回调接收者顺序一致。未执行Lua解释器/目标游戏。",
-    "lua_syntax_check": "未执行Lua 5.1解释器检查；本批仅修正函数调用实参。",
+    "static_source_review": "检查点301：PC212-PC255导出与模块字段静态核对完成；MainLoop调用路径与数值for循环游标语义复核，未发现明确需要改写的逻辑。补充循环游标注释。",
+    "lua_syntax_check": "未执行：当前容器未发现lua5.1/luac5.1/lua/luac命令；本批仅静态扫描Lua 5.2+禁用标识，未安装工具。",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
   },
@@ -70,6 +70,6 @@
       "使用unpack而非table.unpack；避免table.pack/table.move/bit32/utf8/package.searchpath等5.2+接口",
       "确认闭包、变长参数、多返回值、迭代器及元表行为均符合Lua 5.1"
     ],
-    "current_review": "检查点300：仅将一处FindMonsterInCurrViewField调用改为零实参普通Lua调用；未引入新语法或标准库接口。未运行Lua 5.1解释器。"
+    "current_review": "检查点301：唯一主源码静态扫描未发现goto、标签、table.unpack、table.pack、table.move、bit32、utf8、package.searchpath；_ENV仅出现在注释文本中。未发现可用Lua解释器命令，不能宣称语法通过。"
   }
 }

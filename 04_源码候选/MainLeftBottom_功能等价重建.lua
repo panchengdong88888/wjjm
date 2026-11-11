@@ -1374,11 +1374,13 @@ local function MainLoop()
             resetSlot17 = resetSlot17 + 1
         end
 
-        -- 原型PC159-PC160向零形参辅助函数传入等待标记；保留这个额外实参。
+        -- 原型PC159-PC160向零形参辅助函数传入等待标记；Lua 5.1会忽略多余实参，保留调用形态。
         local actorMap = FindMonsterInCurrViewField(resetSlot19)
         local mainPlayerID = GetMainPlayerID()
         local allOwnersResolved = true
 
+        -- 注意：数值for的起止值在进入循环时确定；循环内更新resetSlot17
+        -- 只影响下一次MainLoop回调的起点，不会改变本轮index的递增。
         for index = resetSlot17, #resettableTable do
             local targetID = resettableTable[index]
             local actor = actorMap[targetID]
