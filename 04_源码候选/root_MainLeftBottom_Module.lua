@@ -373,6 +373,140 @@ local opaquePairTable = {
 
 
 ----------------------------------------------------------------
+-- 功能等价复刻 · 第一批：地图、坐标、玩家与基础查询辅助函数
+--
+-- 这些函数均对应已有原型，不是新框架引擎 API：
+--   GetMapId                 root.children[13]
+--   GetMapName               root.children[30]
+--   PlayerPos                root.children[57]
+--   GetDroppedItems          root.children[4]
+--   GetMainPlayerID          root.children[39]
+--   IsDie                    root.children[29]
+--   GetPlayerPosition        root.children[18]
+--   GetPlayerMapPosition     root.children[44]
+--   DistanceCalculation      root.children[11]
+--   IsInWhitelistMap         root.children[31]
+--   GetOwnerDescription      root.children[43]
+--
+-- 以下保留已核对的调用接收者、返回值数量、假值处理和比较方式。
+-- 这些函数尚未在目标游戏环境运行验证。
+----------------------------------------------------------------
+
+-- 获取地图 ID；元变量为 nil/false 时回退为 0。
+local function GetMapId()
+    return SL:GetMetaValue("MAP_ID") or 0
+end
+
+-- 获取地图名称；元变量为 nil/false 时回退为空字符串。
+local function GetMapName()
+    return SL:GetMetaValue("MAP_NAME") or ""
+end
+
+-- 返回主角当前 X、Y 两个坐标值（两个独立返回值，不组装成表）。
+local function PlayerPos()
+    local x = SL:GetMetaValue("X")
+    local y = SL:GetMetaValue("Y")
+    return x, y
+end
+
+-- 返回当前视野内掉落物列表；保留宿主方法的全部返回值。
+local function GetDroppedItems()
+    return global.dropItemManager:FindDropItemInCurrViewFieldAll()
+end
+
+-- 读取主玩家 ID；这是观察到的宿主对象方法，不是新框架文档 API。
+local function GetMainPlayerID()
+    return global.gamePlayerController:GetMainPlayerID()
+end
+
+-- 返回 actor 存活判断结果。
+-- actor 为 nil/false 时，按 Lua and 短路规则原样返回该假值。
+local function IsDie(actor)
+    return actor and not actor:IsDie()
+end
+
+-- 以元变量 X/Y 构造坐标表；单个坐标为 nil/false 时回退为 0。
+local function GetPlayerPosition()
+    local x = SL:GetMetaValue("X")
+    if not x then
+        x = 0
+    end
+
+    local y = SL:GetMetaValue("Y")
+    if not y then
+        y = 0
+    end
+
+    return { x = x, y = y }
+end
+
+-- 从 actor 的地图坐标字段构造坐标表；actor 假值时返回 nil。
+local function GetPlayerMapPosition(actor)
+    if not actor then
+        return nil
+    end
+
+    local x = actor.mCurrMapX
+    if not x then
+        x = 0
+    end
+
+    local y = actor.mCurrMapY
+    if not y then
+        y = 0
+    end
+
+    return { x = x, y = y }
+end
+
+-- 计算 Chebyshev 距离；任一坐标表假值时返回哨兵值 99999。
+local function DistanceCalculation(pointA, pointB)
+    if not pointA then
+        return 99999
+    end
+    if not pointB then
+        return 99999
+    end
+
+    local dx = math.abs(pointA.x - pointB.x)
+    local dy = math.abs(pointA.y - pointB.y)
+    return math.max(dx, dy)
+end
+
+-- 安全区直接允许；否则只允许地图名严格等于“土城”。
+local function IsInWhitelistMap()
+    if SL:GetMetaValue("IN_SAFE_AREA") then
+        return true
+    end
+
+    local mapName = SL:GetMetaValue("MAP_NAME")
+    for _, allowedMapName in ipairs({ "土城" }) do
+        if mapName == allowedMapName then
+            return true
+        end
+    end
+
+    return false
+end
+
+-- 返回原始归属 ID 和对应说明文本，保持双返回值顺序。
+local function GetOwnerDescription(actor, mainPlayerID)
+    local ownerID = actor:GetOwnerID()
+    local description
+
+    if ownerID == nil or ownerID == "" or ownerID == -1 then
+        description = "无归属"
+    elseif ownerID == mainPlayerID then
+        description = "自己"
+    else
+        description = "其他玩家"
+    end
+
+    return ownerID, description
+end
+
+
+----------------------------------------------------------------
 -- 检查点211：root.children[41] MoveItemToQuickUse 无捕获主体接入
 --
 -- 原型：root.children[41] / legacy root/42；133条物理指令，0项upvalue。
