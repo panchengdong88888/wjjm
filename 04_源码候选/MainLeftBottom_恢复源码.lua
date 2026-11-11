@@ -1,11 +1,10 @@
 --[[
 MainLeftBottom(2).lua 明文恢复整合稿（静态候选）
-生成：2026-11-11 | GitHub checkpoint 278
+生成：2026-11-10 | GitHub checkpoint 277
 用途：按110原型索引和PC级证据整合普通Lua候选、根模块状态及58个直接子闭包。
 当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配；PC43-PC85、PC181-PC258及PC297-PC388闭包已按VM创建顺序整合；检查点261修正采集状态表跨词法块引用；检查点262按寄存器生命周期重建PC1-PC42初始化；检查点263显式恢复PC43-PC85的T[4..8]创建、覆写、捕获及导出顺序；检查点264恢复PC86-PC211采集闭包及T[14..22]共享cell注入；检查点265补齐PC212-PC296 UI闭包校验、模块字段身份及PC275全局模块表重读；检查点266按T[44..51]恢复PC297-PC315配置包装链并用于doInit_UI捕获注入；检查点267复核PC350-PC388黑名单闭包对象身份、T[57] live cell及全局导出落点；检查点268核对PC389 T[59]模块表重读与PC411写入目标；检查点269逐槽核对doInit_UI的20项捕获并将UP[8]修正为gatherConfig；检查点270清理已被后续版本覆盖的重复源码词法块，纠正doInit_UI来源标记；检查点271保留MainLoop共享cell工厂版本，删除两个普通值旧草稿，并清理root22重复注册；检查点272全量核对53个源码注册键唯一、37个字面sourceFunction调用全部命中已注册来源与导出符号，22个bindDirect引用亦全部命中；检查点273增加PC1-PC42根表/初始table身份断言；检查点274强化PC43-PC85的LuaSendMsg必需闭包保护与寄存器导出身份；检查点275核对58个根直接闭包均有fail-fast必需性校验。
 结构索引：docs/handoff/13_MainLeftBottom_原型结构树.md（110/110原型父子树；调用图仍需独立恢复）。
 检查点277：PC86-PC315共享cell/闭包参数/模块字段链静态复核见docs/audit/检查点277_PC86-PC315共享cell与字段链复核.md；PC275/389的_ENV与_G环境对象等价性仍未验证。
-检查点278：入口/UI对照corrected phase3修正PC265/269/274字段目标为MainLeftBottom.a.hide/show/destroy；补齐doInit_UI PC388的a.hidebut写入；快捷栏初始化日志调用改用捕获的PrintLog（UPVALUE_0）。
 重要：
 - 根模块初始化与闭包创建仍采用明确标注的恢复适配结构，不冒充原作者逐字源码。
 - 所有函数体仍按原型路径保留；根装配按OP_387捕获顺序绑定共享cell和状态表。
@@ -374,10 +373,10 @@ local resetSlot22 = ""
 -- [T[0],T[3],T[1]]，即UI状态对象、定时器状态对象、按钮映射表。
 -- 此捕获映射与检查点164修正结果一致。
 
--- PC265：将闭包R37写入T[0]（MainLeftBottom.a UI状态表）的hide字段。
+-- PC265：将闭包R37写入当前模块表的hide字段。
 -- PC266：创建root.children[10] / SetButtonVisibilityState，捕获顺序为[T[0],T[1]]；
 -- PC267-PC268为两项捕获描述。函数体已在检查点161完整静态恢复。
--- PC269：将闭包R37写入T[0]（MainLeftBottom.a UI状态表）的show字段。
+-- PC269：将闭包R37写入当前模块表的show字段。
 -- PC270：创建root.children[40] / ShowHideAllButtons，捕获数3；
 -- 后续捕获描述跨出本批范围，留待下一检查点继续核对（PC271起）。
 
@@ -386,8 +385,8 @@ local resetSlot22 = ""
 -- PC271-PC273：ShowHideAllButtons（root.children[40]）的三个捕获描述，
 -- 按序捕获父root T[3]、T[1]、T[0]；对应定时器状态、按钮映射表、UI状态对象。
 -- 该顺序与子函数已静态恢复的UPVALUE[0..2]一致。
--- PC274：将该闭包写入T[0]（MainLeftBottom.a UI状态表）的destroy字段。
--- 因此hide/show/destroy三个方法均属于MainLeftBottom.a，供doInit_UI捕获的UI状态表调用。
+-- PC274：将该闭包写入模块表的destroy字段（R0为MainLeftBottom模块表）。
+-- 因此当前已确认模块表的hide/show/destroy三个字段分别在PC265/269/274写入。
 
 -- PC275：重新读取_ENV.MainLeftBottom；检查点265的主装配适配器显式读取_G.MainLeftBottom后再写入main字段。
 -- PC276-PC278：创建root.children[55] / AccountIDValidation，捕获父root T[4]与T[5]；
@@ -686,15 +685,15 @@ local function AttachRecoveredPrototypes(prototypes)
     exportGlobal("StopGatherMonsters", "StopGatherMonsters")
     exportGlobal("Builtsetting", "Builtsetting")
 
-    -- root PC259-PC274：UI状态表MainLeftBottom.a上的界面控制闭包。
+    -- root PC259-PC274：模块表上的界面控制闭包。
     if prototypes.DestroyUI ~= nil then
-        MainLeftBottom.a.hide = prototypes.DestroyUI
+        MainLeftBottom.hide = prototypes.DestroyUI
     end
     if prototypes.SetButtonVisibilityState ~= nil then
-        MainLeftBottom.a.show = prototypes.SetButtonVisibilityState
+        MainLeftBottom.show = prototypes.SetButtonVisibilityState
     end
     if prototypes.ShowHideAllButtons ~= nil then
-        MainLeftBottom.a.destroy = prototypes.ShowHideAllButtons
+        MainLeftBottom.destroy = prototypes.ShowHideAllButtons
     end
     exportGlobal("MoveItemToQuickUse", "MoveItemToQuickUse")
 
@@ -2324,7 +2323,7 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
                 if itemIndex then
                     local succeeded, message =
                         MoveItemToQuickUse(itemIndex, slotConfig.slot)
-                    UPVALUE_0(message)
+                    PrintLog(message)
                     if succeeded then
                         return
                     end
@@ -2533,8 +2532,6 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
     local hideButton = GUI:Button_Create(
         uiParent, "hidebut", 0.0, 0.0, "res/public/fuzhu_btn.png"
     )
-    -- PC388：无条件将Button_Create返回值（包括nil）写入捕获的UI状态表T[0].hidebut。
-    UPVALUE_3.hidebut = hideButton
     if hideButton then
         GUI:Button_setTitleText(hideButton, "隐 藏")
         GUI:Button_setTitleFontSize(hideButton, 18.0)
@@ -6178,9 +6175,7 @@ do
     -- 检查点251：UI闭包按父root寄存器T[0]/T[1]/T[3]捕获顺序注入。
     -- T[0]=MainLeftBottom.a（UI状态对象），T[1]=MainLeftBottom.b（按钮映射），
     -- T[3]=timerState；三者均为共享表引用，不作值复制。
-    assert(type(rootModule.a) == "table"
-        and type(rootModule.b) == "table"
-        and rootSource.uiState == rootModule.a
+    assert(rootSource.uiState == rootModule.a
         and rootSource.buttonMap == rootModule.b
         and type(rootSource.timerState) == "table",
         "PC261-PC274 UI capture object identity mismatch")
@@ -6193,7 +6188,7 @@ do
         )
     end
     rootPrototypes.DestroyUI = requireRecoveredClosure("DestroyUI", rootPrototypes.DestroyUI)
-    rootModule.a.hide = rootPrototypes.DestroyUI
+    rootModule.hide = rootPrototypes.DestroyUI
 
     local makeSetButtonVisibility = sourceFunction(
         "04_源码候选/短函数草稿_第十三批.lua", "make_SetButtonVisibilityState"
@@ -6206,7 +6201,7 @@ do
     rootPrototypes.SetButtonVisibilityState = requireRecoveredClosure(
         "SetButtonVisibilityState", rootPrototypes.SetButtonVisibilityState
     )
-    rootModule.a.show = rootPrototypes.SetButtonVisibilityState
+    rootModule.show = rootPrototypes.SetButtonVisibilityState
 
     local makeShowHideAll = sourceFunction(
         "04_源码候选/短函数草稿_第十四批.lua", "make_ShowHideAllButtons"
@@ -6219,7 +6214,7 @@ do
     rootPrototypes.ShowHideAllButtons = requireRecoveredClosure(
         "ShowHideAllButtons", rootPrototypes.ShowHideAllButtons
     )
-    rootModule.a.destroy = rootPrototypes.ShowHideAllButtons
+    rootModule.destroy = rootPrototypes.ShowHideAllButtons
 
     -- PC275：OP_137按全局名MainLeftBottom重新读取当前chunk环境中的模块表。
     -- 适配器暂以_G.MainLeftBottom表达；只有_ENV与_G指向同一环境表时才严格等价，宿主环境身份尚未验证。
@@ -6600,7 +6595,7 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 278,
+        checkpoint = 275,
         root_pc86_pc211_ordered = true,
         root_pc181_pc258_ordered = true,
         root_pc297_pc357_ordered = true,
@@ -6626,8 +6621,6 @@ do
         checkpoint273_root_initial_table_identity_checked = true,
         checkpoint274_pc43_pc85_register_export_identity_checked = true,
         checkpoint275_all_58_root_closures_fail_fast = true,
-        checkpoint278_ui_methods_attached_to_a_state_table = true,
-        checkpoint278_doInit_printlog_uses_captured_callback = true,
         checkpoint275_captured_factories_guarded = 36,
         checkpoint275_direct_bindings_guarded = 22,
         checkpoint275_required_closure_names_unique = 58,
