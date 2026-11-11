@@ -69,3 +69,10 @@
 - 尚未完成：root PC43-PC412、AccountIDValidation主体及两个子原型、doInit_UI主体419条指令及23个子原型。
 - 下一步：按PC顺序继续核对root PC43-PC85；不得跳到其他功能模块。
 - 注意：历史检查点323及旧审计报告不能自动视为本轮完成证明；发现证据冲突时以VM原始指令为准，并在状态文件中记录。
+
+## 检查点325补充：root PC43-PC85
+
+- 已核对PrintLog、ShowLocalNoticeByType、LuaSendMsg及Schedule/ScheduleOnce本地闭包的创建/捕获身份。
+- 已核对PC55/57/59/61/63/67/70/73/78/82/85对应的全局导出名称和唯一源码目标。
+- 未发现明确错配；函数定义和赋值在普通Lua文件中的行序与VM创建PC顺序不完全相同，需在root全量审查中继续确认无初始化期副作用。
+- root PC86-PC412仍未完成本轮核对；下一步按PC顺序继续。
