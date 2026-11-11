@@ -1065,14 +1065,322 @@ local function ShowLocalNoticeByType(message, ...)
 end
 local function Schedule(callback, interval) return SL:Schedule(callback, interval) end
 local function ScheduleOnce(callback, delay) return SL:ScheduleOnce(callback, delay) end
-local function CallRootFunction(name, ...)
-    local fn = rootEnvironment[name]
-    if type(fn) ~= "function" then PrintLog("功能入口尚未接入：%s", name); return nil end
-    return fn(...)
+-- ============================================================================
+-- 根级入口闭包：PC212-PC279
+-- 以唯一词法作用域装配共享状态；未确认的宿主依赖通过ENV读取并显式检查。
+-- ============================================================================
+local gatherRunningCell = { value = isGatherRunning }
+local gatherStateCell = { value = currentState }
+local gatherTargetsCell = { value = resettableTable }
+local gatherCursorCell = { value = 0 }
+local gatherOwnedCountCell = { value = 0 }
+local gatherWaitingCell = { value = resetSlot19 }
+local gatherDeadlineCell = { value = resetSlot20 }
+local gatherPendingIDCell = { value = resetSlot21 }
+local gatherPendingNameCell = { value = resetSlot22 }
+
+local function SetGatherState(newState)
+    local oldState = gatherStateCell.value
+    PrintLog(string.format("状态切换: %s -> %s", tostring(oldState), tostring(newState)))
+    gatherStateCell.value = newState
+    currentState = newState
 end
-local function Builtsetting(...) return CallRootFunction("Builtsetting", ...) end
-local function InitGatherMonsters(...) return CallRootFunction("InitGatherMonsters", ...) end
-local function StopGatherMonsters(...) return CallRootFunction("StopGatherMonsters", ...) end
+
+local function ResetGatherMonsterData()
+    gatherTargetsCell.value = {}
+    gatherCursorCell.value = 0
+    gatherOwnedCountCell.value = 0
+    gatherWaitingCell.value = false
+    gatherDeadlineCell.value = 0
+    gatherPendingIDCell.value = nil
+    gatherPendingNameCell.value = ""
+    resettableTable = gatherTargetsCell.value
+    resetSlot16, resetSlot17 = 0, 0
+    resetSlot19, resetSlot20, resetSlot21, resetSlot22 = false, 0, nil, ""
+    local clearTarget = rootEnvironment.ClearTargetID_2
+    if type(clearTarget) == "function" then clearTarget() end
+    PrintLog("数据已重置")
+end
+
+local function MainLoop()
+    if not gatherRunningCell.value then return end
+
+    if IsInWhitelistMap() then
+        if gatherStateCell.value ~= gatherStatusText.IDLE then
+            PrintLog("在白名单地图, 停止引怪")
+            SetGatherState(gatherStatusText.IDLE)
+            ResetGatherMonsterData()
+        end
+        return
+    end
+
+    local getCandidates = rootEnvironment.FindMonsterCandidates
+    local getPlayerID = rootEnvironment.GetMainPlayerID
+    local getOwnerID = rootEnvironment.GetOwnerID
+    local getOwnerText = rootEnvironment.GetOwnerIDText
+    local getOwnerDescription = rootEnvironment.GetOwnerDescription
+    local isAlive = rootEnvironment.IsDie
+    local findActors = rootEnvironment.FindMonsterInCurrViewField
+    local setTarget = rootEnvironment.SetTargetID
+
+    if type(getPlayerID) ~= "function" or type(getOwnerID) ~= "function"
+        or type(isAlive) ~= "function" or type(findActors) ~= "function"
+        or type(setTarget) ~= "function" then
+        PrintLog("MainLoop依赖尚未全部接入，跳过本轮")
+        return
+    end
+
+    if gatherStateCell.value == gatherStatusText.IDLE then
+        PrintLog("扫描怪物中")
+        if type(getCandidates) ~= "function" then
+            PrintLog("FindMonsterCandidates尚未接入")
+            return
+        end
+        local candidates = getCandidates() or {}
+        if #candidates == 0 then
+            PrintLog("视野内没有可攻击怪物")
+            return
+        end
+
+        gatherTargetsCell.value = {}
+        local mainPlayerID = getPlayerID()
+        for _, actor in ipairs(candidates) do
+            if not getOwnerID(actor, mainPlayerID) then
+                table.insert(gatherTargetsCell.value, actor:GetID())
+            end
+        end
+        if #gatherTargetsCell.value == 0 then
+            PrintLog("没有可攻击的怪物")
+            return
+        end
+        gatherCursorCell.value = 1
+        gatherOwnedCountCell.value = 0
+        PrintLog(string.format("开始引怪，目标数量: %d", #gatherTargetsCell.value))
+        SetGatherState(gatherStatusText.GATHERING)
+        return
+    end
+
+    if gatherStateCell.value == gatherStatusText.GATHERING then
+        PrintLog("引怪中")
+        if gatherWaitingCell.value then
+            local now = os.time()
+            if now < gatherDeadlineCell.value then
+                PrintLog(string.format("等待归属变更中: %s (还剩 %d 秒)",
+                    tostring(gatherPendingNameCell.value), gatherDeadlineCell.value - now))
+                return
+            end
+            local actorMap = findActors()
+            local actor = actorMap and actorMap[gatherPendingIDCell.value]
+            local mainPlayerID = getPlayerID()
+            if actor and type(getOwnerText) == "function" and getOwnerText(actor, mainPlayerID) then
+                PrintLog(string.format("怪物 %s 归属已变更为自己", tostring(gatherPendingNameCell.value)))
+            else
+                PrintLog(string.format("怪物 %s 归属未变更或已离开视野", tostring(gatherPendingNameCell.value)))
+            end
+            gatherWaitingCell.value = false
+            gatherDeadlineCell.value = 0
+            gatherPendingIDCell.value = 0
+            gatherPendingNameCell.value = ""
+            gatherCursorCell.value = gatherCursorCell.value + 1
+        end
+
+        local actorMap = findActors(gatherWaitingCell.value) or {}
+        local mainPlayerID = getPlayerID()
+        local allOwnersResolved = true
+        for index = gatherCursorCell.value, #gatherTargetsCell.value do
+            local targetID = gatherTargetsCell.value[index]
+            local actor = actorMap[targetID]
+            if not actor then
+                PrintLog(string.format("怪物 %d (ID: %s) 不在视野内，跳过", index, tostring(targetID)))
+                gatherCursorCell.value = index + 1
+            elseif not isAlive(actor) then
+                PrintLog(string.format("怪物 %d (ID: %s) 已死亡，跳过", index, tostring(targetID)))
+                gatherCursorCell.value = index + 1
+            else
+                local monsterName = actor:GetName() or "未知怪物"
+                local ownerID, ownerDescription
+                if type(getOwnerDescription) == "function" then
+                    ownerID, ownerDescription = getOwnerDescription(actor, mainPlayerID)
+                else
+                    ownerID = getOwnerID(actor)
+                    ownerDescription = ownerID == mainPlayerID and "自己" or "其他玩家"
+                end
+                if getOwnerID(actor, mainPlayerID) then
+                    PrintLog(string.format("怪物 %d (%s, ID: %s) 归属属于其他玩家(归属ID: %s, %s)，跳过",
+                        index, monsterName, tostring(targetID), tostring(ownerID), tostring(ownerDescription)))
+                    gatherCursorCell.value = index + 1
+                elseif type(getOwnerText) == "function" and getOwnerText(actor, mainPlayerID) then
+                    PrintLog(string.format("怪物 %d (%s, ID: %s) 归属已属于自己(归属ID: %s, %s)，跳过",
+                        index, monsterName, tostring(targetID), tostring(ownerID), tostring(ownerDescription)))
+                    gatherOwnedCountCell.value = gatherOwnedCountCell.value + 1
+                    gatherCursorCell.value = index + 1
+                else
+                    allOwnersResolved = false
+                    gatherCursorCell.value = index
+                    PrintLog(string.format("锁定怪物 %d: %s (ID: %s, 归属: %s)",
+                        index, monsterName, tostring(targetID), tostring(ownerDescription)))
+                    if setTarget(targetID) then
+                        gatherWaitingCell.value = true
+                        gatherDeadlineCell.value = os.time() + gatherConfig.ATTACK_WAIT_TIME
+                        gatherPendingIDCell.value = targetID
+                        gatherPendingNameCell.value = monsterName
+                        PrintLog(string.format("开始等待 %s 归属变更 (等待 %d 秒)",
+                            monsterName, gatherConfig.ATTACK_WAIT_TIME))
+                    else
+                        PrintLog(string.format("锁定怪物 %s 失败", monsterName))
+                    end
+                    gatherCursorCell.value = index + 1
+                end
+            end
+        end
+
+        if allOwnersResolved and gatherCursorCell.value > #gatherTargetsCell.value then
+            PrintLog("所有怪物归属已获取，切换到攻击状态")
+            gatherCursorCell.value = 1
+            SetGatherState(gatherStatusText.ATTACKING)
+        elseif not allOwnersResolved and gatherCursorCell.value > #gatherTargetsCell.value then
+            PrintLog("怪物列表处理完毕但未全部获取归属，重新扫描")
+            SetGatherState(gatherStatusText.IDLE)
+            ResetGatherMonsterData()
+        end
+        return
+    end
+
+    if gatherStateCell.value == gatherStatusText.ATTACKING then
+        PrintLog("攻击中")
+        local actorMap = findActors() or {}
+        for index = gatherCursorCell.value, #gatherTargetsCell.value do
+            local targetID = gatherTargetsCell.value[index]
+            local actor = actorMap[targetID]
+            if actor and isAlive(actor) then
+                local monsterName = actor:GetName() or "未知怪物"
+                PrintLog(string.format("攻击怪物 %d: %s (ID: %s)", index, monsterName, tostring(targetID)))
+                setTarget(targetID)
+                return
+            end
+            PrintLog(string.format("怪物 %d (ID: %s) 已死亡或离开视野", index, tostring(targetID)))
+            gatherCursorCell.value = index + 1
+        end
+        PrintLog("所有目标怪物已死亡或离开视野，切换到空闲状态")
+        SetGatherState(gatherStatusText.IDLE)
+        ResetGatherMonsterData()
+    end
+end
+
+local function InitGatherMonsters()
+    if timerState.gatherTimer then
+        SL:UnSchedule(timerState.gatherTimer)
+        timerState.gatherTimer = nil
+    end
+    gatherRunningCell.value = true
+    isGatherRunning = true
+    SetGatherState(gatherStatusText.IDLE)
+    ResetGatherMonsterData()
+    timerState.gatherTimer = SL:Schedule(MainLoop, gatherConfig.CHECK_INTERVAL)
+    ShowLocalNoticeByType(string.format("引怪功能已启动 (阈值: %d)", gatherConfig.GATHER_THRESHOLD))
+end
+
+local function StopGatherMonsters()
+    gatherRunningCell.value = false
+    isGatherRunning = false
+    if timerState.gatherTimer then
+        SL:UnSchedule(timerState.gatherTimer)
+        timerState.gatherTimer = nil
+    end
+    local clearTarget = rootEnvironment.ClearTargetID_2
+    if type(clearTarget) == "function" then clearTarget() end
+    SetGatherState(gatherStatusText.IDLE)
+    ResetGatherMonsterData()
+    PrintLog("引怪功能已停止")
+end
+
+local function Builtsetting()
+    CHANGE_SETTING(27, {0})
+    ShowLocalNoticeByType("关闭背景音乐")
+    CHANGE_SETTING(52, {0})
+    ShowLocalNoticeByType("关闭游戏音乐")
+    CHANGE_SETTING(1002, {0})
+    ShowLocalNoticeByType("关闭高帧率")
+    CHANGE_SETTING(57, {1})
+    ShowLocalNoticeByType("开启人物简装")
+    CHANGE_SETTING(58, {1})
+    ShowLocalNoticeByType("开启怪物简装")
+    CHANGE_SETTING(2005, {0})
+    ShowLocalNoticeByType("关闭屏蔽怪物")
+end
+
+local function DestroyUI()
+    uiState.isHidden = false
+    if timerState.resTimer then
+        SL:UnSchedule(timerState.resTimer)
+        timerState.resTimer = nil
+    end
+    uiState.resWin = nil
+    GUI:Win_CloseAll()
+    for key in pairs(buttonMap) do GUI:setVisible(buttonMap[key], true) end
+end
+
+local function SetButtonVisibilityState()
+    uiState.isHidden = true
+    for key in pairs(buttonMap) do GUI:setVisible(buttonMap[key], true) end
+end
+
+local function ShowHideAllButtons()
+    if timerState.rewardTimer then
+        SL:UnSchedule(timerState.rewardTimer)
+        timerState.rewardTimer = nil
+    end
+    if timerState.cruiseTimer then
+        SL:UnSchedule(timerState.cruiseTimer)
+        timerState.cruiseTimer = nil
+    end
+    for key in pairs(buttonMap) do GUI:setVisible(buttonMap[key], true) end
+    if uiState.hidebut then
+        GUI:setVisible(uiState.hidebut, false)
+        uiState.hidebut = nil
+    end
+end
+
+local function AccountIDValidation()
+    local gameID = SL:GetMetaValue("GAME_ID")
+    PrintLog("游戏id：" .. tostring(gameID))
+    if gameID ~= 204208 then
+        PrintLog("游戏不一致，id：" .. tostring(gameID))
+        return
+    end
+    local accountID = SL:GetMetaValue("UID")
+    PrintLog("账号ID：" .. tostring(accountID))
+    local allowed = {
+        "6324648", "39770358", "3548598", "1957840929", "1488903257",
+        "1585201915", "1627987432", "1580027021", "1304755149"
+    }
+    local valid = false
+    for _, id in ipairs(allowed) do
+        if tostring(accountID) == tostring(id) then valid = true; break end
+    end
+    if valid then
+        PrintLog("[验证成功] 账号ID验证通过")
+    else
+        ShowLocalNoticeByType("[验证失败] 账号ID未在允许列表中")
+    end
+    SL:Schedule(function()
+        PrintLog("账号验证后延迟回调已触发")
+    end, 0.5)
+end
+
+-- 按根模块PC创建顺序导出；所有入口现在都由本文件内的真实函数提供。
+rootEnvironment.IsInWhitelistMap = IsInWhitelistMap
+rootEnvironment.MainLoop = MainLoop
+rootEnvironment.InitGatherMonsters = InitGatherMonsters
+rootEnvironment.StopGatherMonsters = StopGatherMonsters
+rootEnvironment.Builtsetting = Builtsetting
+rootEnvironment.MoveItemToQuickUse = MoveItemToQuickUse
+MainLeftBottom.hide = DestroyUI
+MainLeftBottom.show = SetButtonVisibilityState
+MainLeftBottom.destroy = ShowHideAllButtons
+MainLeftBottom.main = AccountIDValidation
+
+
 local function StorageItems(...) return CallRootFunction("StorageItems", ...) end
 local function TakeItems(...) return CallRootFunction("TakeItems", ...) end
 local function PickUpItems(...) return CallRootFunction("PickUpItems", ...) end
