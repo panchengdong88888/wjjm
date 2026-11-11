@@ -6,7 +6,7 @@
 -- 状态：根模块入口功能等价复刻候选；仍需完成PC1-PC412连续入口装配审阅，尚未运行时验证。
 -- 检查点236：58个直接子原型闭包创建点与135个OP_387 live-cell捕获已建表，见docs/handoff/12_根模块闭包装配表.json。
 -- 检查点278：第一批11个地图/坐标/玩家辅助函数已在本文件中整理为可读函数主体；静态证据完整，未运行时验证。
--- 检查点279：PC297-PC315配置读写链8个函数改为直接词法闭包；ReadNumericConfig保留vararg入口，未运行时验证。
+-- 检查点282：按原始VM固定参数计数纠正GetWritablePath/ReadNumericConfig入口；两者均为一个固定参数，额外参数不读取，未运行时验证。
 -- 检查点281：按用户要求，当前优先级调整为MainLeftBottom_Module入口PC1-PC412与doInit_UI界面初始化；物品/背包/仓库功能暂缓。
 
 local MainLeftBottom = {}
@@ -306,18 +306,17 @@ local gatherMonsterCountConfigFile = "gather_monster_count.txt"
 ----------------------------------------------------------------
 
 -- root.children[2]：取得可写目录并拼接首个可变参数。
--- 字节码 vararg_flag=1；只读取第一个可变参数，忽略其余参数。
-local function GetWritablePath(...)
-    local path = ...
+-- 原型fixed_param_count=1：path是唯一固定参数；额外参数进入VM的X表但不读取。
+local function GetWritablePath(path)
     local fileUtils = cc.FileUtils:getInstance()
     local writablePath = fileUtils:getWritablePath()
     return writablePath .. path
 end
 
 -- root.children[9]：读取仅包含无符号十进制数字的配置文件。
+-- fixed_param_count=1：fileName是唯一固定参数；额外参数不读取。
 -- 不存在、读取结果非字符串、内容不匹配时均返回 nil。
-local function ReadNumericConfig(...)
-    local fileName = ...
+local function ReadNumericConfig(fileName)
     local fileUtils = cc.FileUtils:getInstance()
     local fullPath = GetWritablePath(fileName)
 

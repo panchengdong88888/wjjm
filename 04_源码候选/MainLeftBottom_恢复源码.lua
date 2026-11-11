@@ -5,7 +5,7 @@ MainLeftBottom(2).lua 明文恢复整合稿（静态候选）
 当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配；PC43-PC85、PC181-PC258及PC297-PC388闭包已按VM创建顺序整合；检查点261修正采集状态表跨词法块引用；检查点262按寄存器生命周期重建PC1-PC42初始化；检查点263显式恢复PC43-PC85的T[4..8]创建、覆写、捕获及导出顺序；检查点264恢复PC86-PC211采集闭包及T[14..22]共享cell注入；检查点265补齐PC212-PC296 UI闭包校验、模块字段身份及PC275全局模块表重读；检查点266按T[44..51]恢复PC297-PC315配置包装链并用于doInit_UI捕获注入；检查点267复核PC350-PC388黑名单闭包对象身份、T[57] live cell及全局导出落点；检查点268核对PC389 T[59]模块表重读与PC411写入目标；检查点269逐槽核对doInit_UI的20项捕获并将UP[8]修正为gatherConfig；检查点270清理已被后续版本覆盖的重复源码词法块，纠正doInit_UI来源标记；检查点271保留MainLoop共享cell工厂版本，删除两个普通值旧草稿，并清理root22重复注册；检查点272全量核对53个源码注册键唯一、37个字面sourceFunction调用全部命中已注册来源与导出符号，22个bindDirect引用亦全部命中；检查点273增加PC1-PC42根表/初始table身份断言；检查点274强化PC43-PC85的LuaSendMsg必需闭包保护与寄存器导出身份；检查点275核对58个根直接闭包均有fail-fast必需性校验。
 结构索引：docs/handoff/13_MainLeftBottom_原型结构树.md（110/110原型父子树；调用图仍需独立恢复）。
 检查点279：已完成11个基础辅助函数与8个配置读写辅助函数的功能等价复刻，主体与绑定见检查点278/279审计；此前PC86-PC315共享cell/闭包参数/模块字段链静态复核见docs/audit/检查点277_PC86-PC315共享cell与字段链复核.md；PC275/389的_ENV与_G环境对象等价性仍未验证。
-检查点281：按用户要求调整顺序，先处理根入口模块MainLeftBottom_Module（PC1-PC412）和UI初始化doInit_UI（root.children[42]，419条指令/23个子原型），暂缓背包/仓库。UI工厂20项捕获参数改为业务语义命名；按钮快捷栏回调改用捕获的printLog，而不是未确认的全局PrintLog；调用位置仍按原20槽顺序传参，未改变捕获关系。
+检查点281：按用户要求调整顺序，先处理根入口模块MainLeftBottom_Module（PC1-PC412）和UI初始化doInit_UI（root.children[42]，419条指令/23个子原型）；检查点282纠正GetWritablePath与ReadNumericConfig固定参数入口，暂缓背包/仓库。UI工厂20项捕获参数改为业务语义命名；按钮快捷栏回调改用捕获的printLog，而不是未确认的全局PrintLog；调用位置仍按原20槽顺序传参，未改变捕获关系。
 重要：
 - 根模块初始化与闭包创建仍采用明确标注的恢复适配结构，不冒充原作者逐字源码。
 - 所有函数体仍按原型路径保留；根装配按OP_387捕获顺序绑定共享cell和状态表。
@@ -3051,18 +3051,17 @@ do
     ----------------------------------------------------------------
     
     -- root.children[2]：取得可写目录并拼接首个可变参数。
-    -- 字节码 vararg_flag=1；只读取第一个可变参数，忽略其余参数。
-    local function GetWritablePath(...)
-        local path = ...
+    -- fixed_param_count=1：path是唯一固定参数；额外参数进入VM的X表但不读取。
+    local function GetWritablePath(path)
         local fileUtils = cc.FileUtils:getInstance()
         local writablePath = fileUtils:getWritablePath()
         return writablePath .. path
     end
     
     -- root.children[9]：读取仅包含无符号十进制数字的配置文件。
+    -- fixed_param_count=1：fileName是唯一固定参数；额外参数不读取。
     -- 不存在、读取结果非字符串、内容不匹配时均返回 nil。
-    local function ReadNumericConfig(...)
-        local fileName = ...
+    local function ReadNumericConfig(fileName)
         local fileUtils = cc.FileUtils:getInstance()
         local fullPath = GetWritablePath(fileName)
     
@@ -3175,7 +3174,7 @@ end
 
 -- root.children[2] / legacy root/3：构造可写目录路径。
 -- PC7读取首个可变参数；PC8拼接顺序为 writablePath .. path；PC9返回。
--- vararg_flag=1，额外参数未读取，保留原可变参数形式。
+-- fixed_param_count=1，path是唯一固定参数；额外参数不读取。
 local function GetWritablePath(path)
     local fileUtils = cc.FileUtils:getInstance()
     local writablePath = fileUtils:getWritablePath()

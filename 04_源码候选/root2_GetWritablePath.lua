@@ -1,7 +1,7 @@
 -- root.children[2] / legacy root/3 / GetWritablePath
--- 10 physical instructions; 4 constants; no child prototypes; vararg_flag=1.
+-- 10 physical instructions; 4 constants; no child prototypes; fixed_param_count=1.
 -- Complete static reconstruction from corrected phase-3 disassembly.
--- Only the first vararg is read; callers pass one path/file name.
+-- The single fixed parameter is path; additional arguments are not read.
 
 local function GetWritablePath(path)
     local fileUtils = cc.FileUtils:getInstance()

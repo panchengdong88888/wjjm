@@ -15,7 +15,7 @@
     "root.children[46]": "DiuItems：169条；普通Lua草稿已独立复审并标记完整静态恢复（未运行时验证）；源码04_源码候选/root46_DiuItems.lua；不计运行时验证。",
     "root.children[42]": "doInit_UI（419条）父函数与23个子原型全部完成静态恢复。Nested_Anonymous fixed_param_count=2，T[0]=promptText、T[1]=successCallback、T[2]=nil；两个调用包装器已确认传入参数，错误分支直接调用nil的原始行为保留。无未解析T槽；未运行时验证。",
     "root.children[8]": "FormatStateChange：10条；检查点177闭合UP0=PrintLog、UP1=MainLoop共享currentState cell、格式参数和回写时序；完整静态恢复，未运行时验证。根级工厂实例化仍待整合。",
-    "root.children[9]": "ReadNumericConfig：45条；检查点130闭合三类失败分支均清理返回槽后返回nil，纯数字字符串才tonumber；检查点178闭合UP0=GetWritablePath（root.children[2]）及root/50 AnonymousHelper_49以blacklist_distance.txt调用并转发返回值。完整静态恢复，未运行时验证；GetWritablePath拼接顺序已由检查点127独立闭合。",
+    "root.children[9]": "ReadNumericConfig：45条；fixed_param_count=1，正确入口function(fileName)；PC5-PC7将唯一固定参数传给UP0 GetWritablePath；文件不存在、非字符串读取、数字模式失败均返回nil，仅非空ASCII数字串tonumber。检查点282纠正根模块候选/主恢复稿的纯vararg入口回归。完整静态恢复，未运行时验证。",
     "root.children[14]": "FindMonsterInCurrViewField：27条；检查点131完成27条PC映射，确认捕获root.children[29] IsDie包装器对存活actor返回truthy，完成静态恢复，未运行时验证。",
     "root.children[1]": "GetStorageItemData：77条；检查点132完成分页合并、逐页容量计算、proxy方法self、通知回调及返回数组静态恢复；未运行时验证。",
     "root.children[3]": "MoveTo：51条；检查点132完成参数、range假值默认、Facade通知self、PlayerPos坐标顺序及两轴<=比较返回极性静态恢复；未运行时验证。",
@@ -52,10 +52,10 @@
     "root": "MainLeftBottom_Module：412条物理指令、109项常量、58个直接子原型。PC1-PC412分段证据已建；58/58直接子闭包源码层绑定；主恢复文件已整合PC43-PC85、PC86-PC211、PC181-PC258及PC297-PC388关键闭包创建顺序；root主体仍需最终字段/寄存器一致性审计并合并为连续执行体。",
     "root.children[42].children[3]": "Nested_FFFF00（320条父指令、72常量、5个子原型、4项捕获）：检查点225已完成PC1-PC320及5个子原型静态恢复；捕获顺序moduleState/printLog/timerState/initState。Win_Create等GUI调用参数已与新框架43份文档核对；五组Text_Create结果均先做truthy门控。K[28]=['unknown',2]已确认是nil的VM dump序列化占位，resTimer清理写nil。MoneyProxy方法未文档化，保留原调用，不反汇编其内部。完整静态恢复，未运行时验证。",
     "root.children[42].children[22]": "Nested_Anonymous（8条父指令；Nested_str 27条、Nested_match 50条、Nested_Helper_11 4条）已完整静态恢复。原始VM M()每次新建T={}和X={}；fixed_param_count=2；两实参写入T[0]/T[1]；额外实参进入X；T[2]无写入保持nil。Nested_str捕获T[0]/PrintLog/T[2]/T[1]；无效数字路径按原字节码调用nil，保留attempt-to-call-nil行为。未运行时验证。",
-    "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
+    "root.children[2]": "GetWritablePath：10条；fixed_param_count=1，正确入口function(path)；PC7读取固定参数，PC8按writablePath..path拼接；额外参数不读取。检查点282纠正根模块候选/主恢复稿的纯vararg入口回归。完整静态恢复，未运行时验证。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "继续优先恢复入口模块MainLeftBottom_Module与UI初始化doInit_UI：先逐PC审阅根模块PC1-PC412，整理真正的模块入口初始化/闭包装配/全局导出/字段挂接/return；再系统整理doInit_UI的419条指令和23个子原型，保留20项捕获顺序。暂缓GetAvailableStoragePage、GetStorageItemData、StorageItems等背包仓库工作。",
+  "next_action": "继续优先恢复入口模块MainLeftBottom_Module与UI初始化doInit_UI。检查点282已纠正root.children[2] GetWritablePath及root.children[9] ReadNumericConfig的固定参数入口回归；下一步继续核对root PC1-PC412的环境读取、闭包装配、字段/全局导出与PC412返回链，再系统整理doInit_UI的419条指令和23个子原型。暂缓GetAvailableStoragePage、GetStorageItemData、StorageItems等背包仓库工作。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2809,19 +2809,20 @@
   ],
   "latest_batch": {
     "date": "2026-11-11",
-    "checkpoint": "281",
+    "checkpoint": "282",
     "targets": [
       "MainLeftBottom_Module",
-      "doInit_UI"
+      "GetWritablePath",
+      "ReadNumericConfig"
     ],
-    "status": "用户要求将入口模块和UI初始化提前。本批完成doInit_UI工厂20项捕获的语义化参数命名，并将快捷栏延迟回调的日志调用改为使用实际捕获的printLog闭包；根模块入口优先级已记录，PC1-PC412连续入口装配审阅尚未完成。",
-    "audit_file": "docs/audit/检查点281_入口模块与UI优先恢复.md",
+    "status": "根入口核查发现检查点279引入固定参数入口回归：GetWritablePath与ReadNumericConfig均为fixed_param_count=1，但根模块候选及主恢复稿副本写成纯vararg入口。已按检查点235 VM调用帧证据修正为单固定参数签名，并同步CSV、机器状态与checkpoint协议。根模块整体仍未完成。",
+    "audit_file": "docs/audit/检查点282_根模块固定参数入口回归修正.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
-    "ui_candidate_file": "04_源码候选/短函数草稿_第六十三批.lua",
-    "ui_capture_count": 20,
-    "ui_child_prototype_count": 23,
-    "ui_instruction_count": 419,
+    "corrected_functions": [
+      "root.children[2] GetWritablePath",
+      "root.children[9] ReadNumericConfig"
+    ],
     "root_instruction_count": 412,
     "static_function_count": 109,
     "ordinary_lua_drafts": 72,
@@ -3548,31 +3549,29 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 281,
-  "checkpoint": 281,
+  "last_checkpoint": 282,
+  "checkpoint": 282,
   "drafts": 33,
-  "next": "继续优先恢复入口模块MainLeftBottom_Module与UI初始化doInit_UI：先逐PC审阅根模块PC1-PC412，整理真正的模块入口初始化/闭包装配/全局导出/字段挂接/return；再系统整理doInit_UI的419条指令和23个子原型，保留20项捕获顺序。暂缓GetAvailableStoragePage、GetStorageItemData、StorageItems等背包仓库工作。",
+  "next": "继续优先恢复入口模块MainLeftBottom_Module与UI初始化doInit_UI。检查点282已纠正root.children[2] GetWritablePath及root.children[9] ReadNumericConfig的固定参数入口回归；下一步继续核对root PC1-PC412的环境读取、闭包装配、字段/全局导出与PC412返回链，再系统整理doInit_UI的419条指令和23个子原型。暂缓GetAvailableStoragePage、GetStorageItemData、StorageItems等背包仓库工作。",
   "recent_checkpoint": {
-    "number": 281,
+    "number": 282,
     "date": "2026-11-11",
-    "audit_file": "docs/audit/检查点281_入口模块与UI优先恢复.md",
+    "audit_file": "docs/audit/检查点282_根模块固定参数入口回归修正.md",
     "targets": [
       "MainLeftBottom_Module",
-      "doInit_UI"
+      "GetWritablePath",
+      "ReadNumericConfig"
     ],
     "metrics": {
-      "ui_capture_count": 20,
-      "ui_child_prototype_count": 23,
-      "ui_instruction_count": 419,
       "root_instruction_count": 412,
       "static_function_count": 109,
       "ordinary_lua_drafts": 72,
       "runtime_verified": 0,
       "lua_compiler_available": false
     },
-    "notes": "doInit_UI工厂的20个捕获形参改为语义名称，保持PC390-PC410位置顺序；按钮快捷栏回调原先误写为未确认全局PrintLog，改为调用UP0捕获的printLog。根模块PC1-PC412与doInit_UI其余主体/子闭包仍为当前优先工作。"
+    "notes": "修正检查点279的参数入口回归：root.children[2]/[9]均fixed_param_count=1，源码恢复为function(path)/function(fileName)，不再从纯vararg读取固定参数；入口/UI优先级不变。"
   },
-  "latest_checkpoint": 281,
+  "latest_checkpoint": 282,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3581,7 +3580,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 281,
+  "next_checkpoint": 282,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3759,12 +3758,12 @@
     "root_pc212_pc296_field_audit": "passed_static",
     "root_pc297_pc315_config_audit": "passed_static",
     "environment_lookup_pc275_pc389": "adapter_difference_documented_unverified",
-    "latest_static_check": "checkpoint278: 11 helper definitions and exports present; 11 bindDirect sources repointed; no Lua compiler/parser available; no syntax-pass claim"
+    "latest_static_check": "检查点282：GetWritablePath/ReadNumericConfig在根候选与主恢复稿中均恢复为单固定参数入口；静态文本检查已完成，无Lua编译器/解析器，未声称语法通过，游戏runtime_verified=0。"
   },
   "latest": {
-    "checkpoint": "280",
-    "summary": "doInit_UI配置回调链已核对并在主恢复稿中使用业务语义别名；保留写入参数顺序异常和FileExistCheck提示/行为不一致，未擅自修复。",
-    "audit_file": "docs/audit/检查点280_doInit_UI配置闭包调用链功能等价复刻.md",
+    "checkpoint": "282",
+    "summary": "根模块入口核查期间修正GetWritablePath与ReadNumericConfig固定参数入口回归；两者均fixed_param_count=1，纯vararg入口与原VM调用帧不符。",
+    "audit_file": "docs/audit/检查点282_根模块固定参数入口回归修正.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3821,7 +3820,7 @@
       "BlacklistPlayerDetection",
       "doInit_UI"
     ],
-    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。 检查点272全量核对53个sources注册键唯一、37个sourceFunction字面调用及22个bindDirect调用全部命中来源路径与符号；未执行Lua解释器/luac。 检查点273核对PC1-PC42根表及a/b/z/timerState来源导出身份，主装配区新增6组静态适配断言；未执行Lua，断言未运行。 检查点274核对PC43-PC85的16个闭包创建点及T[4..8]复用；LuaSendMsg增加requireRecoveredClosure必需性校验，新增T[4..8]与全局导出身份断言；断言未运行。 检查点275静态核对58个根直接闭包均有requireRecoveredClosure保护，36个捕获工厂+22个无捕获绑定，缺失/额外/重复名称均0；Lua未运行。",
+    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。 检查点272全量核对53个sources注册键唯一、37个sourceFunction字面调用及22个bindDirect调用全部命中来源路径与符号；未执行Lua解释器/luac。 检查点273核对PC1-PC42根表及a/b/z/timerState来源导出身份，主装配区新增6组静态适配断言；未执行Lua，断言未运行。 检查点274核对PC43-PC85的16个闭包创建点及T[4..8]复用；LuaSendMsg增加requireRecoveredClosure必需性校验，新增T[4..8]与全局导出身份断言；断言未运行。 检查点275静态核对58个根直接闭包均有requireRecoveredClosure保护，36个捕获工厂+22个无捕获绑定，缺失/额外/重复名称均0；Lua未运行。 检查点282发现并修正PC297-PC315配置函数参数入口回归：GetWritablePath与ReadNumericConfig的fixed_param_count均为1，恢复为function(path)/function(fileName)；不改变58个闭包的捕获/绑定统计，未运行验证。",
     "checkpoint261_gather_status_scope_fixed": true,
     "checkpoint272_source_registry_keys_unique": true,
     "source_registry_registration_count": 53,
@@ -3905,8 +3904,8 @@
     "lua_syntax_compiler_available": false,
     "runtime_verified": 0,
     "direct_sources_bound": 8,
-    "last_completed_checkpoint": 281,
-    "next_checkpoint": 281
+    "last_completed_checkpoint": 282,
+    "next_checkpoint": 282
   },
   "checkpoint280_config_callback_graph": {
     "audit_file": "docs/audit/检查点280_doInit_UI配置闭包调用链功能等价复刻.md",
@@ -3917,5 +3916,31 @@
     "clear_config": "make_Nested_Helper/make_Nested_s -> FileExistCheck_pcall_wrapper(configFileName) -> (success,path)",
     "parameter_order_anomaly": "PCallHelper body treats arg1 as payload and arg0 as GetWritablePath argument; callers pass filename first and value second. Preserved pending PC-level recheck.",
     "runtime_verified": false
+  },
+  "checkpoint282_parameter_entry_regression": {
+    "audit_file": "docs/audit/检查点282_根模块固定参数入口回归修正.md",
+    "evidence": "检查点235 VM执行器M()调用帧语义 + 原型总索引fixed_param_count + root.children[2]/[9] PC调用窗口",
+    "functions": {
+      "root.children[2]": {
+        "name": "GetWritablePath",
+        "fixed_param_count": 1,
+        "correct_signature": "function(path)",
+        "incorrect_regression": "function(...) local path = ..."
+      },
+      "root.children[9]": {
+        "name": "ReadNumericConfig",
+        "fixed_param_count": 1,
+        "correct_signature": "function(fileName)",
+        "incorrect_regression": "function(...) local fileName = ..."
+      }
+    },
+    "files_updated": [
+      "04_源码候选/root_MainLeftBottom_Module.lua",
+      "04_源码候选/MainLeftBottom_恢复源码.lua",
+      "04_源码候选/root2_GetWritablePath.lua",
+      "02_基础索引/03_函数状态清单.csv"
+    ],
+    "runtime_verified": false,
+    "lua_compiler_available": false
   }
 }

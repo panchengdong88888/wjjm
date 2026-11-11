@@ -3528,3 +3528,19 @@ Nested_match：
 - 本批未声称入口模块或UI类整体完成；下一步继续逐PC整理根入口PC1-PC412，再对doInit_UI父函数及23个子原型做完整调用来源复核。
 - 物品/背包/仓库工作（GetAvailableStoragePage/GetStorageItemData/StorageItems）暂缓。
 - 未运行Lua编译器，未做目标游戏运行时验证；静态恢复计数109/110、普通Lua草稿72不变。
+
+
+## 检查点282（2026-11-11）：根模块配置函数固定参数入口回归修正
+
+- 基线：检查点281；工作分支：`work/functional-equivalent-rebuild-2026-11-11`。
+- 复核依据：`docs/audit/检查点235_VM调用帧初始化与固定参数计数纠错.md`、原始VM执行器 `M()`、原型总索引的 `fixed_param_count`、root PC297-PC315调用链。
+- 明确语义：原型tuple[3]记录固定参数数量；调用时固定参数进入T表，超出固定数量的参数进入X表（额外参数区）。因此不能仅因旧字段名包含 `vararg` 就把固定参数改写成Lua `...`。
+- `root.children[2]` GetWritablePath：`fixed_param_count=1`，正确普通Lua入口为 `function(path)`；不从 `...` 取path。
+- `root.children[9]` ReadNumericConfig：`fixed_param_count=1`，正确普通Lua入口为 `function(fileName)`；PC5-PC7读取固定参数T[0]，额外参数不读取。
+- 检查点279配置链整理时，两函数的根模块候选/主恢复稿副本被回归为 `function(...)`；检查点282已修正 `04_源码候选/root_MainLeftBottom_Module.lua` 与 `04_源码候选/MainLeftBottom_恢复源码.lua`，并同步更正 `root2_GetWritablePath.lua` 的过期说明。
+- `ReadNumericConfig` 独立候选 `root9_ReadNumericConfig.lua` 已使用 `function(fileName)`，本批未改变其函数体。
+- `PCallHelper(arg1,arg0,...)`、`FileExistCheck_pcall_wrapper(path,...)` 及其他函数的参数签名不在本次修正范围；没有依据的参数交换未做。
+- 未改变函数内部FileUtils调用顺序、路径拼接顺序、返回值分支、PC297-PC315闭包创建顺序及捕获对象。
+- 静态文本检查：两个函数定义均为单固定参数形式；已检查根候选、主恢复稿和GetWritablePath独立候选；检查点235签名与CSV/状态说明同步。
+- Lua语法编译未执行（无可用lua/luac/解析器）；目标游戏运行时验证仍为0。
+- 根模块仍未标记完整，58个闭包装配统计不变。下一步继续root PC1-PC412剩余入口审阅和doInit_UI优先整理；背包/仓库仍暂缓。
