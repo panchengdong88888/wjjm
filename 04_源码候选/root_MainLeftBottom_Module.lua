@@ -84,7 +84,7 @@ local timerState = {}
 
 -- 检查点193：PC43-PC85，根模块辅助闭包创建与导出。
 -- PC42的T[3] timerState已在前段创建；本段从PC43开始记录子闭包创建。
--- PC43-PC45：创建 root.children[16] PrintLog 闭包，并赋值给 _G.log。
+-- PC43-PC45：创建 root.children[16] PrintLog闭包；PC44读取ENV['_G']，PC45向该表写入log。
 -- PC46：创建 root.children[20] ShowLocalNoticeByType 闭包，捕获父 T[0]；
 -- 本段没有观察到其全局导出，暂不臆测其最终持有位置。
 -- PC48-PC51：创建 root.children[12] LuaSendMsg 闭包，捕获父 T[0]、T[4]，
@@ -268,7 +268,7 @@ local resetSlot22 = ""
 -- PC274：将该闭包写入模块表的destroy字段（R0为MainLeftBottom模块表）。
 -- 因此当前已确认模块表的hide/show/destroy三个字段分别在PC265/269/274写入。
 
--- PC275：重新读取_ENV.MainLeftBottom；检查点265的主装配适配器显式读取_G.MainLeftBottom后再写入main字段。
+-- PC275：从当前chunk ENV重新读取MainLeftBottom，并向该次读取结果写入main字段。
 -- PC276-PC278：创建root.children[55] / AccountIDValidation，捕获父root T[4]与T[5]；
 -- 即PrintLog与ShowLocalNoticeByType两个已建立的回调闭包。
 -- PC279：将AccountIDValidation闭包写入MainLeftBottom.main字段。
@@ -886,8 +886,8 @@ end
 -- T[3]：PC19的9.0先用于Blocklist；PC42覆盖为新的timer-state表。后续五个
 --       捕获点都在PC42之后；业务角色沿用已复核的ShowHideAllButtons映射。
 -- T[4]：PC20的10.0先用于Blocklist；PC43创建PrintLog并写入T[4]，PC45导出
---       _G.log。PC72 GetStorageItemData捕获的就是PrintLog，通知回调身份现已确定。
--- T[5]：PC21的60000.0先用于Blocklist；PC44临时写入_G，PC46覆盖为
+--       ENV['_G'].log。PC72 GetStorageItemData捕获的就是PrintLog，通知回调身份现已确定。
+-- T[5]：PC21的60000.0先用于Blocklist；PC44临时读取ENV['_G']，PC46覆盖为
 --       ShowLocalNoticeByType闭包。后续十个捕获点均取得该通知回调。
 -- T[37]：PC212-PC270依次复用为IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、MoveItemToQuickUse、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons等闭包；PC275写入MainLeftBottom，
 --       PC280重置为空表，PC281-PC282构造{"随机传送石"}。PC356 UseItemByIndex
