@@ -7,31 +7,34 @@
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "入口/UI静态VM核对已完成；配置读写链跨函数核对也已完成。唯一交付源码中AnonymousHelper_32/AnonymousHelper_54的参数顺序已按VM修正。FileExistCheck_pcall_wrapper与其两个调用点忠实保留VM行为；发现按钮提示与实际文件删除行为不一致，这是原始VM逻辑问题，不是源码恢复偏差。下一步补全根模块跨函数调用关系清单，不重复分析已完成的函数主体。",
-    "title": "补全根模块跨函数调用关系清单",
-    "prototype": "root / MainLeftBottom_Module；以已完成的root.children[0..57]函数静态恢复和root PC1-PC412闭包装配记录为基础，整理根模块内部调用边及外部宿主API调用边",
+    "status": "用户于2026-11-11明确将优先级调整为：继续完善唯一交付源码，并优先处理“开拉怪”功能及核对。暂停此前根模块全量调用图整理；本轮只围绕开拉怪完整链路查证、修正VM可证明的源码偏差并补齐交接记录。",
+    "title": "开拉怪功能完整调用链核对与源码修正",
+    "prototype": "doInit_UI的yinguaibut按钮回调；root.children[19] InitGatherMonsters；root.children[27] StopGatherMonsters；root.children[28] FindMonsterCandidates；root.children[26] ResetGatherMonsterData；root.children[45] MainLoop；以及相关闭包root.children[42].children[6]/[7]、相关辅助函数。",
     "scope": [
-      "只整理现有静态恢复结果中尚未形成完整逐边清单的根模块调用关系，不重新逐PC审查已完成函数主体",
-      "区分本地词法函数调用、模块状态表回调、全局导出函数调用、宿主框架API调用及延迟/定时回调",
-      "每条调用边记录调用方、被调目标、调用形式（点/冒号/闭包）、参数与返回值证据来源",
-      "对不确定的宿主行为或业务含义标注待确认，不编造函数关系",
-      "如发现明确源码调用目标、receiver或参数顺序与VM不一致，直接修正唯一交付源码；不建立平行主源码"
+      "核对按钮点击后开拉怪/关拉怪分支、阈值读取、缺失阈值输入、阈值保存及启动状态更新",
+      "核对InitGatherMonsters的定时器取消/重建、运行标记、状态复位、Schedule参数与提示",
+      "核对MainLoop的IDLE/GATHERING/ATTACKING状态流转及直接调用的辅助函数",
+      "核对FindMonsterCandidates的SL接口调用形式、receiver和显式参数，以及候选过滤/排序/阈值截取",
+      "核对停止链的UnSchedule、目标清除、状态复位及按钮文字状态更新",
+      "只根据VM和官方API文档修正唯一交付源码中的明确错误；不凭预期用途改写原始VM行为",
+      "保持Lua 5.1兼容；不执行Lua/luac实际编译和游戏运行验证"
     ],
     "focus": [
-      "根模块自身是函数状态清单中唯一仍标记为部分普通Lua草稿的原型",
-      "109个子原型已有完整静态恢复记录；不重做其函数主体",
-      "root PC1-PC412、58个闭包创建点、135项OP_387捕获及共享寄存器cell关系已有静态核对成果，直接复用",
-      "当前目标是补全函数之间的调用关系与调用契约，不是重做入口/UI或业务函数反虚拟化",
-      "保持Lua 5.1兼容；不执行实际编译或游戏运行验证"
+      "沿现有完成的静态VM核对成果继续，不重新反虚拟化已完成的417条MainLoop及已完成辅助原型",
+      "函数状态清单显示MainLoop 417条、InitGatherMonsters 36条、StopGatherMonsters 25条、FindMonsterCandidates 102条、ResetGatherMonsterData 20条均已完整静态恢复",
+      "优先核查源码与VM调用契约是否一致，尤其SL:FindMonsterInCurrViewField的冒号调用与参数",
+      "只修改根目录MainLeftBottom_唯一交付文件.lua；不创建分支、平行源码或新项目目录",
+      "本轮不要求实际编译和目标游戏运行验证"
     ],
     "completion_criteria": [
-      "根模块内部函数间可静态确认的调用边形成完整清单",
-      "延迟回调、定时器回调、UI按钮回调与全局导出入口的调用关系单独标识",
-      "每条边的调用receiver、实参顺序及返回值传递有源码/VM证据",
-      "未能静态确认的边或宿主行为单独列为风险，不推测",
-      "唯一交付源码中发现的明确调用错误已修正；不要求实际编译或目标游戏运行"
+      "开拉怪按钮点击到启动/停止定时器的完整调用链已逐段核对",
+      "阈值读取、阈值输入保存、状态按钮文字更新的调用与参数契约已核对",
+      "MainLoop三个状态及候选怪物获取链的直接调用目标、receiver、参数顺序与VM一致",
+      "停止路径清理运行标记、定时器、目标ID和共享状态的顺序与VM一致",
+      "发现的明确源码错配已修正并提交到main；原始VM异常单独记录，不擅自修复",
+      "AI_START_HERE.md与本JSON同步更新"
     ],
-    "next": "以现有root结构树和唯一交付源码为依据，先从MainLoop、DiuItems、BlacklistPlayerDetection等已恢复函数中提取对其他恢复函数的直接调用边，再整理由doInit_UI创建的回调触发边；避免重新分析这些函数内部业务逻辑。"
+    "next": "先逐项对照root.children[28] FindMonsterCandidates 102条VM指令与唯一交付源码，确认SL.FindMonsterInCurrViewField调用的receiver和两个布尔参数；随后核对yinguaibut按钮处理器、Nested_StopGatherMonsters、Nested_InitGatherMonsters及阈值输入保存闭包，再回核InitGatherMonsters/MainLoop/StopGatherMonsters的调用顺序。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
@@ -119,5 +122,5 @@
     ],
     "task_change_authority": "只有用户明确要求，或当前任务完成标准全部满足后，才能改变 current_task；AI不得自行提前切换到其他模块。"
   },
-  "progress": "undefined\n检查点337：读取函数状态清单后，发现root.children[32] AnonymousHelper_32与root.children[54] AnonymousHelper_54的唯一交付源码实参顺序偏离VM。VM确认两者均按PCallHelper(固定文件名, firstArg)调用；而PCallHelper本体将第1参tostring后作为写入内容、第2参传给GetWritablePath。已直接修正MainLeftBottom_唯一交付文件.lua中的两处调用，并添加注释明确保留反直觉参数顺序；提交到main。下一步核对root.children[0] FileExistCheck_pcall_wrapper与其两个配置清理UI调用点，区分VM原始逻辑异常和源码错配。\n检查点338：配置读写链复核完成。直接对照VM确认root.children[0] FileExistCheck_pcall_wrapper的32条指令及Nested_removeFile子原型5条指令；唯一交付源码控制流一致：文件已存在时直接返回true和路径，不执行删除；文件不存在时才pcall removeFile并再次检查。doInit_UI child2/child20两个调用点均按返回布尔值显示“已清空/清理失败”。因此提示语与实际行为不一致是原始VM逻辑缺陷，未擅自修复以保持功能等价。root.children[17] PCallHelper及root.children[32]/[54]调用顺序已复核，源码修正完成。配置链无其他明确源码错配。\n下一阶段：根模块调用图补全。函数状态清单显示109个子原型已完整静态恢复，root模块仍为部分普通Lua草稿；不重做已完成函数主体，改为补全内部调用边、定时/延迟回调边、UI回调边和宿主API边。"
+  "progress": "undefined\n检查点337：读取函数状态清单后，发现root.children[32] AnonymousHelper_32与root.children[54] AnonymousHelper_54的唯一交付源码实参顺序偏离VM。VM确认两者均按PCallHelper(固定文件名, firstArg)调用；而PCallHelper本体将第1参tostring后作为写入内容、第2参传给GetWritablePath。已直接修正MainLeftBottom_唯一交付文件.lua中的两处调用，并添加注释明确保留反直觉参数顺序；提交到main。下一步核对root.children[0] FileExistCheck_pcall_wrapper与其两个配置清理UI调用点，区分VM原始逻辑异常和源码错配。\n检查点338：配置读写链复核完成。直接对照VM确认root.children[0] FileExistCheck_pcall_wrapper的32条指令及Nested_removeFile子原型5条指令；唯一交付源码控制流一致：文件已存在时直接返回true和路径，不执行删除；文件不存在时才pcall removeFile并再次检查。doInit_UI child2/child20两个调用点均按返回布尔值显示“已清空/清理失败”。因此提示语与实际行为不一致是原始VM逻辑缺陷，未擅自修复以保持功能等价。root.children[17] PCallHelper及root.children[32]/[54]调用顺序已复核，源码修正完成。配置链无其他明确源码错配。\n下一阶段：根模块调用图补全。函数状态清单显示109个子原型已完整静态恢复，root模块仍为部分普通Lua草稿；不重做已完成函数主体，改为补全内部调用边、定时/延迟回调边、UI回调边和宿主API边。\n用户任务优先级变更（2026-11-11）：暂停原“补全根模块调用图”，改为优先核对并完善“开拉怪”完整功能链。范围包括yinguaibut按钮回调、阈值读取/输入保存、Nested_StopGatherMonsters/Nested_InitGatherMonsters、InitGatherMonsters、MainLoop、FindMonsterCandidates、StopGatherMonsters及相关状态复位。"
 }
