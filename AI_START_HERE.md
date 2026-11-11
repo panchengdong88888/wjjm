@@ -23,10 +23,11 @@
 
 ## 3. 当前接续位置
 
-- 最近检查点：**320**
-- 下一检查点：**321**
-- 当前优先任务：继续入口与UI链全量静态复核，当前只处理root PC1-PC412、AccountIDValidation（root.children[55]）及doInit_UI（root.children[42]）和全部23个直接子原型。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
-- 检查点320完成Nested_FFFF00资源统计窗口父原型320条指令及5个子原型静态核对：窗口开关、定时器取消/nil清理、Win_Create 12参、Layout/ListView、五组Text_Create门控、资源行构造、MoneyProxy刷新、立即刷新和1秒Schedule均与VM一致。修正过期T7说明：ipairs控制值初始0，四项遍历后保留4，PC180/PC183传4；nil序列化占位的旧说明同步修正。money快照按资源名写入、按moneyId读取的跨函数差异按VM保留，不推断未文档化代理语义。检查点319的黑名单按钮回调捕获对象身份复核结果保持。入口字段MainLeftBottom.main/doInit及PC412模块返回与VM一致。当前未执行Lua 5.1语法检查或目标游戏运行验证。
+- 最近检查点：**321**
+- 下一检查点：**322**
+- 当前优先任务：继续入口与UI链全量静态复核，只处理root PC1-PC412、AccountIDValidation（root.children[55]）及doInit_UI（root.children[42]）和全部23个直接子原型。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
+- 检查点321核对doInit_UI PC346-PC419按钮创建尾段、child9的50条按钮工厂与48条点击回调：三组按钮坐标/配置、创建失败早退、buttonMap登记、标题样式、toggle初始化、所有按钮注册点击事件、handler先执行及严格false门控均与VM一致。child11/14输入包装器及Nested_Helper_5/8成功回调顺序一致；child22 Nested_Anonymous→Nested_str→Nested_match→Nested_Helper_11三级闭包及T0/T1/T2捕获已对照，T2=nil由VM帧初始化证据确认，原错误分支调用nil行为按VM保留。隐藏按钮PC379-PC419创建、写入hidebut及事件注册一致。Lua 5.1禁用语法/API静态扫描未发现goto、table.unpack/pack/move、bit32、utf8、package.searchpath等；_ENV仅出现在注释。环境未发现lua5.1/luac5.1/lua/luac/luajit或luaparser，尚未执行语法编译检查。
+- 检查点320完成Nested_FFFF00资源统计窗口父原型320条及5个子原型静态核对，并修正T7注释：ipairs控制值初始0，四项遍历后保留4，PC180/PC183传4。检查点319的黑名单按钮回调捕获对象身份复核结果保持。入口字段MainLeftBottom.main/doInit及PC412模块返回与VM一致。当前未执行目标游戏运行验证。
 
 ## 4. 源码文件职责
 
