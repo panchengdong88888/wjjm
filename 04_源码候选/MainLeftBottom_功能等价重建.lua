@@ -131,7 +131,7 @@ local gatherConfig = {
 }
 
 -- PC90-PC95：计算 math.floor(3600 / 0.2)，结果为18000。
-local rootRegister11 = math.floor(3600 / 0.2)
+local rewardSequenceModulus = math.floor(3600 / 0.2)
 -- root PC408将该值捕获给doInit_UI的UPVALUE[17]；其在UI中的具体用途尚未闭合。
 
 -- PC96-PC167：先创建空表，再逐项构造14条三元素奖励记录。
@@ -2275,7 +2275,7 @@ local showLocalNotice = ShowLocalNoticeByType
 local getWritablePath = GetWritablePath
 local writeGatherMonsterCountConfig = AnonymousHelper_54
 local checkConfigFileState = FileExistCheck_pcall_wrapper
-local capturedValue17 = rootRegister11
+local capturedValue17 = rewardSequenceModulus
 local rewardEntries = loginAndOnlineRewardEntries
 local capturedValue19 = 0.2
 
@@ -2814,6 +2814,9 @@ local function make_Nested_StopGatherMonsters(
     return Nested_StopGatherMonsters
 end
 
+-- PC289-PC295传入的modulus是root PC90的18000，不是奖励记录条数。
+-- 回调按(counter-1)%18000+1索引14项记录；索引15..18000取到nil后直接返回。
+-- 这是当前静态调用链的实际参数关系，不能擅自改成#messageEntries或循环14次。
 local function make_Nested_LuaSendMsg(counter, modulus, messageEntries)
     local function Nested_LuaSendMsg()
         counter = counter + 1
