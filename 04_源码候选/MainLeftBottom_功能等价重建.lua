@@ -1174,8 +1174,8 @@ local function ScheduleOnce(callback, delay) return SL:ScheduleOnce(callback, de
 local function FormatStateChange(newState, ...)
     local message = string.format(
         "状态切换: %s -> %s",
-        tostring(currentState),
-        tostring(newState)
+        currentState,
+        newState
     )
     PrintLog(message)
     -- 仅当PrintLog正常返回后才更新共享状态。
@@ -1190,7 +1190,7 @@ local function ResetGatherMonsterData()
     resetSlot20 = 0
     resetSlot21 = nil
     resetSlot22 = ""
-    local clearTarget = ClearTargetID_2
+    local clearTarget = rootEnvironment.ClearTargetID_2
     if type(clearTarget) == "function" then clearTarget() end
     PrintLog("数据已重置")
 end
@@ -1434,7 +1434,6 @@ local function InitGatherMonsters()
         timerState.gatherTimer = nil
     end
     isGatherRunning = true
-    isGatherRunning = true
     FormatStateChange(gatherStatusText.IDLE)
     ResetGatherMonsterData()
     timerState.gatherTimer = SL:Schedule(MainLoop, gatherConfig.CHECK_INTERVAL)
@@ -1442,7 +1441,6 @@ local function InitGatherMonsters()
 end
 
 local function StopGatherMonsters()
-    isGatherRunning = false
     isGatherRunning = false
     if timerState.gatherTimer then
         SL:UnSchedule(timerState.gatherTimer)
