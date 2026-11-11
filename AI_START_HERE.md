@@ -23,10 +23,10 @@
 
 ## 3. 当前接续位置
 
-- 最近检查点：**301**
-- 下一检查点：**302**
-- 当前优先任务：定点核对PC1-PC85基础闭包导出与模块字段引用；保持Lua 5.1兼容，之后再做可执行语法检查。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
-- PC280-PC412 的根级创建/捕获/导出/入口挂接已静态核对；PC1-PC211已修正ResetGatherMonsterData的清目标/等待状态复位顺序，FindMonsterInCurrViewField主体与27条物理指令恢复稿一致。检查点300已修正MainLoop等待归属变更到期后的FindMonsterInCurrViewField调用实参；检查点301已静态核对PC212-PC255导出，并补充MainLoop数值for循环游标语义注释。当前容器未发现Lua解释器命令，尚未执行Lua 5.1语法检查。后续仍以同一唯一主源码为准。
+- 最近检查点：**302**
+- 下一检查点：**303**
+- 当前优先任务：核对PC86-PC167配置和奖励表的创建值、捕获用途，检查与doInit_UI闭包捕获的一致性。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
+- PC280-PC412 的根级创建/捕获/导出/入口挂接已静态核对；PC1-PC211已修正ResetGatherMonsterData的清目标/等待状态复位顺序，FindMonsterInCurrViewField主体与27条物理指令恢复稿一致。检查点300已修正MainLoop等待归属变更到期后的FindMonsterInCurrViewField调用实参；检查点301已静态核对PC212-PC255导出，并补充MainLoop数值for循环游标语义注释；检查点302核对PC1-PC85闭包导出及捕获边界，修正物品/仓库函数对根级函数的错误词法引用。当前容器未发现Lua解释器命令，尚未执行Lua 5.1语法检查。后续仍以同一唯一主源码为准。
 
 ## 4. 源码文件职责
 

@@ -1680,11 +1680,14 @@ rootEnvironment.MoveTo = MoveTo
 -- ============================================================================
 -- 物品功能入口：root PC64-PC85
 -- ============================================================================
+-- PC64-PC85闭包边界：物品/仓库入口只捕获原型记录的状态表与通知回调。
+-- 其他根级函数通过getfenv(1)按Lua 5.1函数环境查找；LuaSendMsg从
+-- ENV.MainLeftBottom.a读取PC51写入的同一函数对象，避免误增词法upvalue。
 local function DiuItems()
     local MAX_GROUND_ITEMS = 35
     if z.isDiuing then return end
     z.isDiuing = true
-    local _, groundItemCount = GetDroppedItems()
+    local _, groundItemCount = getfenv(1).GetDroppedItems()
     groundItemCount = groundItemCount or 0
     if MAX_GROUND_ITEMS < groundItemCount then
         ShowLocalNoticeByType("地面物品(" .. groundItemCount .. ")超过上限(" .. MAX_GROUND_ITEMS .. ")")
@@ -1711,7 +1714,7 @@ local function DiuItems()
             break
         end
         ShowLocalNoticeByType("丢: " .. candidate.name)
-        LuaSendMsg(global.MsgType.MSG_CS_MAP_ITEM_DISCARD,candidate.makeIndex,candidate.count,0,0,candidate.name,string.len(candidate.name))
+        getfenv(1).MainLeftBottom.a.LuaSendMsg(global.MsgType.MSG_CS_MAP_ITEM_DISCARD,candidate.makeIndex,candidate.count,0,0,candidate.name,string.len(candidate.name))
         sentCount = sentCount + 1
         groundItemCount = groundItemCount + 1
     end
@@ -1722,7 +1725,7 @@ end
 local function TakeItems()
     if z.isTaking then return end
     z.isTaking = true
-    local storageItems = GetStorageItemData()
+    local storageItems = getfenv(1).GetStorageItemData()
     if not storageItems or #storageItems == 0 then
         ShowLocalNoticeByType("仓库无可取物品")
         z.isTaking = false
@@ -1733,7 +1736,7 @@ local function TakeItems()
         if item and item.Name and item.MakeIndex then
             local itemName = string.trim(item.Name)
             ShowLocalNoticeByType("取: " .. itemName)
-            LuaSendMsg(global.MsgType.MSG_CS_STORAGE_PICK_OUT_REQUEST,999999999,item.MakeIndex,0,0,itemName,string.len(itemName))
+            getfenv(1).MainLeftBottom.a.LuaSendMsg(global.MsgType.MSG_CS_STORAGE_PICK_OUT_REQUEST,999999999,item.MakeIndex,0,0,itemName,string.len(itemName))
             takenCount = takenCount + 1
         end
     end
@@ -1748,9 +1751,9 @@ local function PickUpItems()
         return left.dist < right.dist
     end
     local nameRules = {}
-    local droppedItems,droppedCount = GetDroppedItems()
+    local droppedItems,droppedCount = getfenv(1).GetDroppedItems()
     if droppedCount == 0 then ShowLocalNoticeByType("地面无可拾取物品"); return end
-    local playerX,playerY = PlayerPos()
+    local playerX,playerY = getfenv(1).PlayerPos()
     local preferredItems,ordinaryItems = {},{}
     for _,item in ipairs(droppedItems) do
         local name = item.mName or item.mONameStr or item.Name or item.name or ""
@@ -1776,7 +1779,7 @@ local function PickUpItems()
     for _,entry in ipairs(ordinaryItems) do table.insert(candidates,entry) end
     if #candidates == 0 then return end
     local target = candidates[1]
-    MoveTo(target.x,target.y,0)
+    getfenv(1).MoveTo(target.x,target.y,0)
     if math.abs(playerX-target.x)<=1 and math.abs(playerY-target.y)<=1 then
         global.dropItemController:PickMainPlayerPosItem()
         ShowLocalNoticeByType("拾取: " .. target.item.mName)
@@ -1814,7 +1817,7 @@ end
 local function StorageItems()
     if z.isStoring then return end
     z.isStoring = true
-    if not GetAvailableStoragePage() then
+    if not getfenv(1).GetAvailableStoragePage() then
         PrintLog("仓库已满,无法存仓")
         z.isStoring = false
         return
@@ -1900,7 +1903,7 @@ local function StorageItems()
                         return
                     end
                     ShowLocalNoticeByType("存: " .. item.Name)
-                    LuaSendMsg(global.MsgType.MSG_CS_STORAGE_STORE_REQUEST,
+                    getfenv(1).MainLeftBottom.a.LuaSendMsg(global.MsgType.MSG_CS_STORAGE_STORE_REQUEST,
                         999999999,item.MakeIndex,targetPage,0,item.Name,string.len(item.Name))
                     processedMakeIndexes[makeIndex] = true
                     storedPageData[targetPage] = storedPageData[targetPage] + 1
