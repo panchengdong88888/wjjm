@@ -1686,6 +1686,31 @@ end
 rootEnvironment.GetAvailableStoragePage = GetAvailableStoragePage
 rootEnvironment.StorageItems = StorageItems
 
+-- root.children[1] / GetStorageItemData：读取全部仓库页并统计可用格数。
+local function GetStorageItemData()
+    local storageItems = {}
+    local storageProxy = NPCStorageProxy
+    if not storageProxy then return storageItems end
+    local maxPage = storageProxy:GetMaxPage()
+    local availableSlots = 0
+    for page = 1, maxPage do
+        local pageData = storageProxy:GetStorageDataByPage(page)
+        if type(pageData) == "table" then
+            for _, item in ipairs(pageData) do table.insert(storageItems, item) end
+        end
+        local pageItemCount = pageData and #pageData or 0
+        local perPageMax = GUIDefine.STORAGE_PER_PAGE_MAX
+        if not perPageMax then perPageMax = global.MMO.NPC_STORAGE_MAX_PAGE end
+        local openSize = storageProxy:GetOpenSize()
+        local pageLimit = openSize - (page - 1) * perPageMax
+        if pageLimit > perPageMax then pageLimit = perPageMax end
+        if pageLimit > 0 then availableSlots = availableSlots + (pageLimit - pageItemCount) end
+    end
+    PrintLog("仓库总可用格子: " .. tostring(availableSlots))
+    return storageItems
+end
+rootEnvironment.GetStorageItemData = GetStorageItemData
+
 local function CallRootFunction(name, ...)
     local fn = rootEnvironment[name]
     if type(fn) ~= "function" then
