@@ -24,13 +24,13 @@
 
 ## 3. 当前任务（强制）
 
-第一优先级：按机器状态 JSON 的 current_task，继续核对根模块配置读写链的跨函数参数与调用契约。
+第一优先级：按机器状态 JSON 的 current_task，补全根模块内部函数调用关系清单。
 
 - 入口模块、AccountIDValidation、doInit_UI 主体及其 UI 子原型的静态 VM 核对已完成；不得重新从头审查。
-- 当前范围：root.children[0] FileExistCheck_pcall_wrapper、root.children[2] GetWritablePath、root.children[9] ReadNumericConfig、root.children[17] PCallHelper、root.children[32]/[33]/[49]/[54] 配置包装闭包及其调用点。
-- root.children[32] 与 root.children[54] 的 VM 实参顺序均为 PCallHelper(固定文件名, firstArg)，已在唯一交付源码修正；不得按直觉交换。
-- 核对 FileExistCheck_pcall_wrapper 时，区分 VM 原始逻辑异常与源码恢复错误；没有 VM 证据不得擅自改写。
-- 有明确错误就直接修正唯一交付源码；不要另建候选主源码。
+- 配置读写链跨函数核对已完成。root.children[32] 与 root.children[54] 的 VM 实参顺序均为 PCallHelper(固定文件名, firstArg)，唯一交付源码已修正。
+- root.children[0] FileExistCheck_pcall_wrapper及其两个UI调用点已对照VM；文件已存在时直接返回成功、不删除文件，是原始VM行为，与“清空配置”提示不一致。为保持功能等价，不擅自改写。
+- 当前范围：只补全根模块中已恢复函数之间的调用边、延迟/定时回调边、UI回调边和宿主API调用边；不重新分析已完成函数主体。
+- 以现有root PC1-PC412闭包装配记录、原型结构树、函数状态清单和唯一交付源码为依据；有明确错误就直接修正唯一交付源码，不建立平行主源码。
 - 每完成一组、发现阻塞或任务变化，立即更新机器状态 JSON 和本文件，并提交到 main。
 - 不得把历史检查点323记载的上一轮静态复核，当作本轮用户指定任务已经完成。
 
@@ -165,3 +165,13 @@
 - 唯一交付源码原先两处均反序，已修正为PCallHelper(blacklistDistanceConfigFile, firstArg)及PCallHelper(gatherMonsterCountConfigFile, firstArg)，并保留注释说明该反直觉参数顺序来自VM。
 - 源码修正已提交到main；机器状态JSON同步更新。
 - 下一步核对root.children[0] FileExistCheck_pcall_wrapper、Nested_removeFile及其两个配置清理回调调用点。
+
+
+## 检查点338补充：配置读写链复核完成，转入根模块调用图
+
+- root.children[0] FileExistCheck_pcall_wrapper的32条指令及Nested_removeFile子原型5条指令已与唯一交付源码对照。
+- 已确认源码行为与VM一致：文件已存在时直接返回true和路径、不删除；文件不存在时才pcall removeFile并再次检查。
+- doInit_UI child2/child20两个配置清理回调均按返回布尔值显示“已清空/清理失败”；提示与实际行为不一致属于原始VM逻辑问题，本轮不擅自改变。
+- root.children[32]/[54]的PCallHelper实参顺序已修正并提交。
+- 下一步只补全根模块函数间调用边、定时/延迟回调边、UI回调边及宿主API调用边，不重做已完成函数主体。
+- 另记API冲突：用户确认官方GUI:Attach_UITop()无参数，但唯一交付源码仍保留VM调用实参T7=4；本轮未改动该UI调用。
