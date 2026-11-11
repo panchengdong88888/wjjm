@@ -2898,7 +2898,7 @@ local function make_Nested_blacklistTimer(
 end
 
 local function make_Nested_Helper_10(
-    timerState, notify, moduleState, readBlacklistDistanceConfig,
+    timerState, notify, featureState, readBlacklistDistanceConfig,
     openBlacklistDistanceInput, startBlacklistTimer
 )
     local function Nested_Helper_10()
@@ -2906,7 +2906,7 @@ local function make_Nested_Helper_10(
             notify("关闭黑名单功能")
             SL:UnSchedule(timerState.blacklistTimer)
             timerState.blacklistTimer = nil
-            moduleState.isBlacklisting = false
+            featureState.isBlacklisting = false
             return true
         end
 
