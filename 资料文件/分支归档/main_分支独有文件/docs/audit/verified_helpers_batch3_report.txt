@@ -1,0 +1,30 @@
+MainLeftBottom.lua — 已核验辅助函数批次 3
+=========================================
+
+本批新增恢复 4 个完整、可读 Lua 辅助函数；以原 dispatcher 的操作数语义、正确字段 VM dump 和闭包映射交叉核验。
+
+1. root/40 — GetMainPlayerID
+   6 条物理指令。调用 global.gamePlayerController:GetMainPlayerID() 并返回结果。
+
+2. root/30 — IsActorAlive
+   7 条物理指令。输入为空/false 时原样返回；否则调用 actor:IsDie() 并取反。
+
+3. root/44 — GetOwnerDescription
+   20 条物理指令。调用 actor:GetOwnerID()；ownerID 为 nil（VM dump 以 ["unknown", 2] 序列化）、空字符串或 -1 时分类为“无归属”；与传入 mainPlayerID 相同则为“自己”；否则为“其他玩家”。调用点确认参数为 actor、mainPlayerID，返回顺序为原始 ownerID、分类描述。
+
+4. root/29/1 — CompareMonsterDistance
+   8 条物理指令。按 a._distance < b._distance 比较，作为 root/29 的 table.sort 比较器。
+
+合计：4 个完整辅助函数，41 条物理指令。
+
+附加的 root/46 分析成果：
+- 已确认 22 个闭包 upvalue 槽位到父原型局部寄存器的捕获映射。
+- 通过父原型 root 的寄存器定义，识别出 slot 1 是状态显示字符串“空闲状态”，slot 2 是状态名称表，slot 21 是配置表（含 GATHER_THRESHOLD、CHECK_INTERVAL、ATTACK_WAIT_TIME）；slot 0/8/10/11/12/13/14/16 对应状态/计数/标志类变量或空值，仍需逐个核对。
+- root/29 是 FindMonsterInCurrViewField 的包装/过滤/排序辅助函数；其常量和代码显示读取 MMO.SETTING_IDX_IGNORE_MONSTER、调用 GET_SETTING、过滤忽略列表、读取怪物 GetName，并以 _distance 排序及使用 GATHER_THRESHOLD。
+- root/29/1 比较器已单独恢复。
+- SL.md 原文确认 SL:FindMonsterInCurrViewField(noPetOfMainPlayer, noPetOfNetPlayer)，参数 true 表示排除主玩家宠物/其他玩家宠物（第二参数 true 表示不包含其他玩家宠物）。
+
+注意：root/29 本体仍未计入完整恢复函数数；其多分支过滤循环仍需要继续核验。root/46 本体仍未完成。
+
+## 2026-11-08 校正
+此前本报告把 VM dump 的 ["unknown", 2] 误读为字符串 "unknown"，并把返回值顺序写反。已通过 23 处跨原型常量使用、MainLoop PC 208–231 调用点及 root.children[43] PC 17–19 逐条复核。正确实现见 docs/audit/root43_GetOwnerDescription_静态恢复核验.md；未做运行时验证。

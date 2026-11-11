@@ -1,0 +1,23 @@
+【新对话必须先读】MainLeftBottom(2).lua 明文恢复工程
+
+这不是从零开始的项目。用户前几天已完成了完整的底层静态去虚拟化工作。请先读取工程包中的 01_原始资料校验与总账.md，再读取：
+- 02_原型总索引.json
+- 03_函数状态清单.csv
+- 04_闭包捕获映射.json
+- 05_机器可读接续状态.json
+- 恢复候选_静态未验收/静态恢复候选.lua
+- 已有静态去虚拟化成果/MainLeftBottom_完整明文重建版.lua
+- 已有静态去虚拟化成果/MainLeftBottom_vm_disassembly_corrected_phase3.txt
+- 已有静态去虚拟化成果/MainLeftBottom_opcode_reference_corrected_phase3.txt
+- 已有静态去虚拟化成果/MainLeftBottom_closure_map_phase3.txt
+- 已有静态去虚拟化成果/MainLeftBottom_reverse_engineering_phase3.txt
+
+核心路径规则：本项目新工作一律使用 JSON 零基路径 root.children[n]。旧报告 root/46 是一基标签，等于 root.children[45]（417 条 MainLoop）；旧 root/47 等于 root.children[46]（169 条 DiuItems）；旧 root/47/1 等于 root.children[46].children[0]（关键词闭包）。不要再把两套路径混为一谈。
+
+已有的底层成果：71,216 字节 stage3 payload、110 个原型、5,580 条物理指令、356 种 opcode、corrected opcode reference（含 OP_412）、全量物理 PC 反汇编、全量闭包映射、765 KB 指令级去虚拟化清单、阶段三控制流报告。它们都已经存在，禁止重复从头生成。
+
+注意：765 KB 的“完整明文重建版.lua”是 VM 指令级静态去虚拟化清单，不是作者级普通 Lua，也不能直接运行。`MainLeftBottom_decrypted(1).lua` 与原始加密文件字节完全相同，不是解密成果。
+
+当前目标仍是作者级可读 Lua 明文。下一步优先核验静态候选和调用点，再恢复 MainLoop、DiuItems、UI 初始化等长函数。每次新增普通 Lua 源码都必须真实写入文件，并更新状态 CSV/JSON。上下文结束前将接续资料和机器状态提交到 GitHub 仓库；本仓库是唯一主工作区。新对话先读仓库 README.md，再按 README 顺序读取 docs/handoff/ 与索引/反汇编文件。
+
+用户不需要逐步讲解，只希望尽快拿到完整明文；中文回复，少汇报过程，不虚报百分比。
