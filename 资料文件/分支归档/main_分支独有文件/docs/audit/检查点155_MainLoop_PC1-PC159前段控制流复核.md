@@ -10,9 +10,9 @@
 ## 1. 入口运行门槛（PC1-PC4）
 
 - PC1读取UPVALUE_0。
-- PC2判断其truthiness；运行标记为false/nil时执行PC3跳转至PC5，继续主流程。
-- 运行标记truthy时跳过PC3并在PC4立即return。
-- 草稿的`if not UPVALUE_0 then return end`与该控制流一致。
+- PC2判断其truthiness；运行标记为true时，条件不触发跳过，执行PC3跳转至PC5，继续主流程。
+- 运行标记为false/nil时，PC2跳过PC3并在PC4立即return。
+- 因此草稿的`if not UPVALUE_0 then return end`与该控制流一致。此前本段文字把真假分支方向写反，现按PC1-PC4的反汇编语义更正；唯一交付源码无需修改。
 
 ## 2. 白名单地图门槛（PC5-PC23）
 
