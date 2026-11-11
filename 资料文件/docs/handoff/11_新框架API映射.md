@@ -81,7 +81,7 @@
 
 ## 五、需要结合字节码复核的调用形式
 
-1. `FindMonsterCandidates` 候选代码中出现 `SL.FindMonsterInCurrViewField()` 点调用；开发包文档示例为 `SL:FindMonsterInCurrViewField(noPetOfMainPlayer, noPetOfNetPlayer)`。需要回到 corrected phase3 对应调用窗口，核实是否漏写 self 或候选源码是否误转写，暂不自动修改。
+1. `FindMonsterCandidates` 的调用形式已于检查点339完成VM核实：root.children[28] PC1读取SL，PC2为OP_121（`R[A+1]=R[B]; R[A]=R[B][C]`，即SELF/冒号方法调用），PC3/PC4分别由OP_338/OP_401装载true，PC5调用。因此唯一交付源码必须写为 `SL:FindMonsterInCurrViewField(true, true)`。旧候选代码 `SL.FindMonsterInCurrViewField()` 漏掉receiver和两个参数，已修正。
 2. `doInit_UI` 的检查点208确认 `GUI.Attach_UITop` 只收到一个显式 T[7] 实参；开发包 `GUI/常用方法.md` 的接口标题写作 `Attach_UITop()`。这是文档签名与字节码实参数量的待核对点，保留 T[7] 来源占位，不改成零参，也不擅自认定宿主含义。
 3. `SL:GetMetaValue`、`SL:ScheduleOnce`、`SL:UnSchedule` 等已明确的 SL 方法，后续逐项检查候选代码是否保留 SL 接收者及正确参数顺序。
 
@@ -117,3 +117,11 @@
 ### VM dump的unknown标记
 
 检查点102已确认常量`["unknown",2]`是VM dump对nil的序列化占位，不是运行时业务哨兵。检查点225据此修正Nested_FFFF00的resTimer清理和doInit_UI的cruiseTimer清理为nil。该规则适用于同一dump格式中的相同标记，不能将其他不同来源的unknown值一概替换。
+
+
+## 检查点339补充：FindMonsterCandidates调用形式已由VM闭合
+
+- 新框架文档签名：`SL:FindMonsterInCurrViewField(noPetOfMainPlayer, noPetOfNetPlayer)`。
+- root.children[28] PC1-PC5：读取SL；OP_121执行SELF取方法并保留self；OP_338与OP_401分别装载true；随后调用方法。
+- 唯一交付源码原先误写为点调用且无参数，已改为 `SL:FindMonsterInCurrViewField(true, true)`。
+- 这既符合具体VM调用窗口，也符合新框架文档的receiver和双参数签名；不再列为待核对项。
