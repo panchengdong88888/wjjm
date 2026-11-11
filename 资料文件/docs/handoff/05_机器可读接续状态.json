@@ -2,8 +2,8 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-11",
-  "latest_checkpoint": 325,
-  "next_checkpoint": 326,
+  "latest_checkpoint": 326,
+  "next_checkpoint": 327,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
@@ -34,7 +34,7 @@
       "只有以上项目全部完成，才允许把当前任务改为下一功能模块"
     ],
     "next": "从唯一交付源码开始，按 root 入口、AccountIDValidation、doInit_UI 三组顺序逐段复核；每完成一组立即更新本状态文件和 AI_START_HERE.md 并提交 main。不得提前分析或编写其他功能函数。",
-    "progress": "检查点324：已开始本轮入口/UI专项复核。root PC1-PC42（模块环境与根表创建、a/b/z/timerState初始化）已直接对照MainLeftBottom_vm_dump.json逐条核对；唯一交付源码第17-83行的执行顺序、字段值、表身份和当前chunk环境写入关系一致，未发现需要修正的明确错配。\nroot PC43-PC412尚未完成本轮逐段核对；不得因历史检查点注释或旧审计报告而视为已完成。下一步继续核对root PC43-PC85，再沿PC顺序推进剩余入口装配。\n本轮已读取AccountIDValidation（root.children[55]）及其两个子原型的VM指令和源码，发现旧归档检查点169对等待回调捕获值的文字结论与PC55/PC59指令顺序存在冲突；尚未将该组标记完成，待按VM指令进一步复核后处理。\n检查点325：root PC43-PC85已直接对照VM完成父级闭包创建/捕获顺序与根级导出落点核对。PrintLog写入ENV['_G'].log；ShowLocalNoticeByType捕获a；LuaSendMsg按[a,PrintLog]捕获并写入a.LuaSendMsg；ScheduleOnce/Schedule保持本地闭包；GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems/GetAvailableStoragePage/GetStorageItemData/StorageItems/TakeItems/PickUpItems的全局导出目标均能在唯一源码中找到对应函数身份。源码定义/导出在文件中的物理行位置与VM PC时间顺序不同，但这些段落只建立闭包和赋值，尚未发现会改变最终入口对象身份的副作用；整段根模块审查仍继续。"
+    "progress": "检查点324：已开始本轮入口/UI专项复核。root PC1-PC42（模块环境与根表创建、a/b/z/timerState初始化）已直接对照MainLeftBottom_vm_dump.json逐条核对；唯一交付源码第17-83行的执行顺序、字段值、表身份和当前chunk环境写入关系一致，未发现需要修正的明确错配。\nroot PC43-PC412尚未完成本轮逐段核对；不得因历史检查点注释或旧审计报告而视为已完成。下一步继续核对root PC43-PC85，再沿PC顺序推进剩余入口装配。\n本轮已读取AccountIDValidation（root.children[55]）及其两个子原型的VM指令和源码，发现旧归档检查点169对等待回调捕获值的文字结论与PC55/PC59指令顺序存在冲突；尚未将该组标记完成，待按VM指令进一步复核后处理。\n检查点325：root PC43-PC85已直接对照VM完成父级闭包创建/捕获顺序与根级导出落点核对。PrintLog写入ENV['_G'].log；ShowLocalNoticeByType捕获a；LuaSendMsg按[a,PrintLog]捕获并写入a.LuaSendMsg；ScheduleOnce/Schedule保持本地闭包；GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems/GetAvailableStoragePage/GetStorageItemData/StorageItems/TakeItems/PickUpItems的全局导出目标均能在唯一源码中找到对应函数身份。源码定义/导出在文件中的物理行位置与VM PC时间顺序不同，但这些段落只建立闭包和赋值，尚未发现会改变最终入口对象身份的副作用；整段根模块审查仍继续。\n检查点326：root PC86-PC211已完成本轮父级数据/共享cell/闭包捕获对照。gatherConfig三字段、奖励取模值18000、14项奖励表、状态文字表与currentState初值、T15-T22共享状态初值均与VM一致；FormatStateChange捕获[PrintLog,currentState]、SetTargetID/ClearTargetID_2/GetMainPlayerID/GetPlayerPosition/GetPlayerMapPosition/DistanceCalculation/IsDie/GetOwnerIDText/GetOwnerID/GetOwnerDescription的闭包创建身份与后续捕获来源一致；FindMonsterCandidates捕获[GetPlayerPosition,IsDie,GetPlayerMapPosition,DistanceCalculation,gatherConfig]；ResetGatherMonsterData捕获九个共享cell/闭包；FindMonsterInCurrViewField捕获IsDie。未发现明确根级装配错配。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
@@ -61,7 +61,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "本轮检查点324仅完成root PC1-PC42的直接静态对照：MainLeftBottom chunk环境导出、a/b/z/timerState创建顺序及初始化字段与VM一致，未发现明确源码错配。root PC43-PC412、AccountIDValidation、doInit_UI及23个UI子原型仍待本轮逐项复核。历史检查点323只作参考。 检查点325补充：root PC43-PC85的闭包捕获、ENV['_G'].log、a.LuaSendMsg及11个全局导出目标已对照；未发现明确错配。",
+    "static_source_review": "本轮检查点324仅完成root PC1-PC42的直接静态对照：MainLeftBottom chunk环境导出、a/b/z/timerState创建顺序及初始化字段与VM一致，未发现明确源码错配。root PC43-PC412、AccountIDValidation、doInit_UI及23个UI子原型仍待本轮逐项复核。历史检查点323只作参考。 检查点325补充：root PC43-PC85的闭包捕获、ENV['_G'].log、a.LuaSendMsg及11个全局导出目标已对照；未发现明确错配。 检查点326补充：root PC86-PC211配置表、奖励记录、共享状态初值及相关闭包捕获身份已对照VM，未发现明确父级装配错配。",
     "lua_syntax_check": "未执行真正Lua 5.1编译：当前环境没有lua5.1/luac5.1/lua/luac/luajit或luaparser。已做禁用语法/API词项扫描（无goto、table.unpack/pack/move、bit32、utf8、package.searchpath；_ENV仅注释）及自制词法块配对检查（function/if/do/repeat与end/until平衡），这不等同于luac编译。",
     "runtime_check": "未执行目标游戏运行验证。",
     "do_not_claim_pass_without_execution": true,

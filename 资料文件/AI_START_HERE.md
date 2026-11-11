@@ -76,3 +76,10 @@
 - 已核对PC55/57/59/61/63/67/70/73/78/82/85对应的全局导出名称和唯一源码目标。
 - 未发现明确错配；函数定义和赋值在普通Lua文件中的行序与VM创建PC顺序不完全相同，需在root全量审查中继续确认无初始化期副作用。
 - root PC86-PC412仍未完成本轮核对；下一步按PC顺序继续。
+
+## 检查点326补充：root PC86-PC211
+
+- 已核对gatherConfig、18000奖励取模值、14项奖励记录、采集状态文字表、currentState及T15-T22共享状态初值。
+- 已核对FormatStateChange、FindMonsterCandidates、ResetGatherMonsterData、FindMonsterInCurrViewField等闭包的父级捕获顺序和对应词法共享变量。
+- 未发现明确父级装配错配；本批不代表这些子原型业务主体已经全部完成语义审计。
+- 下一步继续root PC212-PC296，核对全局导出、UI控制闭包、AccountIDValidation父级捕获和黑名单状态表字段。
