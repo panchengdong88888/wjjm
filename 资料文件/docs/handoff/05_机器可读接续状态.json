@@ -2,12 +2,12 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-11",
-  "latest_checkpoint": 335,
-  "next_checkpoint": 336,
+  "latest_checkpoint": 336,
+  "next_checkpoint": 337,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "入口root PC1-PC412、AccountIDValidation及doInit_UI主体/23个直接子原型的静态VM核对完成；Lua 5.1实际编译未执行，目标游戏运行未验证。当前仍保持入口/UI任务锁定，未经用户指示不切换到其他功能模块。",
+    "status": "入口/UI静态VM核对已完成。用户明确要求：不执行Lua 5.1实际编译，也不执行目标游戏运行验证；这两项不是项目交付条件，不得作为阻塞。后续按函数状态清单和既定优先级继续其他功能模块。",
     "title": "优先核对唯一交付源码中的入口函数与全部 UI 相关函数",
     "prototype": "root / MainLeftBottom_Module + root.children[55] / AccountIDValidation + root.children[42] / doInit_UI 及其 UI 子原型",
     "scope": [
@@ -25,15 +25,15 @@
       "静态核对、Lua 5.1 编译、目标游戏运行验证分开记录，不得把静态核对说成编译或运行通过"
     ],
     "completion_criteria": [
-      "root 入口模块 PC1-PC412 对应实现逐段核对并记录结果",
-      "AccountIDValidation 主体及全部嵌套回调逐项核对",
-      "doInit_UI 主体 419 条指令及 23 个直接子原型逐项核对",
-      "入口与 UI 涉及的所有明确源码错误已修正到唯一交付文件",
-      "Lua 5.1 禁用语法/API 扫描与可执行的语法验证状态已记录；无法编译时明确标记未编译",
-      "所有未能静态确认的宿主/API冲突与运行风险已单独列明",
-      "只有以上项目全部完成，才允许把当前任务改为下一功能模块"
+      "root入口模块PC1-PC412静态VM核对完成",
+      "AccountIDValidation主体及全部嵌套回调静态核对完成",
+      "doInit_UI主体419条指令及23个直接子原型静态核对完成",
+      "明确源码错误已修正到唯一交付文件",
+      "Lua 5.1兼容性通过静态代码审查及禁用语法/API扫描；不要求实际编译",
+      "未能静态确认的宿主/API冲突与运行风险单独列明",
+      "静态核对完成即可继续下一功能模块；实际编译和目标游戏运行验证不是阶段完成条件"
     ],
-    "next": "入口root PC1-PC412、AccountIDValidation、doInit_UI主体419条及23个直接子原型、跨段共享状态的本轮静态VM核对均已完成，明确GETGLOBAL绑定偏差已修正。下一步不是重新分析：需在具备Lua 5.1/luac5.1的环境对根目录MainLeftBottom_唯一交付文件.lua执行真实语法编译；随后在目标游戏环境验证入口/UI、定时器和宿主API风险。当前运行环境无Lua 5.1编译器，故暂记未编译。完成实际编译/运行验证前，current_task仍保持入口/UI任务，不得自行切换其他功能模块。",
+    "next": "不要重新分析入口/UI已完成部分。按用户明确要求，跳过Lua 5.1实际编译、luac编译及目标游戏运行验证；不安装/寻找编译器、不等待外部验证、不要求用户补做。Lua 5.1兼容性仍通过静态代码审查和禁用语法/API扫描把关。下一步读取函数状态清单，按既定优先级继续尚未完成的功能模块。",
     "progress": "检查点324：已开始本轮入口/UI专项复核。root PC1-PC42（模块环境与根表创建、a/b/z/timerState初始化）已直接对照MainLeftBottom_vm_dump.json逐条核对；唯一交付源码第17-83行的执行顺序、字段值、表身份和当前chunk环境写入关系一致，未发现需要修正的明确错配。\nroot PC43-PC412尚未完成本轮逐段核对；不得因历史检查点注释或旧审计报告而视为已完成。下一步继续核对root PC43-PC85，再沿PC顺序推进剩余入口装配。\n本轮已读取AccountIDValidation（root.children[55]）及其两个子原型的VM指令和源码，发现旧归档检查点169对等待回调捕获值的文字结论与PC55/PC59指令顺序存在冲突；尚未将该组标记完成，待按VM指令进一步复核后处理。\n检查点325：root PC43-PC85已直接对照VM完成父级闭包创建/捕获顺序与根级导出落点核对。PrintLog写入ENV['_G'].log；ShowLocalNoticeByType捕获a；LuaSendMsg按[a,PrintLog]捕获并写入a.LuaSendMsg；ScheduleOnce/Schedule保持本地闭包；GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems/GetAvailableStoragePage/GetStorageItemData/StorageItems/TakeItems/PickUpItems的全局导出目标均能在唯一源码中找到对应函数身份。源码定义/导出在文件中的物理行位置与VM PC时间顺序不同，但这些段落只建立闭包和赋值，尚未发现会改变最终入口对象身份的副作用；整段根模块审查仍继续。\n检查点326：root PC86-PC211已完成本轮父级数据/共享cell/闭包捕获对照。gatherConfig三字段、奖励取模值18000、14项奖励表、状态文字表与currentState初值、T15-T22共享状态初值均与VM一致；FormatStateChange捕获[PrintLog,currentState]、SetTargetID/ClearTargetID_2/GetMainPlayerID/GetPlayerPosition/GetPlayerMapPosition/DistanceCalculation/IsDie/GetOwnerIDText/GetOwnerID/GetOwnerDescription的闭包创建身份与后续捕获来源一致；FindMonsterCandidates捕获[GetPlayerPosition,IsDie,GetPlayerMapPosition,DistanceCalculation,gatherConfig]；ResetGatherMonsterData捕获九个共享cell/闭包；FindMonsterInCurrViewField捕获IsDie。未发现明确根级装配错配。\n检查点327：root PC212-PC296已完成父级闭包/模块字段/全局导出核对。IsInWhitelistMap、MainLoop 22项捕获、InitGatherMonsters 7项捕获、StopGatherMonsters 7项捕获、Builtsetting捕获、MoveItemToQuickUse无捕获均与源码闭包引用一致；a.hide/show/destroy分别对应DestroyUI/SetButtonVisibilityState/ShowHideAllButtons且捕获顺序一致；AccountIDValidation捕获[PrintLog,ShowLocalNoticeByType]并写入MainLeftBottom.main；randomTeleportItemNames、三个黑名单数值常量、blacklistState七字段及两个配置文件名均与VM一致。未发现明确根级装配错配。\n检查点328：root PC212-PC315父级装配已直接对照VM。PC212-PC258五个全局入口（IsInWhitelistMap/MainLoop/InitGatherMonsters/StopGatherMonsters/Builtsetting）及MainLoop 22项捕获、Init/Stop各7项捕获顺序一致；PC261-PC274三个UI闭包分别捕获[a,timerState,b]、[a,b]、[timerState,b,a]并写入a.hide/show/destroy；PC275-PC279 AccountIDValidation捕获PrintLog/ShowLocalNoticeByType并挂入MainLeftBottom.main；PC280-PC294随机传送石数组、黑名单常量和blacklistState字段及a.blacklist同一对象写入一致；PC295-PC315配置文件名、GetWritablePath/ReadNumericConfig/PCallHelper/FileExistCheck_pcall_wrapper及四个固定文件包装闭包的捕获链与源码词法引用对应。未发现明确父级装配错配。\n检查点329：root PC316-PC412父级闭包及模块返回完成本轮对照。PC316-PC349八组数值对子表与源码构造一致；PC350-PC351 GetMapData2DPtr捕获T52；PC352无捕获PCallHelper_2；PC353-PC354 FindBlacklistPlayer捕获该函数；PC355-PC356 UseItemByIndex捕获randomTeleportItemNames；PC357-PC359 onDamageMsg捕获blacklistState并写入a.onDamageMsg；PC360-PC362 InstallDamageHook捕获[a,PrintLog]并作为T57 live cell供后续捕获；PC363-PC367 DeathAutoBlacklist捕获[blacklistState,PrintLog,FindBlacklistPlayer,ShowLocalNoticeByType]；PC368-PC381 BlacklistPlayerDetection的13项捕获与源码词法引用顺序一致并于PC382导出；PC383-PC388 ClearBlacklistItems四项捕获与导出一致；PC389-PC410 doInit_UI的20项捕获槽身份与源码局部别名/共享变量对应；PC411写MainLeftBottom.doInit，PC412返回根模块表。root PC1-PC412本轮父级装配核对完成，未发现明确错配。\n检查点330：root.children[55] AccountIDValidation主原型及两个直接子原型完成逐段VM核对。主原型GAME_ID读取/数值204208判断、UID读取、9项字符串白名单、Nested_ID调用、成功/失败日志、等待回调创建及SL:Schedule(callback,0.5)顺序一致；children[1] ipairs循环、双方tostring比较、命中PrintLog并return true、未命中ShowLocalNoticeByType并return false一致；children[0]检查MainProperty._ui.Panel_mini_chat，满足时SL:UnSchedule(nil)并调用MainLeftBottom.doInit，之后输出等待日志一致。PC55 nil捕获结论按指令确认，未发现源码错配。\n检查点331：开始doInit_UI 419条主体及23个直接子原型复核。已完成主体PC1-PC419的结构/执行顺序对照：初始化通知、资源快照、四组快捷栏定时任务、巡航任务、仓库代理请求、Attach_UITop(4)、mini-chat定位、三组按钮配置、12个按钮处理闭包、按钮创建/点击回调、隐藏按钮和hidebut写入顺序与VM对应。发现并修正6类全局函数绑定偏差：VM子原型通过GETGLOBAL调用/传递StorageItems、TakeItems、PickUpItems、DiuItems、BlacklistItems、ClearBlacklistItems，旧稿通过本地CallRootFunction包装器间接调用；已删除这些包装器并改为getfenv(1)全局环境查找/传递，保持目标全局函数身份。另修正巡航回调：VM child12使用GETGLOBAL LuaSendMsg，旧稿误读a.LuaSendMsg；现改为getfenv(1).LuaSendMsg，保留VM原行为及潜在全局缺失风险。23个子原型主体仍需继续逐个核验。\n检查点332：doInit_UI的直接子原型child0-child10及child1/child3/child9的嵌套闭包完成第一批逐段核对。child0/child3.child1背包数量统计（BAG_DATA、Name/MakeIndex、string.find纯文本、ITEM_IS_BIND、OverLap）；child1奖励开关与嵌套LuaSendMsg回调；child2清怪阈值配置清理提示；child3资源统计窗口及其五个子原型（数值格式化、背包计数、资源行布局、刷新定时器、空白关闭回调）；child4离开游戏世界；child5按钮状态刷新；child6/7拉怪开关和阈值写入；child8存仓开关；child9按钮创建和点击闭包；child10拾取开关均已对照VM。除检查点331已修正的GETGLOBAL函数绑定外，本批未发现新的明确指令/参数/receiver/返回值错配。\n检查点333：doInit_UI直接子原型child11-child22及其嵌套闭包完成逐段核对。child11/14输入弹窗与各自保存回调；child12每日巡航时间窗/日期去重/GETGLOBAL LuaSendMsg；child13清空黑名单；child15隐藏按钮状态切换；child16快捷栏物品索引及MoveItemToQuickUse；child17黑名单定时器；child18黑名单开关；child19取物开关；child20清理黑名单距离配置；child21丢弃开关；child22输入弹窗匿名函数及Nested_str/Nested_match/Nested_Helper_11均与VM指令的参数、分支、捕获和返回对应。确认child12巡航回调第二捕获状态值未在VM主体读取；源码现只保留参数位置，不再错误从该表读取LuaSendMsg。确认Nested_Anonymous错误输入路径T[2]=nil并保留延迟直接调用nil的原始行为。除已在检查点331记录并修正的全局绑定偏差外，本批未发现新的明确错配。\n检查点334：跨段共享状态与闭包一致性复核完成。确认a/b/z/timerState为同一根模块生命周期内的共享对象；uiState=a、buttonMap=b、featureState=z；a.blacklist与blacklistState同一表，a.onDamageMsg与消息回调同一函数；a.hide/show/destroy分别绑定DestroyUI/SetButtonVisibilityState/ShowHideAllButtons；MainLeftBottom.main/doInit分别绑定AccountIDValidation/doInit_UI。gatherConfig由MainLoop及UI阈值输入闭包共享；timerState的gather/storage/take/shiqu/drop/blacklist/reward/cruise/res定时器字段在对应启动/取消路径使用同一状态表；blacklistState.distance由UI写入并由黑名单检测闭包读取；z.isBlacklisting/isStoring/isTaking/isDiuing等状态由对应功能闭包共享。a.hidebut/resWin分别与隐藏按钮及资源窗口关闭/清理路径连接。未发现新的明确共享对象身份错配。"
   },
   "source_files": {
@@ -62,8 +62,8 @@
   },
   "verification": {
     "static_source_review": "本轮检查点324仅完成root PC1-PC42的直接静态对照：MainLeftBottom chunk环境导出、a/b/z/timerState创建顺序及初始化字段与VM一致，未发现明确源码错配。root PC43-PC412、AccountIDValidation、doInit_UI及23个UI子原型仍待本轮逐项复核。历史检查点323只作参考。 检查点325补充：root PC43-PC85的闭包捕获、ENV['_G'].log、a.LuaSendMsg及11个全局导出目标已对照；未发现明确错配。 检查点326补充：root PC86-PC211配置表、奖励记录、共享状态初值及相关闭包捕获身份已对照VM，未发现明确父级装配错配。 检查点327补充：root PC212-PC296的采集闭包父级捕获、a.hide/show/destroy字段、AccountIDValidation入口绑定、黑名单状态表及配置常量已对照VM，未发现明确父级装配错配。 检查点328补充：root PC212-PC315全局导出、UI闭包捕获、AccountIDValidation挂接、blacklistState共享对象及配置读写闭包链已对照；未发现明确父级装配错配。AccountIDValidation两个子原型的完整逻辑已开始独立核验，详见后续检查点。 检查点329补充：root PC316-PC412数值表、黑名单闭包链、T57 live-cell捕获、onDamageMsg字段、BlacklistItems/ClearBlacklistItems导出、doInit_UI 20项捕获、doInit挂接和模块返回均已直接对照VM；root PC1-PC412本轮父级装配审查完成，未发现明确错配。子原型主体审查仍待完成。 检查点330补充：AccountIDValidation主原型与两个直接子原型（等待回调、白名单匹配闭包）已逐段对照VM；9项ID及顺序、GAME_ID门控、回调UI条件、UnSchedule(nil)、doInit调用均一致，未发现明确错配。 检查点331：doInit_UI主体PC1-PC419执行结构已与VM核对；修正了UI子闭包中6类root全局函数被本地CallRootFunction包装器替代的问题，并将巡航回调发送入口改回VM的GETGLOBAL LuaSendMsg。 检查点332补充：doInit_UI直接子原型child0-child10及其嵌套闭包已逐段对照；资源统计窗口320条主体与5个子原型、按钮创建/点击事件和各开关定时回调对应。未发现新的明确错配。 检查点333补充：doInit_UI直接子原型child11-child22及嵌套闭包已逐段对照；输入弹窗、巡航回调、黑名单/存仓/取物/拾取/丢弃开关、快捷栏和隐藏按钮回调均对应VM。未发现新的明确错配。 检查点334补充：已完成跨段共享状态核对，a/b/z/timerState、blacklistState、gatherConfig、按钮映射、资源窗口和各定时器句柄均保持预期共享对象/字段关系，未发现新的明确身份错配。",
-    "lua_syntax_check": "对当前最新唯一交付源码（127583字符）重新执行Lua 5.1兼容词项扫描：去除注释和字符串后，goto、_ENV、table.unpack/pack/move、bit32、utf8、package.searchpath、string.pack/unpack均为0处；自制词法块配对检查function/if/do/repeat与end/until完全平衡。运行环境中未找到lua5.1、luac5.1、lua、luac、luajit或luaparser，因此真正Lua 5.1语法编译仍未执行；静态词项/块配对检查不等同于编译通过。",
-    "runtime_check": "未执行目标游戏运行验证。",
+    "lua_syntax_check": "仅执行静态Lua 5.1兼容性审查、禁用语法/API扫描及词法结构检查。用户明确要求不执行实际Lua 5.1编译；不得安装/寻找编译器或要求用户补做。",
+    "runtime_check": "按用户明确要求，不执行目标游戏运行验证；不得将未运行作为阻塞或要求用户补做。",
     "do_not_claim_pass_without_execution": true,
     "open_risks": [
       "VM在PC183调用GUI:Attach_UITop时传入一个显式实参T7=4；新框架文档标题签名为Attach_UITop()无必需参数。保留VM调用，不擅自删参，需目标版本运行验证。",
@@ -73,7 +73,8 @@
       "AccountIDValidation等待回调按VM执行SL:UnSchedule(nil)；不擅自替换为Schedule返回句柄。",
       "Nested_Anonymous错误输入路径按VM捕获T[2]=nil并在延迟回调中直接调用，原始行为会产生attempt-to-call-nil；按功能等价要求保留原行为，若要修复需单独批准偏离VM。",
       "巡航回调root.children[42].children[12]按VM GETGLOBAL读取当前chunk环境LuaSendMsg；已在唯一源码改为getfenv(1).LuaSendMsg。根模块PC51只把LuaSendMsg写入MainLeftBottom.a.LuaSendMsg而未导出同名全局，因此该入口在目标宿主环境中是否另有定义仍待运行验证，不擅自改回a.LuaSendMsg。"
-    ]
+    ],
+    "execution_policy": "用户明确决定：不需要Lua 5.1实际编译、luac编译或目标游戏运行验证。不得安装/寻找编译器、搭建验证环境或反复请求用户验证。静态VM对照、Lua 5.1兼容性审查和禁用语法/API扫描照常执行。"
   },
   "working_rules": [
     "直接写可读 Lua 实现，不只写分析报告或伪代码。",
@@ -84,7 +85,8 @@
     "中文沟通，减少过程汇报，不重复询问已知信息。",
     "每批有意义改动集中为一个 commit，直接提交到唯一分支 main；只核验本批文件与 main 分支 HEAD。",
     "唯一持续更新主源码为MainLeftBottom_唯一交付文件.lua；不得另建平行开发源码，所有新增实现直接写入该文件。",
-    "仓库只使用 main 一个分支；不得创建任何其他分支。"
+    "仓库只使用 main 一个分支；不得创建任何其他分支。",
+    "用户明确要求不执行Lua 5.1实际编译/luac编译及目标游戏运行验证；不得安装或寻找编译器、搭建验证环境、要求用户补做，也不得把未编译/未运行作为阻塞。"
   ],
   "lua_compatibility": {
     "target_version": "Lua 5.1",
