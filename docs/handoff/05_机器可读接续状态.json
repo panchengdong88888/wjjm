@@ -19,14 +19,15 @@
       "23 个子原型调用关系",
       "20 个捕获参数在根模块工厂装配时的实际注入顺序"
     ],
-    "next": "直接检查当前主源码的相关代码段，完成 UI 初始化功能等价实现与捕获装配复核；形成可审阅成果后，再处理 MainLeftBottom_Module PC1-PC412 的连续入口实现。"
+    "next": "直接在唯一主源码 MainLeftBottom_功能等价重建.lua 内继续补齐 doInit_UI 和其依赖闭包；后续所有实现只更新该文件。"
   },
   "source_files": {
-    "primary": "04_源码候选/root_MainLeftBottom_Module.lua",
+    "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
     "legacy_cross_reference": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "function_status_index": "02_基础索引/03_函数状态清单.csv",
     "framework_api_reference": "docs/handoff/11_新框架API映射.md",
-    "vm_dump": "02_基础索引/MainLeftBottom_vm_dump.json"
+    "vm_dump": "02_基础索引/MainLeftBottom_vm_dump.json",
+    "root_module_reference": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
   "loading_policy": {
     "read_first": [
@@ -45,7 +46,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "checkpoint 284 已完成 doInit_UI 捕获命名与集中主稿回调来源同步；后续仍需继续复核 UI 初始化、事件和根模块装配关系。",
+    "static_source_review": "已于2026-11-11创建唯一主源码文件，初始内容承接root_MainLeftBottom_Module.lua现有可读实现；整体闭包装配仍未完成。",
     "lua_syntax_check": "未执行/未确认",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
@@ -57,6 +58,7 @@
     "简单明确的逻辑优先；复杂逻辑可先标记后续分析。",
     "用户发送 1 表示继续，无需确认。",
     "中文沟通，减少过程汇报，不重复询问已知信息。",
-    "每批有意义改动集中为一个 commit，更新此状态；只核验本批文件与分支 HEAD。"
+    "每批有意义改动集中为一个 commit，更新此状态；只核验本批文件与分支 HEAD。",
+    "唯一持续更新主源码为04_源码候选/MainLeftBottom_功能等价重建.lua；不得另建平行开发源码，所有新增实现直接写入该文件。"
   ]
 }
