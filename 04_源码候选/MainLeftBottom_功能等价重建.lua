@@ -1522,6 +1522,19 @@ local function AccountIDValidation()
 end
 
 
+-- root PC212-PC279：按原始导出位置接回根级全局函数和模块字段。
+-- PC213/237/246/255/258为chunk ENV全局导出；PC265/269/274/279为模块字段。
+rootEnvironment.IsInWhitelistMap = IsInWhitelistMap
+rootEnvironment.MainLoop = MainLoop
+rootEnvironment.InitGatherMonsters = InitGatherMonsters
+rootEnvironment.StopGatherMonsters = StopGatherMonsters
+rootEnvironment.Builtsetting = Builtsetting
+MainLeftBottom.hide = DestroyUI
+MainLeftBottom.show = SetButtonVisibilityState
+MainLeftBottom.destroy = ShowHideAllButtons
+MainLeftBottom.main = AccountIDValidation
+
+
 -- root.children[3] / MoveTo：地图移动通知与目标距离判断（51条物理指令）。
 -- 保留Facade冒号调用、PlayerPos双返回值、range的nil/false回退规则。
 local function MoveTo(x, y, range)
@@ -3295,6 +3308,20 @@ return MainLeftBottom
 --
 -- 本批为静态源码整合；table.find、networkCtl与代理行为属于宿主依赖，
 -- 未执行Lua语法检查或目标游戏运行验证。
+-- ============================================================================
+
+-- ============================================================================
+-- 功能等价复刻 · 第四批：PC212-PC279入口导出与模块字段（检查点288）
+--
+-- 本批将已恢复的根级函数接回其真实导出位置：
+-- ENV.IsInWhitelistMap / MainLoop / InitGatherMonsters / StopGatherMonsters /
+-- Builtsetting；MainLeftBottom.hide / show / destroy / main。
+-- 对应模块字段分别是DestroyUI、SetButtonVisibilityState、
+-- ShowHideAllButtons、AccountIDValidation。它们不再只是孤立local函数。
+--
+-- 与PC1-PC412寄存器时间线一致：这些赋值发生在函数定义后、物品功能前；
+-- 不覆盖MainLeftBottom.blacklist、MainLeftBottom.onDamageMsg及doInit既有挂接。
+-- Lua语法和宿主运行仍未验证。
 -- ============================================================================
 
 

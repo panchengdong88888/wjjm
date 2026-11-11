@@ -5,22 +5,22 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 287,
-  "next_checkpoint": 288,
+  "latest_checkpoint": 288,
+  "next_checkpoint": 289,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
     "prototype": "root / MainLeftBottom_Module",
-    "function": "根模块PC43-PC85基础导出与局部闭包身份核对",
-    "physical_pc": "PC43-PC85",
+    "function": "PC1-PC412根模块导出完整性与依赖闭合",
+    "physical_pc": "PC1-PC412",
     "focus": [
-      "复核MoveTo/GetMapId/GetMapName/PlayerPos/GetDroppedItems及物品函数导出身份",
-      "检查LuaSendMsg的调用方是否通过MainLeftBottom.a.LuaSendMsg同一闭包",
-      "确认PC64-PC85导出时序及各函数调用接收者/参数顺序",
-      "随后继续PC212-PC279入口模块字段收敛"
+      "核对PC43-PC85全局导出和模块a字段身份",
+      "核对PC212-PC279全局导出与hide/show/destroy/main字段",
+      "逐项检查doInit_UI中按钮回调调用的根级入口是否都能解析",
+      "修正未定义符号或错接导出，避免重复定义"
     ],
-    "next": "定点复核DiuItems/StorageItems/TakeItems/PickUpItems调用LuaSendMsg的闭包身份，并检查root PC212-PC279五个模块字段（hide/show/destroy/main）是否已正确挂接；不要重复分析已完成的UI主体。",
-    "progress": "检查点287完成：GetMapId/GetMapName/PlayerPos/GetDroppedItems四项全局导出已接入；LuaSendMsg按92条指令实现并挂入a.LuaSendMsg，物品流程共用该词法函数。"
+    "next": "静态扫描doInit_UI及物品/黑名单回调引用的根级函数名，逐项对照局部定义与ENV/模块字段导出；先修复未定义的直接依赖，再检查PC1-PC412其余缺口。",
+    "progress": "检查点288完成：根级ENV导出IsInWhitelistMap/MainLoop/InitGatherMonsters/StopGatherMonsters/Builtsetting已补齐；模块hide/show/destroy/main已分别挂接DestroyUI/SetButtonVisibilityState/ShowHideAllButtons/AccountIDValidation。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -47,7 +47,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点287：PC55/57/59/61基础全局导出已补齐；LuaSendMsg的92条静态主体已接入a.LuaSendMsg，含日志豁免、SendHookList pcall拦截和networkCtl六参数转发。未执行Lua语法检查或游戏运行验证。",
+    "static_source_review": "检查点288：PC212-PC279五项根级全局导出和四项MainLeftBottom模块字段已接入；未覆盖blacklist/onDamageMsg/doInit已有字段。未执行Lua语法检查或目标游戏运行验证。",
     "lua_syntax_check": "未执行/未确认",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
