@@ -1,47 +1,46 @@
 {
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
-  "updated_at": "2026-11-11",
+  "updated_at": "2026-11-12",
   "latest_checkpoint": 340,
   "next_checkpoint": 341,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "已完成：开拉怪按钮→阈值处理→启动/停止→MainLoop三状态→候选筛选/目标锁定/攻击循环→停止清理的完整静态调用链已与VM逐项核对；检查点340未发现唯一交付源码新的明确错配。历史检查点155入口真假分支文字错误已更正，唯一交付源码入口判断本来正确。等待用户指定下一项任务，不自动切换模块。",
-    "title": "开拉怪功能完整调用链核对与源码修正",
-    "prototype": "doInit_UI的yinguaibut按钮回调；root.children[19] InitGatherMonsters；root.children[27] StopGatherMonsters；root.children[28] FindMonsterCandidates；root.children[26] ResetGatherMonsterData；root.children[45] MainLoop；以及相关闭包root.children[42].children[6]/[7]、相关辅助函数。",
+    "status": "进行中：用户明确反馈开拉怪功能已在目标环境实测存在问题。此前检查点340的静态一致结论不再视为任务完成；以实测异常为入口，重新审计开拉怪相关代码，直到定位问题原因并完成有证据支持的修正。其他功能模块全部暂停。",
+    "title": "开拉怪功能实测问题定位、重新核对与修正",
+    "prototype": "doInit_UI的yinguaibut按钮回调；阈值读取/输入/保存链；Nested_StopGatherMonsters；Nested_InitGatherMonsters；InitGatherMonsters；MainLoop；FindMonsterCandidates；StopGatherMonsters；ResetGatherMonsterData；相关定时器、引擎代理和宿主API调用。",
     "scope": [
-      "核对按钮点击后开拉怪/关拉怪分支、阈值读取、缺失阈值输入、阈值保存及启动状态更新",
-      "核对InitGatherMonsters的定时器取消/重建、运行标记、状态复位、Schedule参数与提示",
-      "核对MainLoop的IDLE/GATHERING/ATTACKING状态流转及直接调用的辅助函数",
-      "核对FindMonsterCandidates的SL接口调用形式、receiver和显式参数，以及候选过滤/排序/阈值截取",
-      "核对停止链的UnSchedule、目标清除、状态复位及按钮文字状态更新",
-      "只根据VM和官方API文档修正唯一交付源码中的明确错误；不凭预期用途改写原始VM行为",
-      "保持Lua 5.1兼容；不执行Lua/luac实际编译和游戏运行验证",
-      "单独记录开拉怪阈值持久化包装链的原始参数行为与潜在缺陷，不因预期用途擅自偏离VM"
+      "以用户实测出现的问题为起点，不因检查点340标记静态核对完成而跳过任何相关代码",
+      "重新核对按钮事件是否真实绑定、点击分支、弹窗确认回调、阈值数据流、启动函数调用和按钮状态同步",
+      "重新核对配置读取/写入包装链、路径拼接、文件API返回值和阈值在启动前后的实际流向",
+      "重新核对InitGatherMonsters定时器创建、回调参数、运行标记和共享状态初始化",
+      "重新核对MainLoop三个状态、定时器回调是否持续执行、候选怪物获取、过滤/排序/阈值截取、目标锁定、攻击与停止条件",
+      "重新核对所有直接/间接调用的receiver、实参顺序、多返回值、nil/false/truthy语义、闭包捕获及官方API契约",
+      "将实测表现与VM指令、唯一交付源码、官方框架API文档三方交叉核对；旧检查点只作线索，不作为免审依据",
+      "发现VM原始逻辑本身导致实测功能失败时，明确区分源码恢复错误与原始功能缺陷，并以解决用户实测问题为目标提出/实施有证据的修复，不再机械保留已确认妨碍功能的原始异常",
+      "只修改根目录唯一交付源码MainLeftBottom_唯一交付文件.lua；不创建分支或平行源码",
+      "保持Lua 5.1兼容；不执行Lua/luac实际编译和游戏运行验证，实测信息由用户提供"
     ],
     "focus": [
-      "开拉怪按钮 yinguaibut 的 handler 映射为Nested_StopGatherMonsters；点击闭包只在handler结果不为false时切换按钮状态",
-      "timerState.gatherTimer存在时走StopGatherMonsters；不存在时先读取gather_monster_count.txt，缺失则弹出阈值输入框",
-      "输入框只接受数字字符串并tonumber；Lua中0为truthy，VM并未要求正数，保留该语义",
-      "阈值保存包装链VM顺序为PCallHelper(固定文件名, firstArg)，但PCallHelper本体把第1参转为写入内容、第2参用于路径；结果与预期固定文件写入不一致，作为原始VM行为异常记录，不擅自换参",
-      "InitGatherMonsters取消旧timer、置运行标记、复位IDLE和共享状态、Schedule(MainLoop,CHECK_INTERVAL)、输出启动提示",
-      "MainLoop三个状态及其辅助函数调用关系已经恢复；FindMonsterCandidates调用已按VM修正为SL:FindMonsterInCurrViewField(true,true)",
-      "StopGatherMonsters按VM顺序取消timer、清目标、切IDLE、重置状态并输出停止提示；ResetGatherMonsterData内部还会再次清目标，保留原始重复调用",
-      "检查点340确认MainLoop入口：isGatherRunning为truthy时继续执行；false/nil时return。检查点155归档审计原文真假方向写反，已更正；唯一交付源码if not isGatherRunning then return end本来正确。",
-      "MainLoop GATHERING等待归属、游标推进、SetTargetID成功/失败后的数值循环继续、ATTACKING首个存活目标锁定后return均与VM和检查点153-158一致；不按主观预期修改原始游标行为。",
-      "SetTargetID的Facade:retrieveProxy与proxy:SetTargetID receiver/参数/返回值、GetOwnerID/GetOwnerIDText谓词极性、FindMonsterInCurrViewField的SL方法receiver和true,true参数已核对。"
+      "用户已明确：开拉怪功能实测存在问题，待解决；本任务未完成",
+      "此前检查点339/340的静态核对结果必须在实测问题相关路径上重新审视，不能用与VM一致直接判定无需处理",
+      "重点检查阈值持久化包装链：VM调用PCallHelper(固定文件名,value)，而PCallHelper本体把第一参数作为写入内容、第二参数作为路径；核实该问题是否导致阈值无法保存或下次读取失败",
+      "重点检查无效/有效输入回调、T[2]可能为nil的路径，以及确认按钮是否能走到启动调用",
+      "重点检查SL:Schedule(MainLoop,CHECK_INTERVAL)的参数契约、回调执行和MainLoop的持续调度方式",
+      "重新检查FindMonsterCandidates的SL:FindMonsterInCurrViewField(true,true)及候选对象结构/筛选条件",
+      "重新检查MainLoop的IDLE/GATHERING/ATTACKING状态切换、目标归属判断、SetTargetID调用和攻击目标清理；不能预设旧审计结论无误",
+      "保留Lua 5.1、单一main分支、单一交付源码和不执行编译/运行验证的既定规则"
     ],
     "completion_criteria": [
-      "开拉怪按钮点击到启动/停止定时器的完整调用链已逐段核对",
-      "阈值读取、阈值输入保存、状态按钮文字更新的调用与参数契约已核对",
-      "MainLoop三个状态及候选怪物获取链的直接调用目标、receiver、参数顺序与VM一致",
-      "停止路径清理运行标记、定时器、目标ID和共享状态的顺序与VM一致",
-      "发现的明确源码错配已修正并提交到main；原始VM异常单独记录，不擅自修复",
-      "AI_START_HERE.md与本JSON同步更新",
-      "阈值文件写入链若与预期固定文件路径不符，已准确记录为原始VM异常，未擅自交换参数"
+      "明确记录用户实测的具体操作步骤、实际表现和预期表现",
+      "按该表现重新追踪从按钮点击到产生拉怪行为的完整调用链，定位可解释该现象的具体原因或证据缺口",
+      "相关代码、VM指令和官方API契约完成针对性复核；不得只引用旧检查点结论",
+      "所有确认的源码错配或经用户目标授权需要修复的原始功能缺陷，均在唯一交付源码中修正并说明依据",
+      "复核同一调用链不存在已知的第二处阻断问题；未能确认的宿主行为明确列为待确认，不冒称解决",
+      "更新AI_START_HERE.md与本JSON，提交到main"
     ],
-    "next": "开拉怪功能静态核对已完成。等待用户明确指定下一项任务；不得自行转入根模块调用图或其他功能模块。阈值持久化与无效输入nil回调两个原始VM异常继续保留，若用户要求功能性修复再单独处理。"
+    "next": "先向用户取得开拉怪实测异常的具体表现（按下按钮后的完整操作、输入值、角色实际行为、提示/日志/报错，以及预期行为）。拿到现象后立即从最靠近该现象的代码开始重新核对；在问题解决前不得转入其他模块。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
