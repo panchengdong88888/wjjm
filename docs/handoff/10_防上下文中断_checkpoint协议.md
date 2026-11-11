@@ -3430,3 +3430,16 @@ Nested_match：
 - 本批没有提升静态恢复函数数量；root仍是唯一未完整静态恢复原型。未执行Lua/luac，运行时验证仍0。
 - 本批提交：审计 `02ee6c46`；主恢复源码环境差异注记 `73b87249`；机器状态 `36ddcbe3`；函数CSV `bce27b65`；主恢复源码检查点索引 `60f0d834`。
 - 下一步检查点 #278：从PC级证据回到root模块可读源码收敛，优先将PC1-PC42、PC86-PC180常量/状态初始化、PC280-PC296黑名单状态、PC316-PC349数值表按PC顺序整合为连续执行体；闭包工厂按既有捕获顺序装配，保持来源词法块与装配词法块边界；PC275/389的`_ENV`与`_G`差异继续显式待核。
+
+
+## 检查点 #278（2026-11-11）：基础辅助函数第一批功能等价复刻
+
+- 本批在 `04_源码候选/root_MainLeftBottom_Module.lua` 中新增11个可读的根模块函数主体：GetMapId、GetMapName、PlayerPos、GetDroppedItems、GetMainPlayerID、IsDie、GetPlayerPosition、GetPlayerMapPosition、DistanceCalculation、IsInWhitelistMap、GetOwnerDescription。
+- 函数逻辑按既有静态恢复证据整理，保留SL冒号调用、宿主对象冒号调用、双返回值、nil/false短路、坐标假值回退、Chebyshev距离、土城白名单及归属文本返回顺序；未引入未经文档证明的引擎替代API。
+- 同步将11个根级绑定改为从 `root_MainLeftBottom_Module.lua` 来源直接取得函数，减少对分散旧草稿来源文件的活动依赖；旧候选文件仍保留作证据，不删除。
+- `MainLeftBottom_恢复源码.lua` 中的根模块来源块同步加入相同函数定义和导出；主装配层从该根来源直接绑定。函数原型身份及其既有静态恢复状态不变。
+- 更新函数状态CSV对应11行的来源说明；更新机器状态的最近检查点、当前工作分支、批次指标和下一步任务。
+- 静态文本核对：11个函数均有定义及导出；11处bindDirect均已指向根模块来源；函数名称与原型路径保持不变。没有发现需要改变原参数/返回契约的依据。
+- 环境限制：当前执行环境未安装 `lua`、`luac` 或 `luajit`，也未发现可用Lua解析器，因此本批没有声称Lua语法编译通过。目标游戏运行验证仍为0；完整静态恢复109/110、普通Lua草稿72等底层统计不因来源整合而增加。
+- 当前工作分支：`work/functional-equivalent-rebuild-2026-11-11`；旧备份分支保持不动。
+- 下一步检查点 #279：整理配置读写辅助函数组，优先处理GetWritablePath、ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper及其匿名转发闭包；核对FileUtils调用接收者、路径拼接、pcall返回和多返回值转发，再逐步将确定的函数主体纳入根模块可读源码。
