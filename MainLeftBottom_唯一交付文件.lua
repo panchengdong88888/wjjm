@@ -1256,7 +1256,7 @@ local function FindMonsterInCurrViewField()
 end
 
 local function FindMonsterCandidates()
-    local monsters = SL.FindMonsterInCurrViewField()
+    local monsters = SL:FindMonsterInCurrViewField(true, true)
     if not monsters or #monsters == 0 then return {} end
     local ignoredNames = {}
     local ignoreSetting = GET_SETTING(global.MMO.SETTING_IDX_IGNORE_MONSTER)
