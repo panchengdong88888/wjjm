@@ -5,8 +5,8 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 290,
-  "next_checkpoint": 291,
+  "latest_checkpoint": 291,
+  "next_checkpoint": 292,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
@@ -19,8 +19,8 @@
       "定位剩余未实现根级函数或被错误写成占位的宿主调用",
       "继续在唯一主源码中直接落地"
     ],
-    "next": "继续核对PC86-PC211的共享状态与OP_387 live-cell身份，重点检查MainLoop/InitGatherMonsters/StopGatherMonsters/ResetGatherMonsterData是否对同一运行标记、状态、目标表、游标、等待字段读写同一cell；修正已确认的状态同步缺口，不重写已完成函数主体。",
-    "progress": "检查点290完成：按root.children[16]与root.children[20]已核实的15/38条指令主体，修正PrintLog与ShowLocalNoticeByType。PrintLog保留table→SL.dump、tostring、可选pcall(string.format)及仅检查SL.Print而不调用的行为；ShowLocalNoticeByType捕获同一MainLeftBottom.a对象，构造Type/Msg/FColor/BColor/X/Y通知记录并以SL.ShowLocalNoticeByType单参数调用。PC1-PC85中PlayerPos双返回值、GetDroppedItems宿主双返回值直传、LuaSendMsg六参转发已定点复核。静态文本复核，未做Lua语法或游戏运行验证。"
+    "next": "继续核对PC212-PC279入口闭包的捕获身份和字段挂接：MainLoop的22项依序依赖T18/T14/T13/T4/T23/T35/T26/T34/T15/T32/T17/T16/T19/T20/T22/T36/T21/T31/T30/T33/T24/T8；InitGatherMonsters、StopGatherMonsters应分别共享同一运行标记、FormatStateChange、ResetGatherMonsterData及timerState/ClearTargetID_2。确认根级导出与模块字段之后，继续收敛后续PC297-PC412。",
+    "progress": "检查点291完成：PC172-PC180的T14-T22共享状态已从{value=...}影子包装表改为直接Lua词法局部变量，保证MainLoop、FormatStateChange、ResetGatherMonsterData、InitGatherMonsters、StopGatherMonsters共享同一变量cell。T16=归属计数、T17=扫描游标，T18=运行标记，T19-T22=等待字段；复位函数直接更新这些共享局部变量并调用同一ClearTargetID_2闭包。FormatStateChange按原10条指令的顺序先格式化旧/新状态、PrintLog单参数调用，正常返回后再写回currentState。静态文本核对，未执行Lua语法或游戏运行验证。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -47,7 +47,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点290：PrintLog与ShowLocalNoticeByType已按独立原型静态恢复并接回PC43-PC51；PlayerPos/GetDroppedItems多返回值路径及LuaSendMsg六参转发完成定点核对。未执行Lua语法检查或目标运行时验证。",
+    "static_source_review": "检查点291：PC172-PC180共享状态改为直接词法cell，消除包装表副本；FormatStateChange按原捕获共享状态语义实现；ResetGatherMonsterData直接复位同一cell。尚未执行Lua语法检查或目标运行时验证。",
     "lua_syntax_check": "未执行/未确认",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
