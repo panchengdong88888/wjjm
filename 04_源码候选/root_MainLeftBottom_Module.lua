@@ -327,7 +327,7 @@ local function ReadNumericConfig(fileName)
         return nil
     end
 
-    local normalized = string.gsub(content, "%\s", "")
+    local normalized = string.gsub(content, "%s", "")
     local digits = string.match(normalized, "^%d+$")
     if digits then
         return tonumber(normalized)
