@@ -255,10 +255,10 @@ local resetSlot22 = ""
 -- [T[0],T[3],T[1]]，即UI状态对象、定时器状态对象、按钮映射表。
 -- 此捕获映射与检查点164修正结果一致。
 
--- PC265：将闭包R37写入当前模块表的hide字段。
+-- PC265：R0此时仍是PC3创建并挂入MainLeftBottom.a的UI状态表；写入a.hide。
 -- PC266：创建root.children[10] / SetButtonVisibilityState，捕获顺序为[T[0],T[1]]；
 -- PC267-PC268为两项捕获描述。函数体已在检查点161完整静态恢复。
--- PC269：将闭包R37写入当前模块表的show字段。
+-- PC269：将闭包R37写入同一UI状态表a.show。
 -- PC270：创建root.children[40] / ShowHideAllButtons，捕获数3；
 -- 后续捕获描述跨出本批范围，留待下一检查点继续核对（PC271起）。
 
@@ -267,8 +267,8 @@ local resetSlot22 = ""
 -- PC271-PC273：ShowHideAllButtons（root.children[40]）的三个捕获描述，
 -- 按序捕获父root T[3]、T[1]、T[0]；对应定时器状态、按钮映射表、UI状态对象。
 -- 该顺序与子函数已静态恢复的UPVALUE[0..2]一致。
--- PC274：将该闭包写入模块表的destroy字段（R0为MainLeftBottom模块表）。
--- 因此当前已确认模块表的hide/show/destroy三个字段分别在PC265/269/274写入。
+-- PC274：将该闭包写入同一UI状态表a.destroy（R0仍为PC3创建的a表）。
+-- hide/show/destroy三个UI控制闭包属于MainLeftBottom.a；不是模块根表字段。
 
 -- PC275：从当前chunk ENV重新读取MainLeftBottom，并向该次读取结果写入main字段。
 -- PC276-PC278：创建root.children[55] / AccountIDValidation，捕获父root T[4]与T[5]；
@@ -834,15 +834,15 @@ local function AttachRecoveredPrototypes(prototypes, environment)
     exportGlobal("StopGatherMonsters", "StopGatherMonsters")
     exportGlobal("Builtsetting", "Builtsetting")
 
-    -- root PC259-PC274：模块表上的界面控制闭包。
+    -- root PC259-PC274：MainLeftBottom.a UI状态表上的界面控制闭包。
     if prototypes.DestroyUI ~= nil then
-        module.hide = prototypes.DestroyUI
+        module.a.hide = prototypes.DestroyUI
     end
     if prototypes.SetButtonVisibilityState ~= nil then
-        module.show = prototypes.SetButtonVisibilityState
+        module.a.show = prototypes.SetButtonVisibilityState
     end
     if prototypes.ShowHideAllButtons ~= nil then
-        module.destroy = prototypes.ShowHideAllButtons
+        module.a.destroy = prototypes.ShowHideAllButtons
     end
     exportGlobal("MoveItemToQuickUse", "MoveItemToQuickUse")
 
@@ -985,9 +985,9 @@ end
 -- PC247-PC255：StopGatherMonsters捕获[T18,T3,T25,T23,T13,T35,T4]，PC255全局导出。
 -- PC256-PC258：Builtsetting捕获T5，PC258全局导出。
 -- PC259-PC260：MoveItemToQuickUse无捕获，PC260全局导出。
--- PC261-PC265：DestroyUI捕获[T0,T3,T1]，写入MainLeftBottom.hide。
--- PC266-PC269：SetButtonVisibilityState捕获[T0,T1]，写入MainLeftBottom.show。
--- PC270-PC274：ShowHideAllButtons捕获[T3,T1,T0]，写入MainLeftBottom.destroy。
+-- PC261-PC265：DestroyUI捕获[T0,T3,T1]，写入MainLeftBottom.a.hide。
+-- PC266-PC269：SetButtonVisibilityState捕获[T0,T1]，写入MainLeftBottom.a.show。
+-- PC270-PC274：ShowHideAllButtons捕获[T3,T1,T0]，写入MainLeftBottom.a.destroy。
 -- PC276-PC279：AccountIDValidation捕获[T4,T5]（PrintLog、ShowLocalNoticeByType），写入MainLeftBottom.main。
 -- PC286-PC294：创建blacklistState并初始化lastAttacker=nil、lastHp=nil、deathHandled=false、alertAt=0、nextTryAt=0、noStoneWarned=false、distance=nil；同一表写入MainLeftBottom.blacklist。
 -- T54：PC318临时数值/表构造用途在PC349前结束；PC352最终写入PCallHelper_2；PC354与PC384分别被FindBlacklistPlayer UP0和ClearBlacklistItems UP0捕获。两次捕获均取到PCallHelper_2，之后T54无再写入。
@@ -1015,7 +1015,7 @@ end
 -- 检查点245：根模块PC1-PC412全局导出与模块字段总账（跨区间合并复核）。
 -- PC1-PC85：ENV.MainLeftBottom；ENV["_G"].log（PC45）；ENV.GetMapId；ENV.GetMapName；ENV.PlayerPos；ENV.GetDroppedItems；ENV.MoveTo；ENV.DiuItems；ENV.GetAvailableStoragePage；ENV.GetStorageItemData；ENV.StorageItems；ENV.TakeItems；ENV.PickUpItems。MainLeftBottom.a字段包括version/screenW/screenH/Blocklist/SendHookList/RecvHookList/isHidden/hidebut/LuaSendMsg；另建立b空表、z状态表。
 -- PC86-PC211：复核未发现新的根级全局导出或MainLeftBottom根表字段写入；此区间是局部配置、共享状态和闭包创建。
--- PC212-PC340：ENV.IsInWhitelistMap、ENV.MainLoop、ENV.InitGatherMonsters、ENV.StopGatherMonsters、ENV.Builtsetting、ENV.MoveItemToQuickUse；模块字段hide/show/destroy/main/blacklist。
+-- PC212-PC340：ENV.IsInWhitelistMap、ENV.MainLoop、ENV.InitGatherMonsters、ENV.StopGatherMonsters、ENV.Builtsetting、ENV.MoveItemToQuickUse；MainLeftBottom.a.hide/show/destroy及MainLeftBottom.main/blacklist。
 -- PC341-PC412：MainLeftBottom.onDamageMsg；ENV.BlacklistItems；ENV.ClearBlacklistItems；MainLeftBottom.doInit。
 -- 总账将全局导出与模块字段分开统计；局部函数创建不等于导出。ShowLocalNoticeByType、ScheduleOnce、Schedule在已审PC段未发现根级导出。
 -- 完整机器可读明细见docs/handoff/12_根模块闭包装配表.json的root_complete_module_ledger。
@@ -1640,7 +1640,7 @@ local function AccountIDValidation()
             -- validationResult来自Nested_ID的布尔返回值；与文档scheduleID契约存在疑点，
             -- 先保留原始调用，不凭推测改写，需目标宿主运行验证。
             SL:UnSchedule(validationResult)
-            MainLeftBottom.doInit()
+            rootEnvironment.MainLeftBottom.doInit()
         end
         PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
     end
@@ -1655,10 +1655,10 @@ rootEnvironment.MainLoop = MainLoop
 rootEnvironment.InitGatherMonsters = InitGatherMonsters
 rootEnvironment.StopGatherMonsters = StopGatherMonsters
 rootEnvironment.Builtsetting = Builtsetting
-MainLeftBottom.hide = DestroyUI
-MainLeftBottom.show = SetButtonVisibilityState
-MainLeftBottom.destroy = ShowHideAllButtons
-MainLeftBottom.main = AccountIDValidation
+a.hide = DestroyUI
+a.show = SetButtonVisibilityState
+a.destroy = ShowHideAllButtons
+rootEnvironment.MainLeftBottom.main = AccountIDValidation
 
 
 -- root.children[3] / MoveTo：地图移动通知与目标距离判断（51条物理指令）。
@@ -3356,7 +3356,7 @@ local function doInit_UI()
 end
 
 -- PC411：doInit_UI直接挂入模块根表。
-MainLeftBottom.doInit = doInit_UI
+rootEnvironment.MainLeftBottom.doInit = doInit_UI
 
 -- PC412：返回模块根表。
 return MainLeftBottom
@@ -3486,7 +3486,7 @@ return MainLeftBottom
 --
 -- 本批将已恢复的根级函数接回其真实导出位置：
 -- ENV.IsInWhitelistMap / MainLoop / InitGatherMonsters / StopGatherMonsters /
--- Builtsetting；MainLeftBottom.hide / show / destroy / main。
+-- Builtsetting；MainLeftBottom.a.hide / a.show / a.destroy；MainLeftBottom.main。
 -- 对应模块字段分别是DestroyUI、SetButtonVisibilityState、
 -- ShowHideAllButtons、AccountIDValidation。它们不再只是孤立local函数。
 --
@@ -3508,8 +3508,8 @@ return MainLeftBottom
 -- * doInit_UI按钮包装器的六个CallRootFunction目标均有对应ENV导出：
 --   StorageItems、TakeItems、PickUpItems、DiuItems、BlacklistItems、
 --   ClearBlacklistItems。
--- * PC212-PC279的五个全局导出及hide/show/destroy/main四个模块字段均已挂接。
--- * MainLeftBottom根表字段已具备a/b/z/blacklist/onDamageMsg/hide/show/destroy/main/doInit。
+-- * PC212-PC279的五个全局导出及MainLeftBottom.a的hide/show/destroy、MainLeftBottom.main均已挂接。
+-- * MainLeftBottom根表字段为a/b/z/blacklist/onDamageMsg/main/doInit；hide/show/destroy不属于根表。
 -- * PrintLog仍只写ENV["_G"].log；LuaSendMsg仍只挂a.LuaSendMsg。
 --
 -- 此批只校正导出边界，不改变内部函数主体。Lua语法与游戏运行仍未验证。

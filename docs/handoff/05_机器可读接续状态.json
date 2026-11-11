@@ -5,22 +5,21 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 311,
-  "next_checkpoint": 312,
+  "latest_checkpoint": 312,
+  "next_checkpoint": 313,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
     "prototype": "root / MainLeftBottom_Module + root.children[42] / doInit_UI",
-    "function": "入口与UI链全量静态复核：doInit_UI主原型、23个直接子原型、AccountIDValidation与PC1-PC412模块返回",
-    "physical_pc": "root PC1-PC412；root.children[55]；root.children[42]及其23个子原型",
+    "function": "入口与UI链全量静态复核（修正根寄存器T0对象身份后继续）",
+    "physical_pc": "root PC1-PC412；root.children[55]；root.children[42]及23个子原型",
     "focus": [
-      "完成doInit_UI及23个子原型逐项与VM控制流/捕获/调用参数对照",
-      "核对AccountIDValidation的验证分支、轮询等待和MainLeftBottom.main入口",
-      "确认主模块字段、全局导出、doInit挂接及最终return的顺序",
-      "将静态匹配与开发文档签名冲突/宿主运行时疑点分开登记"
+      "逐项核对doInit_UI主原型及23个子原型的主体、参数、捕获和UI字段写入",
+      "核对AccountIDValidation对MainProperty与MainLeftBottom全局表的读取方式",
+      "核对root PC1-PC412的模块根表与a/b/z状态表身份、全局导出及最终return"
     ],
-    "next": "继续核对doInit_UI的23个子原型及入口等待闭包，优先排查主源码遗漏字段、错误捕获、调用接收者和实参；入口/UI范围完成前不转向其他业务函数。",
-    "progress": "检查点311：逐PC核对doInit_UI根子原型PC379-PC418，发现原候选漏掉PC388将hideButton返回值写入UP[3].hidebut；现补入uiState.hidebut=hideButton，且位置在按钮truthy判断之前，与VM一致。AccountIDValidation、doInit_UI、20项捕获及模块字段main/doInit挂接已建立对应关系，正在继续对23个子原型及入口调用细节做最终静态复核。另将两个必须保留但有文档契约疑点的原始调用显式注释：AccountIDValidation将布尔validationResult传给UnSchedule；奖励定时器调用SL:Schedule(0,callback,scheduleContext)三个显式参数。均未做游戏运行验证。"
+    "next": "继续逐项复核doInit_UI 23个子原型，检查其源代码是否漏掉字段写入、返回值、调用接收者或异步参数；随后做Lua 5.1语法检查（若环境已有解释器），完成入口/UI专项交接。",
+    "progress": "检查点312：复核root PC1-PC5寄存器身份后发现T[0]在PC1先承载模块根表，但PC3被新建a状态表覆盖；PC5将a挂入模块根表。T[0]此后未再覆盖，故PC265/269/274实际写入a.hide/a.show/a.destroy，而非MainLeftBottom根表字段。修正主源码三处挂接，并修正AttachRecoveredPrototypes适配器、源码说明及函数状态CSV对应备注。PC275/279和PC389/411均重新读取_ENV.MainLeftBottom，现分别用rootEnvironment.MainLeftBottom.main/doInit写入；AccountIDValidation等待闭包也按全局表读取doInit。hidebut字段赋值修正仍保留。入口/UI全量复核继续中，尚未做Lua语法或游戏运行验证。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -47,7 +46,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点311：doInit_UI PC379-PC418逐PC核对，补齐PC388缺失的uiState.hidebut=hideButton字段写入；该赋值在if hideButton之前，保留nil写入语义。入口/UI范围其余部分继续核对中，暂不宣称全量无误。",
+    "static_source_review": "检查点312：根据root VM PC1-PC5确认T[0]的寄存器复用：PC1创建模块根表并写ENV.MainLeftBottom，PC3将T[0]覆盖为a表，PC5将a挂入MainLeftBottom.a；T[0]后续保持a身份。因此PC265/269/274必须写a.hide/a.show/a.destroy。主源码实际赋值、旧适配器、说明及CSV均已纠正。PC275/279和PC389/411的MainLeftBottom读取/写入均改为rootEnvironment.MainLeftBottom；入口/UI其他部分继续复核。",
     "lua_syntax_check": "未执行：容器未找到lua5.1/luac5.1/lua/luac命令；未安装或改动用户环境。",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
@@ -71,6 +70,6 @@
       "使用unpack而非table.unpack；避免table.pack/table.move/bit32/utf8/package.searchpath等5.2+接口",
       "确认闭包、变长参数、多返回值、迭代器及元表行为均符合Lua 5.1"
     ],
-    "current_review": "检查点311新增字段赋值与注释，不引入新语法；仍为Lua 5.1兼容写法。未执行Lua 5.1语法检查。"
+    "current_review": "检查点312仅改写字段目标和全局表读取表达式，保持Lua 5.1兼容；尚未执行Lua 5.1语法检查。"
   }
 }
