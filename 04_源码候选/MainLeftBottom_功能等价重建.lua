@@ -1431,8 +1431,10 @@ local function AccountIDValidation()
     else
         ShowLocalNoticeByType("[验证失败] 账号ID未在允许列表中")
     end
+    -- TODO：原闭包在0.5秒后调用Nested_Panel_mini_chat(validationResult, PrintLog)。
+    -- 目前先保留延迟触发占位；待把该子闭包主体并入后替换此回调。
     SL:Schedule(function()
-        PrintLog("账号验证后延迟回调已触发")
+        PrintLog("账号验证延迟回调占位：Nested_Panel_mini_chat尚未接入")
     end, 0.5)
 end
 
@@ -2547,5 +2549,5 @@ return MainLeftBottom
 -- 后续完成的函数、UI初始化、捕获装配和模块导出均直接写入本文件。
 -- root_MainLeftBottom_Module.lua 与 MainLeftBottom_恢复源码.lua 仅作证据参考，
 -- 不再作为平行开发主线；不得以“全部完成后再生成”作为延后创建本文件的理由。
--- 当前状态：INCOMPLETE；尚未完成根级闭包接入，Lua语法检查和游戏运行验证均未执行。
+-- 当前状态：INCOMPLETE；PC212-PC279入口首批已写入（采集主循环、启动/停止、设置、UI控制、账号验证），仍有其他根级闭包及黑名单/物品功能待接入；Lua语法检查和游戏运行验证均未执行。
 -- ============================================================================
