@@ -22,22 +22,22 @@
     "progress": "检查点323：入口与UI链全量静态复核完成。root主原型412条指令、root.children[55]账号验证64条及嵌套回调、root.children[42] doInit_UI 419条及23个直接子原型均有对应源码实现；root PC1-PC412模块创建、全局导出、MainLeftBottom.main/doInit字段挂接、20项doInit捕获顺序和PC412模块返回与VM一致。root PC1-PC211初始化/配置/共享状态在检查点322复核；PC212-PC279模块字段/账号入口此前已复核；PC280-PC388闭包与导出已在既有检查点复核；PC389-PC412捕获和返回本批复核。doInit_UI资源统计窗口320条及5子原型、按钮/点击回调、输入框三级闭包、隐藏按钮均已静态对照。修正rewardSequenceModulus注释，明确18000作为奖励轮询回调取模基数。Lua 5.1关键禁用语法/API扫描未发现禁用项；自制词法块结构扫描function/if/do/repeat与end/until配对无不平衡。没有Lua5.1/luac5.1/lua/luac/luajit或luaparser，未执行真正语法编译；目标游戏运行时验证未执行。"
   },
   "source_files": {
-    "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
-    "legacy_cross_reference": "04_源码候选/MainLeftBottom_恢复源码.lua",
-    "function_status_index": "02_基础索引/03_函数状态清单.csv",
-    "framework_api_reference": "docs/handoff/11_新框架API映射.md",
-    "vm_dump": "02_基础索引/MainLeftBottom_vm_dump.json",
-    "root_module_reference": "04_源码候选/root_MainLeftBottom_Module.lua"
+    "primary": "MainLeftBottom_唯一交付文件.lua",
+    "legacy_cross_reference": "资料文件/04_源码候选/MainLeftBottom_恢复源码.lua",
+    "function_status_index": "资料文件/02_基础索引/03_函数状态清单.csv",
+    "framework_api_reference": "资料文件/docs/handoff/11_新框架API映射.md",
+    "vm_dump": "资料文件/02_基础索引/MainLeftBottom_vm_dump.json",
+    "root_module_reference": "资料文件/04_源码候选/root_MainLeftBottom_Module.lua"
   },
   "loading_policy": {
     "read_first": [
-      "AI_START_HERE.md",
-      "docs/handoff/05_机器可读接续状态.json"
+      "资料文件/AI_START_HERE.md",
+      "资料文件/docs/handoff/05_机器可读接续状态.json"
     ],
     "then": "只读取当前任务对应的源码行段；遇到明确证据缺口再定点查阅 API 映射、函数索引、VM dump 或反汇编。",
     "do_not_load_by_default": [
-      "docs/audit/",
-      "04_源码候选/短函数草稿_*.lua",
+      "资料文件/docs/audit/",
+      "资料文件/04_源码候选/短函数草稿_*.lua",
       "完整函数状态 CSV",
       "完整 VM dump",
       "完整反汇编目录",
@@ -68,7 +68,7 @@
     "用户发送 1 表示继续，无需确认。",
     "中文沟通，减少过程汇报，不重复询问已知信息。",
     "每批有意义改动集中为一个 commit，更新此状态；只核验本批文件与分支 HEAD。",
-    "唯一持续更新主源码为04_源码候选/MainLeftBottom_功能等价重建.lua；不得另建平行开发源码，所有新增实现直接写入该文件。"
+    "唯一持续更新主源码为MainLeftBottom_唯一交付文件.lua；不得另建平行开发源码，所有新增实现直接写入该文件。"
   ],
   "lua_compatibility": {
     "target_version": "Lua 5.1",

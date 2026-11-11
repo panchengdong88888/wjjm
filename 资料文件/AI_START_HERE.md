@@ -4,7 +4,7 @@
 
 ## 用户给新 AI 的最简提示词
 
-`继续 wjjm 功能等价复刻。请只按仓库根目录 AI_START_HERE.md 接续，直接完成当前下一项工作。`
+`继续 wjjm 功能等价复刻。请只按仓库根目录 资料文件/AI_START_HERE.md 接续，直接完成当前下一项工作。`
 
 ## 1. 唯一工作分支
 
@@ -15,9 +15,9 @@
 
 ## 2. 新对话只按这个顺序读取
 
-1. 本文件（`AI_START_HERE.md`）。
-2. `docs/handoff/05_机器可读接续状态.json`（精简状态；确定检查点和当前任务）。
-3. 按状态文件指定的位置，定点读取当前函数在 `04_源码候选/root_MainLeftBottom_Module.lua` 或 `04_源码候选/MainLeftBottom_恢复源码.lua` 中的相关代码段。
+1. 本文件（`资料文件/AI_START_HERE.md`）。
+2. `资料文件/docs/handoff/05_机器可读接续状态.json`（精简状态；确定检查点和当前任务）。
+3. 按状态文件指定的位置，定点读取当前函数在 `资料文件/04_源码候选/root_MainLeftBottom_Module.lua` 或 `资料文件/04_源码候选/MainLeftBottom_恢复源码.lua` 中的相关代码段。
 
 **不要例行读取：** 全部 README/交接文档、整个 CSV、docs/audit、全部短函数批次草稿、完整 VM dump、完整反汇编、整个源码文件或全仓库文件树。只有当前代码证据不足时，才针对一个具体问题读取一份必要资料。
 
@@ -25,20 +25,20 @@
 
 - 最近检查点：**323**
 - 下一检查点：**324**
-- 当前优先任务：入口与UI链全量静态复核已完成；只做Lua 5.1兼容性收尾和已知运行时风险记录。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
+- 当前优先任务：入口与UI链全量静态复核已完成；只做Lua 5.1兼容性收尾和已知运行时风险记录。唯一主源码仍为 `MainLeftBottom_唯一交付文件.lua`。
 - 检查点323完成root PC1-PC412、AccountIDValidation（root.children[55]）及doInit_UI（root.children[42]）的全链静态核对。root 412条指令、AccountIDValidation 64条及嵌套回调、doInit_UI 419条及23个直接子原型均有对应源码；模块根表、全局导出、MainLeftBottom.main/doInit挂接、20项捕获和PC412返回与VM一致。资源统计窗口、按钮工厂/点击回调、输入对话框三级闭包、隐藏按钮已逐段核对。修正rewardSequenceModulus过期注释，明确18000是奖励轮询回调取模基数。
 - 已知待运行验证冲突：Attach_UITop按VM传T7=4但文档无必需参数；RequestStorageData(4)未文档化；奖励回调SL:Schedule(0,callback,0.2)与通用文档签名不同；money快照写key与读取key表达式不同；奖励回调GETGLOBAL LuaSendMsg；等待回调UnSchedule(nil)；Nested_Anonymous非法输入路径按原VM直接调用nil。均保留VM行为，不擅自改写。
 - Lua 5.1禁用语法/API扫描未发现禁用项，词法块配对扫描平衡；但当前环境无Lua5.1/luac5.1/lua/luac/luajit或luaparser，未执行真正语法编译。目标游戏运行验证未执行。
 
 ## 4. 源码文件职责
 
-- `04_源码候选/MainLeftBottom_功能等价重建.lua`：**唯一主源码，所有实际代码修正只写入此文件**。
-- `04_源码候选/root_MainLeftBottom_Module.lua`：根模块 PC/捕获关系参考文件，只定点读取证据，不作为并行主源码。
-- `04_源码候选/MainLeftBottom_恢复源码.lua`：历史恢复候选。仅在当前函数证据不足时定点对照。
-- `02_基础索引/03_函数状态清单.csv`：函数状态索引。只在需要确认某个函数状态时定位对应行，不要每轮整表读取。
-- `docs/handoff/11_新框架API映射.md`：只有遇到框架 API 名称、调用形式或参数契约不明确时，才查对应条目。
-- `02_基础索引/MainLeftBottom_vm_dump.json`、`03_静态反汇编/`：只作为特定控制流、寄存器、捕获顺序问题的证据来源，禁止无目的全量加载。
-- `docs/audit/`、`短函数草稿_*.lua` 等历史过程资料：默认不读。已完成函数的过程性分析应逐步从新线清理；若少数证据确有必要，可按名称定点追溯，不要恢复成例行阅读清单。
+- `MainLeftBottom_唯一交付文件.lua`：**唯一主源码，所有实际代码修正只写入此文件**。
+- `资料文件/04_源码候选/root_MainLeftBottom_Module.lua`：根模块 PC/捕获关系参考文件，只定点读取证据，不作为并行主源码。
+- `资料文件/04_源码候选/MainLeftBottom_恢复源码.lua`：历史恢复候选。仅在当前函数证据不足时定点对照。
+- `资料文件/02_基础索引/03_函数状态清单.csv`：函数状态索引。只在需要确认某个函数状态时定位对应行，不要每轮整表读取。
+- `资料文件/docs/handoff/11_新框架API映射.md`：只有遇到框架 API 名称、调用形式或参数契约不明确时，才查对应条目。
+- `资料文件/02_基础索引/MainLeftBottom_vm_dump.json`、`资料文件/03_静态反汇编/`：只作为特定控制流、寄存器、捕获顺序问题的证据来源，禁止无目的全量加载。
+- `资料文件/docs/audit/`、`短函数草稿_*.lua` 等历史过程资料：默认不读。已完成函数的过程性分析应逐步从新线清理；若少数证据确有必要，可按名称定点追溯，不要恢复成例行阅读清单。
 
 ## 5. 工作规则
 
