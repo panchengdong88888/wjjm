@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点279：整理配置读写辅助函数组。优先处理GetWritablePath、ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper及匿名转发闭包；逐项核对FileUtils接收者、writablePath与文件名拼接顺序、pcall成功/失败分支、false/nil含义和多返回值转发。已明确的函数先写入可读Lua主体，未确认的宿主行为保留原调用并注释。",
+  "next_action": "检查点280：继续处理配置链的调用者和读写状态使用点，重点核对doInit_UI捕获的AnonymousHelper_49/32/33/54、FileExistCheck_pcall_wrapper及其子函数调用时机；随后进入物品/背包/仓库与拾取功能组。先按已有静态源码补齐确定业务代码，复杂宿主代理行为保留原调用并注释，不回到重复VM统计。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2809,26 +2809,23 @@
   ],
   "latest_batch": {
     "date": "2026-11-11",
-    "checkpoint": "278",
+    "checkpoint": "279",
     "targets": [
-      "GetMapId",
-      "GetMapName",
-      "PlayerPos",
-      "GetDroppedItems",
-      "GetMainPlayerID",
-      "IsDie",
-      "GetPlayerPosition",
-      "GetPlayerMapPosition",
-      "DistanceCalculation",
-      "IsInWhitelistMap",
-      "GetOwnerDescription"
+      "FileExistCheck_pcall_wrapper",
+      "GetWritablePath",
+      "ReadNumericConfig",
+      "PCallHelper",
+      "AnonymousHelper_49",
+      "AnonymousHelper_32",
+      "AnonymousHelper_33",
+      "AnonymousHelper_54"
     ],
-    "status": "11个简单辅助函数已写入根模块源码候选并由主恢复稿直接绑定；未删除旧来源证据，未改变原型静态恢复数量或运行时验证计数。",
-    "audit_file": "docs/audit/检查点278_基础辅助函数第一批功能等价复刻.md",
+    "status": "8个配置读写函数已写入根模块直接闭包；主恢复稿已合并根模块来源导出，保留第一批11个基础辅助函数；PC297-PC315活动装配已切换为直接函数来源，旧工厂证据文件未删除。",
+    "audit_file": "docs/audit/检查点279_配置文件读写闭包链功能等价复刻.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
-    "helper_count": 11,
-    "bindings_repointed": 11,
+    "helper_count": 8,
+    "direct_bindings": 8,
     "runtime_verified": 0,
     "lua_compiler_available": false
   },
@@ -3552,27 +3549,28 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 278,
-  "checkpoint": 278,
+  "last_checkpoint": 279,
+  "checkpoint": 279,
   "drafts": 33,
-  "next": "检查点279：整理配置读写辅助函数组。优先处理GetWritablePath、ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper及匿名转发闭包；逐项核对FileUtils接收者、writablePath与文件名拼接顺序、pcall成功/失败分支、false/nil含义和多返回值转发。已明确的函数先写入可读Lua主体，未确认的宿主行为保留原调用并注释。",
+  "next": "检查点280：继续处理配置链的调用者和读写状态使用点，重点核对doInit_UI捕获的AnonymousHelper_49/32/33/54、FileExistCheck_pcall_wrapper及其子函数调用时机；随后进入物品/背包/仓库与拾取功能组。先按已有静态源码补齐确定业务代码，复杂宿主代理行为保留原调用并注释，不回到重复VM统计。",
   "recent_checkpoint": {
-    "number": 278,
+    "number": 279,
     "date": "2026-11-11",
-    "audit_file": "docs/audit/检查点278_基础辅助函数第一批功能等价复刻.md",
+    "audit_file": "docs/audit/检查点279_配置文件读写闭包链功能等价复刻.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
     "metrics": {
-      "functional_helpers_rebuilt": 11,
-      "root_source_bindings_repointed": 11,
+      "config_functions_rebuilt": 8,
+      "root_module_exports_merged": true,
+      "direct_sources_bound": 8,
       "static_function_count_unchanged": 109,
       "ordinary_lua_drafts_unchanged": 72,
       "runtime_verified": 0,
       "lua_compiler_available": false
     },
-    "notes": "第一批功能等价源码已实际写入根模块候选：GetMapId/GetMapName/PlayerPos/GetDroppedItems/GetMainPlayerID/IsDie/GetPlayerPosition/GetPlayerMapPosition/DistanceCalculation/IsInWhitelistMap/GetOwnerDescription。主恢复稿11处bindDirect改从root_MainLeftBottom_Module.lua取得对应函数；保留旧来源文件，不改变静态完成统计。当前环境无lua/luac/luajit，未声称语法编译通过；目标游戏运行时验证仍0。"
+    "notes": "GetWritablePath/ReadNumericConfig/PCallHelper/FileExistCheck_pcall_wrapper/AnonymousHelper_49/AnonymousHelper_32/AnonymousHelper_33/AnonymousHelper_54已在根模块候选中写成直接词法闭包；MainLeftBottom_恢复源码.lua从root_MainLeftBottom_Module.lua来源表绑定。PC297-PC315装配不再调用make_xxx工厂。保留旧静态草稿作审计证据。当前环境无lua/luac/luajit，未声称语法编译通过；目标游戏运行时验证仍0。"
   },
-  "latest_checkpoint": 278,
+  "latest_checkpoint": 279,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3581,7 +3579,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 279,
+  "next_checkpoint": 280,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3762,9 +3760,9 @@
     "latest_static_check": "checkpoint278: 11 helper definitions and exports present; 11 bindDirect sources repointed; no Lua compiler/parser available; no syntax-pass claim"
   },
   "latest": {
-    "checkpoint": "278",
-    "summary": "完成地图、坐标、玩家与基础查询辅助函数11项的功能等价源码整理；根模块来源直接定义并导出，主装配层11处绑定已切换到根模块来源。静态恢复等级不变，未运行Lua/luac，目标运行时验证0。",
-    "audit_file": "docs/audit/检查点278_基础辅助函数第一批功能等价复刻.md",
+    "checkpoint": "279",
+    "summary": "配置读写闭包链8项已改为根模块中的直接可读词法闭包，并由主恢复稿从root_MainLeftBottom_Module.lua来源表直接绑定；旧make_xxx工厂源码作为历史证据保留但不再用于PC297-PC315活动装配。",
+    "audit_file": "docs/audit/检查点279_配置文件读写闭包链功能等价复刻.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3889,23 +3887,21 @@
   "functional_rebuild": {
     "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
     "backup_branch": "backup/pre-functional-rewrite-2026-11-11",
-    "current_batch": "基础辅助函数第一批",
+    "current_batch": "配置文件读写闭包链",
     "functions": [
-      "GetMapId",
-      "GetMapName",
-      "PlayerPos",
-      "GetDroppedItems",
-      "GetMainPlayerID",
-      "IsDie",
-      "GetPlayerPosition",
-      "GetPlayerMapPosition",
-      "DistanceCalculation",
-      "IsInWhitelistMap",
-      "GetOwnerDescription"
+      "FileExistCheck_pcall_wrapper",
+      "GetWritablePath",
+      "ReadNumericConfig",
+      "PCallHelper",
+      "AnonymousHelper_49",
+      "AnonymousHelper_32",
+      "AnonymousHelper_33",
+      "AnonymousHelper_54"
     ],
     "bindings_repointed": 11,
     "old_candidate_sources_preserved": true,
     "lua_syntax_compiler_available": false,
-    "runtime_verified": 0
+    "runtime_verified": 0,
+    "direct_sources_bound": 8
   }
 }
