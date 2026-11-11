@@ -1283,8 +1283,11 @@ local function FindMonsterCandidates()
 end
 
 local function MainLoop()
-    if not isGatherRunning then return end
+    if not isGatherRunning then
+        return
+    end
 
+    -- 白名单地图：仅在状态非IDLE时记录切换并复位。
     if IsInWhitelistMap() then
         if currentState ~= gatherStatusText.IDLE then
             PrintLog("在白名单地图, 停止引怪")
@@ -1294,45 +1297,32 @@ local function MainLoop()
         return
     end
 
-    local getCandidates = FindMonsterCandidates
-    local getPlayerID = GetMainPlayerID
-    local getOwnerID = GetOwnerID
-    local getOwnerText = GetOwnerIDText
-    local getOwnerDescription = GetOwnerDescription
-    local isAlive = IsDie
-    local findActors = FindMonsterInCurrViewField
-    local setTarget = SetTargetID
-
-    if type(getPlayerID) ~= "function" or type(getOwnerID) ~= "function"
-        or type(isAlive) ~= "function" or type(findActors) ~= "function"
-        or type(setTarget) ~= "function" then
-        PrintLog("MainLoop依赖尚未全部接入，跳过本轮")
-        return
-    end
-
+    --------------------------------------------------------------------------
+    -- IDLE：收集候选怪物ID。
+    --------------------------------------------------------------------------
     if currentState == gatherStatusText.IDLE then
         PrintLog("扫描怪物中")
-        if type(getCandidates) ~= "function" then
-            PrintLog("FindMonsterCandidates尚未接入")
-            return
-        end
-        local candidates = getCandidates() or {}
+
+        local candidates = FindMonsterCandidates()
         if #candidates == 0 then
             PrintLog("视野内没有可攻击怪物")
             return
         end
 
         resettableTable = {}
-        local mainPlayerID = getPlayerID()
+        local mainPlayerID = GetMainPlayerID()
+
         for _, actor in ipairs(candidates) do
-            if not getOwnerID(actor, mainPlayerID) then
+            if not GetOwnerID(actor, mainPlayerID) then
                 table.insert(resettableTable, actor:GetID())
             end
         end
+
         if #resettableTable == 0 then
             PrintLog("没有可攻击的怪物")
             return
         end
+
         resetSlot17 = 1
         resetSlot16 = 0
         PrintLog(string.format("开始引怪，目标数量: %d", #resettableTable))
@@ -1340,23 +1330,41 @@ local function MainLoop()
         return
     end
 
+    --------------------------------------------------------------------------
+    -- GATHERING：先处理等待归属变更的目标，再扫描目标列表。
+    --------------------------------------------------------------------------
     if currentState == gatherStatusText.GATHERING then
         PrintLog("引怪中")
+
         if resetSlot19 then
             local now = os.time()
             if now < resetSlot20 then
-                PrintLog(string.format("等待归属变更中: %s (还剩 %d 秒)",
-                    tostring(resetSlot22), resetSlot20 - now))
+                PrintLog(string.format(
+                    "等待归属变更中: %s (还剩 %d 秒)",
+                    resetSlot22,
+                    resetSlot20 - now
+                ))
                 return
             end
-            local actorMap = findActors()
-            local actor = actorMap and actorMap[resetSlot21]
-            local mainPlayerID = getPlayerID()
-            if actor and type(getOwnerText) == "function" and getOwnerText(actor, mainPlayerID) then
-                PrintLog(string.format("怪物 %s 归属已变更为自己", tostring(resetSlot22)))
+
+            -- FindMonsterInCurrViewField没有形参；原调用点仍传入一个额外参数，
+            -- Lua函数不会消费该额外参数，保留调用实参以对应原调用点。
+            local actorMap = FindMonsterInCurrViewField(resetSlot19)
+            local actor = actorMap[resetSlot21]
+            local mainPlayerID = GetMainPlayerID()
+
+            if actor and GetOwnerIDText(actor, mainPlayerID) then
+                PrintLog(string.format(
+                    "怪物 %s 归属已变更为自己",
+                    resetSlot22
+                ))
             else
-                PrintLog(string.format("怪物 %s 归属未变更或已离开视野", tostring(resetSlot22)))
+                PrintLog(string.format(
+                    "怪物 %s 归属未变更或已离开视野",
+                    resetSlot22
+                ))
             end
+
             resetSlot19 = false
             resetSlot20 = 0
             resetSlot21 = 0
@@ -1364,86 +1372,153 @@ local function MainLoop()
             resetSlot17 = resetSlot17 + 1
         end
 
-        local actorMap = findActors(resetSlot19) or {}
-        local mainPlayerID = getPlayerID()
+        -- 原型PC159-PC160向零形参辅助函数传入等待标记；保留这个额外实参。
+        local actorMap = FindMonsterInCurrViewField(resetSlot19)
+        local mainPlayerID = GetMainPlayerID()
         local allOwnersResolved = true
+
         for index = resetSlot17, #resettableTable do
             local targetID = resettableTable[index]
             local actor = actorMap[targetID]
+
             if not actor then
-                PrintLog(string.format("怪物 %d (ID: %s) 不在视野内，跳过", index, tostring(targetID)))
+                PrintLog(string.format(
+                    "怪物 %d (ID: %s) 不在视野内，跳过",
+                    index,
+                    tostring(targetID)
+                ))
                 resetSlot17 = index + 1
-            elseif not isAlive(actor) then
-                PrintLog(string.format("怪物 %d (ID: %s) 已死亡，跳过", index, tostring(targetID)))
+
+            elseif not IsDie(actor) then
+                PrintLog(string.format(
+                    "怪物 %d (ID: %s) 已死亡，跳过",
+                    index,
+                    tostring(targetID)
+                ))
                 resetSlot17 = index + 1
+
             else
-                local monsterName = actor:GetName() or "未知怪物"
-                local ownerID, ownerDescription
-                if type(getOwnerDescription) == "function" then
-                    ownerID, ownerDescription = getOwnerDescription(actor, mainPlayerID)
-                else
-                    ownerID = getOwnerID(actor)
-                    ownerDescription = ownerID == mainPlayerID and "自己" or "其他玩家"
+                local monsterName = actor:GetName()
+                if not monsterName then
+                    monsterName = "未知怪物"
                 end
-                if getOwnerID(actor, mainPlayerID) then
-                    PrintLog(string.format("怪物 %d (%s, ID: %s) 归属属于其他玩家(归属ID: %s, %s)，跳过",
-                        index, monsterName, tostring(targetID), tostring(ownerID), tostring(ownerDescription)))
+
+                local ownerID, ownerDescription =
+                    GetOwnerDescription(actor, mainPlayerID)
+
+                if GetOwnerID(actor, mainPlayerID) then
+                    PrintLog(string.format(
+                        "怪物 %d (%s, ID: %s) 归属属于其他玩家(归属ID: %s, %s)，跳过",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerID),
+                        tostring(ownerDescription)
+                    ))
                     resetSlot17 = index + 1
-                elseif type(getOwnerText) == "function" and getOwnerText(actor, mainPlayerID) then
-                    PrintLog(string.format("怪物 %d (%s, ID: %s) 归属已属于自己(归属ID: %s, %s)，跳过",
-                        index, monsterName, tostring(targetID), tostring(ownerID), tostring(ownerDescription)))
+
+                elseif GetOwnerIDText(actor, mainPlayerID) then
+                    PrintLog(string.format(
+                        "怪物 %d (%s, ID: %s) 归属已属于自己(归属ID: %s, %s)，跳过",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerID),
+                        tostring(ownerDescription)
+                    ))
                     resetSlot16 = resetSlot16 + 1
                     resetSlot17 = index + 1
+
                 else
                     allOwnersResolved = false
                     resetSlot17 = index
-                    PrintLog(string.format("锁定怪物 %d: %s (ID: %s, 归属: %s)",
-                        index, monsterName, tostring(targetID), tostring(ownerDescription)))
-                    if setTarget(targetID) then
+
+                    PrintLog(string.format(
+                        "锁定怪物 %d: %s (ID: %s, 归属: %s)",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerDescription)
+                    ))
+
+                    local accepted = SetTargetID(targetID)
+                    if accepted then
                         resetSlot19 = true
                         resetSlot20 = os.time() + gatherConfig.ATTACK_WAIT_TIME
                         resetSlot21 = targetID
                         resetSlot22 = monsterName
-                        PrintLog(string.format("开始等待 %s 归属变更 (等待 %d 秒)",
-                            monsterName, gatherConfig.ATTACK_WAIT_TIME))
+
+                        PrintLog(string.format(
+                            "开始等待 %s 归属变更 (等待 %d 秒)",
+                            monsterName,
+                            gatherConfig.ATTACK_WAIT_TIME
+                        ))
                     else
                         PrintLog(string.format("锁定怪物 %s 失败", monsterName))
                     end
+
                     resetSlot17 = index + 1
                 end
             end
         end
 
-        if allOwnersResolved and resetSlot17 > #resettableTable then
-            PrintLog("所有怪物归属已获取，切换到攻击状态")
-            resetSlot17 = 1
-            FormatStateChange(gatherStatusText.ATTACKING)
-        elseif not allOwnersResolved and resetSlot17 > #resettableTable then
+        if allOwnersResolved then
+            if resetSlot17 > #resettableTable then
+                PrintLog("所有怪物归属已获取，切换到攻击状态")
+                resetSlot17 = 1
+                FormatStateChange(gatherStatusText.ATTACKING)
+                return
+            end
+        elseif resetSlot17 > #resettableTable then
             PrintLog("怪物列表处理完毕但未全部获取归属，重新扫描")
             FormatStateChange(gatherStatusText.IDLE)
             ResetGatherMonsterData()
+            return
         end
+
         return
     end
 
+    --------------------------------------------------------------------------
+    -- ATTACKING：按目标ID查找下一个仍存活的对象。
+    --------------------------------------------------------------------------
     if currentState == gatherStatusText.ATTACKING then
         PrintLog("攻击中")
-        local actorMap = findActors() or {}
+
+        local actorMap = FindMonsterInCurrViewField()
         for index = resetSlot17, #resettableTable do
             local targetID = resettableTable[index]
             local actor = actorMap[targetID]
-            if actor and isAlive(actor) then
-                local monsterName = actor:GetName() or "未知怪物"
-                PrintLog(string.format("攻击怪物 %d: %s (ID: %s)", index, monsterName, tostring(targetID)))
-                setTarget(targetID)
+
+            if actor and IsDie(actor) then
+                local monsterName = actor:GetName()
+                if not monsterName then
+                    monsterName = "未知怪物"
+                end
+
+                PrintLog(string.format(
+                    "攻击怪物 %d: %s (ID: %s)",
+                    index,
+                    monsterName,
+                    tostring(targetID)
+                ))
+
+                SetTargetID(targetID)
                 return
             end
-            PrintLog(string.format("怪物 %d (ID: %s) 已死亡或离开视野", index, tostring(targetID)))
+
+            PrintLog(string.format(
+                "怪物 %d (ID: %s) 已死亡或离开视野",
+                index,
+                tostring(targetID)
+            ))
             resetSlot17 = index + 1
         end
+
         PrintLog("所有目标怪物已死亡或离开视野，切换到空闲状态")
         FormatStateChange(gatherStatusText.IDLE)
         ResetGatherMonsterData()
+        return
     end
 end
 
