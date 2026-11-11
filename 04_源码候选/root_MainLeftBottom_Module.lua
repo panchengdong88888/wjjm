@@ -314,7 +314,8 @@ end
 
 -- root.children[9]：读取仅包含无符号十进制数字的配置文件。
 -- 不存在、读取结果非字符串、内容不匹配时均返回 nil。
-local function ReadNumericConfig(fileName)
+local function ReadNumericConfig(...)
+    local fileName = ...
     local fileUtils = cc.FileUtils:getInstance()
     local fullPath = GetWritablePath(fileName)
 
