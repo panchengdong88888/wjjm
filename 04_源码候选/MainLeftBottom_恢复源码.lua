@@ -6,6 +6,7 @@ MainLeftBottom(2).lua 明文恢复整合稿（静态候选）
 结构索引：docs/handoff/13_MainLeftBottom_原型结构树.md（110/110原型父子树；调用图仍需独立恢复）。
 检查点279：已完成11个基础辅助函数与8个配置读写辅助函数的功能等价复刻，主体与绑定见检查点278/279审计；此前PC86-PC315共享cell/闭包参数/模块字段链静态复核见docs/audit/检查点277_PC86-PC315共享cell与字段链复核.md；PC275/389的_ENV与_G环境对象等价性仍未验证。
 检查点281：按用户要求调整顺序，先处理根入口模块MainLeftBottom_Module（PC1-PC412）和UI初始化doInit_UI（root.children[42]，419条指令/23个子原型）；检查点282纠正GetWritablePath与ReadNumericConfig固定参数入口，暂缓背包/仓库。UI工厂20项捕获参数改为业务语义命名；按钮快捷栏回调改用捕获的printLog，而不是未确认的全局PrintLog；调用位置仍按原20槽顺序传参，未改变捕获关系。
+检查点283：按原始OP_137语义区分当前chunk的ENV与ENV["_G"]；PC2/4/31/34/275/389及PC55-PC85、PC213、PC237、PC246、PC255、PC258、PC260、PC382、PC388均通过同一rootEnvironment处理；PC44读取rootEnvironment._G后，PC45只向该表写log。
 重要：
 - 根模块初始化与闭包创建仍采用明确标注的恢复适配结构，不冒充原作者逐字源码。
 - 所有函数体仍按原型路径保留；根装配按OP_387捕获顺序绑定共享cell和状态表。
@@ -156,8 +157,20 @@ do
 -- 检查点192-198、262-266：根模块分段普通Lua草稿，PC1-PC412均已建立分段记录；非作者原文逐字恢复，未运行时验证。
 -- 状态：不是完整根模块源码，尚未运行时验证。
 
+-- VM的ENV是当前chunk环境，不应无条件等同于_G。
+-- Lua 5.1优先通过getfenv取得；Lua 5.2+使用词法_ENV；
+-- 只有运行环境不提供上述机制时才回退_G。
+local rootEnvironment
+if type(getfenv) == "function" then
+    rootEnvironment = getfenv(1)
+else
+    rootEnvironment = _ENV or _G
+end
+assert(type(rootEnvironment) == "table",
+    "MainLeftBottom root chunk environment is not a table")
+
 local MainLeftBottom = {}
-_G.MainLeftBottom = MainLeftBottom
+rootEnvironment.MainLeftBottom = MainLeftBottom
 
 -- PC3-PC5：T[0]先创建a状态表，再于PC5挂入模块根表。
 local a = {}
@@ -190,7 +203,7 @@ a.hidebut = nil
 
 -- PC30-PC32：T[1]创建b映射表；PC31重新读取模块根表，PC32挂入b。
 local b = {}
-local moduleForB = _G.MainLeftBottom
+local moduleForB = rootEnvironment.MainLeftBottom
 moduleForB.b = b
 
 -- PC33-PC35：T[2]创建z状态表，再挂入模块根表。
@@ -770,7 +783,7 @@ local function MoveItemToQuickUse(itemIndex, targetPos)
 end
 
 -- root PC259-PC260：该原型无捕获，根模块创建后立即导出全局函数。
-_G.MoveItemToQuickUse = MoveItemToQuickUse
+rootEnvironment.MoveItemToQuickUse = MoveItemToQuickUse
 
 
 
@@ -785,14 +798,21 @@ _G.MoveItemToQuickUse = MoveItemToQuickUse
 -- 未提供的项目保持原样，不以空函数冒充恢复结果。
 --
 -- 此函数是恢复适配器，不是原作者源码中的独立函数。
-local function AttachRecoveredPrototypes(prototypes)
+local function AttachRecoveredPrototypes(prototypes, environment)
     assert(type(prototypes) == "table",
         "AttachRecoveredPrototypes expects a table of recovered closures")
+
+    environment = environment or MainLeftBottomRecovered.environment or _G
+    assert(type(environment) == "table",
+        "AttachRecoveredPrototypes expects a chunk environment table")
+    local module = environment.MainLeftBottom
+    assert(type(module) == "table",
+        "AttachRecoveredPrototypes cannot find environment.MainLeftBottom")
 
     local function exportGlobal(globalName, prototypeName)
         local fn = prototypes[prototypeName]
         if fn ~= nil then
-            _G[globalName] = fn
+            environment[globalName] = fn
         end
     end
 
@@ -810,7 +830,7 @@ local function AttachRecoveredPrototypes(prototypes)
     exportGlobal("PickUpItems", "PickUpItems")
 
     if prototypes.LuaSendMsg ~= nil then
-        MainLeftBottom.a.LuaSendMsg = prototypes.LuaSendMsg
+        module.a.LuaSendMsg = prototypes.LuaSendMsg
     end
 
     -- root PC212-PC258：采集控制相关全局入口。
@@ -822,34 +842,34 @@ local function AttachRecoveredPrototypes(prototypes)
 
     -- root PC259-PC274：模块表上的界面控制闭包。
     if prototypes.DestroyUI ~= nil then
-        MainLeftBottom.hide = prototypes.DestroyUI
+        module.hide = prototypes.DestroyUI
     end
     if prototypes.SetButtonVisibilityState ~= nil then
-        MainLeftBottom.show = prototypes.SetButtonVisibilityState
+        module.show = prototypes.SetButtonVisibilityState
     end
     if prototypes.ShowHideAllButtons ~= nil then
-        MainLeftBottom.destroy = prototypes.ShowHideAllButtons
+        module.destroy = prototypes.ShowHideAllButtons
     end
     exportGlobal("MoveItemToQuickUse", "MoveItemToQuickUse")
 
     -- root PC275-PC279：账号验证入口。
     if prototypes.AccountIDValidation ~= nil then
-        MainLeftBottom.main = prototypes.AccountIDValidation
+        module.main = prototypes.AccountIDValidation
     end
 
     -- root PC350-PC388：伤害回调与黑名单功能入口。
     if prototypes.onDamageMsg ~= nil then
-        MainLeftBottom.onDamageMsg = prototypes.onDamageMsg
+        module.onDamageMsg = prototypes.onDamageMsg
     end
     exportGlobal("BlacklistItems", "BlacklistPlayerDetection")
     exportGlobal("ClearBlacklistItems", "ClearBlacklistItems")
 
     -- root PC389-PC411：主界面初始化入口。
     if prototypes.doInit_UI ~= nil then
-        MainLeftBottom.doInit = prototypes.doInit_UI
+        module.doInit = prototypes.doInit_UI
     end
 
-    return MainLeftBottom
+    return module
 end
 
 -- 第一阶段接入约定：
@@ -875,6 +895,8 @@ end
   __exports["GetOwnerDescription"] = GetOwnerDescription
   if AttachRecoveredPrototypes ~= nil then __exports["AttachRecoveredPrototypes"] = AttachRecoveredPrototypes end
   if MainLeftBottom ~= nil then __exports["MainLeftBottom"] = MainLeftBottom end
+  __exports["environment"] = rootEnvironment
+  MainLeftBottomRecovered.environment = rootEnvironment
   if gatherConfig ~= nil then __exports["gatherConfig"] = gatherConfig end
   -- Checkpoint250: initial values for shared OP_387 parent-register cells.
   __exports["currentState"] = currentState
@@ -6018,8 +6040,8 @@ end
 
 -- 检查点244：根模块PC341-PC412最终装配关系（依据corrected phase3）。
 -- MainLeftBottom.onDamageMsg = onDamageMsg（PC359）。
--- _G.BlacklistItems = BlacklistPlayerDetection（PC382）。
--- _G.ClearBlacklistItems = ClearBlacklistItems（PC388）。
+-- rootEnvironment.BlacklistItems = BlacklistPlayerDetection（PC382）。
+-- rootEnvironment.ClearBlacklistItems = ClearBlacklistItems（PC388）。
 -- MainLeftBottom.doInit = doInit_UI（PC411）；PC412返回MainLeftBottom。
 -- doInit_UI在root创建时按20项顺序捕获[T4,T2,T3,T0,T1,T41,T48,T7,T8,T50,T49,T5,T44,T42,T51,T43,T47,T11,T12,T9]。
 -- BlacklistPlayerDetection的13项捕获、DeathAutoBlacklist的4项捕获、ClearBlacklistItems的4项捕获及onDamageMsg的状态表捕获已写入根模块闭包装配表；均为父寄存器live cell，不是独立快照。
@@ -6043,6 +6065,9 @@ end
 do
     local sources = MainLeftBottomRecovered.sources
     local rootSource = sources["04_源码候选/root_MainLeftBottom_Module.lua"]
+    local rootEnvironment = rootSource and rootSource.environment
+    assert(type(rootEnvironment) == "table",
+        "root chunk environment is missing from root source registry")
     local rootModule = rootSource and rootSource.MainLeftBottom
     assert(type(rootModule) == "table",
         "root module candidate is missing from source registry")
@@ -6050,7 +6075,7 @@ do
     -- 检查点273：PC1-PC42根表与四个初始table的跨词法块身份核对。
     -- root_MainLeftBottom_Module来源块执行PC1-PC42后，将局部值导出到rootSource；
     -- 此处不能直接访问来源块的local a/b/z/timerState。
-    assert(_G.MainLeftBottom == rootModule,
+    assert(rootEnvironment.MainLeftBottom == rootModule,
         "PC1-PC2 root module global/source identity mismatch")
     assert(type(rootModule.a) == "table"
         and rootSource.uiState == rootModule.a,
@@ -6120,9 +6145,11 @@ do
     rootRegisters[4] = requireRecoveredClosure("PrintLog", rootPrototypes.PrintLog)
 
     -- PC44-PC45：T[5]暂存_G；PC45执行_G.log=T[4]。
-    rootRegisters[5] = _G
+    rootRegisters[5] = rootEnvironment._G
+    assert(type(rootRegisters[5]) == "table",
+        "PC44 ENV['_G'] did not resolve to a table")
     rootRegisters[5].log = rootRegisters[4]
-    assert(_G.log == rootPrototypes.PrintLog,
+    assert(rootRegisters[5].log == rootPrototypes.PrintLog,
         "PC45 _G.log export identity mismatch")
 
     -- PC46-PC47：创建ShowLocalNoticeByType，捕获T[0]=a表，随后覆写T[5]。
@@ -6162,23 +6189,23 @@ do
     -- PC54-PC63：T[8]连续复用五次；每个闭包都在下一次覆写前立即导出。
     bindDirect("GetMapId", "04_源码候选/root_MainLeftBottom_Module.lua", "GetMapId")
     rootRegisters[8] = requireRecoveredClosure("GetMapId", rootPrototypes.GetMapId)
-    _G.GetMapId = rootRegisters[8]
+    rootEnvironment.GetMapId = rootRegisters[8]
 
     bindDirect("GetMapName", "04_源码候选/root_MainLeftBottom_Module.lua", "GetMapName")
     rootRegisters[8] = requireRecoveredClosure("GetMapName", rootPrototypes.GetMapName)
-    _G.GetMapName = rootRegisters[8]
+    rootEnvironment.GetMapName = rootRegisters[8]
 
     bindDirect("PlayerPos", "04_源码候选/root_MainLeftBottom_Module.lua", "PlayerPos")
     rootRegisters[8] = requireRecoveredClosure("PlayerPos", rootPrototypes.PlayerPos)
-    _G.PlayerPos = rootRegisters[8]
+    rootEnvironment.PlayerPos = rootRegisters[8]
 
     bindDirect("GetDroppedItems", "04_源码候选/root_MainLeftBottom_Module.lua", "GetDroppedItems")
     rootRegisters[8] = requireRecoveredClosure("GetDroppedItems", rootPrototypes.GetDroppedItems)
-    _G.GetDroppedItems = rootRegisters[8]
+    rootEnvironment.GetDroppedItems = rootRegisters[8]
 
     bindDirect("MoveTo", "04_源码候选/短函数草稿_第五十三批.lua", "MoveTo")
     rootRegisters[8] = requireRecoveredClosure("MoveTo", rootPrototypes.MoveTo)
-    _G.MoveTo = rootRegisters[8]
+    rootEnvironment.MoveTo = rootRegisters[8]
 
     -- PC64-PC67：T[8]=DiuItems；捕获T[2]=z表、T[5]=ShowLocalNoticeByType。
     local makeDiuItems = sourceFunction("04_源码候选/root46_DiuItems.lua", "make_DiuItems")
@@ -6186,7 +6213,7 @@ do
         rootPrototypes.DiuItems = makeDiuItems(rootRegisters[2], rootRegisters[5])
     end
     rootRegisters[8] = requireRecoveredClosure("DiuItems", rootPrototypes.DiuItems)
-    _G.DiuItems = rootRegisters[8]
+    rootEnvironment.DiuItems = rootRegisters[8]
 
     -- PC68-PC70：T[8]=GetAvailableStoragePage，捕获T[4]=PrintLog。
     local makeGetAvailableStoragePage = sourceFunction(
@@ -6198,7 +6225,7 @@ do
     rootRegisters[8] = requireRecoveredClosure(
         "GetAvailableStoragePage", rootPrototypes.GetAvailableStoragePage
     )
-    _G.GetAvailableStoragePage = rootRegisters[8]
+    rootEnvironment.GetAvailableStoragePage = rootRegisters[8]
 
     -- PC71-PC73：T[8]=GetStorageItemData，捕获T[4]=PrintLog。
     local getStorageItemSource = sources["04_源码候选/短函数草稿_第五十六批.lua#GetStorageItemData"]
@@ -6209,7 +6236,7 @@ do
     rootRegisters[8] = requireRecoveredClosure(
         "GetStorageItemData", rootPrototypes.GetStorageItemData
     )
-    _G.GetStorageItemData = rootRegisters[8]
+    rootEnvironment.GetStorageItemData = rootRegisters[8]
 
     -- PC74-PC78：T[8]=StorageItems，捕获[T[2],T[4],T[5]]；
     -- 两个嵌套工厂代表StorageItems内部创建的子闭包，不是root额外捕获槽。
@@ -6225,7 +6252,7 @@ do
         )
     end
     rootRegisters[8] = requireRecoveredClosure("StorageItems", rootPrototypes.StorageItems)
-    _G.StorageItems = rootRegisters[8]
+    rootEnvironment.StorageItems = rootRegisters[8]
 
     -- PC79-PC82：T[8]=TakeItems，捕获[T[2],T[5]]。
     local makeTakeItems = sourceFunction("04_源码候选/短函数草稿_第五十七批.lua", "make_TakeItems")
@@ -6233,7 +6260,7 @@ do
         rootPrototypes.TakeItems = makeTakeItems(rootRegisters[2], rootRegisters[5])
     end
     rootRegisters[8] = requireRecoveredClosure("TakeItems", rootPrototypes.TakeItems)
-    _G.TakeItems = rootRegisters[8]
+    rootEnvironment.TakeItems = rootRegisters[8]
 
     -- PC83-PC85：T[8]=PickUpItems，捕获T[5]；PC85完成本段最后一次全局导出。
     local makePickUpItems = sourceFunction("04_源码候选/PickUpItems_拾取流程_第十批.lua", "make_PickUpItems")
@@ -6241,11 +6268,11 @@ do
         rootPrototypes.PickUpItems = makePickUpItems(rootRegisters[5])
     end
     rootRegisters[8] = requireRecoveredClosure("PickUpItems", rootPrototypes.PickUpItems)
-    _G.PickUpItems = rootRegisters[8]
+    rootEnvironment.PickUpItems = rootRegisters[8]
 
     -- 检查点274：核对PC43-PC85的即时导出与寄存器最终身份。
     assert(rootRegisters[4] == rootPrototypes.PrintLog
-        and _G.log == rootPrototypes.PrintLog,
+        and rootRegisters[5].log == rootPrototypes.PrintLog,
         "PC43-PC45 PrintLog/T[4]/_G.log identity mismatch")
     assert(rootRegisters[5] == rootPrototypes.ShowLocalNoticeByType,
         "PC46-PC47 T[5] closure identity mismatch")
@@ -6253,18 +6280,18 @@ do
         and rootRegisters[7] == rootPrototypes.Schedule,
         "PC52-PC53 T[6]/T[7] closure identity mismatch")
     assert(rootRegisters[8] == rootPrototypes.PickUpItems
-        and _G.PickUpItems == rootPrototypes.PickUpItems,
+        and rootEnvironment.PickUpItems == rootPrototypes.PickUpItems,
         "PC83-PC85 final T[8]/PickUpItems identity mismatch")
-    assert(_G.GetMapId == rootPrototypes.GetMapId
-        and _G.GetMapName == rootPrototypes.GetMapName
-        and _G.PlayerPos == rootPrototypes.PlayerPos
-        and _G.GetDroppedItems == rootPrototypes.GetDroppedItems
-        and _G.MoveTo == rootPrototypes.MoveTo
-        and _G.DiuItems == rootPrototypes.DiuItems
-        and _G.GetAvailableStoragePage == rootPrototypes.GetAvailableStoragePage
-        and _G.GetStorageItemData == rootPrototypes.GetStorageItemData
-        and _G.StorageItems == rootPrototypes.StorageItems
-        and _G.TakeItems == rootPrototypes.TakeItems,
+    assert(rootEnvironment.GetMapId == rootPrototypes.GetMapId
+        and rootEnvironment.GetMapName == rootPrototypes.GetMapName
+        and rootEnvironment.PlayerPos == rootPrototypes.PlayerPos
+        and rootEnvironment.GetDroppedItems == rootPrototypes.GetDroppedItems
+        and rootEnvironment.MoveTo == rootPrototypes.MoveTo
+        and rootEnvironment.DiuItems == rootPrototypes.DiuItems
+        and rootEnvironment.GetAvailableStoragePage == rootPrototypes.GetAvailableStoragePage
+        and rootEnvironment.GetStorageItemData == rootPrototypes.GetStorageItemData
+        and rootEnvironment.StorageItems == rootPrototypes.StorageItems
+        and rootEnvironment.TakeItems == rootPrototypes.TakeItems,
         "PC54-PC82 T[8] sequential global export identity mismatch")
 
     -- 检查点261：gatherStatusText在root source候选的独立词法块内声明，
@@ -6399,7 +6426,7 @@ do
     rootPrototypes.IsInWhitelistMap = requireRecoveredClosure(
         "IsInWhitelistMap", rootPrototypes.IsInWhitelistMap
     )
-    _G.IsInWhitelistMap = rootPrototypes.IsInWhitelistMap
+    rootEnvironment.IsInWhitelistMap = rootPrototypes.IsInWhitelistMap
 
     local makeMainLoop = sourceFunction(
         "04_源码候选/root45_MainLoop.lua", "make_MainLoop"
@@ -6419,7 +6446,7 @@ do
         )
     end
     rootPrototypes.MainLoop = requireRecoveredClosure("MainLoop", rootPrototypes.MainLoop)
-    _G.MainLoop = rootPrototypes.MainLoop
+    rootEnvironment.MainLoop = rootPrototypes.MainLoop
 
     local makeInitGather = sourceFunction(
         "04_源码候选/InitGatherMonsters_初始化逻辑_第八批草稿.lua",
@@ -6436,7 +6463,7 @@ do
     rootPrototypes.InitGatherMonsters = requireRecoveredClosure(
         "InitGatherMonsters", rootPrototypes.InitGatherMonsters
     )
-    _G.InitGatherMonsters = rootPrototypes.InitGatherMonsters
+    rootEnvironment.InitGatherMonsters = rootPrototypes.InitGatherMonsters
 
     local makeStopGather = sourceFunction(
         "04_源码候选/短函数草稿_第十三批.lua", "make_StopGatherMonsters"
@@ -6452,7 +6479,7 @@ do
     rootPrototypes.StopGatherMonsters = requireRecoveredClosure(
         "StopGatherMonsters", rootPrototypes.StopGatherMonsters
     )
-    _G.StopGatherMonsters = rootPrototypes.StopGatherMonsters
+    rootEnvironment.StopGatherMonsters = rootPrototypes.StopGatherMonsters
 
     -- Builtsetting：UP[0]=root T[5]=ShowLocalNoticeByType；PC258导出全局。
     local makeBuiltsetting = sourceFunction(
@@ -6466,7 +6493,7 @@ do
     rootPrototypes.Builtsetting = requireRecoveredClosure(
         "Builtsetting", rootPrototypes.Builtsetting
     )
-    _G.Builtsetting = rootPrototypes.Builtsetting
+    rootEnvironment.Builtsetting = rootPrototypes.Builtsetting
 
     -- root PC259-PC260：创建无捕获MoveItemToQuickUse；PC260导出全局。
     bindDirect("MoveItemToQuickUse",
@@ -6474,7 +6501,7 @@ do
     rootPrototypes.MoveItemToQuickUse = requireRecoveredClosure(
         "MoveItemToQuickUse", rootPrototypes.MoveItemToQuickUse
     )
-    _G.MoveItemToQuickUse = rootPrototypes.MoveItemToQuickUse
+    rootEnvironment.MoveItemToQuickUse = rootPrototypes.MoveItemToQuickUse
 
     -- 检查点251：UI闭包按父root寄存器T[0]/T[1]/T[3]捕获顺序注入。
     -- T[0]=MainLeftBottom.a（UI状态对象），T[1]=MainLeftBottom.b（按钮映射），
@@ -6522,7 +6549,7 @@ do
 
     -- PC275：OP_137按全局名MainLeftBottom重新读取当前chunk环境中的模块表。
     -- 适配器暂以_G.MainLeftBottom表达；只有_ENV与_G指向同一环境表时才严格等价，宿主环境身份尚未验证。
-    local accountValidationModule = _G.MainLeftBottom
+    local accountValidationModule = rootEnvironment.MainLeftBottom
     assert(type(accountValidationModule) == "table",
         "PC275 _ENV.MainLeftBottom is not a table")
 
@@ -6772,7 +6799,7 @@ do
     rootPrototypes.BlacklistPlayerDetection = requireRecoveredClosure(
         "BlacklistPlayerDetection", rootPrototypes.BlacklistPlayerDetection
     )
-    _G.BlacklistItems = rootPrototypes.BlacklistPlayerDetection
+    rootEnvironment.BlacklistItems = rootPrototypes.BlacklistPlayerDetection
 
     local makeClearBlacklistItems = sourceFunction(
         "04_源码候选/短函数草稿_第五十四批.lua", "make_ClearBlacklistItems"
@@ -6788,7 +6815,7 @@ do
     rootPrototypes.ClearBlacklistItems = requireRecoveredClosure(
         "ClearBlacklistItems", rootPrototypes.ClearBlacklistItems
     )
-    _G.ClearBlacklistItems = rootPrototypes.ClearBlacklistItems
+    rootEnvironment.ClearBlacklistItems = rootPrototypes.ClearBlacklistItems
 
     -- 检查点267：PC350-PC388黑名单闭包链的对象身份与导出落点复核。
     assert(rootModule.blacklist == rootSource.blacklistState,
@@ -6799,15 +6826,15 @@ do
         "PC360/368 T[57] live-cell value mismatch")
     assert(rootCells[57].value ~= rootPrototypes.onDamageMsg,
         "PC357 onDamageMsg must not replace PC360 InstallDamageHook in T[57]")
-    assert(_G.BlacklistItems == rootPrototypes.BlacklistPlayerDetection,
+    assert(rootEnvironment.BlacklistItems == rootPrototypes.BlacklistPlayerDetection,
         "PC382 BlacklistItems global export mismatch")
-    assert(_G.ClearBlacklistItems == rootPrototypes.ClearBlacklistItems,
+    assert(rootEnvironment.ClearBlacklistItems == rootPrototypes.ClearBlacklistItems,
         "PC388 ClearBlacklistItems global export mismatch")
 
     -- PC389：原始OP_137按全局名MainLeftBottom读取当前chunk环境，并写入独立临时寄存器T[59]。
     -- 适配器暂以_G.MainLeftBottom表达；_ENV与_G是否为同一对象尚未由宿主证据验证，不冒充逐字原文。
     -- T[2]/T[0]不被覆写；PC392/PC394仍分别捕获MainLeftBottom.z/a。
-    local doInitModule = _G.MainLeftBottom
+    local doInitModule = rootEnvironment.MainLeftBottom
     assert(type(doInitModule) == "table",
         "PC389 reread _ENV.MainLeftBottom did not return a table")
 
