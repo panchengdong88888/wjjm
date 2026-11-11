@@ -1381,6 +1381,15 @@ MainLeftBottom.destroy = ShowHideAllButtons
 MainLeftBottom.main = AccountIDValidation
 
 
+local function CallRootFunction(name, ...)
+    local fn = rootEnvironment[name]
+    if type(fn) ~= "function" then
+        PrintLog("功能入口尚未接入：%s", name)
+        return nil
+    end
+    return fn(...)
+end
+
 local function StorageItems(...) return CallRootFunction("StorageItems", ...) end
 local function TakeItems(...) return CallRootFunction("TakeItems", ...) end
 local function PickUpItems(...) return CallRootFunction("PickUpItems", ...) end
