@@ -2936,3 +2936,76 @@ return MainLeftBottom
 -- 不再作为平行开发主线；不得以“全部完成后再生成”作为延后创建本文件的理由。
 -- 当前状态：INCOMPLETE；PC212-PC279入口首批已写入（采集主循环、启动/停止、设置、UI控制、账号验证），仍有其他根级闭包及黑名单/物品功能待接入；Lua语法检查和游戏运行验证均未执行。
 -- ============================================================================
+
+-- ============================================================================
+-- 检查点285：root.children[42] / doInit_UI 第一阶段收敛复核
+--
+-- 419条物理指令的主函数体已按PC顺序落为普通Lua；这里补记本轮逐项对账结果，
+-- 避免把“UI代码已写入”误判为“23个子原型或捕获关系已全部验证”。
+--
+-- 23个直接子原型与当前实现的对应关系（按VM child索引，不按创建先后排序）：
+-- child[0]  Nested_find：背包资源数量查询；
+-- child[1]  make_Nested_SL_2：奖励定时器回调；
+-- child[2]  make_Nested_Helper：清除拉怪数量配置；
+-- child[3]  make_Nested_FFFF00：资源统计窗口及其刷新/行构造闭包；
+-- child[4]  Nested_OnGameLeaveWorld：快速小退/离开世界回调；
+-- child[5]  make_Nested_ffffff：按钮标题与toggle状态同步；
+-- child[6]  make_Nested_StopGatherMonsters：停止/启动拉怪按钮门控；
+-- child[7]  make_Nested_InitGatherMonsters：拉怪阈值初始化；
+-- child[8]  make_Nested_SL_3：仓库存储定时器回调；
+-- child[9]  createButton：按钮创建及其child[0]点击回调；
+-- child[10] make_Nested_shiquTimer：拾取定时器回调；
+-- child[11] make_Nested_Helper_4：黑名单距离输入及其输入回调；
+-- child[12] make_Nested_04d_02d_02d：每日定时协议回调；
+-- child[13] make_Nested_ClearBlacklistItems：清理黑名单按钮回调；
+-- child[14] make_Nested_Helper_7：拉怪数量输入及其输入回调；
+-- child[15] make_Nested_Helper_9：隐藏按钮回调；
+-- child[16] item-slot callback：四组传送道具索引查询与快捷栏设置；
+-- child[17] make_Nested_blacklistTimer：黑名单检测定时器；
+-- child[18] make_Nested_Helper_10：黑名单按钮回调；
+-- child[19] make_Nested_TakeItems：仓库取物定时器回调；
+-- child[20] make_Nested_s：清除黑名单距离配置；
+-- child[21] make_Nested_dropTimer：丢弃物品定时器回调；
+-- child[22] make_Nested_Anonymous：输入对话框回调包装。
+--
+-- 上述23项均能在本文件中定位到对应的局部函数/闭包创建点；本轮静态核对没有
+-- 发现缺失的 make_Nested_* 函数引用。子原型内部仍有宿主API契约及运行时行为
+-- 未验证项，不把“引用已接通”扩大表述为“游戏内功能已验证”。
+--
+-- PC390-PC410的20项捕获按原始父T寄存器顺序绑定到当前词法变量：
+-- UP[0] PrintLog                         <- T[4]
+-- UP[1] featureState(z)                  <- T[2]
+-- UP[2] timerState                       <- T[3]
+-- UP[3] uiState(a)                       <- T[0]
+-- UP[4] buttonMap(b)                     <- T[1]
+-- UP[5] blacklistState                   <- T[41]
+-- UP[6] readBlacklistDistanceConfig      <- T[48] AnonymousHelper_49
+-- UP[7] schedule                         <- T[7] Schedule
+-- UP[8] gatherConfig                     <- T[8]
+-- UP[9] readGatherMonsterCountConfig     <- T[50] AnonymousHelper_33
+-- UP[10] writeBlacklistDistanceConfig   <- T[49] AnonymousHelper_32
+-- UP[11] showLocalNotice                 <- T[5] ShowLocalNoticeByType
+-- UP[12] getWritablePath                 <- T[44] GetWritablePath
+-- UP[13] blacklistDistanceConfigFile    <- T[42]
+-- UP[14] writeGatherMonsterCountConfig  <- T[51] AnonymousHelper_54
+-- UP[15] gatherMonsterCountConfigFile   <- T[43]
+-- UP[16] checkConfigFileState           <- T[47] FileExistCheck_pcall_wrapper
+-- UP[17] capturedValue17                <- T[11] 18000
+-- UP[18] rewardEntries                  <- T[12] loginAndOnlineRewardEntries
+-- UP[19] capturedValue19                <- T[9] 0.2
+--
+-- 绑定顺序与PC390-PC410捕获序列逐槽一致；本文件使用词法变量身份，不再通过
+-- make_doInit_UI工厂或rootRegisters/rootConfigRegisters影子表二次装配。
+--
+-- 初始化顺序复核：完成通知 -> 计时/资源快照 -> Builtsetting -> 四组传送道具
+-- ScheduleOnce -> 替换并建立每日Schedule -> 请求仓库数据 -> Attach_UITop ->
+-- 读取mini-chat几何信息 -> 创建按钮配置与回调 -> 按40/0/80三组偏移创建按钮 ->
+-- 创建隐藏按钮。未将异步ScheduleOnce回调提前执行，也未重排按钮回调构造。
+--
+-- 参数T[7]：保留为0。其静态生产者是PC90调用返回值中的第三返回值，PC133
+-- 作为ipairs第三参数使用；标准Lua ipairs返回0。目标宿主是否覆盖ipairs仍未运行验证。
+-- PC411 MainLeftBottom.doInit = doInit_UI、PC412 return MainLeftBottom 保持不变。
+-- 本检查点只完成静态结构与捕获对账，不代表Lua语法检查或游戏运行验证通过。
+-- ============================================================================
+
+

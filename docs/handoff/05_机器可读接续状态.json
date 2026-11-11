@@ -5,22 +5,22 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 284,
-  "next_checkpoint": 285,
+  "latest_checkpoint": 285,
+  "next_checkpoint": 286,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "prototype": "root.children[42]",
-    "function": "doInit_UI",
-    "physical_pc": "PC1-PC419",
+    "prototype": "root / MainLeftBottom_Module",
+    "function": "根模块连续功能等价实现与入口依赖接入",
+    "physical_pc": "PC1-PC412",
     "focus": [
-      "UI 初始化和字段挂接顺序",
-      "按钮创建及事件回调",
-      "23 个子原型调用关系",
-      "20 个捕获参数在根模块工厂装配时的实际注入顺序"
+      "在唯一主源码中核对根级闭包定义与实际导出/模块字段挂接",
+      "优先补齐入口依赖尚未接通的简单根级函数，避免重复定义",
+      "复核MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting及UI控制入口之间的调用关系",
+      "复杂宿主行为保留TODO，不臆造API"
     ],
-    "next": "继续在唯一主源码 MainLeftBottom_功能等价重建.lua 中补齐根模块普通函数、UI及业务闭包依赖；不要另建平行源码。",
-    "progress": "已将doInit_UI的419条PC主体及其直接子闭包首版并入唯一主源码，20项父级捕获改为词法变量绑定；UI函数已挂入MainLeftBottom.doInit。依赖的部分根级业务函数仍需接入。"
+    "next": "从唯一主源码中定位仍未接通的根级入口依赖，按原始PC顺序直接补齐或修正；UI主线本轮已完成23个子原型引用和20项捕获槽静态对账。",
+    "progress": "检查点285完成：doInit_UI主体PC1-PC419、23个子原型引用与PC390-PC410的20项词法捕获绑定已逐项静态对账；初始化顺序已记录。没有发现缺失的make_Nested_*引用。宿主行为、Lua语法和游戏运行仍未验证。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -47,7 +47,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "唯一主源码约2169行；doInit_UI主体与直接子闭包已并入，PC411模块挂接和PC412返回已写入。可执行代码不依赖动态源码加载或历史寄存器影子适配表。未执行Lua语法检查（当前环境无lua/luac），未执行目标游戏运行验证。",
+    "static_source_review": "唯一主源码已追加检查点285：doInit_UI主体PC1-PC419、23个子原型引用、20项捕获槽及初始化顺序完成静态对账；根模块其余功能仍在持续完善。未执行Lua语法检查，未执行目标游戏运行验证。",
     "lua_syntax_check": "未执行/未确认",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
