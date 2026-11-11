@@ -1,6 +1,6 @@
 {
   "project": "MainLeftBottom(2).lua VM devirtualization / readable Lua recovery",
-  "as_of": "2026-11-10",
+  "as_of": "2026-11-11",
   "source_sha256": {
     "MainLeftBottom(2).lua": "458b2f98d635307cc566e38222cf7c59bea3d0eeee545b55dbdf79c665a96bfe",
     "MainLeftBottom_vm_dump.json": "7d79cecada92270dca0512dc4161d12c45a547ca8f9aeb74d0d2f87b5f996e43",
@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点276：继续检查PC86-PC211共享cell注入及PC212-PC315字段/配置链：对照closure_sites核对工厂实参数量、顺序和寄存器来源；检查OP_387同一父寄存器是否只创建一个cell且不同寄存器不共用；检查UI字段hide/show/destroy/main的写入对象及PC275模块重读目标；检查T[44..51]配置包装链；对身份断言做nil安全性审计，类型/必需闭包断言必须先于相等断言。",
+  "next_action": "检查点279：整理配置读写辅助函数组。优先处理GetWritablePath、ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper及匿名转发闭包；逐项核对FileUtils接收者、writablePath与文件名拼接顺序、pcall成功/失败分支、false/nil含义和多返回值转发。已明确的函数先写入可读Lua主体，未确认的宿主行为保留原调用并注释。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -80,7 +80,10 @@
     "default_branch": "main",
     "visibility": "public",
     "canonical_workspace": true,
-    "policy": "后续读取、源码恢复、状态更新和交接均以 GitHub 为主；Library 仅作历史来源/备用副本。"
+    "policy": "后续读取、源码恢复、状态更新和交接均以 GitHub 为主；Library 仅作历史来源/备用副本。",
+    "active_work_branch": "work/functional-equivalent-rebuild-2026-11-11",
+    "backup_branch": "backup/pre-functional-rewrite-2026-11-11",
+    "main_write_policy": "本轮功能等价复刻只写入active_work_branch；main与backup分支均不修改。"
   },
   "github_migration": {
     "completed": true,
@@ -2805,22 +2808,29 @@
     }
   ],
   "latest_batch": {
-    "date": "2026-11-10",
-    "checkpoint": "260",
+    "date": "2026-11-11",
+    "checkpoint": "278",
     "targets": [
-      "root PC86-PC211闭包创建顺序",
-      "root PC297-PC388配置包装/黑名单闭包创建顺序",
-      "T[14..22]及T[57]共享cell唯一性"
+      "GetMapId",
+      "GetMapName",
+      "PlayerPos",
+      "GetDroppedItems",
+      "GetMainPlayerID",
+      "IsDie",
+      "GetPlayerPosition",
+      "GetPlayerMapPosition",
+      "DistanceCalculation",
+      "IsInWhitelistMap",
+      "GetOwnerDescription"
     ],
-    "status": "主恢复文件继续按PC顺序整合：PC86-PC180配置/奖励/采集状态值在root候选中按序初始化；PC181 FormatStateChange、PC184-PC193辅助闭包、PC194 FindMonsterCandidates、PC200 ResetGather、PC210 FindMonsterInCurrViewField、PC212 IsInWhitelistMap、PC214-PC258采集控制闭包已顺序排列。PC297-PC315的GetWritablePath/配置包装/四个匿名转发闭包按创建顺序排列；PC350-PC388的MapData/PCallHelper2/FindBlacklistPlayer/UseItem/onDamageMsg/InstallDamageHook/DeathAutoBlacklist/BlacklistPlayerDetection/ClearBlacklistItems按PC顺序排列。删除重复匿名工厂和T57重复cell创建。",
-    "audit_file": "docs/audit/检查点260_PC86-PC211及PC297-PC388根模块顺序整合.md",
+    "status": "11个简单辅助函数已写入根模块源码候选并由主恢复稿直接绑定；未删除旧来源证据，未改变原型静态恢复数量或运行时验证计数。",
+    "audit_file": "docs/audit/检查点278_基础辅助函数第一批功能等价复刻.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
-    "main_recovery_blob_sha": "cd8804843576e79f8849b52145def225ee90229d",
-    "static_complete_functions": 109,
-    "ordinary_lua_drafts": 72,
+    "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
+    "helper_count": 11,
+    "bindings_repointed": 11,
     "runtime_verified": 0,
-    "root_direct_closures_source_bound": 58,
-    "root_direct_closures_expected": 58
+    "lua_compiler_available": false
   },
   "corrections": [
     {
@@ -3542,27 +3552,27 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 277,
-  "checkpoint": 275,
+  "last_checkpoint": 278,
+  "checkpoint": 278,
   "drafts": 33,
-  "next": "检查点278：从结构树与PC级证据回到root模块可读源码收敛。优先把root_MainLeftBottom_Module.lua中已经有明确语句的PC1-PC42、PC86-PC180常量/状态初始化、PC280-PC296黑名单状态及PC316-PC349数值表按PC顺序整合为连续执行体；PC43-PC85和其余闭包按已恢复工厂顺序装配。先检查来源词法块导出与主装配区的执行先后，避免local跨块引用；不将OP_387捕获描述写成业务语句；PC275/389的_ENV与_G差异保持显式待核，不猜测宿主环境。",
+  "next": "检查点279：整理配置读写辅助函数组。优先处理GetWritablePath、ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper及匿名转发闭包；逐项核对FileUtils接收者、writablePath与文件名拼接顺序、pcall成功/失败分支、false/nil含义和多返回值转发。已明确的函数先写入可读Lua主体，未确认的宿主行为保留原调用并注释。",
   "recent_checkpoint": {
-    "number": 277,
-    "date": "2026-11-10",
-    "audit_file": "docs/audit/检查点277_PC86-PC315共享cell与字段链复核.md",
+    "number": 278,
+    "date": "2026-11-11",
+    "audit_file": "docs/audit/检查点278_基础辅助函数第一批功能等价复刻.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
-    "main_recovery_sha": "3ea847f42858ea4812ebdfe4361310b492ac0248",
+    "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
     "metrics": {
-      "pc86_pc211_capture_groups_reviewed": 8,
-      "mutable_shared_cells_reviewed": 9,
-      "pc212_pc296_field_writes_reviewed": 4,
-      "pc297_pc315_config_closures_reviewed": 8,
-      "nil_safety_review": "static_reviewed",
-      "runtime_verified": 0
+      "functional_helpers_rebuilt": 11,
+      "root_source_bindings_repointed": 11,
+      "static_function_count_unchanged": 109,
+      "ordinary_lua_drafts_unchanged": 72,
+      "runtime_verified": 0,
+      "lua_compiler_available": false
     },
-    "notes": "静态复核PC86-PC211采集闭包工厂、T14..22共享cell、PC212-PC296 UI/模块字段写入及PC297-PC315配置包装链。捕获顺序一致。发现PC275/PC389 OP_137读取当前全局环境名MainLeftBottom，但适配器使用_G.MainLeftBottom；已标注仅在_ENV与_G同一对象时等价，尚无宿主证据，不擅自改写。未运行Lua/luac。"
+    "notes": "第一批功能等价源码已实际写入根模块候选：GetMapId/GetMapName/PlayerPos/GetDroppedItems/GetMainPlayerID/IsDie/GetPlayerPosition/GetPlayerMapPosition/DistanceCalculation/IsInWhitelistMap/GetOwnerDescription。主恢复稿11处bindDirect改从root_MainLeftBottom_Module.lua取得对应函数；保留旧来源文件，不改变静态完成统计。当前环境无lua/luac/luajit，未声称语法编译通过；目标游戏运行时验证仍0。"
   },
-  "latest_checkpoint": 277,
+  "latest_checkpoint": 278,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3571,7 +3581,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 278,
+  "next_checkpoint": 279,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3748,12 +3758,13 @@
     "root_pc86_pc211_shared_cell_audit": "passed_static",
     "root_pc212_pc296_field_audit": "passed_static",
     "root_pc297_pc315_config_audit": "passed_static",
-    "environment_lookup_pc275_pc389": "adapter_difference_documented_unverified"
+    "environment_lookup_pc275_pc389": "adapter_difference_documented_unverified",
+    "latest_static_check": "checkpoint278: 11 helper definitions and exports present; 11 bindDirect sources repointed; no Lua compiler/parser available; no syntax-pass claim"
   },
   "latest": {
-    "checkpoint": "277",
-    "summary": "完成根模块PC86-PC315共享cell、工厂参数、UI字段写入及配置包装链静态复核；T14..22九个共享cell的创建/复用关系一致；PC275/389存在全局环境读取适配差异，明确标为未证实假设。",
-    "audit_file": "docs/audit/检查点277_PC86-PC315共享cell与字段链复核.md",
+    "checkpoint": "278",
+    "summary": "完成地图、坐标、玩家与基础查询辅助函数11项的功能等价源码整理；根模块来源直接定义并导出，主装配层11处绑定已切换到根模块来源。静态恢复等级不变，未运行Lua/luac，目标运行时验证0。",
+    "audit_file": "docs/audit/检查点278_基础辅助函数第一批功能等价复刻.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3874,5 +3885,27 @@
     "pc389": "OP_137 global-name MainLeftBottom; adapter currently _G.MainLeftBottom",
     "equivalence": "only if _ENV and _G are the same environment table",
     "status": "unverified; explicitly annotated; do not claim exact source syntax"
+  },
+  "functional_rebuild": {
+    "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
+    "backup_branch": "backup/pre-functional-rewrite-2026-11-11",
+    "current_batch": "基础辅助函数第一批",
+    "functions": [
+      "GetMapId",
+      "GetMapName",
+      "PlayerPos",
+      "GetDroppedItems",
+      "GetMainPlayerID",
+      "IsDie",
+      "GetPlayerPosition",
+      "GetPlayerMapPosition",
+      "DistanceCalculation",
+      "IsInWhitelistMap",
+      "GetOwnerDescription"
+    ],
+    "bindings_repointed": 11,
+    "old_candidate_sources_preserved": true,
+    "lua_syntax_compiler_available": false,
+    "runtime_verified": 0
   }
 }
