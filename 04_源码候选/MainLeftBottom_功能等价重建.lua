@@ -1204,14 +1204,16 @@ local function FormatStateChange(newState, ...)
 end
 
 local function ResetGatherMonsterData()
+    -- 保留root.children[26]的原始写入顺序：
+    -- T[15]/T[16]/T[17]复位后，先清除当前目标，再复位T[19..22]。
     resettableTable = {}
     resetSlot16 = 0
     resetSlot17 = 0
+    ClearTargetID_2()
     resetSlot19 = false
     resetSlot20 = 0
     resetSlot21 = nil
     resetSlot22 = ""
-    ClearTargetID_2()
     PrintLog("数据已重置")
 end
 

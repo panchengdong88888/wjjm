@@ -5,21 +5,21 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 298,
-  "next_checkpoint": 299,
+  "latest_checkpoint": 299,
+  "next_checkpoint": 300,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
     "prototype": "root / MainLeftBottom_Module",
-    "function": "根模块PC350-PC412闭包链与模块入口收敛",
-    "physical_pc": "PC350-PC412",
+    "function": "PC1-PC211早期根模块功能与共享状态复核",
+    "physical_pc": "PC1-PC211",
     "focus": [
-      "逐项核对PCallHelper_2、FindBlacklistPlayer、UseItemByIndex、onDamageMsg、InstallDamageHook、DeathAutoBlacklist、BlacklistPlayerDetection、ClearBlacklistItems的局部闭包身份和导出落点",
-      "核对PC390-PC410 doInit_UI的20项捕获顺序及PC411/PC412模块入口返回",
-      "完成后转向主源码剩余未复核函数，继续只维护唯一主源码"
+      "复核PrintLog/LuaSendMsg/ShowLocalNoticeByType与基础地图/玩家辅助函数的调用方式和返回值",
+      "核对ResetGatherMonsterData及FindMonsterInCurrViewField的共享cell、调用顺序和返回结构",
+      "继续检查PC214-PC255采集状态机入口与辅助闭包的词法变量写回"
     ],
-    "next": "检查主源码中PC1-PC211的早期根模块装配与功能函数，优先找出仍依赖未定义全局名、参数顺序错误、共享表身份断裂或仅有占位实现的地方；按简单明确项直接修正，随后进行Lua 5.1语法检查准备。",
-    "progress": "检查点298完成：对照历史函数主体逐项复核PC352-P C388黑名单闭包链。PCallHelper_2按pcall保护FriendProxy查询并将false/nil归一为nil；FindBlacklistPlayer先查targetID，再按ACTOR_MASTER_ID回退，并返回true与entry.Name；InstallDamageHook先pcall模块onDamageMsg再返回原处理器结果，保持字节码恢复稿中的originalHandler.mNetMsgHandle字段访问；ClearBlacklistItems收集key后按(index-1)*0.01秒ScheduleOnce调用RequestOutBlacklist并清理同一_friendProxy._blacklistData，最后清空共享blacklistState.lastAttacker。PC390-PC410 doInit_UI的20槽捕获顺序已在唯一主源码注释和函数实现中对齐，PC411挂MainLeftBottom.doInit，PC412返回MainLeftBottom。纠正UP[0]=z状态表的自相矛盾注释及文件末尾过时状态描述。"
+    "next": "继续对照MainLoop、InitGatherMonsters、StopGatherMonsters的原型主体，优先核查采集运行标志、timerState.gatherTimer、共享状态cell写入及定时器回调接收者；明确差异直接修正唯一主源码。",
+    "progress": "检查点299完成：按root.children[26] ResetGatherMonsterData原型捕获顺序修正复位副作用顺序：先替换目标ID表、归属计数和扫描游标，再调用ClearTargetID_2清除当前目标，随后才复位等待标记、截止时间、等待目标ID和等待名称，最后PrintLog。原先把ClearTargetID_2放在所有状态复位之后，与恢复稿PC7-PC8位于PC10-PC17之前的执行顺序不符。另定点核对root.children[14] FindMonsterInCurrViewField，主源码已准确保留SL:FindMonsterInCurrViewField(true,true)、IsDie过滤、GetID truthy过滤及按ID映射返回，不需改动。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -46,8 +46,8 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点298：PC352-P C388闭包链按历史恢复函数逐项静态对照；PCallHelper_2、FindBlacklistPlayer、InstallDamageHook、ClearBlacklistItems的行为与局部调用关系一致；PC357 onDamageMsg仅挂MainLeftBottom.onDamageMsg；PC360 InstallDamageHook写T57 live cell；PC368 BlacklistPlayerDetection使用该cell；PC382/388仅导出BlacklistItems/ClearBlacklistItems；PC390-PC410 doInit_UI捕获序列与PC411/412挂接返回已复核。未运行Lua解释器/目标游戏。",
-    "lua_syntax_check": "未执行Lua 5.1解释器检查；仅完成静态源代码对照",
+    "static_source_review": "检查点299：ResetGatherMonsterData对照短函数草稿_第十三批.lua make_ResetGatherMonsterData的九项捕获写入顺序核验并修正；FindMonsterInCurrViewField对照同批已完成27条物理指令的闭包主体，调用参数true,true、捕获IsDie过滤、actor:GetID及ID-keyed map返回一致。未运行Lua解释器/目标游戏。",
+    "lua_syntax_check": "未执行Lua 5.1解释器检查；本批仅调整函数内语句顺序",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
   },
@@ -70,6 +70,6 @@
       "使用unpack而非table.unpack；避免table.pack/table.move/bit32/utf8/package.searchpath等5.2+接口",
       "确认闭包、变长参数、多返回值、迭代器及元表行为均符合Lua 5.1"
     ],
-    "current_review": "检查点298：本批仅修改注释与Lua函数注释，不引入新语法或库调用；目标Lua 5.1语法检查仍未执行。"
+    "current_review": "检查点299：仅移动ClearTargetID_2调用到Lua 5.1兼容的普通语句位置；未引入新语法或标准库接口。未运行Lua 5.1解释器。"
   }
 }
