@@ -100,3 +100,11 @@
 - 已核对blacklistState七个字段初值及同一表对象写入MainLeftBottom.a.blacklist；随机传送石列表和三个数值常量保持原值。
 - 已核对PC297-PC315配置文件读写闭包链与固定配置文件包装闭包的捕获来源。
 - 本批没有修改唯一交付源码；下一步继续root PC316-PC412，并单独核验AccountIDValidation主体和嵌套回调。
+
+## 检查点329补充：root PC316-PC412
+
+- 已核对八组数值对子表、GetMapData2DPtr/PCallHelper_2/FindBlacklistPlayer/UseItemByIndex闭包身份。
+- 已核对blacklistState、onDamageMsg、InstallDamageHook live cell、DeathAutoBlacklist、BlacklistPlayerDetection 13项捕获及ClearBlacklistItems 4项捕获。
+- 已核对BlacklistItems/ClearBlacklistItems全局导出、doInit_UI 20项捕获顺序、MainLeftBottom.doInit挂接及PC412根表返回。
+- root PC1-PC412父级入口装配本轮核对完成；这不等于AccountIDValidation/doInit_UI等子原型主体审查完成。
+- 下一步独立逐PC核验AccountIDValidation主原型及两个嵌套子原型。
