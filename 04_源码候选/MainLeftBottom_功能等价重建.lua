@@ -1170,6 +1170,26 @@ local function ScheduleOnce(callback, delay) return SL:ScheduleOnce(callback, de
 -- 对应关系：T14=currentState，T15=resettableTable，T16=resetSlot16(归属计数)，
 -- T17=resetSlot17(扫描游标)，T18=isGatherRunning，T19-T22为等待状态字段。
 
+-- PC185：创建无捕获root.children[56] / ClearTargetID_2。
+-- 代理获取失败时直接返回；SetTargetID保留代理对象冒号接收者及两个参数。
+local function ClearTargetID_2()
+    if not global.Facade then
+        return
+    end
+
+    local playerInputProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.PlayerInputProxy
+    )
+    if not playerInputProxy then
+        return
+    end
+
+    playerInputProxy:SetTargetID(
+        0,
+        global.MMO.SELETE_TARGET_TYPE_FIND
+    )
+end
+
 -- root.children[8] / FormatStateChange：UP[0]=PrintLog，UP[1]=T14共享cell。
 local function FormatStateChange(newState, ...)
     local message = string.format(
@@ -1190,8 +1210,7 @@ local function ResetGatherMonsterData()
     resetSlot20 = 0
     resetSlot21 = nil
     resetSlot22 = ""
-    local clearTarget = rootEnvironment.ClearTargetID_2
-    if type(clearTarget) == "function" then clearTarget() end
+    ClearTargetID_2()
     PrintLog("数据已重置")
 end
 
@@ -1446,8 +1465,7 @@ local function StopGatherMonsters()
         SL:UnSchedule(timerState.gatherTimer)
         timerState.gatherTimer = nil
     end
-    local clearTarget = rootEnvironment.ClearTargetID_2
-    if type(clearTarget) == "function" then clearTarget() end
+    ClearTargetID_2()
     FormatStateChange(gatherStatusText.IDLE)
     ResetGatherMonsterData()
     PrintLog("引怪功能已停止")
