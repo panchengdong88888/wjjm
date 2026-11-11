@@ -5,8 +5,8 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 294,
-  "next_checkpoint": 295,
+  "latest_checkpoint": 295,
+  "next_checkpoint": 296,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
@@ -19,8 +19,8 @@
       "定位剩余未实现根级函数或被错误写成占位的宿主调用",
       "继续在唯一主源码中直接落地"
     ],
-    "next": "继续根模块PC212-PC279剩余闭包的导出/共享对象一致性核对；优先核对Builtsetting、MoveItemToQuickUse、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons与AccountIDValidation的模块字段落点和捕获对象身份。",
-    "progress": "检查点294完成：按root.children[45] MainLoop静态恢复稿重写唯一主源码中的MainLoop，移除未见于原型的依赖类型防御分支和GetOwnerDescription/OwnerText降级路径；改为直接使用22项捕获所对应的词法闭包与共享状态。保留GATHERING等待标记作为额外实参传入零形参FindMonsterInCurrViewField、归属检查调用顺序、SetTargetID成功/失败后的游标推进、ATTACKING目标扫描及状态复位。InitGatherMonsters/StopGatherMonsters的捕获顺序与调用顺序核对无冲突：Stop先清运行标记、取消计时器、调用T25 ClearTargetID_2，再FormatStateChange(IDLE)、ResetGatherMonsterData、PrintLog；Init按T3/T18/T23/T13/T35/T8/T4捕获，当前主体顺序吻合。"
+    "next": "继续核对根模块PC280-PC340的局部值构造、闭包捕获及配置包装链共享对象身份；优先检查随机传送道具名表、三个黑名单数值常量、配置文件名/包装闭包及MainLeftBottom.blacklist对象。",
+    "progress": "检查点295完成：按PC261-PC274闭包捕获账本修正三个UI闭包的共享对象引用。DestroyUI捕获[T0=a,T3=timerState,T1=b]，SetButtonVisibilityState捕获[T0=a,T1=b]，ShowHideAllButtons捕获[T3=timerState,T1=b,T0=a]；此前函数体误用未在词法作用域定义的uiState/buttonMap，现统一改为a/b，确保写入的isHidden、resWin、hidebut及按钮遍历都落在根模块实际共享表。模块字段映射仍为hide=DestroyUI、show=SetButtonVisibilityState、destroy=ShowHideAllButtons；AccountIDValidation捕获PrintLog/ShowLocalNoticeByType并写main，Builtsetting捕获ShowLocalNoticeByType并全局导出，MoveItemToQuickUse无捕获并全局导出，均与PC212-PC279账本一致。另将环境回退从_ENV or _G改为Lua 5.1的_G，避免依赖5.2环境变量机制。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -47,8 +47,8 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点294：MainLoop主体按root.children[45]静态恢复稿复核并修正；InitGatherMonsters/StopGatherMonsters捕获顺序及执行顺序与对应静态草稿、根模块PC238-PC255装配记录一致。未执行Lua语法检查或目标运行时验证。",
-    "lua_syntax_check": "未执行Lua 5.1解释器检查；仅完成源码静态兼容性关键词扫描",
+    "static_source_review": "检查点295：PC261-PC279模块字段和捕获身份逐项核对；修正DestroyUI/SetButtonVisibilityState/ShowHideAllButtons使用a/b共享表。Builtsetting、MoveItemToQuickUse、AccountIDValidation的导出/捕获映射与root模块PC记录一致。环境初始化已改为Lua 5.1 getfenv/_G分支。",
+    "lua_syntax_check": "未执行Lua 5.1解释器检查；静态检查本批修改片段",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
   },
@@ -71,6 +71,6 @@
       "使用unpack而非table.unpack；避免table.pack/table.move/bit32/utf8/package.searchpath等5.2+接口",
       "确认闭包、变长参数、多返回值、迭代器及元表行为均符合Lua 5.1"
     ],
-    "current_review": "检查点294主源码初步静态扫描未发现goto、标签或明显Lua 5.2+标准库接口；检测到getfenv分支属于Lua 5.1接口。尚未使用Lua 5.1解释器执行语法检查，不能视为语法验证通过。"
+    "current_review": "检查点295：根环境初始化仅使用Lua 5.1 getfenv(1)与_G回退；本批UI闭包修正仅使用普通索引、pairs和冒号调用，均为Lua 5.1语法。尚未运行Lua 5.1解释器。"
   }
 }

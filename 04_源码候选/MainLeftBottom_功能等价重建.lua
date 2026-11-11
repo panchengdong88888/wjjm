@@ -18,7 +18,8 @@ local rootEnvironment
 if type(getfenv) == "function" then
     rootEnvironment = getfenv(1)
 else
-    rootEnvironment = _ENV or _G
+    -- 本工程目标运行时为Lua 5.1；无getfenv时只回退到标准全局表。
+    rootEnvironment = _G
 end
 assert(type(rootEnvironment) == "table",
     "MainLeftBottom root chunk environment is not a table")
@@ -1562,19 +1563,19 @@ local function Builtsetting()
 end
 
 local function DestroyUI()
-    uiState.isHidden = false
+    a.isHidden = false
     if timerState.resTimer then
         SL:UnSchedule(timerState.resTimer)
         timerState.resTimer = nil
     end
-    uiState.resWin = nil
+    a.resWin = nil
     GUI:Win_CloseAll()
-    for key in pairs(buttonMap) do GUI:setVisible(buttonMap[key], true) end
+    for key in pairs(b) do GUI:setVisible(b[key], true) end
 end
 
 local function SetButtonVisibilityState()
-    uiState.isHidden = true
-    for key in pairs(buttonMap) do GUI:setVisible(buttonMap[key], true) end
+    a.isHidden = true
+    for key in pairs(b) do GUI:setVisible(b[key], true) end
 end
 
 local function ShowHideAllButtons()
@@ -1586,10 +1587,10 @@ local function ShowHideAllButtons()
         SL:UnSchedule(timerState.cruiseTimer)
         timerState.cruiseTimer = nil
     end
-    for key in pairs(buttonMap) do GUI:setVisible(buttonMap[key], true) end
-    if uiState.hidebut then
-        GUI:setVisible(uiState.hidebut, false)
-        uiState.hidebut = nil
+    for key in pairs(b) do GUI:setVisible(b[key], true) end
+    if a.hidebut then
+        GUI:setVisible(a.hidebut, false)
+        a.hidebut = nil
     end
 end
 
