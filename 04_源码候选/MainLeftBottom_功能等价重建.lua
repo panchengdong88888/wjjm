@@ -1947,12 +1947,16 @@ local function Nested_FriendProxy()
     return global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)
 end
 
+-- PC352无捕获保护函数：FriendProxy查询异常时返回nil；false/nil结果统一归一为nil。
+-- PC353-PC354由FindBlacklistPlayer捕获本函数；PC384由ClearBlacklistItems捕获同一函数身份。
 local function PCallHelper_2()
     local ok, result = pcall(Nested_FriendProxy)
     if not ok then return nil end
     return result or nil
 end
 
+-- PC353-PC354：按目标角色ID查询；未命中时再按ACTOR_MASTER_ID查询主角色。
+-- 命中返回true与黑名单记录Name，未命中只返回false。
 local function FindBlacklistPlayer(targetID)
     local friendProxy = PCallHelper_2()
     if not friendProxy then return false end
@@ -1989,6 +1993,8 @@ local function onDamageMsg(arg1, messageJson)
 end
 MainLeftBottom.onDamageMsg = onDamageMsg
 
+-- PC360-PC362：T[57]写入此闭包；BlacklistPlayerDetection捕获该live cell当前值。
+-- 包装回调先pcall模块onDamageMsg，再无论回调结果如何返回原消息处理器结果。
 local function InstallDamageHook()
     local gameMapController = global.gameMapController
     if not gameMapController then return end
@@ -2202,6 +2208,8 @@ local function BlacklistPlayerDetection()
 end
 rootEnvironment.BlacklistItems = BlacklistPlayerDetection
 
+-- PC383-PC388：使用与FindBlacklistPlayer相同的PCallHelper_2闭包身份。
+-- 每个黑名单key按(index-1)*0.01秒异步请求移除，并在回调中清理共享数据表。
 local function ClearBlacklistItems()
     local friendProxy = PCallHelper_2()
     if not friendProxy or not friendProxy._blacklistData then
@@ -3331,7 +3339,7 @@ return MainLeftBottom
 -- 后续完成的函数、UI初始化、捕获装配和模块导出均直接写入本文件。
 -- root_MainLeftBottom_Module.lua 与 MainLeftBottom_恢复源码.lua 仅作证据参考，
 -- 不再作为平行开发主线；不得以“全部完成后再生成”作为延后创建本文件的理由。
--- 当前状态：INCOMPLETE；PC212-PC279入口首批已写入（采集主循环、启动/停止、设置、UI控制、账号验证），仍有其他根级闭包及黑名单/物品功能待接入；Lua语法检查和游戏运行验证均未执行。
+-- 当前状态：功能等价重建仍未完成；PC1-PC412根级导出/字段、物品功能、黑名单功能及doInit_UI入口已在本文件形成统一实现。剩余工作转为逐函数语义复核、修正与Lua 5.1语法检查；目标游戏运行验证尚未执行。
 -- ============================================================================
 
 -- ============================================================================
@@ -3419,8 +3427,8 @@ return MainLeftBottom
 -- 5) rootEnvironment.BlacklistItems现指向BlacklistPlayerDetection，
 --    使doInit_UI按钮包装器CallRootFunction("BlacklistItems")能够实际找到入口。
 --
--- 捕获槽特别保留：UP[0]是MainLeftBottom.z（isBlacklisting状态），
--- 不是z功能状态表；UP[1]是PC360 InstallDamageHook live-cell当前值，
+-- 捕获槽特别保留：UP[0]就是MainLeftBottom.z功能状态表，其中写入isBlacklisting；
+-- 不是MainLeftBottom.a UI状态表。UP[1]是PC360 InstallDamageHook live-cell当前值，
 -- 不是PC357 onDamageMsg。InstallDamageHook内部originalHandler字段访问
 -- 按已恢复物理指令原样保留，不以“看起来不合理”为由擅自改写。
 --

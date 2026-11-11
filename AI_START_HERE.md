@@ -23,10 +23,10 @@
 
 ## 3. 当前接续位置
 
-- 最近检查点：**296**
-- 下一检查点：**297**
-- 当前优先任务：继续根模块 PC341-PC412 的模块装配与闭包身份核对，直接维护唯一主源码 `04_源码候选/MainLeftBottom_功能等价重建.lua`。优先核查 T52 二维表捕获、PCallHelper_2/FindBlacklistPlayer/UseItemByIndex/onDamageMsg/InstallDamageHook/DeathAutoBlacklist/BlacklistPlayerDetection/ClearBlacklistItems 的共享 cell 与导出落点。
-- PC280-PC349 已核对；配置写入包装器现按 `PCallHelper(内容, 文件名)` 传参。`doInit_UI` 与根模块 PC1-PC412 均在同一唯一主源码中维护。
+- 最近检查点：**298**
+- 下一检查点：**299**
+- 当前优先任务：检查唯一主源码 `04_源码候选/MainLeftBottom_功能等价重建.lua` 中 PC1-PC211 的早期根模块装配与功能函数，优先排查未定义全局依赖、参数顺序错误、共享表身份断裂和占位实现；明确项直接修正。
+- PC280-PC412 的根级创建/捕获/导出/入口挂接已静态核对；配置写入包装器按 `PCallHelper(内容, 文件名)` 传参。后续仍以同一唯一主源码为准。
 
 ## 4. 源码文件职责
 
