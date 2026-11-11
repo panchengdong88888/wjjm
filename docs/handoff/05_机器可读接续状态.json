@@ -5,8 +5,8 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 289,
-  "next_checkpoint": 290,
+  "latest_checkpoint": 290,
+  "next_checkpoint": 291,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
@@ -19,8 +19,8 @@
       "定位剩余未实现根级函数或被错误写成占位的宿主调用",
       "继续在唯一主源码中直接落地"
     ],
-    "next": "继续定点复核root PC1-PC85的模块初始化和基础辅助函数是否逐条接入，重点确认MainLeftBottom.a字段、LuaSendMsg调用者和基础函数的多返回值；再核对PC86-PC211共享状态初始化。",
-    "progress": "检查点289完成：按原始导出账本移除三个不属于root全局导出的内部函数导出；六个UI按钮CallRootFunction目标全部有ENV出口，根模块字段与入口挂接已静态核对。"
+    "next": "继续核对PC86-PC211的共享状态与OP_387 live-cell身份，重点检查MainLoop/InitGatherMonsters/StopGatherMonsters/ResetGatherMonsterData是否对同一运行标记、状态、目标表、游标、等待字段读写同一cell；修正已确认的状态同步缺口，不重写已完成函数主体。",
+    "progress": "检查点290完成：按root.children[16]与root.children[20]已核实的15/38条指令主体，修正PrintLog与ShowLocalNoticeByType。PrintLog保留table→SL.dump、tostring、可选pcall(string.format)及仅检查SL.Print而不调用的行为；ShowLocalNoticeByType捕获同一MainLeftBottom.a对象，构造Type/Msg/FColor/BColor/X/Y通知记录并以SL.ShowLocalNoticeByType单参数调用。PC1-PC85中PlayerPos双返回值、GetDroppedItems宿主双返回值直传、LuaSendMsg六参转发已定点复核。静态文本复核，未做Lua语法或游戏运行验证。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -47,7 +47,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点289：已移除非原始ENV导出的FindBlacklistPlayer/InstallDamageHook/DeathAutoBlacklist；它们仍保留局部闭包调用。六个CallRootFunction按钮目标均有ENV导出，根模块字段与PC212-PC279导出已核对。",
+    "static_source_review": "检查点290：PrintLog与ShowLocalNoticeByType已按独立原型静态恢复并接回PC43-PC51；PlayerPos/GetDroppedItems多返回值路径及LuaSendMsg六参转发完成定点核对。未执行Lua语法检查或目标运行时验证。",
     "lua_syntax_check": "未执行/未确认",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true

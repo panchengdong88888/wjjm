@@ -5,6 +5,7 @@
 -- 检查点192-198、262-269：根模块分段普通Lua草稿，PC1-PC412均已建立分段记录；非作者原文逐字恢复；检查点273核对PC1-PC42根表/a/b/z/timerState创建顺序及来源导出身份；检查点276新增docs/handoff/13_MainLeftBottom_原型结构树.md，汇总110个原型节点及根级58个闭包创建点；未运行时验证。
 -- 状态：持续开发中。此文件是唯一主源码；每批新增/修正直接写入本文件。当前尚未完成整体闭包装配，未运行时验证。
 -- 检查点236：58个直接子原型闭包创建点与135个OP_387 live-cell捕获已建表，见docs/handoff/12_根模块闭包装配表.json。
+-- 检查点290：按原型主体静态恢复PrintLog（table走SL.dump、格式化只在pcall内执行且不虚构SL.Print调用）与ShowLocalNoticeByType（捕获MainLeftBottom.a并构造通知记录）；未运行时验证。
 -- 检查点278：第一批11个地图/坐标/玩家辅助函数已在本文件中整理为可读函数主体；静态证据完整，未运行时验证。
 -- 检查点282：按原始VM固定参数计数纠正GetWritablePath/ReadNumericConfig入口；两者均为一个固定参数，额外参数不读取，未运行时验证。
 -- 检查点281：按用户要求，当前优先级调整为MainLeftBottom_Module入口PC1-PC412与doInit_UI界面初始化；物品/背包/仓库功能暂缓。
@@ -1053,13 +1054,25 @@ end
 -- 根PC390-PC411的20项捕获现改为同一词法作用域直接绑定。
 -- ============================================================================
 
-local rootGlobal = rootEnvironment["_G"] or _G
-local function PrintLog(message, ...)
-    local logger = rootGlobal and rootGlobal.log
-    if type(logger) == "function" and logger ~= PrintLog then return logger(message, ...) end
-    if type(print) == "function" then
-        if select("#", ...) > 0 then return print(string.format(tostring(message), ...)) end
-        return print(tostring(message))
+-- PC43-PC45：PrintLog无捕获；PC44读取ENV["_G"]，PC45写入该表的log字段。
+local rootGlobal = rootEnvironment["_G"]
+local function PrintLog(value, ...)
+    if type(value) == "table" then
+        SL.dump(value, "【超本】")
+        return
+    end
+
+    local message = tostring(value)
+    if select("#", ...) > 0 then
+        local ok, formatted = pcall(string.format, message, ...)
+        if ok and formatted then
+            message = formatted
+        end
+    end
+
+    -- 原型只检查SL与SL.Print是否存在，没有对应的Print调用指令。
+    if SL and SL.Print then
+        -- 保留原型中的空检查分支，不补造输出调用。
     end
 end
 rootGlobal.log = PrintLog
@@ -1134,10 +1147,17 @@ local function LuaSendMsg(
 end
 a.LuaSendMsg = LuaSendMsg
 
-local function ShowLocalNoticeByType(message, ...)
-    local notice = rootEnvironment.ShowLocalNoticeByType
-    if type(notice) == "function" and notice ~= ShowLocalNoticeByType then return notice(message, ...) end
-    return PrintLog(message, ...)
+-- PC46：捕获父T[0]，即MainLeftBottom.a；通知位置使用同一状态表的screenH。
+local function ShowLocalNoticeByType(message)
+    local notice = {
+        Type = 10,
+        Msg = message,
+        FColor = 249,
+        BColor = 0,
+        X = 5,
+        Y = a.screenH - 50,
+    }
+    SL.ShowLocalNoticeByType(notice)
 end
 local function Schedule(callback, interval) return SL:Schedule(callback, interval) end
 local function ScheduleOnce(callback, delay) return SL:ScheduleOnce(callback, delay) end
