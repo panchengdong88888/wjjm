@@ -2,36 +2,36 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-11",
-  "latest_checkpoint": 337,
-  "next_checkpoint": 338,
+  "latest_checkpoint": 338,
+  "next_checkpoint": 339,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "入口/UI静态VM核对已完成。按函数状态清单继续根模块跨函数调用链核对。检查点337发现并修正唯一交付源码中两个配置写入包装闭包的实参顺序错配；下一步核对FileExistCheck_pcall_wrapper及其UI调用者的VM语义，区分原始行为异常与源码恢复错误。",
-    "title": "根模块配置读写链跨函数参数与调用契约核对",
-    "prototype": "root.children[0] FileExistCheck_pcall_wrapper + root.children[2] GetWritablePath + root.children[9] ReadNumericConfig + root.children[17] PCallHelper + root.children[32]/[33]/[49]/[54]配置包装闭包；关联doInit_UI的配置清理回调调用点",
+    "status": "入口/UI静态VM核对已完成；配置读写链跨函数核对也已完成。唯一交付源码中AnonymousHelper_32/AnonymousHelper_54的参数顺序已按VM修正。FileExistCheck_pcall_wrapper与其两个调用点忠实保留VM行为；发现按钮提示与实际文件删除行为不一致，这是原始VM逻辑问题，不是源码恢复偏差。下一步补全根模块跨函数调用关系清单，不重复分析已完成的函数主体。",
+    "title": "补全根模块跨函数调用关系清单",
+    "prototype": "root / MainLeftBottom_Module；以已完成的root.children[0..57]函数静态恢复和root PC1-PC412闭包装配记录为基础，整理根模块内部调用边及外部宿主API调用边",
     "scope": [
-      "对照VM逐项核对配置读写链函数的固定参数、UPVALUE捕获、receiver、实参顺序、多返回值与返回值语义",
-      "核对PCallHelper与AnonymousHelper_32/AnonymousHelper_54之间的跨函数参数传递，严格保留VM实参顺序",
-      "核对FileExistCheck_pcall_wrapper及其两个UI调用者的控制流，区分原始VM行为与普通Lua恢复偏差",
-      "只修正有VM证据支持的唯一交付源码错误；原始VM本身的异常行为单独记录，不擅自按预期用途改写",
-      "不重新展开已完成的入口/UI整体审查，不处理物品、背包、仓库、地图、战斗等其他模块"
+      "只整理现有静态恢复结果中尚未形成完整逐边清单的根模块调用关系，不重新逐PC审查已完成函数主体",
+      "区分本地词法函数调用、模块状态表回调、全局导出函数调用、宿主框架API调用及延迟/定时回调",
+      "每条调用边记录调用方、被调目标、调用形式（点/冒号/闭包）、参数与返回值证据来源",
+      "对不确定的宿主行为或业务含义标注待确认，不编造函数关系",
+      "如发现明确源码调用目标、receiver或参数顺序与VM不一致，直接修正唯一交付源码；不建立平行主源码"
     ],
     "focus": [
-      "当前优先级是配置读写链跨函数参数契约与调用行为核对",
-      "root.children[32]和root.children[54]的VM调用顺序为PCallHelper(固定文件名, firstArg)，已修正唯一交付源码",
-      "PCallHelper本体将第1参转为写入内容、第2参作为GetWritablePath参数；即使组合反直觉，也按VM保留",
-      "FileExistCheck_pcall_wrapper文件已存在时直接返回true和路径、不删除文件，这是VM记录的原始行为；核实调用者后再决定是否仅记录原始逻辑缺陷",
-      "保持Lua 5.1兼容，不执行实际编译或游戏运行验证"
+      "根模块自身是函数状态清单中唯一仍标记为部分普通Lua草稿的原型",
+      "109个子原型已有完整静态恢复记录；不重做其函数主体",
+      "root PC1-PC412、58个闭包创建点、135项OP_387捕获及共享寄存器cell关系已有静态核对成果，直接复用",
+      "当前目标是补全函数之间的调用关系与调用契约，不是重做入口/UI或业务函数反虚拟化",
+      "保持Lua 5.1兼容；不执行实际编译或游戏运行验证"
     ],
     "completion_criteria": [
-      "root.children[17] PCallHelper与其嵌套写入闭包的参数/返回语义已对照VM",
-      "root.children[32]与root.children[54]实参顺序与VM一致，唯一交付源码已修正",
-      "root.children[0] FileExistCheck_pcall_wrapper及两个调用点已逐项对照VM",
-      "原始VM逻辑缺陷与源码恢复错误分别记录，不因语义不合理擅自偏离VM",
-      "Lua 5.1兼容性通过静态审查；不要求实际编译或目标游戏运行"
+      "根模块内部函数间可静态确认的调用边形成完整清单",
+      "延迟回调、定时器回调、UI按钮回调与全局导出入口的调用关系单独标识",
+      "每条边的调用receiver、实参顺序及返回值传递有源码/VM证据",
+      "未能静态确认的边或宿主行为单独列为风险，不推测",
+      "唯一交付源码中发现的明确调用错误已修正；不要求实际编译或目标游戏运行"
     ],
-    "next": "继续核对root.children[0] FileExistCheck_pcall_wrapper的32条VM指令、Nested_removeFile子原型和doInit_UI两个调用点；如果当前源码忠实保留VM的已存在文件分支，则记录为原始逻辑行为而非源码修正。随后按函数状态清单选择下一项有证据支持的跨函数疑点。"
+    "next": "以现有root结构树和唯一交付源码为依据，先从MainLoop、DiuItems、BlacklistPlayerDetection等已恢复函数中提取对其他恢复函数的直接调用边，再整理由doInit_UI创建的回调触发边；避免重新分析这些函数内部业务逻辑。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
@@ -58,7 +58,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "本轮检查点324仅完成root PC1-PC42的直接静态对照：MainLeftBottom chunk环境导出、a/b/z/timerState创建顺序及初始化字段与VM一致，未发现明确源码错配。root PC43-PC412、AccountIDValidation、doInit_UI及23个UI子原型仍待本轮逐项复核。历史检查点323只作参考。 检查点325补充：root PC43-PC85的闭包捕获、ENV['_G'].log、a.LuaSendMsg及11个全局导出目标已对照；未发现明确错配。 检查点326补充：root PC86-PC211配置表、奖励记录、共享状态初值及相关闭包捕获身份已对照VM，未发现明确父级装配错配。 检查点327补充：root PC212-PC296的采集闭包父级捕获、a.hide/show/destroy字段、AccountIDValidation入口绑定、黑名单状态表及配置常量已对照VM，未发现明确父级装配错配。 检查点328补充：root PC212-PC315全局导出、UI闭包捕获、AccountIDValidation挂接、blacklistState共享对象及配置读写闭包链已对照；未发现明确父级装配错配。AccountIDValidation两个子原型的完整逻辑已开始独立核验，详见后续检查点。 检查点329补充：root PC316-PC412数值表、黑名单闭包链、T57 live-cell捕获、onDamageMsg字段、BlacklistItems/ClearBlacklistItems导出、doInit_UI 20项捕获、doInit挂接和模块返回均已直接对照VM；root PC1-PC412本轮父级装配审查完成，未发现明确错配。子原型主体审查仍待完成。 检查点330补充：AccountIDValidation主原型与两个直接子原型（等待回调、白名单匹配闭包）已逐段对照VM；9项ID及顺序、GAME_ID门控、回调UI条件、UnSchedule(nil)、doInit调用均一致，未发现明确错配。 检查点331：doInit_UI主体PC1-PC419执行结构已与VM核对；修正了UI子闭包中6类root全局函数被本地CallRootFunction包装器替代的问题，并将巡航回调发送入口改回VM的GETGLOBAL LuaSendMsg。 检查点332补充：doInit_UI直接子原型child0-child10及其嵌套闭包已逐段对照；资源统计窗口320条主体与5个子原型、按钮创建/点击事件和各开关定时回调对应。未发现新的明确错配。 检查点333补充：doInit_UI直接子原型child11-child22及嵌套闭包已逐段对照；输入弹窗、巡航回调、黑名单/存仓/取物/拾取/丢弃开关、快捷栏和隐藏按钮回调均对应VM。未发现新的明确错配。 检查点334补充：已完成跨段共享状态核对，a/b/z/timerState、blacklistState、gatherConfig、按钮映射、资源窗口和各定时器句柄均保持预期共享对象/字段关系，未发现新的明确身份错配。 检查点337补充：直接读取VM dump root.children[32]/[54]的6条指令及函数状态清单，确认固定文件名先、firstArg后传入PCallHelper；唯一交付源码原先反序，已修正。",
+    "static_source_review": "本轮检查点324仅完成root PC1-PC42的直接静态对照：MainLeftBottom chunk环境导出、a/b/z/timerState创建顺序及初始化字段与VM一致，未发现明确源码错配。root PC43-PC412、AccountIDValidation、doInit_UI及23个UI子原型仍待本轮逐项复核。历史检查点323只作参考。 检查点325补充：root PC43-PC85的闭包捕获、ENV['_G'].log、a.LuaSendMsg及11个全局导出目标已对照；未发现明确错配。 检查点326补充：root PC86-PC211配置表、奖励记录、共享状态初值及相关闭包捕获身份已对照VM，未发现明确父级装配错配。 检查点327补充：root PC212-PC296的采集闭包父级捕获、a.hide/show/destroy字段、AccountIDValidation入口绑定、黑名单状态表及配置常量已对照VM，未发现明确父级装配错配。 检查点328补充：root PC212-PC315全局导出、UI闭包捕获、AccountIDValidation挂接、blacklistState共享对象及配置读写闭包链已对照；未发现明确父级装配错配。AccountIDValidation两个子原型的完整逻辑已开始独立核验，详见后续检查点。 检查点329补充：root PC316-PC412数值表、黑名单闭包链、T57 live-cell捕获、onDamageMsg字段、BlacklistItems/ClearBlacklistItems导出、doInit_UI 20项捕获、doInit挂接和模块返回均已直接对照VM；root PC1-PC412本轮父级装配审查完成，未发现明确错配。子原型主体审查仍待完成。 检查点330补充：AccountIDValidation主原型与两个直接子原型（等待回调、白名单匹配闭包）已逐段对照VM；9项ID及顺序、GAME_ID门控、回调UI条件、UnSchedule(nil)、doInit调用均一致，未发现明确错配。 检查点331：doInit_UI主体PC1-PC419执行结构已与VM核对；修正了UI子闭包中6类root全局函数被本地CallRootFunction包装器替代的问题，并将巡航回调发送入口改回VM的GETGLOBAL LuaSendMsg。 检查点332补充：doInit_UI直接子原型child0-child10及其嵌套闭包已逐段对照；资源统计窗口320条主体与5个子原型、按钮创建/点击事件和各开关定时回调对应。未发现新的明确错配。 检查点333补充：doInit_UI直接子原型child11-child22及嵌套闭包已逐段对照；输入弹窗、巡航回调、黑名单/存仓/取物/拾取/丢弃开关、快捷栏和隐藏按钮回调均对应VM。未发现新的明确错配。 检查点334补充：已完成跨段共享状态核对，a/b/z/timerState、blacklistState、gatherConfig、按钮映射、资源窗口和各定时器句柄均保持预期共享对象/字段关系，未发现新的明确身份错配。 检查点337补充：直接读取VM dump root.children[32]/[54]的6条指令及函数状态清单，确认固定文件名先、firstArg后传入PCallHelper；唯一交付源码原先反序，已修正。 检查点338补充：root.children[0] 32条VM指令、Nested_removeFile 5条及doInit_UI child2/child20调用路径已对照；源码与VM一致。已确认“清空配置”提示与原始文件检查/删除分支行为不一致，属于原始逻辑问题，未擅自改变。",
     "lua_syntax_check": "仅执行静态Lua 5.1兼容性审查、禁用语法/API扫描及词法结构检查。用户明确要求不执行实际Lua 5.1编译；不得安装/寻找编译器或要求用户补做。",
     "runtime_check": "按用户明确要求，不执行目标游戏运行验证；不得将未运行作为阻塞或要求用户补做。",
     "do_not_claim_pass_without_execution": true,
@@ -69,7 +69,8 @@
       "资源统计初始化快照按moneyName写入initSnapshot，刷新回调按moneyId读取；代理GetMoneyIdByName语义未文档化，按VM保留。",
       "AccountIDValidation等待回调按VM执行SL:UnSchedule(nil)；不擅自替换为Schedule返回句柄。",
       "Nested_Anonymous错误输入路径按VM捕获T[2]=nil并在延迟回调中直接调用，原始行为会产生attempt-to-call-nil；按功能等价要求保留原行为，若要修复需单独批准偏离VM。",
-      "巡航回调root.children[42].children[12]按VM GETGLOBAL读取当前chunk环境LuaSendMsg；已在唯一源码改为getfenv(1).LuaSendMsg。根模块PC51只把LuaSendMsg写入MainLeftBottom.a.LuaSendMsg而未导出同名全局，因此该入口在目标宿主环境中是否另有定义仍待运行验证，不擅自改回a.LuaSendMsg。"
+      "巡航回调root.children[42].children[12]按VM GETGLOBAL读取当前chunk环境LuaSendMsg；已在唯一源码改为getfenv(1).LuaSendMsg。根模块PC51只把LuaSendMsg写入MainLeftBottom.a.LuaSendMsg而未导出同名全局，因此该入口在目标宿主环境中是否另有定义仍待运行验证，不擅自改回a.LuaSendMsg。",
+      "GUI:Attach_UITop：用户于2026-11-11明确确认官方接口无参数；唯一交付源码仍保留VM恢复出的显式实参T7=4。此项是VM调用形态与官方API契约冲突，当前任务转入根模块调用图整理，尚未改动该UI调用。"
     ],
     "execution_policy": "用户明确决定：不需要Lua 5.1实际编译、luac编译或目标游戏运行验证。不得安装/寻找编译器、搭建验证环境或反复请求用户验证。静态VM对照、Lua 5.1兼容性审查和禁用语法/API扫描照常执行。"
   },
@@ -99,7 +100,7 @@
   "active_branch": "main",
   "branch_policy": "仓库只保留 main 一个分支；不创建工作分支、备份分支或平行开发线。其他分支的历史文件只归档到资料文件/分支归档/对应来源目录；确认归档和主源码完整后，删除旧分支。",
   "branch_cleanup_status": {
-    "main_head": "933c21d992df3b096b851b62b567f5500d2325e9",
+    "main_head": "5e91cc1cf611f639613cee6929521963e274741c",
     "archived_sources": [
       "backup/pre-functional-rewrite-2026-11-11",
       "work/functional-equivalent-rebuild-2026-11-11"
@@ -118,5 +119,5 @@
     ],
     "task_change_authority": "只有用户明确要求，或当前任务完成标准全部满足后，才能改变 current_task；AI不得自行提前切换到其他模块。"
   },
-  "progress": "undefined\n检查点337：读取函数状态清单后，发现root.children[32] AnonymousHelper_32与root.children[54] AnonymousHelper_54的唯一交付源码实参顺序偏离VM。VM确认两者均按PCallHelper(固定文件名, firstArg)调用；而PCallHelper本体将第1参tostring后作为写入内容、第2参传给GetWritablePath。已直接修正MainLeftBottom_唯一交付文件.lua中的两处调用，并添加注释明确保留反直觉参数顺序；提交到main。下一步核对root.children[0] FileExistCheck_pcall_wrapper与其两个配置清理UI调用点，区分VM原始逻辑异常和源码错配。"
+  "progress": "undefined\n检查点337：读取函数状态清单后，发现root.children[32] AnonymousHelper_32与root.children[54] AnonymousHelper_54的唯一交付源码实参顺序偏离VM。VM确认两者均按PCallHelper(固定文件名, firstArg)调用；而PCallHelper本体将第1参tostring后作为写入内容、第2参传给GetWritablePath。已直接修正MainLeftBottom_唯一交付文件.lua中的两处调用，并添加注释明确保留反直觉参数顺序；提交到main。下一步核对root.children[0] FileExistCheck_pcall_wrapper与其两个配置清理UI调用点，区分VM原始逻辑异常和源码错配。\n检查点338：配置读写链复核完成。直接对照VM确认root.children[0] FileExistCheck_pcall_wrapper的32条指令及Nested_removeFile子原型5条指令；唯一交付源码控制流一致：文件已存在时直接返回true和路径，不执行删除；文件不存在时才pcall removeFile并再次检查。doInit_UI child2/child20两个调用点均按返回布尔值显示“已清空/清理失败”。因此提示语与实际行为不一致是原始VM逻辑缺陷，未擅自修复以保持功能等价。root.children[17] PCallHelper及root.children[32]/[54]调用顺序已复核，源码修正完成。配置链无其他明确源码错配。\n下一阶段：根模块调用图补全。函数状态清单显示109个子原型已完整静态恢复，root模块仍为部分普通Lua草稿；不重做已完成函数主体，改为补全内部调用边、定时/延迟回调边、UI回调边和宿主API边。"
 }
