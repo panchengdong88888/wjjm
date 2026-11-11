@@ -80,5 +80,14 @@
     "current_review": "检查点323：禁用语法/API词项扫描未发现Lua 5.2+语法或接口；_ENV仅出现在注释。自制词法块配对检查无不平衡。未执行真正Lua 5.1编译，环境没有lua/luac/luajit/luaparser。"
   },
   "active_branch": "main",
-  "branch_policy": "仓库只保留 main 一个分支；不创建工作分支、备份分支或平行开发线。其他分支的历史文件只归档到资料文件/分支归档/对应来源目录；确认归档和主源码完整后，删除旧分支。"
+  "branch_policy": "仓库只保留 main 一个分支；不创建工作分支、备份分支或平行开发线。其他分支的历史文件只归档到资料文件/分支归档/对应来源目录；确认归档和主源码完整后，删除旧分支。",
+  "branch_cleanup_status": {
+    "main_head": "7a2f4b9d2cf35c7410776862d6f70a1e56af6f1f",
+    "archived_sources": [
+      "backup/pre-functional-rewrite-2026-11-11",
+      "work/functional-equivalent-rebuild-2026-11-11"
+    ],
+    "status": "项目文件和接续规则已统一到 main；两个旧 Git 分支尚未删除。当前连接可读取、创建提交和更新分支，但没有删除 Git ref 的操作权限/工具。",
+    "user_action_required": "在 GitHub 仓库页面进入 Branches，分别删除 backup/pre-functional-rewrite-2026-11-11 和 work/functional-equivalent-rebuild-2026-11-11。删除前无需再复制文件；来源索引和资料已保存在资料文件/分支归档/。"
+  }
 }
