@@ -24,11 +24,12 @@
 
 ## 3. 当前任务（强制）
 
-第一优先级：核对根目录唯一交付源码 MainLeftBottom_唯一交付文件.lua 中的入口函数和所有 UI 相关函数。
+第一优先级：按机器状态 JSON 的 current_task，继续核对根模块配置读写链的跨函数参数与调用契约。
 
-- 核对范围：root 入口模块、AccountIDValidation、doInit_UI 主体及其 UI 子原型。
-- 按机器状态 JSON 中的 scope 和 completion_criteria 逐项核对。
-- 入口/UI 全部完成之前，禁止开始物品、背包、仓库、地图、战斗或其他功能模块。
+- 入口模块、AccountIDValidation、doInit_UI 主体及其 UI 子原型的静态 VM 核对已完成；不得重新从头审查。
+- 当前范围：root.children[0] FileExistCheck_pcall_wrapper、root.children[2] GetWritablePath、root.children[9] ReadNumericConfig、root.children[17] PCallHelper、root.children[32]/[33]/[49]/[54] 配置包装闭包及其调用点。
+- root.children[32] 与 root.children[54] 的 VM 实参顺序均为 PCallHelper(固定文件名, firstArg)，已在唯一交付源码修正；不得按直觉交换。
+- 核对 FileExistCheck_pcall_wrapper 时，区分 VM 原始逻辑异常与源码恢复错误；没有 VM 证据不得擅自改写。
 - 有明确错误就直接修正唯一交付源码；不要另建候选主源码。
 - 每完成一组、发现阻塞或任务变化，立即更新机器状态 JSON 和本文件，并提交到 main。
 - 不得把历史检查点323记载的上一轮静态复核，当作本轮用户指定任务已经完成。
@@ -155,3 +156,12 @@
 - 不得把“实际编译未执行”或“目标游戏未运行”当作阻塞条件、阶段未完成理由或切换模块的前置条件。
 - Lua 5.1兼容性仍须通过静态代码审查、禁用语法/API扫描和VM证据核对；这些静态检查照常执行。
 - 入口root、AccountIDValidation、doInit_UI及其子原型的静态核对已完成。下一步按函数状态清单和既定优先级继续尚未完成的功能模块，不要回头重复入口/UI工作。
+
+
+## 检查点337补充：配置写入包装闭包参数顺序
+
+- 按机器状态 JSON 的新 current_task，开始配置读写链跨函数调用契约核对。
+- 对照VM dump及函数状态清单，确认root.children[32] AnonymousHelper_32与root.children[54] AnonymousHelper_54均以固定文件名作为PCallHelper第1参、firstArg作为第2参。
+- 唯一交付源码原先两处均反序，已修正为PCallHelper(blacklistDistanceConfigFile, firstArg)及PCallHelper(gatherMonsterCountConfigFile, firstArg)，并保留注释说明该反直觉参数顺序来自VM。
+- 源码修正已提交到main；机器状态JSON同步更新。
+- 下一步核对root.children[0] FileExistCheck_pcall_wrapper、Nested_removeFile及其两个配置清理回调调用点。
