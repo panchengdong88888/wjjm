@@ -1350,9 +1350,7 @@ local function MainLoop()
                 return
             end
 
-            -- FindMonsterInCurrViewField没有形参；原调用点仍传入一个额外参数，
-            -- Lua函数不会消费该额外参数，保留调用实参以对应原调用点。
-            -- 等待到期后的确认查询按原型调用点不传参数；常规扫描处仍保留额外实参。
+            -- 等待到期后的确认查询按原型调用点不传参数；PC159-PC160常规扫描调用才传入额外实参。
             local actorMap = FindMonsterInCurrViewField()
             local actor = actorMap[resetSlot21]
             local mainPlayerID = GetMainPlayerID()
