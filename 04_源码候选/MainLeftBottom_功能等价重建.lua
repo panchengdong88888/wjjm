@@ -551,6 +551,12 @@ local function GetDroppedItems()
     return global.dropItemManager:FindDropItemInCurrViewFieldAll()
 end
 
+-- root PC55/57/59/61：按原始ENV落点导出四个基础查询闭包。
+rootEnvironment.GetMapId = GetMapId
+rootEnvironment.GetMapName = GetMapName
+rootEnvironment.PlayerPos = PlayerPos
+rootEnvironment.GetDroppedItems = GetDroppedItems
+
 -- 读取主玩家 ID；这是观察到的宿主对象方法，不是新框架文档 API。
 local function GetMainPlayerID()
     return global.gamePlayerController:GetMainPlayerID()
@@ -1057,6 +1063,76 @@ local function PrintLog(message, ...)
     end
 end
 rootGlobal.log = PrintLog
+
+
+-- root.children[12] / LuaSendMsg：PC48-PC51捕获MainLeftBottom.a与PrintLog，
+-- 并挂入a.LuaSendMsg。hook返回值严格为true时拦截网络发送。
+local function LuaSendMsg(
+    hookKey,
+    param1,
+    param2,
+    param3,
+    param4,
+    messageId
+)
+    local message = {
+        recog = 0,
+        msgId = messageId,
+        param1 = param1,
+        param2 = param2,
+        param3 = param3,
+        param4 = param4,
+    }
+
+    local numericHookKey = tonumber(hookKey)
+    local blockedIndex = table.find(a.Blocklist, numericHookKey)
+    if not blockedIndex then
+        local formattedParams = {}
+        local parameterSource = {
+            message.param1,
+            message.param2,
+            message.param3,
+            message.param4,
+        }
+        for _, value in ipairs(parameterSource) do
+            if type(value) == "string" then
+                table.insert(formattedParams, "'" .. value .. "'")
+            else
+                table.insert(formattedParams, tostring(value))
+            end
+        end
+        local logText = "LuaSendMsg("
+            .. table.concat(formattedParams, ", ")
+            .. ")"
+        PrintLog(logText)
+    end
+
+    local hookExists = a.SendHookList[hookKey]
+    if hookExists then
+        local hook = a.SendHookList[hookKey]
+        if type(hook) == "function" then
+            local callOK, handled = pcall(
+                hook,
+                hookKey,
+                messageId,
+                message
+            )
+            if callOK and handled == true then
+                return
+            end
+        end
+    end
+
+    global.networkCtl:SendMsg(
+        hookKey,
+        param1,
+        param2,
+        param3,
+        param4,
+        messageId
+    )
+end
+a.LuaSendMsg = LuaSendMsg
 
 local function ShowLocalNoticeByType(message, ...)
     local notice = rootEnvironment.ShowLocalNoticeByType
@@ -3202,6 +3278,23 @@ return MainLeftBottom
 --
 -- 本批函数主体的静态控制流来自对应已恢复草稿；未执行Lua语法检查、
 -- 未进行目标游戏运行验证。playerInfo/playerObject等局部值保留原型读写位置。
+-- ============================================================================
+
+-- ============================================================================
+-- 功能等价复刻 · 第三批：PC43-PC63基础导出与LuaSendMsg（检查点287）
+--
+-- 已补齐根模块PC55/57/59/61四项chunk ENV全局导出：
+-- GetMapId、GetMapName、PlayerPos、GetDroppedItems。
+-- root.children[12] LuaSendMsg已按92条物理指令恢复并挂入MainLeftBottom.a.LuaSendMsg：
+-- 六个固定参数、Blocklist日志豁免、SendHookList钩子调用与严格true拦截、
+-- 未拦截时global.networkCtl:SendMsg六参数原样转发。
+--
+-- PrintLog、ShowLocalNoticeByType、ScheduleOnce、Schedule未被错误导出为ENV全局；
+-- PrintLog仍按PC45写入ENV["_G"].log，LuaSendMsg仍只挂在a.LuaSendMsg。
+-- 现有物品函数调用LuaSendMsg时使用同一词法函数，不再依赖未定义全局名。
+--
+-- 本批为静态源码整合；table.find、networkCtl与代理行为属于宿主依赖，
+-- 未执行Lua语法检查或目标游戏运行验证。
 -- ============================================================================
 
 
