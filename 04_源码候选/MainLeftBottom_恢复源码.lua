@@ -4,7 +4,7 @@ MainLeftBottom(2).lua 明文恢复整合稿（静态候选）
 用途：按110原型索引和PC级证据整合普通Lua候选、根模块状态及58个直接子闭包。
 当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配；PC43-PC85、PC181-PC258及PC297-PC388闭包已按VM创建顺序整合；检查点261修正采集状态表跨词法块引用；检查点262按寄存器生命周期重建PC1-PC42初始化；检查点263显式恢复PC43-PC85的T[4..8]创建、覆写、捕获及导出顺序；检查点264恢复PC86-PC211采集闭包及T[14..22]共享cell注入；检查点265补齐PC212-PC296 UI闭包校验、模块字段身份及PC275全局模块表重读；检查点266按T[44..51]恢复PC297-PC315配置包装链并用于doInit_UI捕获注入；检查点267复核PC350-PC388黑名单闭包对象身份、T[57] live cell及全局导出落点；检查点268核对PC389 T[59]模块表重读与PC411写入目标；检查点269逐槽核对doInit_UI的20项捕获并将UP[8]修正为gatherConfig；检查点270清理已被后续版本覆盖的重复源码词法块，纠正doInit_UI来源标记；检查点271保留MainLoop共享cell工厂版本，删除两个普通值旧草稿，并清理root22重复注册；检查点272全量核对53个源码注册键唯一、37个字面sourceFunction调用全部命中已注册来源与导出符号，22个bindDirect引用亦全部命中；检查点273增加PC1-PC42根表/初始table身份断言；检查点274强化PC43-PC85的LuaSendMsg必需闭包保护与寄存器导出身份；检查点275核对58个根直接闭包均有fail-fast必需性校验。
 结构索引：docs/handoff/13_MainLeftBottom_原型结构树.md（110/110原型父子树；调用图仍需独立恢复）。
-检查点279：已完成11个基础辅助函数与8个配置读写辅助函数的功能等价复刻，主体与绑定见检查点278/279审计；此前PC86-PC315共享cell/闭包参数/模块字段链静态复核见docs/audit/检查点277_PC86-PC315共享cell与字段链复核.md；PC275/389的_ENV与_G环境对象等价性仍未验证。
+检查点279：已完成11个基础辅助函数与8个配置读写辅助函数的功能等价复刻，主体与绑定见检查点278/279审计；此前PC86-PC315共享cell/闭包参数/模块字段链静态复核见docs/audit/检查点277_PC86-PC315共享cell与字段链复核.md；PC275/389原ENV环境访问曾由_G近似表示；检查点283已改为统一chunk environment引用。
 检查点281：按用户要求调整顺序，先处理根入口模块MainLeftBottom_Module（PC1-PC412）和UI初始化doInit_UI（root.children[42]，419条指令/23个子原型）；检查点282纠正GetWritablePath与ReadNumericConfig固定参数入口，暂缓背包/仓库。UI工厂20项捕获参数改为业务语义命名；按钮快捷栏回调改用捕获的printLog，而不是未确认的全局PrintLog；调用位置仍按原20槽顺序传参，未改变捕获关系。
 检查点283：按原始OP_137语义区分当前chunk的ENV与ENV["_G"]；PC2/4/31/34/275/389及PC55-PC85、PC213、PC237、PC246、PC255、PC258、PC260、PC382、PC388均通过同一rootEnvironment处理；PC44读取rootEnvironment._G后，PC45只向该表写log。
 重要：
@@ -231,7 +231,7 @@ local timerState = {}
 
 -- 检查点193：PC43-PC85，根模块辅助闭包创建与导出。
 -- PC42的T[3] timerState已在前段创建；本段从PC43开始记录子闭包创建。
--- PC43-PC45：创建 root.children[16] PrintLog 闭包，并赋值给 _G.log。
+-- PC43-PC45：创建 root.children[16] PrintLog闭包；PC44读取ENV['_G']，PC45向该表写入log。
 -- PC46：创建 root.children[20] ShowLocalNoticeByType 闭包，捕获父 T[0]；
 -- 本段没有观察到其全局导出，暂不臆测其最终持有位置。
 -- PC48-PC51：创建 root.children[12] LuaSendMsg 闭包，捕获父 T[0]、T[4]，
@@ -6008,7 +6008,7 @@ end
 
 
 -- 检查点241：根模块PC1-PC85明文字段/导出对账摘要。
--- _G.MainLeftBottom在PC2导出；MainLeftBottom.a含version="10000"、
+-- ENV.MainLeftBottom在PC2导出；MainLeftBottom.a含version="10000"、
 -- screenW/screenH、Blocklist={1,9,10,60000}、SendHookList、RecvHookList、
 -- isHidden=true、hidebut=nil及PC51写入的LuaSendMsg。
 -- MainLeftBottom.b为空表；MainLeftBottom.z含六个false状态字段。
@@ -6148,13 +6148,13 @@ do
     bindDirect("PrintLog", "04_源码候选/PrintLog_日志辅助函数_第七批.lua", "PrintLog")
     rootRegisters[4] = requireRecoveredClosure("PrintLog", rootPrototypes.PrintLog)
 
-    -- PC44-PC45：T[5]暂存_G；PC45执行_G.log=T[4]。
+    -- PC44-PC45：T[5]读取ENV['_G']；PC45执行T[5].log=T[4]。
     rootRegisters[5] = rootEnvironment._G
     assert(type(rootRegisters[5]) == "table",
         "PC44 ENV['_G'] did not resolve to a table")
     rootRegisters[5].log = rootRegisters[4]
     assert(rootRegisters[5].log == rootPrototypes.PrintLog,
-        "PC45 _G.log export identity mismatch")
+        "PC45 ENV['_G'].log export identity mismatch")
 
     -- PC46-PC47：创建ShowLocalNoticeByType，捕获T[0]=a表，随后覆写T[5]。
     local makeShowNotice = sourceFunction(
@@ -6277,7 +6277,7 @@ do
     -- 检查点274：核对PC43-PC85的即时导出与寄存器最终身份。
     assert(rootRegisters[4] == rootPrototypes.PrintLog
         and rootRegisters[5].log == rootPrototypes.PrintLog,
-        "PC43-PC45 PrintLog/T[4]/_G.log identity mismatch")
+        "PC43-PC45 PrintLog/T[4]/ENV['_G'].log identity mismatch")
     assert(rootRegisters[5] == rootPrototypes.ShowLocalNoticeByType,
         "PC46-PC47 T[5] closure identity mismatch")
     assert(rootRegisters[6] == rootPrototypes.ScheduleOnce
