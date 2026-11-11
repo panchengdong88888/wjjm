@@ -123,3 +123,9 @@
 - 已修正UI子闭包对StorageItems/TakeItems/PickUpItems/DiuItems/BlacklistItems/ClearBlacklistItems的全局函数身份：不再经CallRootFunction包装器间接调用。
 - 已修正巡航回调的LuaSendMsg读取方式为当前chunk环境GETGLOBAL。
 - 23个直接子原型主体仍待逐个核对；下一步从child0开始。
+
+## 检查点332补充：doInit_UI子原型child0-child10
+
+- 已逐段核对child0-child10及其嵌套闭包，包括奖励回调、资源统计窗口5个子原型、按钮创建/点击闭包、拉怪与存仓/拾取开关。
+- 未发现新的明确错配；此前已修正的GETGLOBAL函数绑定已在当前源码复核确认。
+- 下一步核对child11-child22及嵌套闭包。
