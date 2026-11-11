@@ -23,10 +23,10 @@
 
 ## 3. 当前接续位置
 
-- 最近检查点：**307**
-- 下一检查点：**308**
-- 当前优先任务：复核PC259-PC260 MoveItemToQuickUse无捕获函数主体及全局导出。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
-- 检查点307已核对Builtsetting的父级捕获T[5]=ShowLocalNoticeByType及子原型54条VM指令。六组CHANGE_SETTING参数依次为(27,{0})、(52,{0})、(1002,{0})、(57,{1})、(58,{1})、(2005,{0})，每组之后的通知字符串与主源码一致；无源码改动。检查点306修正InitGatherMonsters启动提示回调为捕获的PrintLog，StopGatherMonsters清理顺序和调度调用形态一致。当前容器未找到Lua解释器，尚未执行Lua 5.1语法检查或游戏运行验证。
+- 最近检查点：**308**
+- 下一检查点：**309**
+- 当前优先任务：复核PC261-PC274的DestroyUI、SetButtonVisibilityState、ShowHideAllButtons三个UI控制函数主体、捕获关系及模块字段挂接。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
+- 检查点308已逐段核对root.children[41]的133条物理指令：QuickUseProxy/Bag代理获取、快捷栏位置范围校验、pairs遍历、快捷栏内交换/移动、背包回查与目标槽替换、SetQuickUsePosData布尔实参、返回值及提示顺序均与主源码一致；PC259创建无捕获闭包、PC260导出全局MoveItemToQuickUse正确，无源码改动。函数状态CSV保持“完整静态恢复（未运行时验证）”。检查点307的Builtsetting核对结果不变。当前容器未找到Lua解释器，尚未执行Lua 5.1语法检查或游戏运行验证。
 - PC280-PC412 的根级创建/捕获/导出/入口挂接已静态核对；PC1-PC211已修正ResetGatherMonsterData的清目标/等待状态复位顺序，FindMonsterInCurrViewField主体与27条物理指令恢复稿一致。检查点300已修正MainLoop等待归属变更到期后的FindMonsterInCurrViewField调用实参；检查点301已静态核对PC212-PC255导出，并补充MainLoop数值for循环游标语义注释；检查点302核对PC1-PC85闭包导出及捕获边界，修正物品/仓库函数对根级函数的错误词法引用；检查点303核对PC86-PC167配置、奖励表及UI捕获，明确奖励回调的18000取模参数。当前容器未发现Lua解释器命令，尚未执行Lua 5.1语法检查。后续仍以同一唯一主源码为准。
 
 ## 4. 源码文件职责
