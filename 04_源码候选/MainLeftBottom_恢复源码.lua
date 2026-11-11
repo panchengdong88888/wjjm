@@ -1643,9 +1643,9 @@ end
 -- 以下函数体复用已完成静态恢复的子原型；UPVALUE 名称仅描述行为。
 -- ---------------------------------------------------------------------------
 
-local function make_Nested_Helper(checkCallback, checkArgument, notify, printLog)
+local function make_Nested_Helper(checkConfigFileState, configFileName, notify, printLog)
     local function Nested_Helper()
-        local success, detail = checkCallback(checkArgument)
+        local success, detail = checkConfigFileState(configFileName)
         if success then
             notify("已清空怪物阈值")
             printLog("已清空怪物阈值存档：%s", detail)
@@ -1657,9 +1657,9 @@ local function make_Nested_Helper(checkCallback, checkArgument, notify, printLog
     return Nested_Helper
 end
 
-local function make_Nested_s(checkCallback, checkArgument, notify, printLog)
+local function make_Nested_s(checkConfigFileState, configFileName, notify, printLog)
     local function Nested_s()
-        local success, detail = checkCallback(checkArgument)
+        local success, detail = checkConfigFileState(configFileName)
         if success then
             notify("已清空黑名单距离")
             printLog("已清空黑名单距离存档：%s", detail)
@@ -1672,57 +1672,57 @@ local function make_Nested_s(checkCallback, checkArgument, notify, printLog)
 end
 
 local function make_Nested_Helper_5(
-    validateValue, notify, formatCallback, resolveFailureContext,
-    failureContext, saveDistance, setButtonState
+    writeConfigValue, notify, formatCallback, resolveWritablePath,
+    configFileName, startBlacklistTimer, setButtonState
 )
     local function Nested_Helper_5(value)
-        if not validateValue(value) then
+        if not writeConfigValue(value) then
             notify("黑名单距离保存失败")
             formatCallback(
                 "黑名单距离保存失败，路径：%s",
-                resolveFailureContext(failureContext)
+                resolveWritablePath(configFileName)
             )
             return
         end
 
         notify("黑名单距离已保存：" .. value .. " 格")
         formatCallback("黑名单距离已保存：%d 格", value)
-        if not saveDistance(value) then return end
+        if not startBlacklistTimer(value) then return end
         setButtonState("blacklistbut", true)
     end
     return Nested_Helper_5
 end
 
 local function make_Nested_Helper_8(
-    validateValue, notify, formatCallback, resolveFailureContext,
-    failureContext, saveThreshold, setButtonState
+    writeConfigValue, notify, formatCallback, resolveWritablePath,
+    configFileName, startGathering, setButtonState
 )
     local function Nested_Helper_8(value)
-        if not validateValue(value) then
+        if not writeConfigValue(value) then
             notify("怪物阈值保存失败")
             formatCallback(
                 "怪物阈值保存失败，路径：%s",
-                resolveFailureContext(failureContext)
+                resolveWritablePath(configFileName)
             )
             return
         end
 
         notify("怪物阈值已保存：" .. value)
         formatCallback("怪物阈值已保存：%d", value)
-        if not saveThreshold(value) then return end
+        if not startGathering(value) then return end
         setButtonState("yinguaibut", true)
     end
     return Nested_Helper_8
 end
 
 local function make_Nested_Helper_4(
-    openDialog, validateValue, notify, formatCallback,
-    resolveFailureContext, failureContext, saveDistance, setButtonState
+    openDialog, writeConfigValue, notify, formatCallback,
+    resolveWritablePath, configFileName, startBlacklistTimer, setButtonState
 )
     local function Nested_Helper_4()
         local callback = make_Nested_Helper_5(
-            validateValue, notify, formatCallback, resolveFailureContext,
-            failureContext, saveDistance, setButtonState
+            writeConfigValue, notify, formatCallback, resolveWritablePath,
+            configFileName, startBlacklistTimer, setButtonState
         )
         openDialog("请输入黑名单的距离格子（数字，按线路计算）", callback)
     end
@@ -1730,13 +1730,13 @@ local function make_Nested_Helper_4(
 end
 
 local function make_Nested_Helper_7(
-    openDialog, validateValue, notify, formatCallback,
-    resolveFailureContext, failureContext, saveThreshold, setButtonState
+    openDialog, writeConfigValue, notify, formatCallback,
+    resolveWritablePath, configFileName, startGathering, setButtonState
 )
     local function Nested_Helper_7()
         local callback = make_Nested_Helper_8(
-            validateValue, notify, formatCallback, resolveFailureContext,
-            failureContext, saveThreshold, setButtonState
+            writeConfigValue, notify, formatCallback, resolveWritablePath,
+            configFileName, startGathering, setButtonState
         )
         openDialog("请输入拉怪的怪物数量阈值（数字）", callback)
     end
@@ -2213,7 +2213,7 @@ local function make_Nested_blacklistTimer(
 end
 
 local function make_Nested_Helper_10(
-    timerState, notify, moduleState, readBlacklistDistance,
+    timerState, notify, moduleState, readBlacklistDistanceConfig,
     openBlacklistDistanceInput, startBlacklistTimer
 )
     local function Nested_Helper_10()
@@ -2225,7 +2225,7 @@ local function make_Nested_Helper_10(
             return true
         end
 
-        local distance = readBlacklistDistance()
+        local distance = readBlacklistDistanceConfig()
         if distance > 0 then
             notify(string.format("开启黑名单功能，距离格子：%d", distance))
             startBlacklistTimer(distance)
@@ -2399,6 +2399,16 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
     local UPVALUE_15, UPVALUE_16, UPVALUE_17, UPVALUE_18, UPVALUE_19 =
         upvalue15, upvalue16, upvalue17, upvalue18, upvalue19
 
+    -- 检查点280：配置闭包的业务别名；不改变原始捕获槽或调用行为。
+    local readBlacklistDistanceConfig = UPVALUE_6
+    local readGatherMonsterCountConfig = UPVALUE_9
+    local writeBlacklistDistanceConfig = UPVALUE_10
+    local resolveConfigPath = UPVALUE_12
+    local blacklistDistancePath = UPVALUE_13
+    local writeGatherMonsterCountConfig = UPVALUE_14
+    local gatherMonsterCountPath = UPVALUE_15
+    local checkConfigFileState = UPVALUE_16
+
     -- PC1-PC3：初始化完成通知。
     UPVALUE_0("插件初始化完成")
 
@@ -2542,20 +2552,20 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
     )
     -- PC245-PC247：child7 Nested_InitGatherMonsters捕获[UP8,UP9]。
     local initGatherCallback = make_Nested_InitGatherMonsters(
-        UPVALUE_8, UPVALUE_9
+        UPVALUE_8, readGatherMonsterCountConfig
     )
 
     -- PC248：child22 Nested_Anonymous仅捕获UP0(PrintLog)；主体已并入上方工厂。fixed_param_count=2，T[0]/T[1]分别对应两个调用实参，T[2]=nil。
     -- PC250-PC258：child11 Nested_Helper_4捕获[R18,UP10,UP11,UP0,UP12,UP13,R16,R15]。
     local nestedAnonymous = make_Nested_Anonymous(UPVALUE_0) -- child22主体已并入；固定参数槽已由检查点235闭合：T[0]=promptText、T[1]=successCallback、T[2]=nil；错误分支的nil调用按原字节码保留。
     local openBlacklistDistanceInput = make_Nested_Helper_4(
-        nestedAnonymous, UPVALUE_10, UPVALUE_11, UPVALUE_0,
-        UPVALUE_12, UPVALUE_13, blacklistTimerCallback, syncButtonState
+        nestedAnonymous, writeBlacklistDistanceConfig, UPVALUE_11, UPVALUE_0,
+        resolveConfigPath, blacklistDistancePath, blacklistTimerCallback, syncButtonState
     ) -- child11 Nested_Helper_4主体已在本文件上方恢复
     -- PC259-PC267：child14 Nested_Helper_7捕获[R18,UP14,UP11,UP0,UP12,UP15,R17,R15]。
     local openGatherThresholdInput = make_Nested_Helper_7(
-        nestedAnonymous, UPVALUE_14, UPVALUE_11, UPVALUE_0,
-        UPVALUE_12, UPVALUE_15, initGatherCallback, syncButtonState
+        nestedAnonymous, writeGatherMonsterCountConfig, UPVALUE_11, UPVALUE_0,
+        resolveConfigPath, gatherMonsterCountPath, initGatherCallback, syncButtonState
     ) -- child14 Nested_Helper_7主体已在本文件上方恢复
 
     -- PC269-PC276：child6捕获[UP2,UP11,UP9,UP0,R20,R17]。
@@ -2565,11 +2575,11 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
     )
     -- PC277-PC282：child2捕获[UP16,UP15,UP11,UP0]。
     local clearMonsterCallback = make_Nested_Helper(
-        UPVALUE_16, UPVALUE_15, UPVALUE_11, UPVALUE_0
+        checkConfigFileState, gatherMonsterCountPath, UPVALUE_11, UPVALUE_0
     )
     -- PC283-PC288：child20捕获[UP16,UP13,UP11,UP0]。
     local clearDistanceCallback = make_Nested_s(
-        UPVALUE_16, UPVALUE_13, UPVALUE_11, UPVALUE_0
+        checkConfigFileState, blacklistDistancePath, UPVALUE_11, UPVALUE_0
     )
     -- PC289-PC295：child1捕获[UP2,UP0,UP17,UP18,UP19]。
     local rewardCallback = make_Nested_SL_2(
@@ -2579,7 +2589,7 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
     local clearBlacklistCallback = make_Nested_ClearBlacklistItems(UPVALUE_0)
     -- PC299-PC306：child18捕获[UP2,UP0,UP1,R19,R16]。
     local blacklistCallback = make_Nested_Helper_10(
-        UPVALUE_2, UPVALUE_0, UPVALUE_1, UPVALUE_6,
+        UPVALUE_2, UPVALUE_0, UPVALUE_1, readBlacklistDistanceConfig,
         openBlacklistDistanceInput, blacklistTimerCallback
     )
     -- PC307-PC312：child8捕获[UP2,UP0,UP1,UP7]。
