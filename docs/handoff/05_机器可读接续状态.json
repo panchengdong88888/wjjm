@@ -19,7 +19,7 @@
       "整理原始VM本身的异常行为和框架文档签名冲突"
     ],
     "next": "完成剩余UI子原型逐项核对，随后做Lua 5.1语法扫描并汇总入口/UI专项审计结论。",
-    "progress": "检查点319：核对root.children[42].children[18] Nested_Helper_10的六项捕获身份。父PC299-PC305传入timerState、PrintLog、featureState(MainLeftBottom.z)、readBlacklistDistanceConfig、openBlacklistDistanceInput、blacklistTimerCallback；源码实参顺序一致。将工厂第三参数从误导性的moduleState改名featureState，内部isBlacklisting状态读写明确落在z表。该原型的定时器句柄清nil使用VM nil序列化占位，已确认。 CSV中Nested_Helper_10的UP[0..5]捕获注释也已按真实父寄存器来源纠正，明确UP[2]=MainLeftBottom.z。"
+    "progress": "检查点319：核对root.children[42].children[18] Nested_Helper_10的六项捕获身份。父PC299-PC305传入timerState、PrintLog、featureState(MainLeftBottom.z)、readBlacklistDistanceConfig、openBlacklistDistanceInput、blacklistTimerCallback；源码实参顺序一致。将工厂第三参数从误导性的moduleState改名featureState，内部isBlacklisting状态读写明确落在z表。该原型的定时器句柄清nil使用VM nil序列化占位，已确认。 CSV中Nested_Helper_10的UP[0..5]捕获注释也已按真实父寄存器来源纠正，明确UP[2]=MainLeftBottom.z。 已将函数状态CSV中Nested_Helper_10的六项捕获说明重写为准确寄存器映射，避免旧注释UP编号错位。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
