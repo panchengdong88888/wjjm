@@ -1015,7 +1015,7 @@ end
 -- 检查点245：根模块PC1-PC412全局导出与模块字段总账（跨区间合并复核）。
 -- PC1-PC85：ENV.MainLeftBottom；ENV["_G"].log（PC45）；ENV.GetMapId；ENV.GetMapName；ENV.PlayerPos；ENV.GetDroppedItems；ENV.MoveTo；ENV.DiuItems；ENV.GetAvailableStoragePage；ENV.GetStorageItemData；ENV.StorageItems；ENV.TakeItems；ENV.PickUpItems。MainLeftBottom.a字段包括version/screenW/screenH/Blocklist/SendHookList/RecvHookList/isHidden/hidebut/LuaSendMsg；另建立b空表、z状态表。
 -- PC86-PC211：复核未发现新的根级全局导出或MainLeftBottom根表字段写入；此区间是局部配置、共享状态和闭包创建。
--- PC212-PC340：ENV.IsInWhitelistMap、ENV.MainLoop、ENV.InitGatherMonsters、ENV.StopGatherMonsters、ENV.Builtsetting、ENV.MoveItemToQuickUse；MainLeftBottom.a.hide/show/destroy及MainLeftBottom.main/blacklist。
+-- PC212-PC340：ENV.IsInWhitelistMap、ENV.MainLoop、ENV.InitGatherMonsters、ENV.StopGatherMonsters、ENV.Builtsetting、ENV.MoveItemToQuickUse；MainLeftBottom.a.hide/show/destroy/blacklist；根表MainLeftBottom.main。
 -- PC341-PC412：MainLeftBottom.a.onDamageMsg；ENV.BlacklistItems；ENV.ClearBlacklistItems；MainLeftBottom.doInit。
 -- 总账将全局导出与模块字段分开统计；局部函数创建不等于导出。ShowLocalNoticeByType、ScheduleOnce、Schedule在已审PC段未发现根级导出。
 -- 完整机器可读明细见docs/handoff/12_根模块闭包装配表.json的root_complete_module_ledger。
@@ -2020,7 +2020,7 @@ local function onDamageMsg(arg1, messageJson)
     if string.find(attackerName, "分身", 1, true) then return end
     blacklistState.lastAttacker = {id=attackerID,name=attackerName}
 end
-MainLeftBottom.a.onDamageMsg = onDamageMsg
+a.onDamageMsg = onDamageMsg
 
 -- PC360-PC362：T[57]写入此闭包；BlacklistPlayerDetection捕获该live cell当前值。
 -- 包装回调先从MainLeftBottom.a读取onDamageMsg并pcall，再无论回调结果如何返回原消息处理器结果。

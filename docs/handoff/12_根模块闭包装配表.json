@@ -7668,7 +7668,8 @@
       "检查点315：doInit_UI的T[7]在PC131由ipairs第三返回值初始化，但PC143泛型for迭代更新后保留最后索引4；PC180/183调用使用该最终值4。",
       "检查点316：AccountIDValidation PC55清空R4后才创建等待闭包，PC59捕获到的UP0为nil；validationResult只用于前面的日志。等待回调PC16对应SL:UnSchedule(nil)，UP1捕获PrintLog。",
       "检查点317：root.children[42].children[9] PC42-PC50对每个成功创建的按钮均无条件注册addOnClickEvent；toggle仅控制toggled=false初始化。点击闭包先执行buttonHandlers[key]，再对非toggle项return；非toggle按钮动作仍需响应。",
-      "检查点317：doInit_UI PC100调用ENV.Builtsetting；child16 PC13调用ENV.MoveItemToQuickUse；reward child root/43/2/1 PC13调用ENV.LuaSendMsg；StopGatherMonsters/InitGatherMonsters子原型亦从ENV读取全局函数。避免在源码中误绑定同名local函数。"
+      "检查点317：doInit_UI PC100调用ENV.Builtsetting；child16 PC13调用ENV.MoveItemToQuickUse；reward child root/43/2/1 PC13调用ENV.LuaSendMsg；StopGatherMonsters/InitGatherMonsters子原型亦从ENV读取全局函数。避免在源码中误绑定同名local函数。",
+      "检查点318：PCallHelper(root/18)先GetWritablePath(arg0)再writeStringToFile(arg1,path)；AnonymousHelper_32(root/33)与AnonymousHelper_54(root/55)均按(firstArg,固定文件路径)转发，主源码参数顺序一致，先前待复核标记关闭。"
     ]
   },
   "root_assembly_checkpoint_246": {
