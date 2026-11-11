@@ -1555,6 +1555,137 @@ rootEnvironment.DiuItems = DiuItems
 rootEnvironment.TakeItems = TakeItems
 rootEnvironment.PickUpItems = PickUpItems
 
+-- ============================================================================
+-- 仓库入口：GetAvailableStoragePage / StorageItems
+-- ============================================================================
+local function GetAvailableStoragePage()
+    local storageProxy = NPCStorageProxy
+    if not storageProxy then
+        PrintLog("仓库代理未初始化")
+        return
+    end
+    local maxPage = storageProxy:GetMaxPage()
+    for page = 1, maxPage do
+        local pageData = storageProxy:GetStorageDataByPage(page)
+        local currentCount = pageData and #pageData or 0
+        local pageCapacity = GUIDefine.STORAGE_PER_PAGE_MAX
+        if not pageCapacity then pageCapacity = global.MMO.NPC_STORAGE_MAX_PAGE end
+        local openSize = storageProxy:GetOpenSize()
+        local remainingOpenSize = openSize - (page - 1) * pageCapacity
+        local pageLimit = remainingOpenSize
+        if pageCapacity < remainingOpenSize then pageLimit = pageCapacity end
+        if pageLimit > 0 and pageLimit > currentCount then return page end
+    end
+    return
+end
+
+local function StorageItems()
+    if z.isStoring then return end
+    z.isStoring = true
+    if not GetAvailableStoragePage() then
+        PrintLog("仓库已满,无法存仓")
+        z.isStoring = false
+        return
+    end
+    local storageProxy = NPCStorageProxy
+    local maxPage = storageProxy:GetMaxPage()
+    local pageCapacity = GUIDefine.STORAGE_PER_PAGE_MAX
+    if not pageCapacity then pageCapacity = global.MMO.NPC_STORAGE_MAX_PAGE end
+    local openSize = storageProxy:GetOpenSize()
+    local storedPageData = {}
+    for page = 1, maxPage do
+        local pageData = storageProxy:GetStorageDataByPage(page)
+        storedPageData[page] = pageData and #pageData or 0
+    end
+    local function findAvailablePage()
+        for page = 1, maxPage do
+            local remainingOpenSize = openSize - (page - 1) * pageCapacity
+            local pageLimit = remainingOpenSize
+            if pageCapacity < remainingOpenSize then pageLimit = pageCapacity end
+            if pageLimit > 0 and pageLimit > storedPageData[page] then return page end
+        end
+        return
+    end
+
+    local specialNames = {
+        "金刚石","玄铁","真金矿石","BOSS头骨","转生证明","魔神石",
+        "神装碎片","涅槃石","宝石精魄","天神令","神彩","金罡",
+        "至尊","圣皇","凤凰","麻痹戒指","复活戒指","切割神戒"
+    }
+    local filterNames = {"待定"}
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then
+        PrintLog("背包物品为空")
+        z.isStoring = false
+        return
+    end
+    local processedMakeIndexes = {}
+    local queuedCount = 0
+    local function isOutputted(item, itemText)
+        if not string.find(itemText, "聚灵珠", 1, true) then return true end
+        if not z.isOutputted then
+            z.isOutputted = true
+            ShowLocalNoticeByType(item)
+            local info = "聚灵珠信息: " .. tostring(item.Name)
+                .. " StdMode=" .. tostring(item.StdMode)
+                .. " Dura=" .. tostring(item.Dura)
+                .. " DuraMax=" .. tostring(item.DuraMax)
+            ShowLocalNoticeByType(info)
+        end
+        if not item.Dura then return false end
+        if not item.DuraMax then return false end
+        return item.Dura <= item.DuraMax
+    end
+
+    for _, item in pairs(bagData) do
+        local makeIndex = item.MakeIndex
+        if makeIndex and not processedMakeIndexes[makeIndex] then
+            local isBound = SL:GetMetaValue("ITEM_IS_BIND", item)
+            if not isBound then
+                for _, filterName in ipairs(filterNames) do
+                    if string.find(item.Name, filterName, 1, true) then
+                        local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", item.Name)
+                        SL:UseItemByIndex(itemIndex)
+                        ShowLocalNoticeByType("使用: " .. item.Name)
+                    end
+                end
+                local matchedSpecialName = false
+                local shouldStore = true
+                for _, specialName in ipairs(specialNames) do
+                    if string.find(item.Name, specialName, 1, true) then
+                        matchedSpecialName = true
+                        if not isOutputted(item, specialName) then
+                            shouldStore = false
+                            break
+                        end
+                    end
+                end
+                if matchedSpecialName and shouldStore then
+                    local targetPage = findAvailablePage()
+                    if not targetPage then
+                        ShowLocalNoticeByType("仓库已满,无法存仓")
+                        z.isStoring = false
+                        return
+                    end
+                    ShowLocalNoticeByType("存: " .. item.Name)
+                    LuaSendMsg(global.MsgType.MSG_CS_STORAGE_STORE_REQUEST,
+                        999999999,item.MakeIndex,targetPage,0,item.Name,string.len(item.Name))
+                    processedMakeIndexes[makeIndex] = true
+                    storedPageData[targetPage] = storedPageData[targetPage] + 1
+                    queuedCount = queuedCount + 1
+                end
+            end
+        end
+    end
+    z.isStoring = false
+    if queuedCount > 0 then
+        ShowLocalNoticeByType("存仓完成, 共存入 " .. tostring(queuedCount) .. " 件物品")
+    end
+end
+
+rootEnvironment.GetAvailableStoragePage = GetAvailableStoragePage
+rootEnvironment.StorageItems = StorageItems
+
 local function CallRootFunction(name, ...)
     local fn = rootEnvironment[name]
     if type(fn) ~= "function" then
