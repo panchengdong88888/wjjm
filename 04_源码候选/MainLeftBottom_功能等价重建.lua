@@ -1611,17 +1611,27 @@ local function AccountIDValidation()
         "6324648", "39770358", "3548598", "1957840929", "1488903257",
         "1585201915", "1627987432", "1580027021", "1304755149"
     }
-    local validationResult = false
-    for _, allowedID in ipairs(allowedAccountIDs) do
-        if tostring(accountID) == tostring(allowedID) then
-            validationResult = true
-            PrintLog("[提示] 账号ID在允许列表中，功能已开启")
-            break
+    -- root.children[55].children[1]：账号列表匹配子闭包。
+    -- 命中时记录局部成功提示并返回true；未命中时通过通知回调显示动态失败信息。
+    local function Nested_ID(checkAccountID)
+        for _, allowedID in ipairs(allowedAccountIDs) do
+            if tostring(checkAccountID) == tostring(allowedID) then
+                PrintLog("[提示] 账号ID在允许列表中，功能已开启")
+                return true
+            end
         end
+
+        ShowLocalNoticeByType(
+            "账号不存在，功能已限制，账号ID：" .. tostring(checkAccountID)
+        )
+        return false
     end
-    if not validationResult then
-        PrintLog("账号不存在，功能已限制，账号ID：" .. tostring(accountID))
-        ShowLocalNoticeByType("[验证失败] 账号ID未在允许列表中")
+
+    local validationResult = Nested_ID(accountID)
+    if validationResult then
+        PrintLog("[验证成功] 账号ID验证通过")
+    else
+        PrintLog("[验证失败] 账号ID未在允许列表中")
     end
     local scheduledCallback = function()
         local mainProperty = MainProperty

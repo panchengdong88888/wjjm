@@ -23,10 +23,10 @@
 
 ## 3. 当前接续位置
 
-- 最近检查点：**309**
-- 下一检查点：**310**
-- 当前优先任务：复核PC275-PC279的AccountIDValidation主体、嵌套回调与MainLeftBottom.main字段挂接。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
-- 检查点309已逐项核对root.children[37]/[10]/[40]三个UI控制函数：定时器取消与nil清理、GUI窗口关闭、按钮可见性循环、hidebut隐藏/清空，以及a/timerState/b捕获顺序均与主源码一致；根PC261-PC274创建闭包并在PC265/269/274挂接hide/show/destroy正确，无源码改动。检查点308已核对MoveItemToQuickUse的133条指令，主体及PC259-PC260全局导出与主源码一致。当前容器未找到Lua解释器，尚未执行Lua 5.1语法检查或游戏运行验证。
+- 最近检查点：**310**
+- 下一检查点：**311**
+- 当前优先任务：继续复核PC389-PC412的doInit_UI界面初始化主体、按钮构建与MainLeftBottom.doInit入口挂接。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
+- 检查点310修正AccountIDValidation：Nested_ID命中时记录局部成功提示并返回true，未命中时通过ShowLocalNoticeByType输出含UID的动态失败文本并返回false；父函数按返回值分别记录验证成功/失败状态日志。补齐原候选遗漏的父级状态日志，并纠正失败通知的调用位置/消息；PC276捕获PrintLog与ShowLocalNoticeByType、PC279写入main字段及0.5秒Schedule调用与VM一致。检查点309核对DestroyUI/SetButtonVisibilityState/ShowHideAllButtons及字段挂接一致；检查点308核对MoveItemToQuickUse主体与导出一致。当前未执行Lua 5.1语法检查或游戏运行验证。
 - PC280-PC412 的根级创建/捕获/导出/入口挂接已静态核对；PC1-PC211已修正ResetGatherMonsterData的清目标/等待状态复位顺序，FindMonsterInCurrViewField主体与27条物理指令恢复稿一致。检查点300已修正MainLoop等待归属变更到期后的FindMonsterInCurrViewField调用实参；检查点301已静态核对PC212-PC255导出，并补充MainLoop数值for循环游标语义注释；检查点302核对PC1-PC85闭包导出及捕获边界，修正物品/仓库函数对根级函数的错误词法引用；检查点303核对PC86-PC167配置、奖励表及UI捕获，明确奖励回调的18000取模参数。当前容器未发现Lua解释器命令，尚未执行Lua 5.1语法检查。后续仍以同一唯一主源码为准。
 
 ## 4. 源码文件职责
