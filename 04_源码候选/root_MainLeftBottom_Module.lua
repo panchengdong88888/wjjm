@@ -286,6 +286,125 @@ MainLeftBottom.blacklist = blacklistState
 local blacklistDistanceConfigFile = "blacklist_distance.txt"
 local gatherMonsterCountConfigFile = "gather_monster_count.txt"
 
+----------------------------------------------------------------
+-- 检查点279：配置文件读写闭包链（功能等价复刻）
+--
+-- 对应根原型：
+--   root.children[2]  GetWritablePath
+--   root.children[9]  ReadNumericConfig
+--   root.children[17] PCallHelper
+--   root.children[0]  FileExistCheck_pcall_wrapper
+--   root.children[49] AnonymousHelper_49
+--   root.children[32] AnonymousHelper_32
+--   root.children[33] AnonymousHelper_33
+--   root.children[54] AnonymousHelper_54
+--
+-- 直接使用词法闭包表达原捕获关系，不再通过 make_xxx 工厂二次包装。
+-- 保留原始 FileUtils 接收者、参数次序、pcall 分支及返回值传递。
+----------------------------------------------------------------
+
+-- root.children[2]：取得可写目录并拼接首个可变参数。
+-- 字节码 vararg_flag=1；只读取第一个可变参数，忽略其余参数。
+local function GetWritablePath(...)
+    local path = ...
+    local fileUtils = cc.FileUtils:getInstance()
+    local writablePath = fileUtils:getWritablePath()
+    return writablePath .. path
+end
+
+-- root.children[9]：读取仅包含无符号十进制数字的配置文件。
+-- 不存在、读取结果非字符串、内容不匹配时均返回 nil。
+local function ReadNumericConfig(fileName)
+    local fileUtils = cc.FileUtils:getInstance()
+    local fullPath = GetWritablePath(fileName)
+
+    if not fileUtils:isFileExist(fullPath) then
+        return nil
+    end
+
+    local content = fileUtils:getStringFromFile(fullPath)
+    if type(content) ~= "string" then
+        return nil
+    end
+
+    local normalized = string.gsub(content, "%\s", "")
+    local digits = string.match(normalized, "^%d+$")
+    if digits then
+        return tonumber(normalized)
+    end
+
+    return nil
+end
+
+-- root.children[17]：将文本写入由GetWritablePath解析出的文件路径。
+-- 第一个参数是写入内容；第二个参数是路径参数。
+-- 子闭包把GetWritablePath(arg0)的全部返回值转发给writeStringToFile。
+-- pcall失败或写入结果严格等于false时返回false；其他成功结果（含nil）返回true。
+local function PCallHelper(arg1, arg0, ...)
+    local function Nested_tostring()
+        local fileUtils = cc.FileUtils:getInstance()
+        local payload = tostring(arg1)
+        return fileUtils:writeStringToFile(
+            payload,
+            GetWritablePath(arg0)
+        )
+    end
+
+    local ok, result = pcall(Nested_tostring, ...)
+    if not ok or result == false then
+        return false
+    end
+
+    return true
+end
+
+-- root.children[0]：检查文件；不存在时尝试删除，再次检查是否已不存在。
+-- 返回值始终为（成功状态, 解析后的完整路径）。
+local function FileExistCheck_pcall_wrapper(path, ...)
+    local fileUtils = cc.FileUtils:getInstance()
+    local resolvedPath = GetWritablePath(path)
+
+    if fileUtils:isFileExist(resolvedPath) then
+        return true, resolvedPath
+    end
+
+    local function Nested_removeFile()
+        fileUtils:removeFile(resolvedPath)
+    end
+
+    local removeSucceeded = pcall(Nested_removeFile)
+    if not removeSucceeded then
+        return false, resolvedPath
+    end
+
+    return not fileUtils:isFileExist(resolvedPath), resolvedPath
+end
+
+-- root.children[49]：固定读取 blacklist_distance.txt，原样返回读取函数的结果。
+local function AnonymousHelper_49()
+    return ReadNumericConfig(blacklistDistanceConfigFile)
+end
+
+-- root.children[32]：固定写入 blacklist_distance.txt，转发首个显式参数。
+local function AnonymousHelper_32(firstArg)
+    return PCallHelper(blacklistDistanceConfigFile, firstArg)
+end
+
+-- root.children[33]：固定读取 gather_monster_count.txt。
+local function AnonymousHelper_33()
+    return ReadNumericConfig(gatherMonsterCountConfigFile)
+end
+
+-- root.children[54]：固定写入 gather_monster_count.txt，转发首个显式参数。
+local function AnonymousHelper_54(firstArg)
+    return PCallHelper(gatherMonsterCountConfigFile, firstArg)
+end
+
+----------------------------------------------------------------
+-- 检查点279配置链结束；后续PC316-PC412继续使用同一词法作用域。
+----------------------------------------------------------------
+
+
 -- PC297：创建root.children[2] / GetWritablePath（无捕获）。
 -- PC298-PC299：创建root.children[9] / ReadNumericConfig，捕获R44=GetWritablePath。
 -- PC300-PC301：创建root.children[17] / PCallHelper，捕获同一R44；
