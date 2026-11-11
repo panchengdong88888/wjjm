@@ -1,12 +1,13 @@
 --[[
 MainLeftBottom(2).lua 明文恢复整合稿（静态候选）
-生成：2026-11-11 | 功能等价复刻 checkpoint 281（入口模块/UI优先）
+生成：2026-11-11 | 功能等价复刻 checkpoint 284（入口模块/UI优先）
 用途：按110原型索引和PC级证据整合普通Lua候选、根模块状态及58个直接子闭包。
 当前状态：109/110原型完整静态恢复；根直接闭包58/58已接入源码层装配；PC43-PC85、PC181-PC258及PC297-PC388闭包已按VM创建顺序整合；检查点261修正采集状态表跨词法块引用；检查点262按寄存器生命周期重建PC1-PC42初始化；检查点263显式恢复PC43-PC85的T[4..8]创建、覆写、捕获及导出顺序；检查点264恢复PC86-PC211采集闭包及T[14..22]共享cell注入；检查点265补齐PC212-PC296 UI闭包校验、模块字段身份及PC275全局模块表重读；检查点266按T[44..51]恢复PC297-PC315配置包装链并用于doInit_UI捕获注入；检查点267复核PC350-PC388黑名单闭包对象身份、T[57] live cell及全局导出落点；检查点268核对PC389 T[59]模块表重读与PC411写入目标；检查点269逐槽核对doInit_UI的20项捕获并将UP[8]修正为gatherConfig；检查点270清理已被后续版本覆盖的重复源码词法块，纠正doInit_UI来源标记；检查点271保留MainLoop共享cell工厂版本，删除两个普通值旧草稿，并清理root22重复注册；检查点272全量核对53个源码注册键唯一、37个字面sourceFunction调用全部命中已注册来源与导出符号，22个bindDirect引用亦全部命中；检查点273增加PC1-PC42根表/初始table身份断言；检查点274强化PC43-PC85的LuaSendMsg必需闭包保护与寄存器导出身份；检查点275核对58个根直接闭包均有fail-fast必需性校验。
 结构索引：docs/handoff/13_MainLeftBottom_原型结构树.md（110/110原型父子树；调用图仍需独立恢复）。
 检查点279：已完成11个基础辅助函数与8个配置读写辅助函数的功能等价复刻，主体与绑定见检查点278/279审计；此前PC86-PC315共享cell/闭包参数/模块字段链静态复核见docs/audit/检查点277_PC86-PC315共享cell与字段链复核.md；PC275/389原ENV环境访问曾由_G近似表示；检查点283已改为统一chunk environment引用。
 检查点281：按用户要求调整顺序，先处理根入口模块MainLeftBottom_Module（PC1-PC412）和UI初始化doInit_UI（root.children[42]，419条指令/23个子原型）；检查点282纠正GetWritablePath与ReadNumericConfig固定参数入口，暂缓背包/仓库。UI工厂20项捕获参数改为业务语义命名；按钮快捷栏回调改用捕获的printLog，而不是未确认的全局PrintLog；调用位置仍按原20槽顺序传参，未改变捕获关系。
 检查点283：按原始OP_137语义区分当前chunk的ENV与ENV["_G"]；PC2/4/31/34/275/389及PC55-PC85、PC213、PC237、PC246、PC255、PC258、PC260、PC382、PC388均通过同一rootEnvironment处理；PC44读取rootEnvironment._G后，PC45只向该表写log。
+检查点284：主恢复稿同步第六十三批UI候选；doInit_UI改为20个具备业务含义的捕获参数名，PC131-PC145快捷栏日志回调使用捕获的printLog；PC390-PC410实参顺序不变；修正resTimer的dump nil注释。仅静态核对，未运行时验证。
 重要：
 - 根模块初始化与闭包创建仍采用明确标注的恢复适配结构，不冒充原作者逐字源码。
 - 所有函数体仍按原型路径保留；根装配按OP_387捕获顺序绑定共享cell和状态表。
@@ -1900,7 +1901,7 @@ local function make_Nested_UnSchedule(printLog, timerState, moduleState)
 
         if timerState.resTimer then
             SL:UnSchedule(timerState.resTimer)
-            -- VM dump中的['unknown',2]尚未确认等价nil；保留占位。
+            -- 检查点225已确认该dump标记是nil的序列化占位；清理定时器句柄。
             timerState.resTimer = nil
         end
 
@@ -2405,39 +2406,20 @@ local function make_Nested_ffffff(buttonConfigs, buttonByKey)
     return Nested_ffffff
 end
 
-local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, upvalue5, upvalue6, upvalue7, upvalue8, upvalue9, upvalue10, upvalue11, upvalue12, upvalue13, upvalue14, upvalue15, upvalue16, upvalue17, upvalue18, upvalue19)
+local function make_doInit_UI(printLog, featureState, timerState, uiState, buttonMap, blacklistState, readBlacklistDistanceConfig, schedule, gatherConfig, readGatherMonsterCountConfig, writeBlacklistDistanceConfig, showLocalNotice, getWritablePath, blacklistDistanceConfigFile, writeGatherMonsterCountConfig, gatherMonsterCountConfigFile, checkConfigFileState, capturedValue17, rewardEntries, capturedValue19)
     local function doInit_UI()
     -- PC390在root创建本闭包时明确捕获20个父级T寄存器。
     -- UP[0..19]依次对应父root的T[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。
-    -- 可直接确认的身份：UP[0]=PrintLog函数；UP[1]=MainLeftBottom.z功能状态表；
-    -- UP[3]=MainLeftBottom.a UI状态表；PC389模块根表读取写入独立T[59]，不覆盖T[2]/T[0]；
-    -- UP[2]是root PC42创建的独立状态表，本函数在其中读写cruiseTimer；
+    -- 可直接确认的身份：UP[0]=PrintLog；UP[1]=MainLeftBottom.z功能状态表；
+    -- UP[2]=root PC42创建的timerState；UP[3]=MainLeftBottom.a UI状态表；
     -- UP[5]是root创建并挂到MainLeftBottom.blacklist的黑名单状态表；
     -- UP[8]是含GATHER_THRESHOLD/CHECK_INTERVAL/ATTACK_WAIT_TIME的配置表；
     -- UP[11]是root PC46创建的ShowLocalNoticeByType闭包；
     -- UP[13]/UP[15]分别是黑名单距离/拉怪数量配置文件路径；
-    -- UP[17]=math.floor；UP[19]=0.2。其余槽位保持编号，不猜业务名称。
-    local UPVALUE_0, UPVALUE_1, UPVALUE_2, UPVALUE_3, UPVALUE_4 =
-        upvalue0, upvalue1, upvalue2, upvalue3, upvalue4
-    local UPVALUE_5, UPVALUE_6, UPVALUE_7, UPVALUE_8, UPVALUE_9 =
-        upvalue5, upvalue6, upvalue7, upvalue8, upvalue9
-    local UPVALUE_10, UPVALUE_11, UPVALUE_12, UPVALUE_13, UPVALUE_14 =
-        upvalue10, upvalue11, upvalue12, upvalue13, upvalue14
-    local UPVALUE_15, UPVALUE_16, UPVALUE_17, UPVALUE_18, UPVALUE_19 =
-        upvalue15, upvalue16, upvalue17, upvalue18, upvalue19
-
-    -- 检查点280：配置闭包的业务别名；不改变原始捕获槽或调用行为。
-    local readBlacklistDistanceConfig = UPVALUE_6
-    local readGatherMonsterCountConfig = UPVALUE_9
-    local writeBlacklistDistanceConfig = UPVALUE_10
-    local resolveConfigPath = UPVALUE_12
-    local blacklistDistancePath = UPVALUE_13
-    local writeGatherMonsterCountConfig = UPVALUE_14
-    local gatherMonsterCountPath = UPVALUE_15
-    local checkConfigFileState = UPVALUE_16
+    -- UP[17]=root PC90计算所得18000；UP[19]=0.2。其余槽位保持编号，不猜业务名称。
 
     -- PC1-PC3：初始化完成通知。
-    UPVALUE_0("插件初始化完成")
+    printLog("插件初始化完成")
 
     -- PC4-PC17：货币与资源名称常量。
     local moneyNames = {"元宝", "绑定元宝", "灵符", "绑定灵符"}
@@ -2446,19 +2428,19 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
     }
 
     -- PC19-PC58：时间状态初始化；os.time/os.date 均在 pcall 路径中调用。
-    UPVALUE_1.initTime = 0
-    UPVALUE_1.initTimeStr = "--"
+    featureState.initTime = 0
+    featureState.initTimeStr = "--"
     if os and os.time and os.date and pcall then
         local okTime, now = pcall(os.time)
         if okTime and now then
-            UPVALUE_1.initTime = now
+            featureState.initTime = now
             local okDate, dateText = pcall(os.date, "%Y-%m-%d %H:%M:%S", now)
             if okDate and dateText then
-                UPVALUE_1.initTimeStr = dateText
+                featureState.initTimeStr = dateText
             end
         end
     end
-    UPVALUE_1.initSnapshot = {}
+    featureState.initSnapshot = {}
 
     -- PC59-PC99：MoneyProxy及两组名称循环，建立资源数量初始快照。
     local moneyProxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
@@ -2469,7 +2451,7 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
                 local count = moneyProxy:GetMoneyCountById(id)
                 -- PC82-PC85：false和nil均进入0回退分支。
                 if not count then count = 0 end
-                UPVALUE_1.initSnapshot[name] = count
+                featureState.initSnapshot[name] = count
             end
         end
     end
@@ -2478,7 +2460,7 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
     -- 第二组是背包资源，不走MoneyProxy：调用无捕获child0 Nested_find(name)，
     -- 并以资源名称作为initSnapshot键；BAG_DATA缺失时返回0。
     for _, name in ipairs(resourceNames) do
-        UPVALUE_1.initSnapshot[name] = Nested_find(name)
+        featureState.initSnapshot[name] = Nested_find(name)
     end
 
     -- PC100-PC101。
@@ -2506,7 +2488,7 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
                 if itemIndex then
                     local succeeded, message =
                         MoveItemToQuickUse(itemIndex, slotConfig.slot)
-                    PrintLog(message)
+                    printLog(message)
                     if succeeded then
                         return
                     end
@@ -2517,17 +2499,17 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
     end
 
     -- PC146-PC166：替换cruiseTimer并建立周期任务。
-    if UPVALUE_2.cruiseTimer then
-        SL:UnSchedule(UPVALUE_2.cruiseTimer)
-        UPVALUE_2.cruiseTimer = nil
+    if timerState.cruiseTimer then
+        SL:UnSchedule(timerState.cruiseTimer)
+        timerState.cruiseTimer = nil
     end
     -- PC145清空父帧T[5]；PC160-PC163随后以该cell创建child12。
     -- 检查点111已闭合：R5是同日发送标记，另捕获UP[3]发送对象、UP[0]通知回调。
     local lastSentDate = nil
     local dailyCallback = make_Nested_04d_02d_02d(
-        lastSentDate, UPVALUE_3, UPVALUE_0
+        lastSentDate, uiState, printLog
     )
-    UPVALUE_2.cruiseTimer = SL:Schedule(dailyCallback, 1.0)
+    timerState.cruiseTimer = SL:Schedule(dailyCallback, 1.0)
 
     -- PC181-PC195：GUI.Attach_UITop调用实参物理来源未闭合。
     -- 当前草稿把调用错误写成七个nil实参；检查点208依据OP_358/OP_068调用展开规则纠正：
@@ -2571,69 +2553,69 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
     }
 
     -- PC236-PC337：按实际父帧捕获顺序建立子闭包工厂。
-    local syncButtonState = make_Nested_ffffff(buttonGroups, UPVALUE_4)
+    local syncButtonState = make_Nested_ffffff(buttonGroups, buttonMap)
 
     -- PC239-PC244：child17 Nested_blacklistTimer捕获[UP5,UP6,UP2,UP7,UP0]。
     local blacklistTimerCallback = make_Nested_blacklistTimer(
-        UPVALUE_5, UPVALUE_6, UPVALUE_2, UPVALUE_7, UPVALUE_0
+        blacklistState, readBlacklistDistanceConfig, timerState, schedule, printLog
     )
     -- PC245-PC247：child7 Nested_InitGatherMonsters捕获[UP8,UP9]。
     local initGatherCallback = make_Nested_InitGatherMonsters(
-        UPVALUE_8, readGatherMonsterCountConfig
+        gatherConfig, readGatherMonsterCountConfig
     )
 
-    -- PC248：child22 Nested_Anonymous仅捕获UP0(PrintLog)；主体已并入上方工厂。fixed_param_count=2，T[0]/T[1]分别对应两个调用实参，T[2]=nil。
+    -- PC248：child22 Nested_Anonymous仅捕获UP0(PrintLog)；检查点235确认固定参数为promptText/successCallback，分别映射T[0]/T[1]，T[2]=nil。
     -- PC250-PC258：child11 Nested_Helper_4捕获[R18,UP10,UP11,UP0,UP12,UP13,R16,R15]。
-    local nestedAnonymous = make_Nested_Anonymous(UPVALUE_0) -- child22主体已并入；固定参数槽已由检查点235闭合：T[0]=promptText、T[1]=successCallback、T[2]=nil；错误分支的nil调用按原字节码保留。
+    local nestedAnonymous = make_Nested_Anonymous(printLog) -- child22固定参数映射已由检查点235闭合；Helper_4/Helper_7分别传入(promptText, callback)，T[2]=nil。
     local openBlacklistDistanceInput = make_Nested_Helper_4(
-        nestedAnonymous, writeBlacklistDistanceConfig, UPVALUE_11, UPVALUE_0,
-        resolveConfigPath, blacklistDistancePath, blacklistTimerCallback, syncButtonState
+        nestedAnonymous, writeBlacklistDistanceConfig, showLocalNotice, printLog,
+        getWritablePath, blacklistDistanceConfigFile, blacklistTimerCallback, syncButtonState
     ) -- child11 Nested_Helper_4主体已在本文件上方恢复
     -- PC259-PC267：child14 Nested_Helper_7捕获[R18,UP14,UP11,UP0,UP12,UP15,R17,R15]。
     local openGatherThresholdInput = make_Nested_Helper_7(
-        nestedAnonymous, writeGatherMonsterCountConfig, UPVALUE_11, UPVALUE_0,
-        resolveConfigPath, gatherMonsterCountPath, initGatherCallback, syncButtonState
+        nestedAnonymous, writeGatherMonsterCountConfig, showLocalNotice, printLog,
+        getWritablePath, gatherMonsterCountConfigFile, initGatherCallback, syncButtonState
     ) -- child14 Nested_Helper_7主体已在本文件上方恢复
 
     -- PC269-PC276：child6捕获[UP2,UP11,UP9,UP0,R20,R17]。
     local stopGatherCallback = make_Nested_StopGatherMonsters(
-        UPVALUE_2, UPVALUE_11, UPVALUE_9, UPVALUE_0,
+        timerState, showLocalNotice, readGatherMonsterCountConfig, printLog,
         openGatherThresholdInput, initGatherCallback
     )
     -- PC277-PC282：child2捕获[UP16,UP15,UP11,UP0]。
     local clearMonsterCallback = make_Nested_Helper(
-        checkConfigFileState, gatherMonsterCountPath, UPVALUE_11, UPVALUE_0
+        checkConfigFileState, gatherMonsterCountConfigFile, showLocalNotice, printLog
     )
     -- PC283-PC288：child20捕获[UP16,UP13,UP11,UP0]。
     local clearDistanceCallback = make_Nested_s(
-        checkConfigFileState, blacklistDistancePath, UPVALUE_11, UPVALUE_0
+        checkConfigFileState, blacklistDistanceConfigFile, showLocalNotice, printLog
     )
     -- PC289-PC295：child1捕获[UP2,UP0,UP17,UP18,UP19]。
     local rewardCallback = make_Nested_SL_2(
-        UPVALUE_2, UPVALUE_0, UPVALUE_17, UPVALUE_18, UPVALUE_19
+        timerState, printLog, capturedValue17, rewardEntries, capturedValue19
     )
     -- PC296-PC298：child13捕获UP0。
-    local clearBlacklistCallback = make_Nested_ClearBlacklistItems(UPVALUE_0)
+    local clearBlacklistCallback = make_Nested_ClearBlacklistItems(printLog)
     -- PC299-PC306：child18捕获[UP2,UP0,UP1,R19,R16]。
     local blacklistCallback = make_Nested_Helper_10(
-        UPVALUE_2, UPVALUE_0, UPVALUE_1, readBlacklistDistanceConfig,
+        timerState, printLog, featureState, readBlacklistDistanceConfig,
         openBlacklistDistanceInput, blacklistTimerCallback
     )
     -- PC307-PC312：child8捕获[UP2,UP0,UP1,UP7]。
     local storageCallback = make_Nested_SL_3(
-        UPVALUE_2, UPVALUE_0, UPVALUE_1, UPVALUE_7
+        timerState, printLog, featureState, schedule
     )
     -- PC313-PC318：child19捕获[UP2,UP0,UP1,UP7]。
     local takeCallback = make_Nested_TakeItems(
-        UPVALUE_2, UPVALUE_0, UPVALUE_1, UPVALUE_7
+        timerState, printLog, featureState, schedule
     )
     -- PC319-PC323：child10捕获[UP2,UP0,UP7]。
     local pickupCallback = make_Nested_shiquTimer(
-        UPVALUE_2, UPVALUE_0, UPVALUE_7
+        timerState, printLog, schedule
     )
     -- PC324-PC329：child21捕获[UP2,UP0,UP1,UP7]。
     local dropCallback = make_Nested_dropTimer(
-        UPVALUE_2, UPVALUE_0, UPVALUE_1, UPVALUE_7
+        timerState, printLog, featureState, schedule
     )
 
     local buttonHandlers = {
@@ -2647,7 +2629,7 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
         takebut = takeCallback,
         shiqubut = pickupCallback,
         diuqibut = dropCallback,
-        moneybut = make_Nested_FFFF00(UPVALUE_3, UPVALUE_0, UPVALUE_2, UPVALUE_1), -- child3；父工厂及刷新/行构造依赖已并入本文件
+        moneybut = make_Nested_FFFF00(uiState, printLog, timerState, featureState), -- child3；父工厂及刷新/行构造依赖已并入本文件
         xiaotuibut = Nested_OnGameLeaveWorld,
     }
     -- PC338-PC345：创建child9工厂闭包，捕获顺序为：
@@ -2655,7 +2637,6 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
     -- UP[4]=buttonMap，T[21]=buttonHandlers。其三个显式参数为config/列索引/行偏移。
     local xBase = miniChatRight - 10
     local yBase = miniChatY + 1
-    local buttonMap = UPVALUE_4
 
     local function createButton(config, columnIndex, rowOffset)
         local x = xBase - 85 * columnIndex
@@ -2720,7 +2701,7 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
         GUI:Button_setTitleFontSize(hideButton, 18.0)
         GUI:Button_setTitleFontName(hideButton, "res/public/kaiti2.ttf")
         -- child15捕获[UP3,UP0]：模块UI状态对象与通知回调。
-        GUI:addOnClickEvent(hideButton, make_Nested_Helper_9(UPVALUE_3, UPVALUE_0))
+        GUI:addOnClickEvent(hideButton, make_Nested_Helper_9(uiState, printLog))
     end
 end
 return doInit_UI
