@@ -23,10 +23,10 @@
 
 ## 3. 当前接续位置
 
-- 最近检查点：**313**
-- 下一检查点：**314**
+- 最近检查点：**314**
+- 下一检查点：**315**
 - 当前优先任务：继续完成入口与UI链全量静态复核，范围为root PC1-PC412、AccountIDValidation（root.children[55]）及doInit_UI（root.children[42]）和全部23个直接子原型。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
-- 检查点313进一步纠正T[0]=MainLeftBottom.a状态表：PC294实际写入a.blacklist，PC359实际写入a.onDamageMsg；InstallDamageHook子闭包捕获a与原消息处理器，读取a.onDamageMsg后pcall，安装包装器后将当前messageHandlers[damageMessageType]写入gameMapController.__ylwHookedOrigin。此前主源码把blacklist/onDamageMsg挂到根表、回调从gameMapController读取onDamageMsg、幂等标记写错对象，现均按VM修正。检查点312已将hide/show/destroy归属a；检查点311补齐uiState.hidebut赋值，并标注UnSchedule(validationResult)与SL:Schedule(0,callback,scheduleContext)的文档契约疑点。当前未执行Lua 5.1语法检查或游戏运行验证。
+- 检查点314同步修正机器账本中的对象层级：模块根表直接字段为a/b/z/main/doInit；a状态表包含hide/show/destroy/blacklist/onDamageMsg等。PC265/269/274写入a.hide/show/destroy，PC294写入a.blacklist，PC359写入a.onDamageMsg；PC360 InstallDamageHook UP0=T0=a，PC368 BlacklistPlayerDetection UP0=T2=z。InstallDamageHook回调从a.onDamageMsg取处理器，包装器安装后将当前messageHandlers[damageMessageType]写入gameMapController.__ylwHookedOrigin。此前错误的模块根表字段与捕获对象备注已在源码/CSV/机器账本同步纠正。检查点311/312/313的修正继续保留。当前未执行Lua 5.1语法检查或游戏运行验证。
 - PC280-PC412 的根级创建/捕获/导出/入口挂接已静态核对；PC1-PC211已修正ResetGatherMonsterData的清目标/等待状态复位顺序，FindMonsterInCurrViewField主体与27条物理指令恢复稿一致。检查点300已修正MainLoop等待归属变更到期后的FindMonsterInCurrViewField调用实参；检查点301已静态核对PC212-PC255导出，并补充MainLoop数值for循环游标语义注释；检查点302核对PC1-PC85闭包导出及捕获边界，修正物品/仓库函数对根级函数的错误词法引用；检查点303核对PC86-PC167配置、奖励表及UI捕获，明确奖励回调的18000取模参数。当前容器未发现Lua解释器命令，尚未执行Lua 5.1语法检查。后续仍以同一唯一主源码为准。
 
 ## 4. 源码文件职责

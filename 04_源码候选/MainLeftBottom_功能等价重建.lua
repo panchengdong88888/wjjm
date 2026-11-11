@@ -300,7 +300,7 @@ local blacklistState = {
     distance = nil
 }
 
--- PC294：同一blacklistState表挂入模块字段；后续onDamageMsg/黑名单闭包共享该对象。
+-- PC294：同一blacklistState表挂入MainLeftBottom.a状态字段；后续onDamageMsg/黑名单闭包共享该对象。
 a.blacklist = blacklistState
 
 -- PC295-PC296：两个配置文件名常量。
@@ -477,7 +477,7 @@ local opaquePairTable = {
 -- PC359：a.onDamageMsg = onDamageMsg，实际消息处理器保存在MainLeftBottom.a状态字段。
 -- PC360-PC362：创建root.children[6] / InstallDamageHook，捕获父T[0]=MainLeftBottom.a、T[4]=PrintLog，并覆盖同一父寄存器T[57]。
 -- PC368创建BlacklistPlayerDetection时捕获T[57]的live cell；因此其UP[1]是PC360写入的InstallDamageHook，不是PC357创建的onDamageMsg处理器。
--- 检查点267：主恢复稿分别保留PC357 onDamageMsg模块字段与PC360 InstallDamageHook/T[57]共享cell，
+-- 检查点267：主恢复稿分别保留PC357 onDamageMsg的a状态字段与PC360 InstallDamageHook/T[57]共享cell，
 -- 并对二者函数身份作静态断言；T[52]八组二元数值按PC316-PC349原值逐项核对。
 -- 这两个父级捕获槽位按顺序保留；子闭包Nested_onDamageMsg的捕获另见检查点179。
 -- PC363-PC367：创建root.children[25] / DeathAutoBlacklist，捕获：
@@ -2014,7 +2014,7 @@ end
 MainLeftBottom.a.onDamageMsg = onDamageMsg
 
 -- PC360-PC362：T[57]写入此闭包；BlacklistPlayerDetection捕获该live cell当前值。
--- 包装回调先pcall模块onDamageMsg，再无论回调结果如何返回原消息处理器结果。
+-- 包装回调先从MainLeftBottom.a读取onDamageMsg并pcall，再无论回调结果如何返回原消息处理器结果。
 local function InstallDamageHook()
     local gameMapController = global.gameMapController
     if not gameMapController then return end
@@ -3509,7 +3509,7 @@ return MainLeftBottom
 --   StorageItems、TakeItems、PickUpItems、DiuItems、BlacklistItems、
 --   ClearBlacklistItems。
 -- * PC212-PC279的五个全局导出及MainLeftBottom.a的hide/show/destroy、MainLeftBottom.main均已挂接。
--- * MainLeftBottom根表字段为a/b/z/blacklist/onDamageMsg/main/doInit；hide/show/destroy不属于根表。
+-- * MainLeftBottom根表字段为a/b/z/main/doInit；a状态表另含hide/show/destroy/blacklist/onDamageMsg。
 -- * PrintLog仍只写ENV["_G"].log；LuaSendMsg仍只挂a.LuaSendMsg。
 --
 -- 此批只校正导出边界，不改变内部函数主体。Lua语法与游戏运行仍未验证。

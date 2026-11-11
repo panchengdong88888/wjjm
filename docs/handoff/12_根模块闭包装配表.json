@@ -5084,7 +5084,7 @@
       },
       {
         "pc_one_based": 294,
-        "event": "assign same table to MainLeftBottom.blacklist",
+        "event": "assign same table to MainLeftBottom.a.blacklist",
         "value": "blacklist state table"
       },
       {
@@ -5689,8 +5689,8 @@
       },
       {
         "pc_one_based": 359,
-        "event": "assign onDamageMsg closure to MainLeftBottom.onDamageMsg",
-        "value": "MainLeftBottom.onDamageMsg = onDamageMsg"
+        "event": "assign onDamageMsg closure to MainLeftBottom.a.onDamageMsg",
+        "value": "MainLeftBottom.a.onDamageMsg = onDamageMsg"
       },
       {
         "pc_one_based": 360,
@@ -5722,7 +5722,7 @@
         "capture_count": 1,
         "notes": [
           "The earlier pair-table value is part of the opaque eight-pair array and is superseded before the only T[57] capture.",
-          "onDamageMsg remains stored in MainLeftBottom.onDamageMsg after T[57] is overwritten; overwriting the register does not erase the module-table field.",
+          "onDamageMsg remains stored in MainLeftBottom.a.onDamageMsg after T[57] is overwritten; overwriting the register does not erase the a-state field.",
           "The capture is a live cell, so its value at PC368 is the PC360 InstallDamageHook closure."
         ]
       }
@@ -6731,17 +6731,17 @@
     "module_fields": [
       {
         "pc": 265,
-        "target": "MainLeftBottom.hide",
+        "target": "MainLeftBottom.a.hide",
         "prototype": "DestroyUI"
       },
       {
         "pc": 269,
-        "target": "MainLeftBottom.show",
+        "target": "MainLeftBottom.a.show",
         "prototype": "SetButtonVisibilityState"
       },
       {
         "pc": 274,
-        "target": "MainLeftBottom.destroy",
+        "target": "MainLeftBottom.a.destroy",
         "prototype": "ShowHideAllButtons"
       },
       {
@@ -6751,7 +6751,7 @@
       },
       {
         "pc": 294,
-        "target": "MainLeftBottom.blacklist",
+        "target": "MainLeftBottom.a.blacklist",
         "value": "blacklistState table"
       }
     ],
@@ -6799,9 +6799,9 @@
     ],
     "notes": [
       "MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、MoveItemToQuickUse均为全局导出；其函数主体状态不因本账本而改变。",
-      "DestroyUI/SetButtonVisibilityState/ShowHideAllButtons分别写入MainLeftBottom.hide/show/destroy；不是全局导出。",
+      "DestroyUI/SetButtonVisibilityState/ShowHideAllButtons分别写入MainLeftBottom.a.hide/show/destroy；不是全局导出。",
       "AccountIDValidation写入MainLeftBottom.main；其两个捕获值分别为PrintLog与ShowLocalNoticeByType。",
-      "blacklistState同一表对象写入MainLeftBottom.blacklist，后续被黑名单相关闭包共享。",
+      "blacklistState同一表对象写入MainLeftBottom.a.blacklist，后续被黑名单相关闭包共享。",
       "PC212-PC340未覆盖PC341-PC412的后续闭包与导出。"
     ]
   },
@@ -6910,7 +6910,7 @@
           {
             "upvalue": 0,
             "parent_T": 0,
-            "value": "MainLeftBottom module table"
+            "value": "MainLeftBottom.a UI/config state table"
           },
           {
             "upvalue": 1,
@@ -6954,7 +6954,7 @@
           {
             "upvalue": 0,
             "parent_T": 2,
-            "value": "MainLeftBottom module table"
+            "value": "MainLeftBottom.z feature-state table"
           },
           {
             "upvalue": 1,
@@ -7156,7 +7156,7 @@
     "module_fields": [
       {
         "pc": 359,
-        "target": "MainLeftBottom.onDamageMsg",
+        "target": "MainLeftBottom.a.onDamageMsg",
         "value": "onDamageMsg"
       },
       {
@@ -7624,17 +7624,17 @@
       },
       {
         "pc": 265,
-        "target": "MainLeftBottom.hide",
+        "target": "MainLeftBottom.a.hide",
         "prototype": "DestroyUI"
       },
       {
         "pc": 269,
-        "target": "MainLeftBottom.show",
+        "target": "MainLeftBottom.a.show",
         "prototype": "SetButtonVisibilityState"
       },
       {
         "pc": 274,
-        "target": "MainLeftBottom.destroy",
+        "target": "MainLeftBottom.a.destroy",
         "prototype": "ShowHideAllButtons"
       },
       {
@@ -7644,12 +7644,12 @@
       },
       {
         "pc": 294,
-        "target": "MainLeftBottom.blacklist",
+        "target": "MainLeftBottom.a.blacklist",
         "value": "blacklistState table"
       },
       {
         "pc": 359,
-        "target": "MainLeftBottom.onDamageMsg",
+        "target": "MainLeftBottom.a.onDamageMsg",
         "value": "onDamageMsg"
       },
       {
@@ -7662,7 +7662,8 @@
       "PC86-PC211没有新增全局导出或MainLeftBottom根表字段赋值；不把局部闭包创建误算为导出。",
       "MainLeftBottom.a内部字段、b/z子表字段保留在module_fields中，和根表直接字段分层记录。",
       "同一闭包可先存入模块字段、随后T寄存器复用；按模块表字段的赋值事实记录，不因寄存器覆写而删除。",
-      "全局导出名称与模块字段名称严格区分；ShowLocalNoticeByType、ScheduleOnce、Schedule在已审PC段未观察到根级导出。"
+      "全局导出名称与模块字段名称严格区分；ShowLocalNoticeByType、ScheduleOnce、Schedule在已审PC段未观察到根级导出。",
+      "检查点314：根表直接字段为a/b/z/main/doInit；a状态表包含hide/show/destroy/blacklist/onDamageMsg。PC265/269/274/294/359均写入a状态表，PC279/411写入根表main/doInit。"
     ]
   },
   "root_assembly_checkpoint_246": {
@@ -8225,7 +8226,7 @@
           "rootSource.timerState (root T[3])",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.hide",
+        "module_field": "MainLeftBottom.a.hide",
         "runtime_verified": false
       },
       {
@@ -8236,7 +8237,7 @@
           "rootSource.uiState (MainLeftBottom.a)",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.show",
+        "module_field": "MainLeftBottom.a.show",
         "runtime_verified": false
       },
       {
@@ -8248,7 +8249,7 @@
           "rootSource.buttonMap (MainLeftBottom.b)",
           "rootSource.uiState (MainLeftBottom.a)"
         ],
-        "module_field": "MainLeftBottom.destroy",
+        "module_field": "MainLeftBottom.a.destroy",
         "runtime_verified": false
       }
     ],
@@ -8403,7 +8404,7 @@
           "rootSource.timerState (root T[3])",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.hide",
+        "module_field": "MainLeftBottom.a.hide",
         "runtime_verified": false
       },
       {
@@ -8414,7 +8415,7 @@
           "rootSource.uiState (MainLeftBottom.a)",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.show",
+        "module_field": "MainLeftBottom.a.show",
         "runtime_verified": false
       },
       {
@@ -8426,7 +8427,7 @@
           "rootSource.buttonMap (MainLeftBottom.b)",
           "rootSource.uiState (MainLeftBottom.a)"
         ],
-        "module_field": "MainLeftBottom.destroy",
+        "module_field": "MainLeftBottom.a.destroy",
         "runtime_verified": false
       },
       {
@@ -8629,7 +8630,7 @@
           "rootSource.timerState (root T[3])",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.hide",
+        "module_field": "MainLeftBottom.a.hide",
         "runtime_verified": false
       },
       {
@@ -8640,7 +8641,7 @@
           "rootSource.uiState (MainLeftBottom.a)",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.show",
+        "module_field": "MainLeftBottom.a.show",
         "runtime_verified": false
       },
       {
@@ -8652,7 +8653,7 @@
           "rootSource.buttonMap (MainLeftBottom.b)",
           "rootSource.uiState (MainLeftBottom.a)"
         ],
-        "module_field": "MainLeftBottom.destroy",
+        "module_field": "MainLeftBottom.a.destroy",
         "runtime_verified": false
       },
       {
@@ -8748,7 +8749,7 @@
         "bindings": [
           "blacklistState (root T[41])"
         ],
-        "module_field": "MainLeftBottom.onDamageMsg",
+        "module_field": "MainLeftBottom.a.onDamageMsg",
         "runtime_verified": false
       },
       {
@@ -8775,7 +8776,7 @@
           "BlacklistPlayerDetection.UP[2]",
           "doInit_UI.UP[5]"
         ],
-        "module_field": "MainLeftBottom.blacklist"
+        "module_field": "MainLeftBottom.a.blacklist"
       },
       "T[42]": {
         "value": "blacklistDistanceConfigFile = blacklist_distance.txt",
@@ -8907,7 +8908,7 @@
           "rootSource.timerState (root T[3])",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.hide",
+        "module_field": "MainLeftBottom.a.hide",
         "runtime_verified": false
       },
       {
@@ -8918,7 +8919,7 @@
           "rootSource.uiState (MainLeftBottom.a)",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.show",
+        "module_field": "MainLeftBottom.a.show",
         "runtime_verified": false
       },
       {
@@ -8930,7 +8931,7 @@
           "rootSource.buttonMap (MainLeftBottom.b)",
           "rootSource.uiState (MainLeftBottom.a)"
         ],
-        "module_field": "MainLeftBottom.destroy",
+        "module_field": "MainLeftBottom.a.destroy",
         "runtime_verified": false
       },
       {
@@ -9026,7 +9027,7 @@
         "bindings": [
           "blacklistState (root T[41])"
         ],
-        "module_field": "MainLeftBottom.onDamageMsg",
+        "module_field": "MainLeftBottom.a.onDamageMsg",
         "runtime_verified": false
       },
       {
@@ -9210,7 +9211,7 @@
           "rootSource.timerState (root T[3])",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.hide",
+        "module_field": "MainLeftBottom.a.hide",
         "runtime_verified": false
       },
       {
@@ -9221,7 +9222,7 @@
           "rootSource.uiState (MainLeftBottom.a)",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.show",
+        "module_field": "MainLeftBottom.a.show",
         "runtime_verified": false
       },
       {
@@ -9233,7 +9234,7 @@
           "rootSource.buttonMap (MainLeftBottom.b)",
           "rootSource.uiState (MainLeftBottom.a)"
         ],
-        "module_field": "MainLeftBottom.destroy",
+        "module_field": "MainLeftBottom.a.destroy",
         "runtime_verified": false
       },
       {
@@ -9329,7 +9330,7 @@
         "bindings": [
           "blacklistState (root T[41])"
         ],
-        "module_field": "MainLeftBottom.onDamageMsg",
+        "module_field": "MainLeftBottom.a.onDamageMsg",
         "runtime_verified": false
       },
       {
@@ -9394,7 +9395,7 @@
         "pc368_capture_by": "BlacklistPlayerDetection.UP[1]",
         "adapter": "rootCells[57] = newLiveCell(rootPrototypes.InstallDamageHook)",
         "read_expression": "installDamageHookCell.value()",
-        "note": "PC357 creates onDamageMsg and PC359 stores it in MainLeftBottom.onDamageMsg. PC360 then overwrites T[57] with InstallDamageHook. OP_387 captures the live cell at PC368; preserve it with rootCells[57] and dereference .value() in the factory. Do not bind UP[1] to onDamageMsg."
+        "note": "PC357 creates onDamageMsg and PC359 stores it in MainLeftBottom.a.onDamageMsg. PC360 then overwrites T[57] with InstallDamageHook. OP_387 captures the live cell at PC368; preserve it with rootCells[57] and dereference .value() in the factory. Do not bind UP[1] to onDamageMsg."
       }
     },
     "runtime_verified": false,
@@ -9581,7 +9582,7 @@
           "rootSource.timerState (root T[3])",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.hide",
+        "module_field": "MainLeftBottom.a.hide",
         "runtime_verified": false
       },
       {
@@ -9592,7 +9593,7 @@
           "rootSource.uiState (MainLeftBottom.a)",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.show",
+        "module_field": "MainLeftBottom.a.show",
         "runtime_verified": false
       },
       {
@@ -9604,7 +9605,7 @@
           "rootSource.buttonMap (MainLeftBottom.b)",
           "rootSource.uiState (MainLeftBottom.a)"
         ],
-        "module_field": "MainLeftBottom.destroy",
+        "module_field": "MainLeftBottom.a.destroy",
         "runtime_verified": false
       },
       {
@@ -9700,7 +9701,7 @@
         "bindings": [
           "blacklistState (root T[41])"
         ],
-        "module_field": "MainLeftBottom.onDamageMsg",
+        "module_field": "MainLeftBottom.a.onDamageMsg",
         "runtime_verified": false
       },
       {
@@ -9775,7 +9776,7 @@
         "pc368_capture_by": "BlacklistPlayerDetection.UP[1]",
         "adapter": "rootCells[57] = newLiveCell(rootPrototypes.InstallDamageHook)",
         "read_expression": "installDamageHookCell.value()",
-        "note": "PC357 creates onDamageMsg and PC359 stores it in MainLeftBottom.onDamageMsg. PC360 then overwrites T[57] with InstallDamageHook. OP_387 captures the live cell at PC368; preserve it with rootCells[57] and dereference .value() in the factory. Do not bind UP[1] to onDamageMsg."
+        "note": "PC357 creates onDamageMsg and PC359 stores it in MainLeftBottom.a.onDamageMsg. PC360 then overwrites T[57] with InstallDamageHook. OP_387 captures the live cell at PC368; preserve it with rootCells[57] and dereference .value() in the factory. Do not bind UP[1] to onDamageMsg."
       }
     },
     "root_direct_closure_status": "58/58 source-level bindings; not runtime-verified",
@@ -10107,7 +10108,7 @@
           "rootSource.timerState (root T[3])",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.hide",
+        "module_field": "MainLeftBottom.a.hide",
         "runtime_verified": false
       },
       {
@@ -10118,7 +10119,7 @@
           "rootSource.uiState (MainLeftBottom.a)",
           "rootSource.buttonMap (MainLeftBottom.b)"
         ],
-        "module_field": "MainLeftBottom.show",
+        "module_field": "MainLeftBottom.a.show",
         "runtime_verified": false
       },
       {
@@ -10130,7 +10131,7 @@
           "rootSource.buttonMap (MainLeftBottom.b)",
           "rootSource.uiState (MainLeftBottom.a)"
         ],
-        "module_field": "MainLeftBottom.destroy",
+        "module_field": "MainLeftBottom.a.destroy",
         "runtime_verified": false
       },
       {
@@ -10226,7 +10227,7 @@
         "bindings": [
           "blacklistState (root T[41])"
         ],
-        "module_field": "MainLeftBottom.onDamageMsg",
+        "module_field": "MainLeftBottom.a.onDamageMsg",
         "runtime_verified": false
       },
       {
@@ -11245,7 +11246,7 @@
         ],
         "module_field": {
           "pc": 265,
-          "target": "MainLeftBottom.hide"
+          "target": "MainLeftBottom.a.hide"
         }
       },
       {
@@ -11258,7 +11259,7 @@
         ],
         "module_field": {
           "pc": 269,
-          "target": "MainLeftBottom.show"
+          "target": "MainLeftBottom.a.show"
         }
       },
       {
@@ -11272,7 +11273,7 @@
         ],
         "module_field": {
           "pc": 274,
-          "target": "MainLeftBottom.destroy"
+          "target": "MainLeftBottom.a.destroy"
         }
       },
       {
@@ -11320,7 +11321,7 @@
           "noStoneWarned": false,
           "distance": null
         },
-        "module_field": "MainLeftBottom.blacklist"
+        "module_field": "MainLeftBottom.a.blacklist"
       },
       "blacklistDistanceConfigFile": {
         "pc": 295,
@@ -11343,7 +11344,7 @@
       "rootSource.uiState == rootModule.a",
       "rootSource.buttonMap == rootModule.b",
       "rootSource.timerState is a table",
-      "rootModule.blacklist == rootSource.blacklistState",
+      "rootModule.a.blacklist == rootSource.blacklistState",
       "randomTeleportItemNames is exactly {'随机传送石'}",
       "blacklistState seven initial fields match the root PC286-PC293 values",
       "blacklist constants and filenames match PC283-PC296"
@@ -11535,7 +11536,7 @@
         ],
         "module_field": {
           "pc": 359,
-          "target": "MainLeftBottom.onDamageMsg"
+          "target": "MainLeftBottom.a.onDamageMsg"
         }
       },
       {
@@ -11604,7 +11605,7 @@
       }
     ],
     "distinct_function_identities": {
-      "PC357": "onDamageMsg message-handler closure; assigned to MainLeftBottom.onDamageMsg at PC359",
+      "PC357": "onDamageMsg message-handler closure; assigned to MainLeftBottom.a.onDamageMsg at PC359",
       "PC360": "InstallDamageHook installer closure; parent T[57] value",
       "PC368_UP1": "captures rootCells[57] live cell containing InstallDamageHook, not onDamageMsg"
     },
@@ -11614,7 +11615,8 @@
         "adapter": "rootCells[57] = newLiveCell(InstallDamageHook)",
         "uniqueness_checked_against": "rootCells[14..22]",
         "consumed_by": "BlacklistPlayerDetection UP[1]",
-        "value_assertion": "rootCells[57].value == rootPrototypes.InstallDamageHook and ~= rootPrototypes.onDamageMsg"
+        "value_assertion": "rootCells[57].value == rootPrototypes.InstallDamageHook and ~= rootPrototypes.onDamageMsg",
+        "note": "PC357 creates onDamageMsg and PC359 stores it in MainLeftBottom.a.onDamageMsg. PC360 then overwrites T[57] with InstallDamageHook. OP_387 captures the live cell at PC368; preserve it with rootCells[57] and dereference .value() in the factory. Do not bind UP[1] to onDamageMsg."
       }
     },
     "T52_validation": {
@@ -11670,17 +11672,18 @@
       "doInit_UI"
     ],
     "identity_assertions": [
-      "rootModule.blacklist == rootSource.blacklistState",
-      "rootModule.onDamageMsg == rootPrototypes.onDamageMsg",
+      "rootModule.a.blacklist == rootSource.blacklistState",
       "rootCells[57].value == rootPrototypes.InstallDamageHook",
       "rootCells[57].value ~= rootPrototypes.onDamageMsg",
       "_G.BlacklistItems == rootPrototypes.BlacklistPlayerDetection",
-      "_G.ClearBlacklistItems == rootPrototypes.ClearBlacklistItems"
+      "_G.ClearBlacklistItems == rootPrototypes.ClearBlacklistItems",
+      "rootModule.a.onDamageMsg == rootPrototypes.onDamageMsg"
     ],
     "caveats": [
       "rootCells[57] is a live-cell recovery adapter, not claimed to be the author's original data structure.",
       "T[52] is preserved as raw numeric pairs; its business semantics remain unknown.",
-      "No Lua compiler or target-game runtime validation has been performed."
+      "No Lua compiler or target-game runtime validation has been performed.",
+      "PC360 InstallDamageHook.UP[0] is MainLeftBottom.a; PC368 BlacklistPlayerDetection.UP[0] is MainLeftBottom.z. These are different tables and must not be interchanged."
     ],
     "runtime_verified": false
   },
