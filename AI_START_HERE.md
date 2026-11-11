@@ -23,11 +23,12 @@
 
 ## 3. 当前接续位置
 
-- 最近检查点：**322**
-- 下一检查点：**323**
-- 当前优先任务：继续入口与UI链全量静态复核，只处理root PC1-PC412、AccountIDValidation（root.children[55]）及doInit_UI（root.children[42]）和全部23个直接子原型。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
-- 检查点322重新核对root PC1-PC211：模块/a/b/z/timerState初始化、Blocklist与Hook表、PrintLog/通知/LuaSendMsg/调度包装、PC43-PC85全局导出边界、gatherConfig、18000取模值、14条奖励记录及共享状态初值与VM一致。DiuItems/TakeItems/PickUpItems/StorageItems/ClearBlacklistItems后段同名局部函数是CallRootFunction转发包装器，目标ENV函数已先行赋值，不覆盖实际主体。AttachRecoveredPrototypes是未调用的局部历史装配骨架，不参与执行。
-- 检查点321核对doInit_UI按钮创建/点击、输入对话框回调及隐藏按钮；检查点320核对资源统计窗口父原型320条及5个子原型。检查点319的黑名单按钮捕获对象身份复核结果保持。入口字段MainLeftBottom.main/doInit及PC412模块返回与VM一致。Lua 5.1禁用语法/API静态扫描未发现禁用项；环境未发现Lua解释器或解析器，尚未执行语法编译和目标游戏运行验证。
+- 最近检查点：**323**
+- 下一检查点：**324**
+- 当前优先任务：入口与UI链全量静态复核已完成；只做Lua 5.1兼容性收尾和已知运行时风险记录。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
+- 检查点323完成root PC1-PC412、AccountIDValidation（root.children[55]）及doInit_UI（root.children[42]）的全链静态核对。root 412条指令、AccountIDValidation 64条及嵌套回调、doInit_UI 419条及23个直接子原型均有对应源码；模块根表、全局导出、MainLeftBottom.main/doInit挂接、20项捕获和PC412返回与VM一致。资源统计窗口、按钮工厂/点击回调、输入对话框三级闭包、隐藏按钮已逐段核对。修正rewardSequenceModulus过期注释，明确18000是奖励轮询回调取模基数。
+- 已知待运行验证冲突：Attach_UITop按VM传T7=4但文档无必需参数；RequestStorageData(4)未文档化；奖励回调SL:Schedule(0,callback,0.2)与通用文档签名不同；money快照写key与读取key表达式不同；奖励回调GETGLOBAL LuaSendMsg；等待回调UnSchedule(nil)；Nested_Anonymous非法输入路径按原VM直接调用nil。均保留VM行为，不擅自改写。
+- Lua 5.1禁用语法/API扫描未发现禁用项，词法块配对扫描平衡；但当前环境无Lua5.1/luac5.1/lua/luac/luajit或luaparser，未执行真正语法编译。目标游戏运行验证未执行。
 
 ## 4. 源码文件职责
 
