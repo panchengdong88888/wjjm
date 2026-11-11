@@ -91,3 +91,12 @@
 - 已核对AccountIDValidation捕获[PrintLog, ShowLocalNoticeByType]并写入MainLeftBottom.main。
 - 已核对随机传送道具名、黑名单数值常量、blacklistState七字段和配置文件名。
 - 未发现明确父级装配错配；下一步继续root PC297-PC412。
+
+## 检查点328补充：root PC212-PC315
+
+- 已核对IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting的全局导出及对应捕获顺序。
+- 已核对a.hide/show/destroy三个UI闭包的捕获顺序和模块字段挂接。
+- 已核对AccountIDValidation捕获PrintLog/ShowLocalNoticeByType并挂接MainLeftBottom.main。
+- 已核对blacklistState七个字段初值及同一表对象写入MainLeftBottom.a.blacklist；随机传送石列表和三个数值常量保持原值。
+- 已核对PC297-PC315配置文件读写闭包链与固定配置文件包装闭包的捕获来源。
+- 本批没有修改唯一交付源码；下一步继续root PC316-PC412，并单独核验AccountIDValidation主体和嵌套回调。
