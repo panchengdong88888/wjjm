@@ -1043,6 +1043,1121 @@ end
 -- 完整20槽映射见docs/audit/检查点269_doInit_UI二十项捕获逐槽对账与T8配置表修正.md。
 
 
+
+-- ============================================================================
+-- 功能等价重建：doInit_UI及其直接子闭包（第一版接入）
+-- 根PC390-PC411的20项捕获现改为同一词法作用域直接绑定。
+-- ============================================================================
+
+local rootGlobal = rootEnvironment["_G"] or _G
+local function PrintLog(message, ...)
+    local logger = rootGlobal and rootGlobal.log
+    if type(logger) == "function" and logger ~= PrintLog then return logger(message, ...) end
+    if type(print) == "function" then
+        if select("#", ...) > 0 then return print(string.format(tostring(message), ...)) end
+        return print(tostring(message))
+    end
+end
+rootGlobal.log = PrintLog
+
+local function ShowLocalNoticeByType(message, ...)
+    local notice = rootEnvironment.ShowLocalNoticeByType
+    if type(notice) == "function" and notice ~= ShowLocalNoticeByType then return notice(message, ...) end
+    return PrintLog(message, ...)
+end
+local function Schedule(callback, interval) return SL:Schedule(callback, interval) end
+local function ScheduleOnce(callback, delay) return SL:ScheduleOnce(callback, delay) end
+local function CallRootFunction(name, ...)
+    local fn = rootEnvironment[name]
+    if type(fn) ~= "function" then PrintLog("功能入口尚未接入：%s", name); return nil end
+    return fn(...)
+end
+local function Builtsetting(...) return CallRootFunction("Builtsetting", ...) end
+local function InitGatherMonsters(...) return CallRootFunction("InitGatherMonsters", ...) end
+local function StopGatherMonsters(...) return CallRootFunction("StopGatherMonsters", ...) end
+local function StorageItems(...) return CallRootFunction("StorageItems", ...) end
+local function TakeItems(...) return CallRootFunction("TakeItems", ...) end
+local function PickUpItems(...) return CallRootFunction("PickUpItems", ...) end
+local function DiuItems(...) return CallRootFunction("DiuItems", ...) end
+local function BlacklistItems(...) return CallRootFunction("BlacklistItems", ...) end
+local function ClearBlacklistItems(...) return CallRootFunction("ClearBlacklistItems", ...) end
+
+local printLog = PrintLog
+local featureState = z
+local uiState = a
+local buttonMap = b
+local readBlacklistDistanceConfig = AnonymousHelper_49
+local schedule = Schedule
+local readGatherMonsterCountConfig = AnonymousHelper_33
+local writeBlacklistDistanceConfig = AnonymousHelper_32
+local showLocalNotice = ShowLocalNoticeByType
+local getWritablePath = GetWritablePath
+local writeGatherMonsterCountConfig = AnonymousHelper_54
+local checkConfigFileState = FileExistCheck_pcall_wrapper
+local capturedValue17 = rootRegister11
+local rewardEntries = loginAndOnlineRewardEntries
+local capturedValue19 = 0.2
+
+local function Nested_find(searchText)
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then return 0 end
+
+    local totalCount = 0
+    for _, item in pairs(bagData) do
+        if item and item.Name and item.MakeIndex
+            and string.find(item.Name, searchText, 1, true)
+            and not SL:GetMetaValue("ITEM_IS_BIND", item) then
+            totalCount = totalCount + (item.OverLap or 1)
+        end
+    end
+    return totalCount
+end
+
+
+-- ---------------------------------------------------------------------------
+-- doInit_UI 子闭包工厂：将父帧捕获槽显式转换为普通 Lua 闭包参数。
+-- 以下函数体复用已完成静态恢复的子原型；UPVALUE 名称仅描述行为。
+-- ---------------------------------------------------------------------------
+
+local function make_Nested_Helper(checkConfigFileState, configFileName, notify, printLog)
+    local function Nested_Helper()
+        local success, detail = checkConfigFileState(configFileName)
+        if success then
+            notify("已清空怪物阈值")
+            printLog("已清空怪物阈值存档：%s", detail)
+        else
+            notify("清空怪物阈值失败")
+            printLog("清空怪物阈值失败：%s", detail)
+        end
+    end
+    return Nested_Helper
+end
+
+local function make_Nested_s(checkConfigFileState, configFileName, notify, printLog)
+    local function Nested_s()
+        local success, detail = checkConfigFileState(configFileName)
+        if success then
+            notify("已清空黑名单距离")
+            printLog("已清空黑名单距离存档：%s", detail)
+        else
+            notify("清空黑名单距离失败")
+            printLog("清空黑名单距离失败：%s", detail)
+        end
+    end
+    return Nested_s
+end
+
+local function make_Nested_Helper_5(
+    writeConfigValue, notify, formatCallback, resolveWritablePath,
+    configFileName, startBlacklistTimer, setButtonState
+)
+    local function Nested_Helper_5(value)
+        if not writeConfigValue(value) then
+            notify("黑名单距离保存失败")
+            formatCallback(
+                "黑名单距离保存失败，路径：%s",
+                resolveWritablePath(configFileName)
+            )
+            return
+        end
+
+        notify("黑名单距离已保存：" .. value .. " 格")
+        formatCallback("黑名单距离已保存：%d 格", value)
+        if not startBlacklistTimer(value) then return end
+        setButtonState("blacklistbut", true)
+    end
+    return Nested_Helper_5
+end
+
+local function make_Nested_Helper_8(
+    writeConfigValue, notify, formatCallback, resolveWritablePath,
+    configFileName, startGathering, setButtonState
+)
+    local function Nested_Helper_8(value)
+        if not writeConfigValue(value) then
+            notify("怪物阈值保存失败")
+            formatCallback(
+                "怪物阈值保存失败，路径：%s",
+                resolveWritablePath(configFileName)
+            )
+            return
+        end
+
+        notify("怪物阈值已保存：" .. value)
+        formatCallback("怪物阈值已保存：%d", value)
+        if not startGathering(value) then return end
+        setButtonState("yinguaibut", true)
+    end
+    return Nested_Helper_8
+end
+
+local function make_Nested_Helper_4(
+    openDialog, writeConfigValue, notify, formatCallback,
+    resolveWritablePath, configFileName, startBlacklistTimer, setButtonState
+)
+    local function Nested_Helper_4()
+        local callback = make_Nested_Helper_5(
+            writeConfigValue, notify, formatCallback, resolveWritablePath,
+            configFileName, startBlacklistTimer, setButtonState
+        )
+        openDialog("请输入黑名单的距离格子（数字，按线路计算）", callback)
+    end
+    return Nested_Helper_4
+end
+
+local function make_Nested_Helper_7(
+    openDialog, writeConfigValue, notify, formatCallback,
+    resolveWritablePath, configFileName, startGathering, setButtonState
+)
+    local function Nested_Helper_7()
+        local callback = make_Nested_Helper_8(
+            writeConfigValue, notify, formatCallback, resolveWritablePath,
+            configFileName, startGathering, setButtonState
+        )
+        openDialog("请输入拉怪的怪物数量阈值（数字）", callback)
+    end
+    return Nested_Helper_7
+end
+
+-- ---------------------------------------------------------------------------
+-- root.children[42].children[22] / Nested_Anonymous
+-- 8条父原型指令；fixed_param_count=2；child0 Nested_str 27条，内含Nested_match与Nested_Helper_11。
+-- 原始VM调用帧已证明T[0]=promptText、T[1]=successCallback、T[2]=nil。
+-- ---------------------------------------------------------------------------
+local function make_Nested_Anonymous(PrintLog)
+    return function(promptText, successCallback)
+        -- 原始VM调用帧M已确认：本原型fixed_param_count=2。
+        -- 两个固定参数分别进入新建帧表T[0]、T[1]；额外实参进入独立X表。
+        -- T[2]没有任何写入指令，因此该槽确定为nil。
+        local T0_SLOT = promptText
+        local T1_SLOT = successCallback
+        local T2_SLOT = nil
+
+        -- child0 Nested_str捕获顺序：
+        -- UP[0] <- T[0]；UP[1] <- 父UP[0](PrintLog)；
+        -- UP[2] <- T[2](nil)；UP[3] <- T[1](successCallback)。
+        local function Nested_str(optionalSuffix)
+            local dialogParams = {
+                btnType = 2,
+                showEdit = true,
+                editParams = {
+                    inputMode = 2,
+                    maxLength = 6,
+                },
+            }
+
+            local initialText = T0_SLOT
+            if optionalSuffix then
+                initialText = initialText .. "\n" .. optionalSuffix
+            end
+            dialogParams.str = initialText
+
+            local function Nested_match(status, result)
+                if status ~= 1 then
+                    return
+                end
+
+                local editStr = result and result.editStr or ""
+                local normalized = tostring(editStr):gsub("%s", "")
+                local isDigits = string.match(normalized, "^%d+$")
+                local numericValue
+
+                if isDigits then
+                    numericValue = tonumber(normalized)
+                end
+
+                if numericValue then
+                    T1_SLOT(numericValue)
+                    return
+                end
+
+                PrintLog(
+                    "%s：参数格式不对（%s）",
+                    initialText,
+                    tostring(editStr)
+                )
+
+                local function Nested_Helper_11()
+                    -- 保留原字节码的直接调用。T[2]确定为nil，
+                    -- 因而该错误提示分支会触发attempt-to-call-nil；
+                    -- 不补造第三回调，也不增加原字节码没有的保护。
+                    T2_SLOT("参数格式不对，请输入数字")
+                end
+
+                SL:ScheduleOnce(Nested_Helper_11, 0.1)
+            end
+
+            dialogParams.callback = Nested_match
+            SL:OpenCommonTipsPop(dialogParams)
+        end
+
+        -- Nested_str固定参数数为1，但PC6-PC7以空实参区间调用它，optionalSuffix=nil。
+        Nested_str()
+        return
+    end
+end
+
+
+
+-- ---------------------------------------------------------------------------
+-- root.children[42].children[3] / Nested_FFFF00资源统计窗口及完整静态子依赖
+-- 来源：第六十二批父函数、第六十四批刷新链、第六十五批资源行构造。
+-- 各函数均为静态恢复草稿，GUI宿主语义及unknown哨兵仍需运行时确认。
+-- ---------------------------------------------------------------------------
+
+-- child0 Nested_Helper_2：35条，无捕获；资源数值缩写格式化。
+local function Nested_Helper_2(value)
+    if not value then
+        return 0.0
+    end
+
+    if value < 100000.0 then
+        return tostring(value)
+    end
+
+    if value < 100000000.0 then
+        return tostring(math.floor(value / 10000.0)) .. "万"
+    end
+
+    local rounded = math.floor((value / 100000000.0) * 10.0) / 10.0
+    return string.format("%.1f亿", rounded)
+end
+
+-- child1 Nested_string：46条，无捕获。
+local function Nested_string(...)
+    local searchName = ...
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then return 0 end
+
+    local totalCount = 0
+    for _, item in pairs(bagData) do
+        if item and item.Name and item.MakeIndex then
+            if string.find(item.Name, searchName, 1, true) then
+                if not SL:GetMetaValue("ITEM_IS_BIND", item) then
+                    totalCount = totalCount + (item.OverLap or 1)
+                end
+            end
+        end
+    end
+    return totalCount
+end
+
+-- child4 Nested_UnSchedule：20条，捕获[printLog,timerState,moduleState]。
+local function make_Nested_UnSchedule(printLog, timerState, moduleState)
+    local function Nested_UnSchedule()
+        printLog("点击空白,关闭资源信息窗口")
+
+        if timerState.resTimer then
+            SL:UnSchedule(timerState.resTimer)
+            -- 检查点225已确认该dump标记是nil的序列化占位；清理定时器句柄。
+            timerState.resTimer = nil
+        end
+
+        GUI:Win_Close(moduleState.resWin)
+    end
+    return Nested_UnSchedule
+end
+
+-- child2 Nested_FFFFFF：65条，捕获[resList,screenW*0.6]。
+local function make_Nested_FFFFFF(listView, cellWidth)
+    local function Nested_FFFFFF(resourceNames, layoutOption, rowType)
+        local rowTextByName = {}
+        local gui = GUI
+        local cellNameSuffix = math.ceil(15 / layoutOption)
+
+        for groupStart = 1, #resourceNames, layoutOption do
+            local cellName = rowType .. "_cell_" .. cellNameSuffix
+            local cellLayout = gui:Layout_Create(
+                listView, cellName, 0, 0, cellWidth, 35, 1
+            )
+
+            for columnIndex = 1, layoutOption do
+                local resourceIndex = groupStart + columnIndex - 1
+                local resourceName = resourceNames[resourceIndex]
+
+                if resourceName then
+                    local textName = "2_text_0.5_" .. columnIndex
+                    local textX = cellWidth * (columnIndex - 0.5) / 1
+                    local textNode = gui:Text_Create(
+                        cellLayout, textName, textX, 15, 30,
+                        "#FFFFFF", resourceName .. ":--"
+                    )
+
+                    if textNode then
+                        gui:setAnchorPoint(textNode, 0.5, 0.5)
+                        rowTextByName[resourceName] = textNode
+                    end
+                end
+            end
+        end
+
+        return rowTextByName
+    end
+    return Nested_FFFFFF
+end
+
+-- child3 Nested_Helper_3：168条，捕获10项。
+local function make_Nested_Helper_3(
+    moduleState, timerState, curTimeText, durTimeText, initState,
+    moneyProxy, moneyRows, formatNumber, itemRows, getItemCount
+)
+    local function Nested_Helper_3()
+        local gui = GUI
+
+        -- PC1-PC19：窗口无效时取消已有定时器、清空句柄并退出。
+        if not gui:Win_IsNotNull(moduleState.resWin) then
+            if timerState.resTimer then
+                SL:UnSchedule(timerState.resTimer)
+                timerState.resTimer = nil
+            end
+            return
+        end
+
+        -- PC20-PC38：取时失败会跳过时间显示，但仍继续刷新资源行。
+        local now
+        if os and os.time then
+            local timeOK, timeValue = pcall(os.time)
+            if timeOK and timeValue then now = timeValue end
+        end
+
+        if now then
+            -- PC39-PC58：日期格式化失败时显示“--”。
+            local dateText
+            if os and os.date then
+                local dateOK, value = pcall(os.date, "%Y-%m-%d %H:%M:%S", now)
+                if dateOK then dateText = value end
+            end
+            gui:Text_setString(curTimeText, "当前时间:" .. (dateText or "--"))
+
+            -- PC59-PC94：初始时间大于0时更新历时。
+            local initTime = initState.initTime
+            if initTime and initTime > 0 then
+                local elapsed = now - initTime
+                local hours = math.floor(elapsed / 3600)
+                local minutes = math.floor((elapsed % 3600) / 60)
+                gui:Text_setString(
+                    durTimeText,
+                    "历时:" .. formatNumber(hours) .. "小时"
+                        .. formatNumber(minutes) .. "分钟"
+                )
+            end
+        end
+
+        -- 跨函数键值对照：doInit_UI PC85将初始货币数量写入initSnapshot[name]；
+        -- 本回调PC106读取initSnapshot[moneyId]。两端键表达式确实不同。
+        -- MoneyProxy:GetMoneyIdByName的宿主返回语义未在仓库实现中定义，
+        -- 因此保留字节码两端各自的访问方式，不擅自改写为同一键。
+        -- PC95-PC137：moneyRows以资源名称为键；快照以moneyId为键。
+        for moneyName, textNode in pairs(moneyRows) do
+            local moneyId = moneyProxy:GetMoneyIdByName(moneyName)
+            if moneyId then
+                local currentCount = moneyProxy:GetMoneyCountById(moneyId) or 0
+                local initialCount = initState.initSnapshot[moneyId] or 0
+                gui:Text_setString(
+                    textNode,
+                    formatNumber(currentCount) .. ":"
+                        .. formatNumber(currentCount - initialCount)
+                )
+            end
+        end
+
+        -- PC138-PC167：itemRows以资源名称为键；快照以物品名称为键。
+        for itemName, textNode in pairs(itemRows) do
+            local currentCount = getItemCount(itemName)
+            local initialCount = initState.initSnapshot[itemName] or 0
+            gui:Text_setString(
+                textNode,
+                formatNumber(currentCount) .. ":"
+                    .. formatNumber(currentCount - initialCount)
+            )
+        end
+    end
+    return Nested_Helper_3
+end
+
+-- 父原型Nested_FFFF00：320条，捕获[moduleState,printLog,timerState,initState]。检查点207逐PC复审PC1-PC320，修正五处Text_Create返回值门控。
+local function make_Nested_FFFF00(moduleState, printLog, timerState, initState)
+    local function Nested_FFFF00()
+        local gui = GUI
+        local sl = SL
+
+        -- PC1-PC27：窗口已存在则关闭；resTimer取消后清为nil；检查点225确认K[28]=["unknown",2]是nil的VM dump序列化占位。
+        if gui:Win_IsNotNull(moduleState.resWin) then
+            printLog("关闭资源信息窗口")
+            if timerState.resTimer then
+                sl:UnSchedule(timerState.resTimer)
+                timerState.resTimer = nil
+            end
+            gui:Win_Close(moduleState.resWin)
+            return
+        end
+
+        -- PC28-PC46：Win_Create显式保留nil参数槽及最后的999。
+        local resWin = gui:Win_Create(
+            "resWin",
+            0, 0,
+            moduleState.screenW, moduleState.screenH,
+            false, true, true, true, true,
+            nil, 999
+        )
+        moduleState.resWin = resWin
+
+        -- PC47-PC72：根Layout和空白点击关闭回调。
+        local rootLayout = gui:Layout_Create(
+            resWin, "closeResWin", 0, 0,
+            moduleState.screenW, moduleState.screenH, true
+        )
+        gui:setTouchEnabled(rootLayout, true)
+
+        -- child4在父PC68-PC71捕获[printLog,timerState,moduleState]。
+        local closeCallback =
+            make_Nested_UnSchedule(printLog, timerState, moduleState)
+        gui:addOnClickEvent(rootLayout, closeCallback)
+
+        -- PC73-PC117：ListView几何、锚点及背景参数。
+        local screenW = moduleState.screenW
+        local screenH = moduleState.screenH
+        local listWidth = screenW * 0.6
+        local resList = gui:ListView_Create(
+            resWin, "resList",
+            (screenW - 1) / 2, screenH / 2,
+            listWidth, screenH * 0.6, 1.0
+        )
+        gui:setAnchorPoint(resList, 0, 0.5)
+        gui:ListView_setBackGroundColorType(resList, 1)
+        gui:ListView_setBackGroundColor(resList, "#CEB5F7")
+        gui:ListView_setBackGroundColorOpacity(resList, 255)
+
+        -- PC118-PC264：标题、初始时间、当前时间、历时、备注五组区域。
+        local titleCell = gui:Layout_Create(resList, "titleCell", 0, 0, 1, 30, 1)
+        local titleText = gui:Text_Create(
+            titleCell, "titleText", 0.5, 15, 20, "#FF0000", "资源统计"
+        )
+        if titleText then
+            gui:setAnchorPoint(titleText, 0.5, 0.5)
+        end
+
+        local initTimeCell = gui:Layout_Create(resList, "initTimeCell", 0, 0, 1, 30, 1)
+        local initTimeText = gui:Text_Create(
+            initTimeCell, "initTimeText", 0.5, 15, 20, "#00FF00",
+            "初始时间:" .. tostring(initState.initTimeStr or "--")
+        )
+        if initTimeText then
+            gui:setAnchorPoint(initTimeText, 0.5, 0.5)
+        end
+
+        local curTimeCell = gui:Layout_Create(resList, "curTimeCell", 0, 0, 1, 30, 1)
+        local curTimeText = gui:Text_Create(
+            curTimeCell, "curTimeText", 0.5, 15, 20, "#00FF00", "当前时间:--"
+        )
+        if curTimeText then
+            gui:setAnchorPoint(curTimeText, 0.5, 0.5)
+        end
+
+        local durTimeCell = gui:Layout_Create(resList, "durTimeCell", 0, 0, 1, 30, 1)
+        local durTimeText = gui:Text_Create(
+            durTimeCell, "durTimeText", 0.5, 15, 20, "#00FF00", "历时:--"
+        )
+        if durTimeText then
+            gui:setAnchorPoint(durTimeText, 0.5, 0.5)
+        end
+
+        local noteCell = gui:Layout_Create(resList, "noteCell", 0, 0, 1, 30, 1)
+        local noteText = gui:Text_Create(
+            noteCell, "noteText", 0.5, 15, 20, "#FFFF00",
+            "（括号内数量为非绑定资源的收益）"
+        )
+        if noteText then
+            gui:setAnchorPoint(noteText, 0.5, 0.5)
+        end
+
+        -- PC265-PC267创建child2：捕获resList与listWidth。
+        local updateResourceRows = make_Nested_FFFFFF(resList, listWidth)
+
+        -- PC268-PC281：两组资源名称。
+        local moneyNames = {"元宝", "绑定元宝", "灵符", "绑定灵符"}
+        local resourceNames = {
+            "声望卷", "悟道茶", "洗髓丹", "转生水晶", "恶魔令牌", "血龙宝珠"
+        }
+
+        -- PC282-PC291：child2两次调用，实参为(names,2,"money"/"item")。
+        local moneyRows = updateResourceRows(moneyNames, 2, "money")
+        local itemRows = updateResourceRows(resourceNames, 2, "item")
+
+        -- PC292：child1 Nested_string无捕获；PC293-PC299随后获取MoneyProxy。
+        local getItemCount = Nested_string
+        local moneyProxy = global.Facade:retrieveProxy(
+            global.ProxyTable.MoneyProxy
+        )
+
+        -- PC300-PC310创建child3，10项捕获顺序按闭包描述显式传入。
+        local formatNumber = Nested_Helper_2
+        local refreshResourceStatistics = make_Nested_Helper_3(
+            moduleState, timerState, curTimeText, durTimeText, initState,
+            moneyProxy, moneyRows, formatNumber, itemRows, getItemCount
+        )
+
+        -- PC311-PC312先立即刷新一次；PC313-PC319再安排1秒周期并保存句柄。
+        refreshResourceStatistics()
+        timerState.resTimer = sl:Schedule(refreshResourceStatistics, 1.0)
+
+        -- PC320：无显式返回值。
+        return
+    end
+    return Nested_FFFF00
+end
+
+
+local function make_Nested_StopGatherMonsters(
+    timerState, notify, canStartGather, logNotice,
+    openThresholdInput, applyGatherState
+)
+    local function Nested_StopGatherMonsters()
+        if timerState.gatherTimer then
+            notify("关闭引怪功能")
+            StopGatherMonsters()
+            return true
+        end
+
+        local ready = canStartGather()
+        if not ready then
+            logNotice("路径中没有怪物数量阈值，弹出输入框")
+            openThresholdInput()
+            return false
+        end
+
+        notify("开启引怪功能")
+        applyGatherState(ready)
+        return true
+    end
+    return Nested_StopGatherMonsters
+end
+
+local function make_Nested_LuaSendMsg(counter, modulus, messageEntries)
+    local function Nested_LuaSendMsg()
+        counter = counter + 1
+        local index = (counter - 1) % modulus + 1
+        local entry = messageEntries[index]
+        if not entry then return end
+
+        LuaSendMsg(9002, entry[1], 1.0, 2.0, 3.0, entry[2], entry[3])
+    end
+    return Nested_LuaSendMsg
+end
+
+local function make_Nested_SL_2(timerState, notify, modulus, messageEntries, scheduleContext)
+    local function Nested_SL_2()
+        if timerState.rewardTimer then
+            notify("关闭奖励功能")
+            SL:UnSchedule(timerState.rewardTimer)
+            timerState.rewardTimer = nil
+            return true
+        end
+
+        notify("开启奖励功能")
+        local callback = make_Nested_LuaSendMsg(0, modulus, messageEntries)
+        timerState.rewardTimer = SL:Schedule(0, callback, scheduleContext)
+        return true
+    end
+    return Nested_SL_2
+end
+
+local function make_Nested_ClearBlacklistItems(notify)
+    local function Nested_ClearBlacklistItems()
+        notify("清空黑名单")
+        ClearBlacklistItems()
+    end
+    return Nested_ClearBlacklistItems
+end
+
+local function make_Nested_blacklistTimer(
+    config, getDistance, timerState, schedule, formatNotice
+)
+    local function Nested_blacklistTimer(distance)
+        if not distance then
+            distance = getDistance()
+        end
+        config.distance = distance
+        if not config.distance then return false end
+
+        BlacklistItems()
+        timerState.blacklistTimer = schedule(BlacklistItems, 0.1)
+        formatNotice("开启黑名单功能，距离格子：%d", config.distance)
+        return true
+    end
+    return Nested_blacklistTimer
+end
+
+local function make_Nested_Helper_10(
+    timerState, notify, moduleState, readBlacklistDistanceConfig,
+    openBlacklistDistanceInput, startBlacklistTimer
+)
+    local function Nested_Helper_10()
+        if timerState.blacklistTimer then
+            notify("关闭黑名单功能")
+            SL:UnSchedule(timerState.blacklistTimer)
+            timerState.blacklistTimer = nil
+            moduleState.isBlacklisting = false
+            return true
+        end
+
+        local distance = readBlacklistDistanceConfig()
+        if distance > 0 then
+            notify(string.format("开启黑名单功能，距离格子：%d", distance))
+            startBlacklistTimer(distance)
+            return true
+        end
+
+        notify("路径中没有黑名单的距离格子，弹出输入框")
+        openBlacklistDistanceInput()
+        return false
+    end
+    return Nested_Helper_10
+end
+
+local function make_Nested_SL_3(timerState, notify, featureState, schedule)
+    local function Nested_SL_3()
+        if timerState.storageTimer then
+            notify("关闭存仓功能")
+            SL:UnSchedule(timerState.storageTimer)
+            timerState.storageTimer = nil
+            featureState.isStoring = false
+            return
+        end
+        notify("开启存仓功能")
+        StorageItems()
+        timerState.storageTimer = schedule(StorageItems, 1.0)
+    end
+    return Nested_SL_3
+end
+
+local function make_Nested_TakeItems(timerState, notify, featureState, schedule)
+    local function Nested_TakeItems()
+        if timerState.takeTimer then
+            notify("关闭取物功能")
+            SL:UnSchedule(timerState.takeTimer)
+            timerState.takeTimer = nil
+            featureState.isTaking = false
+            return
+        end
+        notify("开启取物功能")
+        TakeItems()
+        timerState.takeTimer = schedule(TakeItems, 1.0)
+    end
+    return Nested_TakeItems
+end
+
+local function make_Nested_shiquTimer(timerState, notify, schedule)
+    local function Nested_shiquTimer()
+        if timerState.shiquTimer then
+            notify("关闭拾取物品")
+            SL:UnSchedule(timerState.shiquTimer)
+            timerState.shiquTimer = nil
+            return
+        end
+        notify("开启拾取物品")
+        timerState.shiquTimer = schedule(PickUpItems, 0.01)
+    end
+    return Nested_shiquTimer
+end
+
+local function make_Nested_dropTimer(timerState, notify, featureState, schedule)
+    local function Nested_dropTimer()
+        if timerState.dropTimer then
+            notify("关闭丢弃物品")
+            SL:UnSchedule(timerState.dropTimer)
+            timerState.dropTimer = nil
+            featureState.isDiuing = false
+            return
+        end
+        notify("开启丢弃物品")
+        DiuItems()
+        timerState.dropTimer = schedule(DiuItems, 1.0)
+    end
+    return Nested_dropTimer
+end
+
+local function Nested_OnGameLeaveWorld()
+    global.gameWorldController:OnGameLeaveWorld()
+end
+
+local function make_Nested_Helper_9(uiState, notify)
+    local function Nested_Helper_9()
+        if uiState.isHidden then
+            notify("隐藏所有按钮")
+            uiState.hide()
+            GUI:setOpacity(uiState.hidebut, 0)
+            return
+        end
+        notify("显示所有按钮")
+        uiState.show()
+        GUI:setOpacity(uiState.hidebut, 255)
+    end
+    return Nested_Helper_9
+end
+
+local function make_Nested_InitGatherMonsters(config, getThreshold)
+    local function Nested_InitGatherMonsters(threshold)
+        if not threshold then threshold = getThreshold() end
+        config.GATHER_THRESHOLD = threshold
+        if not config.GATHER_THRESHOLD then return false end
+        InitGatherMonsters()
+        return true
+    end
+    return Nested_InitGatherMonsters
+end
+
+local function make_Nested_04d_02d_02d(lastSentDate, messageSender, notify)
+    local function Nested_04d_02d_02d()
+        local dateParts = os.date("*t")
+        if not dateParts then return end
+
+        local secondsOfDay =
+            dateParts.hour * 3600 + dateParts.min * 60 + dateParts.sec
+        if secondsOfDay < 79205 or secondsOfDay > 79208 then
+            return
+        end
+
+        local dateKey = string.format(
+            "%04d%02d%02d",
+            dateParts.year, dateParts.month, dateParts.day
+        )
+        if dateKey == lastSentDate then return end
+
+        -- PC29先写日期标记，再发送协议；即使发送失败，同日也不重试。
+        lastSentDate = dateKey
+        messageSender.LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)
+        notify("到达 22:00:05，发送开启巡航协议")
+    end
+    return Nested_04d_02d_02d
+end
+
+local function make_Nested_ffffff(buttonConfigs, buttonByKey)
+    local function Nested_ffffff(key, toggled)
+        local matchedConfig
+        for _, config in ipairs(buttonConfigs) do
+            if config.key == key then
+                matchedConfig = config
+                config.toggled = toggled
+            end
+        end
+
+        local button = buttonByKey[key]
+        if not button or not matchedConfig or not matchedConfig.toggle then
+            return
+        end
+
+        local title = toggled and matchedConfig.toggle or matchedConfig.name
+        GUI:Button_setTitleText(button, title)
+        GUI:Button_setTitleColor(button, toggled and "#ff0000" or "#ffffff")
+    end
+    return Nested_ffffff
+end
+
+local function doInit_UI()
+    -- PC390在root创建本闭包时明确捕获20个父级T寄存器。
+    -- UP[0..19]依次对应父root的T[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。
+    -- 可直接确认的身份：UP[0]=PrintLog；UP[1]=MainLeftBottom.z功能状态表；
+    -- UP[2]=root PC42创建的timerState；UP[3]=MainLeftBottom.a UI状态表；
+    -- UP[5]是root创建并挂到MainLeftBottom.blacklist的黑名单状态表；
+    -- UP[8]是含GATHER_THRESHOLD/CHECK_INTERVAL/ATTACK_WAIT_TIME的配置表；
+    -- UP[11]是root PC46创建的ShowLocalNoticeByType闭包；
+    -- UP[13]/UP[15]分别是黑名单距离/拉怪数量配置文件路径；
+    -- UP[17]=root PC90计算所得18000；UP[19]=0.2。其余槽位保持编号，不猜业务名称。
+
+    -- PC1-PC3：初始化完成通知。
+    printLog("插件初始化完成")
+
+    -- PC4-PC17：货币与资源名称常量。
+    local moneyNames = {"元宝", "绑定元宝", "灵符", "绑定灵符"}
+    local resourceNames = {
+        "声望卷", "悟道茶", "洗髓丹", "转生水晶", "恶魔令牌", "血龙宝珠"
+    }
+
+    -- PC19-PC58：时间状态初始化；os.time/os.date 均在 pcall 路径中调用。
+    featureState.initTime = 0
+    featureState.initTimeStr = "--"
+    if os and os.time and os.date and pcall then
+        local okTime, now = pcall(os.time)
+        if okTime and now then
+            featureState.initTime = now
+            local okDate, dateText = pcall(os.date, "%Y-%m-%d %H:%M:%S", now)
+            if okDate and dateText then
+                featureState.initTimeStr = dateText
+            end
+        end
+    end
+    featureState.initSnapshot = {}
+
+    -- PC59-PC99：MoneyProxy及两组名称循环，建立资源数量初始快照。
+    local moneyProxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
+    if moneyProxy then
+        for _, name in ipairs(moneyNames) do
+            local id = moneyProxy:GetMoneyIdByName(name)
+            if id then
+                local count = moneyProxy:GetMoneyCountById(id)
+                -- PC82-PC85：false和nil均进入0回退分支。
+                if not count then count = 0 end
+                featureState.initSnapshot[name] = count
+            end
+        end
+    end
+
+    -- PC88-PC99是独立的第二个ipairs循环，不受MoneyProxy是否存在的门控。
+    -- 第二组是背包资源，不走MoneyProxy：调用无捕获child0 Nested_find(name)，
+    -- 并以资源名称作为initSnapshot键；BAG_DATA缺失时返回0。
+    for _, name in ipairs(resourceNames) do
+        featureState.initSnapshot[name] = Nested_find(name)
+    end
+
+    -- PC100-PC101。
+    Builtsetting()
+
+    -- PC102-PC130：四组传送道具槽位配置。每组包含slot与names数组，
+    -- 其数组成员由相邻寄存器表构造指令确定。
+    local itemSlotConfig = {
+        {slot=1, names={"永久回城石", "盟重回城石", "盟重传送石"}},
+        {slot=2, names={"永久随机石", "随机传送石"}},
+        {slot=3, names={"大陆传送石"}},
+        {slot=4, names={"免战回城石"}},
+    }
+
+    -- PC131-PC145：逐组创建child16（Nested_ITEM_INDEX_BY_NAME）并调用SL:ScheduleOnce。
+    -- child16捕获当前slotConfig及UP[0]（PrintLog）；它遍历slotConfig.names，
+    -- 通过SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)查询索引。
+    -- 若索引存在，则调用MoveItemToQuickUse(itemIndex, slotConfig.slot)，
+    -- 将第二返回值交给PrintLog；若第一返回值成功则提前结束该组回调，
+    -- 否则继续尝试该组的下一个名称。
+    for slotIndex, slotConfig in ipairs(itemSlotConfig) do
+        local callback = function()
+            for _, name in ipairs(slotConfig.names) do
+                local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)
+                if itemIndex then
+                    local succeeded, message =
+                        MoveItemToQuickUse(itemIndex, slotConfig.slot)
+                    printLog(message)
+                    if succeeded then
+                        return
+                    end
+                end
+            end
+        end
+        SL:ScheduleOnce(callback, slotIndex * 0.1)
+    end
+
+    -- PC146-PC166：替换cruiseTimer并建立周期任务。
+    if timerState.cruiseTimer then
+        SL:UnSchedule(timerState.cruiseTimer)
+        timerState.cruiseTimer = nil
+    end
+    -- PC145清空父帧T[5]；PC160-PC163随后以该cell创建child12。
+    -- 检查点111已闭合：R5是同日发送标记，另捕获UP[3]发送对象、UP[0]通知回调。
+    local lastSentDate = nil
+    local dailyCallback = make_Nested_04d_02d_02d(
+        lastSentDate, uiState, printLog
+    )
+    timerState.cruiseTimer = SL:Schedule(dailyCallback, 1.0)
+
+    -- PC181-PC195：GUI.Attach_UITop调用实参物理来源未闭合。
+    -- 当前草稿把调用错误写成七个nil实参；检查点208依据OP_358/OP_068调用展开规则纠正：
+    -- PC180 RequestStorageData与PC183 Attach_UITop均只传T[7]这一个显式实参。
+    -- PC133是调用前最后一次写入T[7]的位置：ipairs(T[6])的第三返回值。
+    -- T[6]的运行时值及ENV.ipairs宿主行为未验证，因此T[7]只保留中性占位。
+    local T7 = 0 -- PC133: standard Lua ipairs第三返回值；本模块未见覆盖ipairs的赋值
+    local storageProxy = global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)
+    if storageProxy then
+        storageProxy:RequestStorageData(T7)
+    end
+
+    local uiParent = GUI:Attach_UITop(T7)
+
+    -- PC184-PC195：读取mini-chat位置/尺寸；xBase/yBase随后由T[22]/T[23]捕获。
+    local mainProperty = MainProperty
+    local miniChat = mainProperty._ui.Panel_mini_chat
+    local miniChatPosition = miniChat:getWorldPosition()
+    local miniChatSize = miniChat:getContentSize()
+    local miniChatRight = miniChatPosition.x + miniChatSize.width
+    local miniChatY = miniChatPosition.y
+
+    -- PC196-PC235：实际按钮配置是三组数组，结构由VM的表构造/数组写入指令确定。
+    local buttonGroups = {
+        {
+            {key="yinguaibut", name="开拉怪", toggle="关拉怪"},
+            {key="blacklistbut", name="开黑名单", toggle="关黑名单"},
+            {key="clearblacklistbut", name="清黑名单"},
+            {key="moneybut", name="资源统计"},
+        },
+        {
+            {key="shiqubut", name="开拾取", toggle="关拾取"},
+            {key="diuqibut", name="开丢物品", toggle="关丢物品"},
+            {key="xiaotuibut", name="快速小退"},
+        },
+        {
+            {key="clearmonsterbut", name="清怪物值"},
+            {key="cleardistancebut", name="清距离值"},
+            {key="rewardbut", name="开奖励", toggle="关奖励"},
+        },
+    }
+
+    -- PC236-PC337：按实际父帧捕获顺序建立子闭包工厂。
+    local syncButtonState = make_Nested_ffffff(buttonGroups, buttonMap)
+
+    -- PC239-PC244：child17 Nested_blacklistTimer捕获[UP5,UP6,UP2,UP7,UP0]。
+    local blacklistTimerCallback = make_Nested_blacklistTimer(
+        blacklistState, readBlacklistDistanceConfig, timerState, schedule, printLog
+    )
+    -- PC245-PC247：child7 Nested_InitGatherMonsters捕获[UP8,UP9]。
+    local initGatherCallback = make_Nested_InitGatherMonsters(
+        gatherConfig, readGatherMonsterCountConfig
+    )
+
+    -- PC248：child22 Nested_Anonymous仅捕获UP0(PrintLog)；检查点235确认固定参数为promptText/successCallback，分别映射T[0]/T[1]，T[2]=nil。
+    -- PC250-PC258：child11 Nested_Helper_4捕获[R18,UP10,UP11,UP0,UP12,UP13,R16,R15]。
+    local nestedAnonymous = make_Nested_Anonymous(printLog) -- child22固定参数映射已由检查点235闭合；Helper_4/Helper_7分别传入(promptText, callback)，T[2]=nil。
+    local openBlacklistDistanceInput = make_Nested_Helper_4(
+        nestedAnonymous, writeBlacklistDistanceConfig, showLocalNotice, printLog,
+        getWritablePath, blacklistDistanceConfigFile, blacklistTimerCallback, syncButtonState
+    ) -- child11 Nested_Helper_4主体已在本文件上方恢复
+    -- PC259-PC267：child14 Nested_Helper_7捕获[R18,UP14,UP11,UP0,UP12,UP15,R17,R15]。
+    local openGatherThresholdInput = make_Nested_Helper_7(
+        nestedAnonymous, writeGatherMonsterCountConfig, showLocalNotice, printLog,
+        getWritablePath, gatherMonsterCountConfigFile, initGatherCallback, syncButtonState
+    ) -- child14 Nested_Helper_7主体已在本文件上方恢复
+
+    -- PC269-PC276：child6捕获[UP2,UP11,UP9,UP0,R20,R17]。
+    local stopGatherCallback = make_Nested_StopGatherMonsters(
+        timerState, showLocalNotice, readGatherMonsterCountConfig, printLog,
+        openGatherThresholdInput, initGatherCallback
+    )
+    -- PC277-PC282：child2捕获[UP16,UP15,UP11,UP0]。
+    local clearMonsterCallback = make_Nested_Helper(
+        checkConfigFileState, gatherMonsterCountConfigFile, showLocalNotice, printLog
+    )
+    -- PC283-PC288：child20捕获[UP16,UP13,UP11,UP0]。
+    local clearDistanceCallback = make_Nested_s(
+        checkConfigFileState, blacklistDistanceConfigFile, showLocalNotice, printLog
+    )
+    -- PC289-PC295：child1捕获[UP2,UP0,UP17,UP18,UP19]。
+    local rewardCallback = make_Nested_SL_2(
+        timerState, printLog, capturedValue17, rewardEntries, capturedValue19
+    )
+    -- PC296-PC298：child13捕获UP0。
+    local clearBlacklistCallback = make_Nested_ClearBlacklistItems(printLog)
+    -- PC299-PC306：child18捕获[UP2,UP0,UP1,R19,R16]。
+    local blacklistCallback = make_Nested_Helper_10(
+        timerState, printLog, featureState, readBlacklistDistanceConfig,
+        openBlacklistDistanceInput, blacklistTimerCallback
+    )
+    -- PC307-PC312：child8捕获[UP2,UP0,UP1,UP7]。
+    local storageCallback = make_Nested_SL_3(
+        timerState, printLog, featureState, schedule
+    )
+    -- PC313-PC318：child19捕获[UP2,UP0,UP1,UP7]。
+    local takeCallback = make_Nested_TakeItems(
+        timerState, printLog, featureState, schedule
+    )
+    -- PC319-PC323：child10捕获[UP2,UP0,UP7]。
+    local pickupCallback = make_Nested_shiquTimer(
+        timerState, printLog, schedule
+    )
+    -- PC324-PC329：child21捕获[UP2,UP0,UP1,UP7]。
+    local dropCallback = make_Nested_dropTimer(
+        timerState, printLog, featureState, schedule
+    )
+
+    local buttonHandlers = {
+        yinguaibut = stopGatherCallback,
+        clearmonsterbut = clearMonsterCallback,
+        cleardistancebut = clearDistanceCallback,
+        rewardbut = rewardCallback,
+        clearblacklistbut = clearBlacklistCallback,
+        blacklistbut = blacklistCallback,
+        storagebut = storageCallback,
+        takebut = takeCallback,
+        shiqubut = pickupCallback,
+        diuqibut = dropCallback,
+        moneybut = make_Nested_FFFF00(uiState, printLog, timerState, featureState), -- child3；父工厂及刷新/行构造依赖已并入本文件
+        xiaotuibut = Nested_OnGameLeaveWorld,
+    }
+    -- PC338-PC345：创建child9工厂闭包，捕获顺序为：
+    -- T[6]=Attach_UITop返回的uiParent，T[22]=xBase，T[23]=yBase，
+    -- UP[4]=buttonMap，T[21]=buttonHandlers。其三个显式参数为config/列索引/行偏移。
+    local xBase = miniChatRight - 10
+    local yBase = miniChatY + 1
+
+    local function createButton(config, columnIndex, rowOffset)
+        local x = xBase - 85 * columnIndex
+        local y = yBase + rowOffset
+
+        -- child9 PC1-PC50：GUI:Button_Create(uiParent,key,x,y,texture)。
+        local button = GUI:Button_Create(
+            uiParent, config.key, x, y, "res/public/fuzhu_btn.png"
+        )
+        if not button then
+            return
+        end
+
+        buttonMap[config.key] = button
+        GUI:Button_setTitleText(button, config.name)
+        GUI:Button_setTitleFontSize(button, 18.0)
+        GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
+        GUI:Button_setTitleColor(button, "#ffffff")
+
+        -- toggle项由child9创建child0回调；child0按buttonHandlers[key]门控。
+        if config.toggle then
+            config.toggled = false
+            GUI:addOnClickEvent(button, function()
+                local gate = buttonHandlers[config.key]
+                local allowed = true
+                if gate then
+                    allowed = gate()
+                end
+                if allowed == false then
+                    return
+                end
+                config.toggled = not config.toggled
+                GUI:Button_setTitleText(
+                    button,
+                    config.toggled and config.toggle or config.name
+                )
+                GUI:Button_setTitleColor(
+                    button,
+                    config.toggled and "#ff0000" or "#ffffff"
+                )
+            end)
+        end
+    end
+
+    -- PC346-PC378：三组配置分别以40、0、80为行偏移，列索引从ipairs返回。
+    for columnIndex, config in ipairs(buttonGroups[1]) do
+        createButton(config, columnIndex, 40.0)
+    end
+    for columnIndex, config in ipairs(buttonGroups[2]) do
+        createButton(config, columnIndex, 0.0)
+    end
+    for columnIndex, config in ipairs(buttonGroups[3]) do
+        createButton(config, columnIndex, 80.0)
+    end
+
+    -- PC379-PC418：创建“隐 藏”按钮，设置标题、字号、字体并绑定点击闭包。
+    local hideButton = GUI:Button_Create(
+        uiParent, "hidebut", 0.0, 0.0, "res/public/fuzhu_btn.png"
+    )
+    if hideButton then
+        GUI:Button_setTitleText(hideButton, "隐 藏")
+        GUI:Button_setTitleFontSize(hideButton, 18.0)
+        GUI:Button_setTitleFontName(hideButton, "res/public/kaiti2.ttf")
+        -- child15捕获[UP3,UP0]：模块UI状态对象与通知回调。
+        GUI:addOnClickEvent(hideButton, make_Nested_Helper_9(uiState, printLog))
+    end
+end
+
+-- PC411：doInit_UI直接挂入模块根表。
+MainLeftBottom.doInit = doInit_UI
+
+-- PC412：返回模块根表。
+return MainLeftBottom
+
 -- ============================================================================
 -- 唯一主源码工作约定
 -- 本文件 MainLeftBottom_功能等价重建.lua 是唯一持续更新的源码目标。
