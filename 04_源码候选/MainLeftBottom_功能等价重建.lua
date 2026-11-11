@@ -1526,6 +1526,7 @@ local function MainLoop()
     end
 end
 
+-- 检查点306：PC245 child19 UP[6]捕获root T[4]=PrintLog；启动提示通过该捕获函数输出。
 local function InitGatherMonsters()
     if timerState.gatherTimer then
         SL:UnSchedule(timerState.gatherTimer)
@@ -1535,7 +1536,7 @@ local function InitGatherMonsters()
     FormatStateChange(gatherStatusText.IDLE)
     ResetGatherMonsterData()
     timerState.gatherTimer = SL:Schedule(MainLoop, gatherConfig.CHECK_INTERVAL)
-    ShowLocalNoticeByType(string.format("引怪功能已启动 (阈值: %d)", gatherConfig.GATHER_THRESHOLD))
+    PrintLog(string.format("引怪功能已启动 (阈值: %d)", gatherConfig.GATHER_THRESHOLD))
 end
 
 local function StopGatherMonsters()

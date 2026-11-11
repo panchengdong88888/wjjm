@@ -23,9 +23,10 @@
 
 ## 3. 当前接续位置
 
-- 最近检查点：**305**
-- 下一检查点：**306**
-- 当前优先任务：复核PC238-PC255 InitGatherMonsters与StopGatherMonsters的两组7项捕获顺序、共享cell身份及调度调用形态。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
+- 最近检查点：**306**
+- 下一检查点：**307**
+- 当前优先任务：复核PC256-PC258 Builtsetting捕获身份、设置调用参数/顺序及通知回调调用形态。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
+- 检查点306已对照VM PC238-PC255和两个子原型指令，确认InitGatherMonsters捕获[T3,T18,T23,T13,T35,T8,T4]，最后一项T4为PrintLog；主源码原先误调用ShowLocalNoticeByType，已改为PrintLog(string.format(...))。StopGatherMonsters的[T18,T3,T25,T23,T13,T35,T4]捕获、状态复位和清理顺序一致。Schedule/UnSchedule保留SL冒号接收者及原实参顺序。当前容器仍未发现Lua解释器命令，尚未执行Lua 5.1语法检查或游戏运行验证。
 - PC280-PC412 的根级创建/捕获/导出/入口挂接已静态核对；PC1-PC211已修正ResetGatherMonsterData的清目标/等待状态复位顺序，FindMonsterInCurrViewField主体与27条物理指令恢复稿一致。检查点300已修正MainLoop等待归属变更到期后的FindMonsterInCurrViewField调用实参；检查点301已静态核对PC212-PC255导出，并补充MainLoop数值for循环游标语义注释；检查点302核对PC1-PC85闭包导出及捕获边界，修正物品/仓库函数对根级函数的错误词法引用；检查点303核对PC86-PC167配置、奖励表及UI捕获，明确奖励回调的18000取模参数。当前容器未发现Lua解释器命令，尚未执行Lua 5.1语法检查。后续仍以同一唯一主源码为准。
 
 ## 4. 源码文件职责
