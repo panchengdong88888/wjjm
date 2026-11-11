@@ -3544,3 +3544,15 @@ Nested_match：
 - 静态文本检查：两个函数定义均为单固定参数形式；已检查根候选、主恢复稿和GetWritablePath独立候选；检查点235签名与CSV/状态说明同步。
 - Lua语法编译未执行（无可用lua/luac/解析器）；目标游戏运行时验证仍为0。
 - 根模块仍未标记完整，58个闭包装配统计不变。下一步继续root PC1-PC412剩余入口审阅和doInit_UI优先整理；背包/仓库仍暂缓。
+
+
+## 检查点 #284（2026-11-11）：doInit_UI捕获命名与集中恢复稿回调来源同步
+- 工作分支：`work/functional-equivalent-rebuild-2026-11-11`。
+- 对照 `短函数草稿_第六十三批.lua`，将集中恢复稿中的 `make_doInit_UI`同步为20个具备明确语义的捕获参数名称，删除 `UPVALUE_0..UPVALUE_19`重复别名层。
+- PC131-PC145快捷栏自动配置回调改为使用UP[0]捕获的 `printLog(message)`，不再引用未经证实的全局 `PrintLog`。
+- 删除 `local buttonMap = buttonMap`自我遮蔽语句；20个捕获参数的实际位置、root PC390-PC410调用实参和顺序不变。
+- 修正资源统计关闭回调的过期dump nil注释；`timerState.resTimer = nil`行为保持原样。
+- 新增审计：`docs/audit/检查点284_doInit_UI捕获命名与主稿回调来源同步.md`。
+- 静态核对：工厂仍为20项捕获，UI工厂内部无UPVALUE别名，快捷栏日志调用落到捕获的printLog；主恢复稿调用点未变。
+- 未检测到可用Lua/luac/LuaJIT/解析器；本批未做Lua语法编译，也未做目标游戏运行验证。运行时验证仍为0。
+- 下一批：继续按PC分段复核doInit_UI的UI初始化、事件回调及23个子原型调用，不改动未确认的宿主方法或参数语义。
