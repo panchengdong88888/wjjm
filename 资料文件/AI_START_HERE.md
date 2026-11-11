@@ -4,7 +4,7 @@
 
 ## 用户给新 AI 的最简提示词
 
-继续 wjjm 功能等价复刻。先读取 wjjm/资料文件/AI_START_HERE.md 和 wjjm/资料文件/docs/handoff/05_机器可读接续状态.json；严格执行 current_task，当前先核对入口函数和 UI 相关函数，未完成前禁止处理其他模块。
+继续 wjjm 功能等价复刻。先读取 wjjm/资料文件/AI_START_HERE.md 和 wjjm/资料文件/docs/handoff/05_机器可读接续状态.json；严格执行机器状态 JSON 的 current_task；当前任务可能随用户明确指示调整，不得按旧检查点自行切换。
 
 ## 1. 唯一项目与分支
 
@@ -24,16 +24,16 @@
 
 ## 3. 当前任务（强制）
 
-第一优先级：按机器状态 JSON 的 current_task，补全根模块内部函数调用关系清单。
+第一优先级：按机器状态 JSON 的 current_task，优先核对并完善“开拉怪”完整功能链。
 
-- 入口模块、AccountIDValidation、doInit_UI 主体及其 UI 子原型的静态 VM 核对已完成；不得重新从头审查。
-- 配置读写链跨函数核对已完成。root.children[32] 与 root.children[54] 的 VM 实参顺序均为 PCallHelper(固定文件名, firstArg)，唯一交付源码已修正。
-- root.children[0] FileExistCheck_pcall_wrapper及其两个UI调用点已对照VM；文件已存在时直接返回成功、不删除文件，是原始VM行为，与“清空配置”提示不一致。为保持功能等价，不擅自改写。
-- 当前范围：只补全根模块中已恢复函数之间的调用边、延迟/定时回调边、UI回调边和宿主API调用边；不重新分析已完成函数主体。
-- 以现有root PC1-PC412闭包装配记录、原型结构树、函数状态清单和唯一交付源码为依据；有明确错误就直接修正唯一交付源码，不建立平行主源码。
-- 每完成一组、发现阻塞或任务变化，立即更新机器状态 JSON 和本文件，并提交到 main。
-- 不得把历史检查点323记载的上一轮静态复核，当作本轮用户指定任务已经完成。
-
+- 用户已明确将当前优先级调整为开拉怪；暂停此前“补全根模块调用图”的任务。
+- 核对范围：doInit_UI 的 yinguaibut 按钮处理器、阈值读取/输入/保存、Nested_StopGatherMonsters、Nested_InitGatherMonsters、InitGatherMonsters、MainLoop、FindMonsterCandidates、StopGatherMonsters、ResetGatherMonsterData。
+- 不重新反虚拟化已经完成的417条MainLoop、102条FindMonsterCandidates及相关辅助原型主体；复用现有VM静态成果，重点查调用receiver、实参顺序、回调连接和源码错配。
+- 检查点339已修正FindMonsterCandidates的视野查询：VM root.children[28] PC2为OP_121 SELF，PC3/PC4装载true，故源码应为 `SL:FindMonsterInCurrViewField(true, true)`；原点调用无参已删除。
+- 开拉怪阈值写入链存在VM原始行为异常：AnonymousHelper_54按VM传入PCallHelper(固定文件名,value)，而PCallHelper本体把第1参当写入内容、第2参当路径。当前保留VM行为，不得未经用户允许自行交换参数。
+- 保持Lua 5.1兼容；不执行Lua/luac实际编译或目标游戏运行验证。
+- 只修改根目录唯一交付源码 MainLeftBottom_唯一交付文件.lua；不创建分支或平行源码。
+- 每完成一组或发现重大问题，立即更新机器状态JSON和本文件并提交main。
 ## 4. 唯一交付源码与参考资料
 
 - MainLeftBottom_唯一交付文件.lua：唯一主源码，所有实际代码修正只写这里。
@@ -175,3 +175,16 @@
 - root.children[32]/[54]的PCallHelper实参顺序已修正并提交。
 - 下一步只补全根模块函数间调用边、定时/延迟回调边、UI回调边及宿主API调用边，不重做已完成函数主体。
 - 另记API冲突：用户确认官方GUI:Attach_UITop()无参数，但唯一交付源码仍保留VM调用实参T7=4；本轮未改动该UI调用。
+
+
+## 检查点339补充：开拉怪功能链第一轮核对
+
+- 已核对按钮映射：yinguaibut → Nested_StopGatherMonsters；handler返回false时点击闭包不切换按钮文字/颜色。
+- 有gatherTimer时调用StopGatherMonsters并返回true；无timer时先读取gather_monster_count.txt，读取失败/缺失则打开阈值输入框。
+- 阈值输入回调只接受数字字符串并tonumber；成功写配置后调用Nested_InitGatherMonsters(value)，再同步yinguaibut为开启状态。
+- Nested_InitGatherMonsters写入gatherConfig.GATHER_THRESHOLD，truthy时调用全局InitGatherMonsters。
+- InitGatherMonsters取消旧timer、置运行标记、切IDLE、重置共享状态、执行SL:Schedule(MainLoop,CHECK_INTERVAL)并输出启动提示。
+- MainLoop调用FindMonsterCandidates；FindMonsterCandidates原源码漏掉SL方法receiver及true,true参数，已按VM修正为SL:FindMonsterInCurrViewField(true,true)。
+- StopGatherMonsters取消timer、清目标、切IDLE、重置共享状态并输出停止提示。ResetGatherMonsterData内部也会清目标，因此重复清目标是VM原行为。
+- 阈值持久化包装参数行为与PCallHelper形参用途不一致，可能写入错误路径；作为原始VM逻辑风险记录，不擅自偏离。
+- 下一步：继续核对MainLoop的GATHERING等待归属、游标推进、锁定目标与ATTACKING分支的调用点，不重新展开417条函数主体。
