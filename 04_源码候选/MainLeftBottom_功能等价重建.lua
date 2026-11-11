@@ -1102,6 +1102,74 @@ local function ResetGatherMonsterData()
     PrintLog("数据已重置")
 end
 
+-- PC184-PC194辅助闭包：按已核实的比较与排序规则直接落为词法函数。
+local function GetOwnerID(actor, expectedOwnerID)
+    local ownerID = actor:GetOwnerID()
+    if ownerID == nil or ownerID == "" or ownerID == -1 then return false end
+    if type(ownerID) == "string" then return ownerID ~= tostring(ownerID) end
+    return ownerID ~= expectedOwnerID
+end
+
+local function GetOwnerIDText(actor, expectedOwnerID)
+    local ownerID = actor:GetOwnerID()
+    if ownerID == nil or ownerID == "" or ownerID == -1 then return false end
+    if type(ownerID) == "string" then return ownerID == tostring(ownerID) end
+    return ownerID == expectedOwnerID
+end
+
+local function SetTargetID(targetID)
+    if not global.Facade then return false end
+    local proxy = global.Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)
+    if not proxy then return false end
+    proxy:SetTargetID(targetID, global.MMO.SELETE_TARGET_TYPE_FIND)
+    return true
+end
+
+local function FindMonsterInCurrViewField()
+    local monsters = SL:FindMonsterInCurrViewField(true, true) or {}
+    local result = {}
+    for _, actor in ipairs(monsters) do
+        if IsDie(actor) then
+            local actorID = actor:GetID()
+            if actorID then result[actorID] = actor end
+        end
+    end
+    return result
+end
+
+local function FindMonsterCandidates()
+    local monsters = SL.FindMonsterInCurrViewField()
+    if not monsters or #monsters == 0 then return {} end
+    local ignoredNames = {}
+    local ignoreSetting = GET_SETTING(global.MMO.SETTING_IDX_IGNORE_MONSTER)
+    if ignoreSetting and type(ignoreSetting[1]) == "table" then
+        for name, enabled in pairs(ignoreSetting[1]) do
+            if enabled == true then ignoredNames[name] = true end
+        end
+    end
+    local playerPosition = GetPlayerPosition()
+    local candidates = {}
+    for _, actor in ipairs(monsters) do
+        if IsDie(actor) then
+            local name = actor:GetName() or "未知怪物"
+            if not ignoredNames[name] then
+                local actorPosition = GetPlayerMapPosition(actor)
+                actor._distance = DistanceCalculation(playerPosition, actorPosition)
+                table.insert(candidates, actor)
+            end
+        end
+    end
+    table.sort(candidates, function(left, right)
+        return left._distance < right._distance
+    end)
+    local result = {}
+    for index, actor in ipairs(candidates) do
+        if index > gatherConfig.GATHER_THRESHOLD then break end
+        table.insert(result, actor)
+    end
+    return result
+end
+
 local function MainLoop()
     if not gatherRunningCell.value then return end
 
@@ -1114,14 +1182,14 @@ local function MainLoop()
         return
     end
 
-    local getCandidates = rootEnvironment.FindMonsterCandidates
-    local getPlayerID = rootEnvironment.GetMainPlayerID
-    local getOwnerID = rootEnvironment.GetOwnerID
-    local getOwnerText = rootEnvironment.GetOwnerIDText
-    local getOwnerDescription = rootEnvironment.GetOwnerDescription
-    local isAlive = rootEnvironment.IsDie
-    local findActors = rootEnvironment.FindMonsterInCurrViewField
-    local setTarget = rootEnvironment.SetTargetID
+    local getCandidates = FindMonsterCandidates
+    local getPlayerID = GetMainPlayerID
+    local getOwnerID = GetOwnerID
+    local getOwnerText = GetOwnerIDText
+    local getOwnerDescription = GetOwnerDescription
+    local isAlive = IsDie
+    local findActors = FindMonsterInCurrViewField
+    local setTarget = SetTargetID
 
     if type(getPlayerID) ~= "function" or type(getOwnerID) ~= "function"
         or type(isAlive) ~= "function" or type(findActors) ~= "function"
