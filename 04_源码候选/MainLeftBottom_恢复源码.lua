@@ -2532,6 +2532,8 @@ local function make_doInit_UI(upvalue0, upvalue1, upvalue2, upvalue3, upvalue4, 
     local hideButton = GUI:Button_Create(
         uiParent, "hidebut", 0.0, 0.0, "res/public/fuzhu_btn.png"
     )
+    -- PC388：无条件将Button_Create返回值（包括nil）写入捕获的UI状态表T[0].hidebut。
+    UPVALUE_3.hidebut = hideButton
     if hideButton then
         GUI:Button_setTitleText(hideButton, "隐 藏")
         GUI:Button_setTitleFontSize(hideButton, 18.0)
