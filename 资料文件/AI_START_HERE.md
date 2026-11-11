@@ -83,3 +83,11 @@
 - 已核对FormatStateChange、FindMonsterCandidates、ResetGatherMonsterData、FindMonsterInCurrViewField等闭包的父级捕获顺序和对应词法共享变量。
 - 未发现明确父级装配错配；本批不代表这些子原型业务主体已经全部完成语义审计。
 - 下一步继续root PC212-PC296，核对全局导出、UI控制闭包、AccountIDValidation父级捕获和黑名单状态表字段。
+
+## 检查点327补充：root PC212-PC296
+
+- 已核对IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、MoveItemToQuickUse的创建/捕获/导出。
+- 已核对MainLeftBottom.a.hide/show/destroy三项UI控制字段及其捕获顺序。
+- 已核对AccountIDValidation捕获[PrintLog, ShowLocalNoticeByType]并写入MainLeftBottom.main。
+- 已核对随机传送道具名、黑名单数值常量、blacklistState七字段和配置文件名。
+- 未发现明确父级装配错配；下一步继续root PC297-PC412。
