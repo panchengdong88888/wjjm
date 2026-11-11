@@ -108,7 +108,7 @@
   "active_branch": "main",
   "branch_policy": "仓库只保留 main 一个分支；不创建工作分支、备份分支或平行开发线。其他分支的历史文件只归档到资料文件/分支归档/对应来源目录；确认归档和主源码完整后，删除旧分支。",
   "branch_cleanup_status": {
-    "main_head": "3c9e5f9841ce8b93257d6b2ce8a96950efc65c83",
+    "main_head": "7161849cbcb432d365adb23f266191e9e1193bbc",
     "archived_sources": [
       "backup/pre-functional-rewrite-2026-11-11",
       "work/functional-equivalent-rebuild-2026-11-11"
