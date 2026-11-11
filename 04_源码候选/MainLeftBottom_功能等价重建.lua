@@ -1418,38 +1418,32 @@ local function AccountIDValidation()
     end
     local accountID = SL:GetMetaValue("UID")
     PrintLog("账号ID：" .. tostring(accountID))
-    local allowed = {
+    local allowedAccountIDs = {
         "6324648", "39770358", "3548598", "1957840929", "1488903257",
         "1585201915", "1627987432", "1580027021", "1304755149"
     }
-    local valid = false
-    for _, id in ipairs(allowed) do
-        if tostring(accountID) == tostring(id) then valid = true; break end
+    local validationResult = false
+    for _, allowedID in ipairs(allowedAccountIDs) do
+        if tostring(accountID) == tostring(allowedID) then
+            validationResult = true
+            PrintLog("[提示] 账号ID在允许列表中，功能已开启")
+            break
+        end
     end
-    if valid then
-        PrintLog("[验证成功] 账号ID验证通过")
-    else
+    if not validationResult then
+        PrintLog("账号不存在，功能已限制，账号ID：" .. tostring(accountID))
         ShowLocalNoticeByType("[验证失败] 账号ID未在允许列表中")
     end
-    -- TODO：原闭包在0.5秒后调用Nested_Panel_mini_chat(validationResult, PrintLog)。
-    -- 目前先保留延迟触发占位；待把该子闭包主体并入后替换此回调。
-    SL:Schedule(function()
-        PrintLog("账号验证延迟回调占位：Nested_Panel_mini_chat尚未接入")
-    end, 0.5)
+    local scheduledCallback = function()
+        local mainProperty = MainProperty
+        if mainProperty and mainProperty._ui and mainProperty._ui.Panel_mini_chat then
+            SL:UnSchedule(validationResult)
+            MainLeftBottom.doInit()
+        end
+        PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
+    end
+    SL:Schedule(scheduledCallback,0.5)
 end
-
--- 按根模块PC创建顺序导出；所有入口现在都由本文件内的真实函数提供。
-rootEnvironment.IsInWhitelistMap = IsInWhitelistMap
-rootEnvironment.MainLoop = MainLoop
-rootEnvironment.InitGatherMonsters = InitGatherMonsters
-rootEnvironment.StopGatherMonsters = StopGatherMonsters
-rootEnvironment.Builtsetting = Builtsetting
-rootEnvironment.MoveItemToQuickUse = MoveItemToQuickUse
-MainLeftBottom.hide = DestroyUI
-MainLeftBottom.show = SetButtonVisibilityState
-MainLeftBottom.destroy = ShowHideAllButtons
-MainLeftBottom.main = AccountIDValidation
-
 
 local function CallRootFunction(name, ...)
     local fn = rootEnvironment[name]
