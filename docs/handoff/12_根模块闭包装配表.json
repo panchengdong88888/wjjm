@@ -7665,7 +7665,8 @@
       "同一闭包可先存入模块字段、随后T寄存器复用；按模块表字段的赋值事实记录，不因寄存器覆写而删除。",
       "全局导出名称与模块字段名称严格区分；ShowLocalNoticeByType、ScheduleOnce、Schedule在已审PC段未观察到根级导出。",
       "检查点314：根表直接字段为a/b/z/main/doInit；a状态表包含hide/show/destroy/blacklist/onDamageMsg。PC265/269/274/294/359均写入a状态表，PC279/411写入根表main/doInit。",
-      "检查点315：doInit_UI的T[7]在PC131由ipairs第三返回值初始化，但PC143泛型for迭代更新后保留最后索引4；PC180/183调用使用该最终值4。"
+      "检查点315：doInit_UI的T[7]在PC131由ipairs第三返回值初始化，但PC143泛型for迭代更新后保留最后索引4；PC180/183调用使用该最终值4。",
+      "检查点316：AccountIDValidation PC55清空R4后才创建等待闭包，PC59捕获到的UP0为nil；validationResult只用于前面的日志。等待回调PC16对应SL:UnSchedule(nil)，UP1捕获PrintLog。"
     ]
   },
   "root_assembly_checkpoint_246": {

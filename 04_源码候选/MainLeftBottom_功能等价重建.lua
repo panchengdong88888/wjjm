@@ -1598,15 +1598,20 @@ local function ShowHideAllButtons()
     end
 end
 
+-- PC276捕获root T[4]=PrintLog、T[5]=ShowLocalNoticeByType。
+-- 使用局部别名固定这两个闭包身份，避免运行期间全局同名函数被替换。
+local accountPrintLog = PrintLog
+local accountShowLocalNotice = ShowLocalNoticeByType
+
 local function AccountIDValidation()
     local gameID = SL:GetMetaValue("GAME_ID")
-    PrintLog("游戏id：" .. tostring(gameID))
+    accountPrintLog("游戏id：" .. tostring(gameID))
     if gameID ~= 204208 then
-        PrintLog("游戏不一致，id：" .. tostring(gameID))
+        accountPrintLog("游戏不一致，id：" .. tostring(gameID))
         return
     end
     local accountID = SL:GetMetaValue("UID")
-    PrintLog("账号ID：" .. tostring(accountID))
+    accountPrintLog("账号ID：" .. tostring(accountID))
     local allowedAccountIDs = {
         "6324648", "39770358", "3548598", "1957840929", "1488903257",
         "1585201915", "1627987432", "1580027021", "1304755149"
@@ -1616,33 +1621,37 @@ local function AccountIDValidation()
     local function Nested_ID(checkAccountID)
         for _, allowedID in ipairs(allowedAccountIDs) do
             if tostring(checkAccountID) == tostring(allowedID) then
-                PrintLog("[提示] 账号ID在允许列表中，功能已开启")
+                accountPrintLog("[提示] 账号ID在允许列表中，功能已开启")
                 return true
             end
         end
 
-        ShowLocalNoticeByType(
+        accountShowLocalNotice(
             "账号不存在，功能已限制，账号ID：" .. tostring(checkAccountID)
         )
         return false
     end
 
-    local validationResult = Nested_ID(accountID)
-    if validationResult then
-        PrintLog("[验证成功] 账号ID验证通过")
-    else
-        PrintLog("[验证失败] 账号ID未在允许列表中")
+    -- PC42-PC53：验证结果只用于本段成功/失败日志。
+    do
+        local validationResult = Nested_ID(accountID)
+        if validationResult then
+            accountPrintLog("[验证成功] 账号ID验证通过")
+        else
+            accountPrintLog("[验证失败] 账号ID未在允许列表中")
+        end
     end
+
+    -- PC55在创建等待闭包前清空R[4]；PC59随后捕获到的UP[0]为nil。
+    -- 因此原始行为是UnSchedule(nil)，不是把验证结果true/false传进去。
+    local unScheduleArgument = nil
     local scheduledCallback = function()
         local mainProperty = MainProperty
         if mainProperty and mainProperty._ui and mainProperty._ui.Panel_mini_chat then
-            -- VM子原型明确把validationResult传给UnSchedule，而不是Schedule返回句柄。
-            -- validationResult来自Nested_ID的布尔返回值；与文档scheduleID契约存在疑点，
-            -- 先保留原始调用，不凭推测改写，需目标宿主运行验证。
-            SL:UnSchedule(validationResult)
-            rootEnvironment.MainLeftBottom.doInit()
+            SL:UnSchedule(unScheduleArgument)
+            getfenv(1).MainLeftBottom.doInit()
         end
-        PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
+        accountPrintLog("等待主界面属性栏(MainProperty)初始化完成...")
     end
     SL:Schedule(scheduledCallback,0.5)
 end
