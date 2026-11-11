@@ -19,7 +19,8 @@
       "23 个子原型调用关系",
       "20 个捕获参数在根模块工厂装配时的实际注入顺序"
     ],
-    "next": "直接在唯一主源码 MainLeftBottom_功能等价重建.lua 内继续补齐 doInit_UI 和其依赖闭包；后续所有实现只更新该文件。"
+    "next": "继续在唯一主源码 MainLeftBottom_功能等价重建.lua 中补齐根模块普通函数、UI及业务闭包依赖；不要另建平行源码。",
+    "progress": "已将doInit_UI的419条PC主体及其直接子闭包首版并入唯一主源码，20项父级捕获改为词法变量绑定；UI函数已挂入MainLeftBottom.doInit。依赖的部分根级业务函数仍需接入。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -46,7 +47,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "已于2026-11-11创建唯一主源码文件，初始内容承接root_MainLeftBottom_Module.lua现有可读实现；整体闭包装配仍未完成。",
+    "static_source_review": "唯一主源码现约2169行；已检查doInit_UI定义、模块字段挂接、return及无sourceFunction/requireRecoveredClosure/rootConfigRegisters动态装配依赖。未执行Lua语法检查（当前环境无lua/luac），未执行目标游戏运行验证。",
     "lua_syntax_check": "未执行/未确认",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
