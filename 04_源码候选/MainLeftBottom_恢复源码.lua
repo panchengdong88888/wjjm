@@ -3014,6 +3014,143 @@ local function __root1_1(removeFile, path)
     return removeFile(path)
 end
 
+----------------------------------------------------------------
+-- 检查点279：配置文件读写闭包链的直接函数来源。
+-- 这些函数按原捕获关系直接闭包化；不再通过多个make_xxx工厂实例化。
+----------------------------------------------------------------
+do
+    ----------------------------------------------------------------
+    -- 检查点279：配置文件读写闭包链（功能等价复刻）
+    --
+    -- 对应根原型：
+    --   root.children[2]  GetWritablePath
+    --   root.children[9]  ReadNumericConfig
+    --   root.children[17] PCallHelper
+    --   root.children[0]  FileExistCheck_pcall_wrapper
+    --   root.children[49] AnonymousHelper_49
+    --   root.children[32] AnonymousHelper_32
+    --   root.children[33] AnonymousHelper_33
+    --   root.children[54] AnonymousHelper_54
+    --
+    -- 直接使用词法闭包表达原捕获关系，不再通过 make_xxx 工厂二次包装。
+    -- 保留原始 FileUtils 接收者、参数次序、pcall 分支及返回值传递。
+    ----------------------------------------------------------------
+    
+    -- root.children[2]：取得可写目录并拼接首个可变参数。
+    -- 字节码 vararg_flag=1；只读取第一个可变参数，忽略其余参数。
+    local function GetWritablePath(...)
+        local path = ...
+        local fileUtils = cc.FileUtils:getInstance()
+        local writablePath = fileUtils:getWritablePath()
+        return writablePath .. path
+    end
+    
+    -- root.children[9]：读取仅包含无符号十进制数字的配置文件。
+    -- 不存在、读取结果非字符串、内容不匹配时均返回 nil。
+    local function ReadNumericConfig(fileName)
+        local fileUtils = cc.FileUtils:getInstance()
+        local fullPath = GetWritablePath(fileName)
+    
+        if not fileUtils:isFileExist(fullPath) then
+            return nil
+        end
+    
+        local content = fileUtils:getStringFromFile(fullPath)
+        if type(content) ~= "string" then
+            return nil
+        end
+    
+        local normalized = string.gsub(content, "%\s", "")
+        local digits = string.match(normalized, "^%d+$")
+        if digits then
+            return tonumber(normalized)
+        end
+    
+        return nil
+    end
+    
+    -- root.children[17]：将文本写入由GetWritablePath解析出的文件路径。
+    -- 第一个参数是写入内容；第二个参数是路径参数。
+    -- 子闭包把GetWritablePath(arg0)的全部返回值转发给writeStringToFile。
+    -- pcall失败或写入结果严格等于false时返回false；其他成功结果（含nil）返回true。
+    local function PCallHelper(arg1, arg0, ...)
+        local function Nested_tostring()
+            local fileUtils = cc.FileUtils:getInstance()
+            local payload = tostring(arg1)
+            return fileUtils:writeStringToFile(
+                payload,
+                GetWritablePath(arg0)
+            )
+        end
+    
+        local ok, result = pcall(Nested_tostring, ...)
+        if not ok or result == false then
+            return false
+        end
+    
+        return true
+    end
+    
+    -- root.children[0]：检查文件；不存在时尝试删除，再次检查是否已不存在。
+    -- 返回值始终为（成功状态, 解析后的完整路径）。
+    local function FileExistCheck_pcall_wrapper(path, ...)
+        local fileUtils = cc.FileUtils:getInstance()
+        local resolvedPath = GetWritablePath(path)
+    
+        if fileUtils:isFileExist(resolvedPath) then
+            return true, resolvedPath
+        end
+    
+        local function Nested_removeFile()
+            fileUtils:removeFile(resolvedPath)
+        end
+    
+        local removeSucceeded = pcall(Nested_removeFile)
+        if not removeSucceeded then
+            return false, resolvedPath
+        end
+    
+        return not fileUtils:isFileExist(resolvedPath), resolvedPath
+    end
+    
+    -- root.children[49]：固定读取 blacklist_distance.txt，原样返回读取函数的结果。
+    local function AnonymousHelper_49()
+        return ReadNumericConfig(blacklistDistanceConfigFile)
+    end
+    
+    -- root.children[32]：固定写入 blacklist_distance.txt，转发首个显式参数。
+    local function AnonymousHelper_32(firstArg)
+        return PCallHelper(blacklistDistanceConfigFile, firstArg)
+    end
+    
+    -- root.children[33]：固定读取 gather_monster_count.txt。
+    local function AnonymousHelper_33()
+        return ReadNumericConfig(gatherMonsterCountConfigFile)
+    end
+    
+    -- root.children[54]：固定写入 gather_monster_count.txt，转发首个显式参数。
+    local function AnonymousHelper_54(firstArg)
+        return PCallHelper(gatherMonsterCountConfigFile, firstArg)
+    end
+    
+    ----------------------------------------------------------------
+    -- 检查点279配置链结束；后续PC316-PC412继续使用同一词法作用域。
+    ----------------------------------------------------------------
+    
+    
+    local __exports = {
+        GetWritablePath = GetWritablePath,
+        ReadNumericConfig = ReadNumericConfig,
+        PCallHelper = PCallHelper,
+        FileExistCheck_pcall_wrapper = FileExistCheck_pcall_wrapper,
+        AnonymousHelper_49 = AnonymousHelper_49,
+        AnonymousHelper_32 = AnonymousHelper_32,
+        AnonymousHelper_33 = AnonymousHelper_33,
+        AnonymousHelper_54 = AnonymousHelper_54
+    }
+    MainLeftBottomRecovered.sources["04_源码候选/root_MainLeftBottom_Module.lua"] = __exports
+end
+
 -- root.children[2] / legacy root/3：构造可写目录路径。
 -- PC7读取首个可变参数；PC8拼接顺序为 writablePath .. path；PC9返回。
 -- vararg_flag=1，额外参数未读取，保留原可变参数形式。
@@ -6418,99 +6555,56 @@ do
 
     -- PC297：创建无捕获GetWritablePath，写入T[44]。
     bindDirect("GetWritablePath",
-        "04_源码候选/verified_helpers_batches_1_3.lua", "GetWritablePath")
+        "04_源码候选/root_MainLeftBottom_Module.lua", "GetWritablePath")
     rootConfigRegisters[44] = requireRecoveredClosure(
         "GetWritablePath", rootPrototypes.GetWritablePath
     )
 
-    -- PC298-PC299：ReadNumericConfig捕获T[44]，创建后写入T[45]。
-    local makeReadNumericConfig = sourceFunction(
-        "04_源码候选/root9_ReadNumericConfig.lua", "make_ReadNumericConfig"
-    )
-    if makeReadNumericConfig then
-        rootPrototypes.ReadNumericConfig =
-            makeReadNumericConfig(rootConfigRegisters[44])
-    end
+    -- PC298-PC299：ReadNumericConfig使用PC297创建的同一GetWritablePath词法闭包。
+    rootPrototypes.ReadNumericConfig =
+        sourceFunction("04_源码候选/root_MainLeftBottom_Module.lua", "ReadNumericConfig")
     rootConfigRegisters[45] = requireRecoveredClosure(
         "ReadNumericConfig", rootPrototypes.ReadNumericConfig
     )
 
-    -- PC300-PC301：PCallHelper捕获同一T[44]，创建后写入T[46]。
-    local makePCallHelper = sourceFunction(
-        "04_源码候选/PCallHelper_文件写入包装_第六批草稿.lua",
-        "make_PCallHelper"
-    )
-    if makePCallHelper then
-        rootPrototypes.PCallHelper =
-            makePCallHelper(rootConfigRegisters[44])
-    end
+    -- PC300-PC301：PCallHelper使用同一GetWritablePath词法闭包。
+    rootPrototypes.PCallHelper =
+        sourceFunction("04_源码候选/root_MainLeftBottom_Module.lua", "PCallHelper")
     rootConfigRegisters[46] = requireRecoveredClosure(
         "PCallHelper", rootPrototypes.PCallHelper
     )
 
-    -- PC302-PC303：FileExistCheck_pcall_wrapper捕获T[44]，写入T[47]。
-    local makeFileExistCheck = sourceFunction(
-        "04_源码候选/短函数草稿_第三十八批.lua",
-        "make_FileExistCheck_pcall_wrapper"
-    )
-    if makeFileExistCheck then
-        rootPrototypes.FileExistCheck_pcall_wrapper =
-            makeFileExistCheck(rootConfigRegisters[44])
-    end
+    -- PC302-PC303：文件存在检查包装器同样闭合到GetWritablePath。
+    rootPrototypes.FileExistCheck_pcall_wrapper =
+        sourceFunction("04_源码候选/root_MainLeftBottom_Module.lua", "FileExistCheck_pcall_wrapper")
     rootConfigRegisters[47] = requireRecoveredClosure(
         "FileExistCheck_pcall_wrapper", rootPrototypes.FileExistCheck_pcall_wrapper
     )
 
-    -- PC304-PC306：AnonymousHelper_49捕获[T[45],T[42]]，写入T[48]。
-    local makeAnonymousHelper49 = sourceFunction(
-        "04_源码候选/root49_AnonymousHelper_49.lua", "make_AnonymousHelper_49"
-    )
-    if makeAnonymousHelper49 then
-        rootPrototypes.AnonymousHelper_49 = makeAnonymousHelper49(
-            rootConfigRegisters[45], rootConfigRegisters[42]
-        )
-    end
+    -- PC304-PC306：固定读取blacklist_distance.txt。
+    rootPrototypes.AnonymousHelper_49 =
+        sourceFunction("04_源码候选/root_MainLeftBottom_Module.lua", "AnonymousHelper_49")
     rootConfigRegisters[48] = requireRecoveredClosure(
         "AnonymousHelper_49", rootPrototypes.AnonymousHelper_49
     )
 
-    -- PC307-PC309：AnonymousHelper_32捕获[T[46],T[42]]，写入T[49]。
-    local makeAnonymousHelper32 = sourceFunction(
-        "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
-        "make_AnonymousHelper_32"
-    )
-    if makeAnonymousHelper32 then
-        rootPrototypes.AnonymousHelper_32 = makeAnonymousHelper32(
-            rootConfigRegisters[46], rootConfigRegisters[42]
-        )
-    end
+    -- PC307-PC309：固定写入blacklist_distance.txt；第一个显式参数继续转发。
+    rootPrototypes.AnonymousHelper_32 =
+        sourceFunction("04_源码候选/root_MainLeftBottom_Module.lua", "AnonymousHelper_32")
     rootConfigRegisters[49] = requireRecoveredClosure(
         "AnonymousHelper_32", rootPrototypes.AnonymousHelper_32
     )
 
-    -- PC310-PC312：AnonymousHelper_33捕获[T[45],T[43]]，写入T[50]。
-    local makeAnonymousHelper33 = sourceFunction(
-        "04_源码候选/PlayerPos与匿名转发闭包_第十一批.lua",
-        "make_AnonymousHelper_33"
-    )
-    if makeAnonymousHelper33 then
-        rootPrototypes.AnonymousHelper_33 = makeAnonymousHelper33(
-            rootConfigRegisters[45], rootConfigRegisters[43]
-        )
-    end
+    -- PC310-PC312：固定读取gather_monster_count.txt。
+    rootPrototypes.AnonymousHelper_33 =
+        sourceFunction("04_源码候选/root_MainLeftBottom_Module.lua", "AnonymousHelper_33")
     rootConfigRegisters[50] = requireRecoveredClosure(
         "AnonymousHelper_33", rootPrototypes.AnonymousHelper_33
     )
 
-    -- PC313-PC315：AnonymousHelper_54捕获[T[46],T[43]]，写入T[51]。
-    local makeAnonymousHelper54 = sourceFunction(
-        "root/55_AnonymousHelper_54.lua", "make_AnonymousHelper_54"
-    )
-    if makeAnonymousHelper54 then
-        rootPrototypes.AnonymousHelper_54 = makeAnonymousHelper54(
-            rootConfigRegisters[46], rootConfigRegisters[43]
-        )
-    end
+    -- PC313-PC315：固定写入gather_monster_count.txt。
+    rootPrototypes.AnonymousHelper_54 =
+        sourceFunction("04_源码候选/root_MainLeftBottom_Module.lua", "AnonymousHelper_54")
     rootConfigRegisters[51] = requireRecoveredClosure(
         "AnonymousHelper_54", rootPrototypes.AnonymousHelper_54
     )
