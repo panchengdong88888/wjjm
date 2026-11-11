@@ -3019,6 +3019,9 @@ end
 -- 这些函数按原捕获关系直接闭包化；不再通过多个make_xxx工厂实例化。
 ----------------------------------------------------------------
 do
+    -- 与根模块PC295-PC296相同的两个固定文件名；仅作为闭包捕获值。
+    local blacklistDistanceConfigFile = "blacklist_distance.txt"
+    local gatherMonsterCountConfigFile = "gather_monster_count.txt"
     ----------------------------------------------------------------
     -- 检查点279：配置文件读写闭包链（功能等价复刻）
     --
@@ -3060,7 +3063,7 @@ do
             return nil
         end
     
-        local normalized = string.gsub(content, "%\s", "")
+        local normalized = string.gsub(content, "%s", "")
         local digits = string.match(normalized, "^%d+$")
         if digits then
             return tonumber(normalized)
@@ -3148,7 +3151,14 @@ do
         AnonymousHelper_33 = AnonymousHelper_33,
         AnonymousHelper_54 = AnonymousHelper_54
     }
-    MainLeftBottomRecovered.sources["04_源码候选/root_MainLeftBottom_Module.lua"] = __exports
+    -- 合并到第一批基础辅助函数已经登记的根模块来源表，避免覆盖旧导出。
+    local rootModuleExports =
+        MainLeftBottomRecovered.sources["04_源码候选/root_MainLeftBottom_Module.lua"] or {}
+    for name, fn in pairs(__exports) do
+        rootModuleExports[name] = fn
+    end
+    MainLeftBottomRecovered.sources["04_源码候选/root_MainLeftBottom_Module.lua"] =
+        rootModuleExports
 end
 
 -- root.children[2] / legacy root/3：构造可写目录路径。
