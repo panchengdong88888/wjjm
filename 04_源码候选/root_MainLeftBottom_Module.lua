@@ -8,9 +8,22 @@
 -- 检查点278：第一批11个地图/坐标/玩家辅助函数已在本文件中整理为可读函数主体；静态证据完整，未运行时验证。
 -- 检查点282：按原始VM固定参数计数纠正GetWritablePath/ReadNumericConfig入口；两者均为一个固定参数，额外参数不读取，未运行时验证。
 -- 检查点281：按用户要求，当前优先级调整为MainLeftBottom_Module入口PC1-PC412与doInit_UI界面初始化；物品/背包/仓库功能暂缓。
+-- 检查点283：PC2/4/31/34等ENV名称读写统一通过rootEnvironment；PC44/45中ENV["_G"]单独解析为rootRegisters[5]，log写入该表；全局闭包导出写入ENV而非假定写入_G。
+
+-- VM的ENV是当前chunk环境，不应无条件等同于_G。
+-- Lua 5.1优先通过getfenv取得；Lua 5.2+使用词法_ENV；
+-- 只有运行环境不提供上述机制时才回退_G。
+local rootEnvironment
+if type(getfenv) == "function" then
+    rootEnvironment = getfenv(1)
+else
+    rootEnvironment = _ENV or _G
+end
+assert(type(rootEnvironment) == "table",
+    "MainLeftBottom root chunk environment is not a table")
 
 local MainLeftBottom = {}
-_G.MainLeftBottom = MainLeftBottom
+rootEnvironment.MainLeftBottom = MainLeftBottom
 
 -- PC3-PC5：T[0]先创建a状态表，再于PC5挂入模块根表。
 local a = {}
@@ -43,7 +56,7 @@ a.hidebut = nil
 
 -- PC30-PC32：T[1]创建b映射表；PC31重新读取模块根表，PC32挂入b。
 local b = {}
-local moduleForB = _G.MainLeftBottom
+local moduleForB = rootEnvironment.MainLeftBottom
 moduleForB.b = b
 
 -- PC33-PC35：T[2]创建z状态表，再挂入模块根表。
@@ -755,7 +768,7 @@ local function MoveItemToQuickUse(itemIndex, targetPos)
 end
 
 -- root PC259-PC260：该原型无捕获，根模块创建后立即导出全局函数。
-_G.MoveItemToQuickUse = MoveItemToQuickUse
+rootEnvironment.MoveItemToQuickUse = MoveItemToQuickUse
 
 
 
@@ -769,14 +782,21 @@ _G.MoveItemToQuickUse = MoveItemToQuickUse
 --
 -- 这是第一阶段装配骨架，不是完整原始模块；尚未完成的父级闭包创建、
 -- 部分本地辅助函数和宿主运行时验证仍需后续补齐。
-local function AttachRecoveredPrototypes(prototypes)
+local function AttachRecoveredPrototypes(prototypes, environment)
     assert(type(prototypes) == "table",
         "AttachRecoveredPrototypes expects a table of recovered closures")
+
+    environment = environment or rootEnvironment
+    assert(type(environment) == "table",
+        "AttachRecoveredPrototypes expects a chunk environment table")
+    local module = environment.MainLeftBottom
+    assert(type(module) == "table",
+        "AttachRecoveredPrototypes cannot find environment.MainLeftBottom")
 
     local function exportGlobal(globalName, prototypeName)
         local fn = prototypes[prototypeName]
         if fn ~= nil then
-            _G[globalName] = fn
+            environment[globalName] = fn
         end
     end
 
@@ -794,7 +814,7 @@ local function AttachRecoveredPrototypes(prototypes)
     exportGlobal("PickUpItems", "PickUpItems")
 
     if prototypes.LuaSendMsg ~= nil then
-        MainLeftBottom.a.LuaSendMsg = prototypes.LuaSendMsg
+        module.a.LuaSendMsg = prototypes.LuaSendMsg
     end
 
     -- root PC212-PC258：采集控制相关全局入口。
@@ -806,34 +826,34 @@ local function AttachRecoveredPrototypes(prototypes)
 
     -- root PC259-PC274：模块表上的界面控制闭包。
     if prototypes.DestroyUI ~= nil then
-        MainLeftBottom.hide = prototypes.DestroyUI
+        module.hide = prototypes.DestroyUI
     end
     if prototypes.SetButtonVisibilityState ~= nil then
-        MainLeftBottom.show = prototypes.SetButtonVisibilityState
+        module.show = prototypes.SetButtonVisibilityState
     end
     if prototypes.ShowHideAllButtons ~= nil then
-        MainLeftBottom.destroy = prototypes.ShowHideAllButtons
+        module.destroy = prototypes.ShowHideAllButtons
     end
     exportGlobal("MoveItemToQuickUse", "MoveItemToQuickUse")
 
     -- root PC275-PC279：账号验证入口。
     if prototypes.AccountIDValidation ~= nil then
-        MainLeftBottom.main = prototypes.AccountIDValidation
+        module.main = prototypes.AccountIDValidation
     end
 
     -- root PC350-PC388：伤害回调与黑名单功能入口。
     if prototypes.onDamageMsg ~= nil then
-        MainLeftBottom.onDamageMsg = prototypes.onDamageMsg
+        module.onDamageMsg = prototypes.onDamageMsg
     end
     exportGlobal("BlacklistItems", "BlacklistPlayerDetection")
     exportGlobal("ClearBlacklistItems", "ClearBlacklistItems")
 
     -- root PC389-PC411：主界面初始化入口。
     if prototypes.doInit_UI ~= nil then
-        MainLeftBottom.doInit = prototypes.doInit_UI
+        module.doInit = prototypes.doInit_UI
     end
 
-    return MainLeftBottom
+    return module
 end
 
 -- 第一阶段接入约定：
