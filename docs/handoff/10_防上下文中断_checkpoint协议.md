@@ -3516,3 +3516,15 @@ Nested_match：
 - 原始完整静态恢复计数仍109/110；普通Lua草稿计数仍72。
 - 下一步检查点281：优先功能等价整理GetAvailableStoragePage与GetStorageItemData，再进入StorageItems。未文档化的NPCStorageProxy等宿主代理方法保留原调用。
 
+
+
+## 检查点 #281（2026-11-11）：用户调整优先级——先入口模块与UI类
+
+- 用户明确要求先处理入口类和UI类，暂停背包/仓库。
+- 当前优先目标：`MainLeftBottom_Module` root PC1-PC412；其次`doInit_UI` root.children[42]（419条指令、20项捕获、23个子原型）。
+- root入口关键事实：PC1创建并导出`_G.MainLeftBottom`；PC3-PC42初始化模块子表和状态；PC43-PC388创建/导出闭包与模块字段；PC390-PC410创建并捕获doInit_UI；PC411写入`_ENV.MainLeftBottom.doInit`；PC412返回模块表。
+- 本批修改`短函数草稿_第六十三批.lua`：doInit_UI的20个工厂捕获形参按实际已知职责命名，保持位置顺序；第17/19槽仍中性命名。PC131-PC145快捷栏回调改为调用UP0捕获的`printLog`，不再引用未确认存在的全局`PrintLog`。
+- 主恢复稿与根模块候选头部均标注入口/UI优先；函数状态CSV和机器状态同步更新。
+- 本批未声称入口模块或UI类整体完成；下一步继续逐PC整理根入口PC1-PC412，再对doInit_UI父函数及23个子原型做完整调用来源复核。
+- 物品/背包/仓库工作（GetAvailableStoragePage/GetStorageItemData/StorageItems）暂缓。
+- 未运行Lua编译器，未做目标游戏运行时验证；静态恢复计数109/110、普通Lua草稿72不变。

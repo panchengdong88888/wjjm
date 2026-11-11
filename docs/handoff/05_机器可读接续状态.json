@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点281：转入物品/背包/仓库功能组。优先将已有完整静态恢复证据且逻辑直观的GetAvailableStoragePage与GetStorageItemData整理为可读直接函数，再进入StorageItems；保留未文档化宿主代理调用，不反汇编代理内部。",
+  "next_action": "继续优先恢复入口模块MainLeftBottom_Module与UI初始化doInit_UI：先逐PC审阅根模块PC1-PC412，整理真正的模块入口初始化/闭包装配/全局导出/字段挂接/return；再系统整理doInit_UI的419条指令和23个子原型，保留20项捕获顺序。暂缓GetAvailableStoragePage、GetStorageItemData、StorageItems等背包仓库工作。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -131,8 +131,8 @@
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
     "last_checkpoint_date": "2026-11-11",
-    "last_checkpoint": "280",
-    "last_completed_checkpoint": 280,
+    "last_checkpoint": "281",
+    "last_completed_checkpoint": 281,
     "next_checkpoint": 281
   },
   "static_recovered_functions": [
@@ -2809,25 +2809,22 @@
   ],
   "latest_batch": {
     "date": "2026-11-11",
-    "checkpoint": "280",
+    "checkpoint": "281",
     "targets": [
-      "doInit_UI",
-      "AnonymousHelper_49",
-      "AnonymousHelper_32",
-      "AnonymousHelper_33",
-      "AnonymousHelper_54",
-      "FileExistCheck_pcall_wrapper",
-      "PCallHelper"
+      "MainLeftBottom_Module",
+      "doInit_UI"
     ],
-    "status": "已核对doInit_UI配置闭包调用时机、实参与返回值用途；主恢复稿改为业务语义局部别名并重命名保存/清除回调形参；不更改捕获顺序与行为。发现PCallHelper固定文件名/输入值参数顺序与其写入体路径/文本用途存在跨函数异常，保留原始顺序并列为待复核。",
-    "audit_file": "docs/audit/检查点280_doInit_UI配置闭包调用链功能等价复刻.md",
+    "status": "用户要求将入口模块和UI初始化提前。本批完成doInit_UI工厂20项捕获的语义化参数命名，并将快捷栏延迟回调的日志调用改为使用实际捕获的printLog闭包；根模块入口优先级已记录，PC1-PC412连续入口装配审阅尚未完成。",
+    "audit_file": "docs/audit/检查点281_入口模块与UI优先恢复.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
-    "helper_count": 0,
-    "direct_bindings": 0,
-    "config_call_paths_reviewed": 6,
-    "static_function_count_unchanged": 109,
-    "ordinary_lua_drafts_unchanged": 72,
+    "ui_candidate_file": "04_源码候选/短函数草稿_第六十三批.lua",
+    "ui_capture_count": 20,
+    "ui_child_prototype_count": 23,
+    "ui_instruction_count": 419,
+    "root_instruction_count": 412,
+    "static_function_count": 109,
+    "ordinary_lua_drafts": 72,
     "runtime_verified": 0,
     "lua_compiler_available": false
   },
@@ -3551,28 +3548,31 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 280,
-  "checkpoint": 280,
+  "last_checkpoint": 281,
+  "checkpoint": 281,
   "drafts": 33,
-  "next": "检查点281：转入物品/背包/仓库功能组。优先将已有完整静态恢复证据且逻辑直观的GetAvailableStoragePage与GetStorageItemData整理为可读直接函数，再进入StorageItems；保留未文档化宿主代理调用，不反汇编代理内部。",
+  "next": "继续优先恢复入口模块MainLeftBottom_Module与UI初始化doInit_UI：先逐PC审阅根模块PC1-PC412，整理真正的模块入口初始化/闭包装配/全局导出/字段挂接/return；再系统整理doInit_UI的419条指令和23个子原型，保留20项捕获顺序。暂缓GetAvailableStoragePage、GetStorageItemData、StorageItems等背包仓库工作。",
   "recent_checkpoint": {
-    "number": 280,
+    "number": 281,
     "date": "2026-11-11",
-    "audit_file": "docs/audit/检查点280_doInit_UI配置闭包调用链功能等价复刻.md",
-    "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
-    "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
+    "audit_file": "docs/audit/检查点281_入口模块与UI优先恢复.md",
+    "targets": [
+      "MainLeftBottom_Module",
+      "doInit_UI"
+    ],
     "metrics": {
-      "config_call_paths_reviewed": 6,
-      "doInit_capture_order_preserved": true,
-      "source_parameter_names_clarified": true,
+      "ui_capture_count": 20,
+      "ui_child_prototype_count": 23,
+      "ui_instruction_count": 419,
+      "root_instruction_count": 412,
       "static_function_count": 109,
       "ordinary_lua_drafts": 72,
       "runtime_verified": 0,
       "lua_compiler_available": false
     },
-    "notes": "doInit_UI的配置读取/写入/清除回调时机和参数流已核对；只在按钮或输入回调触发，不在初始化阶段统一读写。保存包装器PCallHelper的参数顺序与本体文本/路径用途存在跨函数异常，依据既有PC证据保留原顺序，不按业务意图交换参数。FileExistCheck现存文件分支返回true/path但不删除，提示语义不一致待复核。"
+    "notes": "doInit_UI工厂的20个捕获形参改为语义名称，保持PC390-PC410位置顺序；按钮快捷栏回调原先误写为未确认全局PrintLog，改为调用UP0捕获的printLog。根模块PC1-PC412与doInit_UI其余主体/子闭包仍为当前优先工作。"
   },
-  "latest_checkpoint": 280,
+  "latest_checkpoint": 281,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3889,7 +3889,7 @@
   "functional_rebuild": {
     "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
     "backup_branch": "backup/pre-functional-rewrite-2026-11-11",
-    "current_batch": "doInit_UI配置回调调用链",
+    "current_batch": "MainLeftBottom_Module入口与doInit_UI优先恢复",
     "functions": [
       "FileExistCheck_pcall_wrapper",
       "GetWritablePath",
@@ -3905,7 +3905,7 @@
     "lua_syntax_compiler_available": false,
     "runtime_verified": 0,
     "direct_sources_bound": 8,
-    "last_completed_checkpoint": 280,
+    "last_completed_checkpoint": 281,
     "next_checkpoint": 281
   },
   "checkpoint280_config_callback_graph": {
