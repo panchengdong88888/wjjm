@@ -24,16 +24,18 @@
 
 ## 3. 当前任务（强制）
 
-当前开拉怪功能的静态核对已在检查点340完成；等待用户指定下一项任务，不得自行切换模块。
+最高优先级：开拉怪实测问题
 
-- 用户已明确将当前优先级调整为开拉怪；暂停此前“补全根模块调用图”的任务。
-- 核对范围：doInit_UI 的 yinguaibut 按钮处理器、阈值读取/输入/保存、Nested_StopGatherMonsters、Nested_InitGatherMonsters、InitGatherMonsters、MainLoop、FindMonsterCandidates、StopGatherMonsters、ResetGatherMonsterData。
-- 不重新反虚拟化已经完成的417条MainLoop、102条FindMonsterCandidates及相关辅助原型主体；复用现有VM静态成果，重点查调用receiver、实参顺序、回调连接和源码错配。
-- 检查点339已修正FindMonsterCandidates的视野查询：VM root.children[28] PC2为OP_121 SELF，PC3/PC4装载true，故源码应为 `SL:FindMonsterInCurrViewField(true, true)`；原点调用无参已删除。
-- 开拉怪阈值写入链存在VM原始行为异常：AnonymousHelper_54按VM传入PCallHelper(固定文件名,value)，而PCallHelper本体把第1参当写入内容、第2参当路径。当前保留VM行为，不得未经用户允许自行交换参数。
-- 保持Lua 5.1兼容；不执行Lua/luac实际编译或目标游戏运行验证。
+用户已明确反馈：开拉怪功能在目标环境实测存在问题，当前任务是重新核对、定位并解决该问题。此前检查点340的静态核对“与VM一致”不再构成结束条件；只要实测表现不符，就必须重新审查对应代码，不能以旧检查点为由跳过。
+
+- 当前只处理开拉怪功能，其他功能模块全部暂停。
+- 以用户提供的具体实测表现为入口，重新追踪 yinguaibut 按钮、阈值读取/输入/保存、Nested_StopGatherMonsters、Nested_InitGatherMonsters、InitGatherMonsters、MainLoop、FindMonsterCandidates、StopGatherMonsters、ResetGatherMonsterData，以及相关定时器、引擎代理和宿主API。
+- 交叉核对实测现象、VM指令、唯一交付源码和官方框架API文档。旧检查点只作线索，不得直接作为“无需再查”的结论。
+- 如果问题来自VM原始逻辑本身，须明确区分“源码恢复错误”和“原始功能缺陷”；以解决实测问题为目标，提出并实施有证据支持的功能修复，不机械保留已确认妨碍功能的原始异常。
 - 只修改根目录唯一交付源码 MainLeftBottom_唯一交付文件.lua；不创建分支或平行源码。
-- 每完成一组或发现重大问题，立即更新机器状态JSON和本文件并提交main。
+- 保持Lua 5.1兼容；按用户要求，不执行Lua/luac实际编译或目标游戏运行验证，实测表现由用户提供。
+- 用户发送“1”表示继续当前开拉怪任务，不需要再次确认。
+
 ## 4. 唯一交付源码与参考资料
 
 - MainLeftBottom_唯一交付文件.lua：唯一主源码，所有实际代码修正只写这里。
