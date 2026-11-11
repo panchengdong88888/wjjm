@@ -27,7 +27,9 @@ rootEnvironment.MainLeftBottom = MainLeftBottom
 
 -- PC3-PC5：T[0]先创建a状态表，再于PC5挂入模块根表。
 local a = {}
-MainLeftBottom.a = a
+-- PC4-PC5：按字节码从当前chunk ENV重新读取模块表，再挂入a状态表。
+local moduleForA = rootEnvironment.MainLeftBottom
+moduleForA.a = a
 
 -- PC6：版本字段。
 a.version = "10000"
@@ -61,7 +63,9 @@ moduleForB.b = b
 
 -- PC33-PC35：T[2]创建z状态表，再挂入模块根表。
 local z = {}
-MainLeftBottom.z = z
+-- PC34-PC35：再次从当前chunk ENV读取模块表，再挂入z状态表。
+local moduleForZ = rootEnvironment.MainLeftBottom
+moduleForZ.z = z
 
 -- PC36-PC41：按PC顺序初始化六个状态字段。
 z.isPaused = false
@@ -102,7 +106,7 @@ local timerState = {}
 -- 并导出为全局 PickUpItems。
 --
 -- 检查点263：主恢复稿装配段以rootRegisters影子表显式模拟T[4..8]的复用：
--- T[4]=PrintLog；T[5]先为_G（PC44/45写_G.log），PC46后为ShowLocalNoticeByType；
+-- T[4]=PrintLog；T[5]先为ENV["_G"]（PC44/45写其log），PC46后为ShowLocalNoticeByType；
 -- T[6]先为LuaSendMsg并于PC51写入a.LuaSendMsg，PC52再覆写为ScheduleOnce；
 -- T[7]=Schedule；T[8]按PC54/56/58/60/62/64/68/71/74/79/83依次复用为
 -- GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems/
@@ -932,7 +936,7 @@ end
 
 
 -- 检查点241：root PC1-PC85模块字段与全局导出逐PC对账。
--- 模块根表：PC1创建，PC2写入_G.MainLeftBottom；PC3复用T0创建a表，
+-- 模块根表：PC1创建，PC2写入ENV.MainLeftBottom；PC3复用T0创建a表，
 -- PC5挂入MainLeftBottom.a。a.version="10000"；screenW/screenH分别来自
 -- SL:GetMetaValue("SCREEN_WIDTH"/"SCREEN_HEIGHT")；Blocklist={1.0,9.0,10.0,60000.0}；
 -- SendHookList/RecvHookList为空表；isHidden=true、hidebut=nil；
@@ -940,12 +944,12 @@ end
 -- PC30-PC32创建并挂入MainLeftBottom.b空表；PC33-PC35创建MainLeftBottom.z；
 -- z的isPaused/isRunning/isStoring/isTaking/isDiuing/isOutputted均初始化false。
 --
--- PC43-PC85闭包导出：PrintLog->_G.log(PC45)；GetMapId->_G.GetMapId(PC55)；
--- GetMapName->_G.GetMapName(PC57)；PlayerPos->_G.PlayerPos(PC59)；
--- GetDroppedItems->_G.GetDroppedItems(PC61)；MoveTo->_G.MoveTo(PC63)；
--- DiuItems->_G.DiuItems(PC67)；GetAvailableStoragePage->_G.GetAvailableStoragePage(PC70)；
--- GetStorageItemData->_G.GetStorageItemData(PC73)；StorageItems->_G.StorageItems(PC78)；
--- TakeItems->_G.TakeItems(PC82)；PickUpItems->_G.PickUpItems(PC85)。
+-- PC43-PC85闭包导出：PrintLog->ENV["_G"].log(PC45)；GetMapId->ENV.GetMapId(PC55)；
+-- GetMapName->ENV.GetMapName(PC57)；PlayerPos->ENV.PlayerPos(PC59)；
+-- GetDroppedItems->ENV.GetDroppedItems(PC61)；MoveTo->ENV.MoveTo(PC63)；
+-- DiuItems->ENV.DiuItems(PC67)；GetAvailableStoragePage->ENV.GetAvailableStoragePage(PC70)；
+-- GetStorageItemData->ENV.GetStorageItemData(PC73)；StorageItems->ENV.StorageItems(PC78)；
+-- TakeItems->ENV.TakeItems(PC82)；PickUpItems->ENV.PickUpItems(PC85)。
 -- LuaSendMsg在PC51进入MainLeftBottom.a字段；ShowLocalNoticeByType、ScheduleOnce、
 -- Schedule在本区间创建但没有全局导出。逐PC账本见检查点241审计和12_根模块闭包装配表。
 
@@ -1003,10 +1007,10 @@ end
 
 
 -- 检查点245：根模块PC1-PC412全局导出与模块字段总账（跨区间合并复核）。
--- PC1-PC85：_G.MainLeftBottom；_G.log；_G.GetMapId；_G.GetMapName；_G.PlayerPos；_G.GetDroppedItems；_G.MoveTo；_G.DiuItems；_G.GetAvailableStoragePage；_G.GetStorageItemData；_G.StorageItems；_G.TakeItems；_G.PickUpItems。MainLeftBottom.a字段包括version/screenW/screenH/Blocklist/SendHookList/RecvHookList/isHidden/hidebut/LuaSendMsg；另建立b空表、z状态表。
+-- PC1-PC85：ENV.MainLeftBottom；ENV["_G"].log（PC45）；ENV.GetMapId；ENV.GetMapName；ENV.PlayerPos；ENV.GetDroppedItems；ENV.MoveTo；ENV.DiuItems；ENV.GetAvailableStoragePage；ENV.GetStorageItemData；ENV.StorageItems；ENV.TakeItems；ENV.PickUpItems。MainLeftBottom.a字段包括version/screenW/screenH/Blocklist/SendHookList/RecvHookList/isHidden/hidebut/LuaSendMsg；另建立b空表、z状态表。
 -- PC86-PC211：复核未发现新的根级全局导出或MainLeftBottom根表字段写入；此区间是局部配置、共享状态和闭包创建。
--- PC212-PC340：_G.IsInWhitelistMap、_G.MainLoop、_G.InitGatherMonsters、_G.StopGatherMonsters、_G.Builtsetting、_G.MoveItemToQuickUse；模块字段hide/show/destroy/main/blacklist。
--- PC341-PC412：MainLeftBottom.onDamageMsg；_G.BlacklistItems；_G.ClearBlacklistItems；MainLeftBottom.doInit。
+-- PC212-PC340：ENV.IsInWhitelistMap、ENV.MainLoop、ENV.InitGatherMonsters、ENV.StopGatherMonsters、ENV.Builtsetting、ENV.MoveItemToQuickUse；模块字段hide/show/destroy/main/blacklist。
+-- PC341-PC412：MainLeftBottom.onDamageMsg；ENV.BlacklistItems；ENV.ClearBlacklistItems；MainLeftBottom.doInit。
 -- 总账将全局导出与模块字段分开统计；局部函数创建不等于导出。ShowLocalNoticeByType、ScheduleOnce、Schedule在已审PC段未发现根级导出。
 -- 完整机器可读明细见docs/handoff/12_根模块闭包装配表.json的root_complete_module_ledger。
 
@@ -1024,7 +1028,7 @@ end
 -- 检查点267：PC350-PC388黑名单闭包身份复核。
 -- PC357 onDamageMsg捕获T41并写MainLeftBottom.onDamageMsg；PC360 InstallDamageHook捕获T0/T4并写T57。
 -- PC368 BlacklistPlayerDetection.UP1捕获T57 live cell，捕获时cell.value为InstallDamageHook，不能接成onDamageMsg。
--- PC382/388分别导出_G.BlacklistItems与_G.ClearBlacklistItems；主恢复稿已增加对象身份断言。
+-- PC382/388分别导出ENV.BlacklistItems与ENV.ClearBlacklistItems；主恢复稿已增加对象身份断言。
 -- 详细逐PC来源与函数主体边界见docs/audit/检查点267_PC350-PC388黑名单闭包链与导出身份核对.md。
 
 
