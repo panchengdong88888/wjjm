@@ -174,7 +174,9 @@ rootEnvironment.MainLeftBottom = MainLeftBottom
 
 -- PC3-PC5：T[0]先创建a状态表，再于PC5挂入模块根表。
 local a = {}
-MainLeftBottom.a = a
+-- PC4-PC5：按字节码从当前chunk ENV重新读取模块表，再挂入a状态表。
+local moduleForA = rootEnvironment.MainLeftBottom
+moduleForA.a = a
 
 -- PC6：版本字段。
 a.version = "10000"
@@ -208,7 +210,9 @@ moduleForB.b = b
 
 -- PC33-PC35：T[2]创建z状态表，再挂入模块根表。
 local z = {}
-MainLeftBottom.z = z
+-- PC34-PC35：再次从当前chunk ENV读取模块表，再挂入z状态表。
+local moduleForZ = rootEnvironment.MainLeftBottom
+moduleForZ.z = z
 
 -- PC36-PC41：按PC顺序初始化六个状态字段。
 z.isPaused = false
@@ -402,7 +406,7 @@ local resetSlot22 = ""
 -- PC274：将该闭包写入模块表的destroy字段（R0为MainLeftBottom模块表）。
 -- 因此当前已确认模块表的hide/show/destroy三个字段分别在PC265/269/274写入。
 
--- PC275：重新读取_ENV.MainLeftBottom；检查点265的主装配适配器显式读取_G.MainLeftBottom后再写入main字段。
+-- PC275：OP_137从当前chunk ENV重新读取MainLeftBottom；main写入目标必须是该次读取的表。
 -- PC276-PC278：创建root.children[55] / AccountIDValidation，捕获父root T[4]与T[5]；
 -- 即PrintLog与ShowLocalNoticeByType两个已建立的回调闭包。
 -- PC279：将AccountIDValidation闭包写入MainLeftBottom.main字段。
@@ -6548,7 +6552,7 @@ do
     rootModule.destroy = rootPrototypes.ShowHideAllButtons
 
     -- PC275：OP_137按全局名MainLeftBottom重新读取当前chunk环境中的模块表。
-    -- 适配器暂以_G.MainLeftBottom表达；只有_ENV与_G指向同一环境表时才严格等价，宿主环境身份尚未验证。
+    -- 当前实现从rootSource.environment读取同一个chunk环境，不把它替换为ENV["_G"]。
     local accountValidationModule = rootEnvironment.MainLeftBottom
     assert(type(accountValidationModule) == "table",
         "PC275 _ENV.MainLeftBottom is not a table")
@@ -6831,8 +6835,8 @@ do
     assert(rootEnvironment.ClearBlacklistItems == rootPrototypes.ClearBlacklistItems,
         "PC388 ClearBlacklistItems global export mismatch")
 
-    -- PC389：原始OP_137按全局名MainLeftBottom读取当前chunk环境，并写入独立临时寄存器T[59]。
-    -- 适配器暂以_G.MainLeftBottom表达；_ENV与_G是否为同一对象尚未由宿主证据验证，不冒充逐字原文。
+    -- PC389：OP_137按全局名MainLeftBottom读取当前chunk ENV，结果进入独立临时寄存器T[59]。
+    -- doInitModule直接引用该次环境读取结果，不以ENV["_G"]代替。
     -- T[2]/T[0]不被覆写；PC392/PC394仍分别捕获MainLeftBottom.z/a。
     local doInitModule = rootEnvironment.MainLeftBottom
     assert(type(doInitModule) == "table",
