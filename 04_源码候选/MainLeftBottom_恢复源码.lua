@@ -373,10 +373,10 @@ local resetSlot22 = ""
 -- [T[0],T[3],T[1]]，即UI状态对象、定时器状态对象、按钮映射表。
 -- 此捕获映射与检查点164修正结果一致。
 
--- PC265：将闭包R37写入当前模块表的hide字段。
+-- PC265：将闭包R37写入T[0]（MainLeftBottom.a UI状态表）的hide字段。
 -- PC266：创建root.children[10] / SetButtonVisibilityState，捕获顺序为[T[0],T[1]]；
 -- PC267-PC268为两项捕获描述。函数体已在检查点161完整静态恢复。
--- PC269：将闭包R37写入当前模块表的show字段。
+-- PC269：将闭包R37写入T[0]（MainLeftBottom.a UI状态表）的show字段。
 -- PC270：创建root.children[40] / ShowHideAllButtons，捕获数3；
 -- 后续捕获描述跨出本批范围，留待下一检查点继续核对（PC271起）。
 
@@ -385,8 +385,8 @@ local resetSlot22 = ""
 -- PC271-PC273：ShowHideAllButtons（root.children[40]）的三个捕获描述，
 -- 按序捕获父root T[3]、T[1]、T[0]；对应定时器状态、按钮映射表、UI状态对象。
 -- 该顺序与子函数已静态恢复的UPVALUE[0..2]一致。
--- PC274：将该闭包写入模块表的destroy字段（R0为MainLeftBottom模块表）。
--- 因此当前已确认模块表的hide/show/destroy三个字段分别在PC265/269/274写入。
+-- PC274：将该闭包写入T[0]（MainLeftBottom.a UI状态表）的destroy字段。
+-- 因此hide/show/destroy三个方法均属于MainLeftBottom.a，供doInit_UI捕获的UI状态表调用。
 
 -- PC275：重新读取_ENV.MainLeftBottom；检查点265的主装配适配器显式读取_G.MainLeftBottom后再写入main字段。
 -- PC276-PC278：创建root.children[55] / AccountIDValidation，捕获父root T[4]与T[5]；
@@ -687,13 +687,13 @@ local function AttachRecoveredPrototypes(prototypes)
 
     -- root PC259-PC274：模块表上的界面控制闭包。
     if prototypes.DestroyUI ~= nil then
-        MainLeftBottom.hide = prototypes.DestroyUI
+        MainLeftBottom.a.hide = prototypes.DestroyUI
     end
     if prototypes.SetButtonVisibilityState ~= nil then
-        MainLeftBottom.show = prototypes.SetButtonVisibilityState
+        MainLeftBottom.a.show = prototypes.SetButtonVisibilityState
     end
     if prototypes.ShowHideAllButtons ~= nil then
-        MainLeftBottom.destroy = prototypes.ShowHideAllButtons
+        MainLeftBottom.a.destroy = prototypes.ShowHideAllButtons
     end
     exportGlobal("MoveItemToQuickUse", "MoveItemToQuickUse")
 
@@ -6175,7 +6175,9 @@ do
     -- 检查点251：UI闭包按父root寄存器T[0]/T[1]/T[3]捕获顺序注入。
     -- T[0]=MainLeftBottom.a（UI状态对象），T[1]=MainLeftBottom.b（按钮映射），
     -- T[3]=timerState；三者均为共享表引用，不作值复制。
-    assert(rootSource.uiState == rootModule.a
+    assert(type(rootModule.a) == "table"
+        and type(rootModule.b) == "table"
+        and rootSource.uiState == rootModule.a
         and rootSource.buttonMap == rootModule.b
         and type(rootSource.timerState) == "table",
         "PC261-PC274 UI capture object identity mismatch")
@@ -6188,7 +6190,7 @@ do
         )
     end
     rootPrototypes.DestroyUI = requireRecoveredClosure("DestroyUI", rootPrototypes.DestroyUI)
-    rootModule.hide = rootPrototypes.DestroyUI
+    rootModule.a.hide = rootPrototypes.DestroyUI
 
     local makeSetButtonVisibility = sourceFunction(
         "04_源码候选/短函数草稿_第十三批.lua", "make_SetButtonVisibilityState"
@@ -6201,7 +6203,7 @@ do
     rootPrototypes.SetButtonVisibilityState = requireRecoveredClosure(
         "SetButtonVisibilityState", rootPrototypes.SetButtonVisibilityState
     )
-    rootModule.show = rootPrototypes.SetButtonVisibilityState
+    rootModule.a.show = rootPrototypes.SetButtonVisibilityState
 
     local makeShowHideAll = sourceFunction(
         "04_源码候选/短函数草稿_第十四批.lua", "make_ShowHideAllButtons"
@@ -6214,7 +6216,7 @@ do
     rootPrototypes.ShowHideAllButtons = requireRecoveredClosure(
         "ShowHideAllButtons", rootPrototypes.ShowHideAllButtons
     )
-    rootModule.destroy = rootPrototypes.ShowHideAllButtons
+    rootModule.a.destroy = rootPrototypes.ShowHideAllButtons
 
     -- PC275：OP_137按全局名MainLeftBottom重新读取当前chunk环境中的模块表。
     -- 适配器暂以_G.MainLeftBottom表达；只有_ENV与_G指向同一环境表时才严格等价，宿主环境身份尚未验证。
@@ -6595,7 +6597,7 @@ do
     MainLeftBottomRecovered.root_module = rootModule
     MainLeftBottomRecovered.root_prototypes = rootPrototypes
     MainLeftBottomRecovered.root_assembly_checkpoint = {
-        checkpoint = 275,
+        checkpoint = 278,
         root_pc86_pc211_ordered = true,
         root_pc181_pc258_ordered = true,
         root_pc297_pc357_ordered = true,
@@ -6621,6 +6623,8 @@ do
         checkpoint273_root_initial_table_identity_checked = true,
         checkpoint274_pc43_pc85_register_export_identity_checked = true,
         checkpoint275_all_58_root_closures_fail_fast = true,
+        checkpoint278_ui_methods_attached_to_a_state_table = true,
+        checkpoint278_doInit_printlog_uses_captured_callback = true,
         checkpoint275_captured_factories_guarded = 36,
         checkpoint275_direct_bindings_guarded = 22,
         checkpoint275_required_closure_names_unique = 58,
