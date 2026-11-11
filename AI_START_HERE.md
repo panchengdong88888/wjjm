@@ -23,11 +23,10 @@
 
 ## 3. 当前接续位置
 
-- 最近检查点：**316**
-- 下一检查点：**317**
-- 当前优先任务：继续完成入口与UI链全量静态复核，范围为root PC1-PC412、AccountIDValidation（root.children[55]）及doInit_UI（root.children[42]）和全部23个直接子原型。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
-- 检查点316纠正AccountIDValidation等待回调捕获值：PC55先清空R4，PC58创建等待闭包，PC59捕获R4时其值为nil；validationResult只用于前面的成功/失败日志，不进入等待闭包。源码改为do块限制validationResult生命周期，回调传SL:UnSchedule(nil)，PrintLog/ShowLocalNoticeByType通过局部别名对应PC276捕获，等待回调通过getfenv(1)读取环境中的MainLeftBottom.doInit。检查点315修正doInit_UI的T7最终值为4，检查点314纠正根表/a/z字段身份。当前未执行Lua 5.1语法检查或游戏运行验证。
-- PC280-PC412 的根级创建/捕获/导出/入口挂接已静态核对；PC1-PC211已修正ResetGatherMonsterData的清目标/等待状态复位顺序，FindMonsterInCurrViewField主体与27条物理指令恢复稿一致。检查点300已修正MainLoop等待归属变更到期后的FindMonsterInCurrViewField调用实参；检查点301已静态核对PC212-PC255导出，并补充MainLoop数值for循环游标语义注释；检查点302核对PC1-PC85闭包导出及捕获边界，修正物品/仓库函数对根级函数的错误词法引用；检查点303核对PC86-PC167配置、奖励表及UI捕获，明确奖励回调的18000取模参数。当前容器未发现Lua解释器命令，尚未执行Lua 5.1语法检查。后续仍以同一唯一主源码为准。
+- 最近检查点：**320**
+- 下一检查点：**321**
+- 当前优先任务：继续入口与UI链全量静态复核，当前只处理root PC1-PC412、AccountIDValidation（root.children[55]）及doInit_UI（root.children[42]）和全部23个直接子原型。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
+- 检查点320完成Nested_FFFF00资源统计窗口父原型320条指令及5个子原型静态核对：窗口开关、定时器取消/nil清理、Win_Create 12参、Layout/ListView、五组Text_Create门控、资源行构造、MoneyProxy刷新、立即刷新和1秒Schedule均与VM一致。修正过期T7说明：ipairs控制值初始0，四项遍历后保留4，PC180/PC183传4；nil序列化占位的旧说明同步修正。money快照按资源名写入、按moneyId读取的跨函数差异按VM保留，不推断未文档化代理语义。检查点319的黑名单按钮回调捕获对象身份复核结果保持。入口字段MainLeftBottom.main/doInit及PC412模块返回与VM一致。当前未执行Lua 5.1语法检查或目标游戏运行验证。
 
 ## 4. 源码文件职责
 

@@ -11,15 +11,16 @@
   "current_task": {
     "priority": 1,
     "prototype": "root / MainLeftBottom_Module + root.children[42] / doInit_UI",
-    "function": "入口与UI链全量静态复核（InstallDamageHook捕获PrintLog身份修正后继续）",
-    "physical_pc": "root PC1-PC412；root.children[55]及两个子原型；root.children[42]及23个子原型；root.children[6]",
+    "function": "入口与UI链全量静态复核（资源统计窗口父原型及5个直接子原型已复核，继续其余UI子原型）",
+    "physical_pc": "root PC1-PC412；root.children[55]及两个子原型；root.children[42]及23个直接子原型",
     "focus": [
-      "继续核对剩余UI子原型的捕获值、返回值及错误分支",
-      "复核黑名单按钮到InstallDamageHook/onDamageMsg的完整链",
-      "整理入口/UI所有保留的原始VM疑点，区分源码差异与宿主运行风险"
+      "继续逐项核对doInit_UI剩余子原型主体、返回值、异常/早退路径与调用点",
+      "复核所有捕获对象身份和父级传参顺序，重点排查UI点击回调、输入对话框回调和定时器",
+      "汇总Attach_UITop(T7=4)与开发文档无参签名的证据冲突；静态阶段保留VM实参",
+      "入口/UI全部静态核对后执行Lua 5.1语法检查并汇总未验证的宿主行为"
     ],
-    "next": "完成资源窗口、输入对话框和剩余按钮回调逐项核对；随后进行Lua 5.1语法静态扫描与入口/UI结论汇总。",
-    "progress": "检查点320：root/7 InstallDamageHook父函数的两个捕获为UP0=T0=MainLeftBottom.a、UP1=T4=PrintLog。主源码原先在父函数日志处动态读取全局PrintLog，未体现VM捕获；现增加installDamagePrintLog局部别名并在函数内调用，捕获顺序与VM一致。嵌套wrappedHandler仍只捕获a与originalHandler，读取a.onDamageMsg并pcall，再调用原处理器。"
+    "next": "继续核对root.children[42]剩余子原型及按钮/输入回调调用点；不转去其他功能模块。",
+    "progress": "检查点320：完成root.children[42].children[3] Nested_FFFF00资源统计窗口父原型320条指令及5个子原型逐项静态核对。父原型窗口开关、resTimer取消/nil清理、Win_Create 12参、根Layout空白点击关闭、ListView几何/背景、五组Text_Create的返回值门控、资源行构造、MoneyProxy读取、立即刷新与1秒Schedule均与VM一致。5个子原型：Nested_Helper_2数值缩写、Nested_string非绑定背包资源计数、Nested_FFFFFF资源行构造、Nested_Helper_3时间/货币/背包刷新、Nested_UnSchedule关闭窗口，调用接收者、分支和返回路径均对齐。保留跨函数观察：doInit_UI以资源名存money初始快照，刷新回调以moneyId读取；代理方法未文档化，不擅自改写。同步修正主源码过期T7注释：ipairs初始控制值0，四项遍历完成后寄存器保留4，PC180/PC183传4；修正nil序列化占位的过期说明。无功能代码变更。入口AccountIDValidation和doInit_UI字段挂接仍与root PC279/411/412一致。未执行Lua 5.1语法检查或目标游戏运行验证。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -46,7 +47,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点320：root.children[6] / root/7 InstallDamageHook父函数两个upvalue分别为a与PrintLog；源代码现在显式捕获installDamagePrintLog，匹配VM。嵌套root/7/1仍捕获父UP0=a及父R2=originalHandler，回调读取a.onDamageMsg。",
+    "static_source_review": "检查点320：Nested_FFFF00父原型320条及5个直接子原型的物理指令、调用顺序、参数、nil清理、早退和返回路径与唯一主源码一致。主源码过期注释已纠正：ipairs循环T7初值0，迭代结束保留4，RequestStorageData/Attach_UITop传4。资源统计初始快照moneyName键与刷新moneyId键的差异按VM原样保留，宿主代理方法语义未推断。",
     "lua_syntax_check": "未执行：容器未找到lua5.1/luac5.1/lua/luac命令；未安装或改动用户环境。",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
@@ -70,6 +71,6 @@
       "使用unpack而非table.unpack；避免table.pack/table.move/bit32/utf8/package.searchpath等5.2+接口",
       "确认闭包、变长参数、多返回值、迭代器及元表行为均符合Lua 5.1"
     ],
-    "current_review": "检查点320增加一个局部函数别名，不引入新语法；Lua 5.1兼容。尚未执行Lua解释器编译检查。"
+    "current_review": "检查点320仅修改注释，不改变运行代码；涉及的循环、函数、pairs/ipairs、字符串/数值运算均为Lua 5.1兼容写法。尚未执行Lua 5.1解释器语法检查。"
   }
 }
