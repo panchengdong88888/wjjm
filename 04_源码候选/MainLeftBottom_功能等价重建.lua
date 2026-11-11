@@ -1445,6 +1445,116 @@ local function AccountIDValidation()
     SL:Schedule(scheduledCallback,0.5)
 end
 
+-- ============================================================================
+-- 物品功能入口：root PC64-PC85
+-- ============================================================================
+local function DiuItems()
+    local MAX_GROUND_ITEMS = 35
+    if z.isDiuing then return end
+    z.isDiuing = true
+    local _, groundItemCount = GetDroppedItems()
+    groundItemCount = groundItemCount or 0
+    if MAX_GROUND_ITEMS < groundItemCount then
+        ShowLocalNoticeByType("地面物品(" .. groundItemCount .. ")超过上限(" .. MAX_GROUND_ITEMS .. ")")
+        z.isDiuing = false
+        return
+    end
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then z.isDiuing = false; return end
+    local candidates = {}
+    for _, item in pairs(bagData) do
+        if item and item.Name and item.MakeIndex and not SL:GetMetaValue("ITEM_IS_BIND", item) then
+            candidates[#candidates + 1] = {makeIndex=item.MakeIndex,count=item.OverLap or 1,name=item.Name}
+        end
+    end
+    if #candidates == 0 then
+        ShowLocalNoticeByType("背包无可丢弃物品")
+        z.isDiuing = false
+        return
+    end
+    local sentCount = 0
+    for _, candidate in ipairs(candidates) do
+        if MAX_GROUND_ITEMS <= groundItemCount then
+            ShowLocalNoticeByType("地面物品已满" .. MAX_GROUND_ITEMS .. "件，停止丢弃")
+            break
+        end
+        ShowLocalNoticeByType("丢: " .. candidate.name)
+        LuaSendMsg(global.MsgType.MSG_CS_MAP_ITEM_DISCARD,candidate.makeIndex,candidate.count,0,0,candidate.name,string.len(candidate.name))
+        sentCount = sentCount + 1
+        groundItemCount = groundItemCount + 1
+    end
+    ShowLocalNoticeByType("共丢弃 " .. sentCount .. " 件物品")
+    z.isDiuing = false
+end
+
+local function TakeItems()
+    if z.isTaking then return end
+    z.isTaking = true
+    local storageItems = GetStorageItemData()
+    if not storageItems or #storageItems == 0 then
+        ShowLocalNoticeByType("仓库无可取物品")
+        z.isTaking = false
+        return
+    end
+    local takenCount = 0
+    for _, item in ipairs(storageItems) do
+        if item and item.Name and item.MakeIndex then
+            local itemName = string.trim(item.Name)
+            ShowLocalNoticeByType("取: " .. itemName)
+            LuaSendMsg(global.MsgType.MSG_CS_STORAGE_PICK_OUT_REQUEST,999999999,item.MakeIndex,0,0,itemName,string.len(itemName))
+            takenCount = takenCount + 1
+        end
+    end
+    z.isTaking = false
+    if takenCount > 0 then ShowLocalNoticeByType("取出物品完成, 共取出 " .. tostring(takenCount) .. " 件") end
+end
+
+local function PickUpItems()
+    local function Nested_dist_2(left,right) return left.dist < right.dist end
+    local function Nested_dist(left,right)
+        if left.kIdx ~= right.kIdx then return left.kIdx < right.kIdx end
+        return left.dist < right.dist
+    end
+    local nameRules = {}
+    local droppedItems,droppedCount = GetDroppedItems()
+    if droppedCount == 0 then ShowLocalNoticeByType("地面无可拾取物品"); return end
+    local playerX,playerY = PlayerPos()
+    local preferredItems,ordinaryItems = {},{}
+    for _,item in ipairs(droppedItems) do
+        local name = item.mName or item.mONameStr or item.Name or item.name or ""
+        local x = item.mCurrMapX or item.MapX or item.mapX or item.x
+        local y = item.mCurrMapY or item.MapY or item.mapY or item.y
+        if x and y then
+            local distance = math.abs(playerX-x)+math.abs(playerY-y)
+            local matchedRuleIndex = 0
+            for ruleIndex,rule in ipairs(nameRules) do
+                if string.find(name,rule) then matchedRuleIndex=ruleIndex; break end
+            end
+            if matchedRuleIndex > 0 then
+                table.insert(preferredItems,{item=item,dist=distance,kIdx=matchedRuleIndex,x=x,y=y})
+            else
+                table.insert(ordinaryItems,{item=item,dist=distance,x=x,y=y})
+            end
+        end
+    end
+    table.sort(preferredItems,Nested_dist)
+    table.sort(ordinaryItems,Nested_dist_2)
+    local candidates = {}
+    for _,entry in ipairs(preferredItems) do table.insert(candidates,entry) end
+    for _,entry in ipairs(ordinaryItems) do table.insert(candidates,entry) end
+    if #candidates == 0 then return end
+    local target = candidates[1]
+    MoveTo(target.x,target.y,0)
+    if math.abs(playerX-target.x)<=1 and math.abs(playerY-target.y)<=1 then
+        global.dropItemController:PickMainPlayerPosItem()
+        ShowLocalNoticeByType("拾取: " .. target.item.mName)
+    end
+end
+
+rootEnvironment.DiuItems = DiuItems
+rootEnvironment.TakeItems = TakeItems
+rootEnvironment.PickUpItems = PickUpItems
+
 local function CallRootFunction(name, ...)
     local fn = rootEnvironment[name]
     if type(fn) ~= "function" then
