@@ -47,7 +47,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "唯一主源码现约2169行；已检查doInit_UI定义、模块字段挂接、return及无sourceFunction/requireRecoveredClosure/rootConfigRegisters动态装配依赖。未执行Lua语法检查（当前环境无lua/luac），未执行目标游戏运行验证。",
+    "static_source_review": "唯一主源码约2169行；doInit_UI主体与直接子闭包已并入，PC411模块挂接和PC412返回已写入。可执行代码不依赖动态源码加载或历史寄存器影子适配表。未执行Lua语法检查（当前环境无lua/luac），未执行目标游戏运行验证。",
     "lua_syntax_check": "未执行/未确认",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true

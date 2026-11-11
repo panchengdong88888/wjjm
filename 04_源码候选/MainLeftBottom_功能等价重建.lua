@@ -441,11 +441,9 @@ end
 -- PC313-PC315：创建root.children[54] / AnonymousHelper_54；
 -- UPVALUE[0]=R46（PCallHelper），UPVALUE[1]=R43（gather_monster_count.txt）。
 -- 其调用参数顺序及多返回值转发已由检查点125闭合。
--- 检查点266：主恢复稿用rootConfigRegisters影子表记录T[44..51]：
--- GetWritablePath、ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper、
--- AnonymousHelper_49、AnonymousHelper_32、AnonymousHelper_33、AnonymousHelper_54；
--- doInit_UI的UP[6]/[9]/[10]/[12]/[14]/[16]从对应T[48]/[50]/[49]/[44]/[51]/[47]注入。
--- rootConfigRegisters仅是恢复适配器，不是原作者源码中的真实table。
+-- 检查点266：历史恢复记录曾以影子表描述T[44..51]的配置包装闭包；
+-- 本文件最终实现不创建该适配表，doInit_UI直接捕获词法变量：
+-- UP[6]/[9]/[10]/[12]/[14]/[16]分别绑定配置读取、配置写入、路径、文件检查闭包。
 
 -- PC316-PC340：开始构造R52所指向的二维数值表。
 -- 已观察到六个二元素子表依次由寄存器构造：
