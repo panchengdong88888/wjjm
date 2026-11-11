@@ -408,7 +408,7 @@ end
 
 -- root.children[32]：固定写入 blacklist_distance.txt，转发首个显式参数。
 local function AnonymousHelper_32(firstArg)
-    return PCallHelper(blacklistDistanceConfigFile, firstArg)
+    return PCallHelper(firstArg, blacklistDistanceConfigFile)
 end
 
 -- root.children[33]：固定读取 gather_monster_count.txt。
@@ -418,7 +418,7 @@ end
 
 -- root.children[54]：固定写入 gather_monster_count.txt，转发首个显式参数。
 local function AnonymousHelper_54(firstArg)
-    return PCallHelper(gatherMonsterCountConfigFile, firstArg)
+    return PCallHelper(firstArg, gatherMonsterCountConfigFile)
 end
 
 ----------------------------------------------------------------
