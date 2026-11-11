@@ -24,7 +24,7 @@
 
 ## 3. 当前任务（强制）
 
-第一优先级：按机器状态 JSON 的 current_task，优先核对并完善“开拉怪”完整功能链。
+当前开拉怪功能的静态核对已在检查点340完成；等待用户指定下一项任务，不得自行切换模块。
 
 - 用户已明确将当前优先级调整为开拉怪；暂停此前“补全根模块调用图”的任务。
 - 核对范围：doInit_UI 的 yinguaibut 按钮处理器、阈值读取/输入/保存、Nested_StopGatherMonsters、Nested_InitGatherMonsters、InitGatherMonsters、MainLoop、FindMonsterCandidates、StopGatherMonsters、ResetGatherMonsterData。
@@ -188,3 +188,16 @@
 - StopGatherMonsters取消timer、清目标、切IDLE、重置共享状态并输出停止提示。ResetGatherMonsterData内部也会清目标，因此重复清目标是VM原行为。
 - 阈值持久化包装参数行为与PCallHelper形参用途不一致，可能写入错误路径；作为原始VM逻辑风险记录，不擅自偏离。
 - 下一步：继续核对MainLoop的GATHERING等待归属、游标推进、锁定目标与ATTACKING分支的调用点，不重新展开417条函数主体。
+
+## 检查点340补充：开拉怪完整功能链静态核对完成
+
+- MainLoop root.children[45] 的417条指令已复用检查点153-158既有逐段/全CFG审计，并与唯一交付源码对应核对：入口运行标记、白名单门槛、IDLE候选构造、GATHERING等待归属与目标扫描、循环汇总、ATTACKING目标扫描及耗尽清理均一致。
+- 特别复核PC1-PC4：运行标记truthy时跳过PC4 return并继续；false/nil时执行return。检查点155旧审计文字曾将真假分支方向写反，已在归档审计文件中更正；唯一交付源码的 `if not isGatherRunning then return end` 本来就是正确的，无需改动。
+- GATHERING等待到期后游标推进、未归属分支SetTargetID成功/失败后继续数值循环、ATTACKING首个存活目标设置后return，均与VM及既有检查点153/154/156/157/158一致。保留原始游标推进顺序，不按主观预期改写。
+- SetTargetID的Facade代理获取、receiver、两个实参及true/false返回；GetOwnerID/GetOwnerIDText两种相反谓词；FindMonsterInCurrViewField的SL方法调用及true,true参数均已复核。
+- InitGatherMonsters的旧timer取消、运行标记、IDLE复位、Reset、SL:Schedule(MainLoop,CHECK_INTERVAL)及提示顺序一致。
+- StopGatherMonsters的运行标记清除、timer取消、预清目标、IDLE切换、Reset及停止提示顺序一致；Reset自身再次清目标是VM原行为。
+- 唯一交付源码本批未发现新的明确错配；本批只更正了历史归档审计检查点155的文字错误，没有改动源码。
+- 仍保留两个VM原始异常：阈值持久化包装器的参数/路径行为不符合预期固定文件写入；无效阈值分支调用nil回调。按功能等价原则未擅自修复。
+- 静态核对完成不等于运行时验证；用户已明确不执行Lua 5.1实际编译或游戏运行验证。
+- 下一步：等待用户明确安排，不自动转入其他功能模块。
