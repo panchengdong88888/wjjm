@@ -2024,6 +2024,8 @@ a.onDamageMsg = onDamageMsg
 
 -- PC360-PC362：T[57]写入此闭包；BlacklistPlayerDetection捕获该live cell当前值。
 -- 包装回调先从MainLeftBottom.a读取onDamageMsg并pcall，再无论回调结果如何返回原消息处理器结果。
+-- PC360捕获顺序：UP[0]=a，UP[1]=PrintLog。
+local installDamagePrintLog = PrintLog
 local function InstallDamageHook()
     local gameMapController = global.gameMapController
     if not gameMapController then return end
@@ -2043,7 +2045,7 @@ local function InstallDamageHook()
     end
     messageHandlers[damageMessageType] = wrappedHandler
     gameMapController.__ylwHookedOrigin = messageHandlers[damageMessageType]
-    PrintLog("已挂接伤害消息钩子（击杀拉黑用）")
+    installDamagePrintLog("已挂接伤害消息钩子（击杀拉黑用）")
 end
 
 local function DeathAutoBlacklist()

@@ -7670,7 +7670,8 @@
       "检查点317：root.children[42].children[9] PC42-PC50对每个成功创建的按钮均无条件注册addOnClickEvent；toggle仅控制toggled=false初始化。点击闭包先执行buttonHandlers[key]，再对非toggle项return；非toggle按钮动作仍需响应。",
       "检查点317：doInit_UI PC100调用ENV.Builtsetting；child16 PC13调用ENV.MoveItemToQuickUse；reward child root/43/2/1 PC13调用ENV.LuaSendMsg；StopGatherMonsters/InitGatherMonsters子原型亦从ENV读取全局函数。避免在源码中误绑定同名local函数。",
       "检查点318：PCallHelper(root/18)先GetWritablePath(arg0)再writeStringToFile(arg1,path)；AnonymousHelper_32(root/33)与AnonymousHelper_54(root/55)均按(firstArg,固定文件路径)转发，主源码参数顺序一致，先前待复核标记关闭。",
-      "检查点319：doInit_UI PC299-PC305对Nested_Helper_10的六项捕获依次为timerState、PrintLog、MainLeftBottom.z、AnonymousHelper_49、Nested_Helper_4、Nested_blacklistTimer；该工厂的第三个参数是z功能状态表，不能与a UI状态表或模块根表混淆。"
+      "检查点319：doInit_UI PC299-PC305对Nested_Helper_10的六项捕获依次为timerState、PrintLog、MainLeftBottom.z、AnonymousHelper_49、Nested_Helper_4、Nested_blacklistTimer；该工厂的第三个参数是z功能状态表，不能与a UI状态表或模块根表混淆。",
+      "检查点320：InstallDamageHook父函数root/7捕获UP0=MainLeftBottom.a、UP1=PrintLog；主源码通过installDamagePrintLog局部别名显式捕获PrintLog。其wrappedHandler子闭包仅捕获a与originalHandler。"
     ]
   },
   "root_assembly_checkpoint_246": {

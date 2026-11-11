@@ -5,21 +5,21 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 319,
-  "next_checkpoint": 320,
+  "latest_checkpoint": 320,
+  "next_checkpoint": 321,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
     "prototype": "root / MainLeftBottom_Module + root.children[42] / doInit_UI",
-    "function": "入口与UI链全量静态复核（黑名单开关回调捕获对象身份已明确，继续剩余子原型）",
-    "physical_pc": "root PC1-PC412；root.children[55]及两个子原型；root.children[42]及23个子原型",
+    "function": "入口与UI链全量静态复核（InstallDamageHook捕获PrintLog身份修正后继续）",
+    "physical_pc": "root PC1-PC412；root.children[55]及两个子原型；root.children[42]及23个子原型；root.children[6]",
     "focus": [
-      "继续核对资源统计窗口及各嵌套子原型的返回值/异常分支",
-      "复核所有捕获对象身份，确保a/z/timerState/blacklistState不混用",
-      "整理原始VM本身的异常行为和框架文档签名冲突"
+      "继续核对剩余UI子原型的捕获值、返回值及错误分支",
+      "复核黑名单按钮到InstallDamageHook/onDamageMsg的完整链",
+      "整理入口/UI所有保留的原始VM疑点，区分源码差异与宿主运行风险"
     ],
-    "next": "完成剩余UI子原型逐项核对，随后做Lua 5.1语法扫描并汇总入口/UI专项审计结论。",
-    "progress": "检查点319：核对root.children[42].children[18] Nested_Helper_10的六项捕获身份。父PC299-PC305传入timerState、PrintLog、featureState(MainLeftBottom.z)、readBlacklistDistanceConfig、openBlacklistDistanceInput、blacklistTimerCallback；源码实参顺序一致。将工厂第三参数从误导性的moduleState改名featureState，内部isBlacklisting状态读写明确落在z表。该原型的定时器句柄清nil使用VM nil序列化占位，已确认。 CSV中Nested_Helper_10的UP[0..5]捕获注释也已按真实父寄存器来源纠正，明确UP[2]=MainLeftBottom.z。 已将函数状态CSV中Nested_Helper_10的六项捕获说明重写为准确寄存器映射，避免旧注释UP编号错位。"
+    "next": "完成资源窗口、输入对话框和剩余按钮回调逐项核对；随后进行Lua 5.1语法静态扫描与入口/UI结论汇总。",
+    "progress": "检查点320：root/7 InstallDamageHook父函数的两个捕获为UP0=T0=MainLeftBottom.a、UP1=T4=PrintLog。主源码原先在父函数日志处动态读取全局PrintLog，未体现VM捕获；现增加installDamagePrintLog局部别名并在函数内调用，捕获顺序与VM一致。嵌套wrappedHandler仍只捕获a与originalHandler，读取a.onDamageMsg并pcall，再调用原处理器。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -46,7 +46,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点319：root.children[42].children[18]的六项捕获来源按PC299-PC305核对，UP0=timerState、UP1=PrintLog、UP2=MainLeftBottom.z、UP3=AnonymousHelper_49、UP4=Nested_Helper_4、UP5=Nested_blacklistTimer；源代码参数顺序一致。清理timerState.blacklistTimer的VM unknown标记是nil序列化占位，源代码nil正确。",
+    "static_source_review": "检查点320：root.children[6] / root/7 InstallDamageHook父函数两个upvalue分别为a与PrintLog；源代码现在显式捕获installDamagePrintLog，匹配VM。嵌套root/7/1仍捕获父UP0=a及父R2=originalHandler，回调读取a.onDamageMsg。",
     "lua_syntax_check": "未执行：容器未找到lua5.1/luac5.1/lua/luac命令；未安装或改动用户环境。",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
@@ -70,6 +70,6 @@
       "使用unpack而非table.unpack；避免table.pack/table.move/bit32/utf8/package.searchpath等5.2+接口",
       "确认闭包、变长参数、多返回值、迭代器及元表行为均符合Lua 5.1"
     ],
-    "current_review": "检查点319仅将工厂形参moduleState改名featureState，仍为Lua 5.1兼容。当前环境无Lua/luac解释器或Lua parser包，尚未执行语法编译检查。"
+    "current_review": "检查点320增加一个局部函数别名，不引入新语法；Lua 5.1兼容。尚未执行Lua解释器编译检查。"
   }
 }
