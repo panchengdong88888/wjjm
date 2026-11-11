@@ -2,9 +2,9 @@
 -- 原型：root / MainLeftBottom_Module
 -- 规范路径：root
 -- 规模：412条物理指令、109常量、58个直接子原型
--- 检查点192-198、262-269：根模块分段普通Lua草稿，PC1-PC412均已建立分段记录；非作者原文逐字恢复；检查点273核对PC1-PC42根表/a/b/z/timerState创建顺序及来源导出身份；检查点276新增docs/handoff/13_MainLeftBottom_原型结构树.md，汇总110个原型节点及根级58个闭包创建点；未运行时验证。
+-- 检查点192-198、262-269：根模块分段普通Lua草稿，PC1-PC412均已建立分段记录；非作者原文逐字恢复；检查点273核对PC1-PC42根表/a/b/z/timerState创建顺序及来源导出身份；检查点276新增资料文件/docs/handoff/13_MainLeftBottom_原型结构树.md，汇总110个原型节点及根级58个闭包创建点；未运行时验证。
 -- 状态：持续开发中。此文件是唯一主源码；每批新增/修正直接写入本文件。当前尚未完成整体闭包装配，未运行时验证。
--- 检查点236：58个直接子原型闭包创建点与135个OP_387 live-cell捕获已建表，见docs/handoff/12_根模块闭包装配表.json。
+-- 检查点236：58个直接子原型闭包创建点与135个OP_387 live-cell捕获已建表，见资料文件/docs/handoff/12_根模块闭包装配表.json。
 -- 检查点290：按原型主体静态恢复PrintLog（table走SL.dump、格式化只在pcall内执行且不虚构SL.Print调用）与ShowLocalNoticeByType（捕获MainLeftBottom.a并构造通知记录）；未运行时验证。
 -- 检查点278：第一批11个地图/坐标/玩家辅助函数已在本文件中整理为可读函数主体；静态证据完整，未运行时验证。
 -- 检查点282：按原始VM固定参数计数纠正GetWritablePath/ReadNumericConfig入口；两者均为一个固定参数，额外参数不读取，未运行时验证。
@@ -499,7 +499,7 @@ local opaquePairTable = {
 -- 其中UP[8]=T[8]=gatherConfig（PC86-PC89构造后未再覆写），传入Nested_InitGatherMonsters的config形参；不是FindMonsterInCurrViewField。
 -- [T[4], T[2], T[3], T[0], T[1], T[41], T[48], T[7], T[8], T[50],
 --  T[49], T[5], T[44], T[42], T[51], T[43], T[47], T[11], T[12], T[9]]。
--- 20项槽位身份已由检查点256逐项闭合；完整顺序与装配值见docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md。
+-- 20项槽位身份已由检查点256逐项闭合；完整顺序与装配值见资料文件/docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md。
 -- doInit_UI本体419条，已有首版普通Lua草稿（检查点187）；
 -- 静态参数映射已由检查点208/235闭合：RequestStorageData与Attach_UITop各传T[7]一个显式实参；Nested_Anonymous fixed_param_count=2，T[0]=promptText、T[1]=successCallback、T[2]=nil。GUI宿主行为仍未运行时验证。
 -- PC411：原始指令[144,268,59,"doInit",60]写入T[59].doInit=doInit_UI；
@@ -879,7 +879,7 @@ end
 --
 -- 本节以corrected phase3 root反汇编的直接写入PC为边界。OP_387捕获父T表
 -- 与寄存器编号组成的live cell，因此捕获时必须读取该PC之前最后一次写入的值。
--- 详细机器表：docs/handoff/12_根模块闭包装配表.json / register_value_timeline。
+-- 详细机器表：资料文件/docs/handoff/12_根模块闭包装配表.json / register_value_timeline。
 --
 -- T[0]：PC1创建MainLeftBottom模块表并于PC2导出；PC3将寄存器T[0]改写为
 --       a配置表，PC5写入MainLeftBottom.a。后续捕获的都是a表，不是模块根表。
@@ -915,7 +915,7 @@ end
 -- T[8]在PC86覆盖为gatherConfig并由PC87-PC89填充；PC199/236/244/399捕获该配置表。
 -- T[42]=blacklist_distance.txt（PC295；捕获PC306/309/404）；T[43]=gather_monster_count.txt（PC296；捕获PC312/315/406）。
 -- T[44]在PC297承载GetWritablePath闭包，PC299/301/303/403捕获同一闭包cell。
--- 详细逐PC时间线见docs/handoff/12_根模块闭包装配表.json；本批未改变静态完成数及运行时验证数。
+-- 详细逐PC时间线见资料文件/docs/handoff/12_根模块闭包装配表.json；本批未改变静态完成数及运行时验证数。
 
 
 -- 检查点239：根模块寄存器生命周期补充（均按捕获PC处的共享live cell值记录）。
@@ -923,7 +923,7 @@ end
 -- T50=AnonymousHelper_33(ReadNumericConfig, 'gather_monster_count.txt')；由doInit_UI UP9捕获。
 -- T52=PC349构造的8元素表，PC351被GetMapData2DPtr捕获；其可达源码路径不读取该UPVALUE。
 -- T53=GetMapData2DPtr；T55=FindBlacklistPlayer；T56=UseItemByIndex(itemNameList)；T58=DeathAutoBlacklist。
--- BlacklistPlayerDetection的UP3/4/5/6/8/9/11与上述捕获身份/常量逐项对齐。详见docs/handoff/12_根模块闭包装配表.json及检查点239审计。
+-- BlacklistPlayerDetection的UP3/4/5/6/8/9/11与上述捕获身份/常量逐项对齐。详见资料文件/docs/handoff/12_根模块闭包装配表.json及检查点239审计。
 
 
 -- 检查点240：root PC298-PC315配置文件读写包装链与doInit_UI捕获槽闭合。
@@ -1018,7 +1018,7 @@ end
 -- PC212-PC340：ENV.IsInWhitelistMap、ENV.MainLoop、ENV.InitGatherMonsters、ENV.StopGatherMonsters、ENV.Builtsetting、ENV.MoveItemToQuickUse；MainLeftBottom.a.hide/show/destroy/blacklist；根表MainLeftBottom.main。
 -- PC341-PC412：MainLeftBottom.a.onDamageMsg；ENV.BlacklistItems；ENV.ClearBlacklistItems；MainLeftBottom.doInit。
 -- 总账将全局导出与模块字段分开统计；局部函数创建不等于导出。ShowLocalNoticeByType、ScheduleOnce、Schedule在已审PC段未发现根级导出。
--- 完整机器可读明细见docs/handoff/12_根模块闭包装配表.json的root_complete_module_ledger。
+-- 完整机器可读明细见资料文件/docs/handoff/12_根模块闭包装配表.json的root_complete_module_ledger。
 
 
 -- ============================================================================
@@ -1035,7 +1035,7 @@ end
 -- PC357 onDamageMsg捕获T41并写MainLeftBottom.a.onDamageMsg；PC360 InstallDamageHook捕获T0/T4并写T57。
 -- PC368 BlacklistPlayerDetection.UP1捕获T57 live cell，捕获时cell.value为InstallDamageHook，不能接成onDamageMsg。
 -- PC382/388分别导出ENV.BlacklistItems与ENV.ClearBlacklistItems；主恢复稿已增加对象身份断言。
--- 详细逐PC来源与函数主体边界见docs/audit/检查点267_PC350-PC388黑名单闭包链与导出身份核对.md。
+-- 详细逐PC来源与函数主体边界见资料文件/docs/audit/检查点267_PC350-PC388黑名单闭包链与导出身份核对.md。
 
 
 -- 检查点268：PC389/PC411原始指令核对。
@@ -1046,7 +1046,7 @@ end
 -- 检查点269：PC390-PC410 doInit_UI二十项捕获逐槽对账。
 -- UP[8]捕获T[8]=gatherConfig；Nested_InitGatherMonsters(config,getThreshold)会写config.GATHER_THRESHOLD。
 -- 主恢复稿已将UP[8]注入rootSource.gatherConfig，并断言三个配置字段10/0.5/1。
--- 完整20槽映射见docs/audit/检查点269_doInit_UI二十项捕获逐槽对账与T8配置表修正.md。
+-- 完整20槽映射见资料文件/docs/audit/检查点269_doInit_UI二十项捕获逐槽对账与T8配置表修正.md。
 
 
 
