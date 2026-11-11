@@ -5,21 +5,21 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 304,
-  "next_checkpoint": 305,
+  "latest_checkpoint": 305,
+  "next_checkpoint": 306,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
     "prototype": "root / MainLeftBottom_Module",
-    "function": "PC214-PC237 MainLoop 22项捕获顺序与共享cell身份复核",
-    "physical_pc": "PC214-PC237",
+    "function": "PC238-PC255 InitGatherMonsters与StopGatherMonsters捕获顺序及共享cell复核",
+    "physical_pc": "PC238-PC255",
     "focus": [
-      "逐槽核对MainLoop的22项捕获顺序与父root T寄存器身份",
-      "确认currentState、目标集合、扫描游标、归属计数及等待字段引用同一共享cell",
-      "检查Lua 5.1闭包捕获和调用形态，不做无证据的逻辑改写"
+      "核对InitGatherMonsters按T3/T18/T23/T13/T35/T8/T4捕获的7项身份",
+      "核对StopGatherMonsters按T18/T3/T25/T23/T13/T35/T4捕获的7项身份",
+      "核对调度取消、状态复位和Schedule回调参数/接收者是否保持VM调用形态"
     ],
-    "next": "定点对照MainLoop捕获列表、主源码函数定义和实际装配位置；仅在发现明确错位或值语义差异时修正。",
-    "progress": "检查点304完成：直接读取VM dump的root PC168-PC211及对应子原型。PC168-PC171状态文字表为IDLE=空闲状态、GATHERING=引怪中、ATTACKING=攻击中；PC172 currentState初值引用IDLE。PC173-PC180初值依次为目标集合空表、归属计数0、扫描游标0、运行标记false、等待标记false、截止时间0、等待目标ID nil、等待名称空字符串。PC181 FormatStateChange捕获T4 PrintLog与T14 currentState共享cell；PC194 FindMonsterCandidates捕获T27/T30/T28/T29/T8；PC200 ResetGatherMonsterData按T15/T16/T17/T25/T19/T20/T21/T22/T4捕获九项；PC210 FindMonsterInCurrViewField仅捕获T30 IsDie。对照唯一主源码及历史恢复稿，状态初值、ResetGatherMonsterData写入顺序、FindMonsterInCurrViewField的SL冒号调用(true,true)、IsDie存活谓词、actor:GetID及结果表索引均一致。未发现明确代码差异，因此不做无意义源码改动；本检查点只更新接续状态。"
+    "next": "定点对照两个函数的主源码定义、PC238-PC255父级捕获记录和现有调度调用，不因风格偏好改写宿主调用。",
+    "progress": "检查点305完成：直接读取VM root PC214-PC237及root.children[45] MainLoop常量/指令记录，并定点核对主源码的状态cell定义、辅助函数定义、MainLoop完整主体及父级捕获说明。VM捕获寄存器顺序为[T18,T14,T13,T4,T23,T35,T26,T34,T15,T32,T17,T16,T19,T20,T22,T36,T21,T31,T30,T33,T24,T8]，逐项对应isGatherRunning、currentState、gatherStatusText、PrintLog、FormatStateChange、ResetGatherMonsterData、GetMainPlayerID、FindMonsterCandidates、resettableTable、GetOwnerID、resetSlot17、resetSlot16、resetSlot19、resetSlot20、resetSlot22、FindMonsterInCurrViewField、resetSlot21、GetOwnerIDText、IsDie、GetOwnerDescription、SetTargetID、gatherConfig。主源码MainLoop按同一词法变量引用这些对象；状态变量在同一chunk作用域定义，故闭包间共享可变cell；IsInWhitelistMap为全局查找，不属于22项捕获。未发现捕获错位或共享cell差异，因此不改主源码。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -46,7 +46,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点304：对照VM root PC168-PC211、主源码及历史恢复稿。核对状态文字表、currentState和T15-T22初值；核对FormatStateChange、FindMonsterCandidates、ResetGatherMonsterData、FindMonsterInCurrViewField的创建顺序与捕获寄存器；核对ResetGatherMonsterData写入顺序及FindMonsterInCurrViewField调用SL:FindMonsterInCurrViewField(true,true)、使用捕获IsDie并按actor:GetID建立映射。未发现明确差异，未作猜测性源码修改。",
+    "static_source_review": "检查点305：对照VM root PC214-PC237与root.children[45] MainLoop，并定点核对主源码共享状态定义、辅助闭包定义、MainLoop主体。22项捕获寄存器[T18,T14,T13,T4,T23,T35,T26,T34,T15,T32,T17,T16,T19,T20,T22,T36,T21,T31,T30,T33,T24,T8]逐项映射到主源码同一词法对象；确认共享状态cell身份一致，IsInWhitelistMap是全局查找而非upvalue。未发现差异，未作猜测性修改。",
     "lua_syntax_check": "未执行：容器未找到lua5.1/luac5.1/lua/luac命令；未安装或改动用户环境。",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
@@ -70,6 +70,6 @@
       "使用unpack而非table.unpack；避免table.pack/table.move/bit32/utf8/package.searchpath等5.2+接口",
       "确认闭包、变长参数、多返回值、迭代器及元表行为均符合Lua 5.1"
     ],
-    "current_review": "检查点304未修改Lua代码；复核的现有闭包/变参写法与Lua 5.1目标兼容。解释器检查仍未执行。"
+    "current_review": "检查点305未修改Lua代码；复核的局部闭包和共享cell引用方式符合Lua 5.1词法闭包模型。未执行解释器语法检查。"
   }
 }

@@ -23,9 +23,9 @@
 
 ## 3. 当前接续位置
 
-- 最近检查点：**304**
-- 下一检查点：**305**
-- 当前优先任务：复核PC214-PC237 MainLoop的22项捕获顺序与主源码词法引用身份，重点确认currentState、目标集合、扫描游标、归属计数及等待状态均共享同一cell。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
+- 最近检查点：**305**
+- 下一检查点：**306**
+- 当前优先任务：复核PC238-PC255 InitGatherMonsters与StopGatherMonsters的两组7项捕获顺序、共享cell身份及调度调用形态。唯一主源码仍为 `04_源码候选/MainLeftBottom_功能等价重建.lua`。
 - PC280-PC412 的根级创建/捕获/导出/入口挂接已静态核对；PC1-PC211已修正ResetGatherMonsterData的清目标/等待状态复位顺序，FindMonsterInCurrViewField主体与27条物理指令恢复稿一致。检查点300已修正MainLoop等待归属变更到期后的FindMonsterInCurrViewField调用实参；检查点301已静态核对PC212-PC255导出，并补充MainLoop数值for循环游标语义注释；检查点302核对PC1-PC85闭包导出及捕获边界，修正物品/仓库函数对根级函数的错误词法引用；检查点303核对PC86-PC167配置、奖励表及UI捕获，明确奖励回调的18000取模参数。当前容器未发现Lua解释器命令，尚未执行Lua 5.1语法检查。后续仍以同一唯一主源码为准。
 
 ## 4. 源码文件职责
