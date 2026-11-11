@@ -3494,3 +3494,25 @@ Nested_match：
 ## 下一步
 
 检查点280：核对doInit_UI及其子闭包对四个配置包装器、文件存在检查包装器的实际调用时机和参数；随后批量整理物品/背包/仓库与拾取业务函数。复杂宿主代理行为按原调用保留并注释，不因个别疑难函数暂停整体源码整理。
+
+
+## 检查点 #280（2026-11-11）：doInit_UI配置闭包调用链与业务参数命名
+
+- 工作分支：`work/functional-equivalent-rebuild-2026-11-11`；旧备份分支只读，main不修改。
+- 基线：检查点279。
+- 已读取doInit_UI完整候选、20项捕获表、配置闭包实现、检查点26/125/178/254/279审计及新框架API映射。
+- 确认配置读写并非doInit_UI启动时统一执行，而是在按钮或输入回调中按条件触发：
+  - UP6 AnonymousHelper_49：黑名单按钮无blacklistTimer时读取blacklist_distance.txt。
+  - UP9 AnonymousHelper_33：Nested_InitGatherMonsters仅在threshold为false/nil时读取gather_monster_count.txt。
+  - UP10 AnonymousHelper_32：黑名单距离输入回调写入包装器。
+  - UP14 AnonymousHelper_54：拉怪数量输入回调写入包装器。
+  - UP16 FileExistCheck_pcall_wrapper：两个配置清除回调共用，消费(success,resolvedPath)。
+  - UP12 GetWritablePath：写入失败日志路径解析；UP13/UP15分别是两个配置文件名。
+- 主恢复源码中为上述捕获建立业务语义别名，并将保存/清除子闭包的模糊形参改为职责名称；捕获顺序、实参顺序、返回值分支及调用时机未变。
+- 发现并明确登记跨函数参数异常：AnonymousHelper_32(value)和AnonymousHelper_54(value)分别调用PCallHelper(固定文件名,value)；检查点26中的PCallHelper本体则将第1参转为文本、第2参送入GetWritablePath作为路径参数。该顺序看起来与“将数值写入固定配置文件”的业务意图不一致，但检查点125/254确认了包装器实参顺序。本批不交换参数，待后续回到原始PCallHelper/AnonymousHelper调用窗口逐PC复核。
+- FileExistCheck_pcall_wrapper在文件存在时直接返回true/path且不删除；清除回调仍显示“已清空”提示。保留现有字节码候选行为，不因提示文字臆造删除副作用。
+- 静态核对通过：8个配置槽位别名存在且绑定到预期UP槽；四条读取/写入调用链和两条清除检查链可定位；没有改写宿主API。
+- 语法编译未执行（无lua/luac/luajit/解析器）；游戏运行时验证仍为0。
+- 原始完整静态恢复计数仍109/110；普通Lua草稿计数仍72。
+- 下一步检查点281：优先功能等价整理GetAvailableStoragePage与GetStorageItemData，再进入StorageItems。未文档化的NPCStorageProxy等宿主代理方法保留原调用。
+

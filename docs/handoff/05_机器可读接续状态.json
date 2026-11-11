@@ -55,7 +55,7 @@
     "root.children[2]": "GetWritablePath：10条；检查点213按PC1-PC9闭合，PC10为不可达尾部；保留vararg并读取首个路径参数；PC8拼接顺序确认是writablePath .. path。完整静态恢复，未运行时验证；源码04_源码候选/root2_GetWritablePath.lua。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "检查点280：继续处理配置链的调用者和读写状态使用点，重点核对doInit_UI捕获的AnonymousHelper_49/32/33/54、FileExistCheck_pcall_wrapper及其子函数调用时机；随后进入物品/背包/仓库与拾取功能组。先按已有静态源码补齐确定业务代码，复杂宿主代理行为保留原调用并注释，不回到重复VM统计。",
+  "next_action": "检查点281：转入物品/背包/仓库功能组。优先将已有完整静态恢复证据且逻辑直观的GetAvailableStoragePage与GetStorageItemData整理为可读直接函数，再进入StorageItems；保留未文档化宿主代理调用，不反汇编代理内部。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -130,10 +130,10 @@
     "enabled": true,
     "protocol_file": "docs/handoff/10_防上下文中断_checkpoint协议.md",
     "rule": "每完成一个可验证批次，立即提交源码/分析产物、函数状态CSV、机器状态JSON和检查点；不得等上下文接近上限。",
-    "last_checkpoint_date": "2026-11-10",
-    "last_checkpoint": "242",
-    "last_completed_checkpoint": 243,
-    "next_checkpoint": 244
+    "last_checkpoint_date": "2026-11-11",
+    "last_checkpoint": "280",
+    "last_completed_checkpoint": 280,
+    "next_checkpoint": 281
   },
   "static_recovered_functions": [
     {
@@ -2809,23 +2809,25 @@
   ],
   "latest_batch": {
     "date": "2026-11-11",
-    "checkpoint": "279",
+    "checkpoint": "280",
     "targets": [
-      "FileExistCheck_pcall_wrapper",
-      "GetWritablePath",
-      "ReadNumericConfig",
-      "PCallHelper",
+      "doInit_UI",
       "AnonymousHelper_49",
       "AnonymousHelper_32",
       "AnonymousHelper_33",
-      "AnonymousHelper_54"
+      "AnonymousHelper_54",
+      "FileExistCheck_pcall_wrapper",
+      "PCallHelper"
     ],
-    "status": "8个配置读写函数已写入根模块直接闭包；主恢复稿已合并根模块来源导出，保留第一批11个基础辅助函数；PC297-PC315活动装配已切换为直接函数来源，旧工厂证据文件未删除。 ReadNumericConfig入口明确保留function(...)，仅读取首个参数；修正后已同步主源码与根模块候选。",
-    "audit_file": "docs/audit/检查点279_配置文件读写闭包链功能等价复刻.md",
+    "status": "已核对doInit_UI配置闭包调用时机、实参与返回值用途；主恢复稿改为业务语义局部别名并重命名保存/清除回调形参；不更改捕获顺序与行为。发现PCallHelper固定文件名/输入值参数顺序与其写入体路径/文本用途存在跨函数异常，保留原始顺序并列为待复核。",
+    "audit_file": "docs/audit/检查点280_doInit_UI配置闭包调用链功能等价复刻.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
-    "helper_count": 8,
-    "direct_bindings": 8,
+    "helper_count": 0,
+    "direct_bindings": 0,
+    "config_call_paths_reviewed": 6,
+    "static_function_count_unchanged": 109,
+    "ordinary_lua_drafts_unchanged": 72,
     "runtime_verified": 0,
     "lua_compiler_available": false
   },
@@ -3549,29 +3551,28 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 279,
-  "checkpoint": 279,
+  "last_checkpoint": 280,
+  "checkpoint": 280,
   "drafts": 33,
-  "next": "检查点280：继续处理配置链的调用者和读写状态使用点，重点核对doInit_UI捕获的AnonymousHelper_49/32/33/54、FileExistCheck_pcall_wrapper及其子函数调用时机；随后进入物品/背包/仓库与拾取功能组。先按已有静态源码补齐确定业务代码，复杂宿主代理行为保留原调用并注释，不回到重复VM统计。",
+  "next": "检查点281：转入物品/背包/仓库功能组。优先将已有完整静态恢复证据且逻辑直观的GetAvailableStoragePage与GetStorageItemData整理为可读直接函数，再进入StorageItems；保留未文档化宿主代理调用，不反汇编代理内部。",
   "recent_checkpoint": {
-    "number": 279,
+    "number": 280,
     "date": "2026-11-11",
-    "audit_file": "docs/audit/检查点279_配置文件读写闭包链功能等价复刻.md",
+    "audit_file": "docs/audit/检查点280_doInit_UI配置闭包调用链功能等价复刻.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
     "metrics": {
-      "config_functions_rebuilt": 8,
-      "root_module_exports_merged": true,
-      "direct_sources_bound": 8,
-      "static_function_count_unchanged": 109,
-      "ordinary_lua_drafts_unchanged": 72,
+      "config_call_paths_reviewed": 6,
+      "doInit_capture_order_preserved": true,
+      "source_parameter_names_clarified": true,
+      "static_function_count": 109,
+      "ordinary_lua_drafts": 72,
       "runtime_verified": 0,
-      "lua_compiler_available": false,
-      "read_numeric_config_vararg_preserved": true
+      "lua_compiler_available": false
     },
-    "notes": "GetWritablePath/ReadNumericConfig/PCallHelper/FileExistCheck_pcall_wrapper/AnonymousHelper_49/AnonymousHelper_32/AnonymousHelper_33/AnonymousHelper_54已在根模块候选中写成直接词法闭包；MainLeftBottom_恢复源码.lua从root_MainLeftBottom_Module.lua来源表绑定。PC297-PC315装配不再调用make_xxx工厂。保留旧静态草稿作审计证据。当前环境无lua/luac/luajit，未声称语法编译通过；目标游戏运行时验证仍0。 ReadNumericConfig按检查点232保留vararg入口function(...)，首个实参为fileName，后续vararg不读取。"
+    "notes": "doInit_UI的配置读取/写入/清除回调时机和参数流已核对；只在按钮或输入回调触发，不在初始化阶段统一读写。保存包装器PCallHelper的参数顺序与本体文本/路径用途存在跨函数异常，依据既有PC证据保留原顺序，不按业务意图交换参数。FileExistCheck现存文件分支返回true/path但不删除，提示语义不一致待复核。"
   },
-  "latest_checkpoint": 279,
+  "latest_checkpoint": 280,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3580,7 +3581,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 280,
+  "next_checkpoint": 281,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3761,9 +3762,9 @@
     "latest_static_check": "checkpoint278: 11 helper definitions and exports present; 11 bindDirect sources repointed; no Lua compiler/parser available; no syntax-pass claim"
   },
   "latest": {
-    "checkpoint": "279",
-    "summary": "配置读写闭包链8项已改为根模块中的直接可读词法闭包，并由主恢复稿从root_MainLeftBottom_Module.lua来源表直接绑定；旧make_xxx工厂源码作为历史证据保留但不再用于PC297-PC315活动装配。 ReadNumericConfig已按检查点232修正为vararg入口，只读取首个fileName参数。",
-    "audit_file": "docs/audit/检查点279_配置文件读写闭包链功能等价复刻.md",
+    "checkpoint": "280",
+    "summary": "doInit_UI配置回调链已核对并在主恢复稿中使用业务语义别名；保留写入参数顺序异常和FileExistCheck提示/行为不一致，未擅自修复。",
+    "audit_file": "docs/audit/检查点280_doInit_UI配置闭包调用链功能等价复刻.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3888,7 +3889,7 @@
   "functional_rebuild": {
     "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
     "backup_branch": "backup/pre-functional-rewrite-2026-11-11",
-    "current_batch": "配置文件读写闭包链",
+    "current_batch": "doInit_UI配置回调调用链",
     "functions": [
       "FileExistCheck_pcall_wrapper",
       "GetWritablePath",
@@ -3903,6 +3904,18 @@
     "old_candidate_sources_preserved": true,
     "lua_syntax_compiler_available": false,
     "runtime_verified": 0,
-    "direct_sources_bound": 8
+    "direct_sources_bound": 8,
+    "last_completed_checkpoint": 280,
+    "next_checkpoint": 281
+  },
+  "checkpoint280_config_callback_graph": {
+    "audit_file": "docs/audit/检查点280_doInit_UI配置闭包调用链功能等价复刻.md",
+    "read_blacklist_distance": "doInit_UI UP6 -> Nested_Helper_10 -> AnonymousHelper_49 -> ReadNumericConfig('blacklist_distance.txt')",
+    "read_gather_threshold": "doInit_UI UP9 -> Nested_InitGatherMonsters fallback when threshold is false/nil -> AnonymousHelper_33 -> ReadNumericConfig('gather_monster_count.txt')",
+    "write_blacklist_distance": "Nested_Helper_5 -> AnonymousHelper_32(value) -> PCallHelper('blacklist_distance.txt', value)",
+    "write_gather_threshold": "Nested_Helper_8 -> AnonymousHelper_54(value) -> PCallHelper('gather_monster_count.txt', value)",
+    "clear_config": "make_Nested_Helper/make_Nested_s -> FileExistCheck_pcall_wrapper(configFileName) -> (success,path)",
+    "parameter_order_anomaly": "PCallHelper body treats arg1 as payload and arg0 as GetWritablePath argument; callers pass filename first and value second. Preserved pending PC-level recheck.",
+    "runtime_verified": false
   }
 }
