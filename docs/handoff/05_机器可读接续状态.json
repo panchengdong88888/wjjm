@@ -48,7 +48,7 @@
   },
   "verification": {
     "static_source_review": "检查点294：MainLoop主体按root.children[45]静态恢复稿复核并修正；InitGatherMonsters/StopGatherMonsters捕获顺序及执行顺序与对应静态草稿、根模块PC238-PC255装配记录一致。未执行Lua语法检查或目标运行时验证。",
-    "lua_syntax_check": "未执行/未确认",
+    "lua_syntax_check": "未执行Lua 5.1解释器检查；仅完成源码静态兼容性关键词扫描",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
   },
@@ -61,5 +61,16 @@
     "中文沟通，减少过程汇报，不重复询问已知信息。",
     "每批有意义改动集中为一个 commit，更新此状态；只核验本批文件与分支 HEAD。",
     "唯一持续更新主源码为04_源码候选/MainLeftBottom_功能等价重建.lua；不得另建平行开发源码，所有新增实现直接写入该文件。"
-  ]
+  ],
+  "lua_compatibility": {
+    "target_version": "Lua 5.1",
+    "policy": "唯一主源码中的新增与修正代码必须兼容Lua 5.1；不使用Lua 5.2及以上新增语法、标准库或运行时接口。宿主引擎API以引擎自身文档为准。",
+    "checks": [
+      "禁止goto与标签语法",
+      "禁止使用_ENV作为全局环境机制；Lua 5.1环境访问按实际宿主约定使用getfenv/setfenv，且不得无证据改写环境",
+      "使用unpack而非table.unpack；避免table.pack/table.move/bit32/utf8/package.searchpath等5.2+接口",
+      "确认闭包、变长参数、多返回值、迭代器及元表行为均符合Lua 5.1"
+    ],
+    "current_review": "检查点294主源码初步静态扫描未发现goto、标签或明显Lua 5.2+标准库接口；检测到getfenv分支属于Lua 5.1接口。尚未使用Lua 5.1解释器执行语法检查，不能视为语法验证通过。"
+  }
 }
