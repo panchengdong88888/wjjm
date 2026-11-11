@@ -6,6 +6,7 @@
 -- 状态：不是完整根模块源码，尚未运行时验证。
 -- 检查点236：58个直接子原型闭包创建点与135个OP_387 live-cell捕获已建表，见docs/handoff/12_根模块闭包装配表.json。
 -- 检查点278：第一批11个地图/坐标/玩家辅助函数已在本文件中整理为可读函数主体；静态证据完整，未运行时验证。
+-- 检查点279：PC297-PC315配置读写链8个函数改为直接词法闭包；ReadNumericConfig保留vararg入口，未运行时验证。
 
 local MainLeftBottom = {}
 _G.MainLeftBottom = MainLeftBottom
