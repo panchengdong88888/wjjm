@@ -406,9 +406,11 @@ local function AnonymousHelper_49()
     return ReadNumericConfig(blacklistDistanceConfigFile)
 end
 
--- root.children[32]：固定写入 blacklist_distance.txt，转发首个显式参数。
+-- root.children[32]：按VM实参顺序调用PCallHelper(固定文件名, firstArg)。
+-- PCallHelper本体把第1参转为写入内容、第2参交给GetWritablePath；
+-- 该参数组合看起来反直觉，但这是VM确认的调用顺序，不能按预期用途调换。
 local function AnonymousHelper_32(firstArg)
-    return PCallHelper(firstArg, blacklistDistanceConfigFile)
+    return PCallHelper(blacklistDistanceConfigFile, firstArg)
 end
 
 -- root.children[33]：固定读取 gather_monster_count.txt。
@@ -416,9 +418,10 @@ local function AnonymousHelper_33()
     return ReadNumericConfig(gatherMonsterCountConfigFile)
 end
 
--- root.children[54]：固定写入 gather_monster_count.txt，转发首个显式参数。
+-- root.children[54]：按VM实参顺序调用PCallHelper(固定文件名, firstArg)。
+-- 保留与root.children[32]相同的原始参数排列，不按直觉交换内容/路径。
 local function AnonymousHelper_54(firstArg)
-    return PCallHelper(firstArg, gatherMonsterCountConfigFile)
+    return PCallHelper(gatherMonsterCountConfigFile, firstArg)
 end
 
 ----------------------------------------------------------------
