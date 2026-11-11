@@ -5,21 +5,21 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 316,
-  "next_checkpoint": 317,
+  "latest_checkpoint": 317,
+  "next_checkpoint": 318,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
     "prototype": "root / MainLeftBottom_Module + root.children[42] / doInit_UI",
-    "function": "入口与UI链全量静态复核（AccountIDValidation回调捕获值纠正后继续）",
+    "function": "入口与UI链全量静态复核（修正非开关按钮点击绑定及全局函数查找后继续）",
     "physical_pc": "root PC1-PC412；root.children[55]及两个子原型；root.children[42]及23个子原型",
     "focus": [
-      "继续核对doInit_UI全部23个子原型及按钮依赖",
-      "完成AccountIDValidation父函数与等待闭包捕获值/调用顺序复核",
-      "核对所有入口函数是否错误读取局部模块表或全局模块表"
+      "继续核对doInit_UI所有UI子原型的实际回调顺序和全局函数查找方式",
+      "逐项确认按钮配置表与buttonHandlers键是否一一对应",
+      "复核资源统计窗口创建、刷新、关闭子闭包"
     ],
-    "next": "继续完成UI子原型逐项对照和入口/状态表引用检查；随后执行Lua 5.1语法检查（若解释器可用）。",
-    "progress": "检查点316：纠正AccountIDValidation源码的捕获值。VM PC55在等待闭包创建前清空R4；PC58创建child0，PC59捕获R4，因此child0.UP0实际为nil，不是validationResult布尔值。父函数验证结果只用于PC42-PC53成功/失败日志。源码现将验证结果限制在do块内，等待闭包使用独立nil局部unScheduleArgument，并调用SL:UnSchedule(nil)；PrintLog/ShowLocalNoticeByType通过两个局部别名捕获，对应PC276的T4/T5。等待回调按当前函数环境读取MainLeftBottom.doInit，避免误捕获局部模块表。"
+    "next": "完成剩余UI子原型逐PC核对，重点核查按钮动作与资源窗口；随后做Lua 5.1语法检查和入口/UI专项总结。",
+    "progress": "检查点317：修正child9 createButton（root.children[42].children[9]）的点击绑定：VM PC42-PC50对所有按钮无条件调用GUI:addOnClickEvent；config.toggle只决定是否初始化toggled=false，child0先调用buttonHandlers[key]，非toggle按钮随后return，不执行标题/颜色切换。旧源码把整个事件注册放在if config.toggle内，导致clearblacklistbut/moneybut/clearmonsterbut/cleardistancebut/xiaotuibut等非开关按钮完全无点击事件，现已修正。另按VM ENV读取修正doInit_UI对Builtsetting、child16对MoveItemToQuickUse、reward child对LuaSendMsg、StopGatherMonsters/InitGatherMonsters的全局函数查找；这些名称虽在源码存在同名local闭包，VM明确使用ENV全局导出。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -46,7 +46,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点316：root.children[55] PC55明确清空R4，PC58创建等待回调，PC59捕获R4，故回调UP0=nil；UP1捕获父UP0=PrintLog。主源码改为do块限制validationResult生命周期，等待闭包捕获nil，成功/失败日志与通知使用捕获的PrintLog/ShowLocalNoticeByType。",
+    "static_source_review": "检查点317：root.children[42].children[9] PC38-PC50确认config.toggle truthy时写toggled=false，PC42-PC50无条件注册点击回调；child0先调用buttonHandlers[key]，再检查toggle，非toggle动作按钮仍执行handler但不切换标题。主源码已按该顺序修正。VM子原型root/43/2/1、/7、/8及父PC100/child16 PC13明确读取ENV.LuaSendMsg/StopGatherMonsters/InitGatherMonsters/Builtsetting/MoveItemToQuickUse，主源码改用getfenv(1)动态读取当前函数环境。",
     "lua_syntax_check": "未执行：容器未找到lua5.1/luac5.1/lua/luac命令；未安装或改动用户环境。",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
@@ -70,6 +70,6 @@
       "使用unpack而非table.unpack；避免table.pack/table.move/bit32/utf8/package.searchpath等5.2+接口",
       "确认闭包、变长参数、多返回值、迭代器及元表行为均符合Lua 5.1"
     ],
-    "current_review": "检查点316仅使用Lua 5.1支持的do块、nil局部变量、getfenv(1)；未引入高版本语法。尚未执行解释器语法检查。"
+    "current_review": "检查点317使用Lua 5.1支持的getfenv(1)与普通闭包；无高版本语法。尚未执行解释器语法检查。"
   }
 }

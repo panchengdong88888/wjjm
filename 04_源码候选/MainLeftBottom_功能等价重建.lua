@@ -2819,7 +2819,7 @@ local function make_Nested_StopGatherMonsters(
     local function Nested_StopGatherMonsters()
         if timerState.gatherTimer then
             notify("关闭引怪功能")
-            StopGatherMonsters()
+            getfenv(1).StopGatherMonsters()
             return true
         end
 
@@ -2847,7 +2847,7 @@ local function make_Nested_LuaSendMsg(counter, modulus, messageEntries)
         local entry = messageEntries[index]
         if not entry then return end
 
-        LuaSendMsg(9002, entry[1], 1.0, 2.0, 3.0, entry[2], entry[3])
+        getfenv(1).LuaSendMsg(9002, entry[1], 1.0, 2.0, 3.0, entry[2], entry[3])
     end
     return Nested_LuaSendMsg
 end
@@ -3010,7 +3010,7 @@ local function make_Nested_InitGatherMonsters(config, getThreshold)
         if not threshold then threshold = getThreshold() end
         config.GATHER_THRESHOLD = threshold
         if not config.GATHER_THRESHOLD then return false end
-        InitGatherMonsters()
+        getfenv(1).InitGatherMonsters()
         return true
     end
     return Nested_InitGatherMonsters
@@ -3120,7 +3120,7 @@ local function doInit_UI()
     end
 
     -- PC100-PC101。
-    Builtsetting()
+    getfenv(1).Builtsetting()
 
     -- PC102-PC130：四组传送道具槽位配置。每组包含slot与names数组，
     -- 其数组成员由相邻寄存器表构造指令确定。
@@ -3151,7 +3151,7 @@ local function doInit_UI()
                 local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)
                 if itemIndex then
                     local succeeded, message =
-                        MoveItemToQuickUse(itemIndex, currentSlotConfig.slot)
+                        getfenv(1).MoveItemToQuickUse(itemIndex, currentSlotConfig.slot)
                     printLog(message)
                     if succeeded then
                         return
@@ -3317,29 +3317,35 @@ local function doInit_UI()
         GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
         GUI:Button_setTitleColor(button, "#ffffff")
 
-        -- toggle项由child9创建child0回调；child0按buttonHandlers[key]门控。
+        -- PC38-PC41：只有toggle项才初始化toggled=false。
         if config.toggle then
             config.toggled = false
-            GUI:addOnClickEvent(button, function()
-                local gate = buttonHandlers[config.key]
-                local allowed = true
-                if gate then
-                    allowed = gate()
-                end
-                if allowed == false then
-                    return
-                end
-                config.toggled = not config.toggled
-                GUI:Button_setTitleText(
-                    button,
-                    config.toggled and config.toggle or config.name
-                )
-                GUI:Button_setTitleColor(
-                    button,
-                    config.toggled and "#ff0000" or "#ffffff"
-                )
-            end)
         end
+
+        -- PC42-PC50：所有按钮都注册点击事件，包括非toggle功能按钮。
+        -- child0先调用buttonHandlers[key]；非toggle项随后直接返回，不改标题/颜色。
+        GUI:addOnClickEvent(button, function()
+            local gate = buttonHandlers[config.key]
+            local allowed = true
+            if gate then
+                allowed = gate()
+            end
+            if not config.toggle then
+                return
+            end
+            if allowed == false then
+                return
+            end
+            config.toggled = not config.toggled
+            GUI:Button_setTitleText(
+                button,
+                config.toggled and config.toggle or config.name
+            )
+            GUI:Button_setTitleColor(
+                button,
+                config.toggled and "#ff0000" or "#ffffff"
+            )
+        end)
     end
 
     -- PC346-PC378：三组配置分别以40、0、80为行偏移，列索引从ipairs返回。
