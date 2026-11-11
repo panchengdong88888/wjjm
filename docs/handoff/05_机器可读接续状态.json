@@ -49,13 +49,13 @@
     "root.children[36]": "GetAvailableStoragePage（51条）检查点190逐PC完整静态恢复：代理缺失提示；逐页读取pageData计数；单页容量配置/回退；每页openSize剩余容量；pageLimit=min(pageCapacity,openSize-(page-1)*pageCapacity)；返回首个pageLimit>currentCount且pageLimit>0的页码，否则nil。未运行时验证。",
     "root.children[12]": "LuaSendMsg（92条）检查点190、205：普通Lua草稿PC1-PC92已独立静态复审；固定六参/message字段、Blocklist仅抑制日志、SendHookList按第1参取hook、pcall(hook,arg1,arg6,message)且仅严格true拦截、否则networkCtl:SendMsg原六参转发均与corrected反汇编一致。草稿仍保留UP0/UP1临时名；作者原名与宿主API语义未证实；未运行时验证。源码04_源码候选/短函数草稿_第五十批.lua；审计docs/audit/检查点205_LuaSendMsg普通Lua草稿独立复审.md。",
     "root.children[41]": "MoveItemToQuickUse（133条）检查点191已将检查点86注释性首版升级为完整普通Lua主体草稿。调用点doInit_UI PC131-PC145确认第1参itemIndex来自ITEM_INDEX_BY_NAME、第2参slotConfig.slot；父调用消费(success,message)，PrintLog(message)，成功停止本组尝试。按PC恢复QuickUseProxy/Bag取得、范围校验、快捷栏内查找/交换/移动、Bag列表next检查、targetEntry条件退回背包、itemDataList[1]删除与目标位设置、三类成功提示和失败提示。SetQuickUsePosData布尔语义、宿主副作用未验证；未运行时验证。",
-    "root": "MainLeftBottom_Module：412条物理指令、109项常量、58个直接子原型。PC1-PC412分段证据已建；58/58直接子闭包源码层绑定；主恢复文件已整合PC43-PC85、PC86-PC211、PC181-PC258及PC297-PC388关键闭包创建顺序；root主体仍需最终字段/寄存器一致性审计并合并为连续执行体。",
+    "root": "MainLeftBottom_Module：412条物理指令、109项常量、58个直接子原型。58/58直接子闭包源码层绑定，主恢复稿已整合各段闭包创建/捕获/导出适配。检查点282修正两个固定参数入口；检查点283区分chunk ENV与ENV['_G']并显式对齐PC2/4/31/34/44/45/275/389环境访问。根模块仍需完成PC86-PC412寄存器生命周期/共享cell/模块字段逐PC审计及连续可读入口整理；未运行时验证。",
     "root.children[42].children[3]": "Nested_FFFF00（320条父指令、72常量、5个子原型、4项捕获）：检查点225已完成PC1-PC320及5个子原型静态恢复；捕获顺序moduleState/printLog/timerState/initState。Win_Create等GUI调用参数已与新框架43份文档核对；五组Text_Create结果均先做truthy门控。K[28]=['unknown',2]已确认是nil的VM dump序列化占位，resTimer清理写nil。MoneyProxy方法未文档化，保留原调用，不反汇编其内部。完整静态恢复，未运行时验证。",
     "root.children[42].children[22]": "Nested_Anonymous（8条父指令；Nested_str 27条、Nested_match 50条、Nested_Helper_11 4条）已完整静态恢复。原始VM M()每次新建T={}和X={}；fixed_param_count=2；两实参写入T[0]/T[1]；额外实参进入X；T[2]无写入保持nil。Nested_str捕获T[0]/PrintLog/T[2]/T[1]；无效数字路径按原字节码调用nil，保留attempt-to-call-nil行为。未运行时验证。",
     "root.children[2]": "GetWritablePath：10条；fixed_param_count=1，正确入口function(path)；PC7读取固定参数，PC8按writablePath..path拼接；额外参数不读取。检查点282纠正根模块候选/主恢复稿的纯vararg入口回归。完整静态恢复，未运行时验证。",
     "root.children[52].children[0]": "Nested_JsonDecode：6条；检查点214确认父级捕获T[3]、pcall调用、SL.JsonDecode点调用及PC5-PC6不可达；完整静态恢复，未运行时验证。"
   },
-  "next_action": "继续优先恢复入口模块MainLeftBottom_Module与UI初始化doInit_UI。检查点282已纠正root.children[2] GetWritablePath及root.children[9] ReadNumericConfig的固定参数入口回归；下一步继续核对root PC1-PC412的环境读取、闭包装配、字段/全局导出与PC412返回链，再系统整理doInit_UI的419条指令和23个子原型。暂缓GetAvailableStoragePage、GetStorageItemData、StorageItems等背包仓库工作。",
+  "next_action": "继续优先恢复入口模块MainLeftBottom_Module与UI初始化doInit_UI。检查点283已修正当前chunk ENV与ENV['_G']的适配区别，并将PC4/PC34的模块表重读也显式落到源码；下一步继续审阅root PC86-PC412的寄存器生命周期、共享cell、模块字段和闭包捕获，核对无误后再系统整理doInit_UI的419条指令和23个子原型。暂缓GetAvailableStoragePage、GetStorageItemData、StorageItems等背包仓库工作。",
   "authoritative_files": [
     "01_原始资料校验与总账.md",
     "02_原型总索引.json",
@@ -2809,20 +2809,16 @@
   ],
   "latest_batch": {
     "date": "2026-11-11",
-    "checkpoint": "282",
+    "checkpoint": "283",
     "targets": [
       "MainLeftBottom_Module",
-      "GetWritablePath",
-      "ReadNumericConfig"
+      "rootEnvironment",
+      "ENV versus ENV['_G']"
     ],
-    "status": "根入口核查发现检查点279引入固定参数入口回归：GetWritablePath与ReadNumericConfig均为fixed_param_count=1，但根模块候选及主恢复稿副本写成纯vararg入口。已按检查点235 VM调用帧证据修正为单固定参数签名，并同步CSV、机器状态与checkpoint协议。根模块整体仍未完成。",
-    "audit_file": "docs/audit/检查点282_根模块固定参数入口回归修正.md",
+    "status": "检查点283继续核对root PC1-PC412，修正ENV与_G混用：根模块当前chunk环境由getfenv(1)或_ENV解析并登记到rootSource.environment；PC2/4/31/34显式使用该环境创建/重读模块表；PC55-PC85、PC213、237、246、255、258、260、382、388的全局导出写入该环境；PC44/45单独读取ENV['_G']并向其写log；PC275/389也从同一chunk环境重读MainLeftBottom。根模块仍是静态功能等价候选，未完成整体入口与UI审计。",
+    "audit_file": "docs/audit/检查点283_根模块ENV与_G环境区分.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
-    "corrected_functions": [
-      "root.children[2] GetWritablePath",
-      "root.children[9] ReadNumericConfig"
-    ],
     "root_instruction_count": 412,
     "static_function_count": 109,
     "ordinary_lua_drafts": 72,
@@ -3549,18 +3545,18 @@
   ],
   "draft_function_count": 72,
   "ordinary_lua_draft_functions": 72,
-  "last_checkpoint": 282,
-  "checkpoint": 282,
+  "last_checkpoint": 283,
+  "checkpoint": 283,
   "drafts": 33,
-  "next": "继续优先恢复入口模块MainLeftBottom_Module与UI初始化doInit_UI。检查点282已纠正root.children[2] GetWritablePath及root.children[9] ReadNumericConfig的固定参数入口回归；下一步继续核对root PC1-PC412的环境读取、闭包装配、字段/全局导出与PC412返回链，再系统整理doInit_UI的419条指令和23个子原型。暂缓GetAvailableStoragePage、GetStorageItemData、StorageItems等背包仓库工作。",
+  "next": "继续优先恢复入口模块MainLeftBottom_Module与UI初始化doInit_UI。检查点283已修正当前chunk ENV与ENV['_G']的适配区别，并将PC4/PC34的模块表重读也显式落到源码；下一步继续审阅root PC86-PC412的寄存器生命周期、共享cell、模块字段和闭包捕获，核对无误后再系统整理doInit_UI的419条指令和23个子原型。暂缓GetAvailableStoragePage、GetStorageItemData、StorageItems等背包仓库工作。",
   "recent_checkpoint": {
-    "number": 282,
+    "number": 283,
     "date": "2026-11-11",
-    "audit_file": "docs/audit/检查点282_根模块固定参数入口回归修正.md",
+    "audit_file": "docs/audit/检查点283_根模块ENV与_G环境区分.md",
     "targets": [
       "MainLeftBottom_Module",
-      "GetWritablePath",
-      "ReadNumericConfig"
+      "rootEnvironment",
+      "ENV and ENV['_G'] semantics"
     ],
     "metrics": {
       "root_instruction_count": 412,
@@ -3569,9 +3565,9 @@
       "runtime_verified": 0,
       "lua_compiler_available": false
     },
-    "notes": "修正检查点279的参数入口回归：root.children[2]/[9]均fixed_param_count=1，源码恢复为function(path)/function(fileName)，不再从纯vararg读取固定参数；入口/UI优先级不变。"
+    "notes": "根模块OP_137环境访问与普通ENV全局导出分开恢复；PC44取得ENV['_G']，PC45只向该表写log；PC275/389仍从当前chunk ENV重读MainLeftBottom。"
   },
-  "latest_checkpoint": 282,
+  "latest_checkpoint": 283,
   "complete_static_reconstruction_count": 109,
   "complete_static_reconstruction": "109/110 (99.1%)",
   "progress_reconciled": true,
@@ -3580,7 +3576,7 @@
     "complete_static_reconstruction": 109,
     "runtime_verified": 0
   },
-  "next_checkpoint": 282,
+  "next_checkpoint": 283,
   "runtime_verified": 0,
   "integration_scaffolds": [
     {
@@ -3761,9 +3757,9 @@
     "latest_static_check": "检查点282：GetWritablePath/ReadNumericConfig在根候选与主恢复稿中均恢复为单固定参数入口；静态文本检查已完成，无Lua编译器/解析器，未声称语法通过，游戏runtime_verified=0。"
   },
   "latest": {
-    "checkpoint": "282",
-    "summary": "根模块入口核查期间修正GetWritablePath与ReadNumericConfig固定参数入口回归；两者均fixed_param_count=1，纯vararg入口与原VM调用帧不符。",
-    "audit_file": "docs/audit/检查点282_根模块固定参数入口回归修正.md",
+    "checkpoint": "283",
+    "summary": "按VM OP_137语义区分当前chunk ENV与ENV['_G']；修复根模块初始化、PC4/PC34模块表重读、PC44/45日志表写入及各处全局导出/PC275/389模块重读的环境对象选择。",
+    "audit_file": "docs/audit/检查点283_根模块ENV与_G环境区分.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
   },
@@ -3775,7 +3771,7 @@
     "capture_semantics": "OP_387 stores a live cell reference {parent_T_table, register_index}; the upvalue proxy __index/__newindex reads/writes the parent T register dynamically. Later parent writes are visible to closures."
   },
   "root_assembly": {
-    "checkpoint": 275,
+    "checkpoint": 283,
     "direct_child_closures_expected": 22,
     "bound_at_source_level": 22,
     "runtime_verified": false,
@@ -3820,7 +3816,7 @@
       "BlacklistPlayerDetection",
       "doInit_UI"
     ],
-    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。 检查点272全量核对53个sources注册键唯一、37个sourceFunction字面调用及22个bindDirect调用全部命中来源路径与符号；未执行Lua解释器/luac。 检查点273核对PC1-PC42根表及a/b/z/timerState来源导出身份，主装配区新增6组静态适配断言；未执行Lua，断言未运行。 检查点274核对PC43-PC85的16个闭包创建点及T[4..8]复用；LuaSendMsg增加requireRecoveredClosure必需性校验，新增T[4..8]与全局导出身份断言；断言未运行。 检查点275静态核对58个根直接闭包均有requireRecoveredClosure保护，36个捕获工厂+22个无捕获绑定，缺失/额外/重复名称均0；Lua未运行。 检查点282发现并修正PC297-PC315配置函数参数入口回归：GetWritablePath与ReadNumericConfig的fixed_param_count均为1，恢复为function(path)/function(fileName)；不改变58个闭包的捕获/绑定统计，未运行验证。",
+    "note": "根模块58个直接子闭包全部完成源码层绑定：22个无捕获闭包+36个有捕获工厂。检查点259按序整合PC43-PC85；检查点260继续整合PC86-PC211及PC297-PC388，并校正PC357-PC388黑名单链创建顺序。根模块仍需PC1-PC412最终字段/寄存器一致性审计；运行时验证0。 检查点261修正rootSource.gatherStatusText三处跨词法块引用；PC390-PC412返回链已静态核对，仍未运行时验证。 检查点272全量核对53个sources注册键唯一、37个sourceFunction字面调用及22个bindDirect调用全部命中来源路径与符号；未执行Lua解释器/luac。 检查点273核对PC1-PC42根表及a/b/z/timerState来源导出身份，主装配区新增6组静态适配断言；未执行Lua，断言未运行。 检查点274核对PC43-PC85的16个闭包创建点及T[4..8]复用；LuaSendMsg增加requireRecoveredClosure必需性校验，新增T[4..8]与全局导出身份断言；断言未运行。 检查点275静态核对58个根直接闭包均有requireRecoveredClosure保护，36个捕获工厂+22个无捕获绑定，缺失/额外/重复名称均0；Lua未运行。 检查点282发现并修正PC297-PC315配置函数参数入口回归：GetWritablePath与ReadNumericConfig的fixed_param_count均为1，恢复为function(path)/function(fileName)；不改变58个闭包的捕获/绑定统计，未运行验证。 检查点283显式区分root chunk ENV与ENV['_G']；PC2/4/31/34环境模块表读写、PC44/45 log目标、后续全局导出及PC275/389重读已静态对齐；未进行Lua或游戏运行时验证。",
     "checkpoint261_gather_status_scope_fixed": true,
     "checkpoint272_source_registry_keys_unique": true,
     "source_registry_registration_count": 53,
@@ -3847,9 +3843,17 @@
     "checkpoint275_all_58_root_closures_fail_fast": true,
     "checkpoint275_captured_factories_guarded": 36,
     "checkpoint275_direct_bindings_guarded": 22,
-    "checkpoint275_required_closure_names_unique": 58
+    "checkpoint275_required_closure_names_unique": 58,
+    "checkpoint283_chunk_environment_separated": true
   },
-  "root_assembly_checkpoint": 275,
+  "root_assembly_checkpoint": {
+    "checkpoint": 283,
+    "checkpoint283_chunk_environment_separated": true,
+    "checkpoint283_pc4_pc34_environment_reread_explicit": true,
+    "checkpoint283_pc44_pc45_env_underscore_distinct": true,
+    "checkpoint283_pc55_pc85_global_exports_to_chunk_env": true,
+    "checkpoint283_pc275_pc389_chunk_environment_reread": true
+  },
   "root_pc1_pc42_sequential_source_restored": true,
   "root_pc43_pc85_register_ordered": true,
   "root_pc86_pc211_cells_capture_ordered": true,
@@ -3880,10 +3884,24 @@
   "root_pc212_pc296_module_field_audit": "passed_static_hide_show_destroy_main_targets",
   "root_pc297_pc315_config_chain_audit": "passed_static_capture_order",
   "root_environment_lookup_adapter": {
-    "pc275": "OP_137 global-name MainLeftBottom; adapter currently _G.MainLeftBottom",
-    "pc389": "OP_137 global-name MainLeftBottom; adapter currently _G.MainLeftBottom",
-    "equivalence": "only if _ENV and _G are the same environment table",
-    "status": "unverified; explicitly annotated; do not claim exact source syntax"
+    "pc2": "ENV['MainLeftBottom']=moduleTable; rootEnvironment.MainLeftBottom=MainLeftBottom",
+    "pc4": "reread ENV.MainLeftBottom before attaching a",
+    "pc31": "reread ENV.MainLeftBottom before attaching b",
+    "pc34": "reread ENV.MainLeftBottom before attaching z",
+    "pc44_pc45": "T[5]=ENV['_G']; then T[5].log=T[4]; distinct from writing ENV.log",
+    "pc55_pc85": "global closures are assigned to ENV[name], represented by rootEnvironment[name]",
+    "later_global_exports": "PC213/237/246/255/258/260/382/388 assign to the same rootEnvironment",
+    "pc275": "reread ENV.MainLeftBottom and write its main field",
+    "pc389": "reread ENV.MainLeftBottom into T[59]; PC411 writes T[59].doInit",
+    "resolver": "getfenv(1) when available; otherwise lexical _ENV; _G only as last compatibility fallback",
+    "status": "static_adapter_updated; target_runtime_environment_not_verified",
+    "equivalence": "The adapter no longer assumes ENV and ENV['_G'] are the same table; fallback to _G remains only for runtimes exposing neither getfenv nor _ENV.",
+    "files_updated": [
+      "04_源码候选/MainLeftBottom_恢复源码.lua",
+      "04_源码候选/root_MainLeftBottom_Module.lua"
+    ],
+    "audit_file": "docs/audit/检查点283_根模块ENV与_G环境区分.md",
+    "runtime_verified": false
   },
   "functional_rebuild": {
     "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
