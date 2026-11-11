@@ -5,21 +5,21 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 303,
-  "next_checkpoint": 304,
+  "latest_checkpoint": 304,
+  "next_checkpoint": 305,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
     "prototype": "root / MainLeftBottom_Module",
-    "function": "PC168-PC211采集状态cell与PC198-PC211辅助闭包创建/捕获核对",
-    "physical_pc": "PC168-PC211",
+    "function": "PC214-PC237 MainLoop 22项捕获顺序与共享cell身份复核",
+    "physical_pc": "PC214-PC237",
     "focus": [
-      "核对状态文字表、currentState及目标/等待/扫描游标共享cell的初始值与后续写入",
-      "复核PC198-PC211创建的辅助闭包、T寄存器身份和FindMonsterInCurrViewField捕获关系",
-      "继续保持Lua 5.1兼容；环境未发现解释器时不宣称语法通过"
+      "逐槽核对MainLoop的22项捕获顺序与父root T寄存器身份",
+      "确认currentState、目标集合、扫描游标、归属计数及等待字段引用同一共享cell",
+      "检查Lua 5.1闭包捕获和调用形态，不做无证据的逻辑改写"
     ],
-    "next": "逐项对照PC168-PC211状态变量与子闭包捕获，优先修正明确的共享cell或初始化顺序差异。",
-    "progress": "检查点303完成：核对PC86-PC89的gatherConfig字段10/0.5/1及其FindMonsterCandidates、Nested_InitGatherMonsters、MainLoop、InitGatherMonsters使用关系；核对PC90-PC95计算floor(3600/0.2)=18000，并确认该值作为奖励发送回调的modulus传入；核对PC96-PC167按序构造的14条三元素奖励记录及PC409的doInit_UI捕获槽UP[18]。发现可读性风险：原变量rootRegister11的实际用途已闭合为奖励回调modulus，已重命名rewardSequenceModulus并注明不可擅自将18000改成#rewardEntries。未发现配置值、奖励记录顺序或捕获槽位的明确差异。"
+    "next": "定点对照MainLoop捕获列表、主源码函数定义和实际装配位置；仅在发现明确错位或值语义差异时修正。",
+    "progress": "检查点304完成：直接读取VM dump的root PC168-PC211及对应子原型。PC168-PC171状态文字表为IDLE=空闲状态、GATHERING=引怪中、ATTACKING=攻击中；PC172 currentState初值引用IDLE。PC173-PC180初值依次为目标集合空表、归属计数0、扫描游标0、运行标记false、等待标记false、截止时间0、等待目标ID nil、等待名称空字符串。PC181 FormatStateChange捕获T4 PrintLog与T14 currentState共享cell；PC194 FindMonsterCandidates捕获T27/T30/T28/T29/T8；PC200 ResetGatherMonsterData按T15/T16/T17/T25/T19/T20/T21/T22/T4捕获九项；PC210 FindMonsterInCurrViewField仅捕获T30 IsDie。对照唯一主源码及历史恢复稿，状态初值、ResetGatherMonsterData写入顺序、FindMonsterInCurrViewField的SL冒号调用(true,true)、IsDie存活谓词、actor:GetID及结果表索引均一致。未发现明确代码差异，因此不做无意义源码改动；本检查点只更新接续状态。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -46,7 +46,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点303：核对PC86-PC89采集配置表字段及引用，PC90-PC95的18000常量计算，PC96-PC167十四条奖励记录与PC409 UP[18]捕获；补充奖励回调modulus为18000且不得改为记录数的静态语义注释。",
+    "static_source_review": "检查点304：对照VM root PC168-PC211、主源码及历史恢复稿。核对状态文字表、currentState和T15-T22初值；核对FormatStateChange、FindMonsterCandidates、ResetGatherMonsterData、FindMonsterInCurrViewField的创建顺序与捕获寄存器；核对ResetGatherMonsterData写入顺序及FindMonsterInCurrViewField调用SL:FindMonsterInCurrViewField(true,true)、使用捕获IsDie并按actor:GetID建立映射。未发现明确差异，未作猜测性源码修改。",
     "lua_syntax_check": "未执行：容器未找到lua5.1/luac5.1/lua/luac命令；未安装或改动用户环境。",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
@@ -70,6 +70,6 @@
       "使用unpack而非table.unpack；避免table.pack/table.move/bit32/utf8/package.searchpath等5.2+接口",
       "确认闭包、变长参数、多返回值、迭代器及元表行为均符合Lua 5.1"
     ],
-    "current_review": "检查点303仅将局部变量重命名并增加注释；未新增Lua语法或标准库调用。解释器检查仍未执行。"
+    "current_review": "检查点304未修改Lua代码；复核的现有闭包/变参写法与Lua 5.1目标兼容。解释器检查仍未执行。"
   }
 }
