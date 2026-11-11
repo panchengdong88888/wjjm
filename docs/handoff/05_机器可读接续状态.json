@@ -5,21 +5,21 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 314,
-  "next_checkpoint": 315,
+  "latest_checkpoint": 315,
+  "next_checkpoint": 316,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
     "prototype": "root / MainLeftBottom_Module + root.children[42] / doInit_UI",
-    "function": "入口与UI链全量静态复核（根表/a/z对象分层与黑名单按钮依赖继续核验）",
-    "physical_pc": "root PC1-PC412；root.children[55]；root.children[42]及23个子原型；root.children[6]、root.children[47]",
+    "function": "入口与UI链全量静态复核（修正T7泛型for最终控制值后继续）",
+    "physical_pc": "root PC1-PC412；root.children[55]；root.children[42]及23个子原型",
     "focus": [
-      "继续核对doInit_UI子原型及黑名单按钮完整调用链",
-      "逐PC确认root T[0]=a、T[2]=z、T[3]=timerState在所有捕获点的身份",
-      "核对入口模块字段、a状态字段、z功能状态字段的最终分层"
+      "继续核对doInit_UI全部23个子原型与父函数调用参数",
+      "核对入口/main/doInit模块表字段及a/z状态表引用",
+      "对照原始VM确认异步回调捕获的每组配置对象身份"
     ],
-    "next": "复核doInit_UI各直接子原型源码与VM控制流/捕获/参数；重点查是否存在其他变量指向错误状态表。随后对主源码执行Lua 5.1语法检查（若解释器可用）。",
-    "progress": "检查点314：更新根模块机器账本中的对象层级：PC265/269/274写入MainLeftBottom.a.hide/show/destroy；PC294写入MainLeftBottom.a.blacklist；PC359写入MainLeftBottom.a.onDamageMsg；PC279/411仍写入模块根表main/doInit。PC360 InstallDamageHook UP0=T0=MainLeftBottom.a；PC368 BlacklistPlayerDetection UP0=T2=MainLeftBottom.z。更正InstallDamageHook子闭包调用a.onDamageMsg，并按VM将当前messageHandlers[damageMessageType]写入gameMapController.__ylwHookedOrigin。同步更新12_根模块闭包装配表、函数状态CSV及源码说明。"
+    "next": "完成UI子原型逐项对照后，做Lua 5.1语法检查；未通过前不宣布入口/UI代码已无错。",
+    "progress": "检查点315：纠正doInit_UI PC131-PC145的泛型for控制寄存器语义。T7虽由ipairs第三返回值以0初始化，但PC143每轮把当前索引写回T7；四组itemSlotConfig迭代完成后，迭代器返回nil，T7保留最后索引4。原源码错误地在循环结束后硬编码T7=0，导致PC180 RequestStorageData与PC183 GUI:Attach_UITop传参错误。现改为显式保留ipairs返回的iterator/state/T7并用while复刻TFORLOOP更新，异步闭包捕获每轮currentSlotConfig，最终将T7=4传给两处调用。同步更新函数状态CSV与源码注释。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -46,7 +46,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点314：根据root PC1-PC5寄存器时间线分层：T0在PC3后为a，T2在PC33后为z，T3为timerState。已据PC265/269/274、PC294、PC359和PC389/411校正模块字段目标；PC360 UP0=a，PC368 UP0=z。root.children[6] PC30-PC36的包装器读取a.onDamageMsg，并将新包装器记录到gameMapController.__ylwHookedOrigin。",
+    "static_source_review": "检查点315：root.children[42] PC131-PC145的ipairs泛型for按TFORLOOP语义恢复：T7初值取ipairs第三返回值，迭代成功后更新为slotIndex，迭代终止时保留4。PC180/PC183均从同一T7寄存器取一个显式参数，故源码现在传4，不再误传0。",
     "lua_syntax_check": "未执行：容器未找到lua5.1/luac5.1/lua/luac命令；未安装或改动用户环境。",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
@@ -70,6 +70,6 @@
       "使用unpack而非table.unpack；避免table.pack/table.move/bit32/utf8/package.searchpath等5.2+接口",
       "确认闭包、变长参数、多返回值、迭代器及元表行为均符合Lua 5.1"
     ],
-    "current_review": "检查点314仅调整字段访问、注释和机器账本，不引入新语法；仍兼容Lua 5.1。尚未执行Lua 5.1语法检查。"
+    "current_review": "检查点315将泛型for改为Lua 5.1支持的while/多返回值/局部变量写法；无goto、_ENV机制、table.unpack等高版本语法。尚未执行解释器语法检查。"
   }
 }

@@ -3122,19 +3122,27 @@ local function doInit_UI()
         {slot=4, names={"免战回城石"}},
     }
 
-    -- PC131-PC145：逐组创建child16（Nested_ITEM_INDEX_BY_NAME）并调用SL:ScheduleOnce。
-    -- child16捕获当前slotConfig及UP[0]（PrintLog）；它遍历slotConfig.names，
-    -- 通过SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)查询索引。
-    -- 若索引存在，则调用MoveItemToQuickUse(itemIndex, slotConfig.slot)，
-    -- 将第二返回值交给PrintLog；若第一返回值成功则提前结束该组回调，
-    -- 否则继续尝试该组的下一个名称。
-    for slotIndex, slotConfig in ipairs(itemSlotConfig) do
+    -- PC131-PC145：按VM的ipairs泛型for调用过程显式保留迭代控制值T7。
+    -- ipairs返回(iterator, state, initialControl)，标准初始控制值为0；
+    -- 每次迭代成功后，TFORLOOP把第一返回值写回控制寄存器T7。
+    -- 四组配置完成、迭代器返回nil退出时，T7保留最后一次索引4。
+    -- 不能在循环结束后重新硬编码为0，否则PC180/PC183实参会与VM不符。
+    local itemSlotIterator, itemSlotState, T7 = ipairs(itemSlotConfig)
+    while true do
+        local slotIndex, slotConfig = itemSlotIterator(itemSlotState, T7)
+        if slotIndex == nil then
+            break
+        end
+        T7 = slotIndex
+
+        -- 每次循环建立独立局部副本，确保异步闭包捕获本组配置。
+        local currentSlotConfig = slotConfig
         local callback = function()
-            for _, name in ipairs(slotConfig.names) do
+            for _, name in ipairs(currentSlotConfig.names) do
                 local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)
                 if itemIndex then
                     local succeeded, message =
-                        MoveItemToQuickUse(itemIndex, slotConfig.slot)
+                        MoveItemToQuickUse(itemIndex, currentSlotConfig.slot)
                     printLog(message)
                     if succeeded then
                         return
@@ -3158,12 +3166,9 @@ local function doInit_UI()
     )
     timerState.cruiseTimer = SL:Schedule(dailyCallback, 1.0)
 
-    -- PC181-PC195：GUI.Attach_UITop调用实参物理来源未闭合。
-    -- 当前草稿把调用错误写成七个nil实参；检查点208依据OP_358/OP_068调用展开规则纠正：
-    -- PC180 RequestStorageData与PC183 Attach_UITop均只传T[7]这一个显式实参。
-    -- PC133是调用前最后一次写入T[7]的位置：ipairs(T[6])的第三返回值。
-    -- T[6]的运行时值及ENV.ipairs宿主行为未验证，因此T[7]只保留中性占位。
-    local T7 = 0 -- PC133: standard Lua ipairs第三返回值；本模块未见覆盖ipairs的赋值
+    -- PC180/PC183：两处方法调用均传入一个显式参数T7。
+    -- T7来自PC131的ipairs第三返回值，但PC143的泛型for迭代器会逐次更新它；
+    -- 四项itemSlotConfig处理完毕后，T7保留最后索引4，而不是初始值0。
     local storageProxy = global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)
     if storageProxy then
         storageProxy:RequestStorageData(T7)
