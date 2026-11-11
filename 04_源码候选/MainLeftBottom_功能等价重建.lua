@@ -1711,6 +1711,131 @@ local function GetStorageItemData()
 end
 rootEnvironment.GetStorageItemData = GetStorageItemData
 
+-- ============================================================================
+-- 黑名单消息与清理入口：root.children[15]/[25]/[51]/[52]/[6]
+-- ============================================================================
+local function Nested_FriendProxy()
+    return global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)
+end
+
+local function PCallHelper_2()
+    local ok, result = pcall(Nested_FriendProxy)
+    if not ok then return nil end
+    return result or nil
+end
+
+local function FindBlacklistPlayer(targetID)
+    local friendProxy = PCallHelper_2()
+    if not friendProxy then return false end
+    local blacklistData = friendProxy._blacklistData
+    if not blacklistData or not targetID then return false end
+    local entry = blacklistData[targetID]
+    if entry then return true, entry.Name end
+    local masterActorID = SL:GetMetaValue("ACTOR_MASTER_ID", targetID)
+    if masterActorID and masterActorID ~= targetID then
+        local masterEntry = blacklistData[masterActorID]
+        if masterEntry then return true, masterEntry.Name end
+    end
+    return false
+end
+
+local function onDamageMsg(arg1, messageJson)
+    if not messageJson or messageJson == "" then return end
+    local decodeOK, message = pcall(function()
+        return SL.JsonDecode(messageJson)
+    end)
+    if not decodeOK or type(message) ~= "table" then return end
+    local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
+    if not mainActorID or message.UserID == mainActorID then return end
+    local attackerID = message.AttackUserID
+    if not attackerID or attackerID == mainActorID then return end
+    if SL:GetMetaValue("ACTOR_IS_HERO", attackerID) then
+        local masterActorID = SL:GetMetaValue("ACTOR_MASTER_ID", attackerID)
+        if masterActorID then attackerID = masterActorID end
+    end
+    local attackerName = SL:GetMetaValue("ACTOR_NAME", attackerID)
+    if not attackerName or attackerName == "" then return end
+    if string.find(attackerName, "分身", 1, true) then return end
+    blacklistState.lastAttacker = {id=attackerID,name=attackerName}
+end
+MainLeftBottom.onDamageMsg = onDamageMsg
+
+local function InstallDamageHook()
+    local gameMapController = global.gameMapController
+    if not gameMapController then return end
+    local messageHandlers = gameMapController.mNetMsgHandle
+    if type(messageHandlers) ~= "table" then return end
+    local messageTypes = global.MsgType
+    if not messageTypes then return end
+    local damageMessageType = messageTypes.MSG_SC_DAMAGE_HP
+    if not damageMessageType then return end
+    local originalHandler = messageHandlers[damageMessageType]
+    if not originalHandler then return end
+    if gameMapController.__ylwHookedOrigin == originalHandler then return end
+    local wrappedHandler = function(arg1,arg2)
+        local optionalCallback = gameMapController.onDamageMsg
+        if type(optionalCallback) == "function" then pcall(optionalCallback,arg1,arg2) end
+        return originalHandler(arg1,arg2)
+    end
+    messageHandlers[damageMessageType] = wrappedHandler
+    originalHandler.__ylwHookedOrigin = originalHandler.mNetMsgHandle[damageMessageType]
+    PrintLog("已挂接伤害消息钩子（击杀拉黑用）")
+end
+
+local function DeathAutoBlacklist()
+    local lastAttacker = blacklistState.lastAttacker
+    blacklistState.lastAttacker = nil
+    if not lastAttacker or not lastAttacker.name or lastAttacker.name == "" then
+        PrintLog("本次死亡没记录到凶手，跳过自动拉黑")
+        return
+    end
+    if FindBlacklistPlayer(lastAttacker.id) then
+        PrintLog("凶手已在黑名单中：%s",lastAttacker.name)
+        return
+    end
+    PrintLog("被 %s 击杀，自动加入黑名单",lastAttacker.name)
+    ShowLocalNoticeByType("自动拉黑：" .. lastAttacker.name)
+    for retryIndex=0,5 do
+        SL:ScheduleOnce(function()
+            SL:RequestAddBlacklistByName(lastAttacker.name)
+        end,0.5*retryIndex)
+    end
+end
+
+local function ClearBlacklistItems()
+    local friendProxy = PCallHelper_2()
+    if not friendProxy or not friendProxy._blacklistData then
+        PrintLog("取不到好友代理，清空失败")
+        ShowLocalNoticeByType("清空黑名单失败")
+        return
+    end
+    local blacklistData = friendProxy._blacklistData
+    local entries = {}
+    for key,_ in pairs(blacklistData) do entries[#entries+1] = key end
+    if #entries == 0 then
+        PrintLog("黑名单本来就是空的")
+        ShowLocalNoticeByType("黑名单为空")
+        return
+    end
+    PrintLog(string.format("开始清空黑名单，共 %d 人",#entries))
+    ShowLocalNoticeByType("清空黑名单 " .. #entries .. " 人")
+    for index,entryKey in ipairs(entries) do
+        local delay = (index-1)*0.01
+        SL:ScheduleOnce(function()
+            SL:RequestOutBlacklist(entryKey)
+            if friendProxy and friendProxy._blacklistData then
+                friendProxy._blacklistData[entryKey] = nil
+            end
+        end,delay)
+    end
+    blacklistState.lastAttacker = nil
+end
+
+rootEnvironment.FindBlacklistPlayer = FindBlacklistPlayer
+rootEnvironment.InstallDamageHook = InstallDamageHook
+rootEnvironment.DeathAutoBlacklist = DeathAutoBlacklist
+rootEnvironment.ClearBlacklistItems = ClearBlacklistItems
+
 local function CallRootFunction(name, ...)
     local fn = rootEnvironment[name]
     if type(fn) ~= "function" then
