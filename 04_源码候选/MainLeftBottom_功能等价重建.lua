@@ -288,7 +288,7 @@ local blacklistShortRetryDelay = 0.01
 local blacklistNoItemRetryDelay = 30.0
 
 -- PC286-PC293：创建黑名单运行状态表并初始化字段。
--- PC294将同一表写入MainLeftBottom.blacklist；root.children[47] BlacklistPlayerDetection
+-- PC294将同一表写入MainLeftBottom.a.blacklist；root.children[47] BlacklistPlayerDetection
 -- 后续捕获该表为UPVALUE[2]，onDamageMsg也共享同一状态表。
 local blacklistState = {
     lastAttacker = nil,   -- VM dump 的 ["unknown",2] 是 nil 序列化标记
@@ -301,7 +301,7 @@ local blacklistState = {
 }
 
 -- PC294：同一blacklistState表挂入模块字段；后续onDamageMsg/黑名单闭包共享该对象。
-MainLeftBottom.blacklist = blacklistState
+a.blacklist = blacklistState
 
 -- PC295-PC296：两个配置文件名常量。
 local blacklistDistanceConfigFile = "blacklist_distance.txt"
@@ -474,7 +474,7 @@ local opaquePairTable = {
 -- PC353-PC354：创建root.children[51] / FindBlacklistPlayer，捕获PCallHelper_2。
 -- PC355-PC356：创建root.children[24] / UseItemByIndex，捕获randomTeleportItemNames。
 -- PC357-PC358：创建root.children[52] / onDamageMsg，捕获blacklistState。
--- PC359：MainLeftBottom.onDamageMsg = onDamageMsg，实际消息处理器保存在模块字段。
+-- PC359：a.onDamageMsg = onDamageMsg，实际消息处理器保存在MainLeftBottom.a状态字段。
 -- PC360-PC362：创建root.children[6] / InstallDamageHook，捕获父T[0]=MainLeftBottom.a、T[4]=PrintLog，并覆盖同一父寄存器T[57]。
 -- PC368创建BlacklistPlayerDetection时捕获T[57]的live cell；因此其UP[1]是PC360写入的InstallDamageHook，不是PC357创建的onDamageMsg处理器。
 -- 检查点267：主恢复稿分别保留PC357 onDamageMsg模块字段与PC360 InstallDamageHook/T[57]共享cell，
@@ -853,7 +853,7 @@ local function AttachRecoveredPrototypes(prototypes, environment)
 
     -- root PC350-PC388：伤害回调与黑名单功能入口。
     if prototypes.onDamageMsg ~= nil then
-        module.onDamageMsg = prototypes.onDamageMsg
+        module.a.onDamageMsg = prototypes.onDamageMsg
     end
     exportGlobal("BlacklistItems", "BlacklistPlayerDetection")
     exportGlobal("ClearBlacklistItems", "ClearBlacklistItems")
@@ -900,10 +900,10 @@ end
 --       和PC381 BlacklistPlayerDetection捕获的都是该一元素数组。
 -- T[41]：PC286创建黑名单状态表，PC287-PC293初始化lastAttacker=nil、
 --       lastHp=nil、deathHandled=false、alertAt=0、nextTryAt=0、
---       noStoneWarned=false、distance=nil；PC294赋给MainLeftBottom.blacklist。
+--       noStoneWarned=false、distance=nil；PC294赋给MainLeftBottom.a.blacklist。
 --       五个捕获点共享此同一状态表。
 -- T[57]：PC327-PC349先作为八向数值表中的一个二元素子表{1,1}；
---       PC357改写为onDamageMsg并于PC359存入MainLeftBottom.onDamageMsg；
+--       PC357改写为onDamageMsg并于PC359存入MainLeftBottom.a.onDamageMsg；
 --       PC360再改写为InstallDamageHook。PC370的唯一捕获因此是
 --       BlacklistPlayerDetection.UP[1]=InstallDamageHook。
 --
@@ -989,7 +989,7 @@ end
 -- PC266-PC269：SetButtonVisibilityState捕获[T0,T1]，写入MainLeftBottom.a.show。
 -- PC270-PC274：ShowHideAllButtons捕获[T3,T1,T0]，写入MainLeftBottom.a.destroy。
 -- PC276-PC279：AccountIDValidation捕获[T4,T5]（PrintLog、ShowLocalNoticeByType），写入MainLeftBottom.main。
--- PC286-PC294：创建blacklistState并初始化lastAttacker=nil、lastHp=nil、deathHandled=false、alertAt=0、nextTryAt=0、noStoneWarned=false、distance=nil；同一表写入MainLeftBottom.blacklist。
+-- PC286-PC294：创建blacklistState并初始化lastAttacker=nil、lastHp=nil、deathHandled=false、alertAt=0、nextTryAt=0、noStoneWarned=false、distance=nil；同一表写入MainLeftBottom.a.blacklist。
 -- T54：PC318临时数值/表构造用途在PC349前结束；PC352最终写入PCallHelper_2；PC354与PC384分别被FindBlacklistPlayer UP0和ClearBlacklistItems UP0捕获。两次捕获均取到PCallHelper_2，之后T54无再写入。
 -- 该段为父模块创建/捕获/赋值账本，不替代子原型主体；PC341-PC412仍待对账。
 
@@ -1000,7 +1000,7 @@ end
 -- PC352：创建无捕获PCallHelper_2。
 -- PC353-PC354：FindBlacklistPlayer UP[0]=T[54]=PCallHelper_2。
 -- PC355-PC356：UseItemByIndex UP[0]=T[37]=randomTeleportItemNames。
--- PC357-PC359：onDamageMsg UP[0]=T[41]=blacklistState；PC359写入MainLeftBottom.onDamageMsg。
+-- PC357-PC359：onDamageMsg UP[0]=T[41]=blacklistState；PC359写入MainLeftBottom.a.onDamageMsg。
 -- PC360-PC362：InstallDamageHook UP[0]=T[0]=MainLeftBottom.a UI/配置状态表、UP[1]=T[4] PrintLog；PC360覆写T[57]，后续BlacklistPlayerDetection捕获该live cell。
 -- PC363-PC367：DeathAutoBlacklist捕获[T41 blacklistState,T4 PrintLog,T55 FindBlacklistPlayer,T5 ShowLocalNoticeByType]。
 -- PC368-PC381：BlacklistPlayerDetection捕获13项[T2=MainLeftBottom.z状态表,T57 InstallDamageHook live cell,T41 blacklistState,T58 DeathAutoBlacklist,T55 FindBlacklistPlayer,T53 GetMapData2DPtr,T38=2.0,T4 PrintLog,T56 UseItemByIndex,T39=0.01,T5 ShowLocalNoticeByType,T40=30.0,T37随机传送道具名表]。
@@ -1016,7 +1016,7 @@ end
 -- PC1-PC85：ENV.MainLeftBottom；ENV["_G"].log（PC45）；ENV.GetMapId；ENV.GetMapName；ENV.PlayerPos；ENV.GetDroppedItems；ENV.MoveTo；ENV.DiuItems；ENV.GetAvailableStoragePage；ENV.GetStorageItemData；ENV.StorageItems；ENV.TakeItems；ENV.PickUpItems。MainLeftBottom.a字段包括version/screenW/screenH/Blocklist/SendHookList/RecvHookList/isHidden/hidebut/LuaSendMsg；另建立b空表、z状态表。
 -- PC86-PC211：复核未发现新的根级全局导出或MainLeftBottom根表字段写入；此区间是局部配置、共享状态和闭包创建。
 -- PC212-PC340：ENV.IsInWhitelistMap、ENV.MainLoop、ENV.InitGatherMonsters、ENV.StopGatherMonsters、ENV.Builtsetting、ENV.MoveItemToQuickUse；MainLeftBottom.a.hide/show/destroy及MainLeftBottom.main/blacklist。
--- PC341-PC412：MainLeftBottom.onDamageMsg；ENV.BlacklistItems；ENV.ClearBlacklistItems；MainLeftBottom.doInit。
+-- PC341-PC412：MainLeftBottom.a.onDamageMsg；ENV.BlacklistItems；ENV.ClearBlacklistItems；MainLeftBottom.doInit。
 -- 总账将全局导出与模块字段分开统计；局部函数创建不等于导出。ShowLocalNoticeByType、ScheduleOnce、Schedule在已审PC段未发现根级导出。
 -- 完整机器可读明细见docs/handoff/12_根模块闭包装配表.json的root_complete_module_ledger。
 
@@ -1032,7 +1032,7 @@ end
 
 
 -- 检查点267：PC350-PC388黑名单闭包身份复核。
--- PC357 onDamageMsg捕获T41并写MainLeftBottom.onDamageMsg；PC360 InstallDamageHook捕获T0/T4并写T57。
+-- PC357 onDamageMsg捕获T41并写MainLeftBottom.a.onDamageMsg；PC360 InstallDamageHook捕获T0/T4并写T57。
 -- PC368 BlacklistPlayerDetection.UP1捕获T57 live cell，捕获时cell.value为InstallDamageHook，不能接成onDamageMsg。
 -- PC382/388分别导出ENV.BlacklistItems与ENV.ClearBlacklistItems；主恢复稿已增加对象身份断言。
 -- 详细逐PC来源与函数主体边界见docs/audit/检查点267_PC350-PC388黑名单闭包链与导出身份核对.md。
@@ -2011,7 +2011,7 @@ local function onDamageMsg(arg1, messageJson)
     if string.find(attackerName, "分身", 1, true) then return end
     blacklistState.lastAttacker = {id=attackerID,name=attackerName}
 end
-MainLeftBottom.onDamageMsg = onDamageMsg
+MainLeftBottom.a.onDamageMsg = onDamageMsg
 
 -- PC360-PC362：T[57]写入此闭包；BlacklistPlayerDetection捕获该live cell当前值。
 -- 包装回调先pcall模块onDamageMsg，再无论回调结果如何返回原消息处理器结果。
@@ -2028,12 +2028,12 @@ local function InstallDamageHook()
     if not originalHandler then return end
     if gameMapController.__ylwHookedOrigin == originalHandler then return end
     local wrappedHandler = function(arg1,arg2)
-        local optionalCallback = gameMapController.onDamageMsg
+        local optionalCallback = a.onDamageMsg
         if type(optionalCallback) == "function" then pcall(optionalCallback,arg1,arg2) end
         return originalHandler(arg1,arg2)
     end
     messageHandlers[damageMessageType] = wrappedHandler
-    originalHandler.__ylwHookedOrigin = originalHandler.mNetMsgHandle[damageMessageType]
+    gameMapController.__ylwHookedOrigin = messageHandlers[damageMessageType]
     PrintLog("已挂接伤害消息钩子（击杀拉黑用）")
 end
 
@@ -3059,7 +3059,7 @@ local function doInit_UI()
     -- UP[0..19]依次对应父root的T[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。
     -- 可直接确认的身份：UP[0]=PrintLog；UP[1]=MainLeftBottom.z功能状态表；
     -- UP[2]=root PC42创建的timerState；UP[3]=MainLeftBottom.a UI状态表；
-    -- UP[5]是root创建并挂到MainLeftBottom.blacklist的黑名单状态表；
+    -- UP[5]是root创建并挂到MainLeftBottom.a.blacklist的黑名单状态表；
     -- UP[8]是含GATHER_THRESHOLD/CHECK_INTERVAL/ATTACK_WAIT_TIME的配置表；
     -- UP[11]是root PC46创建的ShowLocalNoticeByType闭包；
     -- UP[13]/UP[15]分别是黑名单距离/拉怪数量配置文件路径；
@@ -3491,7 +3491,7 @@ return MainLeftBottom
 -- ShowHideAllButtons、AccountIDValidation。它们不再只是孤立local函数。
 --
 -- 与PC1-PC412寄存器时间线一致：这些赋值发生在函数定义后、物品功能前；
--- 不覆盖MainLeftBottom.blacklist、MainLeftBottom.onDamageMsg及doInit既有挂接。
+-- 不覆盖MainLeftBottom.a.blacklist、MainLeftBottom.a.onDamageMsg及doInit既有挂接。
 -- Lua语法和宿主运行仍未验证。
 -- ============================================================================
 

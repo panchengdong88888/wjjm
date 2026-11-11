@@ -5,21 +5,21 @@
   "active_branch": "work/functional-equivalent-rebuild-2026-11-11",
   "archive_branch": "backup/pre-functional-rewrite-2026-11-11",
   "archive_policy": "只读档案；默认不读取、不比较、不扫描。仅在新线缺失明确证据时，按具体文件定点查阅。",
-  "latest_checkpoint": 312,
-  "next_checkpoint": 313,
+  "latest_checkpoint": 313,
+  "next_checkpoint": 314,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
     "prototype": "root / MainLeftBottom_Module + root.children[42] / doInit_UI",
-    "function": "入口与UI链全量静态复核（修正根寄存器T0对象身份后继续）",
-    "physical_pc": "root PC1-PC412；root.children[55]；root.children[42]及23个子原型",
+    "function": "入口与UI链全量静态复核（状态表字段身份及黑名单按钮调用链修正后继续）",
+    "physical_pc": "root PC1-PC412；root.children[55]；root.children[42]及23个子原型；root.children[6]",
     "focus": [
-      "逐项核对doInit_UI主原型及23个子原型的主体、参数、捕获和UI字段写入",
-      "核对AccountIDValidation对MainProperty与MainLeftBottom全局表的读取方式",
-      "核对root PC1-PC412的模块根表与a/b/z状态表身份、全局导出及最终return"
+      "完成doInit_UI 23个子原型逐项核对，尤其黑名单按钮到InstallDamageHook/onDamageMsg的调用链",
+      "确认所有写入T[0]的字段均归属MainLeftBottom.a，而非根表",
+      "核对AccountIDValidation与doInit_UI按_ENV重新读取MainLeftBottom的入口行为"
     ],
-    "next": "继续逐项复核doInit_UI 23个子原型，检查其源代码是否漏掉字段写入、返回值、调用接收者或异步参数；随后做Lua 5.1语法检查（若环境已有解释器），完成入口/UI专项交接。",
-    "progress": "检查点312：复核root PC1-PC5寄存器身份后发现T[0]在PC1先承载模块根表，但PC3被新建a状态表覆盖；PC5将a挂入模块根表。T[0]此后未再覆盖，故PC265/269/274实际写入a.hide/a.show/a.destroy，而非MainLeftBottom根表字段。修正主源码三处挂接，并修正AttachRecoveredPrototypes适配器、源码说明及函数状态CSV对应备注。PC275/279和PC389/411均重新读取_ENV.MainLeftBottom，现分别用rootEnvironment.MainLeftBottom.main/doInit写入；AccountIDValidation等待闭包也按全局表读取doInit。hidebut字段赋值修正仍保留。入口/UI全量复核继续中，尚未做Lua语法或游戏运行验证。"
+    "next": "继续复核UI子原型中所有捕获闭包和回调目标；然后对入口/UI文件做静态语法与Lua 5.1兼容检查。范围未完成前不转向其他业务函数。",
+    "progress": "检查点313：沿root PC1-PC5、PC294、PC359及root.children[6]逐项核对后，纠正状态表对象身份：PC3将T[0]覆写为a，PC5将a挂入MainLeftBottom.a；PC294将blacklist写入a.blacklist；PC359将onDamageMsg写入a.onDamageMsg。InstallDamageHook的嵌套回调实际捕获a与原消息处理器，读取a.onDamageMsg；安装完成后将当前消息处理器表中的新包装器写入gameMapController.__ylwHookedOrigin。主源码此前将blacklist/onDamageMsg错误挂到根表，回调从gameMapController取onDamageMsg，幂等标记也写错对象；现按VM修正。此前检查点311/312对hidebut与a.hide/show/destroy的修正继续保留。"
   },
   "source_files": {
     "primary": "04_源码候选/MainLeftBottom_功能等价重建.lua",
@@ -46,7 +46,7 @@
     ]
   },
   "verification": {
-    "static_source_review": "检查点312：根据root VM PC1-PC5确认T[0]的寄存器复用：PC1创建模块根表并写ENV.MainLeftBottom，PC3将T[0]覆盖为a表，PC5将a挂入MainLeftBottom.a；T[0]后续保持a身份。因此PC265/269/274必须写a.hide/a.show/a.destroy。主源码实际赋值、旧适配器、说明及CSV均已纠正。PC275/279和PC389/411的MainLeftBottom读取/写入均改为rootEnvironment.MainLeftBottom；入口/UI其他部分继续复核。",
+    "static_source_review": "检查点313：root PC1-PC5确认T[0]从模块根表变为a状态表；PC294/PC359分别将blacklist/onDamageMsg写入a；root.children[6] PC30-PC36捕获a与原处理器，子回调从a.onDamageMsg取函数并pcall，包装器安装后将messageHandlers[damageMessageType]写入gameMapController.__ylwHookedOrigin。主源码上述四处错误已修正。",
     "lua_syntax_check": "未执行：容器未找到lua5.1/luac5.1/lua/luac命令；未安装或改动用户环境。",
     "runtime_check": "未执行",
     "do_not_claim_pass_without_execution": true
@@ -70,6 +70,6 @@
       "使用unpack而非table.unpack；避免table.pack/table.move/bit32/utf8/package.searchpath等5.2+接口",
       "确认闭包、变长参数、多返回值、迭代器及元表行为均符合Lua 5.1"
     ],
-    "current_review": "检查点312仅改写字段目标和全局表读取表达式，保持Lua 5.1兼容；尚未执行Lua 5.1语法检查。"
+    "current_review": "检查点313修正字段访问和闭包捕获对象，不引入新语法；仍兼容Lua 5.1。尚未执行Lua 5.1语法检查。"
   }
 }
