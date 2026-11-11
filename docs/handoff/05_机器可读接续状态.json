@@ -2820,7 +2820,7 @@
       "AnonymousHelper_33",
       "AnonymousHelper_54"
     ],
-    "status": "8个配置读写函数已写入根模块直接闭包；主恢复稿已合并根模块来源导出，保留第一批11个基础辅助函数；PC297-PC315活动装配已切换为直接函数来源，旧工厂证据文件未删除。",
+    "status": "8个配置读写函数已写入根模块直接闭包；主恢复稿已合并根模块来源导出，保留第一批11个基础辅助函数；PC297-PC315活动装配已切换为直接函数来源，旧工厂证据文件未删除。 ReadNumericConfig入口明确保留function(...)，仅读取首个参数；修正后已同步主源码与根模块候选。",
     "audit_file": "docs/audit/检查点279_配置文件读写闭包链功能等价复刻.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua",
@@ -3566,9 +3566,10 @@
       "static_function_count_unchanged": 109,
       "ordinary_lua_drafts_unchanged": 72,
       "runtime_verified": 0,
-      "lua_compiler_available": false
+      "lua_compiler_available": false,
+      "read_numeric_config_vararg_preserved": true
     },
-    "notes": "GetWritablePath/ReadNumericConfig/PCallHelper/FileExistCheck_pcall_wrapper/AnonymousHelper_49/AnonymousHelper_32/AnonymousHelper_33/AnonymousHelper_54已在根模块候选中写成直接词法闭包；MainLeftBottom_恢复源码.lua从root_MainLeftBottom_Module.lua来源表绑定。PC297-PC315装配不再调用make_xxx工厂。保留旧静态草稿作审计证据。当前环境无lua/luac/luajit，未声称语法编译通过；目标游戏运行时验证仍0。"
+    "notes": "GetWritablePath/ReadNumericConfig/PCallHelper/FileExistCheck_pcall_wrapper/AnonymousHelper_49/AnonymousHelper_32/AnonymousHelper_33/AnonymousHelper_54已在根模块候选中写成直接词法闭包；MainLeftBottom_恢复源码.lua从root_MainLeftBottom_Module.lua来源表绑定。PC297-PC315装配不再调用make_xxx工厂。保留旧静态草稿作审计证据。当前环境无lua/luac/luajit，未声称语法编译通过；目标游戏运行时验证仍0。 ReadNumericConfig按检查点232保留vararg入口function(...)，首个实参为fileName，后续vararg不读取。"
   },
   "latest_checkpoint": 279,
   "complete_static_reconstruction_count": 109,
@@ -3761,7 +3762,7 @@
   },
   "latest": {
     "checkpoint": "279",
-    "summary": "配置读写闭包链8项已改为根模块中的直接可读词法闭包，并由主恢复稿从root_MainLeftBottom_Module.lua来源表直接绑定；旧make_xxx工厂源码作为历史证据保留但不再用于PC297-PC315活动装配。",
+    "summary": "配置读写闭包链8项已改为根模块中的直接可读词法闭包，并由主恢复稿从root_MainLeftBottom_Module.lua来源表直接绑定；旧make_xxx工厂源码作为历史证据保留但不再用于PC297-PC315活动装配。 ReadNumericConfig已按检查点232修正为vararg入口，只读取首个fileName参数。",
     "audit_file": "docs/audit/检查点279_配置文件读写闭包链功能等价复刻.md",
     "main_recovery_file": "04_源码候选/MainLeftBottom_恢复源码.lua",
     "root_candidate_file": "04_源码候选/root_MainLeftBottom_Module.lua"
