@@ -108,3 +108,11 @@
 - 已核对BlacklistItems/ClearBlacklistItems全局导出、doInit_UI 20项捕获顺序、MainLeftBottom.doInit挂接及PC412根表返回。
 - root PC1-PC412父级入口装配本轮核对完成；这不等于AccountIDValidation/doInit_UI等子原型主体审查完成。
 - 下一步独立逐PC核验AccountIDValidation主原型及两个嵌套子原型。
+
+## 检查点330补充：AccountIDValidation
+
+- 主原型与两个直接子原型已逐段对照VM指令。
+- GAME_ID=204208门控、UID读取、9项白名单ID顺序、Nested_ID比较/日志/返回值、等待回调条件和Schedule(0.5)均一致。
+- 等待回调按原指令保留`SL:UnSchedule(nil)`，之后在主界面属性栏面板存在时调用`MainLeftBottom.doInit()`；没有替换为Schedule返回句柄。
+- 本组未发现明确源码错配；未执行Lua 5.1编译及目标游戏运行验证。
+- 下一步进入doInit_UI主体419条指令及23个直接子原型的审查。
