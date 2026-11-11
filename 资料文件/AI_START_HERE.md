@@ -116,3 +116,10 @@
 - 等待回调按原指令保留`SL:UnSchedule(nil)`，之后在主界面属性栏面板存在时调用`MainLeftBottom.doInit()`；没有替换为Schedule返回句柄。
 - 本组未发现明确源码错配；未执行Lua 5.1编译及目标游戏运行验证。
 - 下一步进入doInit_UI主体419条指令及23个直接子原型的审查。
+
+## 检查点331补充：doInit_UI主体复核
+
+- 已核对doInit_UI主体PC1-PC419的初始化顺序、快照、快捷栏、巡航、仓库请求、Attach_UITop(4)、mini-chat布局、按钮配置、处理器表、按钮创建和hidebut写入。
+- 已修正UI子闭包对StorageItems/TakeItems/PickUpItems/DiuItems/BlacklistItems/ClearBlacklistItems的全局函数身份：不再经CallRootFunction包装器间接调用。
+- 已修正巡航回调的LuaSendMsg读取方式为当前chunk环境GETGLOBAL。
+- 23个直接子原型主体仍待逐个核对；下一步从child0开始。

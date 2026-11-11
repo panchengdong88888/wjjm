@@ -2272,22 +2272,6 @@ end
 
 rootEnvironment.ClearBlacklistItems = ClearBlacklistItems
 
-local function CallRootFunction(name, ...)
-    local fn = rootEnvironment[name]
-    if type(fn) ~= "function" then
-        PrintLog("功能入口尚未接入：%s", name)
-        return nil
-    end
-    return fn(...)
-end
-
-local function StorageItems(...) return CallRootFunction("StorageItems", ...) end
-local function TakeItems(...) return CallRootFunction("TakeItems", ...) end
-local function PickUpItems(...) return CallRootFunction("PickUpItems", ...) end
-local function DiuItems(...) return CallRootFunction("DiuItems", ...) end
-local function BlacklistItems(...) return CallRootFunction("BlacklistItems", ...) end
-local function ClearBlacklistItems(...) return CallRootFunction("ClearBlacklistItems", ...) end
-
 local printLog = PrintLog
 local featureState = z
 local uiState = a
@@ -2876,7 +2860,7 @@ end
 local function make_Nested_ClearBlacklistItems(notify)
     local function Nested_ClearBlacklistItems()
         notify("清空黑名单")
-        ClearBlacklistItems()
+        getfenv(1).ClearBlacklistItems()
     end
     return Nested_ClearBlacklistItems
 end
@@ -2891,8 +2875,8 @@ local function make_Nested_blacklistTimer(
         config.distance = distance
         if not config.distance then return false end
 
-        BlacklistItems()
-        timerState.blacklistTimer = schedule(BlacklistItems, 0.1)
+        getfenv(1).BlacklistItems()
+        timerState.blacklistTimer = schedule(getfenv(1).BlacklistItems, 0.1)
         formatNotice("开启黑名单功能，距离格子：%d", config.distance)
         return true
     end
@@ -2936,8 +2920,8 @@ local function make_Nested_SL_3(timerState, notify, featureState, schedule)
             return
         end
         notify("开启存仓功能")
-        StorageItems()
-        timerState.storageTimer = schedule(StorageItems, 1.0)
+        getfenv(1).StorageItems()
+        timerState.storageTimer = schedule(getfenv(1).StorageItems, 1.0)
     end
     return Nested_SL_3
 end
@@ -2952,8 +2936,8 @@ local function make_Nested_TakeItems(timerState, notify, featureState, schedule)
             return
         end
         notify("开启取物功能")
-        TakeItems()
-        timerState.takeTimer = schedule(TakeItems, 1.0)
+        getfenv(1).TakeItems()
+        timerState.takeTimer = schedule(getfenv(1).TakeItems, 1.0)
     end
     return Nested_TakeItems
 end
@@ -2967,7 +2951,7 @@ local function make_Nested_shiquTimer(timerState, notify, schedule)
             return
         end
         notify("开启拾取物品")
-        timerState.shiquTimer = schedule(PickUpItems, 0.01)
+        timerState.shiquTimer = schedule(getfenv(1).PickUpItems, 0.01)
     end
     return Nested_shiquTimer
 end
@@ -2982,8 +2966,8 @@ local function make_Nested_dropTimer(timerState, notify, featureState, schedule)
             return
         end
         notify("开启丢弃物品")
-        DiuItems()
-        timerState.dropTimer = schedule(DiuItems, 1.0)
+        getfenv(1).DiuItems()
+        timerState.dropTimer = schedule(getfenv(1).DiuItems, 1.0)
     end
     return Nested_dropTimer
 end
@@ -3018,7 +3002,7 @@ local function make_Nested_InitGatherMonsters(config, getThreshold)
     return Nested_InitGatherMonsters
 end
 
-local function make_Nested_04d_02d_02d(lastSentDate, messageSender, notify)
+local function make_Nested_04d_02d_02d(lastSentDate, unusedCapturedState, notify)
     local function Nested_04d_02d_02d()
         local dateParts = os.date("*t")
         if not dateParts then return end
@@ -3037,7 +3021,9 @@ local function make_Nested_04d_02d_02d(lastSentDate, messageSender, notify)
 
         -- PC29先写日期标记，再发送协议；即使发送失败，同日也不重试。
         lastSentDate = dateKey
-        messageSender.LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)
+        -- PC31-PC39：按原指令从当前chunk环境GETGLOBAL LuaSendMsg，不从a.LuaSendMsg取值。
+        -- VM捕获的第二项状态值在该子原型主体中未被读取；保留工厂参数位置但不替代全局查找。
+        getfenv(1).LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)
         notify("到达 22:00:05，发送开启巡航协议")
     end
     return Nested_04d_02d_02d
