@@ -400,3 +400,17 @@
 - 本接续文档随后单独提交；以GitHub main最新SHA为准。
 - 下一步：继续核对proto48通用ButtonFactory的参数来源和按钮配置数组遍历过程，确认`MakeBuyGoldButtonHandler(...)`及`MakeMainLeftBottomDestroyCallback(...)`应在root初始化哪个位置实例化并挂接；随后把这部分从“已恢复函数体”推进到“完整入口集成”。不要重复proto36购买业务、proto50/51捕获映射、addOnClickEvent链或proto2清理主体。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第十九轮——root寄存器来源及destroy捕获对象确认
+
+- 对root初始化区继续追踪寄存器写入，确认proto2的三个upvalue不是抽象未知对象：
+  - root V0在PC2装入`MainLeftBottom`模块表；
+  - root PC30以opcode232创建V1新表，PC31重新取得`MainLeftBottom`，PC32执行`MainLeftBottom.b = V1`，因此V1就是模块表的`b`界面/控件集合；
+  - root PC34取得`MainLeftBottom`并设置其`z`属性，PC42以opcode47将V3创建为空表，因此V3是定时器状态表。
+- 所以root PC270创建proto2时，PC271-PC273捕获的V3、V1、V0分别对应：定时器状态表、`MainLeftBottom.b`界面集合、`MainLeftBottom`模块表。PC274的赋值等价于`MainLeftBottom.destroy = MakeMainLeftBottomDestroyCallback(timerState, MainLeftBottom.b, MainLeftBottom)`。
+- root中proto48的相关捕获对象也已确认：root V4是child43调试/日志闭包；root V5是child30本地提示包装函数；root V55是proto36购买闭包；root V3是定时器状态表。proto48 PC272创建proto50时依次捕获V3、V5、V55、V4，和源码中四个upvalue的顺序完全一致。
+- 唯一明文源码已补充root寄存器来源注释及destroy工厂的等价挂接表达式；没有创建新源码文件。
+- 本轮源码提交：`c21dce00378290575a8b36d6f58f6aa067df8def`
+- 下一步：把root初始化中的状态表、`MainLeftBottom.b`、本地提示包装函数、BuyStoreItem闭包与proto48 UI工厂的实例化过程继续对接，形成可直接读懂的root入口框架。优先核实root V4/V5/V55的创建位置和proto48的15项捕获全表，避免再对局部upvalue作猜测。
+- 未进行Lua编译或游戏运行测试。
