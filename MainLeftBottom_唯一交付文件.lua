@@ -3540,8 +3540,8 @@ return MainLeftBottom
 --   Schedule/ScheduleOnce局部包装器分别转发到SL:Schedule/SL:ScheduleOnce；
 --   其余直接SL定时调用保留各自原始receiver、参数数量和顺序。
 --   上述调用图仅记录源码中明确存在的边，不代表宿主定时器行为已运行验证。
---   GUI:Attach_UITop(T7)、NPCStorageProxy:RequestStorageData(T7)及奖励Schedule
---   的文档/VM签名差异仍按资料文件/docs/handoff/11_新框架API映射.md列为待确认项。
+--   GUI:Attach_UITop已按用户确认的官方无参契约改为GUI:Attach_UITop()；
+--   NPCStorageProxy:RequestStorageData(T7)及奖励Schedule的文档/VM签名差异仍待确认。
 --
 -- 本批未发现足以支持修改运行逻辑的新增错配；仅修正本文件内历史文件名、
 -- 平行源码定位及当前工作状态的过期注释。Lua编译和目标游戏运行均按用户要求不执行。
