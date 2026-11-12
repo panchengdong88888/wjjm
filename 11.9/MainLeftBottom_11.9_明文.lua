@@ -483,6 +483,8 @@ end
 -- ButtonFactory内部PC45创建通用点击闭包，捕获“回调表、按钮配置、按钮控件”；
 -- 点击闭包PC2-PC4按配置key从回调表取出函数，PC43-PC49通过GUI.addOnClickEvent绑定。
 -- 因此buygoldbut最终进入真实按钮点击事件，不只是停留在一个未使用的table字段。
+-- root寄存器来源：V3是root PC42创建的定时器状态表；V5是root child30创建的
+-- ShowLocalNoticeByType包装函数；V55是proto36闭包；V4是root child43调试闭包。
 -- proto48的15项捕获中，proto50按顺序捕获：
 --   A[0] = root.MainLeftBottom状态表；A[1] = root的ShowLocalNotice包装函数；
 --   A[2] = BuyStoreItem(proto36)；A[3] = root调试/日志闭包（proto50/51未使用）。
@@ -560,5 +562,8 @@ local function MakeMainLeftBottomDestroyCallback(
     end
 end
 
--- root PC274将proto2闭包写入 MainLeftBottom.destroy；
+-- root寄存器来源已核实：PC30创建V1表并在PC32赋给MainLeftBottom.b；
+-- PC34-PC42创建V3状态表；PC2的V0为MainLeftBottom模块表。
+-- 因此root PC274的挂接等价于：
+-- MainLeftBottom.destroy = MakeMainLeftBottomDestroyCallback(V3, MainLeftBottom.b, MainLeftBottom)
 -- 本工厂函数用于明文重建该闭包的捕获关系，宿主何时调用destroy不作推断。
