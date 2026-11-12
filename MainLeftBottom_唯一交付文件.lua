@@ -2789,7 +2789,19 @@ local function make_Nested_LuaSendMsg(counter, modulus, messageEntries)
         local entry = messageEntries[index]
         if not entry then return end
 
-        getfenv(1).LuaSendMsg(9002, entry[1], 1.0, 2.0, 3.0, entry[2], entry[3])
+        -- VM按全局名称LuaSendMsg读取；本模块初始化时同时将同一函数保存在
+        -- MainLeftBottom.a.LuaSendMsg。宿主未提供全局别名时，从模块字段回退。
+        local sendMessage = rootEnvironment.LuaSendMsg
+        if type(sendMessage) ~= "function" then
+            local module = rootEnvironment.MainLeftBottom
+            local moduleState = module and module.a
+            sendMessage = moduleState and moduleState.LuaSendMsg
+        end
+        if type(sendMessage) ~= "function" then
+            return
+        end
+
+        sendMessage(9002, entry[1], 1.0, 2.0, 3.0, entry[2], entry[3])
     end
     return Nested_LuaSendMsg
 end
@@ -2805,9 +2817,10 @@ local function make_Nested_SL_2(timerState, notify, modulus, messageEntries, sch
 
         notify("开启奖励功能")
         local callback = make_Nested_LuaSendMsg(0, modulus, messageEntries)
-        -- VM子原型PC20-PC30明确传入(0, callback, scheduleContext)三个显式参数；
-        -- 与开发文档的通用SL:Schedule(callback, time)签名不同，保留字节码调用形态待运行验证。
-        timerState.rewardTimer = SL:Schedule(0, callback, scheduleContext)
+        -- 按新框架API契约SL:Schedule(callback, time)注册循环回调。
+        -- 原VM恢复出的三实参形式(0, callback, 0.2)与API签名冲突；
+        -- 保留callback及0.2秒间隔，去掉会占据callback位置的多余0。
+        timerState.rewardTimer = SL:Schedule(callback, scheduleContext)
         return true
     end
     return Nested_SL_2
