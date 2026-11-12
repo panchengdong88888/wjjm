@@ -263,3 +263,13 @@
 - 按钮点击闭包 `root/43/10/1` 与源码一致：先调用buttonHandlers对应handler；非toggle按钮直接return；toggle按钮仅在handler严格返回false时不切换，否则更新toggled、标题和颜色。
 - 已修正唯一源码AnonymousHelper_32旁旧注释：PCallHelper第1参为路径、第2参为写入内容；调用 `PCallHelper(blacklistDistanceConfigFile, firstArg)` 会将firstArg写入固定文件名对应路径。源码注释提交：`2158cef97b4814a165c4a2c282ef5cfd290d6295`；JSON检查点345提交：`6424a1a0309eaec52d511e2b5f2827483030b16c`。
 - 下一步：做本轮开拉怪相关局部静态一致性和Lua 5.1兼容性收尾；不执行编译或目标游戏运行验证。
+
+
+## 检查点346：开拉怪静态复核收尾与待补实测现象
+
+- 配置读取 `ReadNumericConfig` 与写入 `PCallHelper/AnonymousHelper_54` 的数据流已重新核对：读取和写入使用同一 `GetWritablePath` 与固定配置文件名；`PCallHelper` 第1参是路径、第2参是内容，`firstArg` 正确写入 `gather_monster_count.txt`。源码旧参数语义注释已修正，不再保留“阈值写入路径异常”的旧结论。
+- 开拉怪VM-明文针对性静态核对目前未发现其他控制流错配：GATHERING批次计数条件、ATTACKING目标扫描/清理、输入数字10的成功路径、按钮handler与toggle状态同步均已核对。
+- Lua 5.1禁用语法/API词项静态扫描无命中：`goto`、`table.unpack`、`table.pack`、`table.move`、`bit32`、`utf8`、`package.searchpath`。按用户要求不执行Lua实际编译或目标游戏运行验证。
+- 用户已描述的预期流程：点击开拉怪→输入10确认→逐只锁定怪物获取归属→达到10只后切ATTACKING→逐只击杀→本批目标耗尽后回IDLE并拉下一批。
+- 尚缺的是目标环境中“实际偏离预期的具体表现/发生阶段”。因此目前只能确认静态还原错误已修正，不能冒称目标游戏实测故障已经完全解决。下一步等待用户指出输入10确认后究竟卡在保存、启动、锁定归属、达到数量、攻击清理或下一批中的哪一步，再按该阶段定点复核。
+- 机器状态JSON检查点346提交：`76308e54043f39a0ad94439761cbc406f062909d`。
