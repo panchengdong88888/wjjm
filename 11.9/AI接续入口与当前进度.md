@@ -573,3 +573,14 @@
 - 本轮唯一明文源码提交：`38364d0c60fcd21155b94c8c8a1d064103092ba4`。
 - 下一步继续恢复proto48的UI初始化主干，并把上述两个动作放入正确的PC位置。完成购买金条完整接线后，下一个功能才是“开新区”。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第三十轮——保留原始按钮配置表对象
+
+- 再次校正按钮安装函数的参数：`InstallBuyGoldButton(uiParent, visibleItems, callbackMap, buttonConfig)`现在接收doInit第二组V13遍历时实际传入的配置表，不再在安装函数内部重新创建一份buygold配置副本。
+- `MakeBuyGoldButtonInitFragment.createButton`同步改为接收`buttonConfig`并原样传递。这样按钮点击闭包捕获的就是proto48 V13数组中的原始配置对象，避免后续toggle状态/标题同步引用不同对象。
+- 购买金条配置仍由`BuildMainLeftBottomButtonGroups()`按PC204-PC252构建；真实doInit恢复后，应将第二组循环当前项config直接传入createButton。
+- 真实proto48 doInit接线仍未完成，购买金条不能标记为全部完成。
+- 本轮源码提交：`c60d711c35dc571b876ad7f2c5aed3589c7bad79`。
+- 下一步继续恢复proto48真实doInit执行体，并把回调登记和ButtonFactory迭代放回原始PC位置；完成购买金条后再开始“开新区”。
+- 未进行Lua编译或游戏运行测试。
