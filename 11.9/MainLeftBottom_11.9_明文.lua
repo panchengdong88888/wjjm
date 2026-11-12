@@ -487,7 +487,9 @@ end
 
 -- 对应 proto48 PC277：把proto50闭包登记到按钮回调表的buygoldbut键；
 -- 按钮配置表对应key="buygoldbut"、name="购买金条"。
--- 后续proto48 PC340-PC345创建通用ButtonFactory闭包并捕获整张回调表；
+-- 后续proto48 PC340-PC345创建通用ButtonFactory闭包，捕获：
+--   A[0]=GUI:Attach_UITop()返回的父容器；A[1]/A[2]=布局坐标基值；
+--   A[3]=MainLeftBottom.b界面集合；A[4]=整张按钮回调表。
 -- ButtonFactory内部PC45创建通用点击闭包，捕获“回调表、按钮配置、按钮控件”；
 -- 点击闭包PC2-PC4按配置key从回调表取出函数，PC43-PC49通过GUI.addOnClickEvent绑定。
 -- 因此buygoldbut最终进入真实按钮点击事件，不只是停留在一个未使用的table字段。
