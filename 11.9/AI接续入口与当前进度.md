@@ -560,3 +560,16 @@
 - 本轮源码提交：`3ff54522dd32a19f1713a987781a862811fcebaa`；捕获注释和root上下文修正提交：`c9c98b5ebb7794ae23ff588d942dbcb24b94b476`。
 - 当前下一步：继续恢复proto48真实doInit中PC1-PC433的初始化主干，将已完成的buygoldbut片段放入正确的PC346-PC371第二组按钮循环位置。完成后再处理“开新区”。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第二十九轮——按原始PC顺序拆分回调登记与按钮创建
+
+- 将此前合并在`InstallBuyGoldButton`中的两个阶段拆开，避免把原始doInit执行顺序写错：
+  1. `RegisterBuyGoldButtonHandler(callbackMap,...)`：对应proto48 PC272-PC277，只创建proto50处理器并登记`callbackMap.buygoldbut`。callbackMap仍由proto48 PC266创建。
+  2. `InstallBuyGoldButton(uiParent, visibleItems, callbackMap)`：对应proto48 ButtonFactory在第二组V13首项的那次调用，创建按钮、登记控件、设置样式并绑定非toggle点击回调。
+- `MakeBuyGoldButtonInitFragment(...)`现在返回两个独立动作：`registerCallback(callbackMap)`与`createButton(uiParent, callbackMap)`。后续恢复doInit时，前者应放在PC266之后，后者应放在PC346-PC371第二组V13遍历首项的位置。
+- 这项拆分保留了原始执行顺序：先登记callbackMap，再创建通用ButtonFactory，最后进入数组循环创建按钮。不会把callbackMap另建成与其他按钮处理器不相干的第二张表。
+- 当前仍未完成真实proto48的doInit函数体接入；不能因此宣布购买金条全部完成，也不切换到开新区。
+- 本轮唯一明文源码提交：`38364d0c60fcd21155b94c8c8a1d064103092ba4`。
+- 下一步继续恢复proto48的UI初始化主干，并把上述两个动作放入正确的PC位置。完成购买金条完整接线后，下一个功能才是“开新区”。
+- 未进行Lua编译或游戏运行测试。
