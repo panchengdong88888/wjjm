@@ -544,3 +544,19 @@
 - 本轮唯一明文源码提交：`f2d0aacf0879bc7fb2551d59834bf91913dcfbe8`。
 - 当前下一步：继续恢复proto48的真实doInit函数体，并在PC346-PC371第二组按钮数组循环中接入buygoldbut；保持其他按钮与初始化行为不被删除。购买金条完整接入后，才处理“开新区”。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第二十八轮——按钮配置数组与root运行上下文
+
+- 按proto48 PC204-PC252逐项恢复并写入`BuildMainLeftBottomButtonGroups()`：
+  - 第一组6项：moneybut、settingbut、shiqubut、diuqibut、clearblacklistbut、stopallbut；
+  - 第二组7项：buygoldbut、recyclebut、newzone、rewardbut、yinguaibut、blacklistbut、xiaotuibut；
+  - 第三组为空表。各按钮key、name及toggle文案均来自新版常量和表写入指令，不从旧版照搬。
+- `InstallBuyGoldButton`现在从新版第二组配置数组取出V13[1]，使用配置中的key/name创建按钮并保存控件；坐标仍按VM循环参数(rowIndex=7, groupOffset=0)得到(-594,0)。
+- 新增`MakeBuyGoldRootContext(mainLeftBottom)`，按root PC30-PC46的已确认关系创建visibleItems与timerState，将visibleItems写入`MainLeftBottom.b`，并创建本地提示闭包。
+- 新增的`MakeShowLocalNoticeByType`按root child31的指令恢复通知结构：Type=10、Msg、FColor=249、BColor=0、X=5、Y=screenH-50，并以`SL:ShowLocalNoticeByType(notice)`形式调用。
+- 修正源码中一条proto50捕获注释：proto50的UP[0]是timerState，不是MainLeftBottom模块表；UP[1]为通知包装函数、UP[2]为BuyStoreItem、UP[3]为未使用的调试闭包。
+- 当前仍不能宣布购买金条完成：上述root上下文与doInit片段函数已经写入，但尚未把片段接入完整proto48的`MainLeftBottom.doInit`执行体。不能用仅创建购买金条按钮的局部函数覆盖433条指令的完整初始化入口。
+- 本轮源码提交：`3ff54522dd32a19f1713a987781a862811fcebaa`；捕获注释和root上下文修正提交：`c9c98b5ebb7794ae23ff588d942dbcb24b94b476`。
+- 当前下一步：继续恢复proto48真实doInit中PC1-PC433的初始化主干，将已完成的buygoldbut片段放入正确的PC346-PC371第二组按钮循环位置。完成后再处理“开新区”。
+- 未进行Lua编译或游戏运行测试。
