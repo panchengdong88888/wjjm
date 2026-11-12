@@ -452,22 +452,10 @@ local function MakeMainLeftBottomButtonFactory(
 end
 
 
--- 购买金条对应第二组V13第一项：rowIndex=7、groupOffset=0。
--- 该包装器只复用原版通用ButtonFactory，不另行实现一套按钮样式/点击行为。
-local function InstallBuyGoldButton(uiParent, visibleItems, callbackMap, buttonConfig)
-    local createButton = MakeMainLeftBottomButtonFactory(
-        uiParent,
-        visibleItems,
-        callbackMap
-    )
-    return createButton(buttonConfig, 7, 0)
-end
-
-
 -- 将proto48中相隔的两个执行阶段保留为两个独立动作：
 --   registerCallback(callbackMap)：对应PC272-PC277；
---   createButton(uiParent, callbackMap)：对应PC346-PC371中V13[1]那次ButtonFactory调用。
--- doInit恢复时应在PC266后调用registerCallback，在第二组按钮循环中调用createButton。
+--   createButton(uiParent, callbackMap, config, rowIndex, groupOffset)：复用proto48通用ButtonFactory。
+-- doInit恢复时应在PC266后调用registerCallback，在第二组按钮循环中将原始config、rowIndex、groupOffset传给createButton。
 local function MakeBuyGoldButtonInitFragment(
     visibleItems,
     timerState,
@@ -475,6 +463,8 @@ local function MakeBuyGoldButtonInitFragment(
     BuyStoreItem,
     unusedCapturedFunction
 )
+    local buttonFactory = nil
+
     return {
         registerCallback = function(callbackMap)
             return RegisterBuyGoldButtonHandler(
@@ -486,10 +476,15 @@ local function MakeBuyGoldButtonInitFragment(
             )
         end,
 
-        createButton = function(uiParent, callbackMap, buttonConfig)
-            return InstallBuyGoldButton(
-                uiParent, visibleItems, callbackMap, buttonConfig
-            )
+        createButton = function(uiParent, callbackMap, buttonConfig, rowIndex, groupOffset)
+            if not buttonFactory then
+                buttonFactory = MakeMainLeftBottomButtonFactory(
+                    uiParent,
+                    visibleItems,
+                    callbackMap
+                )
+            end
+            return buttonFactory(buttonConfig, rowIndex, groupOffset)
         end,
     }
 end
