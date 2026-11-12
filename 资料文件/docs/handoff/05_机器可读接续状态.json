@@ -2,38 +2,40 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-12",
-  "latest_checkpoint": 354,
-  "next_checkpoint": 355,
+  "latest_checkpoint": 355,
+  "next_checkpoint": 356,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "测试打包模式账号验证屏蔽已完成。AccountIDValidation不再读取GAME_ID/UID、不再执行账号白名单匹配或失败通知；保留0.5秒延迟回调和MainProperty面板就绪后的doInit初始化。静态检索未发现其他脚本内部账号ID/授权门控；源码中的白名单地图逻辑属于拉怪地图过滤，与账号验证无关，保持不动。",
-    "title": "账号验证屏蔽后的唯一源码打包测试准备",
+    "status": "用户完成APP替换打包测试并反馈四项明确故障：隐藏按钮点击无反应；地图怪物持续闪烁；开拉怪输入数值确认后角色不拉怪；资源统计面板布局与原版不一致。当前优先按用户反馈逐项定位并修复，不处理其它未验证按钮。",
+    "title": "APP替换测试四项故障定位与修复",
     "prototype": "MainLeftBottom_唯一交付文件.lua",
     "scope": [
-      "唯一交付源码仍为根目录MainLeftBottom_唯一交付文件.lua，唯一分支main",
-      "测试打包模式下禁用脚本自身GAME_ID/UID/白名单验证及失败通知",
-      "保留AccountIDValidation入口与原延迟UI初始化回调，确保doInit_UI链可继续执行",
-      "不改APP或平台本身登录/身份认证",
-      "其余已恢复功能和用户实测通过的开拉怪/快速小退逻辑不改",
-      "保持Lua 5.1兼容，不执行用户已取消的编译和目标游戏验证",
-      "下一步检查是否还有其它脚本内账号门控，并核对本次改动只影响验证逻辑"
+      "只修改根目录MainLeftBottom_唯一交付文件.lua，唯一分支main，不创建平行源码或分支",
+      "优先修复隐藏按钮事件链及显示/隐藏状态",
+      "定位怪物持续闪烁的调用/刷新/目标切换原因，避免凭猜测更改",
+      "修复开拉怪按钮→阈值输入→确定→初始化→主循环完整链路；参考用户此前实测正常的APP整合快照，但不得盲目覆盖",
+      "恢复资源统计面板与原版一致的布局/控件结构",
+      "其它按钮暂不扩展、不修改",
+      "Lua 5.1兼容；不执行用户已取消的Lua编译和目标游戏运行验证"
     ],
     "focus": [
-      "检查点354已屏蔽GAME_ID门控、UID读取、9项允许账号ID、Nested_ID匹配和失败通知",
-      "AccountIDValidation仍挂接MainLeftBottom.main，保持原0.5秒Schedule和MainProperty面板就绪后doInit调用",
-      "本次源码提交9615455fe7c94609c6fcbfcec329cee4b6e39406",
-      "下一步检查是否存在其它账号验证门控；不扩大到APP登录认证"
+      "当前唯一源码SHA为c1fdbd810d135b4fe76cda0573f2ac4645a3addb；需继续按原型证据和已知实测快照对照",
+      "用户明确报告四项目标环境故障；此前静态核对通过不代表本次APP打包后功能正常",
+      "已知实测通过快照：资料文件/实测通过版本/MainLeftBottom_UI开拉怪完整链路_替换版.lua（只确认开拉怪和快速小退通过，不代表隐藏按钮/资源统计通过）",
+      "本次先核对隐藏按钮与资源统计UI子原型，再查开拉怪输入链及MainLoop调用；怪物闪烁优先查重复设置目标/循环频率/地图Actor过滤",
+      "不改地图白名单过滤及快速小退等未涉及逻辑"
     ],
     "completion_criteria": [
-      "原型树中109个子原型的函数主体全部在唯一交付文件中实际存在，包含所有嵌套闭包；不存在仅在注释/历史草稿中声称完成而文件缺失的函数",
-      "root模块PC1-PC412的可执行初始化、闭包定义、字段挂接、全局导出和return顺序已在唯一交付文件中连贯表达，不依赖外部原型装配器或平行源码",
-      "所有函数引用均绑定到正确局部闭包、模块字段或chunk ENV导出；未确认宿主外部依赖单独标记",
-      "清除未使用且会误导替换测试的装配骨架/过期注释，不改变已确认业务逻辑",
+      "四项问题分别有明确根因证据和对应的唯一源码修正，或明确指出需用户提供的最少缺失信息",
+      "隐藏按钮点击后能按原版语义切换按钮显隐",
+      "怪物不再因脚本的重复目标设置/刷新而持续闪烁",
+      "开拉怪输入有效数字确认后确实启动主循环并开始拉怪",
+      "资源统计面板的布局/控件与原版VM恢复结构一致",
       "Lua 5.1禁用语法/API静态扫描无命中；不执行用户已取消的编译和游戏运行验证",
-      "更新接续文件并提交唯一分支main"
+      "更新接续资料并提交唯一分支main"
     ],
-    "next": "检查点355：无需扩大改动；向用户交付最新唯一源码和明确替换范围。用户打包测试若出现问题，再根据具体错误继续修复。"
+    "next": "检查点356：先对照唯一源码与实测通过快照，提取隐藏按钮、资源统计、开拉怪启动链和MainLoop的关键差异；随后结合原始VM和框架API证据逐项定位。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
@@ -62,7 +64,7 @@
   "verification": {
     "static_source_review": "本轮检查点324仅完成root PC1-PC42的直接静态对照：MainLeftBottom chunk环境导出、a/b/z/timerState创建顺序及初始化字段与VM一致，未发现明确源码错配。root PC43-PC412、AccountIDValidation、doInit_UI及23个UI子原型仍待本轮逐项复核。历史检查点323只作参考。 检查点325补充：root PC43-PC85的闭包捕获、ENV['_G'].log、a.LuaSendMsg及11个全局导出目标已对照；未发现明确错配。 检查点326补充：root PC86-PC211配置表、奖励记录、共享状态初值及相关闭包捕获身份已对照VM，未发现明确父级装配错配。 检查点327补充：root PC212-PC296的采集闭包父级捕获、a.hide/show/destroy字段、AccountIDValidation入口绑定、黑名单状态表及配置常量已对照VM，未发现明确父级装配错配。 检查点328补充：root PC212-PC315全局导出、UI闭包捕获、AccountIDValidation挂接、blacklistState共享对象及配置读写闭包链已对照；未发现明确父级装配错配。AccountIDValidation两个子原型的完整逻辑已开始独立核验，详见后续检查点。 检查点329补充：root PC316-PC412数值表、黑名单闭包链、T57 live-cell捕获、onDamageMsg字段、BlacklistItems/ClearBlacklistItems导出、doInit_UI 20项捕获、doInit挂接和模块返回均已直接对照VM；root PC1-PC412本轮父级装配审查完成，未发现明确错配。子原型主体审查仍待完成。 检查点330补充：AccountIDValidation主原型与两个直接子原型（等待回调、白名单匹配闭包）已逐段对照VM；9项ID及顺序、GAME_ID门控、回调UI条件、UnSchedule(nil)、doInit调用均一致，未发现明确错配。 检查点331：doInit_UI主体PC1-PC419执行结构已与VM核对；修正了UI子闭包中6类root全局函数被本地CallRootFunction包装器替代的问题，并将巡航回调发送入口改回VM的GETGLOBAL LuaSendMsg。 检查点332补充：doInit_UI直接子原型child0-child10及其嵌套闭包已逐段对照；资源统计窗口320条主体与5个子原型、按钮创建/点击事件和各开关定时回调对应。未发现新的明确错配。 检查点333补充：doInit_UI直接子原型child11-child22及嵌套闭包已逐段对照；输入弹窗、巡航回调、黑名单/存仓/取物/拾取/丢弃开关、快捷栏和隐藏按钮回调均对应VM。未发现新的明确错配。 检查点334补充：已完成跨段共享状态核对，a/b/z/timerState、blacklistState、gatherConfig、按钮映射、资源窗口和各定时器句柄均保持预期共享对象/字段关系，未发现新的明确身份错配。 检查点337补充：直接读取VM dump root.children[32]/[54]的6条指令及函数状态清单，确认固定文件名先、firstArg后传入PCallHelper；唯一交付源码原先反序，已修正。 检查点338补充：root.children[0] 32条VM指令、Nested_removeFile 5条及doInit_UI child2/child20调用路径已对照；源码与VM一致。已确认“清空配置”提示与原始文件检查/删除分支行为不一致，属于原始逻辑问题，未擅自改变。 检查点339：开拉怪按钮/阈值/启动停止链与现有VM原型记录对照；修正root.children[28] FindMonsterCandidates的SL方法调用为冒号+true,true，依据OP_121 SELF、OP_338/OP_401装载true、PC5 CALL及新框架API文档。 检查点340：复核MainLoop root.children[45]全部状态分区及直接依赖，引用检查点153-159、162-163的既有逐PC/CFG审计；唯一交付源码与VM一致。纠正检查点155归档审计PC1-PC4真假分支方向：运行标记truthy继续，false/nil return；源码原判断正确。GATHERING等待到期游标推进、未归属目标锁定成功/失败后的循环继续、ATTACKING首个存活目标锁定后return、候选过滤与owner谓词、SetTargetID方法receiver/参数、启动/停止/重置清理顺序均核对一致。本批无新的唯一交付源码错误，无需改动主源码。开拉怪完整功能链静态核对完成。 检查点344：重新读取MainLoop root.children[45]原始反汇编PC314-PC330。PC314判断allOwnersResolved；为真才继续PC316-PC319，将目标列表长度#UPVALUE[8]与共享归属计数UPVALUE[11]比较，条件为列表长度<=归属计数时进入成功分支切ATTACKING；否则走PC331-PC343失败分支，输出列表未全部获取归属、切IDLE并Reset。唯一源码原先仅检查allOwnersResolved及游标越界，遗漏共享计数比较；当列表中目标归属在扫描期间变成其他玩家时，计数可能小于列表长度，却会误切ATTACKING。已修正为allOwnersResolved and resetSlot16 >= #resettableTable才进入ATTACKING，扫描结束的其他情况统一回IDLE并重置。提交e956cf39b4266df037fb5e61632152a58f8a933d。 检查点345：MainLoop PC344-PC417 ATTACKING分支与唯一源码逐项对应：存活目标取名/日志/SetTargetID后return；死亡或离开视野则日志并推进游标；循环耗尽后输出全部目标耗尽、切IDLE并Reset。输入回调root/43/23/1/1与root/43/15/1的数字成功路径已对照：status门控、editStr读取、空值处理、去空白、数字正则、tonumber、成功回调及失败延迟分支一致；有效输入10走成功分支。按钮点击闭包root/43/10/1与源码一致：先执行handler，非toggle直接返回，handler严格返回false才阻止toggle，随后切换标题/颜色；输入保存成功后启动拉怪并同步yinguaibut为开启状态。未发现新的VM-明文控制流错配。原始VM非法输入提示分支仍捕获nil的T[2]并延迟调用，可能触发attempt-to-call-nil；这是原始VM行为，非明文错配，本轮不擅自修改。修正了源码AnonymousHelper_32旁旧注释的PCallHelper参数语义，消除与检查点343相冲突的注释。 检查点346：配置读取ReadNumericConfig与写入PCallHelper/AnonymousHelper_54的数据流闭合，均使用同一GetWritablePath和固定文件名；PCallHelper第1参路径、第2参内容，firstArg写入配置文件。唯一源码Lua 5.1禁用语法/API词项扫描无命中：goto、table.unpack、table.pack、table.move、bit32、utf8、package.searchpath。未执行Lua实际编译或目标游戏运行。开拉怪静态链路当前未发现其他VM-明文控制流错配；但用户提供的步骤/预期流程尚未对应到明确的实测失败表现，故不能宣称目标环境故障已完全解决，待用户指出具体异常发生阶段。 检查点350-351：109个子原型逐名对照唯一交付文件；补入此前漏掉的Nested_MainLoop、DiuItems.Nested_string_2，后者28项关键词表按原始VM dump常量与构造顺序恢复；其余14个无同名声明的嵌套原型均在父函数中以匿名/局部闭包实现。删除未使用AttachRecoveredPrototypes适配器。唯一源码声明125个local function；Lua 5.2+禁用语法/API词项扫描无命中。",
     "lua_syntax_check": "仅执行静态Lua 5.1兼容性审查、禁用语法/API扫描及词法结构检查。用户明确要求不执行实际Lua 5.1编译；不得安装/寻找编译器或要求用户补做。",
-    "runtime_check": "按用户明确要求，不执行目标游戏运行验证；不得将未运行作为阻塞或要求用户补做。",
+    "runtime_check": "用户已在APP替换打包版本实测并报告四项故障。助手不自行执行目标游戏运行；仅依据用户反馈、源码静态对照、原始VM与API文档定位。每个修复是否通过由用户后续实测反馈确认。",
     "do_not_claim_pass_without_execution": true,
     "open_risks": [
       "VM在PC183调用GUI:Attach_UITop时传入一个显式实参T7=4；新框架文档标题签名为Attach_UITop()无必需参数。保留VM调用，不擅自删参，需目标版本运行验证。",
