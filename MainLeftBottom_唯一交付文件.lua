@@ -1477,20 +1477,18 @@ local function MainLoop()
             end
         end
 
-        if allOwnersResolved then
-            if resetSlot17 > #resettableTable then
-                PrintLog("所有怪物归属已获取，切换到攻击状态")
-                resetSlot17 = 1
-                FormatStateChange(gatherStatusText.ATTACKING)
-                return
-            end
-        elseif resetSlot17 > #resettableTable then
-            PrintLog("怪物列表处理完毕但未全部获取归属，重新扫描")
-            FormatStateChange(gatherStatusText.IDLE)
-            ResetGatherMonsterData()
+        -- VM PC314-PC330：只有归属确认计数达到目标列表总数，才允许进入攻击状态。
+        -- 若扫描结束但计数不足（包括归属被其他玩家抢走），按VM回到IDLE并重置本批。
+        if allOwnersResolved and resetSlot16 >= #resettableTable then
+            PrintLog("所有怪物归属已获取，切换到攻击状态")
+            resetSlot17 = 1
+            FormatStateChange(gatherStatusText.ATTACKING)
             return
         end
 
+        PrintLog("怪物列表处理完毕但未全部获取归属，重新扫描")
+        FormatStateChange(gatherStatusText.IDLE)
+        ResetGatherMonsterData()
         return
     end
 
