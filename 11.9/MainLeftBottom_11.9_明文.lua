@@ -426,9 +426,9 @@ end
 -- 四个参数按闭包捕获顺序传入，避免把root状态表误建成独立buygoldTimer变量。
 local function MakeBuyGoldTimerCallback(
     BuyStoreItem,
-    showFormattedNotice,
+    showLocalNotice,
     timerState,
-    showSystemTips
+    unusedCapturedFunction
 )
     return function()
         local moneyProxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
@@ -449,7 +449,7 @@ local function MakeBuyGoldTimerCallback(
                 SL:UnSchedule(timerState.buygoldTimer)
                 timerState.buygoldTimer = nil
             end
-            showSystemTips("金币不足200W，买金条结束")
+            SL:ShowSystemTips("金币不足200W，买金条结束")
             return
         end
 
@@ -458,7 +458,7 @@ local function MakeBuyGoldTimerCallback(
 
             if buyOK then
                 -- 此捕获函数接收格式串和金币数；不是SL.ShowSystemTips直接调用。
-                showFormattedNotice("买金条成功，当前金币：%d", goldCount)
+                showLocalNotice("买金条成功，当前金币：%d", goldCount)
                 -- 成功路径保留timer，继续周期检测。
             else
                 SL:ShowSystemTips("买金条失败：" .. tostring(buyResult))
@@ -472,32 +472,34 @@ local function MakeBuyGoldTimerCallback(
                 SL:UnSchedule(timerState.buygoldTimer)
                 timerState.buygoldTimer = nil
             end
-            showSystemTips("金币不足200W，买金条结束")
+            SL:ShowSystemTips("金币不足200W，买金条结束")
         end
     end
 end
 
 -- 对应 proto48 PC277：把proto50闭包登记到按钮回调表的buygoldbut键；
 -- 对应按钮配置为key="buygoldbut"、显示名="购买金条"。
--- 对应 proto50：购买金条按钮事件处理器。
--- 已有buygoldTimer时原版直接返回true，不会取消定时器，也不会显示启动提示。
--- 没有timer时才提示并建立0.5秒周期回调。
+-- proto48的15项捕获中，proto50按顺序捕获：
+--   A[0] = root.MainLeftBottom状态表；A[1] = root的ShowLocalNotice包装函数；
+--   A[2] = BuyStoreItem(proto36)；A[3] = root调试/日志闭包（proto50/51未使用）。
+-- 因此proto50处理器参数顺序必须保持以下四项，不得交换第2/4项。
+-- 已有buygoldTimer时原版直接返回true；没有timer才显示本地提示并Schedule。
 local function OnBuyGoldButtonClick(
     timerState,
-    showSystemTips,
+    showLocalNotice,
     BuyStoreItem,
-    showFormattedNotice
+    unusedCapturedFunction
 )
     if timerState.buygoldTimer then
         return true
     end
 
-    showSystemTips("开始检测金币(>200W买金条)")
+    showLocalNotice("开始检测金币(>200W买金条)")
     local callback = MakeBuyGoldTimerCallback(
         BuyStoreItem,
-        showFormattedNotice,
+        showLocalNotice,
         timerState,
-        showSystemTips
+        unusedCapturedFunction
     )
     timerState.buygoldTimer = SL:Schedule(callback, 0.5)
     return true
