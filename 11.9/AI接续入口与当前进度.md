@@ -224,3 +224,13 @@
 - 唯一明文源码提交：e3589cdb0710b5e47842b2d29be4a00ed9b6ea60
 - 下一步：解释proto50创建proto51时的capture指令及proto51对捕获upvalue的实际读写；然后检查proto36的返回值/购买请求参数。只有找到调用关系后才恢复购买按钮完整Lua函数体。
 - 未进行Lua编译或游戏运行测试。
+
+### 2026-11-12：购买金条第八轮——闭包capture语义纠错
+
+- 直接检查11.9内嵌解释器opcode177处理器，确认闭包创建后的capture规则：仅opcode57从父函数局部寄存器V取值；其他capture opcode（本链为374）从父函数upvalue数组A取值。
+- proto48 PC269创建proto50，PC270 opcode374 index=9，表示proto48捕获父函数upvalue A[9]，并非父函数局部寄存器9。
+- proto50 PC13创建proto51，PC14-17均为opcode374，索引依次2、3、0、1，表示proto51捕获proto50的upvalue A[2]、A[3]、A[0]、A[1]，不是proto50局部寄存器。
+- 这纠正了上一轮把opcode374误读为局部寄存器捕获的结论。此前据此推导proto36不在直接upvalue链中的判断撤回，不再作为证据。
+- 当前可确认proto51沿proto50继承proto48上游环境中的4个upvalue引用；具体对象身份还未确定，不能确认是否包含商城代理或proto36闭包。
+- 本轮只修正唯一明文源码注释和接续文档，没有擅自重写购买逻辑；未进行编译或游戏运行测试。
+- 下一步：解读proto48自身父级的upvalue数组来源，并确认其4个传递到proto51的upvalue对应什么对象；同时追踪proto36闭包是否在该上游环境中可达。
