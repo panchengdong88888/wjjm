@@ -518,3 +518,46 @@ end
 -- proto2会检查buygoldTimer，若存在则SL:UnSchedule(scheduleID)，随后清空字段；
 -- 它还负责其他定时器和界面清理。具体销毁时机由宿主调用destroy生命周期方法，
 -- 当前只确认赋值关系，不推断宿主在何种场景/时刻调用该方法。
+
+
+-- 对应root PC270-PC275注册的 MainLeftBottom.destroy 清理闭包（proto2）。
+-- proto2无显式参数，按root创建闭包时的三个upvalue顺序捕获：
+--   UP[0] = 定时器状态表；UP[1] = 需要隐藏的界面/控件集合；
+--   UP[2] = MainLeftBottom模块表（其中包含hidebut）。
+local function MakeMainLeftBottomDestroyCallback(
+    timerState,
+    visibleItems,
+    mainLeftBottom
+)
+    return function()
+        -- proto2按原指令顺序逐一取消并清空四个定时器句柄。
+        local timerFields = {
+            "rewardTimer",
+            "cruiseTimer",
+            "newzoneTimer",
+            "buygoldTimer"
+        }
+
+        for _, fieldName in ipairs(timerFields) do
+            local scheduleID = timerState[fieldName]
+            if scheduleID then
+                SL:UnSchedule(scheduleID)
+                timerState[fieldName] = nil
+            end
+        end
+
+        -- 隐藏root捕获的界面/控件集合。
+        for _, uiItem in pairs(visibleItems) do
+            GUI:setVisible(uiItem, false)
+        end
+
+        -- 单独隐藏并清空MainLeftBottom.hidebut。
+        if mainLeftBottom.hidebut then
+            GUI:setVisible(mainLeftBottom.hidebut, false)
+            mainLeftBottom.hidebut = nil
+        end
+    end
+end
+
+-- root PC274将proto2闭包写入 MainLeftBottom.destroy；
+-- 本工厂函数用于明文重建该闭包的捕获关系，宿主何时调用destroy不作推断。
