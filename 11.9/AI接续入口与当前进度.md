@@ -584,3 +584,22 @@
 - 本轮源码提交：`c60d711c35dc571b876ad7f2c5aed3589c7bad79`。
 - 下一步继续恢复proto48真实doInit执行体，并把回调登记和ButtonFactory迭代放回原始PC位置；完成购买金条后再开始“开新区”。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第三十一轮——恢复通用ButtonFactory并修正按钮坐标
+
+- 重新从新版proto48 children[17]（50条指令，第18个子原型）逐条恢复通用ButtonFactory，而不是沿用先前专用按钮创建路径。
+- 已写入`MakeMainLeftBottomButtonFactory(uiParent, visibleItems, callbackMap)`，其返回函数接收原始`buttonConfig,rowIndex,groupOffset`，并按VM执行：
+  - `x = 1 - 85 * rowIndex`
+  - `y = 2 + groupOffset`
+  - `GUI:Button_Create(uiParent,key,x,y,"res/public/fuzhu_btn.png")`
+  - 将按钮写入`visibleItems[key]`，设置标题、18号字体、字体文件、默认白色；
+  - 仅当config.toggle存在时初始化toggled=false；
+  - 注册点击闭包：从callbackMap按config.key取处理器，先调用处理器；非toggle按钮直接返回；toggle按钮在处理器未返回false时翻转toggled并更新标题/颜色。
+- **修正此前坐标错误**：buygoldbut属于第二组V13第1项，rowIndex=7、groupOffset=0，故正确坐标为`(-594, 2)`，不是`(-594, 0)`。之前对y的公式误写成`2*groupOffset`，现以ButtonFactory PC8-PC9字节码复核为准。
+- `MakeBuyGoldButtonInitFragment`已改为复用通用ButtonFactory，并把实际buttonConfig、rowIndex、groupOffset传入工厂；不再保留一套独立按钮样式/点击分发实现。
+- 删除了此前重复且错误地把callbackMap另建一张表的旧片段，避免同名局部函数遮蔽。
+- 当前真实proto48 `MainLeftBottom.doInit`函数体仍未整体恢复，回调登记和工厂遍历尚未接入真实入口；购买金条仍不能标记完成。
+- 本轮源码提交：`e76c75b1b309877d3d01a81daf6589a80c465fbc`；说明注释同步提交：`27f6b19b0c54596c7e1a3ce93b5039671f14d517`。
+- 下一步继续按proto48 PC1-PC433恢复真实初始化函数，优先把PC266后的buygold回调登记和PC363-PC371第二组循环首项接入。完成购买金条后再处理“开新区”。
+- 未进行Lua编译或游戏运行测试。
