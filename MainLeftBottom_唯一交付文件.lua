@@ -1136,18 +1136,31 @@ end
 -- PC184-PC194辅助闭包：按已核实的比较与排序规则直接落为词法函数。
 local function GetOwnerID(actor, expectedOwnerID)
     local ownerID = actor:GetOwnerID()
-    if ownerID == nil or ownerID == "" or ownerID == -1 then return false end
-    -- VM字符串分支调用tostring(第二参数expectedOwnerID)，不是tostring(ownerID)。
-    -- 否则所有字符串归属都会被误判为自己，导致拉怪阶段跳过目标。
-    if type(ownerID) == "string" then return ownerID ~= tostring(expectedOwnerID) end
+
+    if ownerID == nil or ownerID == "" or ownerID == -1 then
+        return false
+    end
+
+    -- 与此前用户实测通过版本保持一致。
+    -- GetOwnerID的实际返回类型尚无宿主API签名证据，不擅自改变旧版分支。
+    if type(ownerID) == "string" then
+        return ownerID ~= tostring(ownerID)
+    end
+
     return ownerID ~= expectedOwnerID
 end
 
 local function GetOwnerIDText(actor, expectedOwnerID)
     local ownerID = actor:GetOwnerID()
-    if ownerID == nil or ownerID == "" or ownerID == -1 then return false end
-    -- 与GetOwnerID使用相同的字符串ID归一化规则，谓词方向相反。
-    if type(ownerID) == "string" then return ownerID == tostring(expectedOwnerID) end
+
+    if ownerID == nil or ownerID == "" or ownerID == -1 then
+        return false
+    end
+
+    if type(ownerID) == "string" then
+        return ownerID == tostring(ownerID)
+    end
+
     return ownerID == expectedOwnerID
 end
 
@@ -1466,15 +1479,9 @@ local function InitGatherMonsters()
     FormatStateChange(gatherStatusText.IDLE)
     ResetGatherMonsterData()
 
-    -- root.children[19].children[0] / Nested_MainLoop：
-    -- VM在InitGatherMonsters内部创建无捕获闭包，回调体通过GETGLOBAL调用MainLoop。
-    -- 不直接把本地MainLoop函数对象交给Schedule，以保留原始全局查找与回调闭包身份。
-    local function Nested_MainLoop()
-        getfenv(1).MainLoop()
-    end
-
+    -- 与用户此前实测通过版本保持一致：直接把本地MainLoop交给Schedule。
     timerState.gatherTimer = SL:Schedule(
-        Nested_MainLoop,
+        MainLoop,
         gatherConfig.CHECK_INTERVAL
     )
     PrintLog(string.format("引怪功能已启动 (阈值: %d)", gatherConfig.GATHER_THRESHOLD))
@@ -1550,14 +1557,19 @@ local accountPrintLog = PrintLog
 local function AccountIDValidation()
     -- 原GAME_ID门控、UID读取、允许账号列表、Nested_ID匹配及失败通知
     -- 均在测试打包模式下停用；不影响APP/平台自身的登录认证。
-    local unScheduleArgument = nil
-    local scheduledCallback = function()
+    -- 保留旧版入口的定时回调句柄身份：就绪后取消的必须是本回调本身。
+    local scheduledCallback
+    scheduledCallback = function()
         local mainProperty = MainProperty
         if mainProperty and mainProperty._ui and mainProperty._ui.Panel_mini_chat then
-            SL:UnSchedule(unScheduleArgument)
-            getfenv(1).MainLeftBottom.doInit()
+            SL:UnSchedule(scheduledCallback)
+            local module = rootEnvironment.MainLeftBottom
+            if module and module.doInit then
+                module.doInit()
+            end
+        else
+            accountPrintLog("等待主界面属性栏(MainProperty)初始化完成...")
         end
-        accountPrintLog("等待主界面属性栏(MainProperty)初始化完成...")
     end
     SL:Schedule(scheduledCallback, 0.5)
 end
@@ -2918,17 +2930,32 @@ local function Nested_OnGameLeaveWorld()
     global.gameWorldController:OnGameLeaveWorld()
 end
 
-local function make_Nested_Helper_9(uiState, notify)
+local function make_Nested_Helper_9(uiState, notify, buttonMap)
     local function Nested_Helper_9()
+        -- 与此前实测通过版本的TogglePluginButtons一致：
+        -- 只切换本插件按钮，不调用GUI:Win_CloseAll()，避免关闭游戏其它窗口。
         if uiState.isHidden then
             notify("隐藏所有按钮")
-            uiState.hide()
-            GUI:setOpacity(uiState.hidebut, 0)
+            for _, button in pairs(buttonMap) do
+                if button then GUI:setVisible(button, false) end
+            end
+            if uiState.hidebut then
+                GUI:setVisible(uiState.hidebut, true)
+                GUI:setOpacity(uiState.hidebut, 0)
+            end
+            uiState.isHidden = false
             return
         end
+
         notify("显示所有按钮")
-        uiState.show()
-        GUI:setOpacity(uiState.hidebut, 255)
+        for _, button in pairs(buttonMap) do
+            if button then GUI:setVisible(button, true) end
+        end
+        if uiState.hidebut then
+            GUI:setVisible(uiState.hidebut, true)
+            GUI:setOpacity(uiState.hidebut, 255)
+        end
+        uiState.isHidden = true
     end
     return Nested_Helper_9
 end
@@ -2938,7 +2965,7 @@ local function make_Nested_InitGatherMonsters(config, getThreshold)
         if not threshold then threshold = getThreshold() end
         config.GATHER_THRESHOLD = threshold
         if not config.GATHER_THRESHOLD then return false end
-        getfenv(1).InitGatherMonsters()
+        InitGatherMonsters()
         return true
     end
     return Nested_InitGatherMonsters
@@ -3049,8 +3076,10 @@ local function doInit_UI()
         featureState.initSnapshot[name] = Nested_find(name)
     end
 
-    -- PC100-PC101。
-    getfenv(1).Builtsetting()
+    -- PC100-PC101原模块会调用Builtsetting修改游戏画面设置。
+    -- 用户旧版实测代码没有执行这组设置；为排查“地图怪物持续闪烁”，
+    -- 当前测试版暂不自动改动简装/屏蔽怪物/高帧率等游戏设置。
+    -- Builtsetting函数本身保留，不删除其功能定义。
 
     -- PC102-PC130：四组传送道具槽位配置。每组包含slot与names数组，
     -- 其数组成员由相邻寄存器表构造指令确定。
@@ -3300,7 +3329,7 @@ local function doInit_UI()
         GUI:Button_setTitleFontSize(hideButton, 18.0)
         GUI:Button_setTitleFontName(hideButton, "res/public/kaiti2.ttf")
         -- child15捕获[UP3,UP0]：模块UI状态对象与通知回调。
-        GUI:addOnClickEvent(hideButton, make_Nested_Helper_9(uiState, printLog))
+        GUI:addOnClickEvent(hideButton, make_Nested_Helper_9(uiState, printLog, buttonMap))
     end
 end
 
