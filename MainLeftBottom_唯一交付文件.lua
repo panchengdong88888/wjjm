@@ -408,8 +408,7 @@ local function AnonymousHelper_49()
 end
 
 -- root.children[32]：按VM实参顺序调用PCallHelper(固定文件名, firstArg)。
--- PCallHelper本体把第1参转为写入内容、第2参交给GetWritablePath；
--- 该参数组合看起来反直觉，但这是VM确认的调用顺序，不能按预期用途调换。
+-- PCallHelper第1参是路径、第2参是写入内容；该调用会把firstArg写入固定文件名对应路径。
 local function AnonymousHelper_32(firstArg)
     return PCallHelper(blacklistDistanceConfigFile, firstArg)
 end
