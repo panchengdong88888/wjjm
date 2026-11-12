@@ -2,12 +2,12 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-12",
-  "latest_checkpoint": 340,
-  "next_checkpoint": 341,
+  "latest_checkpoint": 341,
+  "next_checkpoint": 342,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "进行中：用户明确反馈开拉怪功能已在目标环境实测存在问题。此前检查点340的静态一致结论不再视为任务完成；以实测异常为入口，重新审计开拉怪相关代码，直到定位问题原因并完成有证据支持的修正。其他功能模块全部暂停。",
+    "status": "进行中：已从原始VM确认并修正MainLoop锁定分支的一处明文控制流还原错误；继续对照原始VM检查等待归属确认、游标推进、批次切换及配置输入链，直到相关链路无已知还原错配。",
     "title": "开拉怪功能实测问题定位、重新核对与修正",
     "prototype": "doInit_UI的yinguaibut按钮回调；阈值读取/输入/保存链；Nested_StopGatherMonsters；Nested_InitGatherMonsters；InitGatherMonsters；MainLoop；FindMonsterCandidates；StopGatherMonsters；ResetGatherMonsterData；相关定时器、引擎代理和宿主API调用。",
     "scope": [
@@ -23,14 +23,13 @@
       "保持Lua 5.1兼容；不执行Lua/luac实际编译和游戏运行验证，实测信息由用户提供"
     ],
     "focus": [
-      "用户已明确：开拉怪功能实测存在问题，待解决；本任务未完成",
-      "此前检查点339/340的静态核对结果必须在实测问题相关路径上重新审视，不能用与VM一致直接判定无需处理",
-      "重点检查阈值持久化包装链：VM调用PCallHelper(固定文件名,value)，而PCallHelper本体把第一参数作为写入内容、第二参数作为路径；核实该问题是否导致阈值无法保存或下次读取失败",
-      "重点检查无效/有效输入回调、T[2]可能为nil的路径，以及确认按钮是否能走到启动调用",
-      "重点检查SL:Schedule(MainLoop,CHECK_INTERVAL)的参数契约、回调执行和MainLoop的持续调度方式",
-      "重新检查FindMonsterCandidates的SL:FindMonsterInCurrViewField(true,true)及候选对象结构/筛选条件",
-      "重新检查MainLoop的IDLE/GATHERING/ATTACKING状态切换、目标归属判断、SetTargetID调用和攻击目标清理；不能预设旧审计结论无误",
-      "保留Lua 5.1、单一main分支、单一交付源码和不执行编译/运行验证的既定规则"
+      "检查点341已确认：MainLoop PC280-PC302为SetTargetID成功分支，设置等待标记/截止时间/目标ID/名称并输出等待日志后直接return；PC303-PC311为锁定失败分支，输出失败日志、游标设为index+1后到PC312 return。唯一交付源码原先把游标递增放在if/else之后且没有分支return，导致成功后错误推进游标并在同一回调继续扫描；已按VM修正为成功保持当前游标并return、失败推进一位并return。",
+      "继续逐段复核MainLoop等待归属到期后的确认分支、自己归属计数、GATHERING循环边界、ATTACKING分支和批次清理，确认明文与VM指令的分支极性/返回位置一致。",
+      "FindMonsterCandidates先按距离排序并截取GATHER_THRESHOLD个，再由MainLoop过滤其他玩家归属，是原始VM当前指令顺序；不能仅因用户的粗略描述不同而改写。",
+      "IsDie包装器返回actor and not actor:IsDie()，truthy表示存活；所有调用按此语义核对。",
+      "阈值写入包装链当前明文与VM调用排列一致，但其PCallHelper本体把第1参转成写入内容、第2参用于GetWritablePath，实际组合存在疑似原始逻辑问题；先保留并进一步核对原始VM调用帧，不将其误报为明文错配。",
+      "用户描述的10只逐只获取归属流程仅作为理解辅助；所有源码还原以原始MainLeftBottom_vm_dump.json及校正反汇编为准。",
+      "保持Lua 5.1、main唯一分支、MainLeftBottom_唯一交付文件.lua唯一交付源码；不执行Lua编译或游戏运行验证。"
     ],
     "completion_criteria": [
       "明确记录用户实测的具体操作步骤、实际表现和预期表现",
@@ -40,7 +39,7 @@
       "复核同一调用链不存在已知的第二处阻断问题；未能确认的宿主行为明确列为待确认，不冒称解决",
       "更新AI_START_HERE.md与本JSON，提交到main"
     ],
-    "next": "先向用户取得开拉怪实测异常的具体表现（按下按钮后的完整操作、输入值、角色实际行为、提示/日志/报错，以及预期行为）。拿到现象后立即从最靠近该现象的代码开始重新核对；在问题解决前不得转入其他模块。"
+    "next": "继续对照原始VM核验MainLoop等待归属到期后的分支与游标推进，随后核对候选截断、阈值输入回调及配置写入调用帧；发现新的明文错配才修正，不擅自改写VM原有行为。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
