@@ -356,3 +356,28 @@
 - 本接续文档随后单独提交；以GitHub main最新SHA为准。
 - 下一步：追踪proto2的父级调用/注册关系，确认它何时执行；同时继续检查proto48后半段通用按钮创建循环，确认`buygoldbut`回调表最终如何交给按钮控件。不要重复分析proto36购买辅助函数和proto50定时器分支。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第十七轮——闭包参数顺序、按钮真实绑定及destroy清理入口
+
+- 本轮重新读取新版加密原件并按原始加载器解析原型树，重点追踪root、proto48、proto50、proto51、proto2及通用按钮工厂；没有重新进行全量解密/全体原型分析。
+- **纠正上一轮对proto50/51捕获函数含义的误判。** root PC438创建proto48时捕获15项；按root PC439-PC453的capture顺序，proto48 A[0]对应root V4，A[3]对应root V3，A[10]对应root V5，A[11]对应root V55。root PC436已把proto36闭包放入V55。
+- proto48 PC272创建proto50时捕获顺序为A[3]、A[10]、A[11]、A[0]，因此proto50参数/upvalue顺序确定为：
+  1. UP[0]：root V3，即MainLeftBottom状态表，buygoldTimer字段位于此表；
+  2. UP[1]：root V5，即root child30生成的本地提示包装函数（内部调用`SL.ShowLocalNoticeByType`）；
+  3. UP[2]：root V55，即proto36的BuyStoreItem闭包；
+  4. UP[3]：root V4，即root child43调试/日志闭包；在proto50/proto51已检查指令中没有发现读取此捕获值。
+- proto50 PC7-PC9使用UP[1]显示“开始检测金币(>200W买金条)”本地提示；不是调用`SL.ShowSystemTips`。proto50 PC13创建proto51时捕获顺序为UP[2]、UP[3]、UP[0]、UP[1]，所以proto51 UP[0]=BuyStoreItem、UP[1]=本地提示包装函数、UP[2]=MainLeftBottom状态表、UP[3]=未使用的调试/日志闭包。
+- proto51失败和金币不足路径明确通过`SL.ShowSystemTips`显示提示；timer读取/取消/清空均访问UP[2].buygoldTimer。成功提示路径按原始调用帧把格式串和金币数传给UP[1]本地提示包装函数。本轮修正了源码函数`OnBuyGoldButtonClick`参数顺序，并将启动提示改为本地提示包装函数；低金币提示改为直接调用`SL:ShowSystemTips`。`MakeBuyGoldTimerCallback`的捕获参数顺序也已与proto51一致。
+- **真实按钮绑定链已闭合到addOnClickEvent：**
+  - proto48 PC228-PC229把配置表的key/name设置为`buygoldbut`/`购买金条`。
+  - proto48 PC272-PC277创建proto50闭包并写入回调表`callbackMap.buygoldbut`。
+  - proto48 PC340-PC345创建通用ButtonFactory闭包，并把该回调表作为其一个upvalue捕获。
+  - ButtonFactory的子闭包PC45创建点击回调，捕获回调表、按钮配置和按钮控件；点击回调PC2-PC4按配置key从回调表读取对应处理器。
+  - ButtonFactory PC43-PC49取得`GUI.addOnClickEvent`并将点击回调注册到真实按钮控件。故购买金条处理器不是仅存在于未使用的映射表，确实进入通用按钮事件绑定链。
+- **proto2清理入口已确认：** root PC270创建root child index 1（proto2）闭包，PC271-PC273依次捕获root V3、V1、V0；PC274把该闭包赋值给`MainLeftBottom.destroy`。proto2 PC35-PC44读取状态表`buygoldTimer`，有句柄时执行`SL:UnSchedule(scheduleID)`并清空字段。由此确认它是`MainLeftBottom.destroy`生命周期回调中的清理逻辑；宿主具体何时调用destroy仍不推断。
+- 已在唯一明文源码中修正捕获参数顺序和提示函数类型，补充ButtonFactory/addOnClickEvent绑定链及destroy挂接说明。没有创建第二份源码文件，没有修改任何参考文件。
+- 本轮源码提交：`996bd462d7e285489fa8c0e325fbc6ef6e5cc749`
+- 本接续文档随后单独提交；以GitHub main最新SHA为准。
+- 下一步：继续恢复proto2整个destroy函数的完整清理和界面隐藏逻辑，并把root层函数/回调映射与当前独立函数体对接；然后核对proto48通用ButtonFactory中按钮配置的来源及参数映射，确认源码函数如何挂入统一回调表。不要重复购买金条业务主体、捕获顺序或RequestBuy尾段。
+- 未进行Lua编译或游戏运行测试。
