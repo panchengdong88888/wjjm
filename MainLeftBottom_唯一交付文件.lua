@@ -909,7 +909,7 @@ rootEnvironment.MoveItemToQuickUse = MoveItemToQuickUse
 -- PC276-PC279：AccountIDValidation捕获[T4,T5]（PrintLog、ShowLocalNoticeByType），写入MainLeftBottom.main。
 -- PC286-PC294：创建blacklistState并初始化lastAttacker=nil、lastHp=nil、deathHandled=false、alertAt=0、nextTryAt=0、noStoneWarned=false、distance=nil；同一表写入MainLeftBottom.a.blacklist。
 -- T54：PC318临时数值/表构造用途在PC349前结束；PC352最终写入PCallHelper_2；PC354与PC384分别被FindBlacklistPlayer UP0和ClearBlacklistItems UP0捕获。两次捕获均取到PCallHelper_2，之后T54无再写入。
--- 该段为父模块创建/捕获/赋值账本，不替代子原型主体；PC341-PC412仍待对账。
+-- 该段为父模块创建/捕获/赋值账本；PC341-PC412的实际闭包定义、字段挂接、全局导出与最终return已在本文件后续可执行代码中落实。
 
 
 -- 检查点244：root PC341-PC412最终闭包、模块字段与全局导出账本。
