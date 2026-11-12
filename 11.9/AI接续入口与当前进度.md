@@ -381,3 +381,22 @@
 - 本接续文档随后单独提交；以GitHub main最新SHA为准。
 - 下一步：继续恢复proto2整个destroy函数的完整清理和界面隐藏逻辑，并把root层函数/回调映射与当前独立函数体对接；然后核对proto48通用ButtonFactory中按钮配置的来源及参数映射，确认源码函数如何挂入统一回调表。不要重复购买金条业务主体、捕获顺序或RequestBuy尾段。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第十八轮——proto2完整清理体与零参数按钮闭包恢复
+
+- 继续拆解root child index 1（proto2）PC45-PC69，并逐项核对pairs、GUI:setVisible及字段赋值处理器。
+- proto2完整可读行为已恢复：按顺序检查并取消/清空`rewardTimer`、`cruiseTimer`、`newzoneTimer`、`buygoldTimer`；随后遍历root捕获的界面/控件集合，对每个元素调用`GUI:setVisible(item, false)`；最后若`MainLeftBottom.hidebut`存在，则隐藏该控件并把字段清空为nil。
+- 已在唯一明文源码增加`MakeMainLeftBottomDestroyCallback(timerState, visibleItems, mainLeftBottom)`闭包工厂，按proto2三个upvalue顺序还原其捕获关系。root PC270-PC275的挂接关系已确认：创建proto2闭包，随后执行`MainLeftBottom.destroy = proto2`。宿主具体何时调用destroy仍不推断。
+- **进一步纠正购买金条回调的Lua结构：**proto50/51在VM中是零显式参数闭包，四项数据是upvalue，不是点击事件传入的四个参数。因此不能把`OnBuyGoldButtonClick(timerState, ...)`直接当成事件回调函数。本轮已将其改为`MakeBuyGoldButtonHandler(timerState, showLocalNotice, BuyStoreItem, unusedCapturedFunction)`工厂，返回一个零参数点击闭包；该闭包内部检查timer、显示启动提示、创建proto51回调并Schedule 0.5秒。
+- 按proto48 PC340-PC345确认通用ButtonFactory闭包捕获回调映射表；ButtonFactory内部子闭包PC45捕获回调表、按钮配置、按钮控件，点击时PC2-PC4以配置key从回调表取出对应函数；PC43-PC49通过`GUI.addOnClickEvent`注册点击闭包。`buygoldbut`从PC277写入映射表到通用工厂再到真实点击事件的链路已经闭合。
+- 重要更正：proto50 UP[1]是root child30生成的`ShowLocalNoticeByType`包装函数，启动提示走本地提示包装；proto51 UP[1]同样是该包装函数。proto51失败和金币不足提示直接调用`SL.ShowSystemTips`。UP[3]为root child43调试/日志闭包，在proto50/proto51中没有发现读取，不应把它误当作ShowSystemTips函数。
+- 唯一明文源码本轮连续更新提交：
+  - 参数顺序纠正：`7794cdbc94ee75774a4083d9581891f036c48212`
+  - 捕获语义注释纠正：`bfbea8d1ae53f27fcf8d5cefc8c0716a82422fbb`
+  - UI真实绑定链注释：`996bd462d7e285489fa8c0e325fbc6ef6e5cc749`
+  - proto2清理闭包体：`744c86d4dc109aed88af7843ff0d7ace55dade00`
+  - proto50零参数按钮闭包工厂：`8f88bc6257e152f9ac8fa9fc36e42146843cef85`
+- 本接续文档随后单独提交；以GitHub main最新SHA为准。
+- 下一步：继续核对proto48通用ButtonFactory的参数来源和按钮配置数组遍历过程，确认`MakeBuyGoldButtonHandler(...)`及`MakeMainLeftBottomDestroyCallback(...)`应在root初始化哪个位置实例化并挂接；随后把这部分从“已恢复函数体”推进到“完整入口集成”。不要重复proto36购买业务、proto50/51捕获映射、addOnClickEvent链或proto2清理主体。
+- 未进行Lua编译或游戏运行测试。
