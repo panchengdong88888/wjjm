@@ -43,7 +43,9 @@
 --  4. UI 初始化、窗口与按钮创建
 -- ============================================================
 
--- TODO：恢复 doInit_UI、createButton 及完整按钮事件链。
+-- proto48（433条指令）是MainLeftBottom.doInit的UI初始化入口。
+-- 当前优先恢复购买金条在该入口中的真实执行链：Attach_UITop -> callbackMap登记
+-- -> ButtonFactory -> GUI:addOnClickEvent。其他按钮与初始化分支继续按新版指令补全。
 
 -- ============================================================
 --  5. 怪物查找与引怪系统
@@ -396,6 +398,53 @@ local function InstallBuyGoldButton(
     end)
 
     return button
+end
+
+
+-- root PC46对应的本地提示包装闭包（root child index 31）。
+-- 它只捕获MainLeftBottom模块表，屏幕高度来自root初始化时写入的screenH字段。
+-- 框架接口ShowLocalNoticeByType按文档直接调用，不分析宿主内部实现。
+local function MakeShowLocalNoticeByType(mainLeftBottom)
+    return function(message)
+        local notice = {
+            Type = 10,
+            Msg = message,
+            FColor = 249,
+            BColor = 0,
+            X = 5,
+            Y = mainLeftBottom.screenH - 50,
+        }
+        SL:ShowLocalNoticeByType(notice)
+    end
+end
+
+-- 将购买金条的PC272-PC277回调登记与PC340-PC384中V13第一项的
+-- ButtonFactory迭代封装成一个可由doInit调用的片段。
+-- doInit的原始顺序是：PC191取得uiParent；PC266创建callbackMap；
+-- PC272-PC277登记buygoldbut；PC340-PC345创建ButtonFactory；
+-- PC346-PC371遍历V13，第一项配置传入(rowIndex=7, groupOffset=0)。
+-- 此片段只安装购买金条这一项，不代替整个proto48初始化函数。
+local function MakeBuyGoldButtonInitFragment(
+    visibleItems,
+    timerState,
+    showLocalNotice,
+    BuyStoreItem,
+    unusedCapturedFunction
+)
+    local callbackMap = {}
+
+    return function(uiParent)
+        local button = InstallBuyGoldButton(
+            uiParent,
+            visibleItems,
+            callbackMap,
+            timerState,
+            showLocalNotice,
+            BuyStoreItem,
+            unusedCapturedFunction
+        )
+        return button, callbackMap
+    end
 end
 
 
