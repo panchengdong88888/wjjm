@@ -327,3 +327,19 @@
 - 本接续文档随后单独提交；以GitHub main最新SHA为准。
 - 下一步：定点核对proto50 PC1-PC20已有timer分支的准确receiver/参数和proto48 PC277按钮绑定上下文；确认后把购买金条按钮事件链的最终函数名/注册位置补进明文源码。随后检查proto2对buygoldTimer的清理时机。不要重新分析proto36主体或RequestBuy尾段。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-12：购买金条第十五轮——proto50定时器状态与已有任务分支纠正
+
+- 对照proto50完整23条指令及opcode177捕获列表，纠正上一版恢复代码中两个重要问题：`buygoldTimer`不是独立局部变量，而是捕获状态表中的字段；按钮事件发现已有timer时不会取消timer。
+- proto50捕获映射已闭合：UP[0]为root状态表（包含`buygoldTimer`字段），UP[1]为启动/结束提示函数，UP[2]为proto36的`BuyStoreItem`闭包，UP[3]为格式化提示函数。
+- proto50 PC1-PC6：从UP[0]读取`buygoldTimer`；若句柄存在，直接返回true，不调用`SL.UnSchedule`，也不显示启动提示。若句柄不存在，则跳过该返回分支继续执行。
+- proto50 PC7-PC9：调用UP[1]显示“开始检测金币(>200W买金条)”提示。
+- proto50 PC10-PC20：从UP[0]取得状态表，调用`SL:Schedule(proto51回调, 0.5)`，并把返回的scheduleID写入状态表字段`buygoldTimer`。
+- proto50 PC21-PC22：返回true。按钮处理器不是“开/关切换”逻辑；已有定时器时再次触发只返回，不停止已有检测。
+- proto51四项捕获顺序复核：UP[0]=BuyStoreItem；UP[1]=格式化提示函数；UP[2]=root状态表；UP[3]=启动/结束提示函数。因此回调中所有timer读取、取消和清空均应访问`timerState.buygoldTimer`，不能使用独立局部变量。
+- 已修正唯一明文文件：把原先的`local buygoldTimer`和错误的“已有timer则UnSchedule”逻辑替换为按捕获参数传递的`MakeBuyGoldTimerCallback(...)`及`ToggleBuyGoldCheck(...)`；回调的成功提示调用捕获的格式化提示函数，低金币提示调用捕获的提示函数，失败提示仍按新版指令直接调用`SL:ShowSystemTips`。
+- 本轮源码提交：`0810dd51a1fddf748439294e37143139bb125870`
+- 本接续文档随后单独提交；以GitHub main最新SHA为准。
+- 下一步：沿proto48 PC277-278和UI事件工厂确认按钮事件实际传入的四项捕获参数与函数绑定名；随后追踪proto2对状态表`buygoldTimer`的清理路径。不要再恢复成timer开关逻辑。
+- 未进行Lua编译或游戏运行测试。
