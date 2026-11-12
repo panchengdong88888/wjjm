@@ -314,8 +314,14 @@
 --  8.1 自动购买金条：已恢复的定时回调与按钮处理器
 -- ============================================================
 
--- 购买金条定时器句柄（对应新版根作用域中的buygoldTimer）。
-local buygoldTimer = nil
+-- proto50/proto51的捕获映射（按新版opcode177及capture顺序）：
+--   proto50 UP[0] = root状态表（其中保存buygoldTimer）
+--   proto50 UP[1] = 启动提示函数
+--   proto50 UP[2] = BuyStoreItem（proto36）
+--   proto50 UP[3] = 格式化提示函数
+--   proto51 UP[0] = BuyStoreItem，UP[1] = 格式化提示函数，
+--                  UP[2] = root状态表，UP[3] = 启动/结束提示函数。
+-- 注意：buygoldTimer是状态表字段，不是本文件内另建的独立局部变量。
 
 -- 对应 proto36：按物品名称定位商城商品，检查购买条件和限购后提交请求。
 -- 该函数的寄存器控制流已逐段对应新版PC1-PC149；API参数均按原指令调用帧恢复。
@@ -370,12 +376,11 @@ local function BuyStoreItem(itemName, buyCount)
         return false, "商城没有这件道具"
     end
 
-    -- 商城代理自身负责判断该商品是否已达到购买限制。
     if not pageStoreProxy:CheckStoreLimitStatus(foundGoods.Index) then
         return false, "已到限购上限"
     end
 
-    -- 新版优先使用Condition；字段不存在/为假时回退到旧式condis。
+    -- 新版优先使用Condition；字段不存在/为假时回退到condis。
     local condition = foundGoods.Condition
     if not condition then
         condition = foundGoods.condis
@@ -387,15 +392,16 @@ local function BuyStoreItem(itemName, buyCount)
         end
     end
 
-    -- 默认购买数量为1；CountMax大于0时限制单次购买数量。
+    -- 默认购买数量为传入值的数值转换结果；转换失败时使用1。
     buyCount = tonumber(buyCount) or 1
+
+    -- CountMax大于0时，单次购买数不得超过该值。
     local countMax = tonumber(foundGoods.CountMax)
     if countMax and countMax > 0 and countMax < buyCount then
         buyCount = countMax
     end
 
     -- LimitCount为累计限购上限，BuyCount为已购买数量。
-    -- 计算剩余可购买数量，并与本次请求数量取较小值。
     local limitCount = tonumber(foundGoods.LimitCount)
     if limitCount and limitCount > 0 then
         local alreadyBought = tonumber(foundGoods.BuyCount) or 0
@@ -416,72 +422,84 @@ local function BuyStoreItem(itemName, buyCount)
     return true, buyCount
 end
 
--- 对应 proto51：每0.5秒检查一次金币余额。
-local function BuyGoldTimerCallback()
-    local moneyProxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
-    if not moneyProxy then
-        return
-    end
-
-    local moneyId = moneyProxy:GetMoneyIdByName("金币")
-    if not moneyId then
-        return
-    end
-
-    local goldCount = moneyProxy:GetMoneyCountById(moneyId)
-    if not goldCount then
-        -- 新版控制流在余额值为假时进入结束分支。
-        -- Lua数字0是真值，因此0会继续走阈值比较，而不是被这里拦截。
-        if buygoldTimer then
-            SL:UnSchedule(buygoldTimer)
-            buygoldTimer = nil
+-- 对应 proto51：购买金条的周期回调。
+-- 四个参数按闭包捕获顺序传入，避免把root状态表误建成独立buygoldTimer变量。
+local function MakeBuyGoldTimerCallback(
+    BuyStoreItem,
+    showFormattedNotice,
+    timerState,
+    showSystemTips
+)
+    return function()
+        local moneyProxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
+        if not moneyProxy then
+            return
         end
-        SL:ShowSystemTips("金币不足200W，买金条结束")
-        return
-    end
 
-    if goldCount > 2000000 then
-        -- proto51 PC22-25：调用捕获的proto36，参数固定为“金条”、1。
-        local buyOK, buyResult = BuyStoreItem("金条", 1)
+        local moneyId = moneyProxy:GetMoneyIdByName("金币")
+        if not moneyId then
+            return
+        end
 
-        if buyOK then
-            SL:ShowSystemTips(string.format(
-                "买金条成功，当前金币：%d",
-                goldCount
-            ))
-            -- 成功分支不清理buygoldTimer，定时检测继续执行。
-        else
-            SL:ShowSystemTips("买金条失败：" .. tostring(buyResult))
-            if buygoldTimer then
-                SL:UnSchedule(buygoldTimer)
-                buygoldTimer = nil
+        local goldCount = moneyProxy:GetMoneyCountById(moneyId)
+        if not goldCount then
+            -- 原始控制流：余额值为假时停止定时器并提示结束。
+            -- Lua数值0是真值，会继续进入下面的2000000比较。
+            if timerState.buygoldTimer then
+                SL:UnSchedule(timerState.buygoldTimer)
+                timerState.buygoldTimer = nil
             end
+            showSystemTips("金币不足200W，买金条结束")
+            return
         end
-    else
-        -- 金币不大于2000000：取消定时器、清空句柄并提示结束。
-        if buygoldTimer then
-            SL:UnSchedule(buygoldTimer)
-            buygoldTimer = nil
+
+        if goldCount > 2000000 then
+            local buyOK, buyResult = BuyStoreItem("金条", 1)
+
+            if buyOK then
+                -- 此捕获函数接收格式串和金币数；不是SL.ShowSystemTips直接调用。
+                showFormattedNotice("买金条成功，当前金币：%d", goldCount)
+                -- 成功路径保留timer，继续周期检测。
+            else
+                SL:ShowSystemTips("买金条失败：" .. tostring(buyResult))
+                if timerState.buygoldTimer then
+                    SL:UnSchedule(timerState.buygoldTimer)
+                    timerState.buygoldTimer = nil
+                end
+            end
+        else
+            if timerState.buygoldTimer then
+                SL:UnSchedule(timerState.buygoldTimer)
+                timerState.buygoldTimer = nil
+            end
+            showSystemTips("金币不足200W，买金条结束")
         end
-        SL:ShowSystemTips("金币不足200W，买金条结束")
     end
 end
 
--- 对应 proto50：购买金条按钮的定时检测启停处理器。
--- PC11-20确认使用SL.Schedule，回调为proto51，周期为0.5秒。
--- PC1-6是已有timer时的分支；其取消调用形式仍需结合该段融合指令最终确认，
--- 因此这里暂只恢复“已有句柄则取消并返回”的业务结构。
-local function ToggleBuyGoldCheck()
-    if buygoldTimer then
-        SL:UnSchedule(buygoldTimer)
-        buygoldTimer = nil
-        return
+-- 对应 proto50：购买金条按钮事件处理器。
+-- 已有buygoldTimer时原版直接返回true，不会取消定时器，也不会显示启动提示。
+-- 没有timer时才提示并建立0.5秒周期回调。
+local function ToggleBuyGoldCheck(
+    timerState,
+    showSystemTips,
+    BuyStoreItem,
+    showFormattedNotice
+)
+    if timerState.buygoldTimer then
+        return true
     end
 
-    SL:ShowSystemTips("开始检测金币(>200W买金条)")
-    buygoldTimer = SL:Schedule(BuyGoldTimerCallback, 0.5)
+    showSystemTips("开始检测金币(>200W买金条)")
+    local callback = MakeBuyGoldTimerCallback(
+        BuyStoreItem,
+        showFormattedNotice,
+        timerState,
+        showSystemTips
+    )
+    timerState.buygoldTimer = SL:Schedule(callback, 0.5)
+    return true
 end
 
--- proto36的PC1-PC149已恢复为BuyStoreItem；函数前半段执行商品索引校验、
--- pageData商品定位、限购状态检查、Condition/condis条件检查、CountMax与
--- LimitCount/BuyCount数量限制；尾部提交RequestBuy并返回true,buyCount。
+-- proto36的PC1-PC149已恢复为BuyStoreItem；proto50/51的timer字段及四项闭包捕获
+-- 也按新版指令关系表达。按钮事件已有timer时原版直接返回true，不执行取消。
