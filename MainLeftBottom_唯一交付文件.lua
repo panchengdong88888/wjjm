@@ -1653,10 +1653,17 @@ local function DiuItems()
     if not bagData then z.isDiuing = false; return end
 
     -- root.children[46].children[0] / Nested_string_2：
-    -- VM在PC36-PC68创建关键词表和该匹配闭包。现有恢复候选确认了闭包算法，
-    -- 但没有保存关键词表的具体常量字符串；因此暂留空表并标注待补证，不猜词条。
-    -- PC89-PC90的常量真分支会跳过PC91-PC95对此闭包的调用，故空表不影响当前活动路径。
-    local discardKeywords = {}
+    -- VM在PC36-PC68创建关键词表和该匹配闭包；28项字符串按原始表构造顺序恢复。
+    -- PC89-PC90的常量真分支会跳过PC91-PC95对此闭包的调用，但仍保留原表和闭包创建。
+    local discardKeywords = {
+        "声望卷", "称号卷", "悟道茶", "转生水晶",
+        "时装晶魄", "血龙宝珠", "洗髓丹", "恶魔令牌",
+        "晶石", "经验卷", "技能残页", "熬光",
+        "敖顺", "敖闰", "点点", "之力",
+        "复活", "麻痹", "护身", "主印",
+        "副印", "神凤", "龙傲", "冰雪",
+        "上古", "起源", "残", "鸿蒙",
+    }
     local function Nested_string_2(text)
         for _, keyword in ipairs(discardKeywords) do
             if string.find(text, keyword, 1, true) then
