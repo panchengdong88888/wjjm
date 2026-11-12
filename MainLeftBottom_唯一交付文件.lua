@@ -1532,50 +1532,13 @@ end
 
 -- PC276捕获root T[4]=PrintLog、T[5]=ShowLocalNoticeByType。
 -- 使用局部别名固定这两个闭包身份，避免运行期间全局同名函数被替换。
+-- 测试打包模式：屏蔽脚本自身的游戏ID/账号UID白名单验证。
+-- 保留原AccountIDValidation入口及延迟UI初始化回调，避免影响主界面初始化。
 local accountPrintLog = PrintLog
-local accountShowLocalNotice = ShowLocalNoticeByType
 
 local function AccountIDValidation()
-    local gameID = SL:GetMetaValue("GAME_ID")
-    accountPrintLog("游戏id：" .. tostring(gameID))
-    if gameID ~= 204208 then
-        accountPrintLog("游戏不一致，id：" .. tostring(gameID))
-        return
-    end
-    local accountID = SL:GetMetaValue("UID")
-    accountPrintLog("账号ID：" .. tostring(accountID))
-    local allowedAccountIDs = {
-        "6324648", "39770358", "3548598", "1957840929", "1488903257",
-        "1585201915", "1627987432", "1580027021", "1304755149"
-    }
-    -- root.children[55].children[1]：账号列表匹配子闭包。
-    -- 命中时记录局部成功提示并返回true；未命中时通过通知回调显示动态失败信息。
-    local function Nested_ID(checkAccountID)
-        for _, allowedID in ipairs(allowedAccountIDs) do
-            if tostring(checkAccountID) == tostring(allowedID) then
-                accountPrintLog("[提示] 账号ID在允许列表中，功能已开启")
-                return true
-            end
-        end
-
-        accountShowLocalNotice(
-            "账号不存在，功能已限制，账号ID：" .. tostring(checkAccountID)
-        )
-        return false
-    end
-
-    -- PC42-PC53：验证结果只用于本段成功/失败日志。
-    do
-        local validationResult = Nested_ID(accountID)
-        if validationResult then
-            accountPrintLog("[验证成功] 账号ID验证通过")
-        else
-            accountPrintLog("[验证失败] 账号ID未在允许列表中")
-        end
-    end
-
-    -- PC55在创建等待闭包前清空R[4]；PC59随后捕获到的UP[0]为nil。
-    -- 因此原始行为是UnSchedule(nil)，不是把验证结果true/false传进去。
+    -- 原GAME_ID门控、UID读取、允许账号列表、Nested_ID匹配及失败通知
+    -- 均在测试打包模式下停用；不影响APP/平台自身的登录认证。
     local unScheduleArgument = nil
     local scheduledCallback = function()
         local mainProperty = MainProperty
@@ -1585,9 +1548,8 @@ local function AccountIDValidation()
         end
         accountPrintLog("等待主界面属性栏(MainProperty)初始化完成...")
     end
-    SL:Schedule(scheduledCallback,0.5)
+    SL:Schedule(scheduledCallback, 0.5)
 end
-
 
 -- root PC212-PC279：按原始导出位置接回根级全局函数和模块字段。
 -- PC213/237/246/255/258为chunk ENV全局导出；PC265/269/274/279为模块字段。
