@@ -497,8 +497,6 @@ local function MakeBuyGoldButtonInitFragment(
     BuyStoreItem,
     unusedCapturedFunction
 )
-    local buttonFactory = nil
-
     return {
         registerCallback = function(callbackMap)
             return RegisterBuyGoldButtonHandler(
