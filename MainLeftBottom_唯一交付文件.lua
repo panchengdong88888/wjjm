@@ -1076,7 +1076,8 @@ local function ShowLocalNoticeByType(message)
         X = 5,
         Y = a.screenH - 50,
     }
-    SL.ShowLocalNoticeByType(notice)
+    -- VM原指令使用SELF：必须保留SL作为receiver，等价于SL:ShowLocalNoticeByType(notice)。
+    SL:ShowLocalNoticeByType(notice)
 end
 local function Schedule(callback, interval) return SL:Schedule(callback, interval) end
 local function ScheduleOnce(callback, delay) return SL:ScheduleOnce(callback, delay) end
@@ -3664,4 +3665,30 @@ return MainLeftBottom
 -- 5) DiuItems在注册周期任务前立即执行；PickUpItems由0.01秒周期任务执行。
 --    当前静态代码未证明这两者存在Schedule参数错误。若仍无响应，需以目标APP日志
 --    区分点击handler、定时器注册和业务回调阶段，不能凭猜测改写宿主调用。
+-- ============================================================================
+
+
+-- ============================================================================
+-- 检查点364：修复全模块本地通知调用缺少receiver
+--
+-- 用户实测反馈：开拾取未显示“地面无可拾取物品”；清黑名单未显示“黑名单为空”；
+-- 开丢物品没有启动提示/丢弃结果；清怪物值、清距离值点击后也没有结果提示。
+-- 这些入口共用ShowLocalNoticeByType，因此先核对通知函数本身。
+--
+-- root.children[20] / ShowLocalNoticeByType的原始VM指令在读取
+-- SL.ShowLocalNoticeByType后执行SELF语义：将SL同时保留为隐式receiver，
+-- 再把notice表作为显式参数传入。历史明文重建稿也写为
+-- SL:ShowLocalNoticeByType({...})。
+-- 唯一交付源码此前写成SL.ShowLocalNoticeByType(notice)，遗漏receiver；
+-- 现修正为SL:ShowLocalNoticeByType(notice)。
+--
+-- 该通知闭包被配置清理、清黑名单、丢弃、拾取等多条路径共享。
+-- 本次只修正调用形式，不改通知结构(Type/Msg/FColor/BColor/X/Y)，
+-- 不改各按钮业务逻辑或Schedule参数。
+--
+-- DiuItems对应root.children[46]的VM常量池/指令未出现IN_SAFE_AREA等安全区判断；
+-- 因此不擅自新增安全区门控。安全区弹窗可能来自宿主/游戏对丢弃消息的响应，
+-- 需结合通知恢复后的APP表现再判断。
+--
+-- 本批为VM静态证据修复；未执行Lua编译或目标游戏运行验证，等待用户实测。
 -- ============================================================================
