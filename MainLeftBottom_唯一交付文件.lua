@@ -2599,11 +2599,13 @@ local function make_Nested_Helper_3(
             local moneyId = moneyProxy:GetMoneyIdByName(moneyName)
             if moneyId then
                 local currentCount = moneyProxy:GetMoneyCountById(moneyId) or 0
-                local initialCount = initState.initSnapshot[moneyId] or 0
+                -- doInit_UI建立快照时以moneyName为键；刷新时必须使用同一键。
+                local initialCount = initState.initSnapshot[moneyName] or 0
+                local delta = currentCount - initialCount
                 gui:Text_setString(
                     textNode,
-                    formatNumber(currentCount) .. ":"
-                        .. formatNumber(currentCount - initialCount)
+                    moneyName .. ":" .. formatNumber(currentCount)
+                        .. "(" .. formatNumber(delta) .. ")"
                 )
             end
         end
@@ -2612,10 +2614,11 @@ local function make_Nested_Helper_3(
         for itemName, textNode in pairs(itemRows) do
             local currentCount = getItemCount(itemName)
             local initialCount = initState.initSnapshot[itemName] or 0
+            local delta = currentCount - initialCount
             gui:Text_setString(
                 textNode,
-                formatNumber(currentCount) .. ":"
-                    .. formatNumber(currentCount - initialCount)
+                itemName .. ":" .. formatNumber(currentCount)
+                    .. "(" .. formatNumber(delta) .. ")"
             )
         end
     end
@@ -3738,4 +3741,33 @@ return MainLeftBottom
 --
 -- 不改资源顺序、数据刷新、字体颜色、行高、列表宽高、外层窗口中心
 -- 或关闭逻辑。本批仅静态修改，等待用户APP实测；未编译、未运行游戏。
+-- ============================================================================
+
+
+-- ============================================================================
+-- 检查点367：资源统计数值显示格式与货币快照键修复
+--
+-- 用户实测：内部内容已经居中，但白色资源项只显示“0:0”等短数字，
+-- 与原版“元宝:0(0)”等完整资源名称/数量/变化值格式不同。
+--
+-- 静态对照root.children[42].children[3].children[3]：
+-- 刷新闭包常量池包含资源分隔符“:”、左括号“(”、右括号“)”，
+-- 并对moneyRows/itemRows分别遍历后调用Text_setString。
+-- 当前明文重建此前只拼接currentCount:delta，遗漏资源名称和括号。
+--
+-- 另对照root初始化PC59-PC85：货币初始快照以资源名称moneyName为键写入
+-- initSnapshot[moneyName]；刷新闭包原实现却读取initSnapshot[moneyId]，
+-- 键类型不一致，会把初始值误当0，导致变化值错误。
+-- 现统一按moneyName读取快照。
+--
+-- 现显示格式：
+--   money：moneyName:currentCount(delta)
+--   item：itemName:currentCount(delta)
+-- item计数仍沿用VM恢复的BAG_DATA/ITEM_IS_BIND筛选逻辑；money仍沿用
+-- MoneyProxy:GetMoneyIdByName/GetMoneyCountById。未擅自替换数据来源或API。
+--
+-- 本批修复的是可由源码/VM静态确认的格式与快照键错误，不代表已经证明
+-- 宿主返回的资源数量非零。若改后仍全为0，下一步需分别检查MoneyProxy
+-- 返回的ID/数量，以及BAG_DATA中资源名称/绑定过滤是否匹配角色实际背包。
+-- 未执行Lua编译或目标游戏运行验证，等待用户实测。
 -- ============================================================================
