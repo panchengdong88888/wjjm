@@ -2,13 +2,13 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-12",
-  "latest_checkpoint": 367,
-  "next_checkpoint": 368,
+  "latest_checkpoint": 368,
+  "next_checkpoint": 369,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "检查点367已修复用户反馈的资源统计白色文字只显示0:0的问题。确认刷新函数此前完全覆盖资源名称，仅拼接currentCount:delta，遗漏资源名称和括号；现改为资源名:当前数量(变化量)。同时发现初始化快照以moneyName为键保存，但刷新时错误地以moneyId读取，已统一为moneyName，避免变化量基准错乱。资源数据来源未更换：货币仍使用MoneyProxy，物品仍使用BAG_DATA/ITEM_IS_BIND筛选。若替换后数量仍全部为0，需继续查宿主数据返回值/物品名称匹配，不能仅凭显示格式判断数据源正常。",
-    "title": "资源统计名称、数量格式与货币快照键修复",
+    "status": "检查点368已找到并修复右列消失的直接原因。make_Nested_FFFFFF每行layoutOption=2、行容器宽度=cellWidth，但textX公式错误地除以1，导致第1列中心为0.5*cellWidth、第2列中心为1.5*cellWidth（超出行容器右边界）。现改为除以layoutOption，列中心分别为0.25*cellWidth和0.75*cellWidth。只改列内横坐标比例，未改资源数据来源或其他布局参数，等待用户实测。",
+    "title": "资源统计右侧资源列越界修复",
     "prototype": "MainLeftBottom_唯一交付文件.lua",
     "scope": [
       "只修改根目录MainLeftBottom_唯一交付文件.lua，唯一分支main",
@@ -18,11 +18,12 @@
       "Lua 5.1兼容；不执行用户取消的编译与目标游戏运行验证"
     ],
     "focus": [
-      "用户实测：资源统计窗口外层和内部控件组已经居中，但白色资源文字显示为多组“0:0”，原版截图则显示资源名称、数量及括号中的变化量，例如“元宝:0(0)”。用户怀疑没有获取到数据。",
-      "检查点367确认第一处确定错误：Nested_Helper_3刷新时对moneyRows和itemRows都把文本整体替换为formatNumber(currentCount)..':'..formatNumber(delta)，漏掉moneyName/itemName和括号，造成资源名称消失。",
-      "检查点367确认第二处确定错误：doInit_UI初始化货币快照时写initSnapshot[name]，刷新货币时却读initSnapshot[moneyId]，键类型不一致，变化量会错误地以0为基准。现改为initSnapshot[moneyName]。",
-      "现在格式为moneyName:currentCount(delta)和itemName:currentCount(delta)。货币仍通过MoneyProxy:GetMoneyIdByName/GetMoneyCountById取数；背包资源仍通过BAG_DATA遍历、ITEM_IS_BIND过滤、OverLap累加，未擅自替换VM数据源。",
-      "当前只能确认显示格式和快照键有错误；尚不能确认游戏宿主是否返回了有效的非零数量。若替换后仍全0，下一步检查MoneyProxy代理/ID/数量返回值，以及BAG_DATA资源Name匹配、ITEM_IS_BIND与OverLap字段。"
+      "用户原版APP截图明确显示白色资源统计项为两列：左列元宝、绑定元宝、灵符、绑定灵符；右列声望卷、悟道茶、洗髓丹、转生水晶、恶魔令牌、血龙宝珠。当前APP只显示左列。",
+      "检查点368找到直接原因：make_Nested_FFFFFF创建每行两个资源项，layoutOption=2，行容器宽cellWidth；textX原公式为cellWidth*(columnIndex-0.5)/1。第二列因此位于1.5*cellWidth，超过行容器边界。",
+      "现修复为textX=cellWidth*(columnIndex-0.5)/layoutOption；layoutOption=2时两列中心为0.25*cellWidth和0.75*cellWidth，右列回到行容器内。该修复保持两列作为整体布局，不是逐项全居中。",
+      "资源名称与刷新逻辑保持：moneyNames四项、resourceNames六项；moneyRows和itemRows分别刷新。检查点367恢复的资源名称:数量(变化量)格式仍保留。",
+      "源码提交：5cb517c9dc1957496dffe6d0d27551c3fd102363；content SHA：42bdfd48796cd2d325b2b89ddd5d2a85cedc5a7ff。",
+      "当前只静态修复列坐标公式，尚未由用户实测验证；未执行编译或目标游戏运行。"
     ],
     "completion_criteria": [
       "资源统计窗口按屏幕中心定位，水平/垂直锚点均为0.5",
@@ -30,7 +31,7 @@
       "不改变资源统计数据与刷新业务逻辑",
       "用户替换APP实测确认尺寸和位置后，才记录运行效果通过"
     ],
-    "next": "检查点368：用户替换最新唯一源码实测资源统计项是否恢复为“资源名称:数量(变化量)”格式，并观察有实际库存的资源是否显示正确数量。如果格式正确但数字仍全0，再按货币和背包物品两条数据源分别定位宿主返回值，不盲目换API。"
+    "next": "检查点369：用户替换最新唯一源码后确认资源统计右侧一列是否出现、两列是否均在紫色窗口内部并作为整体居中。若右列出现但整体左右间距或边缘仍不匹配，再依据截图微调；若仍不出现，检查ListView行容器裁剪和创建返回值，不先改数据源。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
