@@ -52,41 +52,43 @@
 
 ## 四、当前任务（最高优先级）
 
-**唯一优先任务：先完成“购买金条”按钮的完整可读源码与实际事件接线；完成后下一个功能才是“开新区”。**
+**唯一优先任务：完成“购买金条”按钮的完整源码接线；完成后下一个功能才是“开新区”。**
 
 用户已明确要求：购买金条没有完整处理好之前，不要转去处理开新区，也不要因为黑名单等其他按钮已有分析成果而擅自改变顺序。
 
-### 购买金条：当前已恢复内容
+### 购买金条：已恢复并写入唯一明文源码
 
-唯一明文文件 `11.9/MainLeftBottom_11.9_明文.lua` 当前已经包含以下函数：
+文件：`11.9/MainLeftBottom_11.9_明文.lua`
 
-1. `BuyStoreItem(itemName, buyCount)`：对应新版proto36，149条指令。已按11.9原始指令逐段复核，当前函数体覆盖：
-   - 取得PageStoreProxy；代理不可用时返回失败原因。
-   - 通过`pcall(SL.GetMetaValue, SL, "ITEM_INDEX_BY_NAME", itemName)`查询物品索引，并检查索引类型/有效性。
-   - 遍历`pageData`，只处理数值页号小于100且商品集合为table的页面；按`goods.Id`匹配物品索引。
-   - 检查`CheckStoreLimitStatus(goods.Index)`。
-   - 读取`Condition`，必要时回退到`condis`，再调用`SL:CheckCondition`。
-   - 将购买数量转换为数值，按`CountMax`和`LimitCount - BuyCount`调整数量；限购剩余量不大于0时返回失败。
-   - 最终调用`PageStoreProxy:RequestBuy(goods.Index, buyCount, 0)`，函数自身返回`true, buyCount`。
-2. `MakeBuyGoldTimerCallback(...)`：对应proto51，负责金币查询、阈值判断、金条购买调用及成功/失败/金币不足提示和定时器清理。
-3. `MakeBuyGoldButtonHandler(...)`：对应proto50，返回零参数点击闭包；已有`buygoldTimer`时直接返回，否则显示启动提示并以`SL:Schedule(callback, 0.5)`启动检测。
+1. `BuyStoreItem(itemName, buyCount)`：对应新版proto36，149条指令。函数体覆盖商城代理取得、物品名称索引查询、pageData商品查找、`CheckStoreLimitStatus`、`Condition/condis`、`SL:CheckCondition`、`CountMax`、`LimitCount/BuyCount`数量限制及最终商城请求。尾部调用已核实为：
+   `PageStoreProxy:RequestBuy(goods.Index, buyCount, 0)`；proto36随后主动返回`true, buyCount`。
+2. `MakeBuyGoldTimerCallback(...)`：对应proto51，负责金币查询、阈值判断、调用`BuyStoreItem("金条", 1)`、成功/失败/金币不足提示及定时器清理。
+3. `MakeBuyGoldButtonHandler(...)`：对应proto50，已有`buygoldTimer`时直接返回；否则显示启动提示并调用`SL:Schedule(callback, 0.5)`。
+4. 新增`InstallBuyGoldButton(uiParent, visibleItems, callbackMap, timerState, showLocalNotice, BuyStoreItem, unusedCapturedFunction)`：
+   - 登记`callbackMap.buygoldbut`；
+   - 按新版ButtonFactory指令计算位置并创建购买金条按钮；
+   - 保存控件到`visibleItems.buygoldbut`；
+   - 设置标题、字体大小18、字体文件和白色标题；
+   - 通过`GUI:addOnClickEvent(button, callback)`绑定购买金条点击回调。
+   - 按钮本身没有toggle配置，因此点击分发不执行toggle状态切换。
 
-### 已核实的新版原始证据
+### 本轮新核实的UI参数与位置
 
-- proto36：完整149条指令；原始解析结果确认请求尾段为`PageStoreProxy:RequestBuy(goods.Index, buyCount, 0)`，随后proto36主动返回`true, buyCount`。
-- proto50：23条指令；调度周期为0.5秒。
-- proto51：77条指令；金币比较条件为`2000000 < 当前金币数`；购买物品名为`"金条"`，数量参数为1。
-- proto48：按钮配置为`key="buygoldbut"`、`name="购买金条"`；PC272创建购买金条处理器闭包并捕获定时器状态表、本地提示包装函数、BuyStoreItem和调试闭包；PC277将它写入`callbackMap.buygoldbut`。
-- ButtonFactory是proto48的child index 17，50条指令；它负责创建按钮、保存控件、设置标题/字体/颜色并调用`GUI:addOnClickEvent`。其点击子闭包负责按配置key从callbackMap取处理器，并处理toggle按钮状态。
-- 新框架开发文档明确的函数一律直接按文档调用，不分析函数内部实现。特别是`SL:Schedule`、`SL:UnSchedule`、`SL:GetMetaValue`等只核对调用形式和参数，不反编译它们的内部逻辑。文档未提供的商城代理方法则按11.9原始调用帧恢复，不臆造契约。
+- proto48配置数组V13共有7项，第一项就是`key="buygoldbut"`、`name="购买金条"`。
+- ButtonFactory是proto48的child index 17，3个显式参数依次为配置、rowIndex、groupOffset。
+- proto48 PC346-PC371遍历第二组V13时，第一项传入`rowIndex=7`、`groupOffset=0`。
+- ButtonFactory PC5-PC9按指令计算：`x = 1 - 85 * rowIndex`，`y = 2 * groupOffset`，故购买金条按钮位置为`x=-594, y=0`。
+- GUI创建调用形式与已有开发文档记录一致：`GUI:Button_Create(uiParent, key, x, y, "res/public/fuzhu_btn.png")`。
+- 样式和点击接口按文档直接调用；不反编译框架API内部逻辑。
+- `GUI:Attach_UITop()`无参数，不能传入额外参数。
 
-### 目前还不能宣布购买金条完成的原因
+### 仍不能宣布购买金条全部完成的原因
 
-虽然购买业务主体和proto50/51处理器已经写入唯一明文文件，但当前源码中还没有可执行的`callbackMap.buygoldbut = ...`登记语句，也没有把该处理器通过ButtonFactory的点击闭包实际接到GUI按钮的完整代码。原始VM中的PC272-PC277及ButtonFactory/点击子闭包证据已定位，下一步必须把这段映射和事件接线写入唯一明文文件，并核对按钮创建参数；在完成前不能把购买金条标记为全部完成。
+`InstallBuyGoldButton`已经写成可执行函数，但完整的`MainLeftBottom.doInit`（新版proto48，433条指令）尚未整体恢复；目前还没有在恢复后的doInit入口中实际调用该安装函数。因此当前完成的是购买金条业务主体、回调映射、按钮创建参数、控件保存和点击事件绑定函数；**还差把安装函数接入真实doInit初始化链，并核对其调用上下文**。在该入口接线前，不标记购买金条全部完成。
 
 ### 下一步唯一工作
 
-**继续恢复proto48中购买金条所需的回调表登记、ButtonFactory按钮创建及点击事件分发代码。** 只处理购买金条完整接线所需部分；不切换到开新区，不重复分析proto36已核实的149条指令，不分析新框架API内部逻辑。完成并提交后，才开始“开新区”按钮功能。
+**继续恢复proto48的doInit初始化入口中与购买金条有关的实际执行上下文，并将`InstallBuyGoldButton`接入正确位置。** 只处理购买金条所需的入口和初始化链，不切换到开新区；不重复分析proto36、proto50/51已核实的指令；不分析新框架API内部逻辑。购买金条完整完成后，下一个功能严格按用户要求处理“开新区”。
 
 所有代码仍只允许写入`11.9/MainLeftBottom_11.9_明文.lua`；新版加密文件、旧版明文和其他参考资料均只读。
 
@@ -510,4 +512,17 @@
 - ButtonFactory为proto48 child index 17，50条指令，并有一个48条指令的点击子闭包；已确认它负责GUI按钮创建、外观设置及`GUI:addOnClickEvent`绑定。当前唯一明文源码虽已有购买函数和按钮处理器工厂，但尚无可执行的callbackMap登记和ButtonFactory接线代码，因此仍不能宣布购买金条完整完成。
 - 本轮没有修改唯一明文源码；只校正本接续文档中的任务状态，防止新对话误认为proto36尚未恢复或擅自转向开新区。
 - 当前下一步唯一任务：恢复proto48中购买金条的callbackMap登记、ButtonFactory按钮创建与点击事件分发代码，写入唯一明文源码。购买金条完成后，下一个功能严格按用户要求处理“开新区”。
+- 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第二十六轮——回调映射、按钮创建参数和专用安装函数
+
+- 重新从11.9原始文件提取proto48，核对PC204-PC277的按钮配置与callbackMap登记：V13第二组7项，第一项明确为buygoldbut/购买金条；PC272创建proto50处理器，PC273-PC276按定时器状态表、本地提示包装函数、BuyStoreItem和调试闭包的顺序捕获，PC277写入callbackMap.buygoldbut。
+- 核对proto48 PC340-PC345创建ButtonFactory的5项捕获；ButtonFactory为child index 17，50条指令、3个显式参数。其点击子闭包为48条指令。buygoldbut配置无toggle字段，点击后从callbackMap按key取处理器并调用。
+- 逐条核对ButtonFactory PC1-PC17：`GUI:Button_Create(uiParent,key,x,y,"res/public/fuzhu_btn.png")`；x由`1-85*rowIndex`计算，y由`2*groupOffset`计算。V13第一项传入rowIndex=7、groupOffset=0，购买金条按钮坐标为(-594,0)。
+- 按以上VM指令和开发文档接口形式，在唯一明文源码中新增`InstallBuyGoldButton(...)`，实现callbackMap.buygoldbut登记、按钮创建、控件集合登记、标题/字体/颜色设置和非toggle点击事件绑定。
+- 修正了ButtonFactory捕获值说明：其A[1]/A[2]虽然由创建点捕获，但当前50条函数体未读取；不再把它们误写为按钮坐标基值。
+- 当前尚未完成：新版proto48对应的`MainLeftBottom.doInit`总入口仍未整体恢复，InstallBuyGoldButton尚未接入真实doInit执行链。因此购买金条仍不能标记为全部完成。
+- 本轮源码提交：`9fda32fe571f0d7daa60c1e76855b7600629ddf7`；随后捕获值注释修正提交：`9dc27ec22a0dfd2948cea92aefe42983746ad3aa`。
+- 本轮接续文档更新后续另行提交。
 - 未进行Lua编译或游戏运行测试。
