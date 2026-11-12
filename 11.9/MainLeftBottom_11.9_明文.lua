@@ -457,7 +457,7 @@ local function MakeBuyGoldTimerCallback(
             local buyOK, buyResult = BuyStoreItem("金条", 1)
 
             if buyOK then
-                -- 此捕获函数接收格式串和金币数；不是SL.ShowSystemTips直接调用。
+                -- 按VM原始调用帧把格式串和金币数传给本地提示包装函数。
                 showLocalNotice("买金条成功，当前金币：%d", goldCount)
                 -- 成功路径保留timer，继续周期检测。
             else
@@ -478,7 +478,11 @@ local function MakeBuyGoldTimerCallback(
 end
 
 -- 对应 proto48 PC277：把proto50闭包登记到按钮回调表的buygoldbut键；
--- 对应按钮配置为key="buygoldbut"、显示名="购买金条"。
+-- 按钮配置表对应key="buygoldbut"、name="购买金条"。
+-- 后续proto48 PC340-PC345创建通用ButtonFactory闭包并捕获整张回调表；
+-- ButtonFactory内部PC45创建通用点击闭包，捕获“回调表、按钮配置、按钮控件”；
+-- 点击闭包PC2-PC4按配置key从回调表取出函数，PC43-PC49通过GUI.addOnClickEvent绑定。
+-- 因此buygoldbut最终进入真实按钮点击事件，不只是停留在一个未使用的table字段。
 -- proto48的15项捕获中，proto50按顺序捕获：
 --   A[0] = root.MainLeftBottom状态表；A[1] = root的ShowLocalNotice包装函数；
 --   A[2] = BuyStoreItem(proto36)；A[3] = root调试/日志闭包（proto50/51未使用）。
@@ -507,3 +511,10 @@ end
 
 -- proto36的PC1-PC149已恢复为BuyStoreItem；proto50/51的timer字段及四项闭包捕获
 -- 也按新版指令关系表达。按钮事件已有timer时原版直接返回true，不执行取消。
+
+
+-- 生命周期清理入口（新版root PC270-PC275）：
+-- root创建proto2闭包并赋值 MainLeftBottom.destroy = proto2。
+-- proto2会检查buygoldTimer，若存在则SL:UnSchedule(scheduleID)，随后清空字段；
+-- 它还负责其他定时器和界面清理。具体销毁时机由宿主调用destroy生命周期方法，
+-- 当前只确认赋值关系，不推断宿主在何种场景/时刻调用该方法。
