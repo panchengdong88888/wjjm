@@ -93,7 +93,7 @@
 --     buygoldbut无toggle配置，因此点击后只分发购买金条处理器，不执行toggle切换。
 --   * ButtonFactory三参数为buttonConfig、rowIndex、groupOffset；
 --     第二组按钮数组V13共7项，buygoldbut为第1项，故rowIndex=7、groupOffset=0。
---     按原始指令计算按钮坐标：x=1-85*7=-594，y=2*0=0。
+--     按原始指令计算按钮坐标：x=1-85*7=-594，y=2+0=2。
 --   * 新框架文档/既有文档核对的接口调用形式：
 --     GUI:Attach_UITop()（无参数）；
 --     GUI:Button_Create(uiParent,key,x,y,"res/public/fuzhu_btn.png")；
@@ -388,42 +388,79 @@ local function RegisterBuyGoldButtonHandler(
 end
 
 
--- 对应proto48 child index 17（ButtonFactory）对V13[1]执行的非toggle按钮路径。
--- 本函数只处理buygoldbut；toggle状态同步由ButtonFactory的点击子闭包负责，
--- 但buygoldbut配置本身没有toggle字段，所以点击后只分发callbackMap.buygoldbut。
-local function InstallBuyGoldButton(uiParent, visibleItems, callbackMap, buttonConfig)
-    -- buttonConfig必须使用doInit第二组V13循环实际传入的配置表，
-    -- 不在工厂内部重新创建副本，以保持点击闭包捕获的是原配置对象。
-    -- PC346-PC371的第二组循环首项：rowIndex=7、groupOffset=0。
-    -- ButtonFactory按指令计算x=1-85*rowIndex=-594，y=2+groupOffset=2。
-    -- ButtonFactory PC5-PC9计算x=1-85*rowIndex、y=2*groupOffset。
-    local button = GUI:Button_Create(
-        uiParent,
-        buttonConfig.key,
-        -594,
-        2,
-        "res/public/fuzhu_btn.png"
-    )
-    if not button then
-        return nil
-    end
+-- 对应proto48 child index 18（50条指令）：新版通用ButtonFactory。
+-- 三个显式参数：buttonConfig、rowIndex、groupOffset。
+-- 五项捕获：uiParent、两个当前未被函数体读取的父级值、visibleItems、callbackMap。
+-- 原始指令坐标公式：x=1-85*rowIndex；y=2+groupOffset。
+local function MakeMainLeftBottomButtonFactory(
+    uiParent,
+    visibleItems,
+    callbackMap
+)
+    return function(buttonConfig, rowIndex, groupOffset)
+        local x = 1 - 85 * rowIndex
+        local y = 2 + groupOffset
 
-    -- ButtonFactory PC15-PC37：登记控件并设置名称、字号、字体及默认白色。
-    visibleItems[buttonConfig.key] = button
-    GUI:Button_setTitleText(button, buttonConfig.name)
-    GUI:Button_setTitleFontSize(button, 18)
-    GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
-    GUI:Button_setTitleColor(button, "#ffffff")
-
-    -- ButtonFactory PC43-PC49：注册通用点击子闭包；buygoldbut走非toggle路径。
-    GUI:addOnClickEvent(button, function()
-        local callback = callbackMap[buttonConfig.key]
-        if callback then
-            return callback()
+        local button = GUI:Button_Create(
+            uiParent,
+            buttonConfig.key,
+            x,
+            y,
+            "res/public/fuzhu_btn.png"
+        )
+        if not button then
+            return nil
         end
-    end)
 
-    return button
+        visibleItems[buttonConfig.key] = button
+        GUI:Button_setTitleText(button, buttonConfig.name)
+        GUI:Button_setTitleFontSize(button, 18)
+        GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
+        GUI:Button_setTitleColor(button, "#ffffff")
+
+        if buttonConfig.toggle then
+            buttonConfig.toggled = false
+        end
+
+        GUI:addOnClickEvent(button, function()
+            local callback = callbackMap[buttonConfig.key]
+            local allowed = true
+            if callback then
+                allowed = callback()
+            end
+
+            if not buttonConfig.toggle then
+                return
+            end
+            if allowed == false then
+                return
+            end
+
+            buttonConfig.toggled = not buttonConfig.toggled
+            GUI:Button_setTitleText(
+                button,
+                buttonConfig.toggled and buttonConfig.toggle or buttonConfig.name
+            )
+            GUI:Button_setTitleColor(
+                button,
+                buttonConfig.toggled and "#ff0000" or "#ffffff"
+            )
+        end)
+
+        return button
+    end
+end
+
+
+-- 购买金条对应第二组V13第一项：rowIndex=7、groupOffset=0。
+-- 该包装器只复用原版通用ButtonFactory，不另行实现一套按钮样式/点击行为。
+local function InstallBuyGoldButton(uiParent, visibleItems, callbackMap, buttonConfig)
+    local createButton = MakeMainLeftBottomButtonFactory(
+        uiParent,
+        visibleItems,
+        callbackMap
+    )
+    return createButton(buttonConfig, 7, 0)
 end
 
 
