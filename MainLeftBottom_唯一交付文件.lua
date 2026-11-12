@@ -1460,11 +1460,16 @@ local function MainLoop()
                             monsterName,
                             gatherConfig.ATTACK_WAIT_TIME
                         ))
-                    else
-                        PrintLog(string.format("锁定怪物 %s 失败", monsterName))
+
+                        -- VM PC280-PC302：锁定成功后设置等待状态并立即返回。
+                        -- 游标必须保持在当前index；等待归属确认后才由PC1377对应路径推进。
+                        return
                     end
 
+                    -- VM PC303-PC311：锁定失败时记录日志、游标推进到下一只，然后返回。
+                    PrintLog(string.format("锁定怪物 %s 失败", monsterName))
                     resetSlot17 = index + 1
+                    return
                 end
             end
         end
