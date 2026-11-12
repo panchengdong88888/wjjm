@@ -212,3 +212,15 @@
 - 唯一明文源码提交：56de4c4ca3f08ae44dbd894bdf3f19efca065c97
 - 接续文档下一步：追踪proto36在根原型中的闭包引用/调用点，并核对MoneyProxy的其他调用函数，判断是否存在真正的自动购买触发路径。
 - 未进行Lua编译或游戏运行测试。
+### 2026-11-12：购买金条功能第七轮——闭包捕获与proto36身份核查
+
+- 从11.9内嵌解释器确认opcode177是闭包创建：读取指定子原型，并按紧随其后的capture指令绑定upvalue。
+- proto48在PC269创建proto50闭包，捕获proto48寄存器9；proto50创建proto51回调闭包的捕获寄存器仍需进一步解释。
+- root在PC430创建proto48闭包，5个upvalue依次捕获root寄存器4、2、3、7、53。
+- root在PC46创建proto36闭包，只捕获root寄存器0。proto48捕获的5个root寄存器中不含proto36闭包所在的root寄存器5，因此proto36不是通过proto48的直接upvalue捕获传给购买金条按钮链。
+- proto36本身是通用商城购买辅助函数，参数数为2；从新版指令可见其获取PageStoreProxy，检查代理，读取ITEM_INDEX_BY_NAME并校验物品索引，遍历pageData/商品数据，检查Condition、CheckCondition、LimitCount、BuyCount等限制，尾部取得RequestBuy并提交商品Index及购买数量相关参数。函数可独立恢复，但尚无证据证明购买金条按钮调用它。
+- 不能排除proto51通过其自身捕获的代理/闭包或框架事件间接完成业务；proto50创建proto51回调的upvalue捕获关系还要继续解读。
+- 本轮新增证据已写入唯一明文源码文件注释区，没有擅自把proto36接入按钮。
+- 唯一明文源码提交：e3589cdb0710b5e47842b2d29be4a00ed9b6ea60
+- 下一步：解释proto50创建proto51时的capture指令及proto51对捕获upvalue的实际读写；然后检查proto36的返回值/购买请求参数。只有找到调用关系后才恢复购买按钮完整Lua函数体。
+- 未进行Lua编译或游戏运行测试。
