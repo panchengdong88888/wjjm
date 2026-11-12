@@ -490,3 +490,16 @@
 - 本轮源码提交：`6a5f91c5cd1df5ef916b5073724c19db5639b868`
 - 未进行Lua编译或游戏运行测试。
 - 下一步：从root寄存器V44/V7/V39的赋值链核实PC258五项捕获对象，再检查PC278-PC337每一项回调映射key与真实闭包身份。优先解决回调键/闭包行为疑似错配，之后再恢复ButtonFactory完整函数体和root入口整合。
+
+
+### 2026-11-13 第二十四轮补充——PC258黑名单辅助闭包捕获对象闭合
+
+- root PC43-PC47确认V4为child43调试/日志闭包；root V3为定时器状态表。
+- root PC53创建child22写入V7；child22有两个显式参数，通过SL.Schedule包装调用，因此V7为Schedule(callback, interval)包装函数。
+- root PC284把0.1写入V39；root PC290-PC310创建黑名单状态表V44（含deathHandled、lastHp、alertAt、cdTicks、noStoneWarned、distance、distLogAt等字段），并在PC310赋给MainLeftBottom.blacklist。
+- proto48 PC258创建child index 6的五项捕获依次为：UP0=root V44（黑名单状态表）、UP1=root V3（定时器状态表）、UP2=root V7（Schedule包装函数）、UP3=root V39（0.1间隔）、UP4=root V4（调试/日志闭包）。child index 6创建distance=11配置表，调用BlacklistItems，通过Schedule包装函数按0.1间隔调度，并把句柄写入配置表.blacklistTimer，再通过日志闭包输出启动提示。
+- V16并非未使用闭包：PC301创建child index 18时，PC305 opcode57把V16作为第五项局部捕获；PC306将child index 18登记为callbackMap.blacklistbut。child index 18即黑名单按钮开关处理器。PC258的创建、捕获、调用及登记链已闭合。
+- PC264引怪辅助闭包链也复核无误：child index 25捕获proto48 A[8]，写入GATHER_THRESHOLD=11并调用InitGatherMonsters；PC286 child index 8捕获该闭包，PC290登记为callbackMap.yinguaibut。
+- 本补充已写入唯一明文源码，修正前文PC258捕获对象待核对的临时状态。下一步恢复child index 18黑名单按钮开关处理器完整Lua函数体，再逐项核对PC278-PC337回调登记和root入口整合。
+- 补充源码提交：`17efc16f35d4770f7715857d11b3a6626809591e`
+- 未进行Lua编译或游戏运行测试。
