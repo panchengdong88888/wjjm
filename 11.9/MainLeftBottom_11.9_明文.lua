@@ -477,10 +477,12 @@ local function MakeBuyGoldTimerCallback(
     end
 end
 
+-- 对应 proto48 PC277：把proto50闭包登记到按钮回调表的buygoldbut键；
+-- 对应按钮配置为key="buygoldbut"、显示名="购买金条"。
 -- 对应 proto50：购买金条按钮事件处理器。
 -- 已有buygoldTimer时原版直接返回true，不会取消定时器，也不会显示启动提示。
 -- 没有timer时才提示并建立0.5秒周期回调。
-local function ToggleBuyGoldCheck(
+local function OnBuyGoldButtonClick(
     timerState,
     showSystemTips,
     BuyStoreItem,
