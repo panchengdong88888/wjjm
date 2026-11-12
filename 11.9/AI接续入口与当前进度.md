@@ -343,3 +343,16 @@
 - 本接续文档随后单独提交；以GitHub main最新SHA为准。
 - 下一步：沿proto48 PC277-278和UI事件工厂确认按钮事件实际传入的四项捕获参数与函数绑定名；随后追踪proto2对状态表`buygoldTimer`的清理路径。不要再恢复成timer开关逻辑。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-12：购买金条第十六轮——按钮回调登记与全局清理路径
+
+- 复核proto48 PC228-PC229：按钮配置项明确为`key="buygoldbut"`、`name="购买金条"`。
+- 复核proto48 PC272-PC277：PC272创建proto50闭包，PC273-PC276按捕获顺序绑定`proto48 A[3]`、`A[10]`、`A[11]`、`A[0]`；PC277把该闭包写入按钮回调表的`buygoldbut`键。因此proto50确实是“购买金条”按钮的处理器。后续通用按钮创建/绑定过程仍需继续追踪，不把PC277误称为最终UI控件的addOnClickEvent调用。
+- 已将源码函数名`ToggleBuyGoldCheck`改为`OnBuyGoldButtonClick`，并在源码注释中记录按钮key、显示名和回调登记位置。该函数按proto50控制流执行：已有timer直接返回true；没有timer才显示启动提示并Schedule。
+- proto2 PC35-PC44的timer清理路径已逐条核对：从状态表读取`buygoldTimer`；句柄存在时调用`SL:UnSchedule(timerState.buygoldTimer)`；随后把状态表字段`buygoldTimer`清空为nil。不存在句柄时跳过取消与清空步骤。
+- proto2同一函数还包含`rewardTimer`、`cruiseTimer`、`newzoneTimer`清理及GUI可见性处理，说明它是一个多定时器/界面清理函数。**目前只确认它具备清理购买金条timer的能力，尚未确认proto2的实际触发入口和触发时机**，因此不把它擅自绑定到停止脚本按钮或退出事件。
+- 本轮唯一明文源码更新提交：`794adfa4430f82faf713772f0eb3885e2e89b475`
+- 本接续文档随后单独提交；以GitHub main最新SHA为准。
+- 下一步：追踪proto2的父级调用/注册关系，确认它何时执行；同时继续检查proto48后半段通用按钮创建循环，确认`buygoldbut`回调表最终如何交给按钮控件。不要重复分析proto36购买辅助函数和proto50定时器分支。
+- 未进行Lua编译或游戏运行测试。
