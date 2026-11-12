@@ -3312,21 +3312,8 @@ local function doInit_UI()
                 return
             end
 
-            -- 拉怪按钮以实际运行标记为准，不能再按通用toggle盲目取反。
-            -- 启动阈值回调、直接启动和停止操作都可能已改变真实运行状态。
-            if config.key == "yinguaibut" then
-                config.toggled = isGatherRunning and true or false
-                GUI:Button_setTitleText(
-                    button,
-                    config.toggled and config.toggle or config.name
-                )
-                GUI:Button_setTitleColor(
-                    button,
-                    config.toggled and "#ff0000" or "#ffffff"
-                )
-                return
-            end
-
+            -- 与正常参考文件保持一致：handler成功后统一切换toggle状态。
+            -- 阈值输入属于异步启动路径，由输入成功回调单独调用syncButtonState。
             config.toggled = not config.toggled
             GUI:Button_setTitleText(
                 button,
