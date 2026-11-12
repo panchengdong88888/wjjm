@@ -293,7 +293,8 @@ end
 -- 对应 proto48 PC277：把proto50闭包登记到按钮回调表的buygoldbut键；
 -- 按钮配置表对应key="buygoldbut"、name="购买金条"。
 -- 后续proto48 PC340-PC345创建通用ButtonFactory闭包，捕获：
---   A[0]=GUI:Attach_UITop()返回的父容器；A[1]/A[2]=布局坐标基值；
+--   A[0]=GUI:Attach_UITop()返回的父容器；
+--   A[1]/A[2]=创建闭包时捕获的root局部值（ButtonFactory当前指令体未读取）；
 --   A[3]=MainLeftBottom.b界面集合；A[4]=整张按钮回调表。
 -- proto48 PC346-PC384分三组遍历按钮配置数组，调用ButtonFactory(config, rowIndex, groupOffset)：
 --   第一组V12：moneybut、settingbut、shiqubut、diuqibut、clearblacklistbut、stopallbut；
