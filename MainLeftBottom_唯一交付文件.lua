@@ -2664,13 +2664,16 @@ local function make_Nested_FFFF00(moduleState, printLog, timerState, initState)
         -- PC73-PC117：ListView几何、锚点及背景参数。
         local screenW = moduleState.screenW
         local screenH = moduleState.screenH
-        local listWidth = screenW * 0.6
+        -- 按用户提供的原版APP截图校准：统计面板约占游戏画面59%宽、56%高。
+        -- 列表位置使用屏幕中心，锚点也设为中心，避免“中心坐标+左侧锚点”导致整体右移。
+        local listWidth = screenW * 0.59
+        local listHeight = screenH * 0.56
         local resList = gui:ListView_Create(
             resWin, "resList",
-            (screenW - 1) / 2, screenH / 2,
-            listWidth, screenH * 0.6, 1.0
+            screenW / 2, screenH / 2,
+            listWidth, listHeight, 1.0
         )
-        gui:setAnchorPoint(resList, 0, 0.5)
+        gui:setAnchorPoint(resList, 0.5, 0.5)
         gui:ListView_setBackGroundColorType(resList, 1)
         gui:ListView_setBackGroundColor(resList, "#CEB5F7")
         gui:ListView_setBackGroundColorOpacity(resList, 255)
@@ -3691,4 +3694,25 @@ return MainLeftBottom
 -- 需结合通知恢复后的APP表现再判断。
 --
 -- 本批为VM静态证据修复；未执行Lua编译或目标游戏运行验证，等待用户实测。
+-- ============================================================================
+
+
+-- ============================================================================
+-- 检查点365：资源统计窗口按原版APP截图校准
+--
+-- 用户提供原版APP截图（727x625），浅紫色统计面板约为428x348，
+-- 约占截图宽度58.9%、高度55.7%。据此将面板尺寸按screenW*0.59、
+-- screenH*0.56设置。
+--
+-- 原代码将ListView放在(screenW-1)/2处，却设置左侧中点锚点(0,0.5)，
+-- 实际会从屏幕中线向右展开，造成明显右偏。
+-- 现将位置设为(screenW/2,screenH/2)，锚点改为(0.5,0.5)，
+-- 使面板几何中心与屏幕中心重合。
+--
+-- 此处是依据用户提供的原版APP截图进行的显示效果校准，明确偏离原始VM
+-- 中记录的listWidth=screenW*0.6、listHeight=screenH*0.6、
+-- x=(screenW-1)/2、anchor=(0,0.5)几何组合；业务内容、颜色、字体、
+-- 行布局、刷新逻辑和关闭回调均不改动。
+--
+-- 本批仅完成静态几何调整，等待用户替换APP实测；未执行编译或游戏运行验证。
 -- ============================================================================
