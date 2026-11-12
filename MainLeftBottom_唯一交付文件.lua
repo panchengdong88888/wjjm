@@ -358,10 +358,11 @@ local function ReadNumericConfig(fileName)
 end
 
 -- root.children[17]：将文本写入由GetWritablePath解析出的文件路径。
--- 第一个参数是写入内容；第二个参数是路径参数。
--- 子闭包把GetWritablePath(arg0)的全部返回值转发给writeStringToFile。
+-- VM固定参数帧：T[0]是第一个参数（路径），T[1]是第二个参数（写入内容）。
+-- Nested_tostring按捕获顺序读取UP[0]=T[1]、UP[1]=GetWritablePath、UP[2]=T[0]。
+-- 因此第一个参数是路径参数，第二个参数是写入内容；不能按旧草稿的arg1/arg0命名反推。
 -- pcall失败或写入结果严格等于false时返回false；其他成功结果（含nil）返回true。
-local function PCallHelper(arg1, arg0, ...)
+local function PCallHelper(arg0, arg1, ...)
     local function Nested_tostring()
         local fileUtils = cc.FileUtils:getInstance()
         local payload = tostring(arg1)
