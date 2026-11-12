@@ -317,10 +317,104 @@
 -- 购买金条定时器句柄（对应新版根作用域中的buygoldTimer）。
 local buygoldTimer = nil
 
--- proto36 的商城购买辅助函数前置声明。
--- 它的 RequestBuy 调用参数已核实，但商品索引查找、限购和条件校验主体
--- 仍在恢复中；本函数在 proto36 完整实现写入前不可单独运行。
-local BuyStoreItem
+-- 对应 proto36：按物品名称定位商城商品，检查购买条件和限购后提交请求。
+-- 该函数的寄存器控制流已逐段对应新版PC1-PC149；API参数均按原指令调用帧恢复。
+local function BuyStoreItem(itemName, buyCount)
+    local pageStoreProxy = global.Facade:retrieveProxy(global.ProxyTable.PageStoreProxy)
+    if not pageStoreProxy then
+        return false, "商城代理不可用"
+    end
+
+    -- 原版通过pcall保护物品名称到索引的查询，避免元数据查询异常中断函数。
+    local lookupOK, itemIndex = pcall(
+        SL.GetMetaValue,
+        SL,
+        "ITEM_INDEX_BY_NAME",
+        itemName
+    )
+
+    if not lookupOK
+        or type(itemIndex) ~= "number"
+        or itemIndex <= 0
+    then
+        return false, "物品索引不存在: " .. tostring(itemName)
+    end
+
+    -- pageData按页保存商城商品；只遍历数值页号且小于100的页面。
+    -- 每页商品集合必须为table，商品Id与名称查询得到的索引直接比较。
+    local foundGoods = nil
+    local pageData = pageStoreProxy.pageData
+    if not pageData then
+        pageData = {}
+    end
+
+    for pageKey, pageItems in pairs(pageData) do
+        local numericPageKey = tonumber(pageKey)
+        if numericPageKey and numericPageKey < 100
+            and type(pageItems) == "table"
+        then
+            for _, goods in pairs(pageItems) do
+                if goods and goods.Id == itemIndex then
+                    foundGoods = goods
+                    break
+                end
+            end
+        end
+
+        if foundGoods then
+            break
+        end
+    end
+
+    if not foundGoods then
+        return false, "商城没有这件道具"
+    end
+
+    -- 商城代理自身负责判断该商品是否已达到购买限制。
+    if not pageStoreProxy:CheckStoreLimitStatus(foundGoods.Index) then
+        return false, "已到限购上限"
+    end
+
+    -- 新版优先使用Condition；字段不存在/为假时回退到旧式condis。
+    local condition = foundGoods.Condition
+    if not condition then
+        condition = foundGoods.condis
+    end
+
+    if condition and condition ~= "" then
+        if not SL:CheckCondition(condition) then
+            return false, "条件不满足"
+        end
+    end
+
+    -- 默认购买数量为1；CountMax大于0时限制单次购买数量。
+    buyCount = tonumber(buyCount) or 1
+    local countMax = tonumber(foundGoods.CountMax)
+    if countMax and countMax > 0 and countMax < buyCount then
+        buyCount = countMax
+    end
+
+    -- LimitCount为累计限购上限，BuyCount为已购买数量。
+    -- 计算剩余可购买数量，并与本次请求数量取较小值。
+    local limitCount = tonumber(foundGoods.LimitCount)
+    if limitCount and limitCount > 0 then
+        local alreadyBought = tonumber(foundGoods.BuyCount) or 0
+        local remainingCount = limitCount - alreadyBought
+
+        if remainingCount < buyCount then
+            buyCount = remainingCount
+        end
+
+        if buyCount <= 0 then
+            return false, "限购剩余 0"
+        end
+    end
+
+    -- 原始调用帧：PageStoreProxy:RequestBuy(goods.Index, buyCount, 0)。
+    -- proto36不读取宿主RequestBuy返回值，而是在提交调用后主动返回true和数量。
+    pageStoreProxy:RequestBuy(foundGoods.Index, buyCount, 0)
+    return true, buyCount
+end
 
 -- 对应 proto51：每0.5秒检查一次金币余额。
 local function BuyGoldTimerCallback()
@@ -388,8 +482,6 @@ local function ToggleBuyGoldCheck()
     buygoldTimer = SL:Schedule(BuyGoldTimerCallback, 0.5)
 end
 
--- proto36 RequestBuy调用尾段已由VM处理器和寄存器窗口确认：
---   PageStoreProxy:RequestBuy(goods.Index, buyCount, 0)
---   请求提交后函数返回 true, buyCount。
--- proto36前半段的商品索引检索、pageData匹配、Condition和限购校验尚未
--- 全部恢复，故BuyStoreItem暂保留前置声明，不伪造一个不完整实现。
+-- proto36的PC1-PC149已恢复为BuyStoreItem；函数前半段执行商品索引校验、
+-- pageData商品定位、限购状态检查、Condition/condis条件检查、CountMax与
+-- LimitCount/BuyCount数量限制；尾部提交RequestBuy并返回true,buyCount。
