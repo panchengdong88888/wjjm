@@ -526,3 +526,21 @@
 - 本轮源码提交：`9fda32fe571f0d7daa60c1e76855b7600629ddf7`；随后捕获值注释修正提交：`9dc27ec22a0dfd2948cea92aefe42983746ad3aa`。
 - 本轮接续文档更新后续另行提交。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第二十七轮——proto48 doInit捕获上下文与通知闭包
+
+- 重新核对root PC438-PC454，确认proto48就是被赋值给`MainLeftBottom.doInit`的零参数初始化闭包；root PC454执行`MainLeftBottom.doInit = proto48闭包`。
+- proto48的15项upvalue按root PC439-PC453顺序捕获。购买金条直接依赖的槽位已闭合：
+  - proto48 A[3] = root V3定时器状态表（root PC42创建）；
+  - proto48 A[4] = root V1界面控件集合（root PC30创建，PC32写入`MainLeftBottom.b`）；
+  - proto48 A[10] = root V5本地提示包装函数（root PC46创建）；
+  - proto48 A[11] = root V55的`BuyStoreItem`闭包（root PC436创建）；
+  - proto48 A[0] = root V4调试/日志闭包（proto50/51未读取）。
+- root PC46创建的通知闭包已核对：一个显式参数message，捕获MainLeftBottom模块表；构造通知字段`Type=10, Msg=message, FColor=249, BColor=0, X=5, Y=MainLeftBottom.screenH-50`，调用`SL:ShowLocalNoticeByType(notice)`。新框架API只按接口调用，不分析其内部实现。
+- proto48 PC191-PC192通过`GUI:Attach_UITop()`取得UI父容器；PC266创建callbackMap；PC272-PC277登记buygoldbut；PC340-PC345创建通用ButtonFactory；PC346-PC371遍历第二组按钮配置数组V13，第一项buygoldbut传入rowIndex=7、groupOffset=0。
+- 在唯一明文源码新增`MakeShowLocalNoticeByType(mainLeftBottom)`，按root通知闭包捕获关系恢复通知包装函数；新增`MakeBuyGoldButtonInitFragment(...)`，将购买金条回调登记与按钮安装封装为可由doInit调用的片段。
+- **仍未把该片段直接挂入完整`MainLeftBottom.doInit`函数体。** proto48总计433条指令，PC1-PC190包含时间状态、资源快照、定时任务和仓库请求等初始化；PC193-PC265构建按钮配置数组；PC267-PC339登记各按钮处理器；PC340-PC433执行按钮创建及隐藏按钮创建。完整doInit仍需按新版指令恢复，不能用仅安装购买金条的片段覆盖整个初始化函数，否则会丢失其他初始化行为。
+- 本轮唯一明文源码提交：`f2d0aacf0879bc7fb2551d59834bf91913dcfbe8`。
+- 当前下一步：继续恢复proto48的真实doInit函数体，并在PC346-PC371第二组按钮数组循环中接入buygoldbut；保持其他按钮与初始化行为不被删除。购买金条完整接入后，才处理“开新区”。
+- 未进行Lua编译或游戏运行测试。
