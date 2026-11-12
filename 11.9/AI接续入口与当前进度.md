@@ -203,3 +203,12 @@
 - 唯一明文源码提交：2be41079b0604b2017f866b0ed52ecded447f2b6
 - 下一步：继续从11.9全体原型的指令中追踪proto36的调用者，以及MoneyProxy上可能承担购买/兑换动作的其他方法；优先查找proto50/51之外与buygoldbut、buygoldTimer相关的引用。然后再决定真实购买逻辑是否由其他回调或代理通知完成。
 - 未进行Lua编译或游戏运行测试。
+### 2026-11-12：购买金条功能第六轮——全新版原型常量交叉检索
+
+- 对11.9解码得到的105个原型逐一检索常量表：`RequestBuy` 与 `PageStoreProxy` 只出现在proto36；`buygoldTimer`只出现在proto2、proto50、proto51；`buygoldbut`只出现在proto48。
+- `MoneyProxy`、`GetMoneyIdByName`、`GetMoneyCountById`还出现在proto48及proto65/69。proto65为资源统计窗口创建逻辑，proto69为资源统计刷新回调，不能当作购买金条请求。
+- 这进一步说明proto51没有通过常量字符串直接引用proto36；但常量检索本身不能排除间接闭包引用、代理事件或框架侧异步行为。proto36调用者仍需沿根原型闭包创建与调用关系继续追踪。
+- 本轮交叉检索结果已写入唯一明文源码文件注释区。
+- 唯一明文源码提交：56de4c4ca3f08ae44dbd894bdf3f19efca065c97
+- 接续文档下一步：追踪proto36在根原型中的闭包引用/调用点，并核对MoneyProxy的其他调用函数，判断是否存在真正的自动购买触发路径。
+- 未进行Lua编译或游戏运行测试。
