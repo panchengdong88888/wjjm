@@ -441,3 +441,14 @@
 - 唯一明文源码已补充完整15项捕获表和V4/V5/V55的root创建位置。源码提交：`a6a0c89fefc3d0143db3522437b1a660831acd06`
 - 下一步：沿proto48 PC340-PC433完整恢复通用ButtonFactory的参数映射与按钮配置循环，把buygoldbut回调注册链的函数体写成可读Lua；再把root的模块初始化/销毁挂接段整理成唯一源码的入口框架。不要重复proto48捕获映射和购买金条函数内部逻辑。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第二十一轮——ButtonFactory捕获对象与点击分发闭合
+
+- 继续核对proto48 PC340-PC433、通用ButtonFactory子原型及其内部点击闭包。
+- proto48 PC340创建ButtonFactory闭包，PC341-PC345的捕获顺序为：A[0]=V6（GUI:Attach_UITop()返回的父容器）；A[1]=V19、A[2]=V20（PC338/339根据布局寄存器计算的两个坐标基值）；A[3]=proto48 A[4]（root V1，即MainLeftBottom.b界面集合）；A[4]=V18（按钮回调映射表）。
+- ButtonFactory原型有3个显式参数，分别接收每个按钮配置和两个循环传入值；PC1-PC14调用GUI.Button_Create创建控件；PC15-PC17按配置key把控件写入捕获的界面集合；PC18-PC37设置标题、字体和颜色；PC38-PC49检查toggle属性，必要时初始化toggled状态，再创建点击闭包并调用GUI.addOnClickEvent注册。
+- ButtonFactory内部点击闭包有3个upvalue：回调映射表、按钮配置表、按钮控件。PC2-PC4读取配置key并执行`callbackMap[key]`查找；PC43-PC49将该闭包传给`GUI.addOnClickEvent`。这证实buygoldbut映射的处理函数最终由通用点击闭包分发，不需要在ButtonFactory中为购买金条单独写分支。
+- 本轮源码只补充了ButtonFactory五项upvalue来源注释，没有凭不完整的父级循环调用帧虚构三个显式参数的名字或坐标计算规则。源码提交：`f2915d941eaa95c77b3d18933977ecdb6e2e8f03`
+- 下一步：定点恢复proto48 PC346-PC384三组按钮配置数组的遍历与ButtonFactory实参计算，再把root初始化与proto48创建入口整合成唯一明文源码中的可读入口段。不要重复捕获表或通用点击闭包的分发语义。
+- 未进行Lua编译或游戏运行测试。
