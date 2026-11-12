@@ -452,3 +452,17 @@
 - 本轮源码只补充了ButtonFactory五项upvalue来源注释，没有凭不完整的父级循环调用帧虚构三个显式参数的名字或坐标计算规则。源码提交：`f2915d941eaa95c77b3d18933977ecdb6e2e8f03`
 - 下一步：定点恢复proto48 PC346-PC384三组按钮配置数组的遍历与ButtonFactory实参计算，再把root初始化与proto48创建入口整合成唯一明文源码中的可读入口段。不要重复捕获表或通用点击闭包的分发语义。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第二十二轮——proto48三组按钮配置数组与工厂参数
+
+- 按proto48 PC204-PC265及opcode252/261的table打包处理器，确认ButtonFactory调用前构建三组配置数组：
+  - V12第一组，6项：`moneybut`、`settingbut`、`shiqubut`、`diuqibut`、`clearblacklistbut`、`stopallbut`。PC225将V13-V18六个配置表打包进V12。
+  - V13第二组，7项：`buygoldbut`、`recyclebut`、`newzone`、`rewardbut`、`yinguaibut`、`blacklistbut`、`xiaotuibut`。PC251将V14-V20七个配置表打包进V13。
+  - V14第三组：PC252创建空表，之后由其他闭包捕获；目前只确认它作为第三组按钮配置数组参与PC372-PC384遍历，尚未确认它的动态填充来源。
+- proto48 PC346-PC384分别对V12、V13、V14执行`ipairs`遍历，并调用ButtonFactory。每次传入的第一个参数是当前按钮配置表；第二个参数由`#当前数组 - 当前索引 + 1`计算；第三个参数依次为40、0、80。故ButtonFactory的三个显式参数可以明确命名为`buttonConfig`、`rowIndex`、`groupOffset`，后两者是布局计算参数，不应误认为按钮key或控件。
+- ButtonFactory五个upvalue保持上一轮确认：父容器、两个布局坐标基值、`MainLeftBottom.b`界面集合、回调映射表。其内部使用buttonConfig.key/name/toggle/toggled创建控件、保存控件并注册点击闭包。
+- 已将三组配置数组和三参数调用约定写入唯一明文源码注释；第三组V14的填充来源仍明确标为待查，没有虚构按钮项目。
+- 本轮源码提交：`f013db34f71caae3d2c3b4c846fb7401cdc1cf2c`
+- 下一步：定点追踪V14空表被哪些闭包捕获/填充，以及proto48 PC253-PC265三个相关闭包的真实用途；然后恢复ButtonFactory函数体和按钮布局计算的可读Lua实现。不要重新分析前两组配置或buygoldbut点击分发。
+- 未进行Lua编译或游戏运行测试。
