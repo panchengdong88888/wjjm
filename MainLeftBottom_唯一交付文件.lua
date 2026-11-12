@@ -2679,42 +2679,46 @@ local function make_Nested_FFFF00(moduleState, printLog, timerState, initState)
         gui:ListView_setBackGroundColorOpacity(resList, 255)
 
         -- PC118-PC264：标题、初始时间、当前时间、历时、备注五组区域。
-        local titleCell = gui:Layout_Create(resList, "titleCell", 0, 0, 1, 30, 1)
+        -- 五个标题行共用ListView的完整内容宽度作为坐标基准；
+        -- 每行文字仍保持原有中心锚点，不改变下方双列资源行的左右排列关系。
+        local titleCell = gui:Layout_Create(
+            resList, "titleCell", 0, 0, listWidth, 30, 1
+        )
         local titleText = gui:Text_Create(
-            titleCell, "titleText", 0.5, 15, 20, "#FF0000", "资源统计"
+            titleCell, "titleText", listWidth / 2, 15, 20, "#FF0000", "资源统计"
         )
         if titleText then
             gui:setAnchorPoint(titleText, 0.5, 0.5)
         end
 
-        local initTimeCell = gui:Layout_Create(resList, "initTimeCell", 0, 0, 1, 30, 1)
+        local initTimeCell = gui:Layout_Create(resList, "initTimeCell", 0, 0, listWidth, 30, 1)
         local initTimeText = gui:Text_Create(
-            initTimeCell, "initTimeText", 0.5, 15, 20, "#00FF00",
+            initTimeCell, "initTimeText", listWidth / 2, 15, 20, "#00FF00",
             "初始时间:" .. tostring(initState.initTimeStr or "--")
         )
         if initTimeText then
             gui:setAnchorPoint(initTimeText, 0.5, 0.5)
         end
 
-        local curTimeCell = gui:Layout_Create(resList, "curTimeCell", 0, 0, 1, 30, 1)
+        local curTimeCell = gui:Layout_Create(resList, "curTimeCell", 0, 0, listWidth, 30, 1)
         local curTimeText = gui:Text_Create(
-            curTimeCell, "curTimeText", 0.5, 15, 20, "#00FF00", "当前时间:--"
+            curTimeCell, "curTimeText", listWidth / 2, 15, 20, "#00FF00", "当前时间:--"
         )
         if curTimeText then
             gui:setAnchorPoint(curTimeText, 0.5, 0.5)
         end
 
-        local durTimeCell = gui:Layout_Create(resList, "durTimeCell", 0, 0, 1, 30, 1)
+        local durTimeCell = gui:Layout_Create(resList, "durTimeCell", 0, 0, listWidth, 30, 1)
         local durTimeText = gui:Text_Create(
-            durTimeCell, "durTimeText", 0.5, 15, 20, "#00FF00", "历时:--"
+            durTimeCell, "durTimeText", listWidth / 2, 15, 20, "#00FF00", "历时:--"
         )
         if durTimeText then
             gui:setAnchorPoint(durTimeText, 0.5, 0.5)
         end
 
-        local noteCell = gui:Layout_Create(resList, "noteCell", 0, 0, 1, 30, 1)
+        local noteCell = gui:Layout_Create(resList, "noteCell", 0, 0, listWidth, 30, 1)
         local noteText = gui:Text_Create(
-            noteCell, "noteText", 0.5, 15, 20, "#FFFF00",
+            noteCell, "noteText", listWidth / 2, 15, 20, "#FFFF00",
             "（括号内数量为非绑定资源的收益）"
         )
         if noteText then
@@ -3715,4 +3719,23 @@ return MainLeftBottom
 -- 行布局、刷新逻辑和关闭回调均不改动。
 --
 -- 本批仅完成静态几何调整，等待用户替换APP实测；未执行编译或游戏运行验证。
+-- ============================================================================
+
+
+-- ============================================================================
+-- 检查点366：资源统计内部内容组的坐标基准修复
+--
+-- 用户反馈：外层紫色统计面板已居中，但内部控件整体偏左。
+-- 核对发现标题/初始时间/当前时间/历时/备注五个Layout_Create的宽度
+-- 均使用1，Text_Create的X也固定为0.5。它们的坐标基准几乎只有
+-- 1个单位宽，因此五行文字实际聚集在ListView左边缘附近。
+--
+-- 现将这五个标题行Layout宽度统一设为listWidth，文字X改为listWidth/2。
+-- 文字仍使用原有(0.5,0.5)锚点，五行共享同一完整内容区域作为坐标基准。
+-- 下方资源名称仍保持两列布局：每行宽listWidth，列中心分别位于
+-- listWidth*0.25和listWidth*0.75；不把所有资源文字逐个改成居中，
+-- 保持两列资源作为一个整体的排布关系。
+--
+-- 不改资源顺序、数据刷新、字体颜色、行高、列表宽高、外层窗口中心
+-- 或关闭逻辑。本批仅静态修改，等待用户APP实测；未编译、未运行游戏。
 -- ============================================================================
