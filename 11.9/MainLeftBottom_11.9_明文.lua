@@ -308,3 +308,85 @@
 --   仍待确认：RequestBuy调用的receiver/参数顺序/返回寄存器；proto51 PC26-27真假分支
 --   的极性；proto50按钮处理器的完整启停状态；proto2清理入口的具体触发时机。
 --   本轮没有补写不确定的购买函数体，避免把尚未闭合的VM调用帧伪装成已恢复源码。
+
+
+-- ============================================================
+--  8.1 自动购买金条：已恢复的定时回调与按钮处理器
+-- ============================================================
+
+-- proto36 的商城购买辅助函数前置声明。
+-- 它的 RequestBuy 调用参数已核实，但商品索引查找、限购和条件校验主体
+-- 仍在恢复中；本函数在 proto36 完整实现写入前不可单独运行。
+local BuyStoreItem
+
+-- 对应 proto51：每0.5秒检查一次金币余额。
+local function BuyGoldTimerCallback()
+    local moneyProxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
+    if not moneyProxy then
+        return
+    end
+
+    local moneyId = moneyProxy:GetMoneyIdByName("金币")
+    if not moneyId then
+        return
+    end
+
+    local goldCount = moneyProxy:GetMoneyCountById(moneyId)
+    if not goldCount then
+        -- 新版控制流在余额值为假时进入结束分支。
+        -- Lua数字0是真值，因此0会继续走阈值比较，而不是被这里拦截。
+        if buygoldTimer then
+            SL:UnSchedule(buygoldTimer)
+            buygoldTimer = nil
+        end
+        SL:ShowSystemTips("金币不足200W，买金条结束")
+        return
+    end
+
+    if goldCount > 2000000 then
+        -- proto51 PC22-25：调用捕获的proto36，参数固定为“金条”、1。
+        local buyOK, buyResult = BuyStoreItem("金条", 1)
+
+        if buyOK then
+            SL:ShowSystemTips(string.format(
+                "买金条成功，当前金币：%d",
+                goldCount
+            ))
+            -- 成功分支不清理buygoldTimer，定时检测继续执行。
+        else
+            SL:ShowSystemTips("买金条失败：" .. tostring(buyResult))
+            if buygoldTimer then
+                SL:UnSchedule(buygoldTimer)
+                buygoldTimer = nil
+            end
+        end
+    else
+        -- 金币不大于2000000：取消定时器、清空句柄并提示结束。
+        if buygoldTimer then
+            SL:UnSchedule(buygoldTimer)
+            buygoldTimer = nil
+        end
+        SL:ShowSystemTips("金币不足200W，买金条结束")
+    end
+end
+
+-- 对应 proto50：购买金条按钮的定时检测启停处理器。
+-- PC11-20确认使用SL.Schedule，回调为proto51，周期为0.5秒。
+-- PC1-6是已有timer时的分支；其取消调用形式仍需结合该段融合指令最终确认，
+-- 因此这里暂只恢复“已有句柄则取消并返回”的业务结构。
+local function ToggleBuyGoldCheck()
+    if buygoldTimer then
+        SL:UnSchedule(buygoldTimer)
+        buygoldTimer = nil
+        return
+    end
+
+    SL:ShowSystemTips("开始检测金币(>200W买金条)")
+    buygoldTimer = SL:Schedule(BuyGoldTimerCallback, 0.5)
+end
+
+-- proto36 RequestBuy调用尾段已由VM处理器和寄存器窗口确认：
+--   PageStoreProxy:RequestBuy(goods.Index, buyCount, 0)
+--   请求提交后函数返回 true, buyCount。
+-- proto36前半段的商品索引检索、pageData匹配、Condition和限购校验尚未
+-- 全部恢复，故BuyStoreItem暂保留前置声明，不伪造一个不完整实现。
