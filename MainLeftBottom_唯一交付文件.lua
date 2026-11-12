@@ -1027,10 +1027,8 @@ end
 -- ============================================================================
 -- 检查点246：无捕获子原型实际接入记录
 --
--- 主装配代码位于 MainLeftBottom_恢复源码.lua 末尾的
--- root_assembly_checkpoint=246 区段。该文件作为独立候选保留根表构造与
--- PC级证据；22个无捕获闭包按原型身份接入root_prototypes。
--- 有捕获闭包暂不在此处伪造实例，必须使用OP_387共享cell语义。
+-- 根模块主装配已整合进本唯一交付文件；历史候选与root级PC账本仅作证据参考。
+-- 本文件使用词法局部函数与共享局部变量承载闭包身份，不再依赖平行源码装配。
 -- ============================================================================
 
 
@@ -3379,11 +3377,12 @@ return MainLeftBottom
 
 -- ============================================================================
 -- 唯一主源码工作约定
--- 本文件 MainLeftBottom_功能等价重建.lua 是唯一持续更新的源码目标。
--- 后续完成的函数、UI初始化、捕获装配和模块导出均直接写入本文件。
--- root_MainLeftBottom_Module.lua 与 MainLeftBottom_恢复源码.lua 仅作证据参考，
--- 不再作为平行开发主线；不得以“全部完成后再生成”作为延后创建本文件的理由。
--- 当前状态：功能等价重建仍未完成；PC1-PC412根级导出/字段、物品功能、黑名单功能及doInit_UI入口已在本文件形成统一实现。剩余工作转为逐函数语义复核、修正与Lua 5.1语法检查；目标游戏运行验证尚未执行。
+-- 本文件 MainLeftBottom_唯一交付文件.lua 是唯一持续更新和交付的源码目标。
+-- 后续所有源码修正、闭包装配、调用关系整理均直接写入本文件。
+-- root_MainLeftBottom_Module.lua 与 MainLeftBottom_恢复源码.lua 仅作历史证据参考，
+-- 不得作为平行开发主线，也不得创建第二份主源码。
+-- 当前状态：入口、UI、物品、黑名单及开拉怪相关实现已整合；开拉怪和快速小退已由用户实测通过。
+-- 当前继续补全根模块内部调用、定时/延迟回调、UI回调和宿主API调用关系。
 -- ============================================================================
 
 -- ============================================================================
@@ -3533,3 +3532,82 @@ return MainLeftBottom
 -- ============================================================================
 
 
+
+
+-- ============================================================================
+-- 检查点347：根模块调用关系第一组（定时器与UI回调边）
+--
+-- 本批只整理当前源码中已能直接定位的调用边；不改变任何运行逻辑。
+--
+-- A. 根级采集状态机
+--   InitGatherMonsters
+--     -> SL:UnSchedule(timerState.gatherTimer) [存在旧句柄时]
+--     -> FormatStateChange(IDLE)
+--     -> ResetGatherMonsterData
+--     -> SL:Schedule(MainLoop, gatherConfig.CHECK_INTERVAL)
+--   MainLoop
+--     -> IsInWhitelistMap / GetMainPlayerID
+--     -> FindMonsterCandidates
+--     -> FindMonsterInCurrViewField / IsDie
+--     -> GetOwnerID / GetOwnerIDText / GetOwnerDescription
+--     -> SetTargetID
+--     -> FormatStateChange / ResetGatherMonsterData / PrintLog
+--   StopGatherMonsters
+--     -> SL:UnSchedule(timerState.gatherTimer) [存在旧句柄时]
+--     -> ClearTargetID_2
+--     -> FormatStateChange(IDLE)
+--     -> ResetGatherMonsterData
+--
+-- B. doInit_UI按钮事件分派
+--   doInit_UI -> buttonHandlers[key] -> createButton -> GUI:addOnClickEvent
+--   点击闭包先执行buttonHandlers[key]；只有toggle配置才继续更新toggled、
+--   标题和颜色。handler严格返回false时阻止toggle；非toggle按钮仍执行handler。
+--   buttonHandlers映射：
+--     yinguaibut       -> Nested_StopGatherMonsters
+--     clearmonsterbut  -> 配置清理回调
+--     cleardistancebut -> 黑名单距离配置清理回调
+--     rewardbut        -> Nested_SL_2
+--     clearblacklistbut-> Nested_ClearBlacklistItems
+--     blacklistbut     -> Nested_Helper_10
+--     storagebut       -> Nested_SL_3
+--     takebut          -> Nested_TakeItems
+--     shiqubut         -> Nested_shiquTimer
+--     diuqibut         -> Nested_dropTimer
+--     moneybut         -> 资源统计窗口回调
+--     xiaotuibut       -> Nested_OnGameLeaveWorld
+--   hidebut -> GUI:addOnClickEvent -> Nested_Helper_9 -> uiState.hide/uiState.show
+--
+-- C. 周期任务注册与取消
+--   blacklistbut -> Nested_Helper_10 -> Nested_blacklistTimer
+--     -> BlacklistItems立即执行一次 -> Schedule(BlacklistItems, 0.1)
+--     关闭时UnSchedule(timerState.blacklistTimer)，并清isBlacklisting。
+--   storagebut -> Nested_SL_3
+--     -> StorageItems立即执行一次 -> Schedule(StorageItems, 1.0)
+--   takebut -> Nested_TakeItems
+--     -> TakeItems立即执行一次 -> Schedule(TakeItems, 1.0)
+--   shiqubut -> Nested_shiquTimer
+--     -> Schedule(PickUpItems, 0.01)
+--   diuqibut -> Nested_dropTimer
+--     -> DiuItems立即执行一次 -> Schedule(DiuItems, 1.0)
+--   moneybut -> 资源统计窗口初始化
+--     -> refreshResourceStatistics立即执行 -> Schedule(refreshResourceStatistics, 1.0)
+--   rewardbut -> Nested_SL_2
+--     -> Schedule(0, callback, scheduleContext)；该调用形态与通用API文档签名不同，
+--        继续保留VM实参形态，不在本批擅自改写。
+--   doInit_UI每日任务
+--     -> 对四组快捷栏配置分别ScheduleOnce(callback, slotIndex * 0.1)
+--     -> 替换旧cruiseTimer -> Schedule(dailyCallback, 1.0)
+--   AccountIDValidation
+--     -> Schedule(scheduledCallback, 0.5)
+--     -> 条件满足时UnSchedule(nil)并调用MainLeftBottom.doInit()
+--
+-- D. API边界说明
+--   Schedule/ScheduleOnce局部包装器分别转发到SL:Schedule/SL:ScheduleOnce；
+--   其余直接SL定时调用保留各自原始receiver、参数数量和顺序。
+--   上述调用图仅记录源码中明确存在的边，不代表宿主定时器行为已运行验证。
+--   GUI:Attach_UITop(T7)、NPCStorageProxy:RequestStorageData(T7)及奖励Schedule
+--   的文档/VM签名差异仍按资料文件/docs/handoff/11_新框架API映射.md列为待确认项。
+--
+-- 本批未发现足以支持修改运行逻辑的新增错配；仅修正本文件内历史文件名、
+-- 平行源码定位及当前工作状态的过期注释。Lua编译和目标游戏运行均按用户要求不执行。
+-- ============================================================================
