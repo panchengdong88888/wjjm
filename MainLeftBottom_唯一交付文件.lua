@@ -2932,30 +2932,22 @@ end
 
 local function make_Nested_Helper_9(uiState, notify, buttonMap)
     local function Nested_Helper_9()
-        -- 与此前实测通过版本的TogglePluginButtons一致：
-        -- 只切换本插件按钮，不调用GUI:Win_CloseAll()，避免关闭游戏其它窗口。
-        if uiState.isHidden then
-            notify("隐藏所有按钮")
-            for _, button in pairs(buttonMap) do
-                if button then GUI:setVisible(button, false) end
+        -- 每次点击都从当前隐藏状态反推目标状态，统一处理按钮组和隐藏按钮。
+        -- buttonMap就是MainLeftBottom.b，按钮创建时逐项写入同一张表。
+        local shouldShow = not uiState.isHidden
+        for _, button in pairs(buttonMap) do
+            if button then
+                GUI:setVisible(button, shouldShow)
             end
-            if uiState.hidebut then
-                GUI:setVisible(uiState.hidebut, true)
-                GUI:setOpacity(uiState.hidebut, 0)
-            end
-            uiState.isHidden = false
-            return
         end
 
-        notify("显示所有按钮")
-        for _, button in pairs(buttonMap) do
-            if button then GUI:setVisible(button, true) end
-        end
         if uiState.hidebut then
             GUI:setVisible(uiState.hidebut, true)
-            GUI:setOpacity(uiState.hidebut, 255)
+            GUI:setOpacity(uiState.hidebut, shouldShow and 255 or 0)
         end
-        uiState.isHidden = true
+
+        uiState.isHidden = not shouldShow
+        notify(shouldShow and "显示所有按钮" or "隐藏所有按钮")
     end
     return Nested_Helper_9
 end
@@ -3294,6 +3286,22 @@ local function doInit_UI()
             if allowed == false then
                 return
             end
+
+            -- 拉怪按钮以实际运行标记为准，不能再按通用toggle盲目取反。
+            -- 启动阈值回调、直接启动和停止操作都可能已改变真实运行状态。
+            if config.key == "yinguaibut" then
+                config.toggled = isGatherRunning and true or false
+                GUI:Button_setTitleText(
+                    button,
+                    config.toggled and config.toggle or config.name
+                )
+                GUI:Button_setTitleColor(
+                    button,
+                    config.toggled and "#ff0000" or "#ffffff"
+                )
+                return
+            end
+
             config.toggled = not config.toggled
             GUI:Button_setTitleText(
                 button,
