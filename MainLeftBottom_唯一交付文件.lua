@@ -1651,10 +1651,40 @@ local function DiuItems()
     end
     local bagData = SL:GetMetaValue("BAG_DATA")
     if not bagData then z.isDiuing = false; return end
+
+    -- root.children[46].children[0] / Nested_string_2：
+    -- VM在PC36-PC68创建关键词表和该匹配闭包。现有恢复候选确认了闭包算法，
+    -- 但没有保存关键词表的具体常量字符串；因此暂留空表并标注待补证，不猜词条。
+    -- PC89-PC90的常量真分支会跳过PC91-PC95对此闭包的调用，故空表不影响当前活动路径。
+    local discardKeywords = {}
+    local function Nested_string_2(text)
+        for _, keyword in ipairs(discardKeywords) do
+            if string.find(text, keyword, 1, true) then
+                return true
+            end
+        end
+        return false
+    end
+
     local candidates = {}
     for _, item in pairs(bagData) do
-        if item and item.Name and item.MakeIndex and not SL:GetMetaValue("ITEM_IS_BIND", item) then
-            candidates[#candidates + 1] = {makeIndex=item.MakeIndex,count=item.OverLap or 1,name=item.Name}
+        if item and item.Name and item.MakeIndex
+            and not SL:GetMetaValue("ITEM_IS_BIND", item) then
+            -- PC89-PC90：常量真分支始终进入候选添加路径；
+            -- PC91-PC95的Nested_string_2匹配分支按VM保持不可达。
+            if true then
+                candidates[#candidates + 1] = {
+                    makeIndex = item.MakeIndex,
+                    count = item.OverLap or 1,
+                    name = item.Name,
+                }
+            elseif Nested_string_2(item.Name) then
+                candidates[#candidates + 1] = {
+                    makeIndex = item.MakeIndex,
+                    count = item.OverLap or 1,
+                    name = item.Name,
+                }
+            end
         end
     end
     if #candidates == 0 then
