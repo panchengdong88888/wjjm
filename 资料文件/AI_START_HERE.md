@@ -24,7 +24,7 @@
 
 ## 3. 当前任务（强制）
 
-**当前状态：检查点360已修复开拉怪按钮标题未切换问题。用户实测隐藏按钮、快速小退正常；开拉怪能启动但标题未变。对照MainLeftBottom(5).lua后，已将唯一源码yinguaibut点击闭包恢复为参考文件的通用toggle翻转逻辑；阈值输入成功后的异步syncButtonState保留。等待用户替换APP打包实测。**
+**当前状态：检查点361已修复“开奖励”按钮无反应的两处高风险调用。奖励定时器调用改为符合新框架文档的 `SL:Schedule(callback, 0.2)`；奖励发送函数优先读取chunk全局LuaSendMsg，缺失时回退至 `MainLeftBottom.a.LuaSendMsg`。等待用户替换APP打包实测奖励发送及关闭。**
 
 ### 检查点359已修正
 
@@ -299,3 +299,15 @@
 - 阈值输入成功后的异步 `syncButtonState("yinguaibut", true)` 保留；没有修改拉怪状态机、定时器或怪物扫描逻辑。
 - 唯一源码提交：`a3ca74b7a93a61543eeba7c77f2d8923834b7f6d`；content SHA：`e372e556ad0c7e0f8cb5963131ea97eebf471f9f`。
 - 本批只做静态对照，未编译、未运行；等待用户替换APP打包实测。若仍未切换，下一步采集handler返回值、点击回调执行路径及 `GUI:Button_setTitleText` 调用情况，不再猜测修改状态机。
+
+
+## 检查点361：开奖按钮无功能修复
+
+- 用户反馈点击“开奖”按钮无反应。
+- 已核对 `rewardbut` 按钮配置、`buttonHandlers.rewardbut = rewardCallback` 映射及通用按钮点击闭包，静态映射链存在。
+- 唯一源码原先以 `SL:Schedule(0, callback, scheduleContext)` 注册奖励循环；`scheduleContext` 为 0.2，而新框架 API 文档明确签名为 `SL:Schedule(callback, time)`。同一源码中其他定时任务也使用 callback 在前的调用形式。现改为 `SL:Schedule(callback, scheduleContext)`，保留0.2秒间隔。
+- 奖励回调原先只读取 `getfenv(1).LuaSendMsg`。根模块已将发送函数挂入 `MainLeftBottom.a.LuaSendMsg`，但当前源码没有证据证明chunk ENV一定有同名全局。现改为优先读取ENV全局，缺失时回退模块字段。
+- 保持原奖励记录、counter/modulus、消息参数、停止时 `SL:UnSchedule(timerState.rewardTimer)` 等逻辑不变。
+- 用户上传的 `MainLeftBottom(5).lua` 只有奖励按钮配置，不含奖励handler实现，故不将其当作奖励功能参照。
+- 源码提交：`a3a058166a186df48e23c8a4edf580cea39b3a0b`；content SHA：`a6e2b8782601c29f3fd9541796b205e193eb1802`。
+- 机器状态JSON已更新至检查点361。静态核对完成，未编译/未运行；等待用户替换APP打包实测。若仍无效，下一步定点诊断Schedule是否返回句柄、rewardTimer是否写入、回调是否触发及LuaSendMsg实际绑定，不修改其他功能。
