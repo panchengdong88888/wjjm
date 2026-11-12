@@ -1137,14 +1137,17 @@ end
 local function GetOwnerID(actor, expectedOwnerID)
     local ownerID = actor:GetOwnerID()
     if ownerID == nil or ownerID == "" or ownerID == -1 then return false end
-    if type(ownerID) == "string" then return ownerID ~= tostring(ownerID) end
+    -- VM字符串分支调用tostring(第二参数expectedOwnerID)，不是tostring(ownerID)。
+    -- 否则所有字符串归属都会被误判为自己，导致拉怪阶段跳过目标。
+    if type(ownerID) == "string" then return ownerID ~= tostring(expectedOwnerID) end
     return ownerID ~= expectedOwnerID
 end
 
 local function GetOwnerIDText(actor, expectedOwnerID)
     local ownerID = actor:GetOwnerID()
     if ownerID == nil or ownerID == "" or ownerID == -1 then return false end
-    if type(ownerID) == "string" then return ownerID == tostring(ownerID) end
+    -- 与GetOwnerID使用相同的字符串ID归一化规则，谓词方向相反。
+    if type(ownerID) == "string" then return ownerID == tostring(expectedOwnerID) end
     return ownerID == expectedOwnerID
 end
 
@@ -1428,7 +1431,13 @@ local function MainLoop()
                     tostring(targetID)
                 ))
 
-                SetTargetID(targetID)
+                -- ATTACKING每0.5秒都会进入一次；目标没变化时不重复SetTargetID，
+                -- 避免引擎反复刷新同一目标造成地图怪物选中效果闪烁。
+                if resetSlot21 ~= targetID then
+                    if SetTargetID(targetID) then
+                        resetSlot21 = targetID
+                    end
+                end
                 return
             end
 
@@ -1506,7 +1515,8 @@ local function DestroyUI()
     end
     a.resWin = nil
     GUI:Win_CloseAll()
-    for key in pairs(b) do GUI:setVisible(b[key], true) end
+    -- root.children[37]的VM布尔常量为false：真正隐藏所有功能按钮。
+    for key in pairs(b) do GUI:setVisible(b[key], false) end
 end
 
 local function SetButtonVisibilityState()
@@ -1523,7 +1533,8 @@ local function ShowHideAllButtons()
         SL:UnSchedule(timerState.cruiseTimer)
         timerState.cruiseTimer = nil
     end
-    for key in pairs(b) do GUI:setVisible(b[key], true) end
+    -- root.children[40]的VM布尔常量为false：销毁/收起时隐藏全部功能按钮。
+    for key in pairs(b) do GUI:setVisible(b[key], false) end
     if a.hidebut then
         GUI:setVisible(a.hidebut, false)
         a.hidebut = nil
@@ -3094,15 +3105,14 @@ local function doInit_UI()
     )
     timerState.cruiseTimer = SL:Schedule(dailyCallback, 1.0)
 
-    -- PC180/PC183：两处方法调用均传入一个显式参数T7。
-    -- T7来自PC131的ipairs第三返回值，但PC143的泛型for迭代器会逐次更新它；
-    -- 四项itemSlotConfig处理完毕后，T7保留最后索引4，而不是初始值0。
+    -- PC180的RequestStorageData仍按原VM实参保留；GUI挂接接口则按用户确认的
+    -- 官方契约调用无参Attach_UITop()，不把T7传给GUI。
     local storageProxy = global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)
     if storageProxy then
         storageProxy:RequestStorageData(T7)
     end
 
-    local uiParent = GUI:Attach_UITop(T7)
+    local uiParent = GUI:Attach_UITop()
 
     -- PC184-PC195：读取mini-chat位置/尺寸；xBase/yBase随后由T[22]/T[23]捕获。
     local mainProperty = MainProperty
