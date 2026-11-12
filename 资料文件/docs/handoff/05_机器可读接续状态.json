@@ -2,12 +2,12 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-12",
-  "latest_checkpoint": 363,
-  "next_checkpoint": 364,
+  "latest_checkpoint": 364,
+  "next_checkpoint": 365,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "检查点363已完成静态核对并提交两处功能修复。清距离值/清怪物值现在删除已存在配置文件并复查；开黑名单在配置缺失/无效时进入输入框，不再执行nil > 0。相关Schedule/ScheduleOnce参数顺序符合新框架文档。清黑名单、开丢物品、开拾取未发现可据静态证据确认的参数错位或单一根因，不能盲目改写。等待用户替换APP实测两处修复，并在其余三项仍无响应时依据实际日志继续定位。",
+    "status": "检查点364已依据用户最新APP反馈定位到共用通知函数的receiver错误并修复：ShowLocalNoticeByType原先使用SL.ShowLocalNoticeByType(notice)，但root.children[20] VM指令使用SELF语义，必须将SL作为receiver；现改为SL:ShowLocalNoticeByType(notice)。该函数被清怪物值、清距离值、清黑名单、开丢物品、开拾取等路径共享，可能解释多项按钮无可见反馈。用户最新实测：开拾取可能已启动但无“地面无可拾取物品”提示；开黑名单能弹输入框；清黑名单无“黑名单为空”提示；开丢物品无提示；清怪物值/清距离值无提示。尚未确认两项配置删除及黑名单输入值的后续效果。DiuItems对应VM中未发现IN_SAFE_AREA判断，不擅自新增。源码已提交main，等待用户替换APP实测。",
     "title": "排查并修复六个无响应按钮",
     "prototype": "MainLeftBottom_唯一交付文件.lua",
     "scope": [
@@ -34,7 +34,12 @@
       "检查点363未确认项：清黑名单的FriendProxy运行时可用性及SL:RequestOutBlacklist宿主方法行为；DiuItems在定时器注册前立即执行，若其内部宿主调用抛错会中断handler；PickUpItems无物品/远距离目标时可能没有立即可见动作。当前无运行日志，不能静态判定其余三个按钮的实际无响应根因。",
       "检查点363最终源码提交：配置清理与黑名单nil门控修复提交0f2b7f2e771615517e0f2056159ea300f78161b1，随后追加检查点注释提交579eb03e46d4a1abef15bd599260993093b21b4b；最新唯一源码content SHA=a17f6e84564e52344c5f7d3f86bcf56f63c39d14。",
       "检查点363静态兼容性扫描：goto、table.unpack、table.pack、table.move、bit32、utf8、package.searchpath均无命中；未执行Lua 5.1编译或目标APP运行，遵守用户此前明确要求。",
-      "检查点363按钮闭包核对：buttonHandlers中clearmonsterbut/cleardistancebut/clearblacklistbut/blacklistbut/diuqibut/shiqubut均正确映射；非toggle清理按钮handler执行后不会切换标题，依靠ShowLocalNoticeByType/PrintLog反馈；三个toggle按钮handler不严格返回false时会走通用标题切换。静态结构与按钮配置key一致。"
+      "检查点363按钮闭包核对：buttonHandlers中clearmonsterbut/cleardistancebut/clearblacklistbut/blacklistbut/diuqibut/shiqubut均正确映射；非toggle清理按钮handler执行后不会切换标题，依靠ShowLocalNoticeByType/PrintLog反馈；三个toggle按钮handler不严格返回false时会走通用标题切换。静态结构与按钮配置key一致。",
+      "检查点364用户最新实测：开拾取可能已启动但没有原版的“地面无可拾取物品”提示；开黑名单能弹距离输入框，但输入值是否保存并生效尚不确定；清黑名单没有“黑名单为空”提示；开丢物品无任何提示；清怪物值/清距离值无清理成功提示。",
+      "检查点364根因：ShowLocalNoticeByType是多个按钮共同依赖的通知出口。唯一源码原先写SL.ShowLocalNoticeByType(notice)，漏掉SL receiver。root.children[20] VM原始指令使用SELF语义（R[A+1]=SL作为receiver，R[A]=SL.ShowLocalNoticeByType），历史明文重建稿也写为SL:ShowLocalNoticeByType({...})。已修正为冒号调用。",
+      "检查点364只修正通知调用receiver，不改通知参数表Type=10、Msg、FColor=249、BColor=0、X=5、Y=screenH-50，不改Schedule/ScheduleOnce与各业务主体。",
+      "检查点364丢物品安全区行为：root.children[46] DiuItems原始VM常量池/指令未出现IN_SAFE_AREA等安全区判断。用户观察到的安全区弹窗可能是宿主/游戏对MSG_CS_MAP_ITEM_DISCARD的响应；当前不凭观察擅自新增安全区门控，待通知修复后的APP反馈确认。",
+      "检查点364源码提交：1fdf2d9b7ccfb7de75b2c645b6c215661c560afd；最新源码content SHA=3ad8e5b4f800075dcfe378d2a01191eb342676ef。仅做静态VM证据修复，未执行Lua编译或游戏运行验证。"
     ],
     "completion_criteria": [
       "清距离值、清怪物值对应配置文件存在时，清理函数会执行removeFile并复查不存在；缺失时返回成功",
@@ -43,7 +48,7 @@
       "不对没有静态证据的清黑名单、开丢物品、开拾取盲目改写；若仍无响应，依据APP日志精确定位",
       "不修改已实测正常的开拉怪、开奖励、隐藏、快速小退"
     ],
-    "next": "检查点364：等待用户反馈最新唯一源码替换APP后的清距离值/清怪物值/开黑名单结果；若清黑名单/开丢物品/开拾取仍无响应，要求提供对应运行日志或错误弹窗文本，并分别定位FriendProxy/RequestOutBlacklist、DiuItems立即执行阶段、PickUpItems定时回调阶段。不要再以Schedule参数错位作为无证据假设。"
+    "next": "检查点365：用户替换最新唯一源码后实测通知是否恢复。重点看清怪物值是否显示“已清空怪物阈值”、清距离值是否显示“已清空黑名单距离”、清黑名单空名单是否显示“黑名单为空”、开拾取无地面物品时是否显示“地面无可拾取物品”、开丢物品是否出现开启提示及丢弃结果。若通知恢复但某业务仍不执行，再分别排查配置删除、FriendProxy/RequestOutBlacklist、DiuItems消息发送和PickUpItems定时回调。不要擅自添加VM不存在的安全区判断，也不要再以Schedule参数错位作为无证据假设。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
