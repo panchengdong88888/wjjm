@@ -82,14 +82,18 @@
 --            当前身份判断：购买金条定时回调/购买结果处理（高置信）。
 --   proto2：根原型子函数，69条指令；常量包含 buygoldTimer、UnSchedule、
 --           GUI:setVisible 等；需核对其定时器清理分支与本功能的关联。
---   proto36：根原型子函数，149条指令；常量包含 RequestBuy、
---            PageStoreProxy、Condition、Facade、SL，职责推定为商城购买辅助。
+--   proto36：根原型子函数，149条指令、2个Upvalues；常量包含 RequestBuy、
+--            PageStoreProxy、Condition、Facade、SL，属于商城购买逻辑候选。
+--            目前没有直接调用边证据证明proto51会调用proto36，不能先认定两者相连。
 --
 -- 已确认：功能涉及按钮点击处理、buygoldTimer、金币/金条查询及成功/失败提示；
 --         提示文字中明确出现“>200W买金条”。
 -- 尚未确认：按钮的真实key和显示文案、Schedule周期/启停分支、
 --           金币阈值的比较操作数、金条数量判断、商城购买辅助函数的确切实参、
 --           proto51与proto36之间的调用关系，以及退出清理时的准确调用顺序。
+-- 新框架(3_40_xx)的43份开发文档中未检索到 PageStoreProxy / RequestBuy / MoneyProxy
+-- 的接口签名；目前只能确认SL:Schedule(callback,time)与SL:UnSchedule(scheduleID)
+-- 的框架用法，不能从框架文档推导商城代理的参数契约。
 --
 -- 注意：当前只有函数名/常量/原型父子关系线索，不能据此编造RequestBuy参数、
 --       购买数量或定时周期。待完成定点函数控制流核对后，再写入实际Lua函数体。
