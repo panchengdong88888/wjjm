@@ -477,3 +477,16 @@
 - 本轮源码提交：`c99ed7f6c5cef153f803e6e82ebd762fb94f30ec`
 - 下一步：核对proto48 PC253-PC265剩余两个闭包分别负责什么，再继续恢复通用ButtonFactory的可读Lua函数体。之后把root入口创建状态表、提示包装函数、购买函数、回调映射和destroy挂接整合成一段可读初始化框架。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第二十四轮——proto48 PC253-PC265闭包身份定点复核
+
+- 本轮重新按11.9原始加载器解码并解析原型树（105个原型，79573字节完整消费），只检查proto48 PC253-PC265及其后续引用，没有重做全量分析。
+- PC253创建child index 9（2个显式参数、51条指令），捕获V12、V13、V14和upvalue A[4]。函数体遍历三组按钮配置数组，按key匹配界面控件，更新toggled，并调用GUI.Button_setTitleText/Button_setTitleColor；确认是通用按钮toggle状态同步。
+- PC258创建child index 6（零显式参数、18条指令），捕获proto48 A[5]、A[3]、A[6]、A[7]、A[0]。函数体使用distance=11，调用BlacklistItems()，写入blacklistTimer，并格式化“开启黑名单功能，距离格子：%d”提示。确认属于黑名单启动/定时相关闭包；捕获对象身份、调度函数来源及其是否进入当前按钮回调表仍待核对，不虚构按钮key。
+- PC264创建child index 25（零显式参数、7条指令），捕获proto48 A[8]；函数体对捕获对象写入GATHER_THRESHOLD=11，再调用InitGatherMonsters相关入口。PC286创建child index 8时将该闭包作为第三项局部捕获，PC290把点击处理器登记到callbackMap.yinguaibut。因此PC264是引怪启动辅助闭包，child index 8是其按钮处理器。
+- 本轮复核PC267之后的callbackMap登记顺序，确认不能按子原型功能名直接猜按钮key，必须按PC真实key写入和闭包捕获核实。后续逐个复核PC278-PC337，重点检查storagebut/takebut/blacklistbut等键与绑定子原型行为是否一致；发现不匹配时回到原始闭包索引/调用帧核查，不按旧版按钮名称自动纠正。
+- 唯一明文源码已补充以上指令级证据和待核查边界，没有编造PC258的按钮绑定，没有创建第二份明文源码。
+- 本轮源码提交：`6a5f91c5cd1df5ef916b5073724c19db5639b868`
+- 未进行Lua编译或游戏运行测试。
+- 下一步：从root寄存器V44/V7/V39的赋值链核实PC258五项捕获对象，再检查PC278-PC337每一项回调映射key与真实闭包身份。优先解决回调键/闭包行为疑似错配，之后再恢复ButtonFactory完整函数体和root入口整合。
