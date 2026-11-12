@@ -453,10 +453,43 @@ local function MakeMainLeftBottomButtonFactory(
 end
 
 
+-- 对应proto48 PC346-PC384：按三组数组顺序执行通用ButtonFactory。
+-- 每组传入的rowIndex由数组长度倒序计算；groupOffset分别为40、0、80。
+-- 第二组V13第一项buygoldbut因此以rowIndex=7、groupOffset=0创建。
+local function CreateMainLeftBottomButtons(
+    uiParent,
+    visibleItems,
+    callbackMap
+)
+    local firstGroup, secondGroup, thirdGroup =
+        BuildMainLeftBottomButtonGroups()
+    local buttonFactory = MakeMainLeftBottomButtonFactory(
+        uiParent,
+        visibleItems,
+        callbackMap
+    )
+
+    for index, buttonConfig in ipairs(firstGroup) do
+        buttonFactory(buttonConfig, #firstGroup - index + 1, 40)
+    end
+
+    for index, buttonConfig in ipairs(secondGroup) do
+        buttonFactory(buttonConfig, #secondGroup - index + 1, 0)
+    end
+
+    for index, buttonConfig in ipairs(thirdGroup) do
+        buttonFactory(buttonConfig, #thirdGroup - index + 1, 80)
+    end
+
+    return firstGroup, secondGroup, thirdGroup
+end
+
+
 -- 将proto48中相隔的两个执行阶段保留为两个独立动作：
 --   registerCallback(callbackMap)：对应PC272-PC277；
---   createButton(uiParent, callbackMap, config, rowIndex, groupOffset)：复用proto48通用ButtonFactory。
--- doInit恢复时应在PC266后调用registerCallback，在第二组按钮循环中将原始config、rowIndex、groupOffset传给createButton。
+--   createButtons(uiParent, callbackMap)：对应PC346-PC384三组按钮数组遍历，
+--   其中buygoldbut会在第二组V13的第1项位置自动走通用ButtonFactory。
+-- doInit恢复时应在PC266后调用registerCallback，并在完成其他回调登记后调用createButtons。
 local function MakeBuyGoldButtonInitFragment(
     visibleItems,
     timerState,
@@ -477,15 +510,12 @@ local function MakeBuyGoldButtonInitFragment(
             )
         end,
 
-        createButton = function(uiParent, callbackMap, buttonConfig, rowIndex, groupOffset)
-            if not buttonFactory then
-                buttonFactory = MakeMainLeftBottomButtonFactory(
-                    uiParent,
-                    visibleItems,
-                    callbackMap
-                )
-            end
-            return buttonFactory(buttonConfig, rowIndex, groupOffset)
+        createButtons = function(uiParent, callbackMap)
+            return CreateMainLeftBottomButtons(
+                uiParent,
+                visibleItems,
+                callbackMap
+            )
         end,
     }
 end
