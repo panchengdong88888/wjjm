@@ -395,12 +395,13 @@ local function InstallBuyGoldButton(uiParent, visibleItems, callbackMap, buttonC
     -- buttonConfig必须使用doInit第二组V13循环实际传入的配置表，
     -- 不在工厂内部重新创建副本，以保持点击闭包捕获的是原配置对象。
     -- PC346-PC371的第二组循环首项：rowIndex=7、groupOffset=0。
+    -- ButtonFactory按指令计算x=1-85*rowIndex=-594，y=2+groupOffset=2。
     -- ButtonFactory PC5-PC9计算x=1-85*rowIndex、y=2*groupOffset。
     local button = GUI:Button_Create(
         uiParent,
         buttonConfig.key,
         -594,
-        0,
+        2,
         "res/public/fuzhu_btn.png"
     )
     if not button then
@@ -485,36 +486,6 @@ local function MakeBuyGoldRootContext(mainLeftBottom)
     local showLocalNotice = MakeShowLocalNoticeByType(mainLeftBottom)
 
     return timerState, visibleItems, showLocalNotice
-end
-
-
--- 将购买金条的PC272-PC277回调登记与PC340-PC384中V13第一项的
--- ButtonFactory迭代封装成一个可由doInit调用的片段。
--- doInit的原始顺序是：PC191取得uiParent；PC266创建callbackMap；
--- PC272-PC277登记buygoldbut；PC340-PC345创建ButtonFactory；
--- PC346-PC371遍历V13，第一项配置传入(rowIndex=7, groupOffset=0)。
--- 此片段只安装购买金条这一项，不代替整个proto48初始化函数。
-local function MakeBuyGoldButtonInitFragment(
-    visibleItems,
-    timerState,
-    showLocalNotice,
-    BuyStoreItem,
-    unusedCapturedFunction
-)
-    local callbackMap = {}
-
-    return function(uiParent)
-        local button = InstallBuyGoldButton(
-            uiParent,
-            visibleItems,
-            callbackMap,
-            timerState,
-            showLocalNotice,
-            BuyStoreItem,
-            unusedCapturedFunction
-        )
-        return button, callbackMap
-    end
 end
 
 
