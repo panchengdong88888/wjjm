@@ -309,3 +309,21 @@
 - 本接续文档本轮单独提交后，以GitHub main最新SHA为准。
 - 下一步唯一任务：恢复proto36 PC1-140商品定位、条件与限购校验主体，并把`BuyStoreItem`前置声明替换为实际函数体；随后回头定点复核proto50已有timer分支的UnSchedule调用形式。不要再重复proto36 PC141-149或proto51 PC26真假分支分析。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-12：购买金条第十四轮——proto36商城购买辅助函数主体恢复
+
+- 按上一轮接续任务，重新读取本接续文档、唯一明文源码和11.9新版原始加密文件；只围绕proto36 PC1-PC140恢复业务，不重做全量解密或全体原型检索。
+- 逐项核对proto36常量表、149条指令、跳转目标及新版VM对应处理器。确认proto36参数为`itemName`和`buyCount`，PC1-PC12获取PageStoreProxy并在代理缺失时返回`false, "商城代理不可用"`。
+- PC13-PC35：使用`pcall(SL.GetMetaValue, SL, "ITEM_INDEX_BY_NAME", itemName)`取得物品索引；查询异常、索引类型不是number或索引不大于0时，返回`false, "物品索引不存在: " .. tostring(itemName)`。
+- PC37-PC76：遍历`PageStoreProxy.pageData`。页键先经`tonumber`转换，只处理数值页键小于100且页数据为table的页面；逐页`pairs`商品数据，按`goods.Id == itemIndex`定位商品。找不到时返回`false, "商城没有这件道具"`。
+- PC77-PC84：调用`PageStoreProxy:CheckStoreLimitStatus(goods.Index)`；返回假时，返回`false, "已到限购上限"`。
+- PC85-PC101：优先取商品`Condition`，该字段为假时回退到`condis`；条件字段非空时调用`SL:CheckCondition(condition)`，检查失败返回`false, "条件不满足"`。
+- PC102-PC118：`buyCount = tonumber(buyCount) or 1`；若`CountMax`可转成大于0的数且小于当前购买数，则将购买数限制为CountMax。
+- PC119-PC140：若`LimitCount`可转成大于0的数，则计算`LimitCount - (tonumber(BuyCount) or 0)`作为剩余可购买数；剩余数小于本次购买数时下调购买数；下调后小于等于0则返回`false, "限购剩余 0"`。
+- PC141-PC149沿用上一轮已闭合的调用帧：`PageStoreProxy:RequestBuy(goods.Index, buyCount, 0)`，随后由proto36自身返回`true, buyCount`。宿主RequestBuy的返回值不参与此函数的返回判断。
+- 已将上述逻辑写成Lua 5.1函数`BuyStoreItem(itemName, buyCount)`，替换原先只有声明、没有函数体的占位符；proto51定时回调现可在源码结构上调用到该函数。唯一明文文件仍然是`11.9/MainLeftBottom_11.9_明文.lua`，未创建其他源码文件。
+- 本轮源码提交：`a41f1c067f881481e6af5e202c63fafc40916ae1`
+- 本接续文档随后单独提交；以GitHub main最新SHA为准。
+- 下一步：定点核对proto50 PC1-PC20已有timer分支的准确receiver/参数和proto48 PC277按钮绑定上下文；确认后把购买金条按钮事件链的最终函数名/注册位置补进明文源码。随后检查proto2对buygoldTimer的清理时机。不要重新分析proto36主体或RequestBuy尾段。
+- 未进行Lua编译或游戏运行测试。
