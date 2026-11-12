@@ -314,14 +314,14 @@
 --  8.1 自动购买金条：已恢复的定时回调与按钮处理器
 -- ============================================================
 
--- proto50/proto51的捕获映射（按新版opcode177及capture顺序）：
---   proto50 UP[0] = root状态表（其中保存buygoldTimer）
---   proto50 UP[1] = 启动提示函数
+-- proto50/proto51的捕获映射（按root PC438、proto48 PC272、proto50 PC13的opcode177顺序）：
+--   proto50 UP[0] = root.MainLeftBottom状态表（保存buygoldTimer）
+--   proto50 UP[1] = root的ShowLocalNotice包装函数（child30）
 --   proto50 UP[2] = BuyStoreItem（proto36）
---   proto50 UP[3] = 格式化提示函数
---   proto51 UP[0] = BuyStoreItem，UP[1] = 格式化提示函数，
---                  UP[2] = root状态表，UP[3] = 启动/结束提示函数。
--- 注意：buygoldTimer是状态表字段，不是本文件内另建的独立局部变量。
+--   proto50 UP[3] = root调试/日志闭包（child43；proto50/51中未见实际读取）
+--   proto51 UP[0] = BuyStoreItem，UP[1] = ShowLocalNotice包装函数，
+--                  UP[2] = root.MainLeftBottom状态表，UP[3] = 调试/日志闭包（未使用）。
+-- 注意：buygoldTimer是MainLeftBottom状态表字段，不是独立局部变量。
 
 -- 对应 proto36：按物品名称定位商城商品，检查购买条件和限购后提交请求。
 -- 该函数的寄存器控制流已逐段对应新版PC1-PC149；API参数均按原指令调用帧恢复。
