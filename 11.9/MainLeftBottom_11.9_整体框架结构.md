@@ -63,8 +63,8 @@ MainLeftBottom_11.9.lua
 
 ### C. 物品与仓库
 - `DiuItems`：丢弃地面物品，包含 `MSG_CS_MAP_ITEM_DISCARD`、`ITEM_IS_BIND`、`BAG_DATA`、`OverLap` 等线索。
-- `TakeItems)：仓库取物，包含 `MSG_CS_STORAGE_PICK_OUT_REQUEST`。
-- `StorageItems)：仓库存物，包含仓库页、可用格子、物品名称与数量等处理。
+- `TakeItems`：仓库取物，包含 `MSG_CS_STORAGE_PICK_OUT_REQUEST`。
+- `StorageItems`：仓库存物，包含仓库页、可用格子、物品名称与数量等处理。
 - 快捷栏移动、按物品索引使用道具。
 
 ### D. 黑名单与死亡处理
@@ -75,7 +75,7 @@ MainLeftBottom_11.9.lua
 
 ### E. UI与按钮
 - 账号验证及UI初始化相关原型。
-- `doInit_UI) / `createButton) 相关常量线索。
+- `doInit_UI` / `createButton` 相关常量线索。
 - 按钮事件涉及：开奖、绑定灵符、丢弃、黑名单、拾取、清黑名单、引怪、隐藏/显示按钮等。
 - 资源统计窗口独立成组，含窗口创建、时间文本、资源列表、刷新和关闭逻辑。
 
@@ -87,11 +87,11 @@ MainLeftBottom_11.9.lua
 
 ## 4. 与旧版已知结构的重合情况
 
-旧版已知结构中有以下功能名/模块名，在升级版根常量或子原型常量中仍能找到对应字符串线索：
+以下旧版已知函数名，确实能在升级版解码后的字符串常量中找到同名标识：
 
-`GetMapId`, `GetMapName`, `PlayerPos`, `GetDroppedItems`, `GetMainPlayerID`, `IsDie`, `GetPlayerPosition`, `GetPlayerMapPosition`, `DistanceCalculation`, `IsInWhitelistMap`, `GetOwnerDescription`, `MoveItemToQuickUse`, `PrintLog`, `LuaSendMsg`, `ShowLocalNoticeByType`, `Schedule`, `ScheduleOnce`, `ClearTargetID_2`, `FormatStateChange`, `ResetGatherMonsterData`, `GetOwnerID`, `GetOwnerIDText`, `SetTargetID`, `FindMonsterInCurrViewField`, `FindMonsterCandidates`, `MainLoop`, `InitGatherMonsters`, `StopGatherMonsters`, `Builtsetting`, `DestroyUI`, `SetButtonVisibilityState`, `ShowHideAllButtons`, `AccountIDValidation`, `MoveTo`, `DiuItems`, `TakeItems`, `PickUpItems`, `GetAvailableStoragePage`, `StorageItems`, `GetStorageItemData`, `FindBlacklistPlayer`, `onDamageMsg`, `InstallDamageHook`, `DeathAutoBlacklist`, `GetMapData2DPtr`, `UseItemByIndex`, `BlacklistPlayerDetection`, `ClearBlacklistItems`, `doInit_UI`, `createButton`
+`GetMapId`, `GetMapName`, `PlayerPos`, `GetDroppedItems`, `GetMainPlayerID`, `IsDie`, `IsInWhitelistMap`, `MoveItemToQuickUse`, `LuaSendMsg`, `ShowLocalNoticeByType`, `Schedule`, `ScheduleOnce`, `GetOwnerID`, `SetTargetID`, `FindMonsterInCurrViewField`, `MainLoop`, `InitGatherMonsters`, `StopGatherMonsters`, `Builtsetting`, `MoveTo`, `DiuItems`, `TakeItems`, `PickUpItems`, `GetAvailableStoragePage`, `StorageItems`, `GetStorageItemData`, `onDamageMsg`, `GetMapData2DPtr`, `UseItemByIndex`, `ClearBlacklistItems`
 
-这只能证明升级版仍保留这些名称或调用标识，不能仅凭字符串断定实现完全相同。后续需要按函数原型和Opcode控制流核实哪些是原样保留、哪些是内部改写。
+这代表名称/调用标识在新版中仍存在，不代表函数实现完全相同。其余旧版函数名暂时没有在本轮提取到的常量字符串中匹配到；可能是函数改名、由调用关系表达、或尚待指令级确认，不能直接判定功能删除。
 
 ## 5. 全部105个原型索引
 
