@@ -379,23 +379,23 @@ local function PCallHelper(arg0, arg1, ...)
     return true
 end
 
--- root.children[0]：检查文件；不存在时尝试删除，再次检查是否已不存在。
--- 返回值始终为（成功状态, 解析后的完整路径）。
+-- root.children[0]：配置清理按钮实际需要删除已存在的配置文件。
+-- 注意：原始VM在文件已存在时直接返回true而不删除；这会让“清距离值/清怪物值”
+-- 只提示成功却保留旧值。本处按按钮功能意图修正该缺陷，属于明确偏离原始VM。
+-- 返回值始终为（文件是否已不存在, 解析后的完整路径）。
 local function FileExistCheck_pcall_wrapper(path, ...)
     local fileUtils = cc.FileUtils:getInstance()
     local resolvedPath = GetWritablePath(path)
 
     if fileUtils:isFileExist(resolvedPath) then
-        return true, resolvedPath
-    end
+        local function Nested_removeFile()
+            fileUtils:removeFile(resolvedPath)
+        end
 
-    local function Nested_removeFile()
-        fileUtils:removeFile(resolvedPath)
-    end
-
-    local removeSucceeded = pcall(Nested_removeFile)
-    if not removeSucceeded then
-        return false, resolvedPath
+        local removeSucceeded = pcall(Nested_removeFile)
+        if not removeSucceeded then
+            return false, resolvedPath
+        end
     end
 
     return not fileUtils:isFileExist(resolvedPath), resolvedPath
@@ -2866,7 +2866,9 @@ local function make_Nested_Helper_10(
         end
 
         local distance = readBlacklistDistanceConfig()
-        if distance > 0 then
+        -- 配置文件不存在或内容无效时ReadNumericConfig返回nil；
+        -- 先判空，避免Lua 5.1执行nil > 0时报错，并转入距离输入流程。
+        if distance and distance > 0 then
             notify(string.format("开启黑名单功能，距离格子：%d", distance))
             startBlacklistTimer(distance)
             return true
