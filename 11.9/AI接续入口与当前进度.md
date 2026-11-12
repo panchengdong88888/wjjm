@@ -414,3 +414,30 @@
 - 本轮源码提交：`c21dce00378290575a8b36d6f58f6aa067df8def`
 - 下一步：把root初始化中的状态表、`MainLeftBottom.b`、本地提示包装函数、BuyStoreItem闭包与proto48 UI工厂的实例化过程继续对接，形成可直接读懂的root入口框架。优先核实root V4/V5/V55的创建位置和proto48的15项捕获全表，避免再对局部upvalue作猜测。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第二十轮——root关键闭包来源与proto48完整15项捕获表
+
+- root PC43创建child43闭包写入V4（0项捕获），这是调试/日志闭包。
+- root PC44把`_G`写入V5，PC45设置`_G.log = V4`；PC46随后把root child30闭包写入V5，PC47捕获V0。child30函数体把传入消息放入本地提示数据并调用`SL.ShowLocalNoticeByType`，还通过捕获的MainLeftBottom模块表读取屏幕尺寸。因此V5最终是本地提示包装闭包，不是`_G`本身，也不是ShowSystemTips。
+- root PC436创建child29闭包写入V55；child29即proto36的BuyStoreItem商城购买辅助函数。
+- root PC438创建proto48，PC439-PC453的15项捕获顺序已完整列出：
+  - proto48 A[0]=root V4
+  - A[1]=root V2
+  - A[2]=root V0
+  - A[3]=root V3
+  - A[4]=root V1
+  - A[5]=root V44
+  - A[6]=root V7
+  - A[7]=root V39
+  - A[8]=root V8
+  - A[9]=root V54
+  - A[10]=root V5
+  - A[11]=root V55
+  - A[12]=root V11
+  - A[13]=root V12
+  - A[14]=root V9
+- 对购买金条和destroy清理有直接影响的关键值：V0=MainLeftBottom模块表；V1=MainLeftBottom.b界面集合；V3=定时器状态表；V4=调试/日志闭包；V5=本地提示包装闭包；V55=BuyStoreItem闭包。其余寄存器来源已保留为原始映射，不在缺少用途证据时编造变量名。
+- 唯一明文源码已补充完整15项捕获表和V4/V5/V55的root创建位置。源码提交：`a6a0c89fefc3d0143db3522437b1a660831acd06`
+- 下一步：沿proto48 PC340-PC433完整恢复通用ButtonFactory的参数映射与按钮配置循环，把buygoldbut回调注册链的函数体写成可读Lua；再把root的模块初始化/销毁挂接段整理成唯一源码的入口框架。不要重复proto48捕获映射和购买金条函数内部逻辑。
+- 未进行Lua编译或游戏运行测试。
