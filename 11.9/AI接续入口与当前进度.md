@@ -603,3 +603,18 @@
 - 本轮源码提交：`e76c75b1b309877d3d01a81daf6589a80c465fbc`；说明注释同步提交：`27f6b19b0c54596c7e1a3ce93b5039671f14d517`。
 - 下一步继续按proto48 PC1-PC433恢复真实初始化函数，优先把PC266后的buygold回调登记和PC363-PC371第二组循环首项接入。完成购买金条后再处理“开新区”。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第三十二轮——恢复proto48三组按钮遍历
+
+- 在通用`MakeMainLeftBottomButtonFactory`基础上新增`CreateMainLeftBottomButtons(uiParent, visibleItems, callbackMap)`，对应proto48 PC346-PC384的三组数组遍历。
+- 按新版循环关系逐组遍历：
+  - V12第一组6项：rowIndex按`#firstGroup-index+1`倒序，groupOffset=40；
+  - V13第二组7项：rowIndex按`#secondGroup-index+1`倒序，groupOffset=0；
+  - V14第三组为空：groupOffset=80。
+- 第二组V13第一项buygoldbut会自动以rowIndex=7、groupOffset=0进入同一通用ButtonFactory，不再需要专门按钮创建函数；正确坐标由工厂计算为`(-594,2)`。
+- `MakeBuyGoldButtonInitFragment`的创建阶段改为`createButtons(uiParent, callbackMap)`，它执行完整三组按钮遍历，而不是只创建一个购买金条按钮。回调登记阶段仍独立对应PC272-PC277。
+- 这仍只是proto48按钮阶段的恢复，不是完整doInit：PC1-PC265的初始化和回调闭包建立，以及PC385-PC433隐藏按钮创建/点击闭包等尚未完整写入入口。当前不宣布购买金条完成，仍需将回调登记与三组按钮遍历接入完整初始化函数。
+- 本轮源码提交：`df394c6e88cb0b9fd764be8432f93fc9f29a404c`。
+- 下一步继续恢复proto48 PC1-PC265的真实初始化上下文及各回调登记，最终构建完整doInit；购买金条完整接入后再处理“开新区”。
+- 未进行Lua编译或游戏运行测试。
