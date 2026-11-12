@@ -2,12 +2,12 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-12",
-  "latest_checkpoint": 362,
-  "next_checkpoint": 363,
+  "latest_checkpoint": 363,
+  "next_checkpoint": 364,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "用户已报告“清距离值”“清怪物值”“开黑名单”“清黑名单”“开丢物品”“开拾取”点击无反应。已对照唯一源码与新框架API：这些按钮的周期定时器调用均通过Schedule(callback, interval)包装器，参数顺序符合SL:Schedule(callback,time)；清黑名单使用SL:ScheduleOnce(callback,delay)，也符合文档。故不能把六项统一归因于Schedule参数错误。已发现配置清理包装函数对已存在文件不执行删除、黑名单距离配置缺失时直接比较nil > 0会报错。继续逐项静态核对，先修复有明确功能缺陷的两处，并记录其与VM原始行为的偏离。",
+    "status": "检查点363已实施两处明确修复：配置清理包装函数现在会删除已存在文件并复查；黑名单距离配置为nil/无效时转入输入框路径，避免nil > 0异常。开黑名单/开丢物品/开拾取的Schedule调用均符合callback、interval顺序；清黑名单的ScheduleOnce调用符合callback、delay顺序。PCallHelper_2的FriendProxy点调用由VM PC1-PC9明确支持，未误改为冒号调用。其余三个物品/黑名单按钮没有发现静态参数顺序错误，仍需结合APP实际错误日志定位宿主API或业务回调问题。",
     "title": "排查并修复六个无响应按钮",
     "prototype": "MainLeftBottom_唯一交付文件.lua",
     "scope": [
@@ -27,15 +27,21 @@
       "开黑名单handler读取blacklist_distance.txt后直接执行if distance > 0；ReadNumericConfig在文件不存在或内容无效时返回nil，Lua 5.1中nil > 0会报错，导致未打开输入框、也未切换按钮。应把缺失/无效值导向输入框。",
       "PCallHelper_2内部Nested_FriendProxy使用global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)点调用；VM dump root.children[48].children[0]的PC1-PC9明确GETGLOBAL/GETTABLE取Facade.retrieveProxy后直接CALL，仅传ProxyTable.FriendProxy，不传Facade receiver。不得误改成冒号调用。",
       "BlacklistItems/DiuItems/PickUpItems/ClearBlacklistItems均有rootEnvironment导出；点击闭包的getfenv(1)目标可对应chunk ENV导出。DiuItems会在注册周期定时器前立即执行，若其主体报错则可能中断handler；PickUpItems由0.01秒周期任务执行。后续若无响应仍需用户提供APP运行时日志/具体通知表现，静态代码不能证明宿主回调行为。",
-      "未修改任何代码；当前为检查点362静态定位阶段。"
+      "未修改任何代码；当前为检查点362静态定位阶段。",
+      "检查点363源码修复：FileExistCheck_pcall_wrapper对存在文件执行pcall(removeFile)，再检查文件是否消失；文件不存在时直接返回成功。两个清配置按钮复用此函数，现可真正清理对应文件。此修复有意偏离原始VM的“存在即返回true但不删除”分支，原因是原行为与按钮清理功能不符。",
+      "检查点363源码修复：make_Nested_Helper_10将if distance > 0改为if distance and distance > 0。ReadNumericConfig对文件不存在/无效内容返回nil时，不再触发Lua比较异常，而是显示提示并打开黑名单距离输入框。",
+      "检查点363静态核对：schedule包装器=SL:Schedule(callback, interval)；blacklistTimerCallback、dropTimer、pickupTimer均传函数在前、时间在后。ClearBlacklistItems使用SL:ScheduleOnce(callback, delay)。参数形式均符合资料文件/docs/handoff/11_新框架API映射.md。",
+      "检查点363静态核对：root.children[48].children[0] Nested_FriendProxy VM指令PC1-PC9明确GETGLOBAL global、GETTABLE Facade、GETTABLE retrieveProxy、再以CALL传入ProxyTable.FriendProxy，未传Facade receiver；源码点调用global.Facade.retrieveProxy(...)是VM要求，不能改成冒号调用。",
+      "检查点363未确认项：清黑名单的FriendProxy运行时可用性及SL:RequestOutBlacklist宿主方法行为；DiuItems在定时器注册前立即执行，若其内部宿主调用抛错会中断handler；PickUpItems无物品/远距离目标时可能没有立即可见动作。当前无运行日志，不能静态判定其余三个按钮的实际无响应根因。"
     ],
     "completion_criteria": [
-      "配置清理按钮在文件存在时真正删除对应配置文件，并在文件不存在时报告成功",
-      "黑名单距离配置不存在或无效时点击开黑名单应进入距离输入框路径，而不是比较nil与0报错",
-      "确认Schedule/ScheduleOnce调用契约无参数顺序错误",
-      "对其余按钮不凭猜测修改；若静态无明确问题，记录需要运行时错误信息的诊断点"
+      "清距离值、清怪物值对应配置文件存在时，清理函数会执行removeFile并复查不存在；缺失时返回成功",
+      "黑名单距离文件缺失/无效时，点击开黑名单走输入框而非抛nil比较异常",
+      "所有相关Schedule/ScheduleOnce参数顺序与框架API文档一致",
+      "不对没有静态证据的清黑名单、开丢物品、开拾取盲目改写；若仍无响应，依据APP日志精确定位",
+      "不修改已实测正常的开拉怪、开奖励、隐藏、快速小退"
     ],
-    "next": "检查点363：实施两处有明确证据支持的修正（配置文件删除、黑名单距离nil门控），同步唯一源码与机器状态；再完成六个按钮的静态调用链收尾。"
+    "next": "检查点364：复核本批源码差异、Lua 5.1禁用语法/API静态扫描及六个按钮的handler返回/点击闭包行为；更新唯一交付文件末尾检查点注释、机器状态JSON与AI_START_HERE。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
