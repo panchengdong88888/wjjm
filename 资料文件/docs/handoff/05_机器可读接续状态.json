@@ -2,39 +2,40 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-12",
-  "latest_checkpoint": 361,
-  "next_checkpoint": 362,
+  "latest_checkpoint": 362,
+  "next_checkpoint": 363,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "用户反馈“开奖奖励”按钮点击无反应。本轮核对按钮handler映射、奖励定时器和消息发送入口，发现两处具体风险并已修正：SL:Schedule原先传(0, callback, 0.2)，与新框架文档SL:Schedule(callback,time)冲突；奖励回调只从chunk全局环境读取LuaSendMsg，但模块初始化明确将该函数保存于MainLeftBottom.a.LuaSendMsg，故增加模块字段回退。等待用户替换APP打包实测奖励发送及关闭功能。",
-    "title": "修复开奖励按钮点击无功能",
+    "status": "用户已报告“清距离值”“清怪物值”“开黑名单”“清黑名单”“开丢物品”“开拾取”点击无反应。已对照唯一源码与新框架API：这些按钮的周期定时器调用均通过Schedule(callback, interval)包装器，参数顺序符合SL:Schedule(callback,time)；清黑名单使用SL:ScheduleOnce(callback,delay)，也符合文档。故不能把六项统一归因于Schedule参数错误。已发现配置清理包装函数对已存在文件不执行删除、黑名单距离配置缺失时直接比较nil > 0会报错。继续逐项静态核对，先修复有明确功能缺陷的两处，并记录其与VM原始行为的偏离。",
+    "title": "排查并修复六个无响应按钮",
     "prototype": "MainLeftBottom_唯一交付文件.lua",
     "scope": [
-      "只修改根目录唯一交付源码，唯一分支main",
-      "核对rewardbut按钮配置、handler映射、点击回调、奖励定时器和LuaSendMsg发送链",
-      "奖励循环定时注册按新框架文档SL:Schedule(callback,time)调用，间隔仍使用已捕获0.2秒",
-      "奖励发送优先读取chunk环境LuaSendMsg；缺失时回退至模块已挂接的MainLeftBottom.a.LuaSendMsg",
-      "保持奖励消息参数、14项记录、counter/modulus索引及停止时UnSchedule句柄逻辑",
-      "不修改隐藏、快速小退、开拉怪及其他功能",
+      "只修改根目录MainLeftBottom_唯一交付文件.lua，唯一分支main",
+      "核对清距离值、清怪物值、开黑名单、清黑名单、开丢物品、开拾取的按钮配置、handler映射、调用链与定时器",
+      "确认SL:Schedule调用均为callback在前、interval在后；SL:ScheduleOnce调用均为callback在前、delay在后",
+      "修复配置清理按钮对已存在文件未执行删除的问题；明确记录该修复偏离原始VM行为",
+      "修复黑名单距离配置缺失时nil与数字比较导致的handler异常",
+      "其余功能若未发现明确错误，不猜测修改；不改已实测正常的开拉怪、开奖励、隐藏、快速小退",
       "Lua 5.1兼容；不执行用户取消的编译与目标游戏运行验证"
     ],
     "focus": [
-      "用户实测反馈：点击“开奖励”按钮后无反应、没有功能。",
-      "唯一源码doInit_UI的buttonGroups已定义rewardbut，name=开奖励、toggle=关奖励；buttonHandlers.rewardbut已映射到rewardCallback；通用createButton点击闭包会调用handler，handler成功返回后才翻转按钮标题/颜色。",
-      "奖励handler原先在开启分支调用SL:Schedule(0, callback, scheduleContext)，scheduleContext为root捕获的0.2。新框架API映射明确列出SL:Schedule(callback,time)，而同一源码其他已工作定时功能均使用SL:Schedule(callback, interval)。多出的首参数0会占据callback位置，导致定时注册参数与文档契约不符，可能直接抛错并中断按钮toggle更新。现改为SL:Schedule(callback, scheduleContext)，保留0.2秒间隔。",
-      "奖励发送回调原先只调用getfenv(1).LuaSendMsg；根模块初始化PC51已将发送函数挂到MainLeftBottom.a.LuaSendMsg，当前唯一源码并无证据表明chunk ENV一定存在LuaSendMsg同名全局。现改为优先读取rootEnvironment.LuaSendMsg，缺失时回退到rootEnvironment.MainLeftBottom.a.LuaSendMsg；发送参数仍为(9002, entry[1], 1.0, 2.0, 3.0, entry[2], entry[3])。",
-      "用户上传MainLeftBottom(5).lua的奖励部分仅有按钮配置，没有rewardbut handler映射或奖励定时器实现，因此不能把该文件当作奖励功能的正常实现依据。",
-      "奖励计数器、18000取模基数、14条记录、关闭时SL:UnSchedule(timerState.rewardTimer)及timerState.rewardTimer=nil均未修改。",
-      "源码提交：a3a058166a186df48e23c8a4edf580cea39b3a0b；content SHA：a6e2b8782601c29f3fd9541796b205e193eb1802。静态检查完成，未编译或运行，等待用户实测。"
+      "用户实测：开拉怪和开奖励正常；清距离值、清怪物值、开黑名单、清黑名单、开丢物品、开拾取点击后没反应。",
+      "唯一源码的Schedule包装器为SL:Schedule(callback, interval)。开黑名单、开丢物品、开拾取均通过该包装器，参数顺序与新框架文档一致；它们不是(0,callback,time)形式。",
+      "清黑名单使用SL:ScheduleOnce(callback,delay)，参数顺序与新框架文档一致，不属于SL:Schedule参数错位。",
+      "清距离值/清怪物值共用FileExistCheck_pcall_wrapper。现有实现遇到文件已存在时直接返回true和路径，没有调用removeFile；两个按钮因此会报告清空成功但不会删除实际配置。这与按钮功能意图冲突，虽然是当前VM原始控制流，本次允许作为明确功能缺陷修复，并在源码注释/状态记录中注明偏离VM。",
+      "开黑名单handler读取blacklist_distance.txt后直接执行if distance > 0；ReadNumericConfig在文件不存在或内容无效时返回nil，Lua 5.1中nil > 0会报错，导致未打开输入框、也未切换按钮。应把缺失/无效值导向输入框。",
+      "PCallHelper_2内部Nested_FriendProxy使用global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)点调用；VM dump root.children[48].children[0]的PC1-PC9明确GETGLOBAL/GETTABLE取Facade.retrieveProxy后直接CALL，仅传ProxyTable.FriendProxy，不传Facade receiver。不得误改成冒号调用。",
+      "BlacklistItems/DiuItems/PickUpItems/ClearBlacklistItems均有rootEnvironment导出；点击闭包的getfenv(1)目标可对应chunk ENV导出。DiuItems会在注册周期定时器前立即执行，若其主体报错则可能中断handler；PickUpItems由0.01秒周期任务执行。后续若无响应仍需用户提供APP运行时日志/具体通知表现，静态代码不能证明宿主回调行为。",
+      "未修改任何代码；当前为检查点362静态定位阶段。"
     ],
     "completion_criteria": [
-      "用户替换最新唯一源码打包后确认：点击“开奖励”后定时奖励消息实际发送",
-      "按钮开启后显示“关奖励”；再次点击后停止定时发送并恢复“开奖励”",
-      "隐藏、快速小退、开拉怪功能继续保持正常",
-      "若仍无效，定点采集SL:Schedule返回值/异常、rewardTimer是否写入、LuaSendMsg实际解析到哪个函数及回调是否触发；不凭猜测改奖励协议参数"
+      "配置清理按钮在文件存在时真正删除对应配置文件，并在文件不存在时报告成功",
+      "黑名单距离配置不存在或无效时点击开黑名单应进入距离输入框路径，而不是比较nil与0报错",
+      "确认Schedule/ScheduleOnce调用契约无参数顺序错误",
+      "对其余按钮不凭猜测修改；若静态无明确问题，记录需要运行时错误信息的诊断点"
     ],
-    "next": "检查点362：等待用户替换本次唯一交付源码打包实测开奖功能；若仍无效，依据具体表现诊断定时器注册、LuaSendMsg绑定或消息协议，不改其他功能。"
+    "next": "检查点363：实施两处有明确证据支持的修正（配置文件删除、黑名单距离nil门控），同步唯一源码与机器状态；再完成六个按钮的静态调用链收尾。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
