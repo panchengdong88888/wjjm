@@ -3611,3 +3611,35 @@ return MainLeftBottom
 -- 本批未发现足以支持修改运行逻辑的新增错配；仅修正本文件内历史文件名、
 -- 平行源码定位及当前工作状态的过期注释。Lua编译和目标游戏运行均按用户要求不执行。
 -- ============================================================================
+
+
+-- ============================================================================
+-- 检查点348：Lua 5.1 chunk环境动态调用目标核对
+--
+-- 对唯一源码全部getfenv(1)动态查找点进行名称级盘点，并与根模块导出账本对照：
+--   MainLeftBottom.doInit       -> root模块字段PC411，存在；
+--   GetDroppedItems             -> ENV全局导出PC61，存在；
+--   MainLeftBottom.a.LuaSendMsg -> a状态字段PC51，存在；
+--   GetStorageItemData          -> ENV全局导出PC73，存在；
+--   PlayerPos                   -> ENV全局导出PC59，存在；
+--   MoveTo                      -> ENV全局导出PC63，存在；
+--   GetAvailableStoragePage     -> ENV全局导出PC70，存在；
+--   StopGatherMonsters          -> ENV全局导出PC255，存在；
+--   ClearBlacklistItems         -> ENV全局导出PC388，存在；
+--   BlacklistItems              -> ENV全局导出PC382，存在；
+--   StorageItems                -> ENV全局导出PC78，存在；
+--   TakeItems                   -> ENV全局导出PC82，存在；
+--   PickUpItems                 -> ENV全局导出PC85，存在；
+--   DiuItems                    -> ENV全局导出PC67，存在；
+--   InitGatherMonsters          -> ENV全局导出PC246，存在；
+--   Builtsetting                -> ENV全局导出PC258，存在；
+--   MoveItemToQuickUse          -> ENV全局导出PC260，存在。
+--
+-- 唯一未能由本模块导出账本闭合的名称是getfenv(1).LuaSendMsg（出现于奖励回调
+-- 与每日巡航回调）。根PC51只将LuaSendMsg写入MainLeftBottom.a.LuaSendMsg，
+-- 未写入chunk ENV全局；但对应子原型字节码明确执行GETGLOBAL("LuaSendMsg")。
+-- 因此保留该动态全局读取，不擅自替换成a.LuaSendMsg；标记为宿主环境外部全局依赖，
+-- 目标环境是否另行提供该全局尚未确认。
+--
+-- 本批仅完成动态调用目标盘点，没有发现可凭现有证据安全修正的源码错配。
+-- ============================================================================
