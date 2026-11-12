@@ -488,27 +488,28 @@ end
 --   A[2] = BuyStoreItem(proto36)；A[3] = root调试/日志闭包（proto50/51未使用）。
 -- 因此proto50处理器参数顺序必须保持以下四项，不得交换第2/4项。
 -- 已有buygoldTimer时原版直接返回true；没有timer才显示本地提示并Schedule。
-local function OnBuyGoldButtonClick(
+local function MakeBuyGoldButtonHandler(
     timerState,
     showLocalNotice,
     BuyStoreItem,
     unusedCapturedFunction
 )
-    if timerState.buygoldTimer then
+    return function()
+        if timerState.buygoldTimer then
+            return true
+        end
+
+        showLocalNotice("开始检测金币(>200W买金条)")
+        local callback = MakeBuyGoldTimerCallback(
+            BuyStoreItem,
+            showLocalNotice,
+            timerState,
+            unusedCapturedFunction
+        )
+        timerState.buygoldTimer = SL:Schedule(callback, 0.5)
         return true
     end
-
-    showLocalNotice("开始检测金币(>200W买金条)")
-    local callback = MakeBuyGoldTimerCallback(
-        BuyStoreItem,
-        showLocalNotice,
-        timerState,
-        unusedCapturedFunction
-    )
-    timerState.buygoldTimer = SL:Schedule(callback, 0.5)
-    return true
 end
-
 -- proto36的PC1-PC149已恢复为BuyStoreItem；proto50/51的timer字段及四项闭包捕获
 -- 也按新版指令关系表达。按钮事件已有timer时原版直接返回true，不执行取消。
 
