@@ -2,12 +2,12 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-12",
-  "latest_checkpoint": 368,
-  "next_checkpoint": 369,
+  "latest_checkpoint": 369,
+  "next_checkpoint": 370,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "检查点368已找到并修复右列消失的直接原因。make_Nested_FFFFFF每行layoutOption=2、行容器宽度=cellWidth，但textX公式错误地除以1，导致第1列中心为0.5*cellWidth、第2列中心为1.5*cellWidth（超出行容器右边界）。现改为除以layoutOption，列中心分别为0.25*cellWidth和0.75*cellWidth。只改列内横坐标比例，未改资源数据来源或其他布局参数，等待用户实测。",
+    "status": "用户在替换检查点368版本后反馈“好像都可以了”，暂按资源统计窗口整体显示正常、右侧资源列已恢复记录为用户初步实测通过。用户使用“好像”表达仍有不确定性，因此不标记为严格最终验收；后续如出现缺项、错位或数值异常再回到资源统计专项核对。",
     "title": "资源统计右侧资源列越界修复",
     "prototype": "MainLeftBottom_唯一交付文件.lua",
     "scope": [
@@ -23,7 +23,8 @@
       "现修复为textX=cellWidth*(columnIndex-0.5)/layoutOption；layoutOption=2时两列中心为0.25*cellWidth和0.75*cellWidth，右列回到行容器内。该修复保持两列作为整体布局，不是逐项全居中。",
       "资源名称与刷新逻辑保持：moneyNames四项、resourceNames六项；moneyRows和itemRows分别刷新。检查点367恢复的资源名称:数量(变化量)格式仍保留。",
       "源码提交：5cb517c9dc1957496dffe6d0d27551c3fd102363；content SHA：42bdfd48796cd2d325b2b89ddd5d2a85cedc5a7ff。",
-      "当前只静态修复列坐标公式，尚未由用户实测验证；未执行编译或目标游戏运行。"
+      "当前只静态修复列坐标公式，尚未由用户实测验证；未执行编译或目标游戏运行。",
+      "检查点369用户初步实测反馈：替换检查点368版本后“好像都可以了”。暂记资源统计窗口位置、内部两列及显示效果初步通过；因用户表述保留不确定性，不宣称完整验收。"
     ],
     "completion_criteria": [
       "资源统计窗口按屏幕中心定位，水平/垂直锚点均为0.5",
@@ -31,7 +32,7 @@
       "不改变资源统计数据与刷新业务逻辑",
       "用户替换APP实测确认尺寸和位置后，才记录运行效果通过"
     ],
-    "next": "检查点369：用户替换最新唯一源码后确认资源统计右侧一列是否出现、两列是否均在紫色窗口内部并作为整体居中。若右列出现但整体左右间距或边缘仍不匹配，再依据截图微调；若仍不出现，检查ListView行容器裁剪和创建返回值，不先改数据源。"
+    "next": "检查点370：资源统计专项暂时收尾，除非用户后续报告问题，不再主动改动此部分。继续处理此前尚未完成实测确认的其他按钮提示问题；尤其检查点364 ShowLocalNoticeByType receiver修复仍需单独验证，不能因资源统计正常而视为通过。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
