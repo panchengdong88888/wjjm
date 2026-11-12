@@ -2,14 +2,11 @@
 -- 原型：root / MainLeftBottom_Module
 -- 规范路径：root
 -- 规模：412条物理指令、109常量、58个直接子原型
--- 检查点192-198、262-269：根模块分段普通Lua草稿，PC1-PC412均已建立分段记录；非作者原文逐字恢复；检查点273核对PC1-PC42根表/a/b/z/timerState创建顺序及来源导出身份；检查点276新增资料文件/docs/handoff/13_MainLeftBottom_原型结构树.md，汇总110个原型节点及根级58个闭包创建点；未运行时验证。
--- 状态：持续开发中。此文件是唯一主源码；每批新增/修正直接写入本文件。当前尚未完成整体闭包装配，未运行时验证。
--- 检查点236：58个直接子原型闭包创建点与135个OP_387 live-cell捕获已建表，见资料文件/docs/handoff/12_根模块闭包装配表.json。
--- 检查点290：按原型主体静态恢复PrintLog（table走SL.dump、格式化只在pcall内执行且不虚构SL.Print调用）与ShowLocalNoticeByType（捕获MainLeftBottom.a并构造通知记录）；未运行时验证。
--- 检查点278：第一批11个地图/坐标/玩家辅助函数已在本文件中整理为可读函数主体；静态证据完整，未运行时验证。
--- 检查点282：按原始VM固定参数计数纠正GetWritablePath/ReadNumericConfig入口；两者均为一个固定参数，额外参数不读取，未运行时验证。
--- 检查点281：按用户要求，当前优先级调整为MainLeftBottom_Module入口PC1-PC412与doInit_UI界面初始化；物品/背包/仓库功能暂缓。
--- 检查点283：PC2/4/31/34等ENV名称读写统一通过rootEnvironment；PC44/45中ENV["_G"]单独解析为rootRegisters[5]，log写入该表；全局闭包导出写入ENV而非假定写入_G。
+-- 当前文件目标：把root模块及109个子原型整理为同一词法作用域内的可读普通Lua源码。
+-- 已有109个子原型完整静态恢复记录；本轮继续核对嵌套闭包是否全部真实落入本文件，
+-- 并收敛root模块初始化、闭包创建、字段挂接、全局导出与最终return。
+-- 本文件不是作者原始源码逐字恢复；未执行Lua编译或目标游戏运行验证。
+-- 开拉怪与快速小退已由用户在目标APP环境实测通过。
 
 -- VM的ENV是当前chunk环境，不应无条件等同于_G。
 -- Lua 5.1优先通过getfenv取得；Lua 5.2+使用词法_ENV；
@@ -786,98 +783,16 @@ rootEnvironment.MoveItemToQuickUse = MoveItemToQuickUse
 
 
 ----------------------------------------------------------------
--- 检查点210：第一阶段根模块装配接口（可执行普通Lua骨架）
+----------------------------------------------------------------
+-- 检查点350：移除早期未使用的第一阶段外部装配适配器。
 --
--- 用途：把已单独恢复的子原型接回根模块的真实导出位置。
--- prototypes中的函数必须是已完成父级捕获绑定的闭包实例；本接口不
--- 伪造VM upvalue，也不代替各子原型的函数体。
--- 未提供的项目保持原样，不以空函数冒充恢复结果。
---
--- 这是第一阶段装配骨架，不是完整原始模块；尚未完成的父级闭包创建、
--- 部分本地辅助函数和宿主运行时验证仍需后续补齐。
-local function AttachRecoveredPrototypes(prototypes, environment)
-    assert(type(prototypes) == "table",
-        "AttachRecoveredPrototypes expects a table of recovered closures")
-
-    environment = environment or rootEnvironment
-    assert(type(environment) == "table",
-        "AttachRecoveredPrototypes expects a chunk environment table")
-    local module = environment.MainLeftBottom
-    assert(type(module) == "table",
-        "AttachRecoveredPrototypes cannot find environment.MainLeftBottom")
-
-    local function exportGlobal(globalName, prototypeName)
-        local fn = prototypes[prototypeName]
-        if fn ~= nil then
-            environment[globalName] = fn
-        end
-    end
-
-    -- root PC43-PC85：基础辅助函数和物品/仓库流程导出。
-    exportGlobal("GetMapId", "GetMapId")
-    exportGlobal("GetMapName", "GetMapName")
-    exportGlobal("PlayerPos", "PlayerPos")
-    exportGlobal("GetDroppedItems", "GetDroppedItems")
-    exportGlobal("MoveTo", "MoveTo")
-    exportGlobal("DiuItems", "DiuItems")
-    exportGlobal("GetAvailableStoragePage", "GetAvailableStoragePage")
-    exportGlobal("GetStorageItemData", "GetStorageItemData")
-    exportGlobal("StorageItems", "StorageItems")
-    exportGlobal("TakeItems", "TakeItems")
-    exportGlobal("PickUpItems", "PickUpItems")
-
-    if prototypes.LuaSendMsg ~= nil then
-        module.a.LuaSendMsg = prototypes.LuaSendMsg
-    end
-
-    -- root PC212-PC258：采集控制相关全局入口。
-    exportGlobal("IsInWhitelistMap", "IsInWhitelistMap")
-    exportGlobal("MainLoop", "MainLoop")
-    exportGlobal("InitGatherMonsters", "InitGatherMonsters")
-    exportGlobal("StopGatherMonsters", "StopGatherMonsters")
-    exportGlobal("Builtsetting", "Builtsetting")
-
-    -- root PC259-PC274：MainLeftBottom.a UI状态表上的界面控制闭包。
-    if prototypes.DestroyUI ~= nil then
-        module.a.hide = prototypes.DestroyUI
-    end
-    if prototypes.SetButtonVisibilityState ~= nil then
-        module.a.show = prototypes.SetButtonVisibilityState
-    end
-    if prototypes.ShowHideAllButtons ~= nil then
-        module.a.destroy = prototypes.ShowHideAllButtons
-    end
-    exportGlobal("MoveItemToQuickUse", "MoveItemToQuickUse")
-
-    -- root PC275-PC279：账号验证入口。
-    if prototypes.AccountIDValidation ~= nil then
-        module.main = prototypes.AccountIDValidation
-    end
-
-    -- root PC350-PC388：伤害回调与黑名单功能入口。
-    if prototypes.onDamageMsg ~= nil then
-        module.a.onDamageMsg = prototypes.onDamageMsg
-    end
-    exportGlobal("BlacklistItems", "BlacklistPlayerDetection")
-    exportGlobal("ClearBlacklistItems", "ClearBlacklistItems")
-
-    -- root PC389-PC411：主界面初始化入口。
-    if prototypes.doInit_UI ~= nil then
-        module.doInit = prototypes.doInit_UI
-    end
-
-    return module
-end
-
--- 第一阶段接入约定：
--- 1. prototypes的键使用本文件中列出的重建名称。
--- 2. 带父级upvalue的子原型必须由调用方先按反汇编捕获顺序绑定。
--- 3. 不存在或未恢复的键不会被覆盖，也不会自动填入空函数。
--- 4. 本接口只解决“已恢复闭包接回根模块”的装配问题；根模块PC1-PC412
---    的完整逐语句源码重建仍未完成。
+-- 当前唯一交付文件已在同一词法作用域中直接创建根级闭包、共享状态、
+-- 模块字段与chunk ENV导出；不再通过AttachRecoveredPrototypes(prototypes)
+-- 接收外部函数表。保留该旧适配器只会让替换测试误以为还需要外部装配步骤。
+-- 本次删除的是从未被调用的local函数，不改变模块初始化和运行路径。
+----------------------------------------------------------------
 
 
--- ============================================================================
 -- 检查点237：高复用root寄存器值生命周期表（按OP_387 live cell语义）
 --
 -- 本节以corrected phase3 root反汇编的直接写入PC为边界。OP_387捕获父T表
@@ -1541,7 +1456,18 @@ local function InitGatherMonsters()
     isGatherRunning = true
     FormatStateChange(gatherStatusText.IDLE)
     ResetGatherMonsterData()
-    timerState.gatherTimer = SL:Schedule(MainLoop, gatherConfig.CHECK_INTERVAL)
+
+    -- root.children[19].children[0] / Nested_MainLoop：
+    -- VM在InitGatherMonsters内部创建无捕获闭包，回调体通过GETGLOBAL调用MainLoop。
+    -- 不直接把本地MainLoop函数对象交给Schedule，以保留原始全局查找与回调闭包身份。
+    local function Nested_MainLoop()
+        getfenv(1).MainLoop()
+    end
+
+    timerState.gatherTimer = SL:Schedule(
+        Nested_MainLoop,
+        gatherConfig.CHECK_INTERVAL
+    )
     PrintLog(string.format("引怪功能已启动 (阈值: %d)", gatherConfig.GATHER_THRESHOLD))
 end
 
