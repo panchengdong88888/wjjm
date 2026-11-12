@@ -1530,9 +1530,9 @@ local function ShowHideAllButtons()
     end
 end
 
--- PC276捕获root T[4]=PrintLog、T[5]=ShowLocalNoticeByType。
--- 使用局部别名固定这两个闭包身份，避免运行期间全局同名函数被替换。
--- 测试打包模式：屏蔽脚本自身的游戏ID/账号UID白名单验证。
+-- 原VM的AccountIDValidation捕获PrintLog与ShowLocalNoticeByType。
+-- 测试打包模式不再执行账号验证，因此仅保留等待提示所需的PrintLog别名。
+-- 脚本自身的GAME_ID/UID白名单验证已屏蔽；APP/平台登录认证不在本函数范围内。
 -- 保留原AccountIDValidation入口及延迟UI初始化回调，避免影响主界面初始化。
 local accountPrintLog = PrintLog
 
