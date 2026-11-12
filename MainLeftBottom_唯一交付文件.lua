@@ -2946,7 +2946,8 @@ local function make_Nested_Helper_9(uiState, notify, buttonMap)
             GUI:setOpacity(uiState.hidebut, shouldShow and 255 or 0)
         end
 
-        uiState.isHidden = not shouldShow
+        -- 本文件沿用VM字段语义：true表示当前按钮组处于显示态，false表示隐藏态。
+        uiState.isHidden = shouldShow
         notify(shouldShow and "显示所有按钮" or "隐藏所有按钮")
     end
     return Nested_Helper_9
