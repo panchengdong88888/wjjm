@@ -229,3 +229,15 @@
 - 检查点341的锁定分支修正仍有效：成功设置等待状态后保留当前游标并return；失败时推进游标并return。源码注释已将误写的PC编号更正为不带编号的等待确认路径描述。
 - 尚未执行Lua编译或目标游戏运行验证；本批仅做VM与明文静态对照。
 - 下一步：继续核对MainLoop剩余候选处理、GATHERING批次完成、ATTACKING扫描/清理，以及阈值输入写入包装器的原始调用帧。
+
+
+## 检查点343：PCallHelper固定参数槽位语义纠错
+
+- 重新检查原始VM调用帧规则（检查点235）：每次函数调用新建T表，固定参数按顺序写入T[0]、T[1]……；`PCallHelper` 的 `fixed_param_count=2`，因此T[0]为第一个固定参数、T[1]为第二个固定参数。
+- `Nested_tostring` 的捕获顺序为UP[0]=父T[1]、UP[1]=父UP[0](GetWritablePath)、UP[2]=父T[0]。其VM指令明确执行 `tostring(UP[0])`，再调用 `UP[1](UP[2])`，最后把payload和路径传给FileUtils:writeStringToFile。
+- 因此PCallHelper的真实语义是：第一个参数为路径，第二个参数为写入内容。此前明文将签名写成 `PCallHelper(arg1,arg0)`，并把第一个参数当内容、第二个参数当路径，属于AI在解密转明文时的参数槽位还原错误。
+- 已修正唯一交付源码为 `PCallHelper(arg0,arg1,...)`，保持 `payload=tostring(arg1)` 与 `GetWritablePath(arg0)`。这与VM闭包捕获和指令顺序一致。
+- root.children[32]/[54]的包装器按VM原顺序调用 `PCallHelper(固定文件名, firstArg)` 本来就是正确的；修正本体参数语义后，黑名单距离和拉怪阈值均会写入各自固定文件路径，firstArg作为文件内容。
+- 本检查点纠正检查点341中对PCallHelper“第1参内容、第2参路径/VM原始参数异常”的错误判断；该旧判断不得继续作为依据。
+- 唯一源码提交：`dfeb60a907e69267a441a02ad2e4f6f90130b951`。未执行Lua编译或目标游戏运行验证。
+- 下一步：继续复核MainLoop剩余控制流、批次切换与ATTACKING清理，并检查输入回调和按钮同步链。
