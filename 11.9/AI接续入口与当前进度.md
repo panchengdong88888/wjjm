@@ -270,3 +270,16 @@
 - 尚待核实：proto36内部RequestBuy的准确参数和返回值；proto51 PC26-57对返回值的成功/失败提示分支；buygoldTimer停止条件和proto2清理触发时机。
 - 下一步唯一任务：从proto36的完整指令和proto51 PC26-57继续恢复实际购买结果处理，随后写入购买金条Lua 5.1函数体。
 - 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-12：购买金条第十二轮——指令常量位映射复核与RequestBuy尾段定位
+
+- 按11.9内嵌加载器M()的原始解码代码重新核对指令flag：第4位控制操作数A的常量替换，第5位控制B，第6位控制C。此前临时解析输出曾把替换位整体错后一位，造成部分常量显示在错误操作数字段；本轮重新按加载器规则解析，后续PC级判断以本轮映射为准。
+- proto36确认参数数为2；PC1-8通过global.Facade.retrieveProxy(global.ProxyTable.PageStoreProxy)取得商城代理；PC14-20读取ITEM_INDEX_BY_NAME并检查索引；PC37-58遍历pageData定位商品；PC77-118处理商品条件、CheckCondition、CheckStoreLimitStatus、LimitCount和BuyCount等限购逻辑。
+- proto36 PC141读取商城代理的RequestBuy成员；PC142读取商品记录的Index字段；PC143-148构造尾部调用帧，PC149返回。已定位真正请求入口，但receiver、显式参数顺序和返回值寄存器尚未完全闭合，因此本轮没有猜写RequestBuy调用代码。
+- proto51重新核对后：PC10-18查询金币ID和余额；PC20比较常量2000000与金币余额；PC22-25调用捕获的proto36闭包，实参确认是“金条”、1；PC26-27根据proto36返回值分流，PC28-31是成功文案格式化路径，PC33-46是失败提示处理路径。真假分支的极性仍需确认，不能擅自将某个返回值判为成功。
+- proto51 PC48-57存在定时器取消/清理路径；PC59-76为金币不足时取消定时器、清空buygoldTimer并提示“金币不足200W，买金条结束”的路径。
+- 本轮实际修改仅限唯一明文源码文件11.9/MainLeftBottom_11.9_明文.lua，增加本轮证据与待确认边界；没有创建第二份源码，没有修改任何参考文件，没有进行Lua编译或游戏运行测试。
+- 唯一明文源码提交：a1bb50514424fa98cb1bb11e091bc63ed3bb2501
+- 本接续文件随后单独提交；以本文件最新提交SHA为准。
+- 下一步唯一任务：只核对proto36 PC141-149的RequestBuy调用帧和proto51 PC26-27的真假分支极性；一旦闭合，直接恢复并写入proto36、proto50、proto51的Lua 5.1函数体，不再重复全量解密或全体原型检索。
