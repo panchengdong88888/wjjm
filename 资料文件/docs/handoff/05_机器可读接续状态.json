@@ -2,12 +2,12 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-12",
-  "latest_checkpoint": 341,
-  "next_checkpoint": 342,
+  "latest_checkpoint": 342,
+  "next_checkpoint": 343,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "进行中：已从原始VM确认并修正MainLoop锁定分支的一处明文控制流还原错误；继续对照原始VM检查等待归属确认、游标推进、批次切换及配置输入链，直到相关链路无已知还原错配。",
+    "status": "进行中：已通过原始VM确认并修正MainLoop两处明文还原遗漏（锁定分支返回/游标控制、归属确认成功计数）；继续复核剩余开拉怪链路。",
     "title": "开拉怪功能实测问题定位、重新核对与修正",
     "prototype": "doInit_UI的yinguaibut按钮回调；阈值读取/输入/保存链；Nested_StopGatherMonsters；Nested_InitGatherMonsters；InitGatherMonsters；MainLoop；FindMonsterCandidates；StopGatherMonsters；ResetGatherMonsterData；相关定时器、引擎代理和宿主API调用。",
     "scope": [
@@ -23,12 +23,13 @@
       "保持Lua 5.1兼容；不执行Lua/luac实际编译和游戏运行验证，实测信息由用户提供"
     ],
     "focus": [
-      "检查点341已确认：MainLoop PC280-PC302为SetTargetID成功分支，设置等待标记/截止时间/目标ID/名称并输出等待日志后直接return；PC303-PC311为锁定失败分支，输出失败日志、游标设为index+1后到PC312 return。唯一交付源码原先把游标递增放在if/else之后且没有分支return，导致成功后错误推进游标并在同一回调继续扫描；已按VM修正为成功保持当前游标并return、失败推进一位并return。",
-      "继续逐段复核MainLoop等待归属到期后的确认分支、自己归属计数、GATHERING循环边界、ATTACKING分支和批次清理，确认明文与VM指令的分支极性/返回位置一致。",
-      "FindMonsterCandidates先按距离排序并截取GATHER_THRESHOLD个，再由MainLoop过滤其他玩家归属，是原始VM当前指令顺序；不能仅因用户的粗略描述不同而改写。",
-      "IsDie包装器返回actor and not actor:IsDie()，truthy表示存活；所有调用按此语义核对。",
-      "阈值写入包装链当前明文与VM调用排列一致，但其PCallHelper本体把第1参转成写入内容、第2参用于GetWritablePath，实际组合存在疑似原始逻辑问题；先保留并进一步核对原始VM调用帧，不将其误报为明文错配。",
-      "用户描述的10只逐只获取归属流程仅作为理解辅助；所有源码还原以原始MainLeftBottom_vm_dump.json及校正反汇编为准。",
+      "检查点341：MainLoop PC280-PC312确认SetTargetID成功分支写入等待状态/日志后直接return；失败分支输出失败日志、游标推进index+1后return。唯一源码原先统一推进游标并继续循环，已修正为两条VM分支的真实返回控制流。",
+      "检查点342：MainLoop PC122-PC140确认等待目标归属为自己时，VM在输出成功日志后执行共享归属计数UPVALUE[11] = UPVALUE[11] + 1（PC137-PC139），再清理等待字段并推进扫描游标；唯一源码原先遗漏该计数，已补齐resetSlot16 = resetSlot16 + 1。",
+      "等待到期后若未确认归属，VM输出未变更/离开视野日志，不增加归属计数；随后清理等待状态并推进游标。已对照当前源码检查该分支。",
+      "FindMonsterCandidates先距离排序、再按GATHER_THRESHOLD截取，之后MainLoop才过滤其他玩家归属，是原始VM的指令顺序；不要根据用户粗略流程擅自改写。",
+      "IsDie(actor)返回actor and not actor:IsDie()，truthy表示存活。",
+      "阈值写入包装链仍有反直觉参数/路径组合疑点；当前源代码映射与既有VM调用帧审计记录一致，先不改，需继续按原始VM逐槽核验，不能只凭用途推测。",
+      "继续检查MainLoop的目标扫描、批次完成、ATTACKING清理，以及输入保存回调的参数/返回值；只将VM与明文不一致项作为恢复错误修正。",
       "保持Lua 5.1、main唯一分支、MainLeftBottom_唯一交付文件.lua唯一交付源码；不执行Lua编译或游戏运行验证。"
     ],
     "completion_criteria": [
@@ -39,7 +40,7 @@
       "复核同一调用链不存在已知的第二处阻断问题；未能确认的宿主行为明确列为待确认，不冒称解决",
       "更新AI_START_HERE.md与本JSON，提交到main"
     ],
-    "next": "继续对照原始VM核验MainLoop等待归属到期后的分支与游标推进，随后核对候选截断、阈值输入回调及配置写入调用帧；发现新的明文错配才修正，不擅自改写VM原有行为。"
+    "next": "完成MainLoop PC1-PC417与唯一源码的针对性差异核对（重点等待确认后的共享状态、游标、ATTACKING批次完成）；随后核验阈值输入写入包装器的原始调用帧和PCallHelper闭包捕获。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
