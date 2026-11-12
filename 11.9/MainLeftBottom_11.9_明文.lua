@@ -314,14 +314,22 @@
 --  8.1 自动购买金条：已恢复的定时回调与按钮处理器
 -- ============================================================
 
--- proto50/proto51的捕获映射（按root PC438、proto48 PC272、proto50 PC13的opcode177顺序）：
---   proto50 UP[0] = root.MainLeftBottom状态表（保存buygoldTimer）
---   proto50 UP[1] = root的ShowLocalNotice包装函数（child30）
---   proto50 UP[2] = BuyStoreItem（proto36）
---   proto50 UP[3] = root调试/日志闭包（child43；proto50/51中未见实际读取）
---   proto51 UP[0] = BuyStoreItem，UP[1] = ShowLocalNotice包装函数，
---                  UP[2] = root.MainLeftBottom状态表，UP[3] = 调试/日志闭包（未使用）。
--- 注意：buygoldTimer是MainLeftBottom状态表字段，不是独立局部变量。
+-- root到proto48的15项upvalue映射（root PC438创建proto48，PC439-PC453依次捕获）：
+--   proto48 A[0]=root V4；A[1]=V2；A[2]=V0；A[3]=V3；A[4]=V1；
+--   A[5]=V44；A[6]=V7；A[7]=V39；A[8]=V8；A[9]=V54；
+--   A[10]=V5；A[11]=V55；A[12]=V11；A[13]=V12；A[14]=V9。
+-- 关键root寄存器来源：V0=MainLeftBottom模块表；V1=MainLeftBottom.b界面集合；
+-- V3=root PC42创建的定时器状态表；V4=root PC43创建的child43调试/日志闭包；
+-- V5=root PC46创建的child30本地提示包装闭包（捕获V0，读取模块表屏幕尺寸）；
+-- V55=root PC436创建的child29，即BuyStoreItem(proto36)闭包。
+--
+-- proto48 PC272创建proto50时按顺序捕获A[3]、A[10]、A[11]、A[0]：
+--   proto50 UP[0]=定时器状态表；UP[1]=本地提示包装函数；
+--   UP[2]=BuyStoreItem；UP[3]=调试/日志闭包（proto50/51未见实际读取）。
+-- proto50 PC13创建proto51时按顺序捕获UP[2]、UP[3]、UP[0]、UP[1]：
+--   proto51 UP[0]=BuyStoreItem；UP[1]=本地提示包装函数；
+--   UP[2]=定时器状态表；UP[3]=调试/日志闭包（未使用）。
+-- 注意：buygoldTimer是定时器状态表字段，不是独立局部变量。
 
 -- 对应 proto36：按物品名称定位商城商品，检查购买条件和限购后提交请求。
 -- 该函数的寄存器控制流已逐段对应新版PC1-PC149；API参数均按原指令调用帧恢复。
