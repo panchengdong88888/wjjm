@@ -309,10 +309,12 @@ end
 -- 因此buygoldbut最终进入真实按钮点击事件，不只是停留在一个未使用的table字段。
 -- root寄存器来源：V3是root PC42创建的定时器状态表；V5是root child30创建的
 -- ShowLocalNoticeByType包装函数；V55是proto36闭包；V4是root child43调试闭包。
--- proto48的15项捕获中，proto50按顺序捕获：
---   A[0] = root.MainLeftBottom状态表；A[1] = root的ShowLocalNotice包装函数；
---   A[2] = BuyStoreItem(proto36)；A[3] = root调试/日志闭包（proto50/51未使用）。
--- 因此proto50处理器参数顺序必须保持以下四项，不得交换第2/4项。
+-- proto48的15项捕获中，proto50按顺序捕获proto48 A[3]、A[10]、A[11]、A[0]：
+--   UP[0] = root V3定时器状态表；
+--   UP[1] = root V5的ShowLocalNoticeByType包装函数；
+--   UP[2] = root V55的BuyStoreItem(proto36)闭包；
+--   UP[3] = root V4调试/日志闭包（proto50/51未使用）。
+-- 因此proto50处理器参数顺序必须保持以下四项，不得交换。
 -- 已有buygoldTimer时原版直接返回true；没有timer才显示本地提示并Schedule。
 local function MakeBuyGoldButtonHandler(
     timerState,
@@ -446,6 +448,20 @@ local function MakeShowLocalNoticeByType(mainLeftBottom)
         SL:ShowLocalNoticeByType(notice)
     end
 end
+
+-- 对应root PC30-PC46：创建MainLeftBottom.b界面控件表、定时器状态表及本地提示闭包。
+-- root PC30创建空控件表，PC32赋值MainLeftBottom.b；root PC42创建空timerState；
+-- root PC46创建ShowLocalNoticeByType闭包，捕获MainLeftBottom模块表。
+local function MakeBuyGoldRootContext(mainLeftBottom)
+    local visibleItems = {}
+    local timerState = {}
+
+    mainLeftBottom.b = visibleItems
+    local showLocalNotice = MakeShowLocalNoticeByType(mainLeftBottom)
+
+    return timerState, visibleItems, showLocalNotice
+end
+
 
 -- 将购买金条的PC272-PC277回调登记与PC340-PC384中V13第一项的
 -- ButtonFactory迭代封装成一个可由doInit调用的片段。
