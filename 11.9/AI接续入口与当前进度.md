@@ -52,47 +52,43 @@
 
 ## 四、当前任务（最高优先级）
 
-**任务：继续恢复新版11.9源码，所有代码只写入 `11.9/MainLeftBottom_11.9_明文.lua`。**
+**唯一优先任务：先完成“购买金条”按钮的完整可读源码与实际事件接线；完成后下一个功能才是“开新区”。**
 
-当前唯一明文文件已创建初始骨架，尚未填入经过核实的业务实现。文件当前包括以下占位模块：
+用户已明确要求：购买金条没有完整处理好之前，不要转去处理开新区，也不要因为黑名单等其他按钮已有分析成果而擅自改变顺序。
 
-1. 加载入口与全局初始化
-2. 基础框架 API 包装函数
-3. 通用辅助函数与配置
-4. UI 初始化、窗口与按钮创建
-5. 怪物查找与引怪系统
-6. 物品处理与仓库系统
-7. 黑名单、伤害消息与 Hook
-8. 新版新增功能及其他业务模块
-9. 文件收尾与返回值
+### 购买金条：当前已恢复内容
 
-### 建议的实际执行顺序
+唯一明文文件 `11.9/MainLeftBottom_11.9_明文.lua` 当前已经包含以下函数：
 
-1. 先确认文件入口、顶层初始化顺序和返回结构。
-2. 先恢复简单且开发文档有明确API契约的包装函数。
-3. 恢复UI初始化、按钮创建及每个按钮的完整事件链。
-4. 恢复引怪功能：FindMonsterInCurrViewField、FindMonsterCandidates、InitGatherMonsters、MainLoop、StopGatherMonsters。
-5. 恢复物品、仓库、黑名单、Hook及其他新版功能。
-6. 每完成一组就立即写入唯一明文文件并更新本接续文件，不等全部分析结束。
+1. `BuyStoreItem(itemName, buyCount)`：对应新版proto36，149条指令。已按11.9原始指令逐段复核，当前函数体覆盖：
+   - 取得PageStoreProxy；代理不可用时返回失败原因。
+   - 通过`pcall(SL.GetMetaValue, SL, "ITEM_INDEX_BY_NAME", itemName)`查询物品索引，并检查索引类型/有效性。
+   - 遍历`pageData`，只处理数值页号小于100且商品集合为table的页面；按`goods.Id`匹配物品索引。
+   - 检查`CheckStoreLimitStatus(goods.Index)`。
+   - 读取`Condition`，必要时回退到`condis`，再调用`SL:CheckCondition`。
+   - 将购买数量转换为数值，按`CountMax`和`LimitCount - BuyCount`调整数量；限购剩余量不大于0时返回失败。
+   - 最终调用`PageStoreProxy:RequestBuy(goods.Index, buyCount, 0)`，函数自身返回`true, buyCount`。
+2. `MakeBuyGoldTimerCallback(...)`：对应proto51，负责金币查询、阈值判断、金条购买调用及成功/失败/金币不足提示和定时器清理。
+3. `MakeBuyGoldButtonHandler(...)`：对应proto50，返回零参数点击闭包；已有`buygoldTimer`时直接返回，否则显示启动提示并以`SL:Schedule(callback, 0.5)`启动检测。
 
-### 引怪链已有线索（不要从头重新分析）
+### 已核实的新版原始证据
 
-新版原型身份初步映射：
-- proto 29：InitGatherMonsters，36条指令。
-- proto 85：FindMonsterCandidates，102条指令。
-- proto 90：StopGatherMonsters，25条指令。
-- proto 94：MainLoop，462条指令。
+- proto36：完整149条指令；原始解析结果确认请求尾段为`PageStoreProxy:RequestBuy(goods.Index, buyCount, 0)`，随后proto36主动返回`true, buyCount`。
+- proto50：23条指令；调度周期为0.5秒。
+- proto51：77条指令；金币比较条件为`2000000 < 当前金币数`；购买物品名为`"金条"`，数量参数为1。
+- proto48：按钮配置为`key="buygoldbut"`、`name="购买金条"`；PC272创建购买金条处理器闭包并捕获定时器状态表、本地提示包装函数、BuyStoreItem和调试闭包；PC277将它写入`callbackMap.buygoldbut`。
+- ButtonFactory是proto48的child index 17，50条指令；它负责创建按钮、保存控件、设置标题/字体/颜色并调用`GUI:addOnClickEvent`。其点击子闭包负责按配置key从callbackMap取处理器，并处理toggle按钮状态。
+- 新框架开发文档明确的函数一律直接按文档调用，不分析函数内部实现。特别是`SL:Schedule`、`SL:UnSchedule`、`SL:GetMetaValue`等只核对调用形式和参数，不反编译它们的内部逻辑。文档未提供的商城代理方法则按11.9原始调用帧恢复，不臆造契约。
 
-旧版对应关系：
-- 旧版 root/20：InitGatherMonsters，36条指令。
-- 旧版 root/29：FindMonsterCandidates，102条指令。
-- 旧版 root/28：StopGatherMonsters，25条指令。
-- 旧版 root/46：MainLoop，417条指令。
+### 目前还不能宣布购买金条完成的原因
 
-现有差异结论：
-- MainLoop 新版比旧版多45条指令，并出现 GetSkills 常量线索；不能直接复制旧版主体。
-- Init、Stop、FindMonsterCandidates 指令数相同，只能说明结构规模相同，不能单凭数量认定逻辑完全相同。
-- 以上映射和线索来自此前已提交报告；新对话按需读取报告即可，不要重新做全量解密。
+虽然购买业务主体和proto50/51处理器已经写入唯一明文文件，但当前源码中还没有可执行的`callbackMap.buygoldbut = ...`登记语句，也没有把该处理器通过ButtonFactory的点击闭包实际接到GUI按钮的完整代码。原始VM中的PC272-PC277及ButtonFactory/点击子闭包证据已定位，下一步必须把这段映射和事件接线写入唯一明文文件，并核对按钮创建参数；在完成前不能把购买金条标记为全部完成。
+
+### 下一步唯一工作
+
+**继续恢复proto48中购买金条所需的回调表登记、ButtonFactory按钮创建及点击事件分发代码。** 只处理购买金条完整接线所需部分；不切换到开新区，不重复分析proto36已核实的149条指令，不分析新框架API内部逻辑。完成并提交后，才开始“开新区”按钮功能。
+
+所有代码仍只允许写入`11.9/MainLeftBottom_11.9_明文.lua`；新版加密文件、旧版明文和其他参考资料均只读。
 
 ## 五、必须遵守的工作纪律
 
@@ -502,4 +498,16 @@
 - PC264引怪辅助闭包链也复核无误：child index 25捕获proto48 A[8]，写入GATHER_THRESHOLD=11并调用InitGatherMonsters；PC286 child index 8捕获该闭包，PC290登记为callbackMap.yinguaibut。
 - 本补充已写入唯一明文源码，修正前文PC258捕获对象待核对的临时状态。下一步恢复child index 18黑名单按钮开关处理器完整Lua函数体，再逐项核对PC278-PC337回调登记和root入口整合。
 - 补充源码提交：`17efc16f35d4770f7715857d11b3a6626809591e`
+- 未进行Lua编译或游戏运行测试。
+
+
+### 2026-11-13：购买金条第二十五轮——proto36完整函数与事件接线缺口校正
+
+- 本轮定点读取11.9原始文件，按原文件的Base36/LZW与XOR规则提取proto36和proto48相关指令；解析数据完整消费79573字节，得到105个原型，与现有结构报告一致。没有重新开展全量业务分析。
+- proto36定位为根原型子函数（当前解析路径root/29），2个显式参数、149条指令。逐条指令核对后，确认唯一明文源码中现有`BuyStoreItem(itemName, buyCount)`已覆盖商品索引查询、pageData分页遍历、商品匹配、商城限购状态、Condition/condis条件、CountMax数量上限、LimitCount累计限购及最终RequestBuy调用。故前一轮“proto36前140条尚未恢复”的状态已过时，不能继续沿用。
+- 新框架API遵循用户最新要求：开发文档有明确说明的接口直接调用，不分析其内部实现；本轮只核对了脚本业务函数自身的指令和调用帧。
+- 进一步核对proto48 PC272-PC277：创建proto50闭包，依次捕获定时器状态表、本地提示包装函数、BuyStoreItem和调试闭包，再将闭包写入`callbackMap.buygoldbut`。proto48的按钮配置明确为`key="buygoldbut"`、`name="购买金条"`。
+- ButtonFactory为proto48 child index 17，50条指令，并有一个48条指令的点击子闭包；已确认它负责GUI按钮创建、外观设置及`GUI:addOnClickEvent`绑定。当前唯一明文源码虽已有购买函数和按钮处理器工厂，但尚无可执行的callbackMap登记和ButtonFactory接线代码，因此仍不能宣布购买金条完整完成。
+- 本轮没有修改唯一明文源码；只校正本接续文档中的任务状态，防止新对话误认为proto36尚未恢复或擅自转向开新区。
+- 当前下一步唯一任务：恢复proto48中购买金条的callbackMap登记、ButtonFactory按钮创建与点击事件分发代码，写入唯一明文源码。购买金条完成后，下一个功能严格按用户要求处理“开新区”。
 - 未进行Lua编译或游戏运行测试。
