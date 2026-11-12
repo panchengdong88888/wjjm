@@ -156,3 +156,13 @@
 - 当前没有写入猜测的购买代码。仅凭常量无法确认RequestBuy实参、购买数量、阈值比较操作数、Schedule周期和启停细节；这些必须先定点闭合对应函数控制流，避免写出无法工作的假源码。
 - 下一步唯一任务：定点核对proto50、proto51、proto2，以及proto36的调用关系；确认参数和分支后，直接把完整Lua 5.1实现写入唯一明文文件。
 - 未进行Lua编译或游戏运行测试。
+
+### 2026-11-12：购买金条功能第二轮核对
+
+- 重新核对了新版整体结构报告：proto50 是 proto48 的直接子函数，23条指令并含一个子原型；proto51 是 proto50 的子函数，77条指令。父子关系支持“按钮回调创建定时回调”的判断，但具体调用顺序和间隔仍未闭合。
+- proto2 含 cruiseTimer、newzoneTimer、buygoldTimer、rewardTimer 和 UnSchedule，整体职责更像多个功能定时器/UI状态清理；目前不能只凭常量认定它在某个固定时机清理购买金条定时器。
+- proto36 含 RequestBuy、PageStoreProxy、Condition、Facade、SL，确实是商城购买逻辑候选；但尚无证据证明 proto51 直接调用 proto36，接续分析中不得把这条调用关系写成事实。
+- 已检查新框架(3_40_xx).zip的全部43份文档：其中没有 PageStoreProxy、RequestBuy、MoneyProxy、GetMoneyIdByName 或 GetMoneyCountById 的接口签名。文档能支持 SL:Schedule(callback,time) 与 SL:UnSchedule(scheduleID) 的调用形式，但不能补出商城代理的参数契约。
+- 已修订唯一明文文件中的购买金条证据注释，避免将 proto36 和 proto51 的关系过早定论。没有写入臆测的购买实现。
+- 下一步：继续利用新版函数线索确认 proto50 的定时器启停条件和 proto51 的金币/金条判断；单独确认 proto36 的调用者与 RequestBuy 实参。若框架文档没有该接口，保留新版源码中可观察到的调用契约，不虚构参数。
+- 本轮唯一明文文件提交：eb1b224210de5598b0ca035c8ce2cabdc7c861f5
