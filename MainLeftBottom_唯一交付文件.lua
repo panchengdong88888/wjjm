@@ -2524,7 +2524,7 @@ local function make_Nested_FFFFFF(listView, cellWidth)
 
                 if resourceName then
                     local textName = "2_text_0.5_" .. columnIndex
-                    local textX = cellWidth * (columnIndex - 0.5) / 1
+                    local textX = cellWidth * (columnIndex - 0.5) / layoutOption
                     local textNode = gui:Text_Create(
                         cellLayout, textName, textX, 15, 30,
                         "#FFFFFF", resourceName .. ":--"
@@ -3770,4 +3770,26 @@ return MainLeftBottom
 -- 宿主返回的资源数量非零。若改后仍全为0，下一步需分别检查MoneyProxy
 -- 返回的ID/数量，以及BAG_DATA中资源名称/绑定过滤是否匹配角色实际背包。
 -- 未执行Lua编译或目标游戏运行验证，等待用户实测。
+-- ============================================================================
+
+
+-- ============================================================================
+-- 检查点368：资源统计右侧资源列越界修复
+--
+-- 用户指出原版白色资源为左右两列，而当前版本只看到左列。
+-- 逐行核对make_Nested_FFFFFF发现每行layoutOption=2、cell宽度=cellWidth，
+-- 但原明文重建的textX公式为：
+--   cellWidth * (columnIndex - 0.5) / 1
+-- 因此第一列中心=0.5*cellWidth，第二列中心=1.5*cellWidth，
+-- 第二列中心落在行容器右边界之外，导致右列控件被布局到容器外。
+--
+-- 现将除数改为layoutOption：
+--   第一列中心=0.25*cellWidth
+--   第二列中心=0.75*cellWidth
+-- 两列各占一半行宽，保持左右排列，并使两列内容组整体居中。
+-- 本次只修正列内X坐标比例，不改变行宽、资源名称顺序、行高、字体、
+-- 数据来源、刷新逻辑或外层窗口位置。
+--
+-- 该修复针对明文重建中可直接确认的坐标公式错误；目标游戏布局效果
+-- 仍需用户替换APP实测。未执行Lua编译或游戏运行验证。
 -- ============================================================================
