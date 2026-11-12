@@ -339,6 +339,33 @@ end
 -- proto36的PC1-PC149已恢复为BuyStoreItem；proto50/51的timer字段及四项闭包捕获
 -- 也按新版指令关系表达。按钮事件已有timer时原版直接返回true，不执行取消。
 
+-- 对应proto48 PC204-PC252：按新版VM原样恢复三组按钮配置。
+-- 第三组在原始指令中只创建空表，不擅自添加按钮。
+local function BuildMainLeftBottomButtonGroups()
+    local firstGroup = {
+        { key = "moneybut", name = "V10001" },
+        { key = "settingbut", name = "内挂设置" },
+        { key = "shiqubut", name = "开拾取", toggle = "关拾取" },
+        { key = "diuqibut", name = "开丢弃", toggle = "关丢弃" },
+        { key = "clearblacklistbut", name = "清黑名单" },
+        { key = "stopallbut", name = "停止脚本" },
+    }
+
+    local secondGroup = {
+        { key = "buygoldbut", name = "购买金条" },
+        { key = "recyclebut", name = "回收装备" },
+        { key = "newzone", name = "开新区" },
+        { key = "rewardbut", name = "开奖励", toggle = "关奖励" },
+        { key = "yinguaibut", name = "开拉怪", toggle = "关拉怪" },
+        { key = "blacklistbut", name = "开黑名单", toggle = "关黑名单" },
+        { key = "xiaotuibut", name = "快速小退" },
+    }
+
+    local thirdGroup = {}
+    return firstGroup, secondGroup, thirdGroup
+end
+
+
 -- 仅针对购买金条按钮的可执行安装函数。
 -- 参数由MainLeftBottom.doInit（proto48）初始化上下文提供：
 --   uiParent      = GUI:Attach_UITop()返回的父容器（Attach_UITop无参数）
@@ -371,9 +398,11 @@ local function InstallBuyGoldButton(
     callbackMap.buygoldbut = buyGoldHandler
 
     -- proto48第二组按钮V13第1项：rowIndex=7，groupOffset=0。
+    local _, secondGroup = BuildMainLeftBottomButtonGroups()
+    local buttonConfig = secondGroup[1]
     local button = GUI:Button_Create(
         uiParent,
-        "buygoldbut",
+        buttonConfig.key,
         -594,
         0,
         "res/public/fuzhu_btn.png"
@@ -383,8 +412,8 @@ local function InstallBuyGoldButton(
     end
 
     -- 对应ButtonFactory PC15-PC37。
-    visibleItems.buygoldbut = button
-    GUI:Button_setTitleText(button, "购买金条")
+    visibleItems[buttonConfig.key] = button
+    GUI:Button_setTitleText(button, buttonConfig.name)
     GUI:Button_setTitleFontSize(button, 18)
     GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
     GUI:Button_setTitleColor(button, "#ffffff")
