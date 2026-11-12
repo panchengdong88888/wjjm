@@ -52,8 +52,10 @@ local recvHookList = {}
 a.RecvHookList = recvHookList
 
 -- PC28-PC29：界面初始显示状态字段。
-a.isHidden = true
+a.isHidden = false
 a.hidebut = nil
+a.initialized = false
+a.initializing = false
 
 -- PC30-PC32：T[1]创建b映射表；PC31重新读取模块根表，PC32挂入b。
 local b = {}
@@ -2931,24 +2933,30 @@ local function Nested_OnGameLeaveWorld()
 end
 
 local function make_Nested_Helper_9(uiState, notify, buttonMap)
-    local function Nested_Helper_9()
-        -- 每次点击都从当前隐藏状态反推目标状态，统一处理按钮组和隐藏按钮。
-        -- buttonMap就是MainLeftBottom.b，按钮创建时逐项写入同一张表。
-        local shouldShow = not uiState.isHidden
+    -- 与用户提供的正常运行参考代码保持一致：
+    -- isHidden=true表示功能按钮当前隐藏，false表示当前显示。
+    local function SetPluginButtonsVisible(visible)
         for _, button in pairs(buttonMap) do
             if button then
-                GUI:setVisible(button, shouldShow)
+                GUI:setVisible(button, visible)
             end
         end
 
         if uiState.hidebut then
             GUI:setVisible(uiState.hidebut, true)
-            GUI:setOpacity(uiState.hidebut, shouldShow and 255 or 0)
+            GUI:setOpacity(uiState.hidebut, visible and 255 or 0)
         end
 
-        -- 本文件沿用VM字段语义：true表示当前按钮组处于显示态，false表示隐藏态。
-        uiState.isHidden = shouldShow
-        notify(shouldShow and "显示所有按钮" or "隐藏所有按钮")
+        uiState.isHidden = not visible
+    end
+
+    local function Nested_Helper_9()
+        if uiState.isHidden then
+            SetPluginButtonsVisible(true)
+        else
+            SetPluginButtonsVisible(false)
+        end
+        notify(uiState.isHidden and "隐藏所有按钮" or "显示所有按钮")
     end
     return Nested_Helper_9
 end
@@ -3014,6 +3022,22 @@ local function make_Nested_ffffff(buttonConfigs, buttonByKey)
 end
 
 local function doInit_UI()
+    -- 与用户提供的正常运行参考代码一致，防止入口重复触发时重复创建按钮。
+    if uiState.initialized or uiState.initializing then
+        return
+    end
+    uiState.initializing = true
+
+    -- UI尚未准备好时不进入初始化；允许稍后由入口再次调用。
+    local readyMainProperty = MainProperty
+    if not readyMainProperty
+        or not readyMainProperty._ui
+        or not readyMainProperty._ui.Panel_mini_chat then
+        uiState.initializing = false
+        printLog("Panel_mini_chat尚未准备好")
+        return
+    end
+
     -- PC390在root创建本闭包时明确捕获20个父级T寄存器。
     -- UP[0..19]依次对应父root的T[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。
     -- 可直接确认的身份：UP[0]=PrintLog；UP[1]=MainLeftBottom.z功能状态表；
@@ -3340,6 +3364,9 @@ local function doInit_UI()
         -- child15捕获[UP3,UP0]：模块UI状态对象与通知回调。
         GUI:addOnClickEvent(hideButton, make_Nested_Helper_9(uiState, printLog, buttonMap))
     end
+
+    uiState.initialized = true
+    uiState.initializing = false
 end
 
 -- PC411：doInit_UI直接挂入模块根表。
