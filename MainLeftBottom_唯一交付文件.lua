@@ -1363,6 +1363,8 @@ local function MainLoop()
                     "怪物 %s 归属已变更为自己",
                     resetSlot22
                 ))
+                -- VM PC137-PC139：确认归属成功后递增共享归属计数。
+                resetSlot16 = resetSlot16 + 1
             else
                 PrintLog(string.format(
                     "怪物 %s 归属未变更或已离开视野",
@@ -1462,7 +1464,7 @@ local function MainLoop()
                         ))
 
                         -- VM PC280-PC302：锁定成功后设置等待状态并立即返回。
-                        -- 游标必须保持在当前index；等待归属确认后才由PC1377对应路径推进。
+                        -- 游标必须保持在当前index；等待归属确认后再由VM的确认分支推进。
                         return
                     end
 
