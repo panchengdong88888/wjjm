@@ -2,49 +2,37 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-12",
-  "latest_checkpoint": 343,
-  "next_checkpoint": 344,
+  "latest_checkpoint": 347,
+  "next_checkpoint": 347,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "本轮开拉怪故障定位已完成：用户在目标APP环境实测确认开拉怪正常、角色会实际拉怪；快速小退也测试正常。实测APP整合版已原样归档到资料文件/实测通过版本/MainLeftBottom_UI开拉怪完整链路_替换版.lua。等待用户下一项明确安排。",
-    "title": "开拉怪功能实测问题定位、重新核对与修正",
-    "prototype": "doInit_UI的yinguaibut按钮回调；阈值读取/输入/保存链；Nested_StopGatherMonsters；Nested_InitGatherMonsters；InitGatherMonsters；MainLoop；FindMonsterCandidates；StopGatherMonsters；ResetGatherMonsterData；相关定时器、引擎代理和宿主API调用。",
+    "status": "用户于2026-11-12明确要求继续完善根目录唯一交付源码MainLeftBottom_唯一交付文件.lua。开拉怪与快速小退已由用户实测通过；本轮恢复此前已列入工程进度、但尚未完成的根模块调用关系整理。",
+    "title": "补全根模块调用图与宿主调用关系",
+    "prototype": "MainLeftBottom唯一交付源码中的根模块函数注册、内部调用、定时/延迟回调、UI回调及宿主API调用点。",
     "scope": [
-      "以用户实测出现的问题为起点，不因检查点340标记静态核对完成而跳过任何相关代码",
-      "重新核对按钮事件是否真实绑定、点击分支、弹窗确认回调、阈值数据流、启动函数调用和按钮状态同步",
-      "重新核对配置读取/写入包装链、路径拼接、文件API返回值和阈值在启动前后的实际流向",
-      "重新核对InitGatherMonsters定时器创建、回调参数、运行标记和共享状态初始化",
-      "重新核对MainLoop三个状态、定时器回调是否持续执行、候选怪物获取、过滤/排序/阈值截取、目标锁定、攻击与停止条件",
-      "重新核对所有直接/间接调用的receiver、实参顺序、多返回值、nil/false/truthy语义、闭包捕获及官方API契约",
-      "将实测表现与VM指令、唯一交付源码、官方框架API文档三方交叉核对；旧检查点只作线索，不作为免审依据",
-      "发现VM原始逻辑本身导致实测功能失败时，明确区分源码恢复错误与原始功能缺陷，并以解决用户实测问题为目标提出/实施有证据的修复，不再机械保留已确认妨碍功能的原始异常",
-      "只修改根目录唯一交付源码MainLeftBottom_唯一交付文件.lua；不创建分支或平行源码",
-      "保持Lua 5.1兼容；不执行Lua/luac实际编译和游戏运行验证，实测信息由用户提供"
+      "只维护根目录MainLeftBottom_唯一交付文件.lua，不创建平行源码或新分支",
+      "以现有VM静态恢复结果、函数状态清单及新框架API映射为证据，补全根模块内部调用边、定时/延迟回调边、UI回调边和宿主API边",
+      "优先补全简单明确的调用关系和注释；复杂或证据不足的宿主行为标注TODO，不猜测",
+      "不重复开拉怪与快速小退已完成的功能链审计，除非调用图发现直接冲突",
+      "保持Lua 5.1兼容；不执行Lua实际编译或目标游戏运行验证",
+      "每批只做有证据支持的源码/注释完善，并同步状态文件提交main"
     ],
     "focus": [
-      "检查点341：MainLoop PC280-PC312确认SetTargetID成功分支写入等待状态/日志后直接return；失败分支输出失败日志、游标推进index+1后return。源码已修正为对应控制流。",
-      "检查点342：MainLoop PC122-PC140确认等待目标归属为自己时，VM先输出成功日志，再将共享归属计数UPVALUE[11]加一（PC137-PC139）；源码已补齐resetSlot16 = resetSlot16 + 1。",
-      "检查点343：PCallHelper root.children[17] fixed_param_count=2；检查点235的原始VM调用帧规则明确T[0]为第一个固定参数、T[1]为第二个固定参数。Nested_tostring捕获顺序UP[0]=T[1]、UP[1]=父UP[0](GetWritablePath)、UP[2]=T[0]；其指令执行tostring(UP[0])并调用UP[1](UP[2])。因此PCallHelper第一个参数是路径、第二个参数是内容。唯一源码原先将签名写成PCallHelper(arg1,arg0)并把第1参当内容、第2参当路径，属于明确的AI还原错误；已改为PCallHelper(arg0,arg1)，保留payload=tostring(arg1)、GetWritablePath(arg0)。",
-      "AnonymousHelper_32/54按VM调用PCallHelper(固定文件名, firstArg)的顺序本来正确；修正PCallHelper形参语义后，两个配置写入器现在均将firstArg写入对应固定文件名，不再误把数值作为路径。检查点341关于“PCallHelper第1参内容、第2参路径/原始VM参数异常”的判断已被本检查点纠正，不能继续引用为结论。",
-      "FindMonsterCandidates先距离排序、再按GATHER_THRESHOLD截取，之后MainLoop才过滤其他玩家归属，是原始VM的指令顺序；不要根据用户粗略流程擅自改写。",
-      "IsDie(actor)返回actor and not actor:IsDie()，truthy表示存活。",
-      "继续检查MainLoop剩余候选处理、GATHERING批次完成、ATTACKING扫描/清理，以及配置输入保存回调与按钮同步；只将VM与明文不一致项作为恢复错误修正。",
-      "保持Lua 5.1、main唯一分支、MainLeftBottom_唯一交付文件.lua唯一交付源码；不执行Lua编译或游戏运行验证。",
-      "检查点344：MainLoop root.children[45] PC314-PC330确认循环结束后先判断allOwnersResolved，再比较共享归属计数UPVALUE[11]与目标列表长度#UPVALUE[8]；只有#目标列表 <= 归属计数时才切换ATTACKING，否则进入“怪物列表处理完毕但未全部获取归属”分支，切回IDLE并重置。唯一源码原先仅以allOwnersResolved和游标越界作为成功条件，遗漏计数比较；当某目标在扫描期间变成其他玩家归属时，会错误地把不完整批次切入ATTACKING。已修正为allOwnersResolved and resetSlot16 >= #resettableTable才进入ATTACKING，其余扫描结束情况统一回IDLE并ResetGatherMonsterData。源码提交e956cf39b4266df037fb5e61632152a58f8a933d。",
-      "检查点345：重新对照MainLoop PC344-PC417，ATTACKING分支与唯一源码一致：先遍历目标ID；actor存在且IsDie(actor) truthy（即存活）时取名、输出攻击日志、调用SetTargetID(targetID)并立即return；目标死亡/离开视野则输出日志并推进共享游标；循环耗尽后输出全部目标已死亡/离开视野，切IDLE、ResetGatherMonsterData并return。没有发现新的ATTACKING源码错配。另对照root/43/15/1有效输入路径及root/43/23/1/1输入对话框回调：status==1门控、读取editStr、空值回退、去空白、^%d+$匹配、tonumber、成功回调与失败延迟分支均与源码对应；输入数字10会走成功分支。root/43/10/1按钮点击闭包与源码一致：先调用handler，非toggle直接返回，handler严格返回false才阻止切换，否则更新toggled/标题/颜色。make_Nested_Helper_8保存成功后启动拉怪并调用syncButtonState(\"yinguaibut\",true)，与VM一致。已修正源码AnonymousHelper_32旁边的旧注释：PCallHelper第1参路径、第2参内容，firstArg写入固定文件名。源码注释提交2158cef97b4814a165c4a2c282ef5cfd290d6295。",
-      "检查点346：完成开拉怪链局部静态收尾。配置读取ReadNumericConfig与写入PCallHelper/AnonymousHelper_54均使用同一GetWritablePath固定文件名；PCallHelper第1参路径、第2参内容，读写数据流闭合，源码中旧参数语义注释已修正。Lua 5.1禁用语法/API词项静态扫描：goto、table.unpack、table.pack、table.move、bit32、utf8、package.searchpath均无命中；未执行实际编译或游戏运行。MainLoop GATHERING计数条件、ATTACKING分支、数字输入10成功路径、按钮handler/toggle同步已完成VM对照。现有资料记录了用户预期步骤（点开拉怪→输入10确认→逐只锁定获取归属→达到10切ATTACKING→逐只攻击→目标耗尽后回IDLE下一批），但尚无更具体的实测失败表现（实际卡在哪一步/表现为何），故不宣称目标环境故障已完全解决。",
-      "2026-11-12实测通过：用户确认开拉怪功能正常、角色会实际拉怪；快速小退功能也测试正常。APP整合版1174行原样归档于资料文件/实测通过版本/MainLeftBottom_UI开拉怪完整链路_替换版.lua。此归档是APP实测快照，根目录MainLeftBottom_唯一交付文件.lua仍是唯一主源码，不覆盖、不另建平行主源码。"
+      "开拉怪和快速小退已由用户实测通过，实测APP快照归档，不覆盖唯一主源码",
+      "此前工程进度已明确下一阶段为根模块函数间调用边、定时/延迟回调边、UI回调边及宿主API调用边",
+      "入口root、AccountIDValidation、doInit_UI及子原型已完成静态VM核对；配置读写链与开拉怪链的已知错配已修正",
+      "从唯一交付源码与函数状态清单提取未明确标注的调用关系，逐项核对VM调用帧和API映射",
+      "本轮从检查点347开始；完成一个调用关系组后更新机器状态与接续入口"
     ],
     "completion_criteria": [
-      "明确记录用户实测的具体操作步骤、实际表现和预期表现",
-      "按该表现重新追踪从按钮点击到产生拉怪行为的完整调用链，定位可解释该现象的具体原因或证据缺口",
-      "相关代码、VM指令和官方API契约完成针对性复核；不得只引用旧检查点结论",
-      "所有确认的源码错配或经用户目标授权需要修复的原始功能缺陷，均在唯一交付源码中修正并说明依据",
-      "复核同一调用链不存在已知的第二处阻断问题；未能确认的宿主行为明确列为待确认，不冒称解决",
-      "更新AI_START_HERE.md与本JSON，提交到main"
+      "根模块内已知直接/间接函数调用关系有明确记录，调用目标与参数契约可追溯",
+      "定时器、延迟回调、UI事件回调的注册点与回调目标对应清楚",
+      "宿主API调用点尽可能映射到官方框架API文档；未文档化项明确标记",
+      "唯一源码中发现的明确调用错配已修正，未确认行为不猜测",
+      "更新AI_START_HERE.md与本JSON并提交main"
     ],
-    "next": "等待用户下一项明确指示；不自行切换其他功能模块。"
+    "next": "先读取唯一交付源码相关段落及函数状态清单，定位根模块调用关系尚未明确的第一组；从简单、证据完整的调用边开始。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
