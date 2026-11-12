@@ -241,3 +241,15 @@
 - 本检查点纠正检查点341中对PCallHelper“第1参内容、第2参路径/VM原始参数异常”的错误判断；该旧判断不得继续作为依据。
 - 唯一源码提交：`dfeb60a907e69267a441a02ad2e4f6f90130b951`。未执行Lua编译或目标游戏运行验证。
 - 下一步：继续复核MainLoop剩余控制流、批次切换与ATTACKING清理，并检查输入回调和按钮同步链。
+
+
+## 检查点344：GATHERING批次完成条件遗漏归属计数，已修正
+
+- 重新对照原始反汇编 `root/46`（即 `root.children[45]` / MainLoop）PC314-PC330。
+- PC314先判断 `allOwnersResolved`；只有为真才进入PC316-PC319，将目标列表长度 `#UPVALUE[8]` 与共享归属计数 `UPVALUE[11]` 比较。
+- VM的成功条件是 `#目标列表 <= 归属计数`；满足才输出“所有怪物归属已获取”并切换ATTACKING。计数不足则进入PC331-PC343失败分支，输出“怪物列表处理完毕但未全部获取归属”，切回IDLE并重置本批。
+- 唯一交付源码原先只检查 `allOwnersResolved` 与游标越界，遗漏计数比较。若某只目标在扫描期间归属变成其他玩家，代码会跳过该目标但不增加归属计数，仍可能错误切入ATTACKING。
+- 已修正唯一源码：只有 `allOwnersResolved and resetSlot16 >= #resettableTable` 才切换ATTACKING；扫描结束的其他情况统一回IDLE并调用ResetGatherMonsterData。
+- 源码提交：`e956cf39b4266df037fb5e61632152a58f8a933d`；机器状态JSON提交：`e82ba8fd6e36c1fae0b502d0ed80d6ac90a2540f`。
+- 下一步：核对MainLoop PC344-PC417的ATTACKING目标扫描/清理，再核对阈值输入确认回调和yinguaibut按钮状态同步。
+- 注意：检查点343已纠正PCallHelper参数语义，第一个固定参数是路径、第二个是写入内容。检查点340及更早文档中关于“阈值持久化参数异常”的旧描述已过时，不得作为当前结论。
