@@ -368,29 +368,15 @@ local function BuildMainLeftBottomButtonGroups()
 end
 
 
--- 仅针对购买金条按钮的可执行安装函数。
--- 参数由MainLeftBottom.doInit（proto48）初始化上下文提供：
---   uiParent      = GUI:Attach_UITop()返回的父容器（Attach_UITop无参数）
---   visibleItems  = MainLeftBottom.b控件集合
---   callbackMap   = proto48的按钮回调映射表
---   timerState    = root定时器状态表
---   showLocalNotice = root本地提示包装函数
---   BuyStoreItem  = root创建的proto36闭包
---   unusedCapturedFunction = root调试/日志闭包（按proto50捕获顺序保留）
---
--- 本按钮配置无toggle字段。原始ButtonFactory对第二组V13第1项传入
--- rowIndex=7、groupOffset=0；PC5-PC9计算x=1-85*rowIndex、y=2*groupOffset。
--- GUI按钮创建及样式/事件API按开发文档调用，不分析宿主API内部实现。
-local function InstallBuyGoldButton(
-    uiParent,
-    visibleItems,
+-- proto48 PC272-PC277：只负责创建并登记buygoldbut回调，不创建按钮。
+-- callbackMap由proto48 PC266创建，后续其它按钮处理器也登记在同一张表。
+local function RegisterBuyGoldButtonHandler(
     callbackMap,
     timerState,
     showLocalNotice,
     BuyStoreItem,
     unusedCapturedFunction
 )
-    -- proto48 PC272-PC277：先把proto50处理器登记到callbackMap.buygoldbut。
     local buyGoldHandler = MakeBuyGoldButtonHandler(
         timerState,
         showLocalNotice,
@@ -398,10 +384,19 @@ local function InstallBuyGoldButton(
         unusedCapturedFunction
     )
     callbackMap.buygoldbut = buyGoldHandler
+    return buyGoldHandler
+end
 
-    -- proto48第二组按钮V13第1项：rowIndex=7，groupOffset=0。
+
+-- 对应proto48 child index 17（ButtonFactory）对V13[1]执行的非toggle按钮路径。
+-- 本函数只处理buygoldbut；toggle状态同步由ButtonFactory的点击子闭包负责，
+-- 但buygoldbut配置本身没有toggle字段，所以点击后只分发callbackMap.buygoldbut。
+local function InstallBuyGoldButton(uiParent, visibleItems, callbackMap)
     local _, secondGroup = BuildMainLeftBottomButtonGroups()
     local buttonConfig = secondGroup[1]
+
+    -- PC346-PC371的第二组循环首项：rowIndex=7、groupOffset=0。
+    -- ButtonFactory PC5-PC9计算x=1-85*rowIndex、y=2*groupOffset。
     local button = GUI:Button_Create(
         uiParent,
         buttonConfig.key,
@@ -413,22 +408,51 @@ local function InstallBuyGoldButton(
         return nil
     end
 
-    -- 对应ButtonFactory PC15-PC37。
+    -- ButtonFactory PC15-PC37：登记控件并设置名称、字号、字体及默认白色。
     visibleItems[buttonConfig.key] = button
     GUI:Button_setTitleText(button, buttonConfig.name)
     GUI:Button_setTitleFontSize(button, 18)
     GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
     GUI:Button_setTitleColor(button, "#ffffff")
 
-    -- 对应ButtonFactory PC43-PC49及其点击子闭包的非toggle路径。
+    -- ButtonFactory PC43-PC49：注册通用点击子闭包；buygoldbut走非toggle路径。
     GUI:addOnClickEvent(button, function()
-        local callback = callbackMap.buygoldbut
+        local callback = callbackMap[buttonConfig.key]
         if callback then
             return callback()
         end
     end)
 
     return button
+end
+
+
+-- 将proto48中相隔的两个执行阶段保留为两个独立动作：
+--   registerCallback(callbackMap)：对应PC272-PC277；
+--   createButton(uiParent, callbackMap)：对应PC346-PC371中V13[1]那次ButtonFactory调用。
+-- doInit恢复时应在PC266后调用registerCallback，在第二组按钮循环中调用createButton。
+local function MakeBuyGoldButtonInitFragment(
+    visibleItems,
+    timerState,
+    showLocalNotice,
+    BuyStoreItem,
+    unusedCapturedFunction
+)
+    return {
+        registerCallback = function(callbackMap)
+            return RegisterBuyGoldButtonHandler(
+                callbackMap,
+                timerState,
+                showLocalNotice,
+                BuyStoreItem,
+                unusedCapturedFunction
+            )
+        end,
+
+        createButton = function(uiParent, callbackMap)
+            return InstallBuyGoldButton(uiParent, visibleItems, callbackMap)
+        end,
+    }
 end
 
 
