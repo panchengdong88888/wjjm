@@ -493,7 +493,8 @@ end
 -- proto48 PC346-PC384分三组遍历按钮配置数组，调用ButtonFactory(config, rowIndex, groupOffset)：
 --   第一组V12：moneybut、settingbut、shiqubut、diuqibut、clearblacklistbut、stopallbut；
 --   第二组V13：buygoldbut、recyclebut、newzone、rewardbut、yinguaibut、blacklistbut、xiaotuibut；
---   第三组V14：先创建为空表，作为后续动态按钮配置组。
+--   第三组V14：初始化为空表；proto48 child9的toggle状态同步闭包也会遍历该组，
+--              但当前尚未找到向V14追加按钮配置的指令，不能擅自补项目。
 -- 每组rowIndex按“数组长度 - 当前索引 + 1”计算，groupOffset依次为40、0、80。
 -- ButtonFactory内部PC45创建通用点击闭包，捕获“回调表、按钮配置、按钮控件”；
 -- 点击闭包PC2-PC4按配置key从回调表取出函数，PC43-PC49通过GUI.addOnClickEvent绑定。
