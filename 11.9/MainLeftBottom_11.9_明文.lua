@@ -87,7 +87,7 @@
 -- 按钮与事件的新版证据：
 --   * proto48配置数组V13第1项：key="buygoldbut"，name="购买金条"，无toggle字段。
 --   * proto48 PC272-PC277创建proto50处理器并写入callbackMap.buygoldbut。
---   * proto48 child index 17（50条指令）是通用ButtonFactory；
+--   * proto48 children[17]（50条指令，即第18个子原型）是通用ButtonFactory；
 --     它创建GUI按钮、保存到MainLeftBottom.b、设置标题/字体/颜色并绑定点击事件。
 --   * ButtonFactory的点击闭包按buttonConfig.key从callbackMap取处理器；
 --     buygoldbut无toggle配置，因此点击后只分发购买金条处理器，不执行toggle切换。
@@ -103,9 +103,10 @@
 --
 -- 当前边界：
 --   * BuyStoreItem、proto50/51处理器及购买金条按钮配置、坐标和点击分发链已核实。
---   * 下方InstallBuyGoldButton(uiParent, visibleItems, callbackMap, ...)是该按钮的
---     可执行专用安装函数：登记callbackMap.buygoldbut、创建按钮、保存控件并绑定点击事件。
---   * MainLeftBottom.doInit（proto48）的完整初始化入口尚未整体恢复，因此该专用安装函数
+--   * RegisterBuyGoldButtonHandler负责PC272-PC277回调登记；
+--     MakeMainLeftBottomButtonFactory恢复children[17]通用ButtonFactory，
+--     MakeBuyGoldButtonInitFragment把回调登记与通用工厂创建分开，供doInit按原始PC顺序调用。
+--   * MainLeftBottom.doInit（proto48）的完整初始化入口尚未整体恢复，因此上述两个动作
 --     尚待接入完整doInit；在该入口接线前，不将整项功能标记为全部完成。
 --   * 新框架开发文档中明确的API只按文档直接调用，不反编译其内部实现。
 --   * 旧版源码仅作只读对照；新版VM证据优先。目标语法为Lua 5.1。
