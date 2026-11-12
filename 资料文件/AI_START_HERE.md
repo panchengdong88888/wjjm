@@ -253,3 +253,13 @@
 - 源码提交：`e956cf39b4266df037fb5e61632152a58f8a933d`；机器状态JSON提交：`e82ba8fd6e36c1fae0b502d0ed80d6ac90a2540f`。
 - 下一步：核对MainLoop PC344-PC417的ATTACKING目标扫描/清理，再核对阈值输入确认回调和yinguaibut按钮状态同步。
 - 注意：检查点343已纠正PCallHelper参数语义，第一个固定参数是路径、第二个是写入内容。检查点340及更早文档中关于“阈值持久化参数异常”的旧描述已过时，不得作为当前结论。
+
+
+## 检查点345：ATTACKING、阈值输入成功路径与按钮同步复核
+
+- MainLoop `root/46` PC344-PC417与唯一源码一致：按目标ID扫描；目标存在且 `IsDie(actor)` truthy（实际表示存活）时取名、输出攻击日志、调用 `SetTargetID(targetID)` 后立即return；目标死亡/离开视野则输出日志并推进游标；循环耗尽后输出目标全部耗尽、切IDLE并ResetGatherMonsterData。
+- 阈值输入回调 `root/43/23/1/1` 与唯一源码一致：仅status==1继续；读取editStr、空值回退、去空白、按 `^%d+$` 匹配、tonumber；有效数字调用成功回调。保存回调 `root/43/15/1` 与源码一致：先写配置，失败则通知并输出路径；成功则通知、输出保存日志、调用Nested_InitGatherMonsters(value)，再同步 `yinguaibut=true`。
+- 输入数字10走有效成功路径；输入框非法内容的原始VM分支捕获T[2]=nil并在ScheduleOnce回调中直接调用，可能触发attempt-to-call-nil。该行为属于原始VM，不是明文还原错配；本轮不擅自改变。
+- 按钮点击闭包 `root/43/10/1` 与源码一致：先调用buttonHandlers对应handler；非toggle按钮直接return；toggle按钮仅在handler严格返回false时不切换，否则更新toggled、标题和颜色。
+- 已修正唯一源码AnonymousHelper_32旁旧注释：PCallHelper第1参为路径、第2参为写入内容；调用 `PCallHelper(blacklistDistanceConfigFile, firstArg)` 会将firstArg写入固定文件名对应路径。源码注释提交：`2158cef97b4814a165c4a2c282ef5cfd290d6295`；JSON检查点345提交：`6424a1a0309eaec52d511e2b5f2827483030b16c`。
+- 下一步：做本轮开拉怪相关局部静态一致性和Lua 5.1兼容性收尾；不执行编译或目标游戏运行验证。
