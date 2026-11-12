@@ -1,0 +1,3795 @@
+-- MainLeftBottom(2).lua 唯一持续更新主源码文件
+-- 原型：root / MainLeftBottom_Module
+-- 规范路径：root
+-- 规模：412条物理指令、109常量、58个直接子原型
+-- 当前文件目标：把root模块及109个子原型整理为同一词法作用域内的可读普通Lua源码。
+-- 已有109个子原型完整静态恢复记录；本轮继续核对嵌套闭包是否全部真实落入本文件，
+-- 并收敛root模块初始化、闭包创建、字段挂接、全局导出与最终return。
+-- 本文件不是作者原始源码逐字恢复；未执行Lua编译或目标游戏运行验证。
+-- 开拉怪与快速小退已由用户在目标APP环境实测通过。
+
+-- VM的ENV是当前chunk环境，不应无条件等同于_G。
+-- Lua 5.1优先通过getfenv取得；Lua 5.2+使用词法_ENV；
+-- 只有运行环境不提供上述机制时才回退_G。
+local rootEnvironment
+if type(getfenv) == "function" then
+    rootEnvironment = getfenv(1)
+else
+    -- 本工程目标运行时为Lua 5.1；无getfenv时只回退到标准全局表。
+    rootEnvironment = _G
+end
+assert(type(rootEnvironment) == "table",
+    "MainLeftBottom root chunk environment is not a table")
+
+local MainLeftBottom = {}
+rootEnvironment.MainLeftBottom = MainLeftBottom
+
+-- PC3-PC5：T[0]先创建a状态表，再于PC5挂入模块根表。
+local a = {}
+-- PC4-PC5：按字节码从当前chunk ENV重新读取模块表，再挂入a状态表。
+local moduleForA = rootEnvironment.MainLeftBottom
+moduleForA.a = a
+
+-- PC6：版本字段。
+a.version = "10000"
+
+-- PC7-PC11：读取屏幕宽度并写入a.screenW。
+a.screenW = SL:GetMetaValue("SCREEN_WIDTH")
+
+-- PC12-PC16：读取屏幕高度并写入a.screenH。
+a.screenH = SL:GetMetaValue("SCREEN_HEIGHT")
+
+-- PC17-PC23：T[1]临时构造Blocklist数组，完成后挂入a表。
+local blocklist = {1.0, 9.0, 10.0, 60000.0}
+a.Blocklist = blocklist
+
+-- PC24-PC25：创建并挂入发送钩子列表。
+local sendHookList = {}
+a.SendHookList = sendHookList
+
+-- PC26-PC27：创建并挂入接收钩子列表。
+local recvHookList = {}
+a.RecvHookList = recvHookList
+
+-- PC28-PC29：界面初始显示状态字段。
+a.isHidden = false
+a.hidebut = nil
+a.initialized = false
+a.initializing = false
+
+-- PC30-PC32：T[1]创建b映射表；PC31重新读取模块根表，PC32挂入b。
+local b = {}
+local moduleForB = rootEnvironment.MainLeftBottom
+moduleForB.b = b
+
+-- PC33-PC35：T[2]创建z状态表，再挂入模块根表。
+local z = {}
+-- PC34-PC35：再次从当前chunk ENV读取模块表，再挂入z状态表。
+local moduleForZ = rootEnvironment.MainLeftBottom
+moduleForZ.z = z
+
+-- PC36-PC41：按PC顺序初始化六个状态字段。
+z.isPaused = false
+z.isRunning = false
+z.isStoring = false
+z.isTaking = false
+z.isDiuing = false
+z.isOutputted = false
+
+-- PC42：创建供各定时器闭包共享的空状态表（T[3]）。
+local timerState = {}
+
+-- PC1-PC42已按检查点262恢复初始化语句；PC43-PC85已按T寄存器顺序装配；PC86-PC211采集闭包及共享cell已在主恢复稿装配；PC212-PC296 UI闭包与模块字段已补充来源校验；PC297-PC315配置包装链已按T[44..51]顺序装配；PC316-PC349八组数值表已按原值核对；PC350-PC388黑名单闭包捕获与T[57]身份已在主恢复稿装配；PC390-PC412的doInit_UI 20项捕获、PC411 doInit字段和PC412根表返回已在检查点268核验。
+-- 本文件是功能等价重建的唯一持续更新目标，不是原作者逐字源码。当前阶段尚不完整；后续代码直接追加/整合到本文件，不另建平行主源码。
+
+
+-- 检查点193：PC43-PC85，根模块辅助闭包创建与导出。
+-- PC42的T[3] timerState已在前段创建；本段从PC43开始记录子闭包创建。
+-- PC43-PC45：创建 root.children[16] PrintLog闭包；PC44读取ENV['_G']，PC45向该表写入log。
+-- PC46：创建 root.children[20] ShowLocalNoticeByType 闭包，捕获父 T[0]；
+-- 本段没有观察到其全局导出，暂不臆测其最终持有位置。
+-- PC48-PC51：创建 root.children[12] LuaSendMsg 闭包，捕获父 T[0]、T[4]，
+-- 并将该闭包写入 PC3-PC5 创建的 MainLeftBottom.a.LuaSendMsg。
+-- PC52-PC53：创建 ScheduleOnce、Schedule；PC54创建GetMapId；
+-- GetMapId 在 PC55 导出为全局 GetMapId。ScheduleOnce/Schedule 在此段未见全局赋值。
+-- PC56-PC63：创建并导出全局 GetMapName、PlayerPos、GetDroppedItems、MoveTo。
+-- PC64-PC67：创建 root.children[46] DiuItems，按捕获描述捕获父 T[2]、T[5]，
+-- 随后导出为全局 DiuItems。
+-- PC68-PC70：创建 root.children[36] GetAvailableStoragePage，捕获父 T[4]，
+-- 并导出为全局 GetAvailableStoragePage。
+-- PC71-PC73：创建 root.children[1] GetStorageItemData，捕获父 T[4]，
+-- 并导出为全局 GetStorageItemData。
+-- PC74-PC78：创建 root.children[50] StorageItems，按序捕获父 T[2]、T[4]、T[5]，
+-- 并导出为全局 StorageItems。
+-- PC79-PC82：创建 root.children[5] TakeItems，按序捕获父 T[2]、T[5]，
+-- 并导出为全局 TakeItems。
+-- PC83-PC85：创建 root.children[21] PickUpItems，捕获父 T[5]，
+-- 并导出为全局 PickUpItems。
+--
+-- 检查点263：主恢复稿装配段以rootRegisters影子表显式模拟T[4..8]的复用：
+-- T[4]=PrintLog；T[5]先为ENV["_G"]（PC44/45写其log），PC46后为ShowLocalNoticeByType；
+-- T[6]先为LuaSendMsg并于PC51写入a.LuaSendMsg，PC52再覆写为ScheduleOnce；
+-- T[7]=Schedule；T[8]按PC54/56/58/60/62/64/68/71/74/79/83依次复用为
+-- GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems/
+-- GetAvailableStoragePage/GetStorageItemData/StorageItems/TakeItems/PickUpItems，
+-- 每次全局导出均在下一次T[8]覆写前完成。
+-- rootRegisters是恢复适配影子表，不是原作者源码中的真实table。
+--
+-- 注意：OP_387后续记录是闭包捕获描述，不是独立业务语句。
+-- 所有子原型实现均保留在各自源码文件；本根模块只记录闭包创建、
+-- 捕获顺序和导出位置。
+
+
+-- 检查点194：PC86-PC167 配置表与奖励记录表构造。
+-- PC86-PC89：创建供采集逻辑读取的配置表；root.children[28] FindMonsterCandidates
+-- 在父root PC194创建时捕获该表为UPVALUE[4]，因此这里按已核实用途命名。
+local gatherConfig = {
+    GATHER_THRESHOLD = 10,
+    CHECK_INTERVAL = 0.5,
+    ATTACK_WAIT_TIME = 1
+}
+
+-- PC90-PC95：计算 math.floor(3600 / 0.2)，结果为18000。
+local rewardSequenceModulus = math.floor(3600 / 0.2)
+-- root PC408将该值捕获给doInit_UI的UPVALUE[17]；作为奖励轮询回调的取模基数传入Nested_SL_2。
+
+-- PC96-PC167：先创建空表，再逐项构造14条三元素奖励记录。
+-- 前7项为累计登录天数记录，后7项为在线时长记录。
+-- PC167将R13-R26按顺序组装进R12；PC409随后将R12捕获给
+-- root.children[42] doInit_UI，捕获槽位为UPVALUE[18]。
+-- 数字ID、文字标签和末尾数值均保留原始位置，不擅自解释其协议字段含义。
+local loginAndOnlineRewardEntries = {
+    {56061, "累计登录 1 天", 18},
+    {56061, "累计登录 2 天", 18},
+    {56061, "累计登录 3 天", 18},
+    {56061, "累计登录 4 天", 18},
+    {56061, "累计登录 5 天", 18},
+    {56061, "累计登录 6 天", 18},
+    {56061, "累计登录 7 天", 18},
+    {56011, "在线时长5分钟", 19},
+    {56011, "在线时长10分钟", 20},
+    {56011, "在线时长20分钟", 20},
+    {56011, "在线时长30分钟", 20},
+    {56011, "在线时长60分钟", 20},
+    {56011, "在线时长90分钟", 20},
+    {56011, "在线时长120分钟", 21}
+}
+
+-- 上述奖励表由doInit_UI闭包捕获；其GUI展示/领取语义及三列字段的
+-- 宿主协议含义仍待结合doInit_UI调用点与运行环境验证。
+
+
+-- 检查点195：PC168-PC200，采集状态、共享状态单元及辅助闭包注册。
+-- PC168-PC171：状态文字常量表；PC172以IDLE作为currentState初值。
+local gatherStatusText = {
+    IDLE = "空闲状态",
+    GATHERING = "引怪中",
+    ATTACKING = "攻击中"
+}
+local currentState = gatherStatusText.IDLE
+
+-- PC173-PC180：根模块共享状态单元的初始值。
+-- 仅将后续已闭合用途的槽位命名；其余保持中性名称，避免猜测业务字段。
+local resettableTable = {}
+local resetSlot16 = 0
+local resetSlot17 = 0
+local isGatherRunning = false
+local resetSlot19 = false
+local resetSlot20 = 0
+local resetSlot21 = nil
+local resetSlot22 = ""
+
+-- PC181：创建root.children[8] / FormatStateChange闭包。
+-- UPVALUE[0]捕获root T[4]=PrintLog；UPVALUE[1]捕获root T[14]=currentState共享单元。
+-- 子原型在PrintLog正常返回后写回该共享单元；不得用值传参的独立局部变量替代共享cell。
+
+-- PC184-PC193：依序创建无捕获辅助闭包：
+-- PC184 root.children[35] SetTargetID
+-- PC185 root.children[56] ClearTargetID_2
+-- PC186 root.children[39] GetMainPlayerID
+-- PC187 root.children[18] GetPlayerPosition
+-- PC188 root.children[44] GetPlayerMapPosition
+-- PC189 root.children[11] DistanceCalculation
+-- PC190 root.children[29] IsDie
+-- PC191 root.children[7] GetOwnerIDText
+-- PC192 root.children[38] GetOwnerID
+-- PC193 root.children[43] GetOwnerDescription
+-- 这些闭包在root帧中创建为寄存器值，后续由MainLoop/其他闭包捕获；
+-- 本文件不虚构它们的定义或全局导出。
+
+-- PC194-PC199：创建root.children[28] / FindMonsterCandidates并按序捕获：
+-- UPVALUE[0]=root T[27] GetPlayerPosition；
+-- UPVALUE[1]=root T[30] IsDie；
+-- UPVALUE[2]=root T[28] GetPlayerMapPosition；
+-- UPVALUE[3]=root T[29] DistanceCalculation；
+-- UPVALUE[4]=root T[8] gatherConfig。
+
+-- PC200-PC209：创建root.children[26] / ResetGatherMonsterData并捕获九个共享单元：
+-- UPVALUE[0]=root T[15] 空表；[1]=T[16]初值0；[2]=T[17]初值0；
+-- [3]=T[25] ClearTargetID_2闭包（清除当前目标）；
+-- [4]=T[19]初值false；[5]=T[20]初值0；[6]=T[21]初值nil；
+-- [7]=T[22]初值空字符串；[8]=T[4] PrintLog。
+-- 该子原型的复位写入顺序和回调调用契约已在检查点162独立闭合。
+
+
+-- 检查点196：PC201-PC270，采集/主循环/界面控制闭包注册与捕获。
+-- PC201-PC209：ResetGatherMonsterData的九项捕获描述，见检查点195/162；
+-- 此处不将捕获描述误写成业务语句。
+
+-- PC210：创建root.children[14] / FindMonsterInCurrViewField，捕获数1；
+-- PC211：捕获父帧T[30]（IsDie闭包）。ClearBlacklistItems实际是root.children[15]，在PC383创建。
+-- 检查点264：主恢复装配段为T[14..22]各建立唯一共享cell，并按PC181、
+-- PC184-PC193、PC194、PC200、PC210的顺序实例化对应闭包；工厂来源缺失时
+-- requireRecoveredClosure会中止装配，避免nil/错位捕获被静默传入。
+
+-- PC212-PC213：创建root.children[31] / IsInWhitelistMap（无捕获），
+-- 并将闭包导出为全局IsInWhitelistMap。
+
+-- PC214-PC236：创建root.children[45] / MainLoop，捕获数22。
+-- 按字节码顺序捕获的父root T寄存器为：
+-- [18,14,13,4,23,35,26,34,15,32,17,16,19,20,22,36,21,31,30,33,24,8]。
+-- 与检查点158已闭合的MainLoop 22项upvalue语义顺序一致：
+-- 运行标记、currentState、状态常量、PrintLog、FormatStateChange、
+-- ResetGatherMonsterData、GetMainPlayerID、FindMonsterCandidates、
+-- 目标ID数组、GetOwnerID、扫描游标、自己归属计数、等待标志、
+-- 截止时间、等待名称、FindMonsterInCurrViewField、等待目标ID、
+-- GetOwnerIDText、IsDie、GetOwnerDescription、SetTargetID、gatherConfig。
+-- PC237将闭包导出为全局MainLoop；不重复转写其已完整静态恢复的函数体。
+
+-- PC238-PC245：创建root.children[19] / InitGatherMonsters，捕获数7；
+-- 按顺序捕获父root T[3],T[18],T[23],T[13],T[35],T[8],T[4]。
+-- PC246将闭包导出为全局InitGatherMonsters。
+-- PC247-PC254：创建root.children[27] / StopGatherMonsters，捕获数7；
+-- 按顺序捕获父root T[18],T[3],T[25],T[23],T[13],T[35],T[4]。
+-- PC255将闭包导出为全局StopGatherMonsters。
+-- 两个子函数主体已在既有检查点独立静态恢复；此处仅记录父级捕获和导出。
+
+-- PC256-PC257：创建root.children[23] / Builtsetting，捕获父root T[5]；
+-- PC258将闭包导出为全局Builtsetting。
+
+-- PC259-PC260：创建无捕获root.children[41] / MoveItemToQuickUse，
+-- 并导出为全局MoveItemToQuickUse。函数体普通Lua草稿见检查点191。
+
+-- PC261-PC264：创建root.children[37] / DestroyUI，捕获顺序为
+-- [T[0],T[3],T[1]]，即UI状态对象、定时器状态对象、按钮映射表。
+-- 此捕获映射与检查点164修正结果一致。
+
+-- PC265：R0此时仍是PC3创建并挂入MainLeftBottom.a的UI状态表；写入a.hide。
+-- PC266：创建root.children[10] / SetButtonVisibilityState，捕获顺序为[T[0],T[1]]；
+-- PC267-PC268为两项捕获描述。函数体已在检查点161完整静态恢复。
+-- PC269：将闭包R37写入同一UI状态表a.show。
+-- PC270：创建root.children[40] / ShowHideAllButtons，捕获数3；
+-- 后续捕获描述跨出本批范围，留待下一检查点继续核对（PC271起）。
+
+
+-- 检查点197：PC271-PC340，UI导出、账号验证闭包、黑名单状态及配置初始化。
+-- PC271-PC273：ShowHideAllButtons（root.children[40]）的三个捕获描述，
+-- 按序捕获父root T[3]、T[1]、T[0]；对应定时器状态、按钮映射表、UI状态对象。
+-- 该顺序与子函数已静态恢复的UPVALUE[0..2]一致。
+-- PC274：将该闭包写入同一UI状态表a.destroy（R0仍为PC3创建的a表）。
+-- hide/show/destroy三个UI控制闭包属于MainLeftBottom.a；不是模块根表字段。
+
+-- PC275：从当前chunk ENV重新读取MainLeftBottom，并向该次读取结果写入main字段。
+-- PC276-PC278：创建root.children[55] / AccountIDValidation，捕获父root T[4]与T[5]；
+-- 即PrintLog与ShowLocalNoticeByType两个已建立的回调闭包。
+-- PC279：将AccountIDValidation闭包写入MainLeftBottom.main字段。
+-- 这里仅记录字段赋值和捕获关系，不推断main字段是否为唯一入口或具体触发时机。
+
+-- PC280-PC282：构造单元素名称数组，内容为“随机传送石”。
+-- 该数组后续在PC355-PC356被捕获给root.children[24] / UseItemByIndex。
+local randomTeleportItemNames = { "随机传送石" }
+
+-- PC283-PC285：装载三个数值常量：2.0、0.01、30.0。
+-- 它们在PC368-PC381被BlacklistPlayerDetection按UPVALUE[6]/[9]/[11]捕获；
+-- 机器状态与闭包映射已将其用途分别记录为节流阈值、短重试延迟、无道具重试延迟。
+local blacklistAlertThreshold = 2.0
+local blacklistShortRetryDelay = 0.01
+local blacklistNoItemRetryDelay = 30.0
+
+-- PC286-PC293：创建黑名单运行状态表并初始化字段。
+-- PC294将同一表写入MainLeftBottom.a.blacklist；root.children[47] BlacklistPlayerDetection
+-- 后续捕获该表为UPVALUE[2]，onDamageMsg也共享同一状态表。
+local blacklistState = {
+    lastAttacker = nil,   -- VM dump 的 ["unknown",2] 是 nil 序列化标记
+    lastHp = nil,
+    deathHandled = false,
+    alertAt = 0.0,
+    nextTryAt = 0.0,
+    noStoneWarned = false,
+    distance = nil
+}
+
+-- PC294：同一blacklistState表挂入MainLeftBottom.a状态字段；后续onDamageMsg/黑名单闭包共享该对象。
+a.blacklist = blacklistState
+
+-- PC295-PC296：两个配置文件名常量。
+local blacklistDistanceConfigFile = "blacklist_distance.txt"
+local gatherMonsterCountConfigFile = "gather_monster_count.txt"
+
+----------------------------------------------------------------
+-- 检查点279：配置文件读写闭包链（功能等价复刻）
+--
+-- 对应根原型：
+--   root.children[2]  GetWritablePath
+--   root.children[9]  ReadNumericConfig
+--   root.children[17] PCallHelper
+--   root.children[0]  FileExistCheck_pcall_wrapper
+--   root.children[49] AnonymousHelper_49
+--   root.children[32] AnonymousHelper_32
+--   root.children[33] AnonymousHelper_33
+--   root.children[54] AnonymousHelper_54
+--
+-- 直接使用词法闭包表达原捕获关系，不再通过 make_xxx 工厂二次包装。
+-- 保留原始 FileUtils 接收者、参数次序、pcall 分支及返回值传递。
+----------------------------------------------------------------
+
+-- root.children[2]：取得可写目录并拼接首个可变参数。
+-- 原型fixed_param_count=1：path是唯一固定参数；额外参数进入VM的X表但不读取。
+local function GetWritablePath(path)
+    local fileUtils = cc.FileUtils:getInstance()
+    local writablePath = fileUtils:getWritablePath()
+    return writablePath .. path
+end
+
+-- root.children[9]：读取仅包含无符号十进制数字的配置文件。
+-- fixed_param_count=1：fileName是唯一固定参数；额外参数不读取。
+-- 不存在、读取结果非字符串、内容不匹配时均返回 nil。
+local function ReadNumericConfig(fileName)
+    local fileUtils = cc.FileUtils:getInstance()
+    local fullPath = GetWritablePath(fileName)
+
+    if not fileUtils:isFileExist(fullPath) then
+        return nil
+    end
+
+    local content = fileUtils:getStringFromFile(fullPath)
+    if type(content) ~= "string" then
+        return nil
+    end
+
+    local normalized = string.gsub(content, "%s", "")
+    local digits = string.match(normalized, "^%d+$")
+    if digits then
+        return tonumber(normalized)
+    end
+
+    return nil
+end
+
+-- root.children[17]：将文本写入由GetWritablePath解析出的文件路径。
+-- VM固定参数帧：T[0]是第一个参数（路径），T[1]是第二个参数（写入内容）。
+-- Nested_tostring按捕获顺序读取UP[0]=T[1]、UP[1]=GetWritablePath、UP[2]=T[0]。
+-- 因此第一个参数是路径参数，第二个参数是写入内容；不能按旧草稿的arg1/arg0命名反推。
+-- pcall失败或写入结果严格等于false时返回false；其他成功结果（含nil）返回true。
+local function PCallHelper(arg0, arg1, ...)
+    local function Nested_tostring()
+        local fileUtils = cc.FileUtils:getInstance()
+        local payload = tostring(arg1)
+        return fileUtils:writeStringToFile(
+            payload,
+            GetWritablePath(arg0)
+        )
+    end
+
+    local ok, result = pcall(Nested_tostring, ...)
+    if not ok or result == false then
+        return false
+    end
+
+    return true
+end
+
+-- root.children[0]：配置清理按钮实际需要删除已存在的配置文件。
+-- 注意：原始VM在文件已存在时直接返回true而不删除；这会让“清距离值/清怪物值”
+-- 只提示成功却保留旧值。本处按按钮功能意图修正该缺陷，属于明确偏离原始VM。
+-- 返回值始终为（文件是否已不存在, 解析后的完整路径）。
+local function FileExistCheck_pcall_wrapper(path, ...)
+    local fileUtils = cc.FileUtils:getInstance()
+    local resolvedPath = GetWritablePath(path)
+
+    if fileUtils:isFileExist(resolvedPath) then
+        local function Nested_removeFile()
+            fileUtils:removeFile(resolvedPath)
+        end
+
+        local removeSucceeded = pcall(Nested_removeFile)
+        if not removeSucceeded then
+            return false, resolvedPath
+        end
+    end
+
+    return not fileUtils:isFileExist(resolvedPath), resolvedPath
+end
+
+-- root.children[49]：固定读取 blacklist_distance.txt，原样返回读取函数的结果。
+local function AnonymousHelper_49()
+    return ReadNumericConfig(blacklistDistanceConfigFile)
+end
+
+-- root.children[32]：按VM实参顺序调用PCallHelper(固定文件名, firstArg)。
+-- PCallHelper第1参是路径、第2参是写入内容；该调用会把firstArg写入固定文件名对应路径。
+local function AnonymousHelper_32(firstArg)
+    return PCallHelper(blacklistDistanceConfigFile, firstArg)
+end
+
+-- root.children[33]：固定读取 gather_monster_count.txt。
+local function AnonymousHelper_33()
+    return ReadNumericConfig(gatherMonsterCountConfigFile)
+end
+
+-- root.children[54]：按VM实参顺序调用PCallHelper(固定文件名, firstArg)。
+-- 保留与root.children[32]相同的原始参数排列，不按直觉交换内容/路径。
+local function AnonymousHelper_54(firstArg)
+    return PCallHelper(gatherMonsterCountConfigFile, firstArg)
+end
+
+----------------------------------------------------------------
+-- 检查点279配置链结束；后续PC316-PC412继续使用同一词法作用域。
+----------------------------------------------------------------
+
+
+-- PC297：创建root.children[2] / GetWritablePath（无捕获）。
+-- PC298-PC299：创建root.children[9] / ReadNumericConfig，捕获R44=GetWritablePath。
+-- PC300-PC301：创建root.children[17] / PCallHelper，捕获同一R44；
+-- 子原型及其嵌套写文件回调的完整语义见函数状态CSV和既有审计。
+-- PC302-PC303：创建root.children[0] / FileExistCheck_pcall_wrapper，捕获R44。
+-- 上述三个闭包捕获的是同一父帧寄存器值；此处不把捕获描述重复写成普通业务调用。
+
+-- PC304-PC306：创建root.children[49] / AnonymousHelper_49；
+-- UPVALUE[0]=R45（ReadNumericConfig闭包），UPVALUE[1]=R42（blacklist_distance.txt）。
+-- 该辅助闭包调用ReadNumericConfig并转发结果，细节见检查点178。
+
+-- PC307-PC309：创建root.children[32]，捕获R46与R42。
+-- PC310-PC312：创建root.children[33]，捕获R45与R43。
+-- 这两个短闭包的寄存器捕获关系按物理PC记录；其槽位用途不在本批扩大推断。
+-- PC313-PC315：创建root.children[54] / AnonymousHelper_54；
+-- UPVALUE[0]=R46（PCallHelper），UPVALUE[1]=R43（gather_monster_count.txt）。
+-- 其调用参数顺序及多返回值转发已由检查点125闭合。
+-- 检查点266：历史恢复记录曾以影子表描述T[44..51]的配置包装闭包；
+-- 本文件最终实现不创建该适配表，doInit_UI直接捕获词法变量：
+-- UP[6]/[9]/[10]/[12]/[14]/[16]分别绑定配置读取、配置写入、路径、文件检查闭包。
+
+-- PC316-PC340：开始构造R52所指向的二维数值表。
+-- 已观察到六个二元素子表依次由寄存器构造：
+--   {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}。
+-- 本段只记录字节码直接构造出的数值，不擅自赋予方向、坐标偏移等业务含义。
+-- PC341-PC348还需补齐后两个二元素子表，PC349再组装外层八项数组；
+-- 因此本检查点不将R52标记为完整初始化。
+-- PC350将R52捕获给root.children[22]；该函数UPVALUE在其活动路径中未读取
+-- （检查点184），不据此推断该表参与距离计算。
+
+
+
+-- 检查点198：PC341-PC412，根模块剩余数组、黑名单闭包及doInit_UI注册。
+-- PC341-PC348完成R52最后两个二元素子表，PC349组装八项外层表。
+-- 以下数值完全按字节码构造顺序记录；R52业务用途未知，不命名为方向/寻路表。
+local opaquePairTable = {
+    {  1,  0 }, { -1,  0 },
+    {  0,  1 }, {  0, -1 },
+    {  1,  1 }, {  1, -1 },
+    { -1,  1 }, { -1, -1 }
+}
+
+-- PC350-PC351：创建root.children[22] / GetMapData2DPtr，捕获R52。
+-- 检查点184确认该子函数活动路径不读取此UPVALUE。
+-- PC352：创建root.children[48] / PCallHelper_2（无捕获）。
+-- PC353-PC354：创建root.children[51] / FindBlacklistPlayer，捕获PCallHelper_2。
+-- PC355-PC356：创建root.children[24] / UseItemByIndex，捕获randomTeleportItemNames。
+-- PC357-PC358：创建root.children[52] / onDamageMsg，捕获blacklistState。
+-- PC359：a.onDamageMsg = onDamageMsg，实际消息处理器保存在MainLeftBottom.a状态字段。
+-- PC360-PC362：创建root.children[6] / InstallDamageHook，捕获父T[0]=MainLeftBottom.a、T[4]=PrintLog，并覆盖同一父寄存器T[57]。
+-- PC368创建BlacklistPlayerDetection时捕获T[57]的live cell；因此其UP[1]是PC360写入的InstallDamageHook，不是PC357创建的onDamageMsg处理器。
+-- 检查点267：主恢复稿分别保留PC357 onDamageMsg的a状态字段与PC360 InstallDamageHook/T[57]共享cell，
+-- 并对二者函数身份作静态断言；T[52]八组二元数值按PC316-PC349原值逐项核对。
+-- 这两个父级捕获槽位按顺序保留；子闭包Nested_onDamageMsg的捕获另见检查点179。
+-- PC363-PC367：创建root.children[25] / DeathAutoBlacklist，捕获：
+-- [T[41], T[4], T[55], T[5]]。
+-- PC368-PC381：创建root.children[47] / BlacklistPlayerDetection，按序捕获：
+-- [T[2]=MainLeftBottom.z, T[57]=InstallDamageHook live cell, T[41], T[58], T[55], T[53], T[38],
+--  T[4], T[56], T[39], T[5], T[40], T[37]]。
+-- PC382：将该闭包导出为全局BlacklistItems。
+-- 13项捕获的逐槽用途见检查点186；此处不重复展开已恢复函数主体。
+
+-- PC383-PC387：创建root.children[15] / ClearBlacklistItems，捕获：
+-- [T[54], T[4], T[5], T[41]]。
+-- PC388：导出全局ClearBlacklistItems。
+
+-- PC389：原始指令[82,137,59,"MainLeftBottom",null]将_ENV.MainLeftBottom读取到独立临时寄存器T[59]。
+-- PC392/PC393/PC394仍分别捕获T[2]=MainLeftBottom.z、T[3]=timerState、T[0]=MainLeftBottom.a；
+-- PC389不覆盖这三个寄存器。
+-- PC390-PC410：创建root.children[42] / doInit_UI，捕获20项父root寄存器：
+-- 其中UP[8]=T[8]=gatherConfig（PC86-PC89构造后未再覆写），传入Nested_InitGatherMonsters的config形参；不是FindMonsterInCurrViewField。
+-- [T[4], T[2], T[3], T[0], T[1], T[41], T[48], T[7], T[8], T[50],
+--  T[49], T[5], T[44], T[42], T[51], T[43], T[47], T[11], T[12], T[9]]。
+-- 20项槽位身份已由检查点256逐项闭合；完整顺序与装配值见资料文件/docs/audit/检查点256_doInit_UI二十项捕获与根闭包全量装配.md。
+-- doInit_UI本体419条，已有首版普通Lua草稿（检查点187）；
+-- 静态参数映射已由检查点208/235闭合：RequestStorageData与Attach_UITop各传T[7]一个显式实参；Nested_Anonymous fixed_param_count=2，T[0]=promptText、T[1]=successCallback、T[2]=nil。GUI宿主行为仍未运行时验证。
+-- PC411：原始指令[144,268,59,"doInit",60]写入T[59].doInit=doInit_UI；
+-- 主恢复稿在PC389读取的doInitModule上执行该赋值，不以rootModule局部变量替代。
+-- PC412：根模块return。
+
+-- 根模块PC1-PC412至此均有分段源码记录。
+-- “PC范围已覆盖”不等于根模块已完成作者级源码恢复，也不等于运行时验证。
+
+
+
+----------------------------------------------------------------
+-- 功能等价复刻 · 第一批：地图、坐标、玩家与基础查询辅助函数
+--
+-- 这些函数均对应已有原型，不是新框架引擎 API：
+--   GetMapId                 root.children[13]
+--   GetMapName               root.children[30]
+--   PlayerPos                root.children[57]
+--   GetDroppedItems          root.children[4]
+--   GetMainPlayerID          root.children[39]
+--   IsDie                    root.children[29]
+--   GetPlayerPosition        root.children[18]
+--   GetPlayerMapPosition     root.children[44]
+--   DistanceCalculation      root.children[11]
+--   IsInWhitelistMap         root.children[31]
+--   GetOwnerDescription      root.children[43]
+--
+-- 以下保留已核对的调用接收者、返回值数量、假值处理和比较方式。
+-- 这些函数尚未在目标游戏环境运行验证。
+----------------------------------------------------------------
+
+-- 获取地图 ID；元变量为 nil/false 时回退为 0。
+local function GetMapId()
+    return SL:GetMetaValue("MAP_ID") or 0
+end
+
+-- 获取地图名称；元变量为 nil/false 时回退为空字符串。
+local function GetMapName()
+    return SL:GetMetaValue("MAP_NAME") or ""
+end
+
+-- 返回主角当前 X、Y 两个坐标值（两个独立返回值，不组装成表）。
+local function PlayerPos()
+    local x = SL:GetMetaValue("X")
+    local y = SL:GetMetaValue("Y")
+    return x, y
+end
+
+-- 返回当前视野内掉落物列表；保留宿主方法的全部返回值。
+local function GetDroppedItems()
+    return global.dropItemManager:FindDropItemInCurrViewFieldAll()
+end
+
+-- root PC55/57/59/61：按原始ENV落点导出四个基础查询闭包。
+rootEnvironment.GetMapId = GetMapId
+rootEnvironment.GetMapName = GetMapName
+rootEnvironment.PlayerPos = PlayerPos
+rootEnvironment.GetDroppedItems = GetDroppedItems
+
+-- 读取主玩家 ID；这是观察到的宿主对象方法，不是新框架文档 API。
+local function GetMainPlayerID()
+    return global.gamePlayerController:GetMainPlayerID()
+end
+
+-- 返回 actor 存活判断结果。
+-- actor 为 nil/false 时，按 Lua and 短路规则原样返回该假值。
+local function IsDie(actor)
+    return actor and not actor:IsDie()
+end
+
+-- 以元变量 X/Y 构造坐标表；单个坐标为 nil/false 时回退为 0。
+local function GetPlayerPosition()
+    local x = SL:GetMetaValue("X")
+    if not x then
+        x = 0
+    end
+
+    local y = SL:GetMetaValue("Y")
+    if not y then
+        y = 0
+    end
+
+    return { x = x, y = y }
+end
+
+-- 从 actor 的地图坐标字段构造坐标表；actor 假值时返回 nil。
+local function GetPlayerMapPosition(actor)
+    if not actor then
+        return nil
+    end
+
+    local x = actor.mCurrMapX
+    if not x then
+        x = 0
+    end
+
+    local y = actor.mCurrMapY
+    if not y then
+        y = 0
+    end
+
+    return { x = x, y = y }
+end
+
+-- 计算 Chebyshev 距离；任一坐标表假值时返回哨兵值 99999。
+local function DistanceCalculation(pointA, pointB)
+    if not pointA then
+        return 99999
+    end
+    if not pointB then
+        return 99999
+    end
+
+    local dx = math.abs(pointA.x - pointB.x)
+    local dy = math.abs(pointA.y - pointB.y)
+    return math.max(dx, dy)
+end
+
+-- 安全区直接允许；否则只允许地图名严格等于“土城”。
+local function IsInWhitelistMap()
+    if SL:GetMetaValue("IN_SAFE_AREA") then
+        return true
+    end
+
+    local mapName = SL:GetMetaValue("MAP_NAME")
+    for _, allowedMapName in ipairs({ "土城" }) do
+        if mapName == allowedMapName then
+            return true
+        end
+    end
+
+    return false
+end
+
+-- 返回原始归属 ID 和对应说明文本，保持双返回值顺序。
+local function GetOwnerDescription(actor, mainPlayerID)
+    local ownerID = actor:GetOwnerID()
+    local description
+
+    if ownerID == nil or ownerID == "" or ownerID == -1 then
+        description = "无归属"
+    elseif ownerID == mainPlayerID then
+        description = "自己"
+    else
+        description = "其他玩家"
+    end
+
+    return ownerID, description
+end
+
+
+----------------------------------------------------------------
+-- 检查点211：root.children[41] MoveItemToQuickUse 无捕获主体接入
+--
+-- 原型：root.children[41] / legacy root/42；133条物理指令，0项upvalue。
+-- 函数主体取自短函数草稿_第六十一批.lua（检查点191），保持其普通Lua
+-- 控制流和原始代理调用参数。该函数无父级捕获，可直接放入根模块作用域。
+-- SetQuickUsePosData布尔参数、Bag返回表[1]语义及宿主代理行为仍待验证。
+-- 本段为已计入72项草稿中的同一函数之整合副本，不重复计数。
+local function MoveItemToQuickUse(itemIndex, targetPos)
+    -- PC1-PC14：分别取得QuickUseProxy与Bag代理。
+    local quickUseProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.QuickUseProxy
+    )
+    local bagProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.Bag
+    )
+
+    -- PC15-PC21：任一代理缺失均返回false和固定提示。
+    if not quickUseProxy or not bagProxy then
+        return false, "参数无效"
+    end
+
+    -- PC22-PC30：检查目标位置范围[1, GetQuickUseSize()]。
+    local quickUseSize = quickUseProxy:GetQuickUseSize()
+    if targetPos < 1 or targetPos > quickUseSize then
+        return false, "目标位置超出范围"
+    end
+
+    -- PC31-PC35：取得快捷栏数据，按pairs遍历位置与条目。
+    local quickUseData = quickUseProxy:GetQuickUseData()
+
+    -- PC36-PC90：查找物品是否已经存在于快捷栏。
+    for position, quickUseEntry in pairs(quickUseData) do
+        if quickUseEntry.Index == itemIndex then
+            -- PC42-PC46：物品已经处于目标位置。
+            if position == targetPos then
+                return false, "物品已在目标位置"
+            end
+
+            -- PC47-PC49：读取目标位置当前条目。
+            local targetEntry =
+                quickUseProxy:GetQucikUseDataByPos(targetPos)
+
+            -- PC50-PC54：先按原始调用顺序写回当前位置条目。
+            -- 第三个显式参数为true；其宿主含义未知，按原值保留。
+            quickUseProxy:SetQuickUsePosData(
+                position,
+                quickUseEntry,
+                true
+            )
+
+            if targetEntry then
+                -- PC55-PC66：目标位置已有条目，执行双位置交换。
+                quickUseProxy:SetQuickUsePosData(
+                    targetPos,
+                    quickUseEntry,
+                    false
+                )
+                quickUseProxy:SetQuickUsePosData(
+                    position,
+                    targetEntry,
+                    false
+                )
+
+                -- PC67-PC74：返回成功状态及“交换”格式提示。
+                return true, string.format(
+                    "快捷栏交换: %d ↔ %d",
+                    position,
+                    targetPos
+                )
+            end
+
+            -- PC75-PC88：目标位置无条目，写入目标位置并返回移动提示。
+            quickUseProxy:SetQuickUsePosData(
+                targetPos,
+                quickUseEntry,
+                true
+            )
+            return true, string.format(
+                "快捷栏移动: %d → %d",
+                position,
+                targetPos
+            )
+        end
+    end
+
+    -- PC89-PC103：快捷栏中未找到该Index，转查背包。
+    local itemDataList =
+        bagProxy:GetItemDataByItemIndex(itemIndex)
+
+    -- PC94-PC103：不仅检查返回值truthy，还调用next确认表非空。
+    if not itemDataList or not next(itemDataList) then
+        return false, "物品不存在"
+    end
+
+    -- PC104-PC106：读取目标快捷栏位置原有条目。
+    local targetEntry =
+        quickUseProxy:GetQucikUseDataByPos(targetPos)
+
+    if targetEntry then
+        -- PC107-PC116：目标位置原有条目时，按原始顺序写入并退回背包。
+        quickUseProxy:SetQuickUsePosData(
+            targetPos,
+            targetEntry,
+            true
+        )
+        bagProxy:addItemData(targetEntry)
+    end
+
+    -- PC117-PC125：取返回表的第1项，按原始顺序删除并写入目标位置。
+    -- 保留itemDataList[1]，不擅自改写为.Index或MakeIndex。
+    local itemEntry = itemDataList[1]
+    quickUseProxy:DelItemData(itemEntry)
+    quickUseProxy:SetQuickUsePosData(
+        targetPos,
+        itemEntry,
+        false
+    )
+
+    -- PC126-PC132：返回成功状态及背包移入快捷栏提示。
+    return true, string.format(
+        "已从背包移动到快捷栏位置%d",
+        targetPos
+    )
+end
+
+-- root PC259-PC260：该原型无捕获，根模块创建后立即导出全局函数。
+rootEnvironment.MoveItemToQuickUse = MoveItemToQuickUse
+
+
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+-- 检查点350：移除早期未使用的第一阶段外部装配适配器。
+--
+-- 当前唯一交付文件已在同一词法作用域中直接创建根级闭包、共享状态、
+-- 模块字段与chunk ENV导出；不再通过AttachRecoveredPrototypes(prototypes)
+-- 接收外部函数表。保留该旧适配器只会让替换测试误以为还需要外部装配步骤。
+-- 本次删除的是从未被调用的local函数，不改变模块初始化和运行路径。
+----------------------------------------------------------------
+
+
+-- 检查点237：高复用root寄存器值生命周期表（按OP_387 live cell语义）
+--
+-- 本节以corrected phase3 root反汇编的直接写入PC为边界。OP_387捕获父T表
+-- 与寄存器编号组成的live cell，因此捕获时必须读取该PC之前最后一次写入的值。
+-- 详细机器表：资料文件/docs/handoff/12_根模块闭包装配表.json / register_value_timeline。
+--
+-- T[0]：PC1创建MainLeftBottom模块表并于PC2导出；PC3将寄存器T[0]改写为
+--       a配置表，PC5写入MainLeftBottom.a。后续捕获的都是a表，不是模块根表。
+-- T[1]：PC17临时构造Blocklist数组并于PC23写入a.Blocklist；PC24/26分别
+--       重置为SendHookList/RecvHookList并于PC25/27赋值；PC30最终重置为b表，
+--       PC32写入MainLeftBottom.b。所有闭包捕获都发生在PC30之后。
+-- T[2]：PC18的1.0先用于PC22构造Blocklist；PC31短暂读入模块表，PC33立即
+--       覆盖为z状态表，PC35写入MainLeftBottom.z，PC36-PC41初始化六个状态位。
+--       后续五个捕获点取得的均是z表。
+-- T[3]：PC19的9.0先用于Blocklist；PC42覆盖为新的timer-state表。后续五个
+--       捕获点都在PC42之后；业务角色沿用已复核的ShowHideAllButtons映射。
+-- T[4]：PC20的10.0先用于Blocklist；PC43创建PrintLog并写入T[4]，PC45导出
+--       ENV['_G'].log。PC72 GetStorageItemData捕获的就是PrintLog，通知回调身份现已确定。
+-- T[5]：PC21的60000.0先用于Blocklist；PC44临时读取ENV['_G']，PC46覆盖为
+--       ShowLocalNoticeByType闭包。后续十个捕获点均取得该通知回调。
+-- T[37]：PC212-PC270依次复用为IsInWhitelistMap、MainLoop、InitGatherMonsters、StopGatherMonsters、Builtsetting、MoveItemToQuickUse、DestroyUI、SetButtonVisibilityState、ShowHideAllButtons等闭包；PC275写入MainLeftBottom，
+--       PC280重置为空表，PC281-PC282构造{"随机传送石"}。PC356 UseItemByIndex
+--       和PC381 BlacklistPlayerDetection捕获的都是该一元素数组。
+-- T[41]：PC286创建黑名单状态表，PC287-PC293初始化lastAttacker=nil、
+--       lastHp=nil、deathHandled=false、alertAt=0、nextTryAt=0、
+--       noStoneWarned=false、distance=nil；PC294赋给MainLeftBottom.a.blacklist。
+--       五个捕获点共享此同一状态表。
+-- T[57]：PC327-PC349先作为八向数值表中的一个二元素子表{1,1}；
+--       PC357改写为onDamageMsg并于PC359存入MainLeftBottom.a.onDamageMsg；
+--       PC360再改写为InstallDamageHook。PC370的唯一捕获因此是
+--       BlacklistPlayerDetection.UP[1]=InstallDamageHook。
+--
+-- 本批已闭合9个高复用/关键寄存器的值生命周期与捕获时值；其余寄存器继续
+-- 按fanout与写入复用顺序复核。此表是根模块装配证据，不代表根模块整体完成。
+
+
+-- 检查点238：T[8]/T[42]/T[43]/T[44]共享cell值生命周期已按PC核对。
+-- T[8]在PC86覆盖为gatherConfig并由PC87-PC89填充；PC199/236/244/399捕获该配置表。
+-- T[42]=blacklist_distance.txt（PC295；捕获PC306/309/404）；T[43]=gather_monster_count.txt（PC296；捕获PC312/315/406）。
+-- T[44]在PC297承载GetWritablePath闭包，PC299/301/303/403捕获同一闭包cell。
+-- 详细逐PC时间线见资料文件/docs/handoff/12_根模块闭包装配表.json；本批未改变静态完成数及运行时验证数。
+
+
+-- 检查点239：根模块寄存器生命周期补充（均按捕获PC处的共享live cell值记录）。
+-- T38=2.0（BlacklistPlayerDetection告警间隔）；T39=0.01（成功重试延迟）；T40=30.0（无道具重试延迟）。
+-- T50=AnonymousHelper_33(ReadNumericConfig, 'gather_monster_count.txt')；由doInit_UI UP9捕获。
+-- T52=PC349构造的8元素表，PC351被GetMapData2DPtr捕获；其可达源码路径不读取该UPVALUE。
+-- T53=GetMapData2DPtr；T55=FindBlacklistPlayer；T56=UseItemByIndex(itemNameList)；T58=DeathAutoBlacklist。
+-- BlacklistPlayerDetection的UP3/4/5/6/8/9/11与上述捕获身份/常量逐项对齐。详见资料文件/docs/handoff/12_根模块闭包装配表.json及检查点239审计。
+
+
+-- 检查点240：root PC298-PC315配置文件读写包装链与doInit_UI捕获槽闭合。
+-- T[45]=root.children[9] ReadNumericConfig(GetWritablePath)，PC298创建，PC299捕获T[44]；
+-- PC305由AnonymousHelper_49捕获为UP[0]，PC311由AnonymousHelper_33捕获为UP[0]。
+-- T[46]=root.children[17] PCallHelper(GetWritablePath)，PC300创建，PC301捕获T[44]；
+-- PC308由AnonymousHelper_32捕获为UP[0]，PC314由AnonymousHelper_54捕获为UP[0]。
+-- T[47]=root.children[0] FileExistCheck_pcall_wrapper，PC302创建、PC303捕获T[44]；
+-- T[48]=AnonymousHelper_49(ReadNumericConfig,"blacklist_distance.txt")；
+-- T[49]=AnonymousHelper_32(PCallHelper,"blacklist_distance.txt")；
+-- T[50]=AnonymousHelper_33(ReadNumericConfig,"gather_monster_count.txt")；
+-- T[51]=AnonymousHelper_54(PCallHelper,"gather_monster_count.txt")。
+-- PC390 doInit_UI捕获：UP[6]=T48、UP[9]=T50、UP[10]=T49、UP[12]=T44、
+-- UP[14]=T51、UP[16]=T47。注意root.children[33]的恢复名是AnonymousHelper_33；
+-- legacy root/34是路径标签，不是函数名。完整寄存器时间线见12_根模块闭包装配表。
+
+
+-- 检查点241：root PC1-PC85模块字段与全局导出逐PC对账。
+-- 模块根表：PC1创建，PC2写入ENV.MainLeftBottom；PC3复用T0创建a表，
+-- PC5挂入MainLeftBottom.a。a.version="10000"；screenW/screenH分别来自
+-- SL:GetMetaValue("SCREEN_WIDTH"/"SCREEN_HEIGHT")；Blocklist={1.0,9.0,10.0,60000.0}；
+-- SendHookList/RecvHookList为空表；isHidden=true、hidebut=nil；
+-- PC51将LuaSendMsg闭包写入MainLeftBottom.a.LuaSendMsg。
+-- PC30-PC32创建并挂入MainLeftBottom.b空表；PC33-PC35创建MainLeftBottom.z；
+-- z的isPaused/isRunning/isStoring/isTaking/isDiuing/isOutputted均初始化false。
+--
+-- PC43-PC85闭包导出：PrintLog->ENV["_G"].log(PC45)；GetMapId->ENV.GetMapId(PC55)；
+-- GetMapName->ENV.GetMapName(PC57)；PlayerPos->ENV.PlayerPos(PC59)；
+-- GetDroppedItems->ENV.GetDroppedItems(PC61)；MoveTo->ENV.MoveTo(PC63)；
+-- DiuItems->ENV.DiuItems(PC67)；GetAvailableStoragePage->ENV.GetAvailableStoragePage(PC70)；
+-- GetStorageItemData->ENV.GetStorageItemData(PC73)；StorageItems->ENV.StorageItems(PC78)；
+-- TakeItems->ENV.TakeItems(PC82)；PickUpItems->ENV.PickUpItems(PC85)。
+-- LuaSendMsg在PC51进入MainLeftBottom.a字段；ShowLocalNoticeByType、ScheduleOnce、
+-- Schedule在本区间创建但没有全局导出。逐PC账本见检查点241审计和12_根模块闭包装配表。
+
+
+-- 检查点242：root PC86-PC211寄存器生命周期闭合与PC210名称纠错。
+-- T7=Schedule（PC53创建，PC398由doInit_UI UP[7]捕获）。
+-- T9=0.2（PC90；PC410由doInit_UI UP[19]捕获，具体UI用途未命名）。
+-- T11=math.floor(3600/0.2)=18000（PC95；PC408由doInit_UI UP[17]捕获）。
+-- T12=14项奖励记录表（PC96-PC167构造；PC409由doInit_UI UP[18]捕获）。
+-- T13=gatherStatusText；T14=currentState共享cell，初值IDLE。
+-- T15=目标ID集合；T16=自己归属计数；T17=扫描游标；T18=isGatherRunning；
+-- T19=等待标记；T20=等待截止时间；T21=等待目标ID；T22=等待目标名称。
+-- T23=FormatStateChange；T24=SetTargetID；T25=ClearTargetID_2；
+-- T26=GetMainPlayerID；T27=GetPlayerPosition；T28=GetPlayerMapPosition；
+-- T29=DistanceCalculation；T30=IsDie；T31=GetOwnerIDText；T32=GetOwnerID；
+-- T33=GetOwnerDescription；T34=FindMonsterCandidates；
+-- T35=ResetGatherMonsterData；T36=FindMonsterInCurrViewField。
+-- PC210实际创建FindMonsterInCurrViewField并于PC211捕获T30=IsDie；
+-- ClearBlacklistItems是root.children[15]，实际创建PC383。此前PC210注释中的名称错误已纠正。
+-- 上述28个新增寄存器时间线及每个捕获槽见12_根模块闭包装配表.json。
+
+
+-- 检查点243：PC212-PC340根模块字段与全局导出复核。
+-- PC212-PC213：root.children[31] IsInWhitelistMap无捕获，导出全局IsInWhitelistMap。
+-- PC214-PC237：root.children[45] MainLoop按既有22项捕获序列创建，PC237导出全局MainLoop。
+-- PC238-PC246：InitGatherMonsters捕获[T3,T18,T23,T13,T35,T8,T4]，PC246全局导出。
+-- PC247-PC255：StopGatherMonsters捕获[T18,T3,T25,T23,T13,T35,T4]，PC255全局导出。
+-- PC256-PC258：Builtsetting捕获T5，PC258全局导出。
+-- PC259-PC260：MoveItemToQuickUse无捕获，PC260全局导出。
+-- PC261-PC265：DestroyUI捕获[T0,T3,T1]，写入MainLeftBottom.a.hide。
+-- PC266-PC269：SetButtonVisibilityState捕获[T0,T1]，写入MainLeftBottom.a.show。
+-- PC270-PC274：ShowHideAllButtons捕获[T3,T1,T0]，写入MainLeftBottom.a.destroy。
+-- PC276-PC279：AccountIDValidation捕获[T4,T5]（PrintLog、ShowLocalNoticeByType），写入MainLeftBottom.main。
+-- PC286-PC294：创建blacklistState并初始化lastAttacker=nil、lastHp=nil、deathHandled=false、alertAt=0、nextTryAt=0、noStoneWarned=false、distance=nil；同一表写入MainLeftBottom.a.blacklist。
+-- T54：PC318临时数值/表构造用途在PC349前结束；PC352最终写入PCallHelper_2；PC354与PC384分别被FindBlacklistPlayer UP0和ClearBlacklistItems UP0捕获。两次捕获均取到PCallHelper_2，之后T54无再写入。
+-- 该段为父模块创建/捕获/赋值账本；PC341-PC412的实际闭包定义、字段挂接、全局导出与最终return已在本文件后续可执行代码中落实。
+
+
+-- 检查点244：root PC341-PC412最终闭包、模块字段与全局导出账本。
+-- PC341-PC349按原始构造顺序建立T[52]八元素数值表：{ {1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1} }。其业务用途仍未知，不命名为方向表或寻路表。
+-- PC350-PC351：root.children[22] GetMapData2DPtr捕获T[52]；已恢复的可达路径不读取该UPVALUE。
+-- PC352：创建无捕获PCallHelper_2。
+-- PC353-PC354：FindBlacklistPlayer UP[0]=T[54]=PCallHelper_2。
+-- PC355-PC356：UseItemByIndex UP[0]=T[37]=randomTeleportItemNames。
+-- PC357-PC359：onDamageMsg UP[0]=T[41]=blacklistState；PC359写入MainLeftBottom.a.onDamageMsg。
+-- PC360-PC362：InstallDamageHook UP[0]=T[0]=MainLeftBottom.a UI/配置状态表、UP[1]=T[4] PrintLog；PC360覆写T[57]，后续BlacklistPlayerDetection捕获该live cell。
+-- PC363-PC367：DeathAutoBlacklist捕获[T41 blacklistState,T4 PrintLog,T55 FindBlacklistPlayer,T5 ShowLocalNoticeByType]。
+-- PC368-PC381：BlacklistPlayerDetection捕获13项[T2=MainLeftBottom.z状态表,T57 InstallDamageHook live cell,T41 blacklistState,T58 DeathAutoBlacklist,T55 FindBlacklistPlayer,T53 GetMapData2DPtr,T38=2.0,T4 PrintLog,T56 UseItemByIndex,T39=0.01,T5 ShowLocalNoticeByType,T40=30.0,T37随机传送道具名表]。
+-- PC382：全局导出BlacklistItems=BlacklistPlayerDetection。
+-- PC383-PC387：ClearBlacklistItems捕获[T54 PCallHelper_2,T4 PrintLog,T5 ShowLocalNoticeByType,T41 blacklistState]。
+-- PC388：全局导出ClearBlacklistItems。
+-- PC390-PC410：doInit_UI在PC390创建，PC391-PC410依序捕获20项，顺序为[T4,T2,T3,T0,T1,T41,T48,T7,T8,T50,T49,T5,T44,T42,T51,T43,T47,T11,T12,T9]；具体身份见12_根模块闭包装配表.json。
+-- PC411：MainLeftBottom.doInit=doInit_UI；PC412：return根模块表。
+-- 至此PC341-PC412的根级创建/捕获/模块字段/全局导出时序已对账；这不代表所有子函数均已达到完整静态恢复，也不代表根模块整体源码已装配完成。
+
+
+-- 检查点245：根模块PC1-PC412全局导出与模块字段总账（跨区间合并复核）。
+-- PC1-PC85：ENV.MainLeftBottom；ENV["_G"].log（PC45）；ENV.GetMapId；ENV.GetMapName；ENV.PlayerPos；ENV.GetDroppedItems；ENV.MoveTo；ENV.DiuItems；ENV.GetAvailableStoragePage；ENV.GetStorageItemData；ENV.StorageItems；ENV.TakeItems；ENV.PickUpItems。MainLeftBottom.a字段包括version/screenW/screenH/Blocklist/SendHookList/RecvHookList/isHidden/hidebut/LuaSendMsg；另建立b空表、z状态表。
+-- PC86-PC211：复核未发现新的根级全局导出或MainLeftBottom根表字段写入；此区间是局部配置、共享状态和闭包创建。
+-- PC212-PC340：ENV.IsInWhitelistMap、ENV.MainLoop、ENV.InitGatherMonsters、ENV.StopGatherMonsters、ENV.Builtsetting、ENV.MoveItemToQuickUse；MainLeftBottom.a.hide/show/destroy/blacklist；根表MainLeftBottom.main。
+-- PC341-PC412：MainLeftBottom.a.onDamageMsg；ENV.BlacklistItems；ENV.ClearBlacklistItems；MainLeftBottom.doInit。
+-- 总账将全局导出与模块字段分开统计；局部函数创建不等于导出。ShowLocalNoticeByType、ScheduleOnce、Schedule在已审PC段未发现根级导出。
+-- 完整机器可读明细见资料文件/docs/handoff/12_根模块闭包装配表.json的root_complete_module_ledger。
+
+
+-- ============================================================================
+-- 检查点246：无捕获子原型实际接入记录
+--
+-- 根模块主装配已整合进本唯一交付文件；历史候选与root级PC账本仅作证据参考。
+-- 本文件使用词法局部函数与共享局部变量承载闭包身份，不再依赖平行源码装配。
+-- ============================================================================
+
+
+-- 检查点267：PC350-PC388黑名单闭包身份复核。
+-- PC357 onDamageMsg捕获T41并写MainLeftBottom.a.onDamageMsg；PC360 InstallDamageHook捕获T0/T4并写T57。
+-- PC368 BlacklistPlayerDetection.UP1捕获T57 live cell，捕获时cell.value为InstallDamageHook，不能接成onDamageMsg。
+-- PC382/388分别导出ENV.BlacklistItems与ENV.ClearBlacklistItems；主恢复稿已增加对象身份断言。
+-- 详细逐PC来源与函数主体边界见资料文件/docs/audit/检查点267_PC350-PC388黑名单闭包链与导出身份核对.md。
+
+
+-- 检查点268：PC389/PC411原始指令核对。
+-- PC389把_ENV.MainLeftBottom读入T[59]；PC392/393/394捕获的T[2]/T[3]/T[0]
+-- 仍分别是z/timerState/a。PC411向T[59].doInit写入doInit_UI；详见检查点268审计。
+
+
+-- 检查点269：PC390-PC410 doInit_UI二十项捕获逐槽对账。
+-- UP[8]捕获T[8]=gatherConfig；Nested_InitGatherMonsters(config,getThreshold)会写config.GATHER_THRESHOLD。
+-- 主恢复稿已将UP[8]注入rootSource.gatherConfig，并断言三个配置字段10/0.5/1。
+-- 完整20槽映射见资料文件/docs/audit/检查点269_doInit_UI二十项捕获逐槽对账与T8配置表修正.md。
+
+
+
+-- ============================================================================
+-- 功能等价重建：doInit_UI及其直接子闭包（第一版接入）
+-- 根PC390-PC411的20项捕获现改为同一词法作用域直接绑定。
+-- ============================================================================
+
+-- PC43-PC45：PrintLog无捕获；PC44读取ENV["_G"]，PC45写入该表的log字段。
+local rootGlobal = rootEnvironment["_G"]
+local function PrintLog(value, ...)
+    if type(value) == "table" then
+        SL.dump(value, "【超本】")
+        return
+    end
+
+    local message = tostring(value)
+    if select("#", ...) > 0 then
+        local ok, formatted = pcall(string.format, message, ...)
+        if ok and formatted then
+            message = formatted
+        end
+    end
+
+    -- 原型只检查SL与SL.Print是否存在，没有对应的Print调用指令。
+    if SL and SL.Print then
+        -- 保留原型中的空检查分支，不补造输出调用。
+    end
+end
+rootGlobal.log = PrintLog
+
+
+-- root.children[12] / LuaSendMsg：PC48-PC51捕获MainLeftBottom.a与PrintLog，
+-- 并挂入a.LuaSendMsg。hook返回值严格为true时拦截网络发送。
+local function LuaSendMsg(
+    hookKey,
+    param1,
+    param2,
+    param3,
+    param4,
+    messageId
+)
+    local message = {
+        recog = 0,
+        msgId = messageId,
+        param1 = param1,
+        param2 = param2,
+        param3 = param3,
+        param4 = param4,
+    }
+
+    local numericHookKey = tonumber(hookKey)
+    local blockedIndex = table.find(a.Blocklist, numericHookKey)
+    if not blockedIndex then
+        local formattedParams = {}
+        local parameterSource = {
+            message.param1,
+            message.param2,
+            message.param3,
+            message.param4,
+        }
+        for _, value in ipairs(parameterSource) do
+            if type(value) == "string" then
+                table.insert(formattedParams, "'" .. value .. "'")
+            else
+                table.insert(formattedParams, tostring(value))
+            end
+        end
+        local logText = "LuaSendMsg("
+            .. table.concat(formattedParams, ", ")
+            .. ")"
+        PrintLog(logText)
+    end
+
+    local hookExists = a.SendHookList[hookKey]
+    if hookExists then
+        local hook = a.SendHookList[hookKey]
+        if type(hook) == "function" then
+            local callOK, handled = pcall(
+                hook,
+                hookKey,
+                messageId,
+                message
+            )
+            if callOK and handled == true then
+                return
+            end
+        end
+    end
+
+    global.networkCtl:SendMsg(
+        hookKey,
+        param1,
+        param2,
+        param3,
+        param4,
+        messageId
+    )
+end
+a.LuaSendMsg = LuaSendMsg
+
+-- PC46：捕获父T[0]，即MainLeftBottom.a；通知位置使用同一状态表的screenH。
+local function ShowLocalNoticeByType(message)
+    local notice = {
+        Type = 10,
+        Msg = message,
+        FColor = 249,
+        BColor = 0,
+        X = 5,
+        Y = a.screenH - 50,
+    }
+    -- VM原指令使用SELF：必须保留SL作为receiver，等价于SL:ShowLocalNoticeByType(notice)。
+    SL:ShowLocalNoticeByType(notice)
+end
+local function Schedule(callback, interval) return SL:Schedule(callback, interval) end
+local function ScheduleOnce(callback, delay) return SL:ScheduleOnce(callback, delay) end
+-- ============================================================================
+-- 根级入口闭包：PC212-PC279
+-- 以唯一词法作用域装配共享状态；未确认的宿主依赖通过ENV读取并显式检查。
+-- ============================================================================
+-- PC172-PC180的九个根寄存器在Lua中直接由词法局部变量承载。
+-- Lua闭包共享这些局部变量本身；不再复制成{value=...}包装表，避免状态双份。
+-- 对应关系：T14=currentState，T15=resettableTable，T16=resetSlot16(归属计数)，
+-- T17=resetSlot17(扫描游标)，T18=isGatherRunning，T19-T22为等待状态字段。
+
+-- PC185：创建无捕获root.children[56] / ClearTargetID_2。
+-- 代理获取失败时直接返回；SetTargetID保留代理对象冒号接收者及两个参数。
+local function ClearTargetID_2()
+    if not global.Facade then
+        return
+    end
+
+    local playerInputProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.PlayerInputProxy
+    )
+    if not playerInputProxy then
+        return
+    end
+
+    playerInputProxy:SetTargetID(
+        0,
+        global.MMO.SELETE_TARGET_TYPE_FIND
+    )
+end
+
+-- root.children[8] / FormatStateChange：UP[0]=PrintLog，UP[1]=T14共享cell。
+local function FormatStateChange(newState, ...)
+    local message = string.format(
+        "状态切换: %s -> %s",
+        currentState,
+        newState
+    )
+    PrintLog(message)
+    -- 仅当PrintLog正常返回后才更新共享状态。
+    currentState = newState
+end
+
+local function ResetGatherMonsterData()
+    -- 保留root.children[26]的原始写入顺序：
+    -- T[15]/T[16]/T[17]复位后，先清除当前目标，再复位T[19..22]。
+    resettableTable = {}
+    resetSlot16 = 0
+    resetSlot17 = 0
+    ClearTargetID_2()
+    resetSlot19 = false
+    resetSlot20 = 0
+    resetSlot21 = nil
+    resetSlot22 = ""
+    PrintLog("数据已重置")
+end
+
+-- PC184-PC194辅助闭包：按已核实的比较与排序规则直接落为词法函数。
+local function GetOwnerID(actor, expectedOwnerID)
+    local ownerID = actor:GetOwnerID()
+
+    if ownerID == nil or ownerID == "" or ownerID == -1 then
+        return false
+    end
+
+    -- 与此前用户实测通过版本保持一致。
+    -- GetOwnerID的实际返回类型尚无宿主API签名证据，不擅自改变旧版分支。
+    if type(ownerID) == "string" then
+        return ownerID ~= tostring(ownerID)
+    end
+
+    return ownerID ~= expectedOwnerID
+end
+
+local function GetOwnerIDText(actor, expectedOwnerID)
+    local ownerID = actor:GetOwnerID()
+
+    if ownerID == nil or ownerID == "" or ownerID == -1 then
+        return false
+    end
+
+    if type(ownerID) == "string" then
+        return ownerID == tostring(ownerID)
+    end
+
+    return ownerID == expectedOwnerID
+end
+
+local function SetTargetID(targetID)
+    if not global.Facade then return false end
+    local proxy = global.Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)
+    if not proxy then return false end
+    proxy:SetTargetID(targetID, global.MMO.SELETE_TARGET_TYPE_FIND)
+    return true
+end
+
+local function FindMonsterInCurrViewField()
+    local monsters = SL:FindMonsterInCurrViewField(true, true) or {}
+    local result = {}
+    for _, actor in ipairs(monsters) do
+        if IsDie(actor) then
+            local actorID = actor:GetID()
+            if actorID then result[actorID] = actor end
+        end
+    end
+    return result
+end
+
+local function FindMonsterCandidates()
+    local monsters = SL:FindMonsterInCurrViewField(true, true)
+    if not monsters or #monsters == 0 then return {} end
+    local ignoredNames = {}
+    local ignoreSetting = GET_SETTING(global.MMO.SETTING_IDX_IGNORE_MONSTER)
+    if ignoreSetting and type(ignoreSetting[1]) == "table" then
+        for name, enabled in pairs(ignoreSetting[1]) do
+            if enabled == true then ignoredNames[name] = true end
+        end
+    end
+    local playerPosition = GetPlayerPosition()
+    local candidates = {}
+    for _, actor in ipairs(monsters) do
+        if IsDie(actor) then
+            local name = actor:GetName() or "未知怪物"
+            if not ignoredNames[name] then
+                local actorPosition = GetPlayerMapPosition(actor)
+                actor._distance = DistanceCalculation(playerPosition, actorPosition)
+                table.insert(candidates, actor)
+            end
+        end
+    end
+    table.sort(candidates, function(left, right)
+        return left._distance < right._distance
+    end)
+    local result = {}
+    for index, actor in ipairs(candidates) do
+        if index > gatherConfig.GATHER_THRESHOLD then break end
+        table.insert(result, actor)
+    end
+    return result
+end
+
+local function MainLoop()
+    if not isGatherRunning then
+        return
+    end
+
+    -- 白名单地图：仅在状态非IDLE时记录切换并复位。
+    if IsInWhitelistMap() then
+        if currentState ~= gatherStatusText.IDLE then
+            PrintLog("在白名单地图, 停止引怪")
+            FormatStateChange(gatherStatusText.IDLE)
+            ResetGatherMonsterData()
+        end
+        return
+    end
+
+    --------------------------------------------------------------------------
+    -- IDLE：收集候选怪物ID。
+    --------------------------------------------------------------------------
+    if currentState == gatherStatusText.IDLE then
+        PrintLog("扫描怪物中")
+
+        local candidates = FindMonsterCandidates()
+        if #candidates == 0 then
+            PrintLog("视野内没有可攻击怪物")
+            return
+        end
+
+        resettableTable = {}
+        local mainPlayerID = GetMainPlayerID()
+
+        for _, actor in ipairs(candidates) do
+            if not GetOwnerID(actor, mainPlayerID) then
+                table.insert(resettableTable, actor:GetID())
+            end
+        end
+
+        if #resettableTable == 0 then
+            PrintLog("没有可攻击的怪物")
+            return
+        end
+
+        resetSlot17 = 1
+        resetSlot16 = 0
+        PrintLog(string.format("开始引怪，目标数量: %d", #resettableTable))
+        FormatStateChange(gatherStatusText.GATHERING)
+        return
+    end
+
+    --------------------------------------------------------------------------
+    -- GATHERING：先处理等待归属变更的目标，再扫描目标列表。
+    --------------------------------------------------------------------------
+    if currentState == gatherStatusText.GATHERING then
+        PrintLog("引怪中")
+
+        if resetSlot19 then
+            local now = os.time()
+            if now < resetSlot20 then
+                PrintLog(string.format(
+                    "等待归属变更中: %s (还剩 %d 秒)",
+                    resetSlot22,
+                    resetSlot20 - now
+                ))
+                return
+            end
+
+            -- 等待到期后的确认查询按原型调用点不传参数；PC159-PC160常规扫描调用才传入额外实参。
+            local actorMap = FindMonsterInCurrViewField()
+            local actor = actorMap[resetSlot21]
+            local mainPlayerID = GetMainPlayerID()
+
+            if actor and GetOwnerIDText(actor, mainPlayerID) then
+                PrintLog(string.format(
+                    "怪物 %s 归属已变更为自己",
+                    resetSlot22
+                ))
+                -- VM PC137-PC139：确认归属成功后递增共享归属计数。
+                resetSlot16 = resetSlot16 + 1
+            else
+                PrintLog(string.format(
+                    "怪物 %s 归属未变更或已离开视野",
+                    resetSlot22
+                ))
+            end
+
+            resetSlot19 = false
+            resetSlot20 = 0
+            resetSlot21 = 0
+            resetSlot22 = ""
+            resetSlot17 = resetSlot17 + 1
+        end
+
+        -- 原型PC159-PC160向零形参辅助函数传入等待标记；Lua 5.1会忽略多余实参，保留调用形态。
+        local actorMap = FindMonsterInCurrViewField(resetSlot19)
+        local mainPlayerID = GetMainPlayerID()
+        local allOwnersResolved = true
+
+        -- 注意：数值for的起止值在进入循环时确定；循环内更新resetSlot17
+        -- 只影响下一次MainLoop回调的起点，不会改变本轮index的递增。
+        for index = resetSlot17, #resettableTable do
+            local targetID = resettableTable[index]
+            local actor = actorMap[targetID]
+
+            if not actor then
+                PrintLog(string.format(
+                    "怪物 %d (ID: %s) 不在视野内，跳过",
+                    index,
+                    tostring(targetID)
+                ))
+                resetSlot17 = index + 1
+
+            elseif not IsDie(actor) then
+                PrintLog(string.format(
+                    "怪物 %d (ID: %s) 已死亡，跳过",
+                    index,
+                    tostring(targetID)
+                ))
+                resetSlot17 = index + 1
+
+            else
+                local monsterName = actor:GetName()
+                if not monsterName then
+                    monsterName = "未知怪物"
+                end
+
+                local ownerID, ownerDescription =
+                    GetOwnerDescription(actor, mainPlayerID)
+
+                if GetOwnerID(actor, mainPlayerID) then
+                    PrintLog(string.format(
+                        "怪物 %d (%s, ID: %s) 归属属于其他玩家(归属ID: %s, %s)，跳过",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerID),
+                        tostring(ownerDescription)
+                    ))
+                    resetSlot17 = index + 1
+
+                elseif GetOwnerIDText(actor, mainPlayerID) then
+                    PrintLog(string.format(
+                        "怪物 %d (%s, ID: %s) 归属已属于自己(归属ID: %s, %s)，跳过",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerID),
+                        tostring(ownerDescription)
+                    ))
+                    resetSlot16 = resetSlot16 + 1
+                    resetSlot17 = index + 1
+
+                else
+                    allOwnersResolved = false
+                    resetSlot17 = index
+
+                    PrintLog(string.format(
+                        "锁定怪物 %d: %s (ID: %s, 归属: %s)",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerDescription)
+                    ))
+
+                    local accepted = SetTargetID(targetID)
+                    if accepted then
+                        resetSlot19 = true
+                        resetSlot20 = os.time() + gatherConfig.ATTACK_WAIT_TIME
+                        resetSlot21 = targetID
+                        resetSlot22 = monsterName
+
+                        PrintLog(string.format(
+                            "开始等待 %s 归属变更 (等待 %d 秒)",
+                            monsterName,
+                            gatherConfig.ATTACK_WAIT_TIME
+                        ))
+
+                        -- VM PC280-PC302：锁定成功后设置等待状态并立即返回。
+                        -- 游标必须保持在当前index；等待归属确认后再由VM的确认分支推进。
+                        return
+                    end
+
+                    -- VM PC303-PC311：锁定失败时记录日志、游标推进到下一只，然后返回。
+                    PrintLog(string.format("锁定怪物 %s 失败", monsterName))
+                    resetSlot17 = index + 1
+                    return
+                end
+            end
+        end
+
+        -- VM PC314-PC330：只有归属确认计数达到目标列表总数，才允许进入攻击状态。
+        -- 若扫描结束但计数不足（包括归属被其他玩家抢走），按VM回到IDLE并重置本批。
+        if allOwnersResolved and resetSlot16 >= #resettableTable then
+            PrintLog("所有怪物归属已获取，切换到攻击状态")
+            resetSlot17 = 1
+            FormatStateChange(gatherStatusText.ATTACKING)
+            return
+        end
+
+        PrintLog("怪物列表处理完毕但未全部获取归属，重新扫描")
+        FormatStateChange(gatherStatusText.IDLE)
+        ResetGatherMonsterData()
+        return
+    end
+
+    --------------------------------------------------------------------------
+    -- ATTACKING：按目标ID查找下一个仍存活的对象。
+    --------------------------------------------------------------------------
+    if currentState == gatherStatusText.ATTACKING then
+        PrintLog("攻击中")
+
+        local actorMap = FindMonsterInCurrViewField()
+        for index = resetSlot17, #resettableTable do
+            local targetID = resettableTable[index]
+            local actor = actorMap[targetID]
+
+            if actor and IsDie(actor) then
+                local monsterName = actor:GetName()
+                if not monsterName then
+                    monsterName = "未知怪物"
+                end
+
+                PrintLog(string.format(
+                    "攻击怪物 %d: %s (ID: %s)",
+                    index,
+                    monsterName,
+                    tostring(targetID)
+                ))
+
+                -- ATTACKING每0.5秒都会进入一次；目标没变化时不重复SetTargetID，
+                -- 避免引擎反复刷新同一目标造成地图怪物选中效果闪烁。
+                if resetSlot21 ~= targetID then
+                    if SetTargetID(targetID) then
+                        resetSlot21 = targetID
+                    end
+                end
+                return
+            end
+
+            PrintLog(string.format(
+                "怪物 %d (ID: %s) 已死亡或离开视野",
+                index,
+                tostring(targetID)
+            ))
+            resetSlot17 = index + 1
+        end
+
+        PrintLog("所有目标怪物已死亡或离开视野，切换到空闲状态")
+        FormatStateChange(gatherStatusText.IDLE)
+        ResetGatherMonsterData()
+        return
+    end
+end
+
+-- 检查点306：PC245 child19 UP[6]捕获root T[4]=PrintLog；启动提示通过该捕获函数输出。
+local function InitGatherMonsters()
+    if timerState.gatherTimer then
+        SL:UnSchedule(timerState.gatherTimer)
+        timerState.gatherTimer = nil
+    end
+    isGatherRunning = true
+    FormatStateChange(gatherStatusText.IDLE)
+    ResetGatherMonsterData()
+
+    -- 与用户此前实测通过版本保持一致：直接把本地MainLoop交给Schedule。
+    timerState.gatherTimer = SL:Schedule(
+        MainLoop,
+        gatherConfig.CHECK_INTERVAL
+    )
+    PrintLog(string.format("引怪功能已启动 (阈值: %d)", gatherConfig.GATHER_THRESHOLD))
+end
+
+local function StopGatherMonsters()
+    isGatherRunning = false
+    if timerState.gatherTimer then
+        SL:UnSchedule(timerState.gatherTimer)
+        timerState.gatherTimer = nil
+    end
+    ClearTargetID_2()
+    FormatStateChange(gatherStatusText.IDLE)
+    ResetGatherMonsterData()
+    PrintLog("引怪功能已停止")
+end
+
+local function Builtsetting()
+    CHANGE_SETTING(27, {0})
+    ShowLocalNoticeByType("关闭背景音乐")
+    CHANGE_SETTING(52, {0})
+    ShowLocalNoticeByType("关闭游戏音乐")
+    CHANGE_SETTING(1002, {0})
+    ShowLocalNoticeByType("关闭高帧率")
+    CHANGE_SETTING(57, {1})
+    ShowLocalNoticeByType("开启人物简装")
+    CHANGE_SETTING(58, {1})
+    ShowLocalNoticeByType("开启怪物简装")
+    CHANGE_SETTING(2005, {0})
+    ShowLocalNoticeByType("关闭屏蔽怪物")
+end
+
+local function DestroyUI()
+    a.isHidden = false
+    if timerState.resTimer then
+        SL:UnSchedule(timerState.resTimer)
+        timerState.resTimer = nil
+    end
+    a.resWin = nil
+    GUI:Win_CloseAll()
+    -- root.children[37]的VM布尔常量为false：真正隐藏所有功能按钮。
+    for key in pairs(b) do GUI:setVisible(b[key], false) end
+end
+
+local function SetButtonVisibilityState()
+    a.isHidden = true
+    for key in pairs(b) do GUI:setVisible(b[key], true) end
+end
+
+local function ShowHideAllButtons()
+    if timerState.rewardTimer then
+        SL:UnSchedule(timerState.rewardTimer)
+        timerState.rewardTimer = nil
+    end
+    if timerState.cruiseTimer then
+        SL:UnSchedule(timerState.cruiseTimer)
+        timerState.cruiseTimer = nil
+    end
+    -- root.children[40]的VM布尔常量为false：销毁/收起时隐藏全部功能按钮。
+    for key in pairs(b) do GUI:setVisible(b[key], false) end
+    if a.hidebut then
+        GUI:setVisible(a.hidebut, false)
+        a.hidebut = nil
+    end
+end
+
+-- 原VM的AccountIDValidation捕获PrintLog与ShowLocalNoticeByType。
+-- 测试打包模式不再执行账号验证，因此仅保留等待提示所需的PrintLog别名。
+-- 脚本自身的GAME_ID/UID白名单验证已屏蔽；APP/平台登录认证不在本函数范围内。
+-- 保留原AccountIDValidation入口及延迟UI初始化回调，避免影响主界面初始化。
+local accountPrintLog = PrintLog
+
+local function AccountIDValidation()
+    -- 原GAME_ID门控、UID读取、允许账号列表、Nested_ID匹配及失败通知
+    -- 均在测试打包模式下停用；不影响APP/平台自身的登录认证。
+    -- 保留旧版入口的定时回调句柄身份：就绪后取消的必须是本回调本身。
+    local scheduledCallback
+    scheduledCallback = function()
+        local mainProperty = MainProperty
+        if mainProperty and mainProperty._ui and mainProperty._ui.Panel_mini_chat then
+            SL:UnSchedule(scheduledCallback)
+            local module = rootEnvironment.MainLeftBottom
+            if module and module.doInit then
+                module.doInit()
+            end
+        else
+            accountPrintLog("等待主界面属性栏(MainProperty)初始化完成...")
+        end
+    end
+    SL:Schedule(scheduledCallback, 0.5)
+end
+
+-- root PC212-PC279：按原始导出位置接回根级全局函数和模块字段。
+-- PC213/237/246/255/258为chunk ENV全局导出；PC265/269/274/279为模块字段。
+rootEnvironment.IsInWhitelistMap = IsInWhitelistMap
+rootEnvironment.MainLoop = MainLoop
+rootEnvironment.InitGatherMonsters = InitGatherMonsters
+rootEnvironment.StopGatherMonsters = StopGatherMonsters
+rootEnvironment.Builtsetting = Builtsetting
+a.hide = DestroyUI
+a.show = SetButtonVisibilityState
+a.destroy = ShowHideAllButtons
+rootEnvironment.MainLeftBottom.main = AccountIDValidation
+
+
+-- root.children[3] / MoveTo：地图移动通知与目标距离判断（51条物理指令）。
+-- 保留Facade冒号调用、PlayerPos双返回值、range的nil/false回退规则。
+local function MoveTo(x, y, range)
+    local moveInfo = {
+        mapID = SL:GetMetaValue("MAP_ID"),
+    }
+    moveInfo.x = tonumber(x)
+    moveInfo.y = tonumber(y)
+    moveInfo.type = global.MMO.INPUT_MOVE_TYPE_AUTOMOVE
+    if not range then
+        range = 0
+    end
+    moveInfo.range = range
+
+    global.Facade:sendNotification(global.NoticeTable.InputMove, moveInfo)
+
+    local playerX, playerY = PlayerPos()
+    local deltaX = math.abs(moveInfo.x - playerX)
+    if not (deltaX <= moveInfo.range) then
+        return false
+    end
+
+    local deltaY = math.abs(moveInfo.y - playerY)
+    if not (deltaY <= moveInfo.range) then
+        return false
+    end
+    return true
+end
+rootEnvironment.MoveTo = MoveTo
+
+-- ============================================================================
+-- 物品功能入口：root PC64-PC85
+-- ============================================================================
+-- PC64-PC85闭包边界：物品/仓库入口只捕获原型记录的状态表与通知回调。
+-- 其他根级函数通过getfenv(1)按Lua 5.1函数环境查找；LuaSendMsg从
+-- ENV.MainLeftBottom.a读取PC51写入的同一函数对象，避免误增词法upvalue。
+local function DiuItems()
+    local MAX_GROUND_ITEMS = 35
+    if z.isDiuing then return end
+    z.isDiuing = true
+    local _, groundItemCount = getfenv(1).GetDroppedItems()
+    groundItemCount = groundItemCount or 0
+    if MAX_GROUND_ITEMS < groundItemCount then
+        ShowLocalNoticeByType("地面物品(" .. groundItemCount .. ")超过上限(" .. MAX_GROUND_ITEMS .. ")")
+        z.isDiuing = false
+        return
+    end
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then z.isDiuing = false; return end
+
+    -- root.children[46].children[0] / Nested_string_2：
+    -- VM在PC36-PC68创建关键词表和该匹配闭包；28项字符串按原始表构造顺序恢复。
+    -- PC89-PC90的常量真分支会跳过PC91-PC95对此闭包的调用，但仍保留原表和闭包创建。
+    local discardKeywords = {
+        "声望卷", "称号卷", "悟道茶", "转生水晶",
+        "时装晶魄", "血龙宝珠", "洗髓丹", "恶魔令牌",
+        "晶石", "经验卷", "技能残页", "熬光",
+        "敖顺", "敖闰", "点点", "之力",
+        "复活", "麻痹", "护身", "主印",
+        "副印", "神凤", "龙傲", "冰雪",
+        "上古", "起源", "残", "鸿蒙",
+    }
+    local function Nested_string_2(text)
+        for _, keyword in ipairs(discardKeywords) do
+            if string.find(text, keyword, 1, true) then
+                return true
+            end
+        end
+        return false
+    end
+
+    local candidates = {}
+    for _, item in pairs(bagData) do
+        if item and item.Name and item.MakeIndex
+            and not SL:GetMetaValue("ITEM_IS_BIND", item) then
+            -- PC89-PC90：常量真分支始终进入候选添加路径；
+            -- PC91-PC95的Nested_string_2匹配分支按VM保持不可达。
+            if true then
+                candidates[#candidates + 1] = {
+                    makeIndex = item.MakeIndex,
+                    count = item.OverLap or 1,
+                    name = item.Name,
+                }
+            elseif Nested_string_2(item.Name) then
+                candidates[#candidates + 1] = {
+                    makeIndex = item.MakeIndex,
+                    count = item.OverLap or 1,
+                    name = item.Name,
+                }
+            end
+        end
+    end
+    if #candidates == 0 then
+        ShowLocalNoticeByType("背包无可丢弃物品")
+        z.isDiuing = false
+        return
+    end
+    local sentCount = 0
+    for _, candidate in ipairs(candidates) do
+        if MAX_GROUND_ITEMS <= groundItemCount then
+            ShowLocalNoticeByType("地面物品已满" .. MAX_GROUND_ITEMS .. "件，停止丢弃")
+            break
+        end
+        ShowLocalNoticeByType("丢: " .. candidate.name)
+        getfenv(1).MainLeftBottom.a.LuaSendMsg(global.MsgType.MSG_CS_MAP_ITEM_DISCARD,candidate.makeIndex,candidate.count,0,0,candidate.name,string.len(candidate.name))
+        sentCount = sentCount + 1
+        groundItemCount = groundItemCount + 1
+    end
+    ShowLocalNoticeByType("共丢弃 " .. sentCount .. " 件物品")
+    z.isDiuing = false
+end
+
+local function TakeItems()
+    if z.isTaking then return end
+    z.isTaking = true
+    local storageItems = getfenv(1).GetStorageItemData()
+    if not storageItems or #storageItems == 0 then
+        ShowLocalNoticeByType("仓库无可取物品")
+        z.isTaking = false
+        return
+    end
+    local takenCount = 0
+    for _, item in ipairs(storageItems) do
+        if item and item.Name and item.MakeIndex then
+            local itemName = string.trim(item.Name)
+            ShowLocalNoticeByType("取: " .. itemName)
+            getfenv(1).MainLeftBottom.a.LuaSendMsg(global.MsgType.MSG_CS_STORAGE_PICK_OUT_REQUEST,999999999,item.MakeIndex,0,0,itemName,string.len(itemName))
+            takenCount = takenCount + 1
+        end
+    end
+    z.isTaking = false
+    if takenCount > 0 then ShowLocalNoticeByType("取出物品完成, 共取出 " .. tostring(takenCount) .. " 件") end
+end
+
+local function PickUpItems()
+    local function Nested_dist_2(left,right) return left.dist < right.dist end
+    local function Nested_dist(left,right)
+        if left.kIdx ~= right.kIdx then return left.kIdx < right.kIdx end
+        return left.dist < right.dist
+    end
+    local nameRules = {}
+    local droppedItems,droppedCount = getfenv(1).GetDroppedItems()
+    if droppedCount == 0 then ShowLocalNoticeByType("地面无可拾取物品"); return end
+    local playerX,playerY = getfenv(1).PlayerPos()
+    local preferredItems,ordinaryItems = {},{}
+    for _,item in ipairs(droppedItems) do
+        local name = item.mName or item.mONameStr or item.Name or item.name or ""
+        local x = item.mCurrMapX or item.MapX or item.mapX or item.x
+        local y = item.mCurrMapY or item.MapY or item.mapY or item.y
+        if x and y then
+            local distance = math.abs(playerX-x)+math.abs(playerY-y)
+            local matchedRuleIndex = 0
+            for ruleIndex,rule in ipairs(nameRules) do
+                if string.find(name,rule) then matchedRuleIndex=ruleIndex; break end
+            end
+            if matchedRuleIndex > 0 then
+                table.insert(preferredItems,{item=item,dist=distance,kIdx=matchedRuleIndex,x=x,y=y})
+            else
+                table.insert(ordinaryItems,{item=item,dist=distance,x=x,y=y})
+            end
+        end
+    end
+    table.sort(preferredItems,Nested_dist)
+    table.sort(ordinaryItems,Nested_dist_2)
+    local candidates = {}
+    for _,entry in ipairs(preferredItems) do table.insert(candidates,entry) end
+    for _,entry in ipairs(ordinaryItems) do table.insert(candidates,entry) end
+    if #candidates == 0 then return end
+    local target = candidates[1]
+    getfenv(1).MoveTo(target.x,target.y,0)
+    if math.abs(playerX-target.x)<=1 and math.abs(playerY-target.y)<=1 then
+        global.dropItemController:PickMainPlayerPosItem()
+        ShowLocalNoticeByType("拾取: " .. target.item.mName)
+    end
+end
+
+rootEnvironment.DiuItems = DiuItems
+rootEnvironment.TakeItems = TakeItems
+rootEnvironment.PickUpItems = PickUpItems
+
+-- ============================================================================
+-- 仓库入口：GetAvailableStoragePage / StorageItems
+-- ============================================================================
+local function GetAvailableStoragePage()
+    local storageProxy = NPCStorageProxy
+    if not storageProxy then
+        PrintLog("仓库代理未初始化")
+        return
+    end
+    local maxPage = storageProxy:GetMaxPage()
+    for page = 1, maxPage do
+        local pageData = storageProxy:GetStorageDataByPage(page)
+        local currentCount = pageData and #pageData or 0
+        local pageCapacity = GUIDefine.STORAGE_PER_PAGE_MAX
+        if not pageCapacity then pageCapacity = global.MMO.NPC_STORAGE_MAX_PAGE end
+        local openSize = storageProxy:GetOpenSize()
+        local remainingOpenSize = openSize - (page - 1) * pageCapacity
+        local pageLimit = remainingOpenSize
+        if pageCapacity < remainingOpenSize then pageLimit = pageCapacity end
+        if pageLimit > 0 and pageLimit > currentCount then return page end
+    end
+    return
+end
+
+local function StorageItems()
+    if z.isStoring then return end
+    z.isStoring = true
+    if not getfenv(1).GetAvailableStoragePage() then
+        PrintLog("仓库已满,无法存仓")
+        z.isStoring = false
+        return
+    end
+    local storageProxy = NPCStorageProxy
+    local maxPage = storageProxy:GetMaxPage()
+    local pageCapacity = GUIDefine.STORAGE_PER_PAGE_MAX
+    if not pageCapacity then pageCapacity = global.MMO.NPC_STORAGE_MAX_PAGE end
+    local openSize = storageProxy:GetOpenSize()
+    local storedPageData = {}
+    for page = 1, maxPage do
+        local pageData = storageProxy:GetStorageDataByPage(page)
+        storedPageData[page] = pageData and #pageData or 0
+    end
+    local function findAvailablePage()
+        for page = 1, maxPage do
+            local remainingOpenSize = openSize - (page - 1) * pageCapacity
+            local pageLimit = remainingOpenSize
+            if pageCapacity < remainingOpenSize then pageLimit = pageCapacity end
+            if pageLimit > 0 and pageLimit > storedPageData[page] then return page end
+        end
+        return
+    end
+
+    local specialNames = {
+        "金刚石","玄铁","真金矿石","BOSS头骨","转生证明","魔神石",
+        "神装碎片","涅槃石","宝石精魄","天神令","神彩","金罡",
+        "至尊","圣皇","凤凰","麻痹戒指","复活戒指","切割神戒"
+    }
+    local filterNames = {"待定"}
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then
+        PrintLog("背包物品为空")
+        z.isStoring = false
+        return
+    end
+    local processedMakeIndexes = {}
+    local queuedCount = 0
+    local function isOutputted(item, itemText)
+        if not string.find(itemText, "聚灵珠", 1, true) then return true end
+        if not z.isOutputted then
+            z.isOutputted = true
+            ShowLocalNoticeByType(item)
+            local info = "聚灵珠信息: " .. tostring(item.Name)
+                .. " StdMode=" .. tostring(item.StdMode)
+                .. " Dura=" .. tostring(item.Dura)
+                .. " DuraMax=" .. tostring(item.DuraMax)
+            ShowLocalNoticeByType(info)
+        end
+        if not item.Dura then return false end
+        if not item.DuraMax then return false end
+        return item.Dura <= item.DuraMax
+    end
+
+    for _, item in pairs(bagData) do
+        local makeIndex = item.MakeIndex
+        if makeIndex and not processedMakeIndexes[makeIndex] then
+            local isBound = SL:GetMetaValue("ITEM_IS_BIND", item)
+            if not isBound then
+                for _, filterName in ipairs(filterNames) do
+                    if string.find(item.Name, filterName, 1, true) then
+                        local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", item.Name)
+                        SL:UseItemByIndex(itemIndex)
+                        ShowLocalNoticeByType("使用: " .. item.Name)
+                    end
+                end
+                local matchedSpecialName = false
+                local shouldStore = true
+                for _, specialName in ipairs(specialNames) do
+                    if string.find(item.Name, specialName, 1, true) then
+                        matchedSpecialName = true
+                        if not isOutputted(item, specialName) then
+                            shouldStore = false
+                            break
+                        end
+                    end
+                end
+                if matchedSpecialName and shouldStore then
+                    local targetPage = findAvailablePage()
+                    if not targetPage then
+                        ShowLocalNoticeByType("仓库已满,无法存仓")
+                        z.isStoring = false
+                        return
+                    end
+                    ShowLocalNoticeByType("存: " .. item.Name)
+                    getfenv(1).MainLeftBottom.a.LuaSendMsg(global.MsgType.MSG_CS_STORAGE_STORE_REQUEST,
+                        999999999,item.MakeIndex,targetPage,0,item.Name,string.len(item.Name))
+                    processedMakeIndexes[makeIndex] = true
+                    storedPageData[targetPage] = storedPageData[targetPage] + 1
+                    queuedCount = queuedCount + 1
+                end
+            end
+        end
+    end
+    z.isStoring = false
+    if queuedCount > 0 then
+        ShowLocalNoticeByType("存仓完成, 共存入 " .. tostring(queuedCount) .. " 件物品")
+    end
+end
+
+rootEnvironment.GetAvailableStoragePage = GetAvailableStoragePage
+rootEnvironment.StorageItems = StorageItems
+
+-- root.children[1] / GetStorageItemData：读取全部仓库页并统计可用格数。
+local function GetStorageItemData()
+    local storageItems = {}
+    local storageProxy = NPCStorageProxy
+    if not storageProxy then return storageItems end
+    local maxPage = storageProxy:GetMaxPage()
+    local availableSlots = 0
+    for page = 1, maxPage do
+        local pageData = storageProxy:GetStorageDataByPage(page)
+        if type(pageData) == "table" then
+            for _, item in ipairs(pageData) do table.insert(storageItems, item) end
+        end
+        local pageItemCount = pageData and #pageData or 0
+        local perPageMax = GUIDefine.STORAGE_PER_PAGE_MAX
+        if not perPageMax then perPageMax = global.MMO.NPC_STORAGE_MAX_PAGE end
+        local openSize = storageProxy:GetOpenSize()
+        local pageLimit = openSize - (page - 1) * perPageMax
+        if pageLimit > perPageMax then pageLimit = perPageMax end
+        if pageLimit > 0 then availableSlots = availableSlots + (pageLimit - pageItemCount) end
+    end
+    PrintLog("仓库总可用格子: " .. tostring(availableSlots))
+    return storageItems
+end
+rootEnvironment.GetStorageItemData = GetStorageItemData
+
+-- ============================================================================
+-- 黑名单消息与清理入口：root.children[15]/[25]/[51]/[52]/[6]
+-- ============================================================================
+local function Nested_FriendProxy()
+    return global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)
+end
+
+-- PC352无捕获保护函数：FriendProxy查询异常时返回nil；false/nil结果统一归一为nil。
+-- PC353-PC354由FindBlacklistPlayer捕获本函数；PC384由ClearBlacklistItems捕获同一函数身份。
+local function PCallHelper_2()
+    local ok, result = pcall(Nested_FriendProxy)
+    if not ok then return nil end
+    return result or nil
+end
+
+-- PC353-PC354：按目标角色ID查询；未命中时再按ACTOR_MASTER_ID查询主角色。
+-- 命中返回true与黑名单记录Name，未命中只返回false。
+local function FindBlacklistPlayer(targetID)
+    local friendProxy = PCallHelper_2()
+    if not friendProxy then return false end
+    local blacklistData = friendProxy._blacklistData
+    if not blacklistData or not targetID then return false end
+    local entry = blacklistData[targetID]
+    if entry then return true, entry.Name end
+    local masterActorID = SL:GetMetaValue("ACTOR_MASTER_ID", targetID)
+    if masterActorID and masterActorID ~= targetID then
+        local masterEntry = blacklistData[masterActorID]
+        if masterEntry then return true, masterEntry.Name end
+    end
+    return false
+end
+
+local function onDamageMsg(arg1, messageJson)
+    if not messageJson or messageJson == "" then return end
+    local decodeOK, message = pcall(function()
+        return SL.JsonDecode(messageJson)
+    end)
+    if not decodeOK or type(message) ~= "table" then return end
+    local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
+    if not mainActorID or message.UserID == mainActorID then return end
+    local attackerID = message.AttackUserID
+    if not attackerID or attackerID == mainActorID then return end
+    if SL:GetMetaValue("ACTOR_IS_HERO", attackerID) then
+        local masterActorID = SL:GetMetaValue("ACTOR_MASTER_ID", attackerID)
+        if masterActorID then attackerID = masterActorID end
+    end
+    local attackerName = SL:GetMetaValue("ACTOR_NAME", attackerID)
+    if not attackerName or attackerName == "" then return end
+    if string.find(attackerName, "分身", 1, true) then return end
+    blacklistState.lastAttacker = {id=attackerID,name=attackerName}
+end
+a.onDamageMsg = onDamageMsg
+
+-- PC360-PC362：T[57]写入此闭包；BlacklistPlayerDetection捕获该live cell当前值。
+-- 包装回调先从MainLeftBottom.a读取onDamageMsg并pcall，再无论回调结果如何返回原消息处理器结果。
+-- PC360捕获顺序：UP[0]=a，UP[1]=PrintLog。
+local installDamagePrintLog = PrintLog
+local function InstallDamageHook()
+    local gameMapController = global.gameMapController
+    if not gameMapController then return end
+    local messageHandlers = gameMapController.mNetMsgHandle
+    if type(messageHandlers) ~= "table" then return end
+    local messageTypes = global.MsgType
+    if not messageTypes then return end
+    local damageMessageType = messageTypes.MSG_SC_DAMAGE_HP
+    if not damageMessageType then return end
+    local originalHandler = messageHandlers[damageMessageType]
+    if not originalHandler then return end
+    if gameMapController.__ylwHookedOrigin == originalHandler then return end
+    local wrappedHandler = function(arg1,arg2)
+        local optionalCallback = a.onDamageMsg
+        if type(optionalCallback) == "function" then pcall(optionalCallback,arg1,arg2) end
+        return originalHandler(arg1,arg2)
+    end
+    messageHandlers[damageMessageType] = wrappedHandler
+    gameMapController.__ylwHookedOrigin = messageHandlers[damageMessageType]
+    installDamagePrintLog("已挂接伤害消息钩子（击杀拉黑用）")
+end
+
+local function DeathAutoBlacklist()
+    local lastAttacker = blacklistState.lastAttacker
+    blacklistState.lastAttacker = nil
+    if not lastAttacker or not lastAttacker.name or lastAttacker.name == "" then
+        PrintLog("本次死亡没记录到凶手，跳过自动拉黑")
+        return
+    end
+    if FindBlacklistPlayer(lastAttacker.id) then
+        PrintLog("凶手已在黑名单中：%s",lastAttacker.name)
+        return
+    end
+    PrintLog("被 %s 击杀，自动加入黑名单",lastAttacker.name)
+    ShowLocalNoticeByType("自动拉黑：" .. lastAttacker.name)
+    for retryIndex=0,5 do
+        SL:ScheduleOnce(function()
+            SL:RequestAddBlacklistByName(lastAttacker.name)
+        end,0.5*retryIndex)
+    end
+end
+
+
+-- root.children[22] / GetMapData2DPtr：五个独立参数的切比雪夫距离门控。
+-- 原型的可达路径在PC37提前返回；后续不可达指令不纳入功能等价实现。
+local function GetMapData2DPtr(x1, y1, x2, y2, maxDistance)
+    if not x1 or not y1 or not x2 or not y2 or not maxDistance then
+        return nil
+    end
+    if x1 == x2 and y1 == y2 then
+        return 0.0
+    end
+    if maxDistance <= 0 then
+        return nil
+    end
+    local dx = math.abs(x2 - x1)
+    local dy = math.abs(y2 - y1)
+    local distance = math.max(dx, dy)
+    if maxDistance < distance then
+        return nil
+    end
+    return distance
+end
+
+-- root.children[24] / UseItemByIndex：按捕获名称顺序寻找有库存的随机传送道具。
+local function UseItemByIndex()
+    for _, itemName in ipairs(randomTeleportItemNames) do
+        local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)
+        local itemCount = tonumber(
+            SL:GetMetaValue("ITEM_COUNT", itemName)
+        ) or 0
+        if itemIndex and itemCount > 0 then
+            SL:UseItemByIndex(itemIndex)
+            return itemName
+        end
+    end
+end
+
+-- root.children[47] / BlacklistPlayerDetection：13项父级捕获按PC368槽序绑定。
+-- UP[0]=z（MainLeftBottom.z功能状态表）；UP[1]=InstallDamageHook；
+-- UP[2]=blacklistState；UP[3]=DeathAutoBlacklist；UP[4]=FindBlacklistPlayer；
+-- UP[5]=GetMapData2DPtr；UP[6]=2.0；UP[7]=PrintLog；UP[8]=UseItemByIndex；
+-- UP[9]=0.01；UP[10]=ShowLocalNoticeByType；UP[11]=30.0；
+-- UP[12]=randomTeleportItemNames。
+local function BlacklistPlayerDetection()
+    z.isBlacklisting = true
+    InstallDamageHook()
+
+    local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
+    if not mainActorID then
+        return
+    end
+
+    local hp = tonumber(SL:GetMetaValue("HP")) or 0.0
+    local previousHP = blacklistState.lastHp
+
+    if previousHP == nil then
+        blacklistState.lastHp = hp
+        blacklistState.deathHandled = (hp <= 0)
+    elseif hp > 0 then
+        blacklistState.lastHp = hp
+        blacklistState.deathHandled = false
+    elseif previousHP > 0 and not blacklistState.deathHandled then
+        blacklistState.deathHandled = true
+        blacklistState.lastHp = 0.0
+        DeathAutoBlacklist()
+    end
+
+    if hp <= 0 then
+        return
+    end
+
+    if IsInWhitelistMap() then
+        return
+    end
+
+    -- 宿主返回玩家列表和显式数量两个值；不能用#players替代第二返回值。
+    local players, playerCount = SL:GetMetaValue("FIND_IN_VIEW_PLAYER_LIST")
+    if not players or not playerCount or playerCount <= 0 then
+        return
+    end
+
+    for index = 1, playerCount do
+        local actorID = players[index]
+
+        if actorID and actorID ~= mainActorID then
+            local isBlacklisted, blacklistDisplayName =
+                FindBlacklistPlayer(actorID)
+
+            if isBlacklisted then
+                local actorName = blacklistDisplayName
+                if not actorName then
+                    actorName = SL:GetMetaValue("ACTOR_NAME", actorID)
+                end
+                if not actorName then
+                    actorName = "黑名单玩家"
+                end
+
+                -- 未配置距离时不读取坐标，按原控制流直接允许后续告警/传送。
+                local distance
+                local distanceAccepted = true
+                local configuredDistance = blacklistState.distance
+
+                if configuredDistance then
+                    local mainX = SL:GetMetaValue("ACTOR_MAP_X", mainActorID)
+                    local mainY = SL:GetMetaValue("ACTOR_MAP_Y", mainActorID)
+                    local actorX = SL:GetMetaValue("ACTOR_MAP_X", actorID)
+                    local actorY = SL:GetMetaValue("ACTOR_MAP_Y", actorID)
+
+                    distance = GetMapData2DPtr(
+                        mainX, mainY, actorX, actorY, configuredDistance
+                    )
+                    distanceAccepted = (distance ~= nil)
+                end
+
+                if distanceAccepted then
+                    local now = os.time()
+                    local lastAlertAt = blacklistState.alertAt or 0
+                    local elapsed = now - lastAlertAt
+
+                    if blacklistAlertThreshold <= elapsed then
+                        blacklistState.alertAt = now
+                        PrintLog(
+                            "野外观测到黑名单玩家：%s（%d格）",
+                            actorName,
+                            distance or 0.0
+                        )
+                    end
+
+                    -- 等待重试截止时间时退出整个检测回调，不继续扫描其他玩家。
+                    if (blacklistState.nextTryAt or 0) > now then
+                        return
+                    end
+
+                    local usedTeleportItemName = UseItemByIndex()
+                    if usedTeleportItemName then
+                        blacklistState.nextTryAt = now + blacklistShortRetryDelay
+                        blacklistState.noStoneWarned = false
+
+                        ShowLocalNotice(string.format(
+                            "黑名单玩家：%s（%d格），飞随机",
+                            actorName,
+                            distance or 0.0
+                        ))
+
+                        PrintLog(
+                            "黑名单玩家 %s，距离 %d 格，使用 %s 随机传送",
+                            actorName,
+                            distance or 0.0,
+                            usedTeleportItemName
+                        )
+                    else
+                        blacklistState.nextTryAt = now + blacklistNoItemRetryDelay
+
+                        if not blacklistState.noStoneWarned then
+                            blacklistState.noStoneWarned = true
+                            ShowLocalNotice("没有随机传送石，黑名单玩家传送暂停")
+                            PrintLog(
+                                "没有可用的随机传送道具（%s）",
+                                table.concat(randomTeleportItemNames, "/")
+                            )
+                        end
+                    end
+
+                    -- 成功与失败路径均在处理当前首个命中玩家后退出。
+                    return
+                end
+            end
+        end
+    end
+end
+rootEnvironment.BlacklistItems = BlacklistPlayerDetection
+
+-- PC383-PC388：使用与FindBlacklistPlayer相同的PCallHelper_2闭包身份。
+-- 每个黑名单key按(index-1)*0.01秒异步请求移除，并在回调中清理共享数据表。
+local function ClearBlacklistItems()
+    local friendProxy = PCallHelper_2()
+    if not friendProxy or not friendProxy._blacklistData then
+        PrintLog("取不到好友代理，清空失败")
+        ShowLocalNoticeByType("清空黑名单失败")
+        return
+    end
+    local blacklistData = friendProxy._blacklistData
+    local entries = {}
+    for key,_ in pairs(blacklistData) do entries[#entries+1] = key end
+    if #entries == 0 then
+        PrintLog("黑名单本来就是空的")
+        ShowLocalNoticeByType("黑名单为空")
+        return
+    end
+    PrintLog(string.format("开始清空黑名单，共 %d 人",#entries))
+    ShowLocalNoticeByType("清空黑名单 " .. #entries .. " 人")
+    for index,entryKey in ipairs(entries) do
+        local delay = (index-1)*0.01
+        SL:ScheduleOnce(function()
+            SL:RequestOutBlacklist(entryKey)
+            if friendProxy and friendProxy._blacklistData then
+                friendProxy._blacklistData[entryKey] = nil
+            end
+        end,delay)
+    end
+    blacklistState.lastAttacker = nil
+end
+
+rootEnvironment.ClearBlacklistItems = ClearBlacklistItems
+
+local printLog = PrintLog
+local featureState = z
+local uiState = a
+local buttonMap = b
+local readBlacklistDistanceConfig = AnonymousHelper_49
+local schedule = Schedule
+local readGatherMonsterCountConfig = AnonymousHelper_33
+local writeBlacklistDistanceConfig = AnonymousHelper_32
+local showLocalNotice = ShowLocalNoticeByType
+local getWritablePath = GetWritablePath
+local writeGatherMonsterCountConfig = AnonymousHelper_54
+local checkConfigFileState = FileExistCheck_pcall_wrapper
+local capturedValue17 = rewardSequenceModulus
+local rewardEntries = loginAndOnlineRewardEntries
+local capturedValue19 = 0.2
+
+local function Nested_find(searchText)
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then return 0 end
+
+    local totalCount = 0
+    for _, item in pairs(bagData) do
+        if item and item.Name and item.MakeIndex
+            and string.find(item.Name, searchText, 1, true)
+            and not SL:GetMetaValue("ITEM_IS_BIND", item) then
+            totalCount = totalCount + (item.OverLap or 1)
+        end
+    end
+    return totalCount
+end
+
+
+-- ---------------------------------------------------------------------------
+-- doInit_UI 子闭包工厂：将父帧捕获槽显式转换为普通 Lua 闭包参数。
+-- 以下函数体复用已完成静态恢复的子原型；UPVALUE 名称仅描述行为。
+-- ---------------------------------------------------------------------------
+
+local function make_Nested_Helper(checkConfigFileState, configFileName, notify, printLog)
+    local function Nested_Helper()
+        local success, detail = checkConfigFileState(configFileName)
+        if success then
+            notify("已清空怪物阈值")
+            printLog("已清空怪物阈值存档：%s", detail)
+        else
+            notify("清空怪物阈值失败")
+            printLog("清空怪物阈值失败：%s", detail)
+        end
+    end
+    return Nested_Helper
+end
+
+local function make_Nested_s(checkConfigFileState, configFileName, notify, printLog)
+    local function Nested_s()
+        local success, detail = checkConfigFileState(configFileName)
+        if success then
+            notify("已清空黑名单距离")
+            printLog("已清空黑名单距离存档：%s", detail)
+        else
+            notify("清空黑名单距离失败")
+            printLog("清空黑名单距离失败：%s", detail)
+        end
+    end
+    return Nested_s
+end
+
+local function make_Nested_Helper_5(
+    writeConfigValue, notify, formatCallback, resolveWritablePath,
+    configFileName, startBlacklistTimer, setButtonState
+)
+    local function Nested_Helper_5(value)
+        if not writeConfigValue(value) then
+            notify("黑名单距离保存失败")
+            formatCallback(
+                "黑名单距离保存失败，路径：%s",
+                resolveWritablePath(configFileName)
+            )
+            return
+        end
+
+        notify("黑名单距离已保存：" .. value .. " 格")
+        formatCallback("黑名单距离已保存：%d 格", value)
+        if not startBlacklistTimer(value) then return end
+        setButtonState("blacklistbut", true)
+    end
+    return Nested_Helper_5
+end
+
+local function make_Nested_Helper_8(
+    writeConfigValue, notify, formatCallback, resolveWritablePath,
+    configFileName, startGathering, setButtonState
+)
+    local function Nested_Helper_8(value)
+        if not writeConfigValue(value) then
+            notify("怪物阈值保存失败")
+            formatCallback(
+                "怪物阈值保存失败，路径：%s",
+                resolveWritablePath(configFileName)
+            )
+            return
+        end
+
+        notify("怪物阈值已保存：" .. value)
+        formatCallback("怪物阈值已保存：%d", value)
+        if not startGathering(value) then return end
+        setButtonState("yinguaibut", true)
+    end
+    return Nested_Helper_8
+end
+
+local function make_Nested_Helper_4(
+    openDialog, writeConfigValue, notify, formatCallback,
+    resolveWritablePath, configFileName, startBlacklistTimer, setButtonState
+)
+    local function Nested_Helper_4()
+        local callback = make_Nested_Helper_5(
+            writeConfigValue, notify, formatCallback, resolveWritablePath,
+            configFileName, startBlacklistTimer, setButtonState
+        )
+        openDialog("请输入黑名单的距离格子（数字，按线路计算）", callback)
+    end
+    return Nested_Helper_4
+end
+
+local function make_Nested_Helper_7(
+    openDialog, writeConfigValue, notify, formatCallback,
+    resolveWritablePath, configFileName, startGathering, setButtonState
+)
+    local function Nested_Helper_7()
+        local callback = make_Nested_Helper_8(
+            writeConfigValue, notify, formatCallback, resolveWritablePath,
+            configFileName, startGathering, setButtonState
+        )
+        openDialog("请输入拉怪的怪物数量阈值（数字）", callback)
+    end
+    return Nested_Helper_7
+end
+
+-- ---------------------------------------------------------------------------
+-- root.children[42].children[22] / Nested_Anonymous
+-- 8条父原型指令；fixed_param_count=2；child0 Nested_str 27条，内含Nested_match与Nested_Helper_11。
+-- 原始VM调用帧已证明T[0]=promptText、T[1]=successCallback、T[2]=nil。
+-- ---------------------------------------------------------------------------
+local function make_Nested_Anonymous(PrintLog)
+    return function(promptText, successCallback)
+        -- 原始VM调用帧M已确认：本原型fixed_param_count=2。
+        -- 两个固定参数分别进入新建帧表T[0]、T[1]；额外实参进入独立X表。
+        -- T[2]没有任何写入指令，因此该槽确定为nil。
+        local T0_SLOT = promptText
+        local T1_SLOT = successCallback
+        local T2_SLOT = nil
+
+        -- child0 Nested_str捕获顺序：
+        -- UP[0] <- T[0]；UP[1] <- 父UP[0](PrintLog)；
+        -- UP[2] <- T[2](nil)；UP[3] <- T[1](successCallback)。
+        local function Nested_str(optionalSuffix)
+            local dialogParams = {
+                btnType = 2,
+                showEdit = true,
+                editParams = {
+                    inputMode = 2,
+                    maxLength = 6,
+                },
+            }
+
+            local initialText = T0_SLOT
+            if optionalSuffix then
+                initialText = initialText .. "\n" .. optionalSuffix
+            end
+            dialogParams.str = initialText
+
+            local function Nested_match(status, result)
+                if status ~= 1 then
+                    return
+                end
+
+                local editStr = result and result.editStr or ""
+                local normalized = tostring(editStr):gsub("%s", "")
+                local isDigits = string.match(normalized, "^%d+$")
+                local numericValue
+
+                if isDigits then
+                    numericValue = tonumber(normalized)
+                end
+
+                if numericValue then
+                    T1_SLOT(numericValue)
+                    return
+                end
+
+                PrintLog(
+                    "%s：参数格式不对（%s）",
+                    initialText,
+                    tostring(editStr)
+                )
+
+                local function Nested_Helper_11()
+                    -- 保留原字节码的直接调用。T[2]确定为nil，
+                    -- 因而该错误提示分支会触发attempt-to-call-nil；
+                    -- 不补造第三回调，也不增加原字节码没有的保护。
+                    T2_SLOT("参数格式不对，请输入数字")
+                end
+
+                SL:ScheduleOnce(Nested_Helper_11, 0.1)
+            end
+
+            dialogParams.callback = Nested_match
+            SL:OpenCommonTipsPop(dialogParams)
+        end
+
+        -- Nested_str固定参数数为1，但PC6-PC7以空实参区间调用它，optionalSuffix=nil。
+        Nested_str()
+        return
+    end
+end
+
+
+
+-- ---------------------------------------------------------------------------
+-- root.children[42].children[3] / Nested_FFFF00资源统计窗口及完整静态子依赖
+-- 来源：第六十二批父函数、第六十四批刷新链、第六十五批资源行构造。
+-- 各函数均已按VM指令静态复核；GUI宿主运行时行为仍需目标游戏验证。VM dump的nil序列化占位已由检查点102/225确认。
+-- ---------------------------------------------------------------------------
+
+-- child0 Nested_Helper_2：35条，无捕获；资源数值缩写格式化。
+local function Nested_Helper_2(value)
+    if not value then
+        return 0.0
+    end
+
+    if value < 100000.0 then
+        return tostring(value)
+    end
+
+    if value < 100000000.0 then
+        return tostring(math.floor(value / 10000.0)) .. "万"
+    end
+
+    local rounded = math.floor((value / 100000000.0) * 10.0) / 10.0
+    return string.format("%.1f亿", rounded)
+end
+
+-- child1 Nested_string：46条，无捕获。
+local function Nested_string(...)
+    local searchName = ...
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then return 0 end
+
+    local totalCount = 0
+    for _, item in pairs(bagData) do
+        if item and item.Name and item.MakeIndex then
+            if string.find(item.Name, searchName, 1, true) then
+                if not SL:GetMetaValue("ITEM_IS_BIND", item) then
+                    totalCount = totalCount + (item.OverLap or 1)
+                end
+            end
+        end
+    end
+    return totalCount
+end
+
+-- child4 Nested_UnSchedule：20条，捕获[printLog,timerState,moduleState]。
+local function make_Nested_UnSchedule(printLog, timerState, moduleState)
+    local function Nested_UnSchedule()
+        printLog("点击空白,关闭资源信息窗口")
+
+        if timerState.resTimer then
+            SL:UnSchedule(timerState.resTimer)
+            -- 检查点225已确认该dump标记是nil的序列化占位；清理定时器句柄。
+            timerState.resTimer = nil
+        end
+
+        GUI:Win_Close(moduleState.resWin)
+    end
+    return Nested_UnSchedule
+end
+
+-- child2 Nested_FFFFFF：65条，捕获[resList,screenW*0.6]。
+local function make_Nested_FFFFFF(listView, cellWidth)
+    local function Nested_FFFFFF(resourceNames, layoutOption, rowType)
+        local rowTextByName = {}
+        local gui = GUI
+        local cellNameSuffix = math.ceil(15 / layoutOption)
+
+        for groupStart = 1, #resourceNames, layoutOption do
+            local cellName = rowType .. "_cell_" .. cellNameSuffix
+            local cellLayout = gui:Layout_Create(
+                listView, cellName, 0, 0, cellWidth, 35, 1
+            )
+
+            for columnIndex = 1, layoutOption do
+                local resourceIndex = groupStart + columnIndex - 1
+                local resourceName = resourceNames[resourceIndex]
+
+                if resourceName then
+                    local textName = "2_text_0.5_" .. columnIndex
+                    local textX = cellWidth * (columnIndex - 0.5) / layoutOption
+                    local textNode = gui:Text_Create(
+                        cellLayout, textName, textX, 15, 30,
+                        "#FFFFFF", resourceName .. ":--"
+                    )
+
+                    if textNode then
+                        gui:setAnchorPoint(textNode, 0.5, 0.5)
+                        rowTextByName[resourceName] = textNode
+                    end
+                end
+            end
+        end
+
+        return rowTextByName
+    end
+    return Nested_FFFFFF
+end
+
+-- child3 Nested_Helper_3：168条，捕获10项。
+local function make_Nested_Helper_3(
+    moduleState, timerState, curTimeText, durTimeText, initState,
+    moneyProxy, moneyRows, formatNumber, itemRows, getItemCount
+)
+    local function Nested_Helper_3()
+        local gui = GUI
+
+        -- PC1-PC19：窗口无效时取消已有定时器、清空句柄并退出。
+        if not gui:Win_IsNotNull(moduleState.resWin) then
+            if timerState.resTimer then
+                SL:UnSchedule(timerState.resTimer)
+                timerState.resTimer = nil
+            end
+            return
+        end
+
+        -- PC20-PC38：取时失败会跳过时间显示，但仍继续刷新资源行。
+        local now
+        if os and os.time then
+            local timeOK, timeValue = pcall(os.time)
+            if timeOK and timeValue then now = timeValue end
+        end
+
+        if now then
+            -- PC39-PC58：日期格式化失败时显示“--”。
+            local dateText
+            if os and os.date then
+                local dateOK, value = pcall(os.date, "%Y-%m-%d %H:%M:%S", now)
+                if dateOK then dateText = value end
+            end
+            gui:Text_setString(curTimeText, "当前时间:" .. (dateText or "--"))
+
+            -- PC59-PC94：初始时间大于0时更新历时。
+            local initTime = initState.initTime
+            if initTime and initTime > 0 then
+                local elapsed = now - initTime
+                local hours = math.floor(elapsed / 3600)
+                local minutes = math.floor((elapsed % 3600) / 60)
+                gui:Text_setString(
+                    durTimeText,
+                    "历时:" .. formatNumber(hours) .. "小时"
+                        .. formatNumber(minutes) .. "分钟"
+                )
+            end
+        end
+
+        -- 跨函数键值对照：doInit_UI PC85将初始货币数量写入initSnapshot[name]；
+        -- 本回调PC106读取initSnapshot[moneyId]。两端键表达式确实不同。
+        -- MoneyProxy:GetMoneyIdByName的宿主返回语义未在仓库实现中定义，
+        -- 因此保留字节码两端各自的访问方式，不擅自改写为同一键。
+        -- PC95-PC137：moneyRows以资源名称为键；快照以moneyId为键。
+        for moneyName, textNode in pairs(moneyRows) do
+            local moneyId = moneyProxy:GetMoneyIdByName(moneyName)
+            if moneyId then
+                local currentCount = moneyProxy:GetMoneyCountById(moneyId) or 0
+                -- doInit_UI建立快照时以moneyName为键；刷新时必须使用同一键。
+                local initialCount = initState.initSnapshot[moneyName] or 0
+                local delta = currentCount - initialCount
+                gui:Text_setString(
+                    textNode,
+                    moneyName .. ":" .. formatNumber(currentCount)
+                        .. "(" .. formatNumber(delta) .. ")"
+                )
+            end
+        end
+
+        -- PC138-PC167：itemRows以资源名称为键；快照以物品名称为键。
+        for itemName, textNode in pairs(itemRows) do
+            local currentCount = getItemCount(itemName)
+            local initialCount = initState.initSnapshot[itemName] or 0
+            local delta = currentCount - initialCount
+            gui:Text_setString(
+                textNode,
+                itemName .. ":" .. formatNumber(currentCount)
+                    .. "(" .. formatNumber(delta) .. ")"
+            )
+        end
+    end
+    return Nested_Helper_3
+end
+
+-- 父原型Nested_FFFF00：320条，捕获[moduleState,printLog,timerState,initState]。检查点207逐PC复审PC1-PC320，修正五处Text_Create返回值门控。
+local function make_Nested_FFFF00(moduleState, printLog, timerState, initState)
+    local function Nested_FFFF00()
+        local gui = GUI
+        local sl = SL
+
+        -- PC1-PC27：窗口已存在则关闭；resTimer取消后清为nil；检查点225确认K[28]=["unknown",2]是nil的VM dump序列化占位。
+        if gui:Win_IsNotNull(moduleState.resWin) then
+            printLog("关闭资源信息窗口")
+            if timerState.resTimer then
+                sl:UnSchedule(timerState.resTimer)
+                timerState.resTimer = nil
+            end
+            gui:Win_Close(moduleState.resWin)
+            return
+        end
+
+        -- PC28-PC46：Win_Create显式保留nil参数槽及最后的999。
+        local resWin = gui:Win_Create(
+            "resWin",
+            0, 0,
+            moduleState.screenW, moduleState.screenH,
+            false, true, true, true, true,
+            nil, 999
+        )
+        moduleState.resWin = resWin
+
+        -- PC47-PC72：根Layout和空白点击关闭回调。
+        local rootLayout = gui:Layout_Create(
+            resWin, "closeResWin", 0, 0,
+            moduleState.screenW, moduleState.screenH, true
+        )
+        gui:setTouchEnabled(rootLayout, true)
+
+        -- child4在父PC68-PC71捕获[printLog,timerState,moduleState]。
+        local closeCallback =
+            make_Nested_UnSchedule(printLog, timerState, moduleState)
+        gui:addOnClickEvent(rootLayout, closeCallback)
+
+        -- PC73-PC117：ListView几何、锚点及背景参数。
+        local screenW = moduleState.screenW
+        local screenH = moduleState.screenH
+        -- 按用户提供的原版APP截图校准：统计面板约占游戏画面59%宽、56%高。
+        -- 列表位置使用屏幕中心，锚点也设为中心，避免“中心坐标+左侧锚点”导致整体右移。
+        local listWidth = screenW * 0.59
+        local listHeight = screenH * 0.56
+        local resList = gui:ListView_Create(
+            resWin, "resList",
+            screenW / 2, screenH / 2,
+            listWidth, listHeight, 1.0
+        )
+        gui:setAnchorPoint(resList, 0.5, 0.5)
+        gui:ListView_setBackGroundColorType(resList, 1)
+        gui:ListView_setBackGroundColor(resList, "#CEB5F7")
+        gui:ListView_setBackGroundColorOpacity(resList, 255)
+
+        -- PC118-PC264：标题、初始时间、当前时间、历时、备注五组区域。
+        -- 五个标题行共用ListView的完整内容宽度作为坐标基准；
+        -- 每行文字仍保持原有中心锚点，不改变下方双列资源行的左右排列关系。
+        local titleCell = gui:Layout_Create(
+            resList, "titleCell", 0, 0, listWidth, 30, 1
+        )
+        local titleText = gui:Text_Create(
+            titleCell, "titleText", listWidth / 2, 15, 20, "#FF0000", "资源统计"
+        )
+        if titleText then
+            gui:setAnchorPoint(titleText, 0.5, 0.5)
+        end
+
+        local initTimeCell = gui:Layout_Create(resList, "initTimeCell", 0, 0, listWidth, 30, 1)
+        local initTimeText = gui:Text_Create(
+            initTimeCell, "initTimeText", listWidth / 2, 15, 20, "#00FF00",
+            "初始时间:" .. tostring(initState.initTimeStr or "--")
+        )
+        if initTimeText then
+            gui:setAnchorPoint(initTimeText, 0.5, 0.5)
+        end
+
+        local curTimeCell = gui:Layout_Create(resList, "curTimeCell", 0, 0, listWidth, 30, 1)
+        local curTimeText = gui:Text_Create(
+            curTimeCell, "curTimeText", listWidth / 2, 15, 20, "#00FF00", "当前时间:--"
+        )
+        if curTimeText then
+            gui:setAnchorPoint(curTimeText, 0.5, 0.5)
+        end
+
+        local durTimeCell = gui:Layout_Create(resList, "durTimeCell", 0, 0, listWidth, 30, 1)
+        local durTimeText = gui:Text_Create(
+            durTimeCell, "durTimeText", listWidth / 2, 15, 20, "#00FF00", "历时:--"
+        )
+        if durTimeText then
+            gui:setAnchorPoint(durTimeText, 0.5, 0.5)
+        end
+
+        local noteCell = gui:Layout_Create(resList, "noteCell", 0, 0, listWidth, 30, 1)
+        local noteText = gui:Text_Create(
+            noteCell, "noteText", listWidth / 2, 15, 20, "#FFFF00",
+            "（括号内数量为非绑定资源的收益）"
+        )
+        if noteText then
+            gui:setAnchorPoint(noteText, 0.5, 0.5)
+        end
+
+        -- PC265-PC267创建child2：捕获resList与listWidth。
+        local updateResourceRows = make_Nested_FFFFFF(resList, listWidth)
+
+        -- PC268-PC281：两组资源名称。
+        local moneyNames = {"元宝", "绑定元宝", "灵符", "绑定灵符"}
+        local resourceNames = {
+            "声望卷", "悟道茶", "洗髓丹", "转生水晶", "恶魔令牌", "血龙宝珠"
+        }
+
+        -- PC282-PC291：child2两次调用，实参为(names,2,"money"/"item")。
+        local moneyRows = updateResourceRows(moneyNames, 2, "money")
+        local itemRows = updateResourceRows(resourceNames, 2, "item")
+
+        -- PC292：child1 Nested_string无捕获；PC293-PC299随后获取MoneyProxy。
+        local getItemCount = Nested_string
+        local moneyProxy = global.Facade:retrieveProxy(
+            global.ProxyTable.MoneyProxy
+        )
+
+        -- PC300-PC310创建child3，10项捕获顺序按闭包描述显式传入。
+        local formatNumber = Nested_Helper_2
+        local refreshResourceStatistics = make_Nested_Helper_3(
+            moduleState, timerState, curTimeText, durTimeText, initState,
+            moneyProxy, moneyRows, formatNumber, itemRows, getItemCount
+        )
+
+        -- PC311-PC312先立即刷新一次；PC313-PC319再安排1秒周期并保存句柄。
+        refreshResourceStatistics()
+        timerState.resTimer = sl:Schedule(refreshResourceStatistics, 1.0)
+
+        -- PC320：无显式返回值。
+        return
+    end
+    return Nested_FFFF00
+end
+
+
+local function make_Nested_StopGatherMonsters(
+    timerState, notify, canStartGather, logNotice,
+    openThresholdInput, applyGatherState
+)
+    local function Nested_StopGatherMonsters()
+        if timerState.gatherTimer then
+            notify("关闭引怪功能")
+            getfenv(1).StopGatherMonsters()
+            return true
+        end
+
+        local ready = canStartGather()
+        if not ready then
+            logNotice("路径中没有怪物数量阈值，弹出输入框")
+            openThresholdInput()
+            return false
+        end
+
+        notify("开启引怪功能")
+        applyGatherState(ready)
+        return true
+    end
+    return Nested_StopGatherMonsters
+end
+
+-- PC289-PC295传入的modulus是root PC90的18000，不是奖励记录条数。
+-- 回调按(counter-1)%18000+1索引14项记录；索引15..18000取到nil后直接返回。
+-- 这是当前静态调用链的实际参数关系，不能擅自改成#messageEntries或循环14次。
+local function make_Nested_LuaSendMsg(counter, modulus, messageEntries)
+    local function Nested_LuaSendMsg()
+        counter = counter + 1
+        local index = (counter - 1) % modulus + 1
+        local entry = messageEntries[index]
+        if not entry then return end
+
+        -- VM按全局名称LuaSendMsg读取；本模块初始化时同时将同一函数保存在
+        -- MainLeftBottom.a.LuaSendMsg。宿主未提供全局别名时，从模块字段回退。
+        local sendMessage = rootEnvironment.LuaSendMsg
+        if type(sendMessage) ~= "function" then
+            local module = rootEnvironment.MainLeftBottom
+            local moduleState = module and module.a
+            sendMessage = moduleState and moduleState.LuaSendMsg
+        end
+        if type(sendMessage) ~= "function" then
+            return
+        end
+
+        sendMessage(9002, entry[1], 1.0, 2.0, 3.0, entry[2], entry[3])
+    end
+    return Nested_LuaSendMsg
+end
+
+local function make_Nested_SL_2(timerState, notify, modulus, messageEntries, scheduleContext)
+    local function Nested_SL_2()
+        if timerState.rewardTimer then
+            notify("关闭奖励功能")
+            SL:UnSchedule(timerState.rewardTimer)
+            timerState.rewardTimer = nil
+            return true
+        end
+
+        notify("开启奖励功能")
+        local callback = make_Nested_LuaSendMsg(0, modulus, messageEntries)
+        -- 按新框架API契约SL:Schedule(callback, time)注册循环回调。
+        -- 原VM恢复出的三实参形式(0, callback, 0.2)与API签名冲突；
+        -- 保留callback及0.2秒间隔，去掉会占据callback位置的多余0。
+        timerState.rewardTimer = SL:Schedule(callback, scheduleContext)
+        return true
+    end
+    return Nested_SL_2
+end
+
+local function make_Nested_ClearBlacklistItems(notify)
+    local function Nested_ClearBlacklistItems()
+        notify("清空黑名单")
+        getfenv(1).ClearBlacklistItems()
+    end
+    return Nested_ClearBlacklistItems
+end
+
+local function make_Nested_blacklistTimer(
+    config, getDistance, timerState, schedule, formatNotice
+)
+    local function Nested_blacklistTimer(distance)
+        if not distance then
+            distance = getDistance()
+        end
+        config.distance = distance
+        if not config.distance then return false end
+
+        getfenv(1).BlacklistItems()
+        timerState.blacklistTimer = schedule(getfenv(1).BlacklistItems, 0.1)
+        formatNotice("开启黑名单功能，距离格子：%d", config.distance)
+        return true
+    end
+    return Nested_blacklistTimer
+end
+
+local function make_Nested_Helper_10(
+    timerState, notify, featureState, readBlacklistDistanceConfig,
+    openBlacklistDistanceInput, startBlacklistTimer
+)
+    local function Nested_Helper_10()
+        if timerState.blacklistTimer then
+            notify("关闭黑名单功能")
+            SL:UnSchedule(timerState.blacklistTimer)
+            timerState.blacklistTimer = nil
+            featureState.isBlacklisting = false
+            return true
+        end
+
+        local distance = readBlacklistDistanceConfig()
+        -- 配置文件不存在或内容无效时ReadNumericConfig返回nil；
+        -- 先判空，避免Lua 5.1执行nil > 0时报错，并转入距离输入流程。
+        if distance and distance > 0 then
+            notify(string.format("开启黑名单功能，距离格子：%d", distance))
+            startBlacklistTimer(distance)
+            return true
+        end
+
+        notify("路径中没有黑名单的距离格子，弹出输入框")
+        openBlacklistDistanceInput()
+        return false
+    end
+    return Nested_Helper_10
+end
+
+local function make_Nested_SL_3(timerState, notify, featureState, schedule)
+    local function Nested_SL_3()
+        if timerState.storageTimer then
+            notify("关闭存仓功能")
+            SL:UnSchedule(timerState.storageTimer)
+            timerState.storageTimer = nil
+            featureState.isStoring = false
+            return
+        end
+        notify("开启存仓功能")
+        getfenv(1).StorageItems()
+        timerState.storageTimer = schedule(getfenv(1).StorageItems, 1.0)
+    end
+    return Nested_SL_3
+end
+
+local function make_Nested_TakeItems(timerState, notify, featureState, schedule)
+    local function Nested_TakeItems()
+        if timerState.takeTimer then
+            notify("关闭取物功能")
+            SL:UnSchedule(timerState.takeTimer)
+            timerState.takeTimer = nil
+            featureState.isTaking = false
+            return
+        end
+        notify("开启取物功能")
+        getfenv(1).TakeItems()
+        timerState.takeTimer = schedule(getfenv(1).TakeItems, 1.0)
+    end
+    return Nested_TakeItems
+end
+
+local function make_Nested_shiquTimer(timerState, notify, schedule)
+    local function Nested_shiquTimer()
+        if timerState.shiquTimer then
+            notify("关闭拾取物品")
+            SL:UnSchedule(timerState.shiquTimer)
+            timerState.shiquTimer = nil
+            return
+        end
+        notify("开启拾取物品")
+        timerState.shiquTimer = schedule(getfenv(1).PickUpItems, 0.01)
+    end
+    return Nested_shiquTimer
+end
+
+local function make_Nested_dropTimer(timerState, notify, featureState, schedule)
+    local function Nested_dropTimer()
+        if timerState.dropTimer then
+            notify("关闭丢弃物品")
+            SL:UnSchedule(timerState.dropTimer)
+            timerState.dropTimer = nil
+            featureState.isDiuing = false
+            return
+        end
+        notify("开启丢弃物品")
+        getfenv(1).DiuItems()
+        timerState.dropTimer = schedule(getfenv(1).DiuItems, 1.0)
+    end
+    return Nested_dropTimer
+end
+
+local function Nested_OnGameLeaveWorld()
+    global.gameWorldController:OnGameLeaveWorld()
+end
+
+local function make_Nested_Helper_9(uiState, notify, buttonMap)
+    -- 与用户提供的正常运行参考代码保持一致：
+    -- isHidden=true表示功能按钮当前隐藏，false表示当前显示。
+    local function SetPluginButtonsVisible(visible)
+        for _, button in pairs(buttonMap) do
+            if button then
+                GUI:setVisible(button, visible)
+            end
+        end
+
+        if uiState.hidebut then
+            GUI:setVisible(uiState.hidebut, true)
+            GUI:setOpacity(uiState.hidebut, visible and 255 or 0)
+        end
+
+        uiState.isHidden = not visible
+    end
+
+    local function Nested_Helper_9()
+        if uiState.isHidden then
+            SetPluginButtonsVisible(true)
+        else
+            SetPluginButtonsVisible(false)
+        end
+        notify(uiState.isHidden and "隐藏所有按钮" or "显示所有按钮")
+    end
+    return Nested_Helper_9
+end
+
+local function make_Nested_InitGatherMonsters(config, getThreshold)
+    local function Nested_InitGatherMonsters(threshold)
+        if not threshold then threshold = getThreshold() end
+        config.GATHER_THRESHOLD = threshold
+        if not config.GATHER_THRESHOLD then return false end
+        InitGatherMonsters()
+        return true
+    end
+    return Nested_InitGatherMonsters
+end
+
+local function make_Nested_04d_02d_02d(lastSentDate, unusedCapturedState, notify)
+    local function Nested_04d_02d_02d()
+        local dateParts = os.date("*t")
+        if not dateParts then return end
+
+        local secondsOfDay =
+            dateParts.hour * 3600 + dateParts.min * 60 + dateParts.sec
+        if secondsOfDay < 79205 or secondsOfDay > 79208 then
+            return
+        end
+
+        local dateKey = string.format(
+            "%04d%02d%02d",
+            dateParts.year, dateParts.month, dateParts.day
+        )
+        if dateKey == lastSentDate then return end
+
+        -- PC29先写日期标记，再发送协议；即使发送失败，同日也不重试。
+        lastSentDate = dateKey
+        -- PC31-PC39：按原指令从当前chunk环境GETGLOBAL LuaSendMsg，不从a.LuaSendMsg取值。
+        -- VM捕获的第二项状态值在该子原型主体中未被读取；保留工厂参数位置但不替代全局查找。
+        getfenv(1).LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)
+        notify("到达 22:00:05，发送开启巡航协议")
+    end
+    return Nested_04d_02d_02d
+end
+
+local function make_Nested_ffffff(buttonConfigs, buttonByKey)
+    local function Nested_ffffff(key, toggled)
+        local matchedConfig
+        for _, config in ipairs(buttonConfigs) do
+            if config.key == key then
+                matchedConfig = config
+                config.toggled = toggled
+            end
+        end
+
+        local button = buttonByKey[key]
+        if not button or not matchedConfig or not matchedConfig.toggle then
+            return
+        end
+
+        local title = toggled and matchedConfig.toggle or matchedConfig.name
+        GUI:Button_setTitleText(button, title)
+        GUI:Button_setTitleColor(button, toggled and "#ff0000" or "#ffffff")
+    end
+    return Nested_ffffff
+end
+
+local function doInit_UI()
+    -- 与用户提供的正常运行参考代码一致，防止入口重复触发时重复创建按钮。
+    if uiState.initialized or uiState.initializing then
+        return
+    end
+    uiState.initializing = true
+
+    -- UI尚未准备好时不进入初始化；允许稍后由入口再次调用。
+    local readyMainProperty = MainProperty
+    if not readyMainProperty
+        or not readyMainProperty._ui
+        or not readyMainProperty._ui.Panel_mini_chat then
+        uiState.initializing = false
+        printLog("Panel_mini_chat尚未准备好")
+        return
+    end
+
+    -- PC390在root创建本闭包时明确捕获20个父级T寄存器。
+    -- UP[0..19]依次对应父root的T[4,2,3,0,1,41,48,7,8,50,49,5,44,42,51,43,47,11,12,9]。
+    -- 可直接确认的身份：UP[0]=PrintLog；UP[1]=MainLeftBottom.z功能状态表；
+    -- UP[2]=root PC42创建的timerState；UP[3]=MainLeftBottom.a UI状态表；
+    -- UP[5]是root创建并挂到MainLeftBottom.a.blacklist的黑名单状态表；
+    -- UP[8]是含GATHER_THRESHOLD/CHECK_INTERVAL/ATTACK_WAIT_TIME的配置表；
+    -- UP[11]是root PC46创建的ShowLocalNoticeByType闭包；
+    -- UP[13]/UP[15]分别是黑名单距离/拉怪数量配置文件路径；
+    -- UP[17]=root PC90计算所得18000；UP[19]=0.2。其余槽位保持编号，不猜业务名称。
+
+    -- PC1-PC3：初始化完成通知。
+    printLog("插件初始化完成")
+
+    -- PC4-PC17：货币与资源名称常量。
+    local moneyNames = {"元宝", "绑定元宝", "灵符", "绑定灵符"}
+    local resourceNames = {
+        "声望卷", "悟道茶", "洗髓丹", "转生水晶", "恶魔令牌", "血龙宝珠"
+    }
+
+    -- PC19-PC58：时间状态初始化；os.time/os.date 均在 pcall 路径中调用。
+    featureState.initTime = 0
+    featureState.initTimeStr = "--"
+    if os and os.time and os.date and pcall then
+        local okTime, now = pcall(os.time)
+        if okTime and now then
+            featureState.initTime = now
+            local okDate, dateText = pcall(os.date, "%Y-%m-%d %H:%M:%S", now)
+            if okDate and dateText then
+                featureState.initTimeStr = dateText
+            end
+        end
+    end
+    featureState.initSnapshot = {}
+
+    -- PC59-PC99：MoneyProxy及两组名称循环，建立资源数量初始快照。
+    local moneyProxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
+    if moneyProxy then
+        for _, name in ipairs(moneyNames) do
+            local id = moneyProxy:GetMoneyIdByName(name)
+            if id then
+                local count = moneyProxy:GetMoneyCountById(id)
+                -- PC82-PC85：false和nil均进入0回退分支。
+                if not count then count = 0 end
+                featureState.initSnapshot[name] = count
+            end
+        end
+    end
+
+    -- PC88-PC99是独立的第二个ipairs循环，不受MoneyProxy是否存在的门控。
+    -- 第二组是背包资源，不走MoneyProxy：调用无捕获child0 Nested_find(name)，
+    -- 并以资源名称作为initSnapshot键；BAG_DATA缺失时返回0。
+    for _, name in ipairs(resourceNames) do
+        featureState.initSnapshot[name] = Nested_find(name)
+    end
+
+    -- PC100-PC101原模块会调用Builtsetting修改游戏画面设置。
+    -- 用户旧版实测代码没有执行这组设置；为排查“地图怪物持续闪烁”，
+    -- 当前测试版暂不自动改动简装/屏蔽怪物/高帧率等游戏设置。
+    -- Builtsetting函数本身保留，不删除其功能定义。
+
+    -- PC102-PC130：四组传送道具槽位配置。每组包含slot与names数组，
+    -- 其数组成员由相邻寄存器表构造指令确定。
+    local itemSlotConfig = {
+        {slot=1, names={"永久回城石", "盟重回城石", "盟重传送石"}},
+        {slot=2, names={"永久随机石", "随机传送石"}},
+        {slot=3, names={"大陆传送石"}},
+        {slot=4, names={"免战回城石"}},
+    }
+
+    -- PC131-PC145：按VM的ipairs泛型for调用过程显式保留迭代控制值T7。
+    -- ipairs返回(iterator, state, initialControl)，标准初始控制值为0；
+    -- 每次迭代成功后，TFORLOOP把第一返回值写回控制寄存器T7。
+    -- 四组配置完成、迭代器返回nil退出时，T7保留最后一次索引4。
+    -- 不能在循环结束后重新硬编码为0，否则PC180/PC183实参会与VM不符。
+    local itemSlotIterator, itemSlotState, T7 = ipairs(itemSlotConfig)
+    while true do
+        local slotIndex, slotConfig = itemSlotIterator(itemSlotState, T7)
+        if slotIndex == nil then
+            break
+        end
+        T7 = slotIndex
+
+        -- 每次循环建立独立局部副本，确保异步闭包捕获本组配置。
+        local currentSlotConfig = slotConfig
+        local callback = function()
+            for _, name in ipairs(currentSlotConfig.names) do
+                local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", name)
+                if itemIndex then
+                    local succeeded, message =
+                        getfenv(1).MoveItemToQuickUse(itemIndex, currentSlotConfig.slot)
+                    printLog(message)
+                    if succeeded then
+                        return
+                    end
+                end
+            end
+        end
+        SL:ScheduleOnce(callback, slotIndex * 0.1)
+    end
+
+    -- PC146-PC166：替换cruiseTimer并建立周期任务。
+    if timerState.cruiseTimer then
+        SL:UnSchedule(timerState.cruiseTimer)
+        timerState.cruiseTimer = nil
+    end
+    -- PC145清空父帧T[5]；PC160-PC163随后以该cell创建child12。
+    -- 检查点111已闭合：R5是同日发送标记，另捕获UP[3]发送对象、UP[0]通知回调。
+    local lastSentDate = nil
+    local dailyCallback = make_Nested_04d_02d_02d(
+        lastSentDate, uiState, printLog
+    )
+    timerState.cruiseTimer = SL:Schedule(dailyCallback, 1.0)
+
+    -- PC180的RequestStorageData仍按原VM实参保留；GUI挂接接口则按用户确认的
+    -- 官方契约调用无参Attach_UITop()，不把T7传给GUI。
+    local storageProxy = global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)
+    if storageProxy then
+        storageProxy:RequestStorageData(T7)
+    end
+
+    local uiParent = GUI:Attach_UITop()
+
+    -- PC184-PC195：读取mini-chat位置/尺寸；xBase/yBase随后由T[22]/T[23]捕获。
+    local mainProperty = MainProperty
+    local miniChat = mainProperty._ui.Panel_mini_chat
+    local miniChatPosition = miniChat:getWorldPosition()
+    local miniChatSize = miniChat:getContentSize()
+    local miniChatRight = miniChatPosition.x + miniChatSize.width
+    local miniChatY = miniChatPosition.y
+
+    -- PC196-PC235：实际按钮配置是三组数组，结构由VM的表构造/数组写入指令确定。
+    local buttonGroups = {
+        {
+            {key="yinguaibut", name="开拉怪", toggle="关拉怪"},
+            {key="blacklistbut", name="开黑名单", toggle="关黑名单"},
+            {key="clearblacklistbut", name="清黑名单"},
+            {key="moneybut", name="资源统计"},
+        },
+        {
+            {key="shiqubut", name="开拾取", toggle="关拾取"},
+            {key="diuqibut", name="开丢物品", toggle="关丢物品"},
+            {key="xiaotuibut", name="快速小退"},
+        },
+        {
+            {key="clearmonsterbut", name="清怪物值"},
+            {key="cleardistancebut", name="清距离值"},
+            {key="rewardbut", name="开奖励", toggle="关奖励"},
+        },
+    }
+
+    -- PC236-PC337：按实际父帧捕获顺序建立子闭包工厂。
+    local syncButtonState = make_Nested_ffffff(buttonGroups, buttonMap)
+
+    -- PC239-PC244：child17 Nested_blacklistTimer捕获[UP5,UP6,UP2,UP7,UP0]。
+    local blacklistTimerCallback = make_Nested_blacklistTimer(
+        blacklistState, readBlacklistDistanceConfig, timerState, schedule, printLog
+    )
+    -- PC245-PC247：child7 Nested_InitGatherMonsters捕获[UP8,UP9]。
+    local initGatherCallback = make_Nested_InitGatherMonsters(
+        gatherConfig, readGatherMonsterCountConfig
+    )
+
+    -- PC248：child22 Nested_Anonymous仅捕获UP0(PrintLog)；检查点235确认固定参数为promptText/successCallback，分别映射T[0]/T[1]，T[2]=nil。
+    -- PC250-PC258：child11 Nested_Helper_4捕获[R18,UP10,UP11,UP0,UP12,UP13,R16,R15]。
+    local nestedAnonymous = make_Nested_Anonymous(printLog) -- child22固定参数映射已由检查点235闭合；Helper_4/Helper_7分别传入(promptText, callback)，T[2]=nil。
+    local openBlacklistDistanceInput = make_Nested_Helper_4(
+        nestedAnonymous, writeBlacklistDistanceConfig, showLocalNotice, printLog,
+        getWritablePath, blacklistDistanceConfigFile, blacklistTimerCallback, syncButtonState
+    ) -- child11 Nested_Helper_4主体已在本文件上方恢复
+    -- PC259-PC267：child14 Nested_Helper_7捕获[R18,UP14,UP11,UP0,UP12,UP15,R17,R15]。
+    local openGatherThresholdInput = make_Nested_Helper_7(
+        nestedAnonymous, writeGatherMonsterCountConfig, showLocalNotice, printLog,
+        getWritablePath, gatherMonsterCountConfigFile, initGatherCallback, syncButtonState
+    ) -- child14 Nested_Helper_7主体已在本文件上方恢复
+
+    -- PC269-PC276：child6捕获[UP2,UP11,UP9,UP0,R20,R17]。
+    local stopGatherCallback = make_Nested_StopGatherMonsters(
+        timerState, showLocalNotice, readGatherMonsterCountConfig, printLog,
+        openGatherThresholdInput, initGatherCallback
+    )
+    -- PC277-PC282：child2捕获[UP16,UP15,UP11,UP0]。
+    local clearMonsterCallback = make_Nested_Helper(
+        checkConfigFileState, gatherMonsterCountConfigFile, showLocalNotice, printLog
+    )
+    -- PC283-PC288：child20捕获[UP16,UP13,UP11,UP0]。
+    local clearDistanceCallback = make_Nested_s(
+        checkConfigFileState, blacklistDistanceConfigFile, showLocalNotice, printLog
+    )
+    -- PC289-PC295：child1捕获[UP2,UP0,UP17,UP18,UP19]。
+    local rewardCallback = make_Nested_SL_2(
+        timerState, printLog, capturedValue17, rewardEntries, capturedValue19
+    )
+    -- PC296-PC298：child13捕获UP0。
+    local clearBlacklistCallback = make_Nested_ClearBlacklistItems(printLog)
+    -- PC299-PC306：child18捕获[UP2,UP0,UP1,R19,R16]。
+    local blacklistCallback = make_Nested_Helper_10(
+        timerState, printLog, featureState, readBlacklistDistanceConfig,
+        openBlacklistDistanceInput, blacklistTimerCallback
+    )
+    -- PC307-PC312：child8捕获[UP2,UP0,UP1,UP7]。
+    local storageCallback = make_Nested_SL_3(
+        timerState, printLog, featureState, schedule
+    )
+    -- PC313-PC318：child19捕获[UP2,UP0,UP1,UP7]。
+    local takeCallback = make_Nested_TakeItems(
+        timerState, printLog, featureState, schedule
+    )
+    -- PC319-PC323：child10捕获[UP2,UP0,UP7]。
+    local pickupCallback = make_Nested_shiquTimer(
+        timerState, printLog, schedule
+    )
+    -- PC324-PC329：child21捕获[UP2,UP0,UP1,UP7]。
+    local dropCallback = make_Nested_dropTimer(
+        timerState, printLog, featureState, schedule
+    )
+
+    local buttonHandlers = {
+        yinguaibut = stopGatherCallback,
+        clearmonsterbut = clearMonsterCallback,
+        cleardistancebut = clearDistanceCallback,
+        rewardbut = rewardCallback,
+        clearblacklistbut = clearBlacklistCallback,
+        blacklistbut = blacklistCallback,
+        storagebut = storageCallback,
+        takebut = takeCallback,
+        shiqubut = pickupCallback,
+        diuqibut = dropCallback,
+        moneybut = make_Nested_FFFF00(uiState, printLog, timerState, featureState), -- child3；父工厂及刷新/行构造依赖已并入本文件
+        xiaotuibut = Nested_OnGameLeaveWorld,
+    }
+    -- PC338-PC345：创建child9工厂闭包，捕获顺序为：
+    -- T[6]=Attach_UITop返回的uiParent，T[22]=xBase，T[23]=yBase，
+    -- UP[4]=buttonMap，T[21]=buttonHandlers。其三个显式参数为config/列索引/行偏移。
+    local xBase = miniChatRight - 10
+    local yBase = miniChatY + 1
+
+    local function createButton(config, columnIndex, rowOffset)
+        local x = xBase - 85 * columnIndex
+        local y = yBase + rowOffset
+
+        -- child9 PC1-PC50：GUI:Button_Create(uiParent,key,x,y,texture)。
+        local button = GUI:Button_Create(
+            uiParent, config.key, x, y, "res/public/fuzhu_btn.png"
+        )
+        if not button then
+            return
+        end
+
+        buttonMap[config.key] = button
+        GUI:Button_setTitleText(button, config.name)
+        GUI:Button_setTitleFontSize(button, 18.0)
+        GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
+        GUI:Button_setTitleColor(button, "#ffffff")
+
+        -- PC38-PC41：只有toggle项才初始化toggled=false。
+        if config.toggle then
+            config.toggled = false
+        end
+
+        -- PC42-PC50：所有按钮都注册点击事件，包括非toggle功能按钮。
+        -- child0先调用buttonHandlers[key]；非toggle项随后直接返回，不改标题/颜色。
+        GUI:addOnClickEvent(button, function()
+            local gate = buttonHandlers[config.key]
+            local allowed = true
+            if gate then
+                allowed = gate()
+            end
+            if not config.toggle then
+                return
+            end
+            if allowed == false then
+                return
+            end
+
+            -- 与正常参考文件保持一致：handler成功后统一切换toggle状态。
+            -- 阈值输入属于异步启动路径，由输入成功回调单独调用syncButtonState。
+            config.toggled = not config.toggled
+            GUI:Button_setTitleText(
+                button,
+                config.toggled and config.toggle or config.name
+            )
+            GUI:Button_setTitleColor(
+                button,
+                config.toggled and "#ff0000" or "#ffffff"
+            )
+        end)
+    end
+
+    -- PC346-PC378：三组配置分别以40、0、80为行偏移，列索引从ipairs返回。
+    for columnIndex, config in ipairs(buttonGroups[1]) do
+        createButton(config, columnIndex, 40.0)
+    end
+    for columnIndex, config in ipairs(buttonGroups[2]) do
+        createButton(config, columnIndex, 0.0)
+    end
+    for columnIndex, config in ipairs(buttonGroups[3]) do
+        createButton(config, columnIndex, 80.0)
+    end
+
+    -- PC379-PC418：创建“隐 藏”按钮，设置标题、字号、字体并绑定点击闭包。
+    local hideButton = GUI:Button_Create(
+        uiParent, "hidebut", 0.0, 0.0, "res/public/fuzhu_btn.png"
+    )
+    -- PC388：无论按钮创建成功与否，都将返回值写入MainLeftBottom.a.hidebut。
+    -- 该字段随后由隐藏按钮回调读取，并由ShowHideAllButtons清理。
+    uiState.hidebut = hideButton
+    if hideButton then
+        GUI:Button_setTitleText(hideButton, "隐 藏")
+        GUI:Button_setTitleFontSize(hideButton, 18.0)
+        GUI:Button_setTitleFontName(hideButton, "res/public/kaiti2.ttf")
+        -- child15捕获[UP3,UP0]：模块UI状态对象与通知回调。
+        GUI:addOnClickEvent(hideButton, make_Nested_Helper_9(uiState, printLog, buttonMap))
+    end
+
+    uiState.initialized = true
+    uiState.initializing = false
+end
+
+-- PC411：doInit_UI直接挂入模块根表。
+rootEnvironment.MainLeftBottom.doInit = doInit_UI
+
+-- PC412：返回模块根表。
+return MainLeftBottom
+
+-- ============================================================================
+-- 唯一主源码工作约定
+-- 本文件 MainLeftBottom_唯一交付文件.lua 是唯一持续更新和交付的源码目标。
+-- 后续所有源码修正、闭包装配、调用关系整理均直接写入本文件。
+-- root_MainLeftBottom_Module.lua 与 MainLeftBottom_恢复源码.lua 仅作历史证据参考，
+-- 不得作为平行开发主线，也不得创建第二份主源码。
+-- 当前状态：入口、UI、物品、黑名单及开拉怪相关实现已整合；开拉怪和快速小退已由用户实测通过。
+-- 当前继续补全根模块内部调用、定时/延迟回调、UI回调和宿主API调用关系。
+-- ============================================================================
+
+-- ============================================================================
+-- 检查点285：root.children[42] / doInit_UI 第一阶段收敛复核
+--
+-- 419条物理指令的主函数体已按PC顺序落为普通Lua；这里补记本轮逐项对账结果，
+-- 避免把“UI代码已写入”误判为“23个子原型或捕获关系已全部验证”。
+--
+-- 23个直接子原型与当前实现的对应关系（按VM child索引，不按创建先后排序）：
+-- child[0]  Nested_find：背包资源数量查询；
+-- child[1]  make_Nested_SL_2：奖励定时器回调；
+-- child[2]  make_Nested_Helper：清除拉怪数量配置；
+-- child[3]  make_Nested_FFFF00：资源统计窗口及其刷新/行构造闭包；
+-- child[4]  Nested_OnGameLeaveWorld：快速小退/离开世界回调；
+-- child[5]  make_Nested_ffffff：按钮标题与toggle状态同步；
+-- child[6]  make_Nested_StopGatherMonsters：停止/启动拉怪按钮门控；
+-- child[7]  make_Nested_InitGatherMonsters：拉怪阈值初始化；
+-- child[8]  make_Nested_SL_3：仓库存储定时器回调；
+-- child[9]  createButton：按钮创建及其child[0]点击回调；
+-- child[10] make_Nested_shiquTimer：拾取定时器回调；
+-- child[11] make_Nested_Helper_4：黑名单距离输入及其输入回调；
+-- child[12] make_Nested_04d_02d_02d：每日定时协议回调；
+-- child[13] make_Nested_ClearBlacklistItems：清理黑名单按钮回调；
+-- child[14] make_Nested_Helper_7：拉怪数量输入及其输入回调；
+-- child[15] make_Nested_Helper_9：隐藏按钮回调；
+-- child[16] item-slot callback：四组传送道具索引查询与快捷栏设置；
+-- child[17] make_Nested_blacklistTimer：黑名单检测定时器；
+-- child[18] make_Nested_Helper_10：黑名单按钮回调；
+-- child[19] make_Nested_TakeItems：仓库取物定时器回调；
+-- child[20] make_Nested_s：清除黑名单距离配置；
+-- child[21] make_Nested_dropTimer：丢弃物品定时器回调；
+-- child[22] make_Nested_Anonymous：输入对话框回调包装。
+--
+-- 上述23项均能在本文件中定位到对应的局部函数/闭包创建点；本轮静态核对没有
+-- 发现缺失的 make_Nested_* 函数引用。子原型内部仍有宿主API契约及运行时行为
+-- 未验证项，不把“引用已接通”扩大表述为“游戏内功能已验证”。
+--
+-- PC390-PC410的20项捕获按原始父T寄存器顺序绑定到当前词法变量：
+-- UP[0] PrintLog                         <- T[4]
+-- UP[1] featureState(z)                  <- T[2]
+-- UP[2] timerState                       <- T[3]
+-- UP[3] uiState(a)                       <- T[0]
+-- UP[4] buttonMap(b)                     <- T[1]
+-- UP[5] blacklistState                   <- T[41]
+-- UP[6] readBlacklistDistanceConfig      <- T[48] AnonymousHelper_49
+-- UP[7] schedule                         <- T[7] Schedule
+-- UP[8] gatherConfig                     <- T[8]
+-- UP[9] readGatherMonsterCountConfig     <- T[50] AnonymousHelper_33
+-- UP[10] writeBlacklistDistanceConfig   <- T[49] AnonymousHelper_32
+-- UP[11] showLocalNotice                 <- T[5] ShowLocalNoticeByType
+-- UP[12] getWritablePath                 <- T[44] GetWritablePath
+-- UP[13] blacklistDistanceConfigFile    <- T[42]
+-- UP[14] writeGatherMonsterCountConfig  <- T[51] AnonymousHelper_54
+-- UP[15] gatherMonsterCountConfigFile   <- T[43]
+-- UP[16] checkConfigFileState           <- T[47] FileExistCheck_pcall_wrapper
+-- UP[17] capturedValue17                <- T[11] 18000
+-- UP[18] rewardEntries                  <- T[12] loginAndOnlineRewardEntries
+-- UP[19] capturedValue19                <- T[9] 0.2
+--
+-- 绑定顺序与PC390-PC410捕获序列逐槽一致；本文件使用词法变量身份，不再通过
+-- make_doInit_UI工厂或rootRegisters/rootConfigRegisters影子表二次装配。
+--
+-- 初始化顺序复核：完成通知 -> 计时/资源快照 -> Builtsetting -> 四组传送道具
+-- ScheduleOnce -> 替换并建立每日Schedule -> 请求仓库数据 -> Attach_UITop ->
+-- 读取mini-chat几何信息 -> 创建按钮配置与回调 -> 按40/0/80三组偏移创建按钮 ->
+-- 创建隐藏按钮。未将异步ScheduleOnce回调提前执行，也未重排按钮回调构造。
+--
+-- 参数T[7]：初始值来自PC90调用返回值的第三返回值，作为ipairs第三参数时为0；
+-- 泛型for每轮将迭代索引写回控制寄存器，四组配置结束后保留最后索引4。
+-- PC180 RequestStorageData与PC183 Attach_UITop因此都传入4；未将其擅自改为0或省略。
+-- PC411 MainLeftBottom.doInit = doInit_UI、PC412 return MainLeftBottom 保持不变。
+-- 本检查点只完成静态结构与捕获对账，不代表Lua语法检查或游戏运行验证通过。
+-- ============================================================================
+
+-- ============================================================================
+-- 功能等价复刻 · 第二批：MoveTo与黑名单检测闭包（检查点286）
+--
+-- 本批直接把已有静态完整草稿接入唯一主源码：
+-- 1) root.children[3] MoveTo：补齐PC62全局导出；拾取逻辑不再依赖未定义全局名。
+-- 2) root.children[22] GetMapData2DPtr：五个独立参数、Chebyshev距离及nil哨兵。
+-- 3) root.children[24] UseItemByIndex：按randomTeleportItemNames查询索引/数量，
+--    有库存才调用SL:UseItemByIndex并返回名称。
+-- 4) root.children[47] BlacklistPlayerDetection：补齐13项捕获的实际词法绑定，
+--    包含HP变化/死亡自动拉黑、白名单地图过滤、黑名单玩家距离告警、
+--    随机传送道具使用节流与无道具重试。
+-- 5) rootEnvironment.BlacklistItems现指向BlacklistPlayerDetection，
+--    使doInit_UI按钮包装器CallRootFunction("BlacklistItems")能够实际找到入口。
+--
+-- 捕获槽特别保留：UP[0]就是MainLeftBottom.z功能状态表，其中写入isBlacklisting；
+-- 不是MainLeftBottom.a UI状态表。UP[1]是PC360 InstallDamageHook live-cell当前值，
+-- 不是PC357 onDamageMsg。InstallDamageHook内部originalHandler字段访问
+-- 按已恢复物理指令原样保留，不以“看起来不合理”为由擅自改写。
+--
+-- 本批函数主体的静态控制流来自对应已恢复草稿；未执行Lua语法检查、
+-- 未进行目标游戏运行验证。playerInfo/playerObject等局部值保留原型读写位置。
+-- ============================================================================
+
+-- ============================================================================
+-- 功能等价复刻 · 第三批：PC43-PC63基础导出与LuaSendMsg（检查点287）
+--
+-- 已补齐根模块PC55/57/59/61四项chunk ENV全局导出：
+-- GetMapId、GetMapName、PlayerPos、GetDroppedItems。
+-- root.children[12] LuaSendMsg已按92条物理指令恢复并挂入MainLeftBottom.a.LuaSendMsg：
+-- 六个固定参数、Blocklist日志豁免、SendHookList钩子调用与严格true拦截、
+-- 未拦截时global.networkCtl:SendMsg六参数原样转发。
+--
+-- PrintLog、ShowLocalNoticeByType、ScheduleOnce、Schedule未被错误导出为ENV全局；
+-- PrintLog仍按PC45写入ENV["_G"].log，LuaSendMsg仍只挂在a.LuaSendMsg。
+-- 现有物品函数调用LuaSendMsg时使用同一词法函数，不再依赖未定义全局名。
+--
+-- 本批为静态源码整合；table.find、networkCtl与代理行为属于宿主依赖，
+-- 未执行Lua语法检查或目标游戏运行验证。
+-- ============================================================================
+
+-- ============================================================================
+-- 功能等价复刻 · 第四批：PC212-PC279入口导出与模块字段（检查点288）
+--
+-- 本批将已恢复的根级函数接回其真实导出位置：
+-- ENV.IsInWhitelistMap / MainLoop / InitGatherMonsters / StopGatherMonsters /
+-- Builtsetting；MainLeftBottom.a.hide / a.show / a.destroy；MainLeftBottom.main。
+-- 对应模块字段分别是DestroyUI、SetButtonVisibilityState、
+-- ShowHideAllButtons、AccountIDValidation。它们不再只是孤立local函数。
+--
+-- 与PC1-PC412寄存器时间线一致：这些赋值发生在函数定义后、物品功能前；
+-- 不覆盖MainLeftBottom.a.blacklist、MainLeftBottom.a.onDamageMsg及doInit既有挂接。
+-- Lua语法和宿主运行仍未验证。
+-- ============================================================================
+
+-- ============================================================================
+-- 功能等价复刻 · 第五批：导出边界与入口依赖核对（检查点289）
+--
+-- 对照root PC43-PC412全局导出账本，移除此前为内部调用方便而增加的三个
+-- 非原始全局导出：FindBlacklistPlayer、InstallDamageHook、DeathAutoBlacklist。
+-- 三者仍是本chunk局部闭包，由BlacklistPlayerDetection/DeathAutoBlacklist
+-- 直接按词法身份调用；原始根模块只在PC382导出BlacklistItems，
+-- PC388导出ClearBlacklistItems。
+--
+-- 静态核对结果：
+-- * doInit_UI按钮包装器的六个CallRootFunction目标均有对应ENV导出：
+--   StorageItems、TakeItems、PickUpItems、DiuItems、BlacklistItems、
+--   ClearBlacklistItems。
+-- * PC212-PC279的五个全局导出及MainLeftBottom.a的hide/show/destroy、MainLeftBottom.main均已挂接。
+-- * MainLeftBottom根表字段为a/b/z/main/doInit；a状态表另含hide/show/destroy/blacklist/onDamageMsg。
+-- * PrintLog仍只写ENV["_G"].log；LuaSendMsg仍只挂a.LuaSendMsg。
+--
+-- 此批只校正导出边界，不改变内部函数主体。Lua语法与游戏运行仍未验证。
+-- ============================================================================
+
+
+
+
+-- ============================================================================
+-- 检查点347：根模块调用关系第一组（定时器与UI回调边）
+--
+-- 本批只整理当前源码中已能直接定位的调用边；不改变任何运行逻辑。
+--
+-- A. 根级采集状态机
+--   InitGatherMonsters
+--     -> SL:UnSchedule(timerState.gatherTimer) [存在旧句柄时]
+--     -> FormatStateChange(IDLE)
+--     -> ResetGatherMonsterData
+--     -> SL:Schedule(MainLoop, gatherConfig.CHECK_INTERVAL)
+--   MainLoop
+--     -> IsInWhitelistMap / GetMainPlayerID
+--     -> FindMonsterCandidates
+--     -> FindMonsterInCurrViewField / IsDie
+--     -> GetOwnerID / GetOwnerIDText / GetOwnerDescription
+--     -> SetTargetID
+--     -> FormatStateChange / ResetGatherMonsterData / PrintLog
+--   StopGatherMonsters
+--     -> SL:UnSchedule(timerState.gatherTimer) [存在旧句柄时]
+--     -> ClearTargetID_2
+--     -> FormatStateChange(IDLE)
+--     -> ResetGatherMonsterData
+--
+-- B. doInit_UI按钮事件分派
+--   doInit_UI -> buttonHandlers[key] -> createButton -> GUI:addOnClickEvent
+--   点击闭包先执行buttonHandlers[key]；只有toggle配置才继续更新toggled、
+--   标题和颜色。handler严格返回false时阻止toggle；非toggle按钮仍执行handler。
+--   buttonHandlers映射：
+--     yinguaibut       -> Nested_StopGatherMonsters
+--     clearmonsterbut  -> 配置清理回调
+--     cleardistancebut -> 黑名单距离配置清理回调
+--     rewardbut        -> Nested_SL_2
+--     clearblacklistbut-> Nested_ClearBlacklistItems
+--     blacklistbut     -> Nested_Helper_10
+--     storagebut       -> Nested_SL_3
+--     takebut          -> Nested_TakeItems
+--     shiqubut         -> Nested_shiquTimer
+--     diuqibut         -> Nested_dropTimer
+--     moneybut         -> 资源统计窗口回调
+--     xiaotuibut       -> Nested_OnGameLeaveWorld
+--   hidebut -> GUI:addOnClickEvent -> Nested_Helper_9 -> uiState.hide/uiState.show
+--
+-- C. 周期任务注册与取消
+--   blacklistbut -> Nested_Helper_10 -> Nested_blacklistTimer
+--     -> BlacklistItems立即执行一次 -> Schedule(BlacklistItems, 0.1)
+--     关闭时UnSchedule(timerState.blacklistTimer)，并清isBlacklisting。
+--   storagebut -> Nested_SL_3
+--     -> StorageItems立即执行一次 -> Schedule(StorageItems, 1.0)
+--   takebut -> Nested_TakeItems
+--     -> TakeItems立即执行一次 -> Schedule(TakeItems, 1.0)
+--   shiqubut -> Nested_shiquTimer
+--     -> Schedule(PickUpItems, 0.01)
+--   diuqibut -> Nested_dropTimer
+--     -> DiuItems立即执行一次 -> Schedule(DiuItems, 1.0)
+--   moneybut -> 资源统计窗口初始化
+--     -> refreshResourceStatistics立即执行 -> Schedule(refreshResourceStatistics, 1.0)
+--   rewardbut -> Nested_SL_2
+--     -> Schedule(0, callback, scheduleContext)；该调用形态与通用API文档签名不同，
+--        继续保留VM实参形态，不在本批擅自改写。
+--   doInit_UI每日任务
+--     -> 对四组快捷栏配置分别ScheduleOnce(callback, slotIndex * 0.1)
+--     -> 替换旧cruiseTimer -> Schedule(dailyCallback, 1.0)
+--   AccountIDValidation
+--     -> Schedule(scheduledCallback, 0.5)
+--     -> 条件满足时UnSchedule(nil)并调用MainLeftBottom.doInit()
+--
+-- D. API边界说明
+--   Schedule/ScheduleOnce局部包装器分别转发到SL:Schedule/SL:ScheduleOnce；
+--   其余直接SL定时调用保留各自原始receiver、参数数量和顺序。
+--   上述调用图仅记录源码中明确存在的边，不代表宿主定时器行为已运行验证。
+--   GUI:Attach_UITop已按用户确认的官方无参契约改为GUI:Attach_UITop()；
+--   NPCStorageProxy:RequestStorageData(T7)及奖励Schedule的文档/VM签名差异仍待确认。
+--
+-- 本批未发现足以支持修改运行逻辑的新增错配；仅修正本文件内历史文件名、
+-- 平行源码定位及当前工作状态的过期注释。Lua编译和目标游戏运行均按用户要求不执行。
+-- ============================================================================
+
+
+-- ============================================================================
+-- 检查点348：Lua 5.1 chunk环境动态调用目标核对
+--
+-- 对唯一源码全部getfenv(1)动态查找点进行名称级盘点，并与根模块导出账本对照：
+--   MainLeftBottom.doInit       -> root模块字段PC411，存在；
+--   GetDroppedItems             -> ENV全局导出PC61，存在；
+--   MainLeftBottom.a.LuaSendMsg -> a状态字段PC51，存在；
+--   GetStorageItemData          -> ENV全局导出PC73，存在；
+--   PlayerPos                   -> ENV全局导出PC59，存在；
+--   MoveTo                      -> ENV全局导出PC63，存在；
+--   GetAvailableStoragePage     -> ENV全局导出PC70，存在；
+--   StopGatherMonsters          -> ENV全局导出PC255，存在；
+--   ClearBlacklistItems         -> ENV全局导出PC388，存在；
+--   BlacklistItems              -> ENV全局导出PC382，存在；
+--   StorageItems                -> ENV全局导出PC78，存在；
+--   TakeItems                   -> ENV全局导出PC82，存在；
+--   PickUpItems                 -> ENV全局导出PC85，存在；
+--   DiuItems                    -> ENV全局导出PC67，存在；
+--   InitGatherMonsters          -> ENV全局导出PC246，存在；
+--   Builtsetting                -> ENV全局导出PC258，存在；
+--   MoveItemToQuickUse          -> ENV全局导出PC260，存在。
+--
+-- 唯一未能由本模块导出账本闭合的名称是getfenv(1).LuaSendMsg（出现于奖励回调
+-- 与每日巡航回调）。根PC51只将LuaSendMsg写入MainLeftBottom.a.LuaSendMsg，
+-- 未写入chunk ENV全局；但对应子原型字节码明确执行GETGLOBAL("LuaSendMsg")。
+-- 因此保留该动态全局读取，不擅自替换成a.LuaSendMsg；标记为宿主环境外部全局依赖，
+-- 目标环境是否另行提供该全局尚未确认。
+--
+-- 本批仅完成动态调用目标盘点，没有发现可凭现有证据安全修正的源码错配。
+-- ============================================================================
+
+
+-- ============================================================================
+-- 检查点363：六个点击无响应按钮的定点核对与两处功能修复
+--
+-- 1) 清距离值/清怪物值共用FileExistCheck_pcall_wrapper。原VM在文件存在时直接
+--    返回成功、不执行removeFile；与清理按钮意图冲突。现对存在文件执行pcall删除，
+--    并复查文件是否消失；这是为恢复按钮实际功能而作的明确VM偏离。
+-- 2) 开黑名单读取配置缺失/无效时ReadNumericConfig返回nil。原代码直接比较
+--    distance > 0会在Lua 5.1抛错；现先判空，缺失时进入输入框流程。
+-- 3) 开黑名单/开丢物品/开拾取通过Schedule(callback, interval)调用SL:Schedule；
+--    清黑名单通过ScheduleOnce(callback, delay)调用SL:ScheduleOnce，参数顺序符合
+--    新框架API映射。未发现这些按钮存在与旧奖励调用相同的参数错位。
+-- 4) ClearBlacklistItems依赖FriendProxy获取及RequestOutBlacklist；其中
+--    Nested_FriendProxy的点调用由root.children[48].children[0] VM指令明确支持，
+--    不得擅自改为冒号调用。
+-- 5) DiuItems在注册周期任务前立即执行；PickUpItems由0.01秒周期任务执行。
+--    当前静态代码未证明这两者存在Schedule参数错误。若仍无响应，需以目标APP日志
+--    区分点击handler、定时器注册和业务回调阶段，不能凭猜测改写宿主调用。
+-- ============================================================================
+
+
+-- ============================================================================
+-- 检查点364：修复全模块本地通知调用缺少receiver
+--
+-- 用户实测反馈：开拾取未显示“地面无可拾取物品”；清黑名单未显示“黑名单为空”；
+-- 开丢物品没有启动提示/丢弃结果；清怪物值、清距离值点击后也没有结果提示。
+-- 这些入口共用ShowLocalNoticeByType，因此先核对通知函数本身。
+--
+-- root.children[20] / ShowLocalNoticeByType的原始VM指令在读取
+-- SL.ShowLocalNoticeByType后执行SELF语义：将SL同时保留为隐式receiver，
+-- 再把notice表作为显式参数传入。历史明文重建稿也写为
+-- SL:ShowLocalNoticeByType({...})。
+-- 唯一交付源码此前写成SL.ShowLocalNoticeByType(notice)，遗漏receiver；
+-- 现修正为SL:ShowLocalNoticeByType(notice)。
+--
+-- 该通知闭包被配置清理、清黑名单、丢弃、拾取等多条路径共享。
+-- 本次只修正调用形式，不改通知结构(Type/Msg/FColor/BColor/X/Y)，
+-- 不改各按钮业务逻辑或Schedule参数。
+--
+-- DiuItems对应root.children[46]的VM常量池/指令未出现IN_SAFE_AREA等安全区判断；
+-- 因此不擅自新增安全区门控。安全区弹窗可能来自宿主/游戏对丢弃消息的响应，
+-- 需结合通知恢复后的APP表现再判断。
+--
+-- 本批为VM静态证据修复；未执行Lua编译或目标游戏运行验证，等待用户实测。
+-- ============================================================================
+
+
+-- ============================================================================
+-- 检查点365：资源统计窗口按原版APP截图校准
+--
+-- 用户提供原版APP截图（727x625），浅紫色统计面板约为428x348，
+-- 约占截图宽度58.9%、高度55.7%。据此将面板尺寸按screenW*0.59、
+-- screenH*0.56设置。
+--
+-- 原代码将ListView放在(screenW-1)/2处，却设置左侧中点锚点(0,0.5)，
+-- 实际会从屏幕中线向右展开，造成明显右偏。
+-- 现将位置设为(screenW/2,screenH/2)，锚点改为(0.5,0.5)，
+-- 使面板几何中心与屏幕中心重合。
+--
+-- 此处是依据用户提供的原版APP截图进行的显示效果校准，明确偏离原始VM
+-- 中记录的listWidth=screenW*0.6、listHeight=screenH*0.6、
+-- x=(screenW-1)/2、anchor=(0,0.5)几何组合；业务内容、颜色、字体、
+-- 行布局、刷新逻辑和关闭回调均不改动。
+--
+-- 本批仅完成静态几何调整，等待用户替换APP实测；未执行编译或游戏运行验证。
+-- ============================================================================
+
+
+-- ============================================================================
+-- 检查点366：资源统计内部内容组的坐标基准修复
+--
+-- 用户反馈：外层紫色统计面板已居中，但内部控件整体偏左。
+-- 核对发现标题/初始时间/当前时间/历时/备注五个Layout_Create的宽度
+-- 均使用1，Text_Create的X也固定为0.5。它们的坐标基准几乎只有
+-- 1个单位宽，因此五行文字实际聚集在ListView左边缘附近。
+--
+-- 现将这五个标题行Layout宽度统一设为listWidth，文字X改为listWidth/2。
+-- 文字仍使用原有(0.5,0.5)锚点，五行共享同一完整内容区域作为坐标基准。
+-- 下方资源名称仍保持两列布局：每行宽listWidth，列中心分别位于
+-- listWidth*0.25和listWidth*0.75；不把所有资源文字逐个改成居中，
+-- 保持两列资源作为一个整体的排布关系。
+--
+-- 不改资源顺序、数据刷新、字体颜色、行高、列表宽高、外层窗口中心
+-- 或关闭逻辑。本批仅静态修改，等待用户APP实测；未编译、未运行游戏。
+-- ============================================================================
+
+
+-- ============================================================================
+-- 检查点367：资源统计数值显示格式与货币快照键修复
+--
+-- 用户实测：内部内容已经居中，但白色资源项只显示“0:0”等短数字，
+-- 与原版“元宝:0(0)”等完整资源名称/数量/变化值格式不同。
+--
+-- 静态对照root.children[42].children[3].children[3]：
+-- 刷新闭包常量池包含资源分隔符“:”、左括号“(”、右括号“)”，
+-- 并对moneyRows/itemRows分别遍历后调用Text_setString。
+-- 当前明文重建此前只拼接currentCount:delta，遗漏资源名称和括号。
+--
+-- 另对照root初始化PC59-PC85：货币初始快照以资源名称moneyName为键写入
+-- initSnapshot[moneyName]；刷新闭包原实现却读取initSnapshot[moneyId]，
+-- 键类型不一致，会把初始值误当0，导致变化值错误。
+-- 现统一按moneyName读取快照。
+--
+-- 现显示格式：
+--   money：moneyName:currentCount(delta)
+--   item：itemName:currentCount(delta)
+-- item计数仍沿用VM恢复的BAG_DATA/ITEM_IS_BIND筛选逻辑；money仍沿用
+-- MoneyProxy:GetMoneyIdByName/GetMoneyCountById。未擅自替换数据来源或API。
+--
+-- 本批修复的是可由源码/VM静态确认的格式与快照键错误，不代表已经证明
+-- 宿主返回的资源数量非零。若改后仍全为0，下一步需分别检查MoneyProxy
+-- 返回的ID/数量，以及BAG_DATA中资源名称/绑定过滤是否匹配角色实际背包。
+-- 未执行Lua编译或目标游戏运行验证，等待用户实测。
+-- ============================================================================
+
+
+-- ============================================================================
+-- 检查点368：资源统计右侧资源列越界修复
+--
+-- 用户指出原版白色资源为左右两列，而当前版本只看到左列。
+-- 逐行核对make_Nested_FFFFFF发现每行layoutOption=2、cell宽度=cellWidth，
+-- 但原明文重建的textX公式为：
+--   cellWidth * (columnIndex - 0.5) / 1
+-- 因此第一列中心=0.5*cellWidth，第二列中心=1.5*cellWidth，
+-- 第二列中心落在行容器右边界之外，导致右列控件被布局到容器外。
+--
+-- 现将除数改为layoutOption：
+--   第一列中心=0.25*cellWidth
+--   第二列中心=0.75*cellWidth
+-- 两列各占一半行宽，保持左右排列，并使两列内容组整体居中。
+-- 本次只修正列内X坐标比例，不改变行宽、资源名称顺序、行高、字体、
+-- 数据来源、刷新逻辑或外层窗口位置。
+--
+-- 该修复针对明文重建中可直接确认的坐标公式错误；目标游戏布局效果
+-- 仍需用户替换APP实测。未执行Lua编译或游戏运行验证。
+-- ============================================================================
