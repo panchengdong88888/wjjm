@@ -24,7 +24,7 @@
 
 ## 3. 当前任务（强制）
 
-**当前任务：检查点363已完成两处修复并静态核对六个按钮。清距离值/清怪物值现在会删除已存在配置文件；开黑名单在距离配置缺失/无效时进入输入框，不再因 `nil > 0` 报错。开黑名单/开丢物品/开拾取的 `SL:Schedule(callback, interval)` 及清黑名单的 `SL:ScheduleOnce(callback, delay)` 参数顺序均符合新框架文档。清黑名单、开丢物品、开拾取暂未发现可确认的参数错位根因，不盲目改写。最新唯一源码提交：`579eb03e46d4a1abef15bd599260993093b21b4b`。下一步根据用户APP实测结果继续定位。**
+**当前任务：检查点364已依据用户最新APP反馈修复共用通知函数receiver错误。ShowLocalNoticeByType原先写成`SL.ShowLocalNoticeByType(notice)`，但root.children[20] VM指令使用SELF语义，必须保留SL作为receiver；现改为`SL:ShowLocalNoticeByType(notice)`。该通知出口被清怪物值、清距离值、清黑名单、开丢物品、开拾取等路径共享，可能解释多项按钮无可见反馈。用户最新实测：开拾取可能启动但无“地面无可拾取物品”提示；开黑名单能弹输入框；清黑名单无“黑名单为空”提示；开丢物品无提示；清怪物值/清距离值无提示。DiuItems原始VM未发现IN_SAFE_AREA判断，不擅自新增。最新唯一源码提交：`1fdf2d9b7ccfb7de75b2c645b6c215661c560afd`。下一步等待用户替换APP实测通知恢复情况。**
 
 ### 检查点359已修正
 
@@ -43,6 +43,23 @@
 - 实测开拉怪启动后是否显示“关拉怪”，点击后是否停止并恢复“开拉怪”。
 - 如隐藏仍无效，采集`doInit_UI`实际调用次数、`buttonMap`键/对象数量，并核对宿主`GUI:setVisible`行为，不凭静态核验宣称运行通过。
 - 只修改根目录`MainLeftBottom_唯一交付文件.lua`，唯一分支main；Lua 5.1兼容；不执行用户已取消的编译和游戏运行验证。
+
+### 检查点364：共用本地通知receiver修复（2026-11-12）
+
+- 用户实测反馈：开拾取可能已启动但无“地面无可拾取物品”提示；开黑名单可弹输入框；清黑名单无“黑名单为空”提示；开丢物品无提示；清怪物值/清距离值无清理成功提示。
+- 对照root.children[20] VM指令：读取SL后执行SELF语义，必须把SL保留为隐式receiver，再把notice表作为显式参数。历史明文重建稿也使用冒号调用。
+- 唯一源码原先写成`SL.ShowLocalNoticeByType(notice)`，漏掉receiver；已修正为`SL:ShowLocalNoticeByType(notice)`。不改通知表字段或各业务逻辑。
+- 该函数是多项按钮共用的通知出口，因此优先修复它，再由用户实测确认通知是否恢复。
+- root.children[46] DiuItems的VM常量池/指令未出现IN_SAFE_AREA等安全区判断；不擅自添加安全区门控。安全区提示可能来自宿主/游戏对丢弃消息的响应。
+- 源码提交：`1fdf2d9b7ccfb7de75b2c645b6c215661c560afd`；content SHA：`3ad8e5b4f800075dcfe378d2a01191eb342676ef`。
+- 状态JSON提交：`2f8b0ba63da89ae4d7a2a295b293bc0ff67a3e03`。
+- 本批仅完成VM静态证据修复；未执行Lua编译或目标游戏运行验证。
+
+### 下一步
+
+- 用户替换最新唯一源码打包，实测清怪物值、清距离值、清黑名单空名单、开拾取无物品、开丢物品是否恢复原版提示。
+- 若通知恢复但某项业务仍不执行，再分别定位配置删除、FriendProxy/RequestOutBlacklist、DiuItems消息发送和PickUpItems定时回调。
+- 不擅自添加VM不存在的安全区判断，不再无证据怀疑Schedule参数顺序。
 
 ## 4. 唯一交付源码与参考资料
 
