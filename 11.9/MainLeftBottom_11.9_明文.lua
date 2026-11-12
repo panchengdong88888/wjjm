@@ -391,10 +391,9 @@ end
 -- 对应proto48 child index 17（ButtonFactory）对V13[1]执行的非toggle按钮路径。
 -- 本函数只处理buygoldbut；toggle状态同步由ButtonFactory的点击子闭包负责，
 -- 但buygoldbut配置本身没有toggle字段，所以点击后只分发callbackMap.buygoldbut。
-local function InstallBuyGoldButton(uiParent, visibleItems, callbackMap)
-    local _, secondGroup = BuildMainLeftBottomButtonGroups()
-    local buttonConfig = secondGroup[1]
-
+local function InstallBuyGoldButton(uiParent, visibleItems, callbackMap, buttonConfig)
+    -- buttonConfig必须使用doInit第二组V13循环实际传入的配置表，
+    -- 不在工厂内部重新创建副本，以保持点击闭包捕获的是原配置对象。
     -- PC346-PC371的第二组循环首项：rowIndex=7、groupOffset=0。
     -- ButtonFactory PC5-PC9计算x=1-85*rowIndex、y=2*groupOffset。
     local button = GUI:Button_Create(
@@ -449,8 +448,10 @@ local function MakeBuyGoldButtonInitFragment(
             )
         end,
 
-        createButton = function(uiParent, callbackMap)
-            return InstallBuyGoldButton(uiParent, visibleItems, callbackMap)
+        createButton = function(uiParent, callbackMap, buttonConfig)
+            return InstallBuyGoldButton(
+                uiParent, visibleItems, callbackMap, buttonConfig
+            )
         end,
     }
 end
