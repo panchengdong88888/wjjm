@@ -1839,3 +1839,40 @@ root/43/23/1的已确认行为：
 - 本轮未修改原始加密文件、旧版整合文件或其他资料文件；未进行Lua编译、APK打包或游戏运行测试。
 
 下一步继续沿root初始化与doInit捕获链确认保存包装函数、读取包装函数、通用输入弹窗包装器和按钮同步闭包的真实构造来源，之后才可接入黑名单按钮回调。
+
+
+## 2026-11-13续：黑名单距离配置文件读写包装器 R44/R48/R49 捕获链闭合
+
+本轮重新读取main上的VM正确字段反汇编，继续核对黑名单距离输入工厂依赖的根级配置文件读写函数。只读审计，未修改唯一明文源码。
+
+### 一、R44：可写目录路径函数
+
+- 根PC297创建`root/3`，赋值给根局部R44；该闭包无捕获。
+- `root/3`依次调用`cc.FileUtils:getInstance():getWritablePath()`，然后按传入参数拼接路径片段并返回。
+- 黑名单距离保存/读取包装器都通过R44构造完整可写路径，不应自行改用相对路径或另一个目录接口。
+
+### 二、R49：黑名单距离保存包装器
+
+- 根PC300创建`root/18`，捕获根R44，保存为根局部R46。
+- `root/18`内部通过`pcall`保护其嵌套写入闭包；嵌套`root/18/1`调用`cc.FileUtils:getInstance():writeStringToFile`，并使用R44提供的可写路径。
+- 根PC307创建`root/33`，捕获根R46与根R42（固定字符串`blacklist_distance.txt`），赋值给根局部R49。
+- `root/33`把捕获的文件名与调用方传入的数据转交给R46。因此R49是已经绑定`blacklist_distance.txt`的保存包装器；黑名单距离保存回调调用`saveConfig(fileName, distance)`时，注入的应是R49对应的固定文件名包装器，不能重复拼接文件名。
+
+### 三、R48：黑名单距离读取包装器
+
+- 根PC298创建`root/10`，捕获根R44，赋值给根局部R45。
+- `root/10`先用R44构造完整路径，再调用`cc.FileUtils:getInstance():isFileExist(path)`；文件不存在则返回nil。
+- 文件存在时调用`getStringFromFile(path)`；要求结果类型为string，去除所有`%s`空白字符，要求匹配`^%d+$`，最后用`tonumber`转换并返回数字。非字符串、非纯数字或文件不存在均返回nil。
+- 根PC304创建`root/50`，捕获根R45与根R42（`blacklist_distance.txt`），赋值给根局部R48。`root/50`将固定文件名和调用参数转交给R45，所以R48是读取黑名单距离配置的专用包装器。
+
+### 四、黑名单距离配置链现已确认
+
+- 保存：黑名单距离保存回调 → R49（固定文件名）→ R46/`root/18` → R44/`root/3` → `getWritablePath` + `writeStringToFile`。
+- 读取：黑名单按钮回调 → R48（固定文件名）→ R45/`root/10` → R44/`root/3` → `getWritablePath` + `isFileExist/getStringFromFile`，随后执行纯数字清理与转换。
+- 这也确认了`MakeBlacklistDistancePrompt`所需的保存参数应对应R49，黑名单按钮处理器所需的读取参数应对应R48；两者都已绑定同一个`blacklist_distance.txt`文件名。
+
+### 五、本轮边界与下一步
+
+本轮只完成静态捕获链审计，没有修改`11.9/MainLeftBottom_11.9_明文.lua`、原始加密文件或旧版整合文件，也没有进行Lua编译、APK打包或游戏运行测试。
+
+下一步继续核对根级`doInit`及root/43父函数的其余捕获来源和真实调用顺序，重点确定R48、R49、R44、R5通知包装器、R4日志函数、R7 Schedule包装器、按钮状态同步闭包如何组装进黑名单按钮回调与距离输入提示工厂。确认完毕后再把初始化接线写入唯一明文源码。
