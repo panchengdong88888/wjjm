@@ -212,7 +212,7 @@ local function DistanceCalculation(pointA, pointB)
 end
 
 -- root.children[24]：安全区或地图名为“土城”时属于引怪白名单。
-local function IsInWhitelistMap()
+IsInWhitelistMap = function()
     if SL:GetMetaValue("IN_SAFE_AREA") then
         return true
     end
@@ -728,6 +728,9 @@ end
 -- ============================================================
 --  7. 黑名单、伤害消息与 Hook
 -- ============================================================
+
+-- 先声明白名单函数，保证前置定义的BlacklistItems闭包捕获同一词法局部变量。
+local IsInWhitelistMap
 
 -- 2026-11-13：黑名单检测闭包链（按新版root PC352-PC382及root/48、root/49、root/52恢复）。
 -- 本段恢复函数工厂和业务主体；根模块最终捕获装配仍需在入口恢复时按PC顺序接入。
