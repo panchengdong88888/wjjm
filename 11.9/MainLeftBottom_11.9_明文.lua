@@ -1060,6 +1060,94 @@ local function MakeBlacklistDistancePrompt(
     end
 end
 
+-- root/43/8：引怪初始化包装闭包。
+-- 捕获引怪配置表和已绑定gather_monster_count.txt的读取包装器。
+-- 参数有值时直接采用；否则读取存档；写回GATHER_THRESHOLD后调用InitGatherMonsters。
+local function MakeGatherInitializationHandler(gatherConfig, readGatherThreshold)
+    return function(threshold)
+        if not threshold then
+            threshold = readGatherThreshold()
+        end
+
+        gatherConfig.GATHER_THRESHOLD = threshold
+        if not gatherConfig.GATHER_THRESHOLD then
+            return false
+        end
+
+        return InitGatherMonsters()
+    end
+end
+
+-- root/43/7：引怪按钮点击回调。
+-- 捕获timerState、通知包装器、阈值读取包装器、PrintLog、
+-- 阈值输入提示闭包和MakeGatherInitializationHandler返回的启动闭包。
+local function MakeGatherButtonHandler(
+    timerState,
+    notify,
+    readGatherThreshold,
+    printLog,
+    showGatherThresholdPrompt,
+    startGather
+)
+    return function()
+        if timerState.gatherTimer then
+            notify("关闭引怪功能")
+            StopGatherMonsters()
+            return true
+        end
+
+        local threshold = readGatherThreshold()
+        if not threshold then
+            printLog("路径中没有怪物数量阈值，弹出输入框")
+            showGatherThresholdPrompt()
+            return false
+        end
+
+        notify("开启引怪功能")
+        return startGather(threshold)
+    end
+end
+
+-- root/43/15/1：引怪阈值数字输入成功后的保存回调。
+-- saveConfig已绑定gather_monster_count.txt，因此只传入阈值。
+local function MakeGatherThresholdPrompt(
+    commonInputPrompt,
+    saveConfig,
+    notify,
+    printLog,
+    getWritablePath,
+    fileName,
+    startGather,
+    syncButtonState
+)
+    return function()
+        local function onThresholdSubmitted(threshold)
+            local saved = saveConfig(threshold)
+            if not saved then
+                notify("怪物阈值保存失败")
+                printLog(
+                    "怪物阈值保存失败，路径：%s",
+                    getWritablePath(fileName)
+                )
+                return
+            end
+
+            notify("怪物阈值已保存：" .. threshold)
+            printLog("怪物阈值已保存：%d", threshold)
+
+            local started = startGather(threshold)
+            if started then
+                syncButtonState("yinguaibut", true)
+            end
+        end
+
+        commonInputPrompt(
+            "请输入拉怪的怪物数量阈值（数字）",
+            onThresholdSubmitted
+        )
+    end
+end
+
 -- root/43/14：清空黑名单按钮点击回调。
 -- 捕获root/43 UP[0]=PrintLog；先记录日志，再从当前chunk ENV读取ClearBlacklistItems并调用。
 local function MakeClearBlacklistButtonHandler(printLog)
