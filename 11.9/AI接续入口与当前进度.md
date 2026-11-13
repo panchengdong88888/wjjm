@@ -1810,3 +1810,32 @@ root/43/23/1的已确认行为：
 5. 这也解释了错误路径：数字校验失败时，先用PrintLog输出“提示文本：参数格式不对（原始输入）”，再安排0.1秒后调用nil槽位，产生原版attempt-to-call-nil异常。不是一个尚未找到的通知函数。
 
 因此通用弹窗包装器的函数签名可按`MakeCommonInputPrompt(printLog)`工厂恢复，返回`function(promptText, successCallback)`；内部参数捕获顺序必须保持上列关系。弹窗参数表的字段与前节一致。仍需注意VM在`str`字段中拼接初始文本的分支：当前黑名单距离提示只传提示文本和保存回调，未提供第三个初始字符串，因此该分支不触发。
+
+
+## 2026-11-13续：通用输入弹窗与黑名单距离输入工厂已写入唯一明文文件
+
+在上一节捕获身份闭合后，本轮将两个工厂写入唯一明文文件`11.9/MainLeftBottom_11.9_明文.lua`：
+
+1. `MakeCommonInputPrompt(printLog)`
+   - 返回`function(promptText, successCallback)`。
+   - 创建`btnType=2`、`showEdit=true`、`editParams.inputMode=2`、`editParams.maxLength=6`的弹窗参数。
+   - 设置`str=promptText`并调用`SL:OpenCommonTipsPop(popupParams)`。
+   - 回调按status==1门控；从result.editStr读取输入，缺失/假值时回退为空串；去除空白；要求`^%d+$`；通过后tonumber并调用成功回调。
+   - 非法输入先调用PrintLog记录原始输入，再按原版安排0.1秒ScheduleOnce回调。该回调保留原始nil调用异常，不补造第三方通知函数。
+2. `MakeBlacklistDistancePrompt(commonInputPrompt, saveConfig, notify, printLog, getWritablePath, fileName, startBlacklistTimer, syncButtonState)`
+   - 返回无参数提示函数。
+   - 使用原始提示文字“请输入黑名单的距离格子（数字，按线路计算）”。
+   - 保存回调先调用`saveConfig(fileName, distance)`。
+   - 保存失败时通知“黑名单距离保存失败”，并记录可写目录路径。
+   - 保存成功时通知“黑名单距离已保存：N 格”，记录格式化日志，调用黑名单启动闭包；仅启动闭包返回真值时调用`syncButtonState("blacklistbut", true)`。
+
+### 提交与边界
+
+- 初次写入提交：`0df94526cfebf9a94dc26a450e5c5d8992ed0d04`。
+- 随后按VM的truthy判断修正`result.editStr`缺失/假值时的空串回退，最终源码提交：`4f59dfd1c4b92d8e70aee94c5d5d213ff0968782`。
+- 最终源码content SHA：`4fe9fe4231a445dd032973bfda7cb878a853a33d`。
+- 这两个工厂目前只是定义，尚未接入root/43/23、root/43/12的真实创建点，也未接入MainLeftBottom.doInit；不能宣称黑名单距离输入UI已经可运行。
+- root R49保存包装函数、root R44路径函数等作为工厂参数注入，当前尚未把它们映射并装配到唯一明文的真实root初始化链。
+- 本轮未修改原始加密文件、旧版整合文件或其他资料文件；未进行Lua编译、APK打包或游戏运行测试。
+
+下一步继续沿root初始化与doInit捕获链确认保存包装函数、读取包装函数、通用输入弹窗包装器和按钮同步闭包的真实构造来源，之后才可接入黑名单按钮回调。
