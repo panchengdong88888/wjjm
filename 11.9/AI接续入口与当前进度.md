@@ -1015,3 +1015,12 @@
 - 静态核对：回调与替换函数各唯一一份；时间上下界、日期去重、先更新日期再发送、9002/55556完整协议参数、通知文本、1秒周期、共享timerState字段及旧句柄取消均命中；新增代码Lua 5.1语法扫描无新版本语法命中。
 - 未进行Lua编译、APK打包或游戏运行测试；未修改新版原始加密文件或旧版源码。
 - 明文源码提交：`2b076f817441469f6e576f4d830c52c4a3bb3f0e`；当前content SHA：`7cb3d4c7adade489a58bf47bcdd410b39390fed3`。
+
+
+### 2026-11-13：巡航日期标记初值进一步闭合
+
+- 重新追踪doInit父函数PC151-PC170对局部寄存器V[5]的写入：PC154为opcode299，解释器对应`for P=E[2],E[3] do V[P]=nil end`；该指令参数为`[299,5,5,0]`，因此在PC170创建巡航回调并由opcode57捕获V[5]之前，V[5]已明确清空为nil。
+- 据此修正明文实现：`MakeCruiseTimerCallback(unusedCapturedState, notify)`内部直接以`local lastSentDate = nil`初始化，不再把日期初值作为外部参数。父级另外两个捕获参数位置仍保留：第二项为回调主体未使用的状态值，第三项为通知函数。
+- `ReplaceCruiseTimer`参数相应调整为`(timerState, unusedCapturedState, notify)`。巡航日期去重状态由回调闭包内部维护，首次命中日期窗口时先写入当天日期键，再发送协议。
+- 修正后的源码提交：`eef3b912a45b25891a1cd54a495db95e8103bb6d`；随后注释清理提交：`553ebb357bd677f76f3e2a6b87eea8ee952c4fce`；当前content SHA：`534742582d7258bf3e887977f0142fa861842da8`。
+- 最终静态检查：两个函数各一份；日期标记初值nil；22:00:05至22:00:08窗口、同日去重、先写标记后发消息、9002/55556消息参数、1秒Schedule和共享timerState清理均正确；Lua 5.1语法扫描通过。仍未做编译或运行测试。
