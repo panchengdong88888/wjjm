@@ -264,9 +264,7 @@ local function GetOwnerDescription(actor, mainPlayerID)
 
     if ownerID == nil or ownerID == "" or ownerID == -1 then
         description = "无归属"
-    elseif ownerID == mainPlayerID
-        or (type(ownerID) == "string" and ownerID == tostring(mainPlayerID))
-    then
+    elseif ownerID == mainPlayerID then
         description = "自己"
     else
         description = "其他玩家"
