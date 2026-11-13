@@ -883,3 +883,15 @@
 - MainLoop不捕获寄存器3，符合它只作为Schedule回调被调用、不负责创建/取消gatherTimer的结构。
 - 其他功能的`cruiseTimer/newzoneTimer/buygoldTimer/rewardTimer`是否也使用同一根表，仍需分别核对各自闭包捕获关系，不作推断。
 - 未进行Lua编译、APK打包或游戏运行测试。
+
+
+### 2026-11-13：确认root共享定时器表覆盖范围
+
+- 继续追踪新版root寄存器3（PC42创建的空表）在其他功能中的使用。
+- `root.children[2]`（`MainLeftBottom.destroy`）的闭包捕获列表包含root寄存器3；其函数体按原始指令顺序读取并取消/清空四个字段：`rewardTimer`、`cruiseTimer`、`newzoneTimer`、`buygoldTimer`。这不是仅凭字段名推断，而是destroy闭包对同一个捕获upvalue的实际字段读写。
+- `InitGatherMonsters`与`StopGatherMonsters`也捕获同一个root寄存器3，并读写`gatherTimer`。因此五个字段都属于同一张root共享定时器状态表。
+- 新区按钮处理器及周期回调源码也通过`timerState.newzoneTimer`读写新区定时器；购买金条处理器/周期回调通过`timerState.buygoldTimer`读写购买金条定时器。当前唯一明文源码中的`local timerState = {}`代表这张共享表，不应按功能拆成多张独立表。
+- 已更新唯一明文文件中该表的说明注释，明确共享字段范围；没有改变任何定时器业务逻辑或创建新的定时器。
+- 源码提交：`3e3bf4decff633daa70f4e509b4ea5e78ec27006`；内容SHA：`ba772f5ed69a6e1d1a743caa2723feadc256d49f`。
+- 本轮没有修改原始加密文件或旧版源码；未进行Lua编译、APK打包或游戏运行测试。
+- 下一步：继续追踪`rewardTimer`与`cruiseTimer`各自的创建/启动函数及其闭包捕获，核对完整调度行为；不得仅因destroy能清理它们，就臆测其启动条件或回调内容。
