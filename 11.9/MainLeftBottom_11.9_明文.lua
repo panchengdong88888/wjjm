@@ -1509,6 +1509,79 @@ local function MakeRewardButtonHandler(
 end
 
 -- ============================================================
+--  8.3 每日巡航定时业务（11.9新版 cruiseTimer）
+-- ============================================================
+
+-- 对应root.children[37].children[13]：每日巡航周期回调（43条指令）。
+-- 闭包捕获顺序：上次发送日期、未在回调主体使用的状态值、通知函数。
+-- 每秒检查一次本地系统时间；仅在22:00:05至22:00:08（含边界）窗口内继续。
+local function MakeCruiseTimerCallback(
+    initialLastSentDate,
+    unusedCapturedState,
+    notify
+)
+    local lastSentDate = initialLastSentDate
+
+    return function()
+        local dateParts = os.date("*t")
+        if not dateParts then
+            return
+        end
+
+        local secondsOfDay =
+            dateParts.hour * 3600 +
+            dateParts.min * 60 +
+            dateParts.sec
+
+        if secondsOfDay < 79205 or secondsOfDay > 79208 then
+            return
+        end
+
+        local dateKey = string.format(
+            "%04d%02d%02d",
+            dateParts.year,
+            dateParts.month,
+            dateParts.day
+        )
+
+        -- 同一自然日只发送一次；先更新闭包日期，再发送协议。
+        if dateKey == lastSentDate then
+            return
+        end
+        lastSentDate = dateKey
+
+        -- VM从当前chunk全局环境读取LuaSendMsg。
+        LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)
+        notify("到达 22:00:05，发送开启巡航协议")
+    end
+end
+
+-- 对应doInit中PC155-PC175的cruiseTimer替换与注册流程。
+-- 先取消旧句柄并清空共享字段，再创建每日回调，以1秒周期注册。
+-- initialLastSentDate/unusedCapturedState/notify由doInit闭包捕获链传入。
+local function ReplaceCruiseTimer(
+    timerState,
+    initialLastSentDate,
+    unusedCapturedState,
+    notify
+)
+    if timerState.cruiseTimer then
+        SL:UnSchedule(timerState.cruiseTimer)
+        timerState.cruiseTimer = nil
+    end
+
+    local callback = MakeCruiseTimerCallback(
+        initialLastSentDate,
+        unusedCapturedState,
+        notify
+    )
+
+    timerState.cruiseTimer = SL:Schedule(callback, 1.0)
+    return timerState.cruiseTimer
+end
+
+
+-- ============================================================
 --  8.3 回收装备按钮业务（11.9新版 recyclebut）
 -- ============================================================
 
