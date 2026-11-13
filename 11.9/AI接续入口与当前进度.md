@@ -52,55 +52,40 @@
 
 ## 四、当前任务（按用户最新指示更新）
 
-**当前唯一任务：继续恢复11.9新版“开拉怪”业务明文。**
+**当前唯一任务：继续恢复11.9新版业务明文，按已确认的新版本证据逐项补齐，不重做已完成模块。**
 
-用户于2026-11-13明确同意先处理开拉怪。当前范围是新版引怪业务链，不是旧版故障修复，也不是按钮创建/UI接线。
+### 已完成的新版业务模块
 
-### 已恢复写入的引怪业务
+已在唯一明文源码 `11.9/MainLeftBottom_11.9_明文.lua` 写入：
+- 自动购买金条定时回调与处理器；
+- 停止脚本业务处理器；
+- 内挂设置业务；
+- 新区启动、延迟消息与背包物品周期处理；
+- 回收装备按钮业务；
+- V10001按钮业务；
+- 奖励数据表、奖励周期回调与开关处理器；
+- 每日巡航周期回调与共享定时器替换逻辑；
+- 引怪状态机、初始化、停止、目标筛选和相关辅助函数；
+- 本轮新增：`GetMapId()`、`GetMapName()` 两个地图元变量包装函数。
 
-已在唯一明文文件 `11.9/MainLeftBottom_11.9_明文.lua` 的第5节写入以下代码：
+### 本轮新增基础包装函数（2026-11-13）
 
-- 引怪状态与配置：`gatherState`、`gatherConfig`、`gatherStatusText`。
-- 基础辅助：`PrintLog`、`GetMainPlayerID`、`IsDie`、`GetPlayerPosition`、`GetPlayerMapPosition`、`DistanceCalculation`。
-- 地图与目标：`IsInWhitelistMap`、`ClearTargetID_2`、`SetTargetID`、`FindMonsterInCurrViewField`。
-- 归属判断：`GetOwnerID`、`GetOwnerIDText`、`GetOwnerDescription`。
-- 候选筛选：`FindMonsterCandidates`，包括忽略怪物设置、距离排序和GATHER_THRESHOLD截取。
-- 主状态机：`MainLoop`。
-- 定时器入口：`InitGatherMonsters`、`StopGatherMonsters`。
+- `GetMapId`：新版root子原型3，9条指令；常量和调用形式对应 `SL:GetMetaValue("MAP_ID")`，函数返回该元变量结果。
+- `GetMapName`：新版root子原型34，9条指令；常量包含 `SL`、`GetMetaValue`、`MAP_NAME`，按框架文档的receiver形式恢复为 `SL:GetMetaValue("MAP_NAME")`。
+- 两个函数均已写入唯一明文源码的第2节；没有新增UI接线，没有修改旧版或新版原始加密文件。
+- 唯一明文源码提交：`d80453ae578c7e7068791a5d6300e47955e540f6`。
+- 当前唯一明文文件content SHA：`74729cb9509a524b0b0a08f5dfbb69a818f1847f`。
+- 静态核对：两个函数定义各唯一一份；返回值和SL冒号调用形式符合原型常量线索及新框架API映射。未进行Lua编译、APK打包或游戏运行测试。
 
-### 新版MainLoop的重要差异
+### 每日巡航当前边界
 
-- 新版原型为 `root.children[45]`，462条指令；旧版对应主循环417条指令。
-- 新版比旧版多45条指令，新增逻辑位于GATHERING状态开始处。
-- 新增逻辑通过 `global.Facade:retrieveProxy(global.ProxyTable.Skill)` 获取Skill代理，遍历 `GetSkills()` 返回的技能，读取 `SL:GetMetaValue("SKILL_NAME", skill.MagicID)`；技能名称包含“彻地钉”时记录“释放技能”日志，并调用 `SL:RequestLaunchSkill(skill.MagicID)`。
-- 该新增技能段已写入MainLoop。未将旧版MainLoop直接当作新版原型；使用新版原型新增技能段和旧版已有状态机恢复结果组成第一版可读源码。
-- `GetOwnerID` 与 `GetOwnerIDText` 的字符串ID比较按新版helper指令恢复为与 `tostring(expectedOwnerID)` 比较；`GetOwnerDescription` 不含type/tostring常量，保持直接比较。
-- 新版技能相关宿主调用的完整API契约未在新框架文档中找到；当前只保留原始VM可观察到的调用形式，不推测冷却、技能可用性或服务器执行结果。
+- `MakeCruiseTimerCallback(unusedCapturedState, notify)` 与 `ReplaceCruiseTimer(timerState, unusedCapturedState, notify)` 已恢复并写入，但尚未接入完整doInit初始化链路。
+- 日期标记初值nil、22:00:05至22:00:08窗口、同日去重、协议参数和1秒Schedule均已由新版VM指令确认。
+- doInit父级闭包捕获的第二、第三项分别保留为未使用状态值和通知函数；在没有进一步闭合其根级来源前，不擅自改名或接UI。
 
-### 本轮提交
+### 下一步
 
-- 唯一明文源码提交：`247d31b180d3b75f0ae4b32ba213297781cf7602`。
-- 随后按新版 `GetOwnerDescription` 原型常量修正归属说明比较，提交：`009181c357298d9c67192c31dca3d7b6b5a66945`。
-- 当前唯一明文文件content SHA：`1c847b67066e841836fc72c01352fd015d0f44c1`。
-- 静态核对：上述10个引怪核心函数各有1处定义；技能关键调用标识存在；Lua 5.2+禁用语法/API词项扫描无命中；引怪TODO标记已清除。
-- 未进行Lua编译、APK打包或游戏运行测试。
-
-### 当前剩余工作
-
-1. 对照新版proto94的PC级指令，继续逐段复核MainLoop的等待归属、游标推进、攻击目标更新和批次完成分支，特别确认与旧版状态机相比是否还有45条新增指令以外的逻辑差异。
-2. 复核proto29、proto90、proto85的完整调用参数与状态字段，确认初始化、停止和候选筛选函数没有把旧版差异误带入新版。
-3. 对照新版root闭包捕获关系，确认本节状态变量及timerState字段与新版真实共享对象一致。
-4. 继续只写入 `11.9/MainLeftBottom_11.9_明文.lua`；完成引怪链静态收尾后，再等待用户指定下一项功能。
-
-### 工作边界
-
-- 不恢复新版通用ButtonFactory、按钮数组、布局或UI事件分发。
-- 不分析旧版按钮创建源码，不把新版业务接入按钮。
-- 不修改旧版 `MainLeftBottom_唯一交付文件.lua`。
-- 不修改新版原始加密文件 `11.9/MainLeftBottom_11.9.lua`。
-- 不进行Lua编译或游戏运行测试，除非用户重新明确要求。
-- 其他目录文件只读；不创建分支或第二份明文源码。
-- 目标运行时为Lua 5.1。
+继续恢复新版基础辅助函数，优先核对地图二维数据/障碍物读取链及其实际调用者；随后继续物品与仓库业务。每次只将证据充分的函数写入唯一明文文件，无法确认的参数或分支明确标注待确认。
 
 ## 五、必须遵守的工作纪律
 
