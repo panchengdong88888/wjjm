@@ -777,3 +777,23 @@
 - 源码提交：`ec57a05bc730af1f584c3e369f4da4090d20bbe6`。
 - 本次没有修改新版原始加密文件、旧版完整源码或其他源码文件；没有创建第二份明文文件；没有创建按钮或做UI接线；未进行Lua编译或游戏运行测试。
 - 当前状态：回收装备本地业务回调已按新版VM完整恢复写入，尚未实测。
+
+### 2026-11-13：V10001（moneybut）按钮业务回调已恢复写入
+
+- 用户指定回收装备之后的下一项为“V10001”。
+- 新版按钮配置定位于`MainLeftBottom.doInit`（`root.children[37]`）：
+  - PC205：配置`key="moneybut"`；
+  - PC206：按钮名称`V10001`；
+  - PC334：将闭包登记到`callbackMap.moneybut`；
+  - PC335：创建对应点击闭包，原型为`root.children[37].children[14]`。
+- 点击闭包为零显式参数、5条有效指令、无子原型。逐条恢复结果：
+  1. 读取`global.gameWorldController`；
+  2. 取控制器的`OnGameLeaveWorld`方法；
+  3. 使用SELF调用形式，以控制器为`self`执行，0个显式参数；
+  4. 返回。
+- 已按VM的SELF + CALL调用形式恢复为：
+  `global.gameWorldController:OnGameLeaveWorld()`。
+- 已写入唯一明文源码函数`V10001ButtonHandler()`。
+- 源码提交：`f58306a653d903423c65e004ce2902e3095f6550`。
+- 本次没有修改新版原始加密文件、旧版完整源码或其他源码文件；没有创建第二份明文文件；没有创建按钮或做UI接线；未进行Lua编译或游戏运行测试。
+- 当前状态：V10001本地点击回调已按新版VM指令恢复写入，尚未实测。
