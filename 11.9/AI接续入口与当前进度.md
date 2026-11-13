@@ -52,52 +52,55 @@
 
 ## 四、当前任务（按用户最新指示更新）
 
-**当前唯一任务：恢复新版“停止脚本”按钮的业务明文。**
+**当前唯一任务：继续恢复11.9新版“开拉怪”业务明文。**
 
-用户于2026-11-13最新要求先处理“停止脚本”，因此暂停开新区，优先恢复stopallbut对应业务函数。
+用户于2026-11-13明确同意先处理开拉怪。当前范围是新版引怪业务链，不是旧版故障修复，也不是按钮创建/UI接线。
 
-用户已于2026-11-13明确纠正工作范围：
+### 已恢复写入的引怪业务
 
-1. 当前阶段只负责从11.9新版加密源码中恢复用户指定的新增功能明文。
-2. **不恢复、不分析新版通用按钮创建逻辑**，包括ButtonFactory、按钮配置数组遍历、按钮布局、按钮样式和点击事件分发。
-3. **不分析旧版按钮创建源码**。旧版源码本身已经是完整明文，且按钮创建功能已测试正常；用户后续会自行在旧版中创建按钮，再把新版恢复出的新增业务功能接入旧版。
-4. 不需要把新版购买金条功能接入新版doInit，也不需要恢复完整proto48初始化入口。
-5. “购买金条”业务功能主体已经恢复到唯一明文文件。当前应停止继续追查购买金条按钮创建/初始化接线，直接进入下一个指定功能“开新区”。
-6. 后续只提取新版“开新区”新增功能自身的业务函数、状态、定时逻辑、调用关系及必要依赖，并写入唯一明文源码文件。不要把通用UI创建代码混进恢复范围。
-7. 如果某个功能的业务明文已经恢复完成，就直接进入下一个功能；不要为了把它接入按钮或UI而停留。
+已在唯一明文文件 `11.9/MainLeftBottom_11.9_明文.lua` 的第5节写入以下代码：
 
-### 购买金条：业务代码恢复状态
+- 引怪状态与配置：`gatherState`、`gatherConfig`、`gatherStatusText`。
+- 基础辅助：`PrintLog`、`GetMainPlayerID`、`IsDie`、`GetPlayerPosition`、`GetPlayerMapPosition`、`DistanceCalculation`。
+- 地图与目标：`IsInWhitelistMap`、`ClearTargetID_2`、`SetTargetID`、`FindMonsterInCurrViewField`。
+- 归属判断：`GetOwnerID`、`GetOwnerIDText`、`GetOwnerDescription`。
+- 候选筛选：`FindMonsterCandidates`，包括忽略怪物设置、距离排序和GATHER_THRESHOLD截取。
+- 主状态机：`MainLoop`。
+- 定时器入口：`InitGatherMonsters`、`StopGatherMonsters`。
 
-以下业务函数已经恢复并写入唯一明文源码：
+### 新版MainLoop的重要差异
 
-- `BuyStoreItem(itemName, buyCount)`：新版商城商品购买辅助函数，包含商品查找、条件/限购判断、数量限制和最终商城请求。
-- `MakeBuyGoldTimerCallback(...)`：查询金币余额，按新版阈值判断，调用金条购买辅助函数，并处理提示与定时器清理。
-- `MakeBuyGoldButtonHandler(...)`：启动购买金条检测定时器。
-- `MakeShowLocalNoticeByType(mainLeftBottom)`：新版本地提示包装函数。
-- 购买金条所需的定时器状态和销毁清理逻辑也已恢复。
+- 新版原型为 `root.children[45]`，462条指令；旧版对应主循环417条指令。
+- 新版比旧版多45条指令，新增逻辑位于GATHERING状态开始处。
+- 新增逻辑通过 `global.Facade:retrieveProxy(global.ProxyTable.Skill)` 获取Skill代理，遍历 `GetSkills()` 返回的技能，读取 `SL:GetMetaValue("SKILL_NAME", skill.MagicID)`；技能名称包含“彻地钉”时记录“释放技能”日志，并调用 `SL:RequestLaunchSkill(skill.MagicID)`。
+- 该新增技能段已写入MainLoop。未将旧版MainLoop直接当作新版原型；使用新版原型新增技能段和旧版已有状态机恢复结果组成第一版可读源码。
+- `GetOwnerID` 与 `GetOwnerIDText` 的字符串ID比较按新版helper指令恢复为与 `tostring(expectedOwnerID)` 比较；`GetOwnerDescription` 不含type/tostring常量，保持直接比较。
+- 新版技能相关宿主调用的完整API契约未在新框架文档中找到；当前只保留原始VM可观察到的调用形式，不推测冷却、技能可用性或服务器执行结果。
 
-**结论：购买金条的新增业务功能明文恢复阶段视为完成，可以转入“开新区”。** 这不代表已将功能接入旧版，也不代表已编译或实测；旧版按钮创建和后续功能整合由用户另行处理。
+### 本轮提交
 
-### 已有按钮创建相关代码的处理边界
+- 唯一明文源码提交：`247d31b180d3b75f0ae4b32ba213297781cf7602`。
+- 随后按新版 `GetOwnerDescription` 原型常量修正归属说明比较，提交：`009181c357298d9c67192c31dca3d7b6b5a66945`。
+- 当前唯一明文文件content SHA：`1c847b67066e841836fc72c01352fd015d0f44c1`。
+- 静态核对：上述10个引怪核心函数各有1处定义；技能关键调用标识存在；Lua 5.2+禁用语法/API词项扫描无命中；引怪TODO标记已清除。
+- 未进行Lua编译、APK打包或游戏运行测试。
 
-唯一明文文件中此前已经写入的部分ButtonFactory、按钮数组及安装片段，是之前恢复过程留下的内容。当前不要求继续完善、核对或接线，也不要为了本次范围调整而擅自删除它们。后续恢复新功能时，只围绕新功能业务代码工作，避免继续扩展UI创建部分。
+### 当前剩余工作
 
-### 下一步唯一工作：恢复“开新区”
+1. 对照新版proto94的PC级指令，继续逐段复核MainLoop的等待归属、游标推进、攻击目标更新和批次完成分支，特别确认与旧版状态机相比是否还有45条新增指令以外的逻辑差异。
+2. 复核proto29、proto90、proto85的完整调用参数与状态字段，确认初始化、停止和候选筛选函数没有把旧版差异误带入新版。
+3. 对照新版root闭包捕获关系，确认本节状态变量及timerState字段与新版真实共享对象一致。
+4. 继续只写入 `11.9/MainLeftBottom_11.9_明文.lua`；完成引怪链静态收尾后，再等待用户指定下一项功能。
 
-开始前按接续步骤读取唯一明文文件和新版原始文件，定点查找新版开新区按钮对应的业务函数及其调用链。重点恢复：
-- 开新区功能自身的处理函数；
-- 与开新区直接相关的定时器、状态字段和清理逻辑（若新版确实存在）；
-- 功能所调用的新版框架API，按开发文档直接使用，不分析API内部；
-- 新版相较旧版新增或变化的业务逻辑。
+### 工作边界
 
-不做以下工作：
-- 不解密/恢复ButtonFactory或通用按钮创建代码；
-- 不分析旧版按钮创建方式；
-- 不恢复完整proto48 doInit；
-- 不把开新区功能接入按钮或UI；
+- 不恢复新版通用ButtonFactory、按钮数组、布局或UI事件分发。
+- 不分析旧版按钮创建源码，不把新版业务接入按钮。
+- 不修改旧版 `MainLeftBottom_唯一交付文件.lua`。
+- 不修改新版原始加密文件 `11.9/MainLeftBottom_11.9.lua`。
 - 不进行Lua编译或游戏运行测试，除非用户重新明确要求。
-
-所有新恢复的业务源码仍只写入唯一文件：`11.9/MainLeftBottom_11.9_明文.lua`。新版加密原件、旧版明文和其他参考文件全部只读。
+- 其他目录文件只读；不创建分支或第二份明文源码。
+- 目标运行时为Lua 5.1。
 
 ## 五、必须遵守的工作纪律
 
@@ -818,3 +821,23 @@
 - 交付文件：`11.9/MainLeftBottom.lua`。
 - 最终文件提交：`07045418b3e7977103dc791352b1cefe44ddac83`（此前创建提交：`c132ce5667802a853f86daebc3bd957dccc1a841`）。
 - 目前只做了文本级结构核对：六项业务函数/处理器存在、按钮回调键已登记、旧版资源统计按钮保留、V10001复用快速小退、旧版模块return保留。没有运行Lua编译、APK打包或游戏实测；这些留给用户指定的另一个AI执行。
+
+
+### 2026-11-13：新版开拉怪业务第一轮明文写入
+
+- 用户同意先恢复新版开拉怪功能。
+- 直接解析只读原始文件 `11.9/MainLeftBottom_11.9.lua` 的内嵌Base36/LZW与XOR数据，完整消费79573字节，得到105个原型；没有重新跑旧版110原型/5580指令资料。
+- 新版引怪原型定位：
+  - `root.children[23]`：InitGatherMonsters，36条指令；
+  - `root.children[39]`：FindMonsterCandidates，102条指令；
+  - `root.children[41]`：StopGatherMonsters，25条指令；
+  - `root.children[45]`：MainLoop，462条指令；
+  - 依赖原型还包括IsInWhitelistMap、FindMonsterInCurrViewField、SetTargetID、GetOwnerID、GetOwnerIDText、GetOwnerDescription、IsDie、玩家/怪物坐标和距离辅助函数。
+- 从root父级闭包创建指令确认MainLoop 22项捕获顺序：running标志、当前状态、状态常量、PrintLog、FormatStateChange、ResetGatherMonsterData、GetMainPlayerID、FindMonsterCandidates、目标ID表、GetOwnerID、游标、归属计数、等待标志、等待截止时间、怪物名、FindMonsterInCurrViewField、等待目标ID、GetOwnerIDText、IsDie、GetOwnerDescription、SetTargetID、配置表。
+- 新版MainLoop比旧版多45条指令；新增45条集中在GATHERING分支开头的技能逻辑。技能逻辑遍历Skill代理的GetSkills结果，按SKILL_NAME查询MagicID对应技能名，匹配“彻地钉”后调用SL:RequestLaunchSkill(MagicID)。
+- 已在唯一明文文件第5节写入状态表、配置、地图白名单、坐标/距离、怪物候选筛选、归属辅助、目标设置/清理、FindMonsterInCurrViewField、MainLoop、InitGatherMonsters和StopGatherMonsters。
+- 新版GetOwnerID与GetOwnerIDText的字符串ID比较按对应helper指令分别处理；GetOwnerDescription根据其常量表不含type/tostring，使用直接ID比较。
+- 源码提交：`247d31b180d3b75f0ae4b32ba213297781cf7602`；归属说明修正提交：`009181c357298d9c67192c31dca3d7b6b5a66945`。
+- 静态检查：10个引怪核心函数均有唯一函数定义；技能调用标识存在；Lua 5.2+禁用语法/API扫描无命中；旧TODO已清除。
+- 待继续核对：proto94剩余PC级控制流与旧版主循环差异、proto29/90/85具体操作数、root共享状态/timerState装配。当前代码是第一轮静态恢复，不代表已编译或游戏实测。
+- 未执行Lua编译、APK打包或游戏运行测试。
