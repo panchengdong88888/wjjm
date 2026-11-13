@@ -1071,6 +1071,46 @@ local function MakeClearBlacklistButtonHandler(printLog)
     end
 end
 
+-- root/43/3：清空引怪数量阈值存档按钮回调。
+-- 捕获顺序：安全删除文件包装器、gather_monster_count.txt、通知包装器、PrintLog。
+local function MakeClearMonsterThresholdButtonHandler(
+    deleteConfig,
+    fileName,
+    notify,
+    printLog
+)
+    return function()
+        local removed = deleteConfig(fileName)
+        if removed then
+            notify("已清空怪物阈值")
+            printLog("已清空怪物阈值存档：%s", fileName)
+        else
+            notify("清空怪物阈值失败")
+            printLog("清空怪物阈值失败：%s", fileName)
+        end
+    end
+end
+
+-- root/43/21：清空黑名单距离存档按钮回调。
+-- 捕获顺序：安全删除文件包装器、blacklist_distance.txt、通知包装器、PrintLog。
+local function MakeClearBlacklistDistanceButtonHandler(
+    deleteConfig,
+    fileName,
+    notify,
+    printLog
+)
+    return function()
+        local removed = deleteConfig(fileName)
+        if removed then
+            notify("已清空黑名单距离")
+            printLog("已清空黑名单距离存档：%s", fileName)
+        else
+            notify("清空黑名单距离失败")
+            printLog("清空黑名单距离失败：%s", fileName)
+        end
+    end
+end
+
 -- Lua 5.1前向声明：根装配工厂在这些工厂定义之前，必须先声明局部名，
 -- 后续用赋值形式定义，避免被解析成全局变量。
 local MakeUseItemByIndex
