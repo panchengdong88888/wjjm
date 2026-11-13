@@ -289,7 +289,7 @@
 - `PCallHelper_2()`：无捕获保护函数，pcall取得FriendProxy，失败或假值返回nil。
 - `MakeFindBlacklistPlayer(PCallHelper)`：按targetID查询`_blacklistData`，未命中时再查`ACTOR_MASTER_ID`对应的主角色记录；命中返回true和记录Name。
 - `MakeInstallDamageHook(mainLeftBottomState, printLog)`：捕获MainLeftBottom.a状态表和日志函数，挂接MSG_SC_DAMAGE_HP处理器；包装回调先pcall调用a.onDamageMsg，再返回原处理器结果。
-- `MakeDeathAutoBlacklist(blacklistState, printLog, showLocalNotice, findBlacklistPlayer)`：消费lastAttacker记录，已在黑名单则跳过；否则通知并按0.5秒间隔重试六次RequestAddBlacklistByName。
+- `MakeDeathAutoBlacklist(blacklistState, printLog, findBlacklistPlayer, showLocalNotice)`：消费lastAttacker记录，已在黑名单则跳过；否则通知并按0.5秒间隔重试六次RequestAddBlacklistByName。
 - `MakeUseItemByIndex(randomTeleportItemNames)`：按随机传送物品名顺序检查ITEM_INDEX_BY_NAME和ITEM_COUNT，使用第一件有库存的物品并返回名称。
 - `MakeBlacklistPlayerDetection(...13项捕获...)`：恢复216条指令主体，包括isBlacklisting置位、伤害Hook安装、HP与死亡状态处理、白名单地图检查、FIND_IN_VIEW_PLAYER_LIST双返回值、数值循环、自身过滤、黑名单身份判断、名称回退、可选距离门控、2秒提示节流、nextTryAt重试、随机传送物品使用及无道具提示。
 
@@ -325,8 +325,9 @@
 
 #### 本轮提交
 
-- 源码提交：`010ea379ab22a831016698e1186c4e3d78cd4010`
-- 源码content SHA：`63f4ce14c04bec4e446a70dc45900725deefe693`
+- 源码提交：`b8c4bee47c940fb2d915d94cd5270b87d69684e5`
+- 源码content SHA：`ba624db0ddcda36aed1a5f4d01021197897fb491`
+- 后续校正：MakeDeathAutoBlacklist捕获顺序按root PC363修正为blacklistState、PrintLog、FindBlacklistPlayer、ShowLocalNoticeByType。
 
 ### 后续恢复顺序
 
