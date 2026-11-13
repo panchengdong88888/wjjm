@@ -852,6 +852,9 @@ local function MakeBlacklistRootBindings(
     showLocalNotice,
     distanceHelperUnusedCapture
 )
+    -- PC350：距离闭包先于本组其他闭包创建，捕获root T[8]（该值在函数活动路径未使用）。
+    local getMapData2DPtr = MakeGetMapData2DPtr(distanceHelperUnusedCapture)
+
     -- PC352：无捕获PCallHelper_2。
     local PCallHelper = PCallHelper_2
 
@@ -879,9 +882,6 @@ local function MakeBlacklistRootBindings(
         findBlacklistPlayer,
         showLocalNotice
     )
-
-    -- PC350：距离闭包在PC352之前创建；这里按其真实工厂形式创建。
-    local getMapData2DPtr = MakeGetMapData2DPtr(distanceHelperUnusedCapture)
 
     -- PC368-PC381：BlacklistItems的13项upvalue，严格按VM捕获顺序注入。
     local blacklistItems = MakeBlacklistPlayerDetection(
