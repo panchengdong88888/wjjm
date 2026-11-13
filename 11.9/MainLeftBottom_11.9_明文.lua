@@ -936,13 +936,6 @@ local function MakeBlacklistRootBindings(
     )
 
     -- PC368-PC381：BlacklistItems的13项upvalue，严格按VM捕获顺序注入。
-    local clearBlacklistItems = MakeClearBlacklistItems(
-        PCallHelper,
-        printLog,
-        showLocalNotice,
-        blacklistState
-    )
-
     local blacklistItems = MakeBlacklistPlayerDetection(
         featureState,              -- UP[0] = root T[2] / MainLeftBottom.z
         installDamageHook,         -- UP[1] = root T[57] live cell最终值
@@ -959,8 +952,16 @@ local function MakeBlacklistRootBindings(
         randomTeleportItemNames   -- UP[12] = root T[37]
     )
 
-    -- PC382：导出到当前chunk ENV，不假定ENV一定等于_G。
+    -- PC382：先导出BlacklistItems。
     rootEnvironment.BlacklistItems = blacklistItems
+
+    -- PC383-PC388：随后创建并导出ClearBlacklistItems。
+    local clearBlacklistItems = MakeClearBlacklistItems(
+        PCallHelper,
+        printLog,
+        showLocalNotice,
+        blacklistState
+    )
     rootEnvironment.ClearBlacklistItems = clearBlacklistItems
 
     return {
