@@ -956,6 +956,109 @@ local function MakeBlacklistButtonHandler(
     end
 end
 
+-- root/43/23：通用数字输入弹窗包装器。
+-- root/43/23/1的弹窗参数：btnType=2、showEdit=true、
+-- editParams.inputMode=2、maxLength=6；成功回调仅在status==1且输入为纯数字时触发。
+-- 注意：VM原版非法输入路径会在0.1秒后调用一个nil捕获槽，保留该异常，不擅自补造通知函数。
+local function MakeCommonInputPrompt(printLog)
+    return function(promptText, successCallback)
+        local function onInputResult(status, result)
+            if status ~= 1 then
+                return
+            end
+
+            local editStr = ""
+            if result then
+                editStr = result.editStr
+            end
+
+            local cleanedInput = tostring(editStr):gsub("%s", "")
+            local matchedInput = string.match(cleanedInput, "^%d+$")
+
+            if matchedInput then
+                local numericValue = tonumber(cleanedInput)
+                if numericValue then
+                    successCallback(numericValue)
+                    return
+                end
+            end
+
+            -- VM使用原始输入值（而非清理后的字符串）生成错误日志。
+            printLog(
+                "%s：参数格式不对（%s）",
+                promptText,
+                tostring(editStr)
+            )
+
+            -- 原版child0捕获的UP[0]为nil；延迟执行时会产生attempt-to-call-nil。
+            local missingCallback = nil
+            local delayedErrorCallback = function()
+                missingCallback("参数格式不对，请输入数字")
+            end
+            SL:ScheduleOnce(delayedErrorCallback, 0.1)
+        end
+
+        local editParams = {
+            inputMode = 2,
+            maxLength = 6
+        }
+
+        local popupParams = {
+            btnType = 2,
+            showEdit = true,
+            editParams = editParams,
+            callback = onInputResult
+        }
+
+        popupParams.str = promptText
+        SL:OpenCommonTipsPop(popupParams)
+    end
+end
+
+-- root/43/12：黑名单距离输入提示及保存回调工厂。
+-- 捕获顺序：
+-- UP[0]=通用输入弹窗包装器；UP[1]=blacklist_distance.txt保存函数；
+-- UP[2]=ShowLocalNoticeByType包装函数；UP[3]=PrintLog；
+-- UP[4]=GetWritablePath；UP[5]=文件名；
+-- UP[6]=黑名单启动定时器闭包；UP[7]=按钮toggle同步闭包。
+local function MakeBlacklistDistancePrompt(
+    commonInputPrompt,
+    saveConfig,
+    notify,
+    printLog,
+    getWritablePath,
+    fileName,
+    startBlacklistTimer,
+    syncButtonState
+)
+    return function()
+        local function onDistanceSubmitted(distance)
+            local saved = saveConfig(fileName, distance)
+            if not saved then
+                notify("黑名单距离保存失败")
+                printLog(
+                    "黑名单距离保存失败，路径：%s",
+                    getWritablePath()
+                )
+                return
+            end
+
+            notify("黑名单距离已保存：" .. distance .. " 格")
+            printLog("黑名单距离已保存：%d 格", distance)
+
+            local started = startBlacklistTimer(distance)
+            if started then
+                syncButtonState("blacklistbut", true)
+            end
+        end
+
+        commonInputPrompt(
+            "请输入黑名单的距离格子（数字，按线路计算）",
+            onDistanceSubmitted
+        )
+    end
+end
+
 -- root/43/14：清空黑名单按钮点击回调。
 -- 先通知，再从当前chunk ENV读取ClearBlacklistItems并调用。
 local function MakeClearBlacklistButtonHandler(notify)
