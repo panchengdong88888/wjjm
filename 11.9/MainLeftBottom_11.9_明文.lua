@@ -826,6 +826,21 @@ local function RecycleEquipmentButtonHandler()
 end
 
 -- ============================================================
+--  V10001 按钮业务（11.9新版 moneybut）
+-- ============================================================
+
+-- doInit中moneybut对应的点击闭包为root.children[37].children[14]。
+-- 原始5条指令依次执行：
+--   global.gameWorldController
+--   取其OnGameLeaveWorld方法（SELF调用形式）
+--   以控制器对象作为self调用，0个显式参数
+--   return
+-- 按VM的SELF + CALL语义还原为Lua冒号调用。
+local function V10001ButtonHandler()
+    global.gameWorldController:OnGameLeaveWorld()
+end
+
+-- ============================================================
 --  8.3 停止脚本按钮业务（11.9新版 stopallbut）
 -- ============================================================
 
