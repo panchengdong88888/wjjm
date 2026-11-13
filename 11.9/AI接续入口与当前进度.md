@@ -88,6 +88,9 @@
   - 超过最大距离返回nil，否则返回该切比雪夫距离。
 - PC37是无条件return；PC38-PC144没有可达入口。其后虽然出现 `sceneManager`、`GetMapData2DPtr`、`getMapDataRows`、`getMapDataCols`、`isObstacle` 等常量/调用片段，但都位于不可达尾部，不能恢复成真实执行的地图二维数据或障碍物判断逻辑。
 - 反汇编中 `GetMapData2DPtr` 的调用文本仅出现在该原型自己的不可达尾部；当前证据未证明存在其他可达调用者。因此本轮不把死尾部写入明文源码，也不伪造地图障碍物读取函数。
+- 后续调用链核对补充：根级PC350创建的这个闭包被root/48（黑名单玩家检测逻辑）捕获为UP[5]；该函数在root/48 PC134以五个参数被实际调用，结果用于距离分支。因此它不是完全未使用的死函数，而是一个**名称误导、实际负责切比雪夫距离计算**的辅助闭包。
+- 已将其可达逻辑按工厂形式写入唯一明文源码：`MakeGetMapData2DPtr(unusedCapturedValue)`。它保留五参数truthiness检查、同坐标优先返回0.0、非正距离限制返回nil、切比雪夫距离计算及超限返回nil。当前只恢复工厂定义，尚未把它接入黑名单检测的完整闭包装配；后续恢复黑名单检测时按UP[5]位置注入，不能把它改成地图数据指针读取。
+- 新增工厂提交：`f8aec2b3c85db525d9fc04d7d8d45ce1a7729cf0`；唯一明文源码content SHA：`dc0da6d588b8b28573f5c53fdd15803aa59047c1`。
 - 同步审计发现上一轮新增的两个地图元变量包装函数遗漏了VM明确的默认值分支，已按既有候选源码和函数状态记录修正：
   - `GetMapId()` → `SL:GetMetaValue("MAP_ID") or 0`
   - `GetMapName()` → `SL:GetMetaValue("MAP_NAME") or ""`
