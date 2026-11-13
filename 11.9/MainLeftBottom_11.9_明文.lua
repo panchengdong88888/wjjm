@@ -675,3 +675,74 @@ end
 -- 当前只写入原型84中调用参数已闭合的函数。原型83的开关分支、
 -- 首条LuaSendMsg的完整实参、ScheduleOnce句柄赋值/取消路径，以及
 -- 原型93逐个背包物品筛选和发包参数仍在定点核对；未确认前不补写猜测代码。
+
+-- ============================================================
+--  8.3 停止脚本按钮业务（11.9新版 stopallbut）
+-- ============================================================
+
+-- 对应proto48 child index 9：按key同步已有按钮的toggle状态。
+-- 此函数只更新已有按钮状态/标题/颜色，不创建按钮、不绑定点击事件。
+local function MakeMainLeftBottomToggleStateSync(
+    firstGroup,
+    secondGroup,
+    thirdGroup,
+    visibleItems
+)
+    local groups = { firstGroup, secondGroup, thirdGroup }
+
+    return function(buttonKey, toggled)
+        for _, group in ipairs(groups) do
+            for _, buttonConfig in ipairs(group) do
+                if buttonConfig.key == buttonKey then
+                    buttonConfig.toggled = toggled
+
+                    local button = visibleItems[buttonKey]
+                    if button then
+                        GUI:Button_setTitleText(
+                            button,
+                            toggled and buttonConfig.toggle or buttonConfig.name
+                        )
+                        GUI:Button_setTitleColor(
+                            button,
+                            toggled and "#ff0000" or "#ffffff"
+                        )
+                    end
+                    return
+                end
+            end
+        end
+    end
+end
+
+
+-- 对应新版stopallbut处理器（proto48 child index 0，38条指令）。
+-- 捕获顺序：timerState、脚本状态表、按钮toggle同步闭包、本地提示闭包。
+-- 注意：新版此按钮的实际停止范围是“丢弃物品”和“拾取物品”两个循环；
+-- 它不会取消引怪、黑名单、奖励、新区等其他功能的定时器。
+local function MakeStopAllScriptButtonHandler(
+    timerState,
+    scriptState,
+    syncButtonToggle,
+    showLocalNotice
+)
+    return function()
+        local dropTimer = timerState.dropTimer
+        if dropTimer then
+            SL:UnSchedule(dropTimer)
+            timerState.dropTimer = nil
+        end
+
+        scriptState.isDiuing = false
+        syncButtonToggle("diuqibut", false)
+
+        local pickupTimer = timerState.shiquTimer
+        if pickupTimer then
+            SL:UnSchedule(pickupTimer)
+            timerState.shiquTimer = nil
+        end
+
+        syncButtonToggle("shiqubut", false)
+        showLocalNotice("已停止丢物品和拾取")
+        return true
+    end
+end
