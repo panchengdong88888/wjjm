@@ -781,7 +781,7 @@ local function MakeFindBlacklistPlayer(PCallHelper)
     end
 end
 
--- root/6：InstallDamageHook，UP[0]=MainLeftBottom.a状态表，UP[1]=PrintLog。
+-- root/7：InstallDamageHook，UP[0]=MainLeftBottom.a状态表，UP[1]=PrintLog。
 -- 挂接后包装原始伤害消息处理器；先pcall调用a.onDamageMsg，再原样返回原处理器结果。
 -- root/53：onDamageMsg，UP[0]=blacklistState，入口首参数为JSON文本。
 -- 该回调只记录最近一次有效攻击者；真正加入黑名单由DeathAutoBlacklist处理。
