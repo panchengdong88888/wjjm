@@ -650,3 +650,28 @@ end
 -- 并调用InitGatherMonsters；PC286 child index 8捕获该闭包，PC290登记为callbackMap.yinguaibut。
 -- 本补充纠正前文PC258捕获对象待核对的临时状态。尚未恢复的是child index 18黑名单按钮开关
 -- 处理器的完整Lua函数体，以及root初始化/按钮工厂的统一整合。
+
+-- ============================================================
+--  8.2 新区功能（11.9新版原型83/84/93）
+-- ============================================================
+
+-- 对应 root.children[38] 的子原型（原型84，10条指令）。
+-- 该闭包由新区启动处理器通过 SL:ScheduleOnce(callback, 0.5) 调度。
+-- VM调用帧确认 LuaSendMsg 收到7个显式参数；这里保留原始参数顺序。
+local function SendNewZoneDelayedCommand()
+    LuaSendMsg(9002, 22502, 1, 2, "", 0, 0)
+end
+
+-- 新区功能原始指令核对记录（11.9原始文件，105原型/79573字节完整消费）：
+--   * root.children[38]（原型83）：零参数、37条指令、1个子原型（原型84）。
+--     常量含 Gbtc、isNewzone、LuaSendMsg、9002、22302、开启新区功能、
+--     SL.ScheduleOnce、0.5、UnSchedule、newzoneTimer。
+--   * 原型84：零参数、10条指令，唯一业务动作是
+--     LuaSendMsg(9002, 22502, 1, 2, "", 0, 0)。
+--   * root.children[44]（原型93）：零参数、76条指令，涉及
+--     SL:GetMetaValue("BAG_DATA")、遍历背包、MSG_CS_USE_BAG_ITEM、
+--     newzoneTimer清理、Gbtc调用及结束提示。
+--
+-- 当前只写入原型84中调用参数已闭合的函数。原型83的开关分支、
+-- 首条LuaSendMsg的完整实参、ScheduleOnce句柄赋值/取消路径，以及
+-- 原型93逐个背包物品筛选和发包参数仍在定点核对；未确认前不补写猜测代码。
