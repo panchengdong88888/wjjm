@@ -1587,3 +1587,71 @@ child13（反汇编路径`root/43/14`）捕获父函数UP[0]，即根R4日志输
 ### 下一步
 
 现在可以按已确认的真实对象关系，审计父函数后续如何将child17、child18和child13登记到`buttonHandlers.blacklistbut`、`buttonHandlers.clearblacklistbut`，以及对应按钮配置表如何交给UI创建机制。确认登记链后，再把黑名单业务闭包接入唯一明文源码的初始化流程；不要重写新版通用UI框架。
+
+
+## 2026-11-13 继续审计：新版黑名单按钮配置、回调派发与UI工厂链
+
+本轮重新读取main上的：
+- `资料文件/03_静态反汇编/MainLeftBottom_vm_disassembly_corrected_phase3.txt`
+- `资料文件/docs/audit/检查点332_doInit_UI_child0-child10_子原型核对.md`
+- `资料文件/docs/audit/检查点333_doInit_UI_child11-child22_子原型核对.md`
+- `11.9/MainLeftBottom_11.9_明文.lua`
+
+### 一、按钮配置表已按VM父函数root/43 PC195-PC235重新确认
+
+三组数组在root/43父函数中按以下顺序构造：
+
+- 第一组R12：`yinguaibut`（开拉怪/关拉怪）、`blacklistbut`（开黑名单/关黑名单）、`clearblacklistbut`（清黑名单）、`moneybut`（资源统计）。
+- 第二组R13：`shiqubut`（开拾取/关拾取）、`diuqibut`（开丢弃/关丢弃）、`xiaotuibut`（快速小退）。
+- 第三组R14：`clearmonsterbut`（清怪物值）、`cleardistancebut`（清距离值）、`rewardbut`（开奖励/关奖励）。
+
+父函数PC346-PC378依次遍历R12、R13、R14，调用同一个ButtonFactory。三组groupOffset分别为40、0、80；rowIndex按各组长度倒序计算。
+
+### 二、通用按钮工厂与点击派发链已闭合
+
+- 父函数PC340创建child9（反汇编路径root/43/10，50条指令）。
+- child9捕获顺序：
+  - UP[0]：UI父容器；
+  - UP[1]：X坐标基准1；
+  - UP[2]：Y坐标基准2；
+  - UP[3]：buttonMap/visibleItems；
+  - UP[4]：buttonHandlers/callbackMap。
+- child9调用GUI.Button_Create(uiParent, config.key, x, y, "res/public/fuzhu_btn.png")；创建失败返回nil；成功后写入buttonMap[config.key]，设置标题、字号18、字体res/public/kaiti2.ttf、白色标题。
+- config有toggle字段时初始化config.toggled=false。
+- child9.child0点击闭包捕获callbackMap、buttonConfig、button控件；点击时按callbackMap[buttonConfig.key]查找回调，有回调才调用；非toggle按钮直接返回；toggle按钮若回调返回false则不切换，否则翻转toggled并同步标题与红/白颜色。
+- 因此黑名单按钮的回调登记键必须精确为`blacklistbut`，清空按钮必须为`clearblacklistbut`。
+
+### 三、黑名单两个回调登记点确认
+
+- root/43 PC296创建child13，PC297捕获日志函数，PC298登记`buttonHandlers.clearblacklistbut`。
+- root/43 PC299创建child18，PC300-PC303捕获父upvalue [2,0,1,6]，PC304-PC305捕获局部R19、R16，PC306登记`buttonHandlers.blacklistbut`。
+- child18捕获对象已闭合：MainLeftBottom全局表（blacklistTimer）、日志辅助函数、MainLeftBottom.z共享状态表、读取blacklist_distance.txt的包装闭包、距离输入提示闭包、child17黑名单启动闭包。
+- child17（root/43/18）将传入距离写入黑名单状态表，立即调用全局BlacklistItems，再用Schedule包装函数按0.1秒调度，并把句柄写入MainLeftBottom.blacklistTimer。
+- 清空按钮child13先输出“清空黑名单”，再GETGLOBAL调用ClearBlacklistItems。
+
+### 四、发现当前唯一明文源码的UI配置与VM存在实质错配
+
+当前`BuildMainLeftBottomButtonGroups()`写成第一组6项、第二组7项、第三组空表，且包含settingbut、stopallbut、buygoldbut、recyclebut、newzone等当前root/43 PC195-PC235配置中没有的key；与此同时，VM实际三组配置是本节第一部分所列4/3/3项。
+
+因此不能把当前BuildMainLeftBottomButtonGroups当作新版root/43的真实配置，也不能沿用当前组内位置/布局作为原版证据。后续若修正，必须以root/43 PC195-PC235的配置数组为准，并确认这些额外业务按钮是否属于其他UI入口，不能把它们随意并入这三组。
+
+### 五、当前源码尚未形成实际初始化调用链
+
+静态搜索当前`11.9/MainLeftBottom_11.9_明文.lua`：
+- `MakeBlacklistRootBindings`仅有定义，没有调用点。
+- `MakeBlacklistButtonHandler`与`MakeClearBlacklistButtonHandler`仅有定义，没有调用点。
+- `MakeMainLeftBottomButtonFactory`和`CreateMainLeftBottomButtons`已有定义；`CreateMainLeftBottomButtons`仅在`MakeBuyGoldButtonInitFragment`返回对象的方法中调用。
+- `MakeBuyGoldButtonInitFragment`目前只有定义和自身内部方法引用，没有实际实例化调用点。
+- 当前明文文件没有可确认的完整新版doInit/UI入口初始化函数。
+- 当前明文文件尚未恢复黑名单距离输入提示工厂（root/43/12及其child0），搜索不到提示文本“请输入黑名单的距离格子（数字，按线路计算）”或对应工厂定义。
+
+### 六、本轮结论与下一步
+
+黑名单两个按钮的配置key、显示名称、toggle名称、buttonHandlers登记点、ButtonFactory按key派发点击回调的链路已确认。尚不能宣称黑名单按钮已接入新版实际初始化，因为：
+1. 当前BuildMainLeftBottomButtonGroups与原始VM配置不一致；
+2. 距离输入提示闭包尚未恢复；
+3. MakeBlacklistRootBindings、两个黑名单按钮handler及ButtonFactory目前没有完整的root初始化调用链。
+
+下一步先恢复root/43/12距离输入提示闭包及其8项捕获来源，再审计root/43父函数从根模块获得buttonMap、timerState、featureState、blacklistState、配置读写函数、通知/日志函数和Schedule包装函数的真实来源。确认后再补齐唯一明文文件的初始化接线；不要重写通用按钮工厂，不要把其他UI版本的按钮组混入新版配置。
+
+本轮只更新接续文档；未修改唯一明文源码、原始加密文件、旧版整合文件或其他资料文件。未进行Lua编译、APK打包或游戏运行测试。
