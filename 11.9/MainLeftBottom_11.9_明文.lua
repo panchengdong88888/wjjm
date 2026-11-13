@@ -1148,6 +1148,73 @@ local function MakeGatherThresholdPrompt(
     end
 end
 
+-- root/43/9：存仓按钮处理器，捕获timerState、PrintLog、功能状态表和Schedule包装器。
+local function MakeStorageButtonHandler(timerState, printLog, featureState, schedule)
+    return function()
+        if timerState.storageTimer then
+            printLog("关闭存仓功能")
+            SL:UnSchedule(timerState.storageTimer)
+            timerState.storageTimer = nil
+            featureState.isStoring = false
+            return
+        end
+
+        printLog("开启存仓功能")
+        StorageItems()
+        timerState.storageTimer = schedule(StorageItems, 1.0)
+    end
+end
+
+-- root/43/20：取物按钮处理器，捕获顺序与存仓处理器一致。
+local function MakeTakeButtonHandler(timerState, printLog, featureState, schedule)
+    return function()
+        if timerState.takeTimer then
+            printLog("关闭取物功能")
+            SL:UnSchedule(timerState.takeTimer)
+            timerState.takeTimer = nil
+            featureState.isTaking = false
+            return
+        end
+
+        printLog("开启取物功能")
+        TakeItems()
+        timerState.takeTimer = schedule(TakeItems, 1.0)
+    end
+end
+
+-- root/43/11：拾取按钮处理器。原版周期为0.01秒，且不写入isTaking/isDiuing状态。
+local function MakePickupButtonHandler(timerState, printLog, schedule)
+    return function()
+        if timerState.shiquTimer then
+            printLog("关闭拾取物品")
+            SL:UnSchedule(timerState.shiquTimer)
+            timerState.shiquTimer = nil
+            return
+        end
+
+        printLog("开启拾取物品")
+        PickUpItems()
+        timerState.shiquTimer = schedule(PickUpItems, 0.01)
+    end
+end
+
+-- root/43/22：丢弃按钮处理器，捕获timerState、PrintLog、功能状态表和Schedule包装器。
+local function MakeDropButtonHandler(timerState, printLog, featureState, schedule)
+    return function()
+        if timerState.dropTimer then
+            printLog("关闭丢弃物品")
+            SL:UnSchedule(timerState.dropTimer)
+            timerState.dropTimer = nil
+            featureState.isDiuing = false
+            return
+        end
+
+        printLog("开启丢弃物品")
+        DiuItems()
+        timerState.dropTimer = schedule(DiuItems, 1.0)
+    end
+end
+
 -- root/43/14：清空黑名单按钮点击回调。
 -- 捕获root/43 UP[0]=PrintLog；先记录日志，再从当前chunk ENV读取ClearBlacklistItems并调用。
 local function MakeClearBlacklistButtonHandler(printLog)
