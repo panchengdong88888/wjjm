@@ -1876,3 +1876,93 @@ root/43/23/1的已确认行为：
 本轮只完成静态捕获链审计，没有修改`11.9/MainLeftBottom_11.9_明文.lua`、原始加密文件或旧版整合文件，也没有进行Lua编译、APK打包或游戏运行测试。
 
 下一步继续核对根级`doInit`及root/43父函数的其余捕获来源和真实调用顺序，重点确定R48、R49、R44、R5通知包装器、R4日志函数、R7 Schedule包装器、按钮状态同步闭包如何组装进黑名单按钮回调与距离输入提示工厂。确认完毕后再把初始化接线写入唯一明文源码。
+
+
+## 2026-11-13续：根级 doInit 注册与 root/43 捕获寄存器身份复核
+
+本轮继续核对根函数PC1-PC412、root/43 UI父函数PC1-PC419及当前唯一明文文件。重点复查早期笔记中root寄存器对象身份，避免把模块表、共享状态表、定时器表混为一谈。本轮只读审计，没有修改源码。
+
+### 一、根函数末尾的真实入口关系
+
+- 根函数PC390创建root/43（直接子原型child-index 42，419条指令，20项upvalue）。
+- PC391-PC410按顺序捕获20个根局部寄存器。
+- PC411执行MainLeftBottom.doInit = root/43。
+- PC412根函数返回。
+- 因此根模块加载阶段只是把UI初始化函数挂到MainLeftBottom.doInit；没有在根函数中直接调用root/43。实际UI构建要等宿主调用doInit。
+
+### 二、根局部寄存器对象身份复核（重要纠正）
+
+按根函数PC1-PC42的赋值顺序，几个容易混淆的根寄存器应区分为：
+
+- root R0：MainLeftBottom.a所指向的表。PC1先建立模块表并导出；PC3新建另一张空表；PC4-PC5将其挂入模块表字段a。
+- root R1：界面控件集合表，随后挂入MainLeftBottom.b。PC30新建控件表；PC31-PC32将其赋给模块表字段b。
+- root R2：MainLeftBottom.z共享功能状态表。PC33新建，PC34-PC35挂入模块表字段z，PC36-PC41初始化isPaused、isRunning、isStoring、isTaking、isDiuing、isOutputted等字段。
+- root R3：共享定时器状态表。PC42新建空表；后续购买金条、新区、奖励、巡航、引怪等定时器字段共享此表。
+- root R4：PrintLog日志闭包。
+- root R5：ShowLocalNoticeByType本地通知包装闭包。
+- root R7：Schedule包装闭包。
+- root R41：黑名单专属状态表，包含distance、lastHp、deathHandled、alertAt、nextTryAt、noStoneWarned等字段。
+- root R44：可写目录路径闭包。
+- root R48：读取blacklist_distance.txt的包装闭包。
+- root R49：保存blacklist_distance.txt的包装闭包。
+
+注意：root R3不是MainLeftBottom模块表；MainLeftBottom模块表通过环境全局MainLeftBottom访问。涉及blacklistTimer的黑名单按钮闭包使用的是共享定时器状态表root R3。
+
+### 三、root/43的20项捕获顺序与黑名单所需值
+
+root/43的upvalue按0-based索引为：
+
+| root/43 UP | 根寄存器 | 对象身份 |
+|---:|---:|---|
+| 0 | R4 | PrintLog |
+| 1 | R2 | MainLeftBottom.z功能状态表 |
+| 2 | R3 | 共享定时器状态表 |
+| 3 | R0 | MainLeftBottom.a表 |
+| 4 | R1 | MainLeftBottom.b控件集合表 |
+| 5 | R41 | 黑名单专属状态表 |
+| 6 | R48 | 黑名单距离读取包装器 |
+| 7 | R7 | Schedule包装函数 |
+| 8 | R8 | 根级其他辅助捕获，具体用途需按各子闭包读取点判断 |
+| 9 | R50 | 根级配置/辅助闭包，按各子闭包读取点判断 |
+| 10 | R49 | 黑名单距离保存包装器 |
+| 11 | R5 | ShowLocalNoticeByType通知包装器 |
+| 12 | R44 | 可写目录路径函数 |
+| 13 | R42 | 固定文件名blacklist_distance.txt |
+| 14 | R51 | 根级其他辅助捕获，按各子闭包读取点判断 |
+| 15 | R43 | 根级配置/辅助闭包，按各子闭包读取点判断 |
+| 16 | R47 | 根级辅助闭包 |
+| 17 | R11 | 根级辅助值 |
+| 18 | R12 | 根级辅助值 |
+| 19 | R9 | 根级辅助值 |
+
+黑名单输入和按钮的具体映射：
+- root/43/12距离输入提示工厂：其8项捕获依次为本地通用输入弹窗闭包、root/43 UP[10]保存包装器、UP[11]通知包装器、UP[0]日志闭包、UP[12]路径函数、UP[13]文件名、局部黑名单启动闭包、局部按钮状态同步闭包。
+- root/43/19黑名单按钮回调：其6项捕获依次为UP[2]共享定时器状态表、UP[0]日志/通知辅助值（以实际闭包调用语义为准）、UP[1]功能状态表、UP[6]读取包装器、局部距离输入提示闭包、局部黑名单启动闭包。
+- root/43/18黑名单启动闭包：其5项捕获依次为UP[5]黑名单状态表、UP[6]读取包装器、UP[2]共享定时器状态表、UP[7]Schedule包装函数、UP[0]日志/格式化辅助函数。
+
+### 四、root/43内部真实创建顺序
+
+- PC236创建按钮状态同步闭包（root/43/6），随后保存在局部R15。
+- PC239创建黑名单启动定时器闭包（root/43/18），随后保存在局部R16。
+- PC248创建通用输入弹窗闭包（root/43/23），随后保存在局部R18。
+- PC250创建黑名单距离输入提示闭包（root/43/12），将R18及R49、R5、R4、R44、R42、R16、R15按已核实顺序捕获。
+- PC296-PC298创建并登记清空黑名单按钮回调buttonHandlers.clearblacklistbut。
+- PC299-PC306创建并登记黑名单按钮回调buttonHandlers.blacklistbut，捕获发生在R16已经被黑名单启动闭包覆盖之后。
+- PC340创建通用ButtonFactory；PC346之后遍历按钮配置组并创建按钮。
+- root/43结束前返回；该函数的入口只由根PC411注册到MainLeftBottom.doInit，不在模块加载阶段自行执行。
+
+### 五、当前唯一明文源码与VM的差异仍未修正
+
+当前BuildMainLeftBottomButtonGroups()仍包含与新版root/43 PC195-PC235不一致的配置（例如settingbut、stopallbut、buygoldbut、recyclebut、newzone等），而VM当前这三组配置的key集合为：
+- 第一组：yinguaibut、blacklistbut、clearblacklistbut、moneybut。
+- 第二组：shiqubut、diuqibut、xiaotuibut。
+- 第三组：空表。
+这项差异会影响按钮数量、位置和点击派发，后续恢复doInit时必须按VM配置修正，不能将其他版本/其他入口按钮混入。
+
+### 六、本轮结论与下一步
+
+已进一步确认根级R44/R48/R49以及root/43的入口注册和黑名单相关局部闭包创建顺序。也纠正了root R3对象身份：它是共享定时器状态表，不是MainLeftBottom模块表。当前黑名单按钮回调和距离输入工厂仍只是明文源码中的独立定义，尚未在唯一明文文件中构建完整的root/43初始化过程。
+
+下一步应审计root/43剩余捕获（尤其R8、R50、R51、R43、R47、R11、R12、R9）的实际子闭包使用点，并对照唯一明文文件已有工厂，规划一个完整的doInit初始化构建函数；同时先解决按钮配置数组与VM不一致问题。审计确认前不接线、不猜参数。
+
+本轮未修改11.9/MainLeftBottom_11.9_明文.lua、原始加密文件或旧版整合文件；未执行Lua编译、APK打包或游戏运行测试。
