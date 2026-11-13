@@ -746,3 +746,104 @@ local function MakeStopAllScriptButtonHandler(
         return true
     end
 end
+
+-- ============================================================
+--  8.4 内挂设置按钮业务（11.9新版 settingbut）
+-- ============================================================
+
+-- 对应新版内挂设置回调：根原型子函数池 child index 9，
+-- 零显式参数、195条有效指令。这里只恢复业务，不创建按钮、不做UI接线。
+--
+-- 注意：以下参数值以11.9新版VM指令为准，不沿用旧版Builtsetting的不同参数。
+local function Builtsetting_11_9()
+    -- PC1-PC13：仅当PKMODE元数据值为1时，向引擎请求模式1并显示原提示。
+    local pkMode = SL:GetMetaValue("PKMODE")
+    if pkMode == 1 then
+        SL:RequestChangePKMode(1)
+        ShowLocalNoticeByType("切换和平模式")
+    end
+
+    -- PC14-PC22：关闭背景音乐。
+    CHANGE_SETTING(27, {0})
+    ShowLocalNoticeByType("关闭背景音乐")
+
+    -- PC23-PC31：关闭游戏音乐。
+    CHANGE_SETTING(52, {0})
+    ShowLocalNoticeByType("关闭游戏音乐")
+
+    -- PC32-PC40：高帧率设置。新版字节码参数为{0}，提示文字为“开启高帧率”。
+    CHANGE_SETTING(1002, {0})
+    ShowLocalNoticeByType("开启高帧率")
+
+    -- PC41-PC49：人物简装。
+    CHANGE_SETTING(57, {0})
+    ShowLocalNoticeByType("开启人物简装")
+
+    -- PC50-PC58：怪物简装。
+    CHANGE_SETTING(58, {1})
+    ShowLocalNoticeByType("开启怪物简装")
+
+    -- PC59-PC67：关闭屏蔽特效。
+    CHANGE_SETTING(2002, {0})
+    ShowLocalNoticeByType("关闭屏蔽特效")
+
+    -- PC68-PC76：关闭屏蔽技能。
+    CHANGE_SETTING(3017, {0})
+    ShowLocalNoticeByType("关闭屏蔽技能")
+
+    -- PC77-PC85：关闭屏蔽怪物。
+    CHANGE_SETTING(2005, {0})
+    ShowLocalNoticeByType("关闭屏蔽怪物")
+
+    -- PC86-PC94：关闭显示称号设置。
+    CHANGE_SETTING(61, {0})
+    ShowLocalNoticeByType("关闭显示称号设置")
+
+    -- PC95-PC103：关闭Boss不简装设置。
+    CHANGE_SETTING(158, {0})
+    ShowLocalNoticeByType("关闭Boss不简装")
+
+    -- PC104-PC112：被玩家攻击时逃跑设置。
+    CHANGE_SETTING(3039, {3})
+    ShowLocalNoticeByType("被玩家攻击时逃跑")
+
+    -- PC113-PC122：开启6格范围内有怪时不走去拾取。
+    CHANGE_SETTING(3040, {1, 6})
+    ShowLocalNoticeByType("开启6格范围内有多少怪 不走去拾取")
+
+    -- PC123-PC138：查询随机传送石索引，并开启HP保护1（生命值低于50%）。
+    local randomTeleportItemIndex =
+        SL:GetMetaValue("ITEM_INDEX_BY_NAME", "随机传送石")
+
+    CHANGE_SETTING(3020, {1, 50})
+    ShowLocalNoticeByType("开启HP保护1(生命值低于50%)")
+
+    -- PC139-PC195：仅在随机传送石存在，且SETTING_RANK_DATA、
+    -- SETTING_CONFIG及SETTING_CONFIG.indexs均存在时，重建并回写优先级索引。
+    if randomTeleportItemIndex then
+        local rankData = SL:GetMetaValue("SETTING_RANK_DATA", 3020)
+        local settingConfig = SL:GetMetaValue("SETTING_CONFIG", 3020)
+
+        if rankData and settingConfig and settingConfig.indexs then
+            -- VM先把随机传送石索引放入新表，再扫描原indexs字符串。
+            local priorityIndexes = { randomTeleportItemIndex }
+            local splitIndexes = string.split(settingConfig.indexs, "#")
+
+            for _, indexText in ipairs(splitIndexes) do
+                local itemIndex = tonumber(indexText)
+
+                -- 按VM原条件，仅把与随机传送石索引相等的数字项追加。
+                -- 不擅自去重，保持原始字节码行为。
+                if itemIndex and itemIndex == randomTeleportItemIndex then
+                    table.insert(priorityIndexes, itemIndex)
+                end
+            end
+
+            rankData.indexs = priorityIndexes
+            SL:SetMetaValue("SETTING_RANK_DATA", 3020, rankData)
+            ShowLocalNoticeByType(
+                "HP保护1物品优先级:" .. "随机传送石"
+            )
+        end
+    end
+end
