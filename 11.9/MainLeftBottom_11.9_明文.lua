@@ -1873,11 +1873,9 @@ local function CreateMainLeftBottomButtons(
 end
 
 
--- 将proto48中相隔的两个执行阶段保留为两个独立动作：
---   registerCallback(callbackMap)：对应PC272-PC277；
---   createButtons(uiParent, callbackMap)：对应PC346-PC384三组按钮数组遍历，
---   其中buygoldbut会在第二组V13的第1项位置自动走通用ButtonFactory。
--- doInit恢复时应在PC266后调用registerCallback，并在完成其他回调登记后调用createButtons。
+-- 购买金条按钮的独立初始化片段（当前新版root/43三组按钮配置中没有buygoldbut）。
+-- 该片段没有真实调用点；保留业务登记与按钮创建能力，但不能将它并入root/43三组原始按钮数组。
+-- createButtons参数沿用通用ButtonFactory的真实布局输入：uiParent、baseX、baseY、callbackMap。
 local function MakeBuyGoldButtonInitFragment(
     visibleItems,
     timerState,
@@ -1896,9 +1894,11 @@ local function MakeBuyGoldButtonInitFragment(
             )
         end,
 
-        createButtons = function(uiParent, callbackMap)
+        createButtons = function(uiParent, baseX, baseY, callbackMap)
             return CreateMainLeftBottomButtons(
                 uiParent,
+                baseX,
+                baseY,
                 visibleItems,
                 callbackMap
             )
