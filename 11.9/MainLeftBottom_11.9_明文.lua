@@ -37,6 +37,37 @@ local function GetMapId()
     return SL:GetMetaValue("MAP_ID") or 0
 end
 
+-- 新版root.children[22] / VM路径root/23：常量名为GetMapData2DPtr。
+-- 注意：可达PC1-PC37实际是五参数切比雪夫距离计算器，不是地图数据读取器。
+-- PC38-PC144中的sceneManager/getMapDataRows/getMapDataCols/isObstacle代码
+-- 位于PC37无条件return之后，属于不可达尾部，绝不能作为障碍物读取实现。
+-- 父级root PC350以一个捕获值创建该闭包；该捕获值在活动路径不读取。
+local function MakeGetMapData2DPtr(unusedCapturedValue)
+    return function(x1, y1, x2, y2, maxDistance)
+        if not x1 or not y1 or not x2 or not y2 or not maxDistance then
+            return nil
+        end
+
+        if x1 == x2 and y1 == y2 then
+            return 0.0
+        end
+
+        if maxDistance <= 0 then
+            return nil
+        end
+
+        local dx = math.abs(x2 - x1)
+        local dy = math.abs(y2 - y1)
+        local distance = math.max(dx, dy)
+
+        if maxDistance < distance then
+            return nil
+        end
+
+        return distance
+    end
+end
+
 -- 新版root子原型34：地图名称读取包装函数（9条指令）。
 -- 常量包含SL、GetMetaValue、MAP_NAME；按框架文档使用SL冒号调用。
 local function GetMapName()
