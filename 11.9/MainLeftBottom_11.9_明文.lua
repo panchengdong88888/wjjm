@@ -2363,16 +2363,13 @@ local function RecycleEquipmentButtonHandler()
 end
 
 -- ============================================================
---  V10001 按钮业务（11.9新版 moneybut）
+--  快速小退按钮业务（11.9新版 xiaotuibut）
 -- ============================================================
 
--- doInit中moneybut对应的点击闭包为root.children[37].children[14]。
--- 原始5条指令依次执行：
---   global.gameWorldController
---   取其OnGameLeaveWorld方法（SELF调用形式）
---   以控制器对象作为self调用，0个显式参数
---   return
--- 按VM的SELF + CALL语义还原为Lua冒号调用。
+-- root/43/5在PC336创建，PC337登记到callbackMap.xiaotuibut。
+-- 原始5条指令依次执行global.gameWorldController:OnGameLeaveWorld()。
+-- 注意：moneybut对应的是root/43/4资源统计窗口处理器，不是本函数；该复杂窗口
+-- 尚待恢复，不能把V10001ButtonHandler错误登记到moneybut。
 local function V10001ButtonHandler()
     global.gameWorldController:OnGameLeaveWorld()
 end
@@ -2381,9 +2378,9 @@ end
 --  8.3 停止脚本按钮业务（11.9新版 stopallbut）
 -- ============================================================
 
--- 对应proto48 child index 9：按key同步已有按钮的toggle状态。
+-- root/43/6：按key同步第一组已有按钮的toggle状态。
 -- 此函数只更新已有按钮状态/标题/颜色，不创建按钮、不绑定点击事件。
--- root/43/6：按钮状态同步闭包只捕获第一组配置表和MainLeftBottom.b控件表。
+-- 闭包只捕获第一组配置表和MainLeftBottom.b控件表。
 -- 它按key在第一组配置中查找，更新toggled，并同步对应按钮标题和颜色。
 local function MakeMainLeftBottomToggleStateSync(firstGroup, visibleItems)
     return function(buttonKey, toggled)
@@ -2404,6 +2401,23 @@ local function MakeMainLeftBottomToggleStateSync(firstGroup, visibleItems)
                 end
                 return
             end
+        end
+    end
+end
+
+-- root/43/16：独立“隐 藏”按钮点击闭包。
+-- 捕获MainLeftBottom.a容器对象和PrintLog；根据容器isHidden状态切换hide/show，
+-- 并将hidebut自身透明度设为0或255。
+local function MakeHideButtonHandler(mainLeftBottomA, printLog)
+    return function()
+        if mainLeftBottomA.isHidden then
+            printLog("显示所有按钮")
+            mainLeftBottomA:show()
+            GUI:setOpacity(mainLeftBottomA.hidebut, 255)
+        else
+            printLog("隐藏所有按钮")
+            mainLeftBottomA:hide()
+            GUI:setOpacity(mainLeftBottomA.hidebut, 0)
         end
     end
 end
