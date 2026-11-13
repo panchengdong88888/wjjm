@@ -329,6 +329,40 @@
 - 源码content SHA：`ba624db0ddcda36aed1a5f4d01021197897fb491`
 - 后续校正：MakeDeathAutoBlacklist捕获顺序按root PC363修正为blacklistState、PrintLog、FindBlacklistPlayer、ShowLocalNoticeByType。
 
+### BlacklistItems伤害消息回调与根闭包装配工厂（2026-11-13）
+
+本轮继续恢复PC350-PC382前置依赖，并补齐此前遗漏的`onDamageMsg`回调。
+
+#### 新增恢复函数
+
+- `MakeOnDamageMsg(blacklistState)`：对应VM原型`root/53`，UP[0]捕获共享blacklistState。首参数为JSON文本；拒绝空输入；以`pcall(SL.JsonDecode)`保护解析并要求结果为table；校验主玩家ID、UserID和AttackUserID；根据`ACTOR_IS_HERO`门控查询`ACTOR_MASTER_ID`并在有效时替换攻击者ID；读取攻击者名称，拒绝空名称和包含“分身”的名称；最终仅写入`blacklistState.lastAttacker={id=...,name=...}`，不直接请求加入黑名单。
+- `MakeBlacklistRootBindings(...)`：按PC350-PC382顺序组装这组闭包，并把伤害回调挂入传入的`MainLeftBottom.a.onDamageMsg`，最后将`BlacklistItems`写入传入的当前chunk环境表。
+
+#### 根级闭包创建/捕获顺序
+
+1. PC350：创建`GetMapData2DPtr`距离工厂，捕获一个活动路径未使用的值。
+2. PC352：创建无捕获`PCallHelper_2`。
+3. PC353-PC354：创建`FindBlacklistPlayer`，UP[0]捕获PCallHelper_2。
+4. PC355-PC356：创建`UseItemByIndex`，UP[0]捕获随机传送物品名表。
+5. PC357-PC359：创建`onDamageMsg`，UP[0]捕获blacklistState，并写入`MainLeftBottom.a.onDamageMsg`。
+6. PC360-PC362：创建`InstallDamageHook`，UP[0]=MainLeftBottom.a，UP[1]=PrintLog；它安装包装器，包装器pcall调用`a.onDamageMsg(arg1,arg2)`后再转发原始处理器返回值。
+7. PC363-PC367：创建`DeathAutoBlacklist`，捕获顺序为blacklistState、PrintLog、FindBlacklistPlayer、ShowLocalNoticeByType。
+8. PC368-PC381：创建`BlacklistItems`，按13项upvalue顺序注入。
+9. PC382：写入当前chunk ENV的`BlacklistItems`全局字段。
+
+#### 当前边界
+
+- `MakeOnDamageMsg`与`MakeBlacklistRootBindings`已写入唯一明文源码。
+- 根级创建顺序和捕获参数已经在装配工厂中按PC顺序排列；T[0]/T[2]/T[4]/T[5]/T[37]-T[41]/T[53]等共享对象必须由完整root初始化提供，不能在该工厂中重复创建。
+- **装配工厂目前尚未由完整root初始化调用**，因此本轮不能声称运行时全局`BlacklistItems`已经实际导出。下一步要把它接入root模块初始化，并复核T[37]随机传送物品名表、T[41]共享状态表以及当前chunk ENV的真实身份。
+- `ClearBlacklistItems`是PC383-PC388的独立导出，尚未接入本装配工厂。
+- 未改旧版文件；未运行Lua编译、APK打包或游戏测试。
+
+#### 本轮源码提交
+
+- 提交：`9da716ba07f5195e75a81c3db25803558db81e8b`
+- 源码content SHA：`f40fcd2a1435725566e1c4c69383412ad4901660`
+
 ### 后续恢复顺序
 
 - 下一项优先恢复黑名单玩家检测闭包（新版root/48，根级导出名 `BlacklistItems`），它在PC134调用 `MakeGetMapData2DPtr` 作为距离计算器；需要按13项捕获顺序逐一映射后再写入主明文，不可只凭函数名猜测。
