@@ -2167,7 +2167,7 @@ local function BlacklistPlayerDetection()
                         blacklistState.nextTryAt = now + blacklistShortRetryDelay
                         blacklistState.noStoneWarned = false
 
-                        ShowLocalNotice(string.format(
+                        ShowLocalNoticeByType(string.format(
                             "黑名单玩家：%s（%d格），飞随机",
                             actorName,
                             distance or 0.0
@@ -2184,7 +2184,7 @@ local function BlacklistPlayerDetection()
 
                         if not blacklistState.noStoneWarned then
                             blacklistState.noStoneWarned = true
-                            ShowLocalNotice("没有随机传送石，黑名单玩家传送暂停")
+                            ShowLocalNoticeByType("没有随机传送石，黑名单玩家传送暂停")
                             PrintLog(
                                 "没有可用的随机传送道具（%s）",
                                 table.concat(randomTeleportItemNames, "/")
@@ -3269,7 +3269,7 @@ local function MakeNewZoneItemTimerCallback()
         end
         PrintLog("新区物品已全部使用完毕，停止定时器")
         SL:ShowSystemTips("新区物品已全部使用完毕")
-        Gbtc()
+        if type(Gbtc) == "function" then Gbtc() end
     end
 end
 
@@ -3278,7 +3278,7 @@ local function MakeNewZoneButtonHandler()
         PrintLog("开启新区功能")
         MainLeftBottom.isNewzone = true
         Send11_9ProtocolMessage(9002, 22302, 1, 2, 3, "", 0)
-        Gbtc()
+        if type(Gbtc) == "function" then Gbtc() end
         SL:ScheduleOnce(SendNewZoneDelayedCommand, 0.5)
         if timerState.newzoneTimer then
             SL:UnSchedule(timerState.newzoneTimer)
