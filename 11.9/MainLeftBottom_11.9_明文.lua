@@ -2763,9 +2763,8 @@ local function MakeResourceStatisticsRows(listView, cellWidth)
     return function(resourceNames, layoutOption, rowType)
         local rowTextByName = {}
         local gui = GUI
-        local cellNameSuffix = math.ceil(15)
-
         for groupStart = 1, #resourceNames, layoutOption do
+            local cellNameSuffix = math.ceil(groupStart / layoutOption)
             local cellName = rowType .. "_cell_" .. cellNameSuffix
             local cellLayout = gui:Layout_Create(
                 listView, cellName, 0, 0, cellWidth, 35, 1
@@ -2776,7 +2775,7 @@ local function MakeResourceStatisticsRows(listView, cellWidth)
                 local resourceName = resourceNames[resourceIndex]
 
                 if resourceName then
-                    local textName = "2_text_0.5_" .. columnIndex
+                    local textName = rowType .. "_text_" .. cellNameSuffix .. "_" .. columnIndex
                     local textX = cellWidth * (columnIndex - 0.5) / layoutOption
                     local textNode = gui:Text_Create(
                         cellLayout, textName, textX, 15, 30,
