@@ -1966,3 +1966,54 @@ root/43的upvalue按0-based索引为：
 下一步应审计root/43剩余捕获（尤其R8、R50、R51、R43、R47、R11、R12、R9）的实际子闭包使用点，并对照唯一明文文件已有工厂，规划一个完整的doInit初始化构建函数；同时先解决按钮配置数组与VM不一致问题。审计确认前不接线、不猜参数。
 
 本轮未修改11.9/MainLeftBottom_11.9_明文.lua、原始加密文件或旧版整合文件；未执行Lua编译、APK打包或游戏运行测试。
+
+
+## 2026-11-13续：root/43剩余捕获值用途审计完成（含奖励参数纠错）
+
+本轮继续沿根函数最终捕获寄存器、root/43捕获点和子闭包实际读取行为交叉核对。只读审计，未修改唯一明文源码。
+
+### 一、剩余捕获值映射
+
+- root/43 UP[8] = 根R8：引怪配置表。根PC86新建，PC87-PC89写入`GATHER_THRESHOLD=10`、`CHECK_INTERVAL=0.5`、`ATTACK_WAIT_TIME=1.0`。root/43/8捕获它并读写`GATHER_THRESHOLD`。
+- root/43 UP[9] = 根R50：读取`gather_monster_count.txt`的专用包装闭包。根PC310创建root/34，捕获通用读取包装器R45和文件名R43；root/34转交固定文件名和调用参数。
+- root/43 UP[14] = 根R51：保存`gather_monster_count.txt`的专用包装闭包。根PC313创建root/55，捕获通用保存包装器R46和文件名R43。
+- root/43 UP[15] = 根R43：固定文件名`gather_monster_count.txt`。
+- root/43 UP[16] = 根R47：安全删除文件包装闭包。根PC302创建root/1并捕获R44可写路径函数；root/1检查文件存在后，通过pcall调用嵌套root/1/1的`cc.FileUtils:getInstance():removeFile(path)`。
+
+黑名单距离配置和引怪阈值配置是两套不同文件链：
+- 黑名单：R48读取、R49保存、R47删除，文件名R42=`blacklist_distance.txt`。
+- 引怪阈值：R50读取、R51保存、R47删除，文件名R43=`gather_monster_count.txt`。
+
+### 二、奖励按钮参数映射与旧笔记纠错
+
+根PC92-PC95计算：
+- R9 = `0.2`（奖励调度周期）。
+- R11 = `math.floor(3600 / 0.2)` = `18000`。
+- R12 = 奖励表（PC96之后建立并填充）。
+
+root/43 UP[17]、UP[18]、UP[19]分别捕获R11、R12、R9。root/43 PC289创建奖励按钮处理器root/43/2，捕获顺序为：
+- child UP[0] = root/43 UP[2]：共享定时器状态表。
+- child UP[1] = root/43 UP[0]：PrintLog。
+- child UP[2] = root/43 UP[17]：18000模数。
+- child UP[3] = root/43 UP[18]：奖励表。
+- child UP[4] = root/43 UP[19]：0.2秒调度周期。
+
+其嵌套回调root/43/2/1明确按`(counter - 1) % modulus + 1`取奖励表项。因此**新版奖励序列模数应为18000，而不是此前笔记中的300**。另外，奖励按钮开关的文字输出闭包捕获的是PrintLog，不应未经核对称为ShowLocalNoticeByType。
+
+此前已写入明文源码的`rewardSequenceModulus = 300`与新版根级捕获值不一致；后续修复该常量，并核对奖励按钮工厂参数名/通知方式，再接入真实doInit。当前本轮没有擅自改动奖励源码。
+
+### 三、对应子闭包用途
+
+- root/43/8：使用引怪配置表和R50读取已保存阈值；没有有效阈值时走输入提示。
+- root/43/15及root/43/15/1：使用R51和R43保存输入的引怪阈值；成功后记录日志并将`yinguaibut`状态设为开启。
+- root/43/3：使用R47和R43删除`gather_monster_count.txt`。
+- root/43/21：使用R47和R42删除`blacklist_distance.txt`。
+- root/43/2：使用共享定时器状态表、PrintLog、模数18000、奖励表和0.2秒周期。
+
+### 四、根级20项捕获身份现状
+
+root/43的20项捕获现已全部映射到对象或具体用途：R4日志、R2功能状态表、R3共享定时器表、R0模块a表、R1模块b控件表、R41黑名单状态表、R48/R49黑名单读写、R7 Schedule包装器、R8引怪配置表、R50/R51引怪阈值读写、R49等已映射的文件名和通知/路径函数、R47安全删除、R11奖励模数、R12奖励表、R9奖励周期。
+
+接下来不再停留在根级捕获身份分析，转入root/43初始化函数装配：先对照当前唯一明文源码修正奖励模数与参数语义，再按VM PC195-PC235准确恢复按钮配置表，最后按PC236起的闭包创建顺序构建真实`MainLeftBottom.doInit`。黑名单距离提示、读取、保存、启动检测、清空和ButtonFactory回调必须按已核实的局部闭包关系接入，不得另造平行初始化路径。
+
+本轮未修改`11.9/MainLeftBottom_11.9_明文.lua`、原始加密文件或旧版整合文件；未进行Lua编译、APK打包或游戏运行测试。
