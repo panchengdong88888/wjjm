@@ -2056,3 +2056,24 @@ root/43的20项捕获现已全部映射到对象或具体用途：R4日志、R2�
 ### 下一步
 
 继续按root/43真实PC顺序补齐doInit装配函数：先核对PC236-PC340之间各按钮回调注册与清空配置处理器，之后核对PC340-PC419的父容器、按钮映射、ButtonFactory调用和最终返回/挂接行为。黑名单两个按钮的handler必须在buttonFactory遍历前按key登记；通用按钮工厂保持原样。
+
+
+### 2026-11-13追加：黑名单距离保存参数纠错与清空存档回调补齐
+
+本轮继续核对root/43/12/1保存回调、root/33文件名包装器和root/1删除包装器，发现此前`MakeBlacklistDistancePrompt`的参数调用有一处错误，现已修正：
+
+- R49（root/33）已经捕获固定文件名`blacklist_distance.txt`，其调用方式是`R49(distance)`，不是`R49(fileName, distance)`。已将保存调用改为`saveConfig(distance)`。
+- R44路径函数接收路径片段并拼接到可写目录；失败日志中的路径应由`getWritablePath(fileName)`生成，不能只调用无参`getWritablePath()`。已修正。
+- `MakeBlacklistTimer`与`MakeBlacklistButtonHandler`捕获的是PrintLog（root/43 UP[0]），参数命名和对应调用已改为`printLog`，不再误标成通知函数。
+- `MakeClearBlacklistButtonHandler`同样捕获PrintLog，已将“清空黑名单”改为日志输出语义；随后仍从当前chunk环境读取并调用`ClearBlacklistItems`。
+- 新增`MakeClearMonsterThresholdButtonHandler(deleteConfig, fileName, notify, printLog)`，按root/43/3恢复清空`gather_monster_count.txt`的成功/失败通知和日志。
+- 新增`MakeClearBlacklistDistanceButtonHandler(deleteConfig, fileName, notify, printLog)`，按root/43/21恢复清空`blacklist_distance.txt`的成功/失败通知和日志。
+
+唯一明文源码提交：`7d578a95cd93a7d3542d11b7e8523838f2bce065`。
+唯一明文源码content SHA：`ddbad852076751047a3d5497bd402be52676adff`。
+
+静态检查已确认：保存只传distance、路径函数带filename、黑名单按钮/启动/清空黑名单回调的日志参数为PrintLog、两个配置清空工厂均存在、奖励模数为18000、按钮配置包含`cleardistancebut`。未做Lua编译、APK打包或游戏运行测试。
+
+### 当前黑名单UI接线状态
+
+上述工厂现已恢复/修正定义，但尚未组装进真实`MainLeftBottom.doInit`。还需按VM PC236-PC340的局部寄存器生命周期，将按钮状态同步闭包、黑名单启动闭包、通用输入包装器、距离提示闭包、黑名单按钮回调、清空黑名单回调、清空距离回调及其他按钮回调按原始顺序实例化并登记到callbackMap。不能因为工厂已存在就宣称按钮已可用。
