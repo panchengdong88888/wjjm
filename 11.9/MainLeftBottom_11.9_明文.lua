@@ -60,11 +60,12 @@
 -- 其余状态机保留IDLE/GATHERING/ATTACKING、归属等待、目标游标和复位流程。
 --
 -- 本节只恢复业务函数，不创建按钮、不接UI、不修改旧版源码。
--- 新版root PC42通过opcode 47明确创建寄存器3的空表；
+-- 新版root PC42通过opcode 47明确创建寄存器3的空表，即MainLeftBottom共享定时器状态表。
 -- InitGatherMonsters（root.children[23]）与StopGatherMonsters（root.children[41]）
--- 的闭包捕获列表均包含该寄存器3，并分别读写其gatherTimer字段。
--- 因此本表就是这两个函数共享的根作用域定时器表，不是各自独立的局部表。
--- 完整root入口装配时，其他定时器字段也必须并入这同一张表。
+-- 捕获该寄存器并读写gatherTimer；root destroy闭包（root.children[2]）也捕获同一寄存器，
+-- 并按原始顺序清理rewardTimer、cruiseTimer、newzoneTimer、buygoldTimer。
+-- 新区与购买金条业务同样通过该状态表读写各自定时器字段。
+-- 因此这些功能必须共用本表，不能在各业务模块另建互不关联的定时器表。
 
 local timerState = {}
 
