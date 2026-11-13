@@ -783,6 +783,61 @@ end
 
 -- root/6：InstallDamageHook，UP[0]=MainLeftBottom.a状态表，UP[1]=PrintLog。
 -- 挂接后包装原始伤害消息处理器；先pcall调用a.onDamageMsg，再原样返回原处理器结果。
+-- root/53：onDamageMsg，UP[0]=blacklistState，入口首参数为JSON文本。
+-- 该回调只记录最近一次有效攻击者；真正加入黑名单由DeathAutoBlacklist处理。
+local function MakeOnDamageMsg(blacklistState)
+    return function(jsonText)
+        if not jsonText or jsonText == "" then
+            return
+        end
+
+        local function Nested_JsonDecode()
+            return SL.JsonDecode(jsonText)
+        end
+
+        local decodeOK, decoded = pcall(Nested_JsonDecode)
+        if not decodeOK or type(decoded) ~= "table" then
+            return
+        end
+
+        local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
+        if not mainActorID then
+            return
+        end
+
+        local userID = decoded.UserID
+        if userID == mainActorID then
+            return
+        end
+
+        local attackerID = decoded.AttackUserID
+        if not attackerID or attackerID == userID then
+            return
+        end
+
+        if SL:GetMetaValue("ACTOR_IS_HERO", attackerID) then
+            local masterActorID = SL:GetMetaValue("ACTOR_MASTER_ID", attackerID)
+            if masterActorID then
+                attackerID = masterActorID
+            end
+        end
+
+        local attackerName = SL:GetMetaValue("ACTOR_NAME", attackerID)
+        if not attackerName or attackerName == "" then
+            return
+        end
+
+        if string.find(attackerName, "分身", 1, true) then
+            return
+        end
+
+        blacklistState.lastAttacker = {
+            id = attackerID,
+            name = attackerName
+        }
+    end
+end
+
 local function MakeInstallDamageHook(mainLeftBottomState, printLog)
     return function()
         local gameMapController = global.gameMapController
