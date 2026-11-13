@@ -890,6 +890,38 @@ local function MakeClearBlacklistItems(PCallHelper, printLog, showLocalNotice, b
     end
 end
 
+-- root/43/18：黑名单定时器启动工厂。
+-- UP[0]=距离配置表、UP[1]=距离读取函数、UP[2]=timerState、
+-- UP[3]=定时调度函数、UP[4]=格式化通知函数。
+local function MakeBlacklistTimer(
+    distanceConfig,
+    readBlacklistDistance,
+    timerState,
+    schedule,
+    notify
+)
+    return function(distance)
+        if not distance then
+            distance = readBlacklistDistance()
+        end
+
+        distanceConfig.distance = distance
+        if not distanceConfig.distance then
+            return false
+        end
+
+        local currentEnvironment = getfenv(1)
+        local blacklistItems = currentEnvironment.BlacklistItems
+        blacklistItems()
+
+        local timerHandle = schedule(blacklistItems, 0.1)
+        timerState.blacklistTimer = timerHandle
+
+        notify("开启黑名单功能，距离格子：%d", distanceConfig.distance)
+        return true
+    end
+end
+
 -- root/43/19：黑名单按钮点击回调。
 -- UP[0]=timerState、UP[1]=notify、UP[2]=MainLeftBottom.z、
 -- UP[3]=读取blacklist_distance.txt、UP[4]=距离输入提示包装器、
