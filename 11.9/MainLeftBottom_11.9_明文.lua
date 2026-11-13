@@ -1431,6 +1431,84 @@ local function MakeNewZoneButtonHandler(
 end
 
 -- ============================================================
+--  8.2 奖励功能按钮业务（11.9新版 rewardbut）
+-- ============================================================
+
+-- 根函数PC90-PC96：奖励回调间隔为0.2秒，轮询取模范围为300。
+-- PC97-PC167构造14条三元素奖励记录；字段按原始VM顺序保留，
+-- 不对消息ID和末尾数字擅自赋予协议含义。
+local rewardScheduleInterval = 0.2
+local rewardSequenceModulus = 300
+
+local loginAndOnlineRewardEntries = {
+    { 56061, "累计登录 1 天", 18 },
+    { 56061, "累计登录 2 天", 18 },
+    { 56061, "累计登录 3 天", 18 },
+    { 56061, "累计登录 4 天", 18 },
+    { 56061, "累计登录 5 天", 18 },
+    { 56061, "累计登录 6 天", 18 },
+    { 56061, "累计登录 7 天", 18 },
+    { 56011, "在线时长5分钟", 19 },
+    { 56011, "在线时长10分钟", 20 },
+    { 56011, "在线时长20分钟", 20 },
+    { 56011, "在线时长30分钟", 20 },
+    { 56011, "在线时长60分钟", 20 },
+    { 56011, "在线时长90分钟", 20 },
+    { 56011, "在线时长120分钟", 21 }
+}
+
+-- 对应奖励周期回调子原型（22条指令）。
+-- 闭包计数器每次调度递增，按((counter - 1) % 300) + 1循环查找奖励表。
+-- 当前槽位没有记录时不发送消息；有记录时按VM实参顺序调用全局LuaSendMsg。
+local function MakeRewardTimerCallback(initialCounter, modulus, rewardEntries)
+    local counter = initialCounter
+
+    return function()
+        counter = counter + 1
+
+        local entryIndex = ((counter - 1) % modulus) + 1
+        local entry = rewardEntries[entryIndex]
+
+        if entry then
+            LuaSendMsg(
+                9002,
+                entry[1],
+                1,
+                2,
+                3,
+                entry[2],
+                entry[3]
+            )
+        end
+    end
+end
+
+-- 对应新版奖励按钮处理器（33条指令）。
+-- 捕获顺序：timerState、ShowLocalNoticeByType包装函数、取模基数、
+-- 奖励记录表、Schedule周期。已有rewardTimer时取消；否则启动0.2秒轮询。
+local function MakeRewardButtonHandler(
+    timerState,
+    showLocalNotice,
+    modulus,
+    rewardEntries,
+    scheduleInterval
+)
+    return function()
+        if timerState.rewardTimer then
+            showLocalNotice("关闭奖励功能")
+            SL:UnSchedule(timerState.rewardTimer)
+            timerState.rewardTimer = nil
+            return true
+        end
+
+        showLocalNotice("开启奖励功能")
+        local callback = MakeRewardTimerCallback(0, modulus, rewardEntries)
+        timerState.rewardTimer = SL:Schedule(callback, scheduleInterval)
+        return true
+    end
+end
+
+-- ============================================================
 --  8.3 回收装备按钮业务（11.9新版 recyclebut）
 -- ============================================================
 
