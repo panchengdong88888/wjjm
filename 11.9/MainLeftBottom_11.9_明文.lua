@@ -968,7 +968,7 @@ local function MakeCommonInputPrompt(printLog)
             end
 
             local editStr = ""
-            if result then
+            if result and result.editStr then
                 editStr = result.editStr
             end
 
