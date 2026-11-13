@@ -1450,3 +1450,15 @@ root PC390创建闭包，PC391-PC410依次捕获：
 - 源码提交：`035eb9456af7b76b5c1bb1d1d4e7568d61428a68`；新content SHA：`a08111a8fe3cb43a868a2f92618a9d2bce5df8c0`。
 - 未进行Lua编译、APK打包或游戏运行测试。
 - 下一步：继续从新版原始VM的`doInit`原型核对黑名单按钮工厂创建、捕获和callbackMap登记，先确认各捕获源，再决定如何接入现有明文框架；不要假定根装配工厂已被实际调用。
+
+
+### 2026-11-13：黑名单UI回调父级捕获槽位与按钮登记点核对
+
+- 重新读取仓库中的 MainLeftBottom_vm_disassembly_corrected_phase3.txt 及doInit_UI子原型审计记录，按当前反汇编记录的父函数 root/43 及其子原型路径核对（不要把这套反汇编路径与另一解析器的0-based root.children[n]路径混用）。
+- 黑名单启动定时器工厂对应child17（root/43/18，28条指令，5项捕获），父级创建点PC239；PC240-PC244捕获顺序为父函数upvalue [5,6,2,7,0]。该闭包在UI父函数中登记到黑名单相关按钮处理器之前创建。
+- 黑名单按钮点击处理器对应child18（root/43/19，39条指令，6项捕获），父级创建点PC299；PC300-PC303依次捕获父函数upvalue [2,0,1,6]，PC304-PC305捕获当前局部寄存器R[19]与R[16]。PC306将闭包登记为buttonHandlers.blacklistbut。
+- 清空黑名单按钮回调对应child13（root/43/14，6条指令，1项捕获），父级创建点PC296；PC297捕获父函数upvalue [0]，PC298登记为buttonHandlers.clearblacklistbut。
+- 两个按钮配置对象分别在父函数PC200附近（blacklistbut）和PC204附近（clearblacklistbut）建立；实际buttonHandlers登记发生在PC296-PC306。该链路确认了按钮key与对应闭包的对应关系。
+- 重要区分：child17的五个捕获槽是父函数upvalue [5,6,2,7,0]，child18除四个父upvalue外还捕获两个当前局部值R[19]、R[16]；不能把child18简单写成只捕获六个父upvalue，也不能把它的局部捕获误当成全局函数。
+- 本轮尚未把父函数upvalue [0,1,2,5,6,7]逐一映射回新版根模块中的真实对象身份，因此不改唯一明文源码、不实例化这些闭包。需继续从创建父函数闭包的上级捕获描述及这些upvalue在本函数内的读写点反向确认真实对象。
+- 本轮仅更新接续审计记录；未修改新版原始加密文件、唯一明文源码、旧版整合文件。未进行Lua编译、APK打包或游戏运行测试。
