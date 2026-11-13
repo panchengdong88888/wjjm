@@ -829,7 +829,7 @@ local function MakeInstallDamageHook(mainLeftBottomState, printLog)
 end
 
 -- root/26：DeathAutoBlacklist，使用共享blacklistState及黑名单查询闭包。
-local function MakeDeathAutoBlacklist(blacklistState, printLog, showLocalNotice, findBlacklistPlayer)
+local function MakeDeathAutoBlacklist(blacklistState, printLog, findBlacklistPlayer, showLocalNotice)
     return function()
         local lastAttacker = blacklistState.lastAttacker
         blacklistState.lastAttacker = nil
