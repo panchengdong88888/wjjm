@@ -454,6 +454,48 @@ root PC390创建闭包，PC391-PC410依次捕获：
 - 明文源码提交：`9749222b464101f9e31271f0b5d38cc5e2725906`
 - 明文源码content SHA：`4b4ab866696048d9ad2e2c588665111c7dd19800`
 
+### 黑名单按钮捕获关系二次核对与距离输入回调（2026-11-13）
+
+本轮重新按`root/43`的闭包创建指令与opcode325/387捕获来源核对，明确了按钮handler的实际捕获来源；之前文档只列局部寄存器编号，现补充可确认的父级来源。
+
+#### 黑名单定时器启动工厂 root/43/18
+
+- 创建点PC239，捕获顺序为PC240-PC244：`doInit UP[5], doInit UP[6], doInit UP[2], doInit UP[7], doInit UP[0]`。
+- 按doInit的20项捕获映射：
+  - UP[0] = doInit UP[5] = root T[41]：共享blacklistState，内含`distance`字段。
+  - UP[1] = doInit UP[6] = root T[48]：读取`blacklist_distance.txt`数值的函数。
+  - UP[2] = doInit UP[2] = root T[3]：共享timerState。
+  - UP[3] = doInit UP[7] = root T[7]：定时调度函数。
+  - UP[4] = doInit UP[0] = root T[4]：PrintLog。
+- 这与已写入的`MakeBlacklistTimer(distanceConfig, readBlacklistDistance, timerState, schedule, notify)`参数顺序一致。VM主体在无显式距离参数时调用距离读取函数，将结果写入共享blacklistState.distance；随后直接调用ENV.BlacklistItems一次，再按0.1秒调度并写入timerState.blacklistTimer，最后用PrintLog格式化输出距离。
+
+#### 黑名单按钮点击回调 root/43/19
+
+- 创建点PC299，捕获顺序为PC300-PC305：`doInit UP[2], doInit UP[0], doInit UP[1], doInit UP[6], doInit局部R[19], doInit局部R[16]`。
+- 映射为：
+  - UP[0] = timerState（root T[3]）。
+  - UP[1] = PrintLog（root T[4]）。
+  - UP[2] = MainLeftBottom.z功能状态表（root T[2]）。
+  - UP[3] = 读取blacklist_distance.txt的函数（root T[48]）。
+  - UP[4] = doInit局部R[19]，PC250创建的黑名单距离输入提示函数（root/43/12闭包）。
+  - UP[5] = doInit局部R[16]，PC239创建的黑名单定时器启动函数（root/43/18闭包）。
+- 因此`MakeBlacklistButtonHandler`当前参数顺序是匹配的；其中`notify`实际对应PrintLog，而不是ShowLocalNoticeByType。
+- PC298设置的是`clearblacklistbut`回调；PC299随后创建的才是`blacklistbut`回调。PC307创建的root/43/9是下一项`storagebut`回调，不是黑名单按钮，不能混淆。
+
+#### 黑名单距离输入提示函数 root/43/12
+
+- PC250创建root/43/12闭包，捕获8项：PC251局部R[18]；PC252-PC256依次捕获doInit UP[10], UP[11], UP[0], UP[12], UP[13]；PC257-PC258再捕获局部R[16], R[15]。
+- 已确认的父级来源分别为：写入blacklist_distance配置函数、ShowLocalNoticeByType、PrintLog、GetWritablePath、文件名`blacklist_distance.txt`，以及两个doInit局部回调。
+- root/43/12自身常量是“请输入黑名单的距离格子（数字，按线路计算）”，并创建子回调root/43/12/1。该子回调先调用捕获的配置/转换函数处理输入；失败时通知并记录路径信息；成功时通知“黑名单距离已保存”并记录日志，随后调用另一个捕获函数保存输入值，最后调用捕获的UI更新回调，将`blacklistbut`状态设为true。
+- 子回调各捕获值的最终语义与返回值仍需逐条核对，尤其是两个配置函数的职责、路径格式化参数以及UI更新回调的准确签名。本轮没有将其臆写成完整源码，也没有改动已有handler主体。
+
+#### 当前源码/接线状态
+
+- `MakeBlacklistTimer`、`MakeBlacklistButtonHandler`、`MakeClearBlacklistButtonHandler`仍只有工厂定义，尚未由完整doInit主体实例化。
+- 黑名单距离输入提示函数`MakeBlacklistDistancePrompt`及其子回调尚未恢复。
+- PC298-PC307的黑名单按钮配置顺序已确认，但还没有写入doInit的完整明文主体。
+- 本轮只更新接续文档，没有修改唯一明文源码；未改旧版文件，未进行Lua编译或游戏测试。
+
 ### 后续恢复顺序
 
 - 下一项优先恢复黑名单玩家检测闭包（新版root/48，根级导出名 `BlacklistItems`），它在PC134调用 `MakeGetMapData2DPtr` 作为距离计算器；需要按13项捕获顺序逐一映射后再写入主明文，不可只凭函数名猜测。
