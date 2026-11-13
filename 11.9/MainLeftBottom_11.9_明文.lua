@@ -2763,7 +2763,7 @@ local function MakeResourceStatisticsRows(listView, cellWidth)
     return function(resourceNames, layoutOption, rowType)
         local rowTextByName = {}
         local gui = GUI
-        local cellNameSuffix = math.ceil(15 / layoutOption)
+        local cellNameSuffix = math.ceil(15)
 
         for groupStart = 1, #resourceNames, layoutOption do
             local cellName = rowType .. "_cell_" .. cellNameSuffix
