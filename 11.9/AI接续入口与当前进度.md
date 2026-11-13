@@ -2176,3 +2176,60 @@ PC236创建root/43/6，捕获顺序为：
 先恢复`root/43/7`引怪按钮handler、`root/43/8`阈值读取与输入提示、`root/43/15`阈值保存输入闭包；再恢复moneybut资源统计窗口及storage/take/pickup/drop等callbackMap处理器。之后才有条件按PC236-PC419把真实doInit一次性接线。黑名单相关工厂虽然已恢复，但目前仍未挂入宿主实际调用的doInit入口。
 
 本轮未修改原始加密文件、旧版整合文件或其他资料文件；未进行Lua编译、APK打包或游戏运行测试。
+
+
+### 2026-11-13追加：引怪按钮与怪物阈值输入链恢复
+
+本轮根据root/43/7、root/43/8、root/43/15及root/43/15/1恢复了引怪按钮和阈值输入保存业务，并写入唯一明文源码。
+
+#### 一、root/43/8引怪初始化包装闭包
+
+捕获：引怪配置表`gatherConfig`、读取`gather_monster_count.txt`的包装器。
+
+行为：
+1. 若调用参数threshold为假值，则调用读取包装器获取存档值。
+2. 将threshold写入`gatherConfig.GATHER_THRESHOLD`。
+3. 若写入值仍是假值，返回false。
+4. 否则调用`InitGatherMonsters()`并返回其结果。
+
+已新增`MakeGatherInitializationHandler(gatherConfig, readGatherThreshold)`。
+
+#### 二、root/43/7引怪按钮点击回调
+
+捕获顺序：
+1. 共享timerState。
+2. ShowLocalNoticeByType通知包装器。
+3. `gather_monster_count.txt`读取包装器。
+4. PrintLog。
+5. 引怪阈值输入提示闭包。
+6. root/43/8引怪初始化包装闭包。
+
+行为：
+- `timerState.gatherTimer`存在：通知关闭引怪、调用`StopGatherMonsters()`，返回true。
+- 否则读取保存阈值；没有阈值时记录“路径中没有怪物数量阈值，弹出输入框”，调用阈值输入提示并返回false，避免ButtonFactory翻转toggle。
+- 有阈值时通知开启引怪，调用root/43/8包装闭包并返回其结果。
+
+已新增`MakeGatherButtonHandler(...)`。
+
+#### 三、root/43/15/1阈值输入成功回调
+
+捕获顺序：保存包装器R51、通知包装器R5、PrintLog R4、可写路径函数R44、固定文件名R43（`gather_monster_count.txt`）、引怪初始化包装闭包root/43/8、按钮状态同步闭包root/43/6。
+
+行为：
+- 调用已绑定文件名的保存包装器，只传入threshold。
+- 保存失败：通知“怪物阈值保存失败”，日志记录`getWritablePath(fileName)`路径。
+- 保存成功：通知“怪物阈值已保存：N”，日志格式化记录阈值。
+- 调用引怪初始化闭包；仅当返回真值时执行`syncButtonState("yinguaibut", true)`。
+
+外层root/43/15提示文字：`请输入拉怪的怪物数量阈值（数字）`，复用root/43/23通用数字输入弹窗包装器。
+
+已新增`MakeGatherThresholdPrompt(...)`。
+
+#### 四、本轮源码提交
+
+唯一明文源码提交：`a72f9e0966c7a8ba3d05dcc884fc36d40a57c506`。
+唯一明文源码content SHA：`e80abc1e95c5a6581cd9c34f2a581701410c7702`。
+
+上述三个工厂目前仍是业务定义，尚未在真实doInit中按PC245、PC259、PC269的顺序实例化和登记。下一步继续恢复root/43/9存仓、root/43/20取物、root/43/11拾取、root/43/22丢弃的callbackMap处理器，并核对它们虽不在三组可见按钮数组内却仍由VM登记的原因；之后恢复moneybut资源统计窗口（root/43/4），再统一完成doInit接线。
+
+本轮未修改原始加密文件、旧版整合文件或其他资料文件；未进行Lua编译、APK打包或游戏运行测试。
