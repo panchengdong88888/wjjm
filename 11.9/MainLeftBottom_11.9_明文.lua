@@ -60,8 +60,11 @@
 -- 其余状态机保留IDLE/GATHERING/ATTACKING、归属等待、目标游标和复位流程。
 --
 -- 本节只恢复业务函数，不创建按钮、不接UI、不修改旧版源码。
--- timerState为根模块共享定时器表的当前占位；完整root入口装配时应与其他
--- cruiseTimer/newzoneTimer/buygoldTimer/rewardTimer字段合并为同一张表。
+-- 新版root PC42通过opcode 47明确创建寄存器3的空表；
+-- InitGatherMonsters（root.children[23]）与StopGatherMonsters（root.children[41]）
+-- 的闭包捕获列表均包含该寄存器3，并分别读写其gatherTimer字段。
+-- 因此本表就是这两个函数共享的根作用域定时器表，不是各自独立的局部表。
+-- 完整root入口装配时，其他定时器字段也必须并入这同一张表。
 
 local timerState = {}
 
