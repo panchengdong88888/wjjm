@@ -872,3 +872,14 @@
 - MainLoop 22项闭包捕获与此前恢复的状态机依赖清单可进行一一对应；其中寄存器4对应PrintLog这一映射与当前已恢复的闭包顺序相符。寄存器3的真实含义仍需结合Init/Stop两个原型对upvalue的读写指令及根PC42附近控制流继续确认。
 - 当前明文文件中的`local timerState = {}`仍为占位；本轮没有改动唯一明文源码，也没有改动原始加密文件。禁止在尚未确认寄存器3语义前，将占位表直接替换为猜测映射。
 - 未进行Lua编译、APK打包或游戏运行测试。
+
+
+### 2026-11-13：确认引怪共享定时器表
+
+- 根原型PC42指令为opcode 47，虚拟机分派器中该opcode明确执行`V[E[2]]={}`；因此根寄存器3在PC42被创建为空表。
+- InitGatherMonsters（root.children[23]）闭包捕获序列为`[3,18,23,13,35,8,4]`；StopGatherMonsters（root.children[41]）捕获序列为`[18,3,25,23,13,35,4]`。两者捕获的寄存器3确为同一个根作用域表。
+- 两个函数的VM指令均通过该捕获对象访问`gatherTimer`，初始化函数负责取消旧句柄、创建新Schedule并写入`gatherTimer`；停止函数负责取消该句柄并清空字段。
+- 因此明文文件中的`local timerState = {}`应代表root PC42创建的共享表。已将此前“占位表、待合并”的注释修正为已确认的根表映射；未改变表结构或引怪业务逻辑。
+- MainLoop不捕获寄存器3，符合它只作为Schedule回调被调用、不负责创建/取消gatherTimer的结构。
+- 其他功能的`cruiseTimer/newzoneTimer/buygoldTimer/rewardTimer`是否也使用同一根表，仍需分别核对各自闭包捕获关系，不作推断。
+- 未进行Lua编译、APK打包或游戏运行测试。
