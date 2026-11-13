@@ -278,6 +278,56 @@
 - 之前接续记录中“A[1]=onDamageMsg”以及“第二返回值可能是距离阈值”的临时判断已被本节纠正，不得继续沿用。
 - 当前唯一明文源码尚未包含`FindBlacklistPlayer`和`BlacklistPlayerDetection`；下一步可以按已审计语义恢复这两个函数，并把13项捕获按根级PC368-PC381顺序装配。不要将其接入UI，除非后续明确确认新版doInit中存在对应初始化链。
 
+### BlacklistItems业务函数已写入唯一明文源码（2026-11-13）
+
+本轮根据新版静态反汇编root/48、root/49、root/49/1、root/52，以及旧版只读文件中与该新版字节码逐项对应的已恢复逻辑，将黑名单检测业务写入唯一明文源码。
+
+#### 写入内容
+
+文件：`11.9/MainLeftBottom_11.9_明文.lua`
+
+- `PCallHelper_2()`：无捕获保护函数，pcall取得FriendProxy，失败或假值返回nil。
+- `MakeFindBlacklistPlayer(PCallHelper)`：按targetID查询`_blacklistData`，未命中时再查`ACTOR_MASTER_ID`对应的主角色记录；命中返回true和记录Name。
+- `MakeInstallDamageHook(mainLeftBottomState, printLog)`：捕获MainLeftBottom.a状态表和日志函数，挂接MSG_SC_DAMAGE_HP处理器；包装回调先pcall调用a.onDamageMsg，再返回原处理器结果。
+- `MakeDeathAutoBlacklist(blacklistState, printLog, showLocalNotice, findBlacklistPlayer)`：消费lastAttacker记录，已在黑名单则跳过；否则通知并按0.5秒间隔重试六次RequestAddBlacklistByName。
+- `MakeUseItemByIndex(randomTeleportItemNames)`：按随机传送物品名顺序检查ITEM_INDEX_BY_NAME和ITEM_COUNT，使用第一件有库存的物品并返回名称。
+- `MakeBlacklistPlayerDetection(...13项捕获...)`：恢复216条指令主体，包括isBlacklisting置位、伤害Hook安装、HP与死亡状态处理、白名单地图检查、FIND_IN_VIEW_PLAYER_LIST双返回值、数值循环、自身过滤、黑名单身份判断、名称回退、可选距离门控、2秒提示节流、nextTryAt重试、随机传送物品使用及无道具提示。
+
+#### 捕获顺序
+
+`MakeBlacklistPlayerDetection`工厂参数严格按root PC368-PC381捕获顺序排列：
+1. z功能状态表
+2. InstallDamageHook
+3. blacklistState
+4. DeathAutoBlacklist
+5. FindBlacklistPlayer
+6. GetMapData2DPtr五参距离闭包
+7. 2.0提示节流阈值
+8. PrintLog
+9. UseItemByIndex
+10. 0.01成功后重试延迟
+11. ShowLocalNoticeByType
+12. 30.0无道具重试延迟
+13. randomTeleportItemNames
+
+#### 词法作用域修正
+
+- 黑名单主体在本文件中位于`IsInWhitelistMap`定义之前，因此先声明`local IsInWhitelistMap`，再在原函数位置赋值函数体，确保BlacklistItems闭包捕获的是同一个词法局部变量，不会错误解析成全局变量。
+- 未改变`IsInWhitelistMap`业务逻辑。
+
+#### 当前完成边界
+
+- 黑名单业务主体及其直接辅助闭包工厂已经写入。
+- **尚未完成根模块PC352-PC382的真实实例化和导出接线**：PCallHelper_2、FindBlacklistPlayer、InstallDamageHook、DeathAutoBlacklist、UseItemByIndex、BlacklistPlayerDetection需要按父级寄存器身份创建并注入；最终还要按PC382导出全局`BlacklistItems`。
+- 尚未把黑名单定时器启动按钮接线到UI，也没有改动任何旧版文件。
+- 静态检查确认各工厂定义唯一、13项参数顺序在源码注释中明确、白名单局部变量前置声明和赋值各一处、未出现Lua 5.2+的goto/continue语法。
+- 未运行Lua编译、APK打包或游戏测试。
+
+#### 本轮提交
+
+- 源码提交：`010ea379ab22a831016698e1186c4e3d78cd4010`
+- 源码content SHA：`63f4ce14c04bec4e446a70dc45900725deefe693`
+
 ### 后续恢复顺序
 
 - 下一项优先恢复黑名单玩家检测闭包（新版root/48，根级导出名 `BlacklistItems`），它在PC134调用 `MakeGetMapData2DPtr` 作为距离计算器；需要按13项捕获顺序逐一映射后再写入主明文，不可只凭函数名猜测。
