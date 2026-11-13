@@ -77,6 +77,24 @@
 - 当前唯一明文文件content SHA：`74729cb9509a524b0b0a08f5dfbb69a818f1847f`。
 - 静态核对：两个函数定义各唯一一份；返回值和SL冒号调用形式符合原型常量线索及新框架API映射。未进行Lua编译、APK打包或游戏运行测试。
 
+### 地图二维数据/障碍物读取链核查（2026-11-13）
+
+- 已读取新版原型映射、函数状态清单、校正后的完整VM反汇编及旧候选函数草稿。
+- 新版 `root.children[22]`（VM路径 `root/23`，144条物理指令，身份字符串 `GetMapData2DPtr`）当前可达控制流仅为：
+  - 检查五个参数 `x1,y1,x2,y2,maxDistance` 是否truthy；
+  - 坐标相同时返回 `0.0`；
+  - `maxDistance <= 0` 返回nil；
+  - 计算 `max(abs(x2-x1), abs(y2-y1))`；
+  - 超过最大距离返回nil，否则返回该切比雪夫距离。
+- PC37是无条件return；PC38-PC144没有可达入口。其后虽然出现 `sceneManager`、`GetMapData2DPtr`、`getMapDataRows`、`getMapDataCols`、`isObstacle` 等常量/调用片段，但都位于不可达尾部，不能恢复成真实执行的地图二维数据或障碍物判断逻辑。
+- 反汇编中 `GetMapData2DPtr` 的调用文本仅出现在该原型自己的不可达尾部；当前证据未证明存在其他可达调用者。因此本轮不把死尾部写入明文源码，也不伪造地图障碍物读取函数。
+- 同步审计发现上一轮新增的两个地图元变量包装函数遗漏了VM明确的默认值分支，已按既有候选源码和函数状态记录修正：
+  - `GetMapId()` → `SL:GetMetaValue("MAP_ID") or 0`
+  - `GetMapName()` → `SL:GetMetaValue("MAP_NAME") or ""`
+- 修正提交：`a9ed03e2272c675c61ceecdd1d29cf30fb0384cf`；唯一明文源码content SHA：`29a37ab1ac5bcdb5c860c599aade651830423a3f`。
+- 静态核对确认两个函数各唯一一份，默认返回值与已存候选函数一致。未做Lua编译、APK打包或游戏运行测试。
+
+
 ### 每日巡航当前边界
 
 - `MakeCruiseTimerCallback(unusedCapturedState, notify)` 与 `ReplaceCruiseTimer(timerState, unusedCapturedState, notify)` 已恢复并写入，但尚未接入完整doInit初始化链路。
