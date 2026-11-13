@@ -2233,3 +2233,22 @@ PC236创建root/43/6，捕获顺序为：
 上述三个工厂目前仍是业务定义，尚未在真实doInit中按PC245、PC259、PC269的顺序实例化和登记。下一步继续恢复root/43/9存仓、root/43/20取物、root/43/11拾取、root/43/22丢弃的callbackMap处理器，并核对它们虽不在三组可见按钮数组内却仍由VM登记的原因；之后恢复moneybut资源统计窗口（root/43/4），再统一完成doInit接线。
 
 本轮未修改原始加密文件、旧版整合文件或其他资料文件；未进行Lua编译、APK打包或游戏运行测试。
+
+
+### 2026-11-13追加：存仓、取物、拾取、丢弃四个按钮处理器恢复
+
+本轮依据root/43/9、root/43/20、root/43/11、root/43/22的指令恢复了四个callbackMap处理器，写入唯一明文源码。
+
+- `MakeStorageButtonHandler(timerState, printLog, featureState, schedule)`：读写`storageTimer`；开启时立即调用`StorageItems()`，再以1.0秒周期调度；关闭时取消句柄、清空字段并将`isStoring=false`。
+- `MakeTakeButtonHandler(timerState, printLog, featureState, schedule)`：读写`takeTimer`；开启时立即调用`TakeItems()`，再以1.0秒周期调度；关闭时取消句柄、清空字段并将`isTaking=false`。
+- `MakePickupButtonHandler(timerState, printLog, schedule)`：读写`shiquTimer`；开启时立即调用`PickUpItems()`，再以0.01秒周期调度；关闭时取消句柄并清空字段。原型不写入`isTaking/isDiuing`状态。
+- `MakeDropButtonHandler(timerState, printLog, featureState, schedule)`：读写`dropTimer`；开启时立即调用`DiuItems()`，再以1.0秒周期调度；关闭时取消句柄、清空字段并将`isDiuing=false`。
+
+这四个函数的开启/关闭文本在原型中由PrintLog捕获输出；周期调度使用root/35 Schedule包装闭包。VM中这些回调会登记到callbackMap的`storagebut`、`takebut`、`shiqubut`、`diuqibut`键，但后两个/前两个部分不在root/43当前三组可见按钮配置数组中；保留回调映射，不擅自增加可见按钮。
+
+唯一明文源码提交：`c4959218cd7f20e4a83a8b13edb87aeb7b528cfd`。
+唯一明文源码content SHA：`22e2f7cca360d0bac279cca4cfe01a56e3b84d18`。
+
+当前还缺少root/43/4资源统计窗口（`moneybut`）的完整320条指令恢复，以及根UI入口中这些handler的实例化/登记。`V10001ButtonHandler`只对应`xiaotuibut`。下一步先恢复资源统计窗口的入口和主要控件/定时刷新链，再按PC236-PC419完成doInit装配。
+
+本轮未修改原始加密文件、旧版整合文件或其他资料文件；未进行Lua编译、APK打包或游戏运行测试。
