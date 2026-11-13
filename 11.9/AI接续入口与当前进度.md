@@ -719,3 +719,42 @@
 - 唯一明文源码提交：`0f6913ba752ae34ade47ac4bb5de65055a714833`。
 - 本次没有改动旧版`MainLeftBottom_唯一交付文件.lua`，没有做按钮创建/UI接线，没有进行Lua编译或游戏运行测试。
 - 当前状态：“内挂设置”业务明文已写入；尚未做实测。后续若发现实际效果与字节码恢复不符，再按新版原型复核。
+
+### 2026-11-13：开新区（newzone）启动与周期物品使用业务已恢复写入
+
+- 用户最新指定“开新区”为内挂设置之后的下一项；当前任务只处理开新区业务，不恢复按钮创建或UI接线。
+- 重新读取并解析11.9原始加密文件；完整解压并消费79573字节，原型树105个原型。
+- 原型身份：
+  - `root.children[38]` / 原型83：零参数、37条有效指令、1个子原型（原型84）。
+  - `root.children[38].children[0]` / 原型84：零参数、10条有效指令。
+  - `root.children[44]` / 原型93：零参数、76条有效指令。
+- 原型83捕获顺序已由父级闭包创建指令确认：
+  1. PrintLog；
+  2. MainLeftBottom模块表；
+  3. timerState；
+  4. Schedule包装函数（实际转调`SL:Schedule`）；
+  5. 原型93背包物品周期回调。
+- 原型83启动行为已按真实VM指令顺序恢复：
+  1. `PrintLog("开启新区功能")`；
+  2. `MainLeftBottom.isNewzone = true`；
+  3. 发送首条消息：`LuaSendMsg(9002, 22302, 1, 2, 3, "", 0)`；
+  4. 调用全局`Gbtc()`；
+  5. `SL:ScheduleOnce(SendNewZoneDelayedCommand, 0.5)`；延迟回调原型84发送`LuaSendMsg(9002, 22502, 1, 2, "", 0, 0)`；
+  6. 若旧`timerState.newzoneTimer`存在，则调用`SL:UnSchedule(oldTimer)`；
+  7. 通过捕获的Schedule包装函数，以0.05秒周期调度原型93，并将返回句柄写入`timerState.newzoneTimer`。
+- 原型93捕获顺序：38项新区物品名称表、PrintLog、timerState。38项名称表保留了原始顺序及重复项：
+  `开天、雷霆战甲(男)、雷霆战盔、雷霆项链、雷霆护腕、雷霆护腕、雷霆戒指、雷霆戒指、雷霆腰带、雷霆战靴、逐日剑法、半月弯刀、施毒术、烈火剑法、自动回收、自动拾取、自动合成、自由发言、解锁绑定、自由交易、超级狂暴、超级神器、超级复活、超级回血、超级四神、回血石Lv.1、雷霆の护盾、龙腾玉佩、龙腾战鼓、龙腾血符、斩尽天下不收刀、梦幻斗笠Lv.1、复活BUFF、青铜会员卡、白银会员卡、黄金会员卡、钻石会员卡、至尊会员卡`。
+- 原型93每次周期回调的真实流程：
+  1. `SL:GetMetaValue("BAG_DATA")`；若结果为空则直接返回，不取消定时器。
+  2. 外层按38项名称表`ipairs`顺序遍历，内层用`pairs`遍历背包数据。
+  3. 仅处理同时具有`MakeIndex`和`Name`的物品；通过`string.find(item.Name, keyword, 1, true)`按字面子串匹配。
+  4. 命中后发送：`LuaSendMsg(global.MsgType.MSG_CS_USE_BAG_ITEM, item.MakeIndex, 0, 0, 0, item.Name, string.len(item.Name))`；随后调用`PrintLog("新区使用：%s", item.Name)`并立即返回。因此每次0.05秒周期最多使用一件匹配物品。
+  5. 如果全部38项均未匹配到背包物品，则取消存在的`newzoneTimer`并清空字段，调用`PrintLog("新区物品已全部使用完毕，停止定时器")`，调用`SL:ShowSystemTips("新区物品已全部使用完毕")`，最后调用`Gbtc()`。
+- 已写入唯一明文源码：
+  - `SendNewZoneDelayedCommand()`（此前已存在，保留）；
+  - `MakeNewZoneItemTimerCallback(itemNameKeywords, printLog, timerState)`；
+  - `MakeNewZoneButtonHandler(printLog, mainLeftBottom, timerState, schedule, processNewZoneItems)`；
+  - `NEW_ZONE_ITEM_NAME_KEYWORDS`（原始38项数组）。
+- 唯一明文源码提交：`331f1ce7dc0a93f139d6a3ab5a5e351cd3956eed`；随后更新原型核对注释提交：`cc28b41d7d1bd7de107ad9e62e4c5dc95f308b61`。
+- 本次没有修改新版原始加密文件、旧版完整源码或其他源码文件；没有创建第二份明文文件；没有创建按钮或做UI接线；未进行Lua编译或游戏运行测试。
+- 当前状态：开新区业务函数已写入唯一明文文件；尚未做实测。若用户实测发现问题，回到原型83/84/93逐项复核，不凭经验改动。
