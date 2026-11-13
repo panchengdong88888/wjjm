@@ -1774,14 +1774,18 @@ end
 -- 三个显式参数：buttonConfig、rowIndex、groupOffset。
 -- 五项捕获：uiParent、两个当前未被函数体读取的父级值、visibleItems、callbackMap。
 -- 原始指令坐标公式：x=1-85*rowIndex；y=2+groupOffset。
+-- root/43/10：ButtonFactory捕获UI父容器、X基准、Y基准、控件表和回调表。
+-- x = baseX - 85 * rowIndex；y = baseY + groupOffset。
 local function MakeMainLeftBottomButtonFactory(
     uiParent,
+    baseX,
+    baseY,
     visibleItems,
     callbackMap
 )
     return function(buttonConfig, rowIndex, groupOffset)
-        local x = 1 - 85 * rowIndex
-        local y = 2 + groupOffset
+        local x = baseX - 85 * rowIndex
+        local y = baseY + groupOffset
 
         local button = GUI:Button_Create(
             uiParent,
@@ -1834,11 +1838,12 @@ local function MakeMainLeftBottomButtonFactory(
 end
 
 
--- 对应proto48 PC346-PC384：按三组数组顺序执行通用ButtonFactory。
--- 每组传入的rowIndex由数组长度倒序计算；groupOffset分别为40、0、80。
--- 第二组V13第一项buygoldbut因此以rowIndex=7、groupOffset=0创建。
+-- root/43 PC346-PC378：按VM原顺序遍历三组按钮配置。
+-- groupOffset分别为40、0、80；每组rowIndex从组长度倒序递减到1。
 local function CreateMainLeftBottomButtons(
     uiParent,
+    baseX,
+    baseY,
     visibleItems,
     callbackMap
 )
@@ -1846,6 +1851,8 @@ local function CreateMainLeftBottomButtons(
         BuildMainLeftBottomButtonGroups()
     local buttonFactory = MakeMainLeftBottomButtonFactory(
         uiParent,
+        baseX,
+        baseY,
         visibleItems,
         callbackMap
     )
@@ -2376,33 +2383,26 @@ end
 
 -- 对应proto48 child index 9：按key同步已有按钮的toggle状态。
 -- 此函数只更新已有按钮状态/标题/颜色，不创建按钮、不绑定点击事件。
-local function MakeMainLeftBottomToggleStateSync(
-    firstGroup,
-    secondGroup,
-    thirdGroup,
-    visibleItems
-)
-    local groups = { firstGroup, secondGroup, thirdGroup }
-
+-- root/43/6：按钮状态同步闭包只捕获第一组配置表和MainLeftBottom.b控件表。
+-- 它按key在第一组配置中查找，更新toggled，并同步对应按钮标题和颜色。
+local function MakeMainLeftBottomToggleStateSync(firstGroup, visibleItems)
     return function(buttonKey, toggled)
-        for _, group in ipairs(groups) do
-            for _, buttonConfig in ipairs(group) do
-                if buttonConfig.key == buttonKey then
-                    buttonConfig.toggled = toggled
+        for _, buttonConfig in ipairs(firstGroup) do
+            if buttonConfig.key == buttonKey then
+                buttonConfig.toggled = toggled
 
-                    local button = visibleItems[buttonKey]
-                    if button then
-                        GUI:Button_setTitleText(
-                            button,
-                            toggled and buttonConfig.toggle or buttonConfig.name
-                        )
-                        GUI:Button_setTitleColor(
-                            button,
-                            toggled and "#ff0000" or "#ffffff"
-                        )
-                    end
-                    return
+                local button = visibleItems[buttonKey]
+                if button then
+                    GUI:Button_setTitleText(
+                        button,
+                        toggled and buttonConfig.toggle or buttonConfig.name
+                    )
+                    GUI:Button_setTitleColor(
+                        button,
+                        toggled and "#ff0000" or "#ffffff"
+                    )
                 end
+                return
             end
         end
     end
