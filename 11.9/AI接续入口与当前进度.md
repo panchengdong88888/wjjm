@@ -2252,3 +2252,21 @@ PC236创建root/43/6，捕获顺序为：
 当前还缺少root/43/4资源统计窗口（`moneybut`）的完整320条指令恢复，以及根UI入口中这些handler的实例化/登记。`V10001ButtonHandler`只对应`xiaotuibut`。下一步先恢复资源统计窗口的入口和主要控件/定时刷新链，再按PC236-PC419完成doInit装配。
 
 本轮未修改原始加密文件、旧版整合文件或其他资料文件；未进行Lua编译、APK打包或游戏运行测试。
+
+### 资源统计窗口恢复（2026-11-13）
+
+- 新版 root/43/4 已确认为320条指令、5个子原型；本轮已把资源统计业务函数写入唯一明文源码。
+- 新增函数：
+  - FormatResourceCount：按VM阈值格式化普通数值、万、亿。
+  - GetResourceItemCount：读取 BAG_DATA，按名称片段查找，排除 ITEM_IS_BIND 为真的物品，并累计 OverLap or 1。
+  - MakeResourceStatisticsRows：创建双列资源行，返回名称到Text控件的映射。
+  - MakeResourceStatisticsRefresh：检查窗口有效性；更新当前时间、历时、MoneyProxy货币数和背包资源数。
+  - MakeResourceStatisticsClose：空白区域点击后取消 resTimer、清空句柄并关闭窗口。
+  - MakeResourceStatisticsWindow：实现窗口开关、布局、资源行、首次刷新和1秒周期刷新。
+  - RegisterResourceStatisticsButtonHandler：将窗口处理器登记到 callbackMap.moneybut。
+- 窗口列表宽高按新版VM的 screenW*0.6、screenH*0.6 恢复；没有沿用旧版候选文件中后来按截图调整的59%/56%数值。
+- 货币刷新保留VM读取路径 initState.initSnapshot[moneyId]；初始快照由doInit建立时的键表达式需要在恢复doInit时继续交叉核对，不能为了消除潜在差异擅自改成资源名称。
+- 当前仅恢复函数定义和独立登记辅助函数；尚未接入真实 doInit 捕获链，也尚未确认 moduleState、initState 在根初始化中的最终构造/传入位置。因此不能宣称 moneybut 已实际接通。
+- 唯一明文源码提交：cfb1a3b45ee6bd9673c20fe95e1404f6e5eb6675。
+- 本轮静态核对：7个新增函数定义各一份；未修改新版加密原文件、旧版源码或其他资料；未执行Lua编译、APK打包或游戏运行测试。
+- 下一步：继续核对root/43/4的四个捕获对象在doInit中的真实来源，重点是模块UI状态表（screenW/screenH/resWin）、PrintLog、共享timerState、资源初始状态表（initTime/initTimeStr/initSnapshot）；随后再接入moneybut回调登记。
