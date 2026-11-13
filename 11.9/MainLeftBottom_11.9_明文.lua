@@ -1683,26 +1683,28 @@ end
 -- 对应proto48 PC204-PC252：按新版VM原样恢复三组按钮配置。
 -- 第三组在原始指令中只创建空表，不擅自添加按钮。
 local function BuildMainLeftBottomButtonGroups()
+    -- 第一组：VM root/43 PC195-PC210，4项。
     local firstGroup = {
-        { key = "moneybut", name = "V10001" },
-        { key = "settingbut", name = "内挂设置" },
-        { key = "shiqubut", name = "开拾取", toggle = "关拾取" },
-        { key = "diuqibut", name = "开丢弃", toggle = "关丢弃" },
-        { key = "clearblacklistbut", name = "清黑名单" },
-        { key = "stopallbut", name = "停止脚本" },
-    }
-
-    local secondGroup = {
-        { key = "buygoldbut", name = "购买金条" },
-        { key = "recyclebut", name = "回收装备" },
-        { key = "newzone", name = "开新区" },
-        { key = "rewardbut", name = "开奖励", toggle = "关奖励" },
         { key = "yinguaibut", name = "开拉怪", toggle = "关拉怪" },
         { key = "blacklistbut", name = "开黑名单", toggle = "关黑名单" },
+        { key = "clearblacklistbut", name = "清黑名单" },
+        { key = "moneybut", name = "资源统计" },
+    }
+
+    -- 第二组：VM root/43 PC211-PC223，3项。
+    local secondGroup = {
+        { key = "shiqubut", name = "开拾取", toggle = "关拾取" },
+        { key = "diuqibut", name = "开丢物品", toggle = "关丢物品" },
         { key = "xiaotuibut", name = "快速小退" },
     }
 
-    local thirdGroup = {}
+    -- 第三组：VM root/43 PC224-PC235，3项。
+    local thirdGroup = {
+        { key = "clearmonsterbut", name = "清怪物值" },
+        { key = "cleardistancebut", name = "清距离值" },
+        { key = "rewardbut", name = "开奖励", toggle = "关奖励" },
+    }
+
     return firstGroup, secondGroup, thirdGroup
 end
 
