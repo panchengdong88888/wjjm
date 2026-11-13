@@ -34,13 +34,13 @@
 -- 新版root子原型3：GetMapId（9条指令）。
 -- 原型常量与调用窗口对应SL:GetMetaValue("MAP_ID")，返回元变量结果。
 local function GetMapId()
-    return SL:GetMetaValue("MAP_ID")
+    return SL:GetMetaValue("MAP_ID") or 0
 end
 
 -- 新版root子原型34：地图名称读取包装函数（9条指令）。
 -- 常量包含SL、GetMetaValue、MAP_NAME；按框架文档使用SL冒号调用。
 local function GetMapName()
-    return SL:GetMetaValue("MAP_NAME")
+    return SL:GetMetaValue("MAP_NAME") or ""
 end
 
 -- ============================================================
