@@ -363,6 +363,49 @@
 - 提交：`9da716ba07f5195e75a81c3db25803558db81e8b`
 - 源码content SHA：`f40fcd2a1435725566e1c4c69383412ad4901660`
 
+### ClearBlacklistItems恢复及根模块状态表核对（2026-11-13）
+
+本轮继续核对root PC280-PC294、PC383-PC388，并恢复清空黑名单闭包。
+
+#### root共享对象确认
+
+- PC280创建root V[37]空表；PC281写入名称`随机传送石`，PC282将名称放入表中。因此V[37]是随机传送物品名数组，供`UseItemByIndex`和`BlacklistItems`捕获。
+- PC286创建root V[41]空表；PC287-PC293初始化字段：
+  - `lastAttacker = nil`
+  - `lastHp = nil`
+  - `deathHandled = false`
+  - `alertAt = 0.0`
+  - `nextTryAt = 0.0`
+  - `noStoneWarned = false`
+  - `distance = nil`
+- PC294将V[41]赋给当前chunk ENV的`blacklist`字段。黑名单检测和死亡回调共享的就是这一张表，不能重新创建另一张。
+- V[2]为root早期构造的`MainLeftBottom.z`功能状态表；V[41]是独立黑名单状态表。两者用途不同，不可混用。
+
+#### ClearBlacklistItems原型恢复
+
+- root PC383创建`root/16`闭包，捕获顺序为：
+  1. V[54]：`PCallHelper_2`
+  2. V[4]：`PrintLog`
+  3. V[5]：`ShowLocalNoticeByType`
+  4. V[41]：共享blacklistState
+- PC388将闭包导出为ENV.ClearBlacklistItems。
+- `MakeClearBlacklistItems(PCallHelper, printLog, showLocalNotice, blacklistState)`已写入唯一明文源码。
+- 行为：取FriendProxy及`_blacklistData`；构建黑名单key数组；空表时提示；非空时显示人数并逐项以`0.01 * (index - 1)`秒间隔调用`SL:ScheduleOnce`；最后清空共享状态中的`lastAttacker`。
+- 子原型`root/16/1`恢复为`MakeRequestOutBlacklistCallback(itemKey, friendProxy)`：调用`SL:RequestOutBlacklist(itemKey)`，再将本地`friendProxy._blacklistData[itemKey]`置nil（仅当该条目仍存在）。
+- 根闭包装配工厂现按字节码顺序：先创建并导出BlacklistItems（PC368-PC382），再创建并导出ClearBlacklistItems（PC383-PC388）。
+
+#### 尚未完成
+
+- `MakeBlacklistRootBindings`仍是装配工厂，尚未由实际root初始化代码调用。
+- root PC389-PC411随后创建并赋值`MainLeftBottom.doInit`，其20项upvalue需要继续映射；这才是把共享状态、闭包、UI初始化和定时器真正接入的完整入口。
+- 目前不宣称BlacklistItems/ClearBlacklistItems在运行时已实际导出；仅确认工厂内的导出语句和创建顺序已写好。
+- 没有修改旧版文件，没有Lua编译、APK打包或游戏测试。
+
+#### 本轮提交
+
+- 明文源码最新提交：`0ff645b891e1ff5d9b0ed754c2631a47ebb13d71`
+- 明文源码content SHA：`b56f44754986744832c72e76fd428194107f9377`
+
 ### 后续恢复顺序
 
 - 下一项优先恢复黑名单玩家检测闭包（新版root/48，根级导出名 `BlacklistItems`），它在PC134调用 `MakeGetMapData2DPtr` 作为距离计算器；需要按13项捕获顺序逐一映射后再写入主明文，不可只凭函数名猜测。
