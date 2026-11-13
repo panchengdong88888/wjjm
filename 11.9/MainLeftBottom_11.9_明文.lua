@@ -2906,14 +2906,14 @@ local function MakeResourceStatisticsWindow(moduleState, printLog, timerState, i
             "resWin",
             0, 0,
             moduleState.screenW, moduleState.screenH,
-            false, true, true, true, true,
+            false, true, 1, true, true,
             nil, 999
         )
         moduleState.resWin = resWin
 
         local rootLayout = gui:Layout_Create(
             resWin, "closeResWin", 0, 0,
-            moduleState.screenW, moduleState.screenH, true
+            moduleState.screenW, moduleState.screenH, 1
         )
         gui:setTouchEnabled(rootLayout, true)
 
