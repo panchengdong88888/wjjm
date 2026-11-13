@@ -1300,3 +1300,9 @@
 - `ReplaceCruiseTimer`参数相应调整为`(timerState, unusedCapturedState, notify)`。巡航日期去重状态由回调闭包内部维护，首次命中日期窗口时先写入当天日期键，再发送协议。
 - 修正后的源码提交：`eef3b912a45b25891a1cd54a495db95e8103bb6d`；随后注释清理提交：`553ebb357bd677f76f3e2a6b87eea8ee952c4fce`；当前content SHA：`534742582d7258bf3e887977f0142fa861842da8`。
 - 最终静态检查：两个函数各一份；日期标记初值nil；22:00:05至22:00:08窗口、同日去重、先写标记后发消息、9002/55556消息参数、1秒Schedule和共享timerState清理均正确；Lua 5.1语法扫描通过。仍未做编译或运行测试。
+
+
+### 黑名单InstallDamageHook原型路径注释校正
+
+- 按函数状态清单与反汇编路径，InstallDamageHook对应VM原型路径为`root/7`（0-based `root.children[6]`），此前明文注释误写为`root/6`，已修正注释，不涉及函数主体。
+- 最新明文源码提交：`2b7725bb784984a98a0b4b3ce09e8048da4981ae`；content SHA：`51be07fd7c5e7628bd59e969a816fa894e5df8ad`。
