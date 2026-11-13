@@ -890,6 +890,51 @@ local function MakeClearBlacklistItems(PCallHelper, printLog, showLocalNotice, b
     end
 end
 
+-- root/43/19：黑名单按钮点击回调。
+-- UP[0]=timerState、UP[1]=notify、UP[2]=MainLeftBottom.z、
+-- UP[3]=读取blacklist_distance.txt、UP[4]=距离输入提示包装器、
+-- UP[5]=启动黑名单定时器。
+local function MakeBlacklistButtonHandler(
+    timerState,
+    notify,
+    featureState,
+    readBlacklistDistance,
+    showDistancePrompt,
+    startBlacklistTimer
+)
+    return function()
+        if timerState.blacklistTimer then
+            notify("关闭黑名单功能")
+            SL:UnSchedule(timerState.blacklistTimer)
+            timerState.blacklistTimer = nil
+            featureState.isBlacklisting = false
+            return true
+        end
+
+        local distance = readBlacklistDistance()
+        if not distance then
+            notify("路径中没有黑名单的距离格子，弹出输入框")
+            showDistancePrompt()
+            return false
+        end
+
+        notify("开启黑名单功能，距离格子：%d", distance)
+        startBlacklistTimer(distance)
+        return true
+    end
+end
+
+-- root/43/14：清空黑名单按钮点击回调。
+-- 先通知，再从当前chunk ENV读取ClearBlacklistItems并调用。
+local function MakeClearBlacklistButtonHandler(notify)
+    return function()
+        notify("清空黑名单")
+        local currentEnvironment = getfenv(1)
+        local clearBlacklistItems = currentEnvironment.ClearBlacklistItems
+        return clearBlacklistItems()
+    end
+end
+
 -- root PC352-PC382：按真实父级寄存器捕获关系组装BlacklistItems闭包链。
 -- 参数对应root模块已建立的共享对象；本函数不创建第二份状态表。
 -- 调用时必须传入rootEnvironment、MainLeftBottom.a、MainLeftBottom.z、
