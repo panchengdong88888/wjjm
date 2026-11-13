@@ -51,8 +51,630 @@
 --  5. 怪物查找与引怪系统
 -- ============================================================
 
--- TODO：恢复 FindMonsterInCurrViewField、FindMonsterCandidates、
---       InitGatherMonsters、MainLoop、StopGatherMonsters 等函数。
+-- 2026-11-13：新版引怪链（proto 11/12/16/19/23/24/25/39/41/45/47/51/52）恢复。
+--
+-- 新版 root 原型树已直接解析：105个原型、79573字节完整消费。
+-- MainLoop 为 root.children[45]，462条指令；相较旧版417条多45条。
+-- 新增45条指令集中在GATHERING状态的技能检查块：扫描Skill代理技能，
+-- 通过SKILL_NAME匹配“彻地钉”，命中后调用SL:RequestLaunchSkill(MagicID)。
+-- 其余状态机保留IDLE/GATHERING/ATTACKING、归属等待、目标游标和复位流程。
+--
+-- 本节只恢复业务函数，不创建按钮、不接UI、不修改旧版源码。
+-- timerState为根模块共享定时器表的当前占位；完整root入口装配时应与其他
+-- cruiseTimer/newzoneTimer/buygoldTimer/rewardTimer字段合并为同一张表。
+
+local timerState = {}
+
+local gatherConfig = {
+    GATHER_THRESHOLD = 11,
+    CHECK_INTERVAL = 0.5,
+    ATTACK_WAIT_TIME = 1
+}
+
+local gatherStatusText = {
+    IDLE = "IDLE",
+    GATHERING = "GATHERING",
+    ATTACKING = "ATTACKING"
+}
+
+local gatherState = {
+    isRunning = false,
+    currentState = "IDLE",
+    targets = {},
+    ownedCount = 0,
+    cursor = 0,
+    pendingOwnerChange = false,
+    ownerDeadline = 0,
+    pendingTargetID = nil,
+    pendingMonsterName = ""
+}
+
+-- root.children[43]：PrintLog日志包装。table参数交给SL.dump；
+-- 普通参数先tostring，再按可用格式参数尝试string.format。
+local function PrintLog(value, ...)
+    if type(value) == "table" then
+        SL.dump(value, "【超本】")
+        return
+    end
+
+    local message = tostring(value)
+    if select("#", ...) > 0 then
+        local ok, formatted = pcall(string.format, message, ...)
+        if ok and formatted then
+            message = formatted
+        end
+    end
+
+    -- 新版原型在SL与SL.Print存在时没有进一步输出调用，保持原行为。
+    if SL and SL.Print then
+        -- 原始VM没有执行SL.Print的指令。
+    end
+end
+
+-- root.children[5]：主玩家ID包装函数。
+local function GetMainPlayerID()
+    return global.gamePlayerController:GetMainPlayerID()
+end
+
+-- root.children[8]：IsDie实际返回“存活”判断值。
+local function IsDie(actor)
+    return actor and not actor:IsDie()
+end
+
+-- root.children[19]：通过SL元数据X/Y构造玩家坐标。
+local function GetPlayerPosition()
+    local x = SL:GetMetaValue("X")
+    if not x then
+        x = 0
+    end
+
+    local y = SL:GetMetaValue("Y")
+    if not y then
+        y = 0
+    end
+
+    return { x = x, y = y }
+end
+
+-- root.children[47]：从actor的地图坐标字段构造坐标。
+local function GetPlayerMapPosition(actor)
+    if not actor then
+        return nil
+    end
+
+    local x = actor.mCurrMapX
+    if not x then
+        x = 0
+    end
+
+    local y = actor.mCurrMapY
+    if not y then
+        y = 0
+    end
+
+    return { x = x, y = y }
+end
+
+-- root.children[25]：Chebyshev距离；缺少任一坐标时返回99999。
+local function DistanceCalculation(pointA, pointB)
+    if not pointA or not pointB then
+        return 99999
+    end
+
+    local dx = math.abs(pointA.x - pointB.x)
+    local dy = math.abs(pointA.y - pointB.y)
+    return math.max(dx, dy)
+end
+
+-- root.children[24]：安全区或地图名为“土城”时属于引怪白名单。
+local function IsInWhitelistMap()
+    if SL:GetMetaValue("IN_SAFE_AREA") then
+        return true
+    end
+
+    local mapName = SL:GetMetaValue("MAP_NAME")
+    for _, allowedMapName in ipairs({ "土城" }) do
+        if mapName == allowedMapName then
+            return true
+        end
+    end
+
+    return false
+end
+
+-- root.children[31]：停止/复位时清除当前选中目标。
+local function ClearTargetID_2()
+    if not global.Facade then
+        return
+    end
+
+    local playerInputProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.PlayerInputProxy
+    )
+    if not playerInputProxy then
+        return
+    end
+
+    playerInputProxy:SetTargetID(
+        0,
+        global.MMO.SELETE_TARGET_TYPE_FIND
+    )
+end
+
+-- root.children[7]：先记录状态切换，再更新共享状态。
+local function FormatStateChange(newState)
+    local message = string.format(
+        "状态切换: %s -> %s",
+        gatherState.currentState,
+        newState
+    )
+    PrintLog(message)
+    gatherState.currentState = newState
+end
+
+-- root.children[52]：按VM顺序重置目标、计数、游标和等待状态。
+local function ResetGatherMonsterData()
+    gatherState.targets = {}
+    gatherState.ownedCount = 0
+    gatherState.cursor = 0
+    ClearTargetID_2()
+    gatherState.pendingOwnerChange = false
+    gatherState.ownerDeadline = 0
+    gatherState.pendingTargetID = nil
+    gatherState.pendingMonsterName = ""
+    PrintLog("数据已重置")
+end
+
+-- root.children[16]：判断怪物是否归属其他玩家。
+-- ownerID为空、nil或-1时返回false；字符串ID与数字主玩家ID比较时
+-- 先将expectedOwnerID转为字符串，这是新版VM中的真实比较路径。
+local function GetOwnerID(actor, expectedOwnerID)
+    local ownerID = actor:GetOwnerID()
+
+    if ownerID == nil or ownerID == "" or ownerID == -1 then
+        return false
+    end
+
+    if type(ownerID) == "string" then
+        return ownerID ~= tostring(expectedOwnerID)
+    end
+
+    return ownerID ~= expectedOwnerID
+end
+
+-- root.children[3]：判断怪物归属是否属于自己。
+local function GetOwnerIDText(actor, expectedOwnerID)
+    local ownerID = actor:GetOwnerID()
+
+    if ownerID == nil or ownerID == "" or ownerID == -1 then
+        return false
+    end
+
+    if type(ownerID) == "string" then
+        return ownerID == tostring(expectedOwnerID)
+    end
+
+    return ownerID == expectedOwnerID
+end
+
+-- root.children[51]：返回原始归属ID及对应说明文字。
+local function GetOwnerDescription(actor, mainPlayerID)
+    local ownerID = actor:GetOwnerID()
+    local description
+
+    if ownerID == nil or ownerID == "" or ownerID == -1 then
+        description = "无归属"
+    elseif ownerID == mainPlayerID
+        or (type(ownerID) == "string" and ownerID == tostring(mainPlayerID))
+    then
+        description = "自己"
+    else
+        description = "其他玩家"
+    end
+
+    return ownerID, description
+end
+
+-- root.children[12]：设置目标；Facade或PlayerInputProxy不可用时返回false。
+local function SetTargetID(targetID)
+    if not global.Facade then
+        return false
+    end
+
+    local playerInputProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.PlayerInputProxy
+    )
+    if not playerInputProxy then
+        return false
+    end
+
+    playerInputProxy:SetTargetID(
+        targetID,
+        global.MMO.SELETE_TARGET_TYPE_FIND
+    )
+    return true
+end
+
+-- root.children[11]：取当前视野怪物并建立ID->actor映射，只保留存活对象。
+local function FindMonsterInCurrViewField()
+    local monsters = SL:FindMonsterInCurrViewField(true, true) or {}
+    local result = {}
+
+    for _, actor in ipairs(monsters) do
+        if IsDie(actor) then
+            local actorID = actor:GetID()
+            if actorID then
+                result[actorID] = actor
+            end
+        end
+    end
+
+    return result
+end
+
+-- root.children[39]：按忽略怪物设置过滤，再按距离排序并截取阈值数量。
+local function FindMonsterCandidates()
+    local monsters = SL:FindMonsterInCurrViewField(true, true)
+    if not monsters or #monsters == 0 then
+        return {}
+    end
+
+    local ignoredNames = {}
+    local ignoreSetting = GET_SETTING(global.MMO.SETTING_IDX_IGNORE_MONSTER)
+
+    if ignoreSetting and type(ignoreSetting[1]) == "table" then
+        for name, enabled in pairs(ignoreSetting[1]) do
+            if enabled == true then
+                ignoredNames[name] = true
+            end
+        end
+    end
+
+    local playerPosition = GetPlayerPosition()
+    local candidates = {}
+
+    for _, actor in ipairs(monsters) do
+        if IsDie(actor) then
+            local name = actor:GetName() or "未知怪物"
+            if not ignoredNames[name] then
+                local actorPosition = GetPlayerMapPosition(actor)
+                actor._distance = DistanceCalculation(
+                    playerPosition,
+                    actorPosition
+                )
+                table.insert(candidates, actor)
+            end
+        end
+    end
+
+    table.sort(candidates, function(left, right)
+        return left._distance < right._distance
+    end)
+
+    local result = {}
+    for index, actor in ipairs(candidates) do
+        if index > gatherConfig.GATHER_THRESHOLD then
+            break
+        end
+        table.insert(result, actor)
+    end
+
+    return result
+end
+
+-- root.children[45]：新版462条指令MainLoop。
+-- 相较旧版新增的技能检查位于GATHERING状态开始处，每个循环周期检查一次
+-- 技能列表；技能名称包含“彻地钉”时请求释放对应MagicID。
+local function MainLoop()
+    if not gatherState.isRunning then
+        return
+    end
+
+    if IsInWhitelistMap() then
+        if gatherState.currentState ~= gatherStatusText.IDLE then
+            PrintLog("在白名单地图, 停止引怪")
+            FormatStateChange(gatherStatusText.IDLE)
+            ResetGatherMonsterData()
+        end
+        return
+    end
+
+    if gatherState.currentState == gatherStatusText.IDLE then
+        PrintLog("扫描怪物中")
+
+        local candidates = FindMonsterCandidates()
+        if #candidates == 0 then
+            PrintLog("视野内没有可攻击怪物")
+            return
+        end
+
+        gatherState.targets = {}
+        local mainPlayerID = GetMainPlayerID()
+
+        for _, actor in ipairs(candidates) do
+            if not GetOwnerID(actor, mainPlayerID) then
+                table.insert(gatherState.targets, actor:GetID())
+            end
+        end
+
+        if #gatherState.targets == 0 then
+            PrintLog("没有可攻击的怪物")
+            return
+        end
+
+        gatherState.cursor = 1
+        gatherState.ownedCount = 0
+        PrintLog(string.format(
+            "开始引怪，目标数量: %d",
+            #gatherState.targets
+        ))
+        FormatStateChange(gatherStatusText.GATHERING)
+        return
+    end
+
+    if gatherState.currentState == gatherStatusText.GATHERING then
+        PrintLog("引怪中")
+
+        -- 新版新增技能逻辑（proto94 PC96-PC140）。
+        -- 取Skill代理技能列表，查询每项MagicID对应的技能名称；
+        -- 名称包含“彻地钉”时记录日志并请求释放。
+        local skillProxy = global.Facade:retrieveProxy(
+            global.ProxyTable.Skill
+        )
+        local skills = skillProxy:GetSkills()
+
+        for _, skill in pairs(skills) do
+            local skillName = SL:GetMetaValue(
+                "SKILL_NAME",
+                skill.MagicID
+            )
+
+            if skillName and string.find(skillName, "彻地钉") then
+                PrintLog(string.format(
+                    "释放技能: %s，ID: %s",
+                    skillName,
+                    tostring(skill.MagicID)
+                ))
+                SL:RequestLaunchSkill(skill.MagicID)
+            end
+        end
+
+        if gatherState.pendingOwnerChange then
+            local now = os.time()
+            if now < gatherState.ownerDeadline then
+                PrintLog(string.format(
+                    "等待归属变更中: %s (还剩 %d 秒)",
+                    gatherState.pendingMonsterName,
+                    gatherState.ownerDeadline - now
+                ))
+                return
+            end
+
+            local actorMap = FindMonsterInCurrViewField()
+            local actor = actorMap[gatherState.pendingTargetID]
+            local mainPlayerID = GetMainPlayerID()
+
+            if actor and GetOwnerIDText(actor, mainPlayerID) then
+                PrintLog(string.format(
+                    "怪物 %s 归属已变更为自己",
+                    gatherState.pendingMonsterName
+                ))
+                gatherState.ownedCount = gatherState.ownedCount + 1
+            else
+                PrintLog(string.format(
+                    "怪物 %s 归属未变更或已离开视野",
+                    gatherState.pendingMonsterName
+                ))
+            end
+
+            gatherState.pendingOwnerChange = false
+            gatherState.ownerDeadline = 0
+            gatherState.pendingTargetID = 0
+            gatherState.pendingMonsterName = ""
+            gatherState.cursor = gatherState.cursor + 1
+        end
+
+        -- 新版VM在此调用零形参FindMonsterInCurrViewField时传入等待标记；
+        -- Lua函数忽略多余实参，保留原始调用形态。
+        local actorMap = FindMonsterInCurrViewField(
+            gatherState.pendingOwnerChange
+        )
+        local mainPlayerID = GetMainPlayerID()
+        local allOwnersResolved = true
+
+        for index = gatherState.cursor, #gatherState.targets do
+            local targetID = gatherState.targets[index]
+            local actor = actorMap[targetID]
+
+            if not actor then
+                PrintLog(string.format(
+                    "怪物 %d (ID: %s) 不在视野内，跳过",
+                    index,
+                    tostring(targetID)
+                ))
+                gatherState.cursor = index + 1
+
+            elseif not IsDie(actor) then
+                PrintLog(string.format(
+                    "怪物 %d (ID: %s) 已死亡，跳过",
+                    index,
+                    tostring(targetID)
+                ))
+                gatherState.cursor = index + 1
+
+            else
+                local monsterName = actor:GetName()
+                if not monsterName then
+                    monsterName = "未知怪物"
+                end
+
+                local ownerID, ownerDescription =
+                    GetOwnerDescription(actor, mainPlayerID)
+
+                if GetOwnerID(actor, mainPlayerID) then
+                    PrintLog(string.format(
+                        "怪物 %d (%s, ID: %s) 归属属于其他玩家(归属ID: %s, %s)，跳过",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerID),
+                        tostring(ownerDescription)
+                    ))
+                    gatherState.cursor = index + 1
+
+                elseif GetOwnerIDText(actor, mainPlayerID) then
+                    PrintLog(string.format(
+                        "怪物 %d (%s, ID: %s) 归属已属于自己(归属ID: %s, %s)，跳过",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerID),
+                        tostring(ownerDescription)
+                    ))
+                    gatherState.ownedCount = gatherState.ownedCount + 1
+                    gatherState.cursor = index + 1
+
+                else
+                    allOwnersResolved = false
+                    gatherState.cursor = index
+
+                    PrintLog(string.format(
+                        "锁定怪物 %d: %s (ID: %s, 归属: %s)",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerDescription)
+                    ))
+
+                    local accepted = SetTargetID(targetID)
+                    if accepted then
+                        gatherState.pendingOwnerChange = true
+                        gatherState.ownerDeadline =
+                            os.time() + gatherConfig.ATTACK_WAIT_TIME
+                        gatherState.pendingTargetID = targetID
+                        gatherState.pendingMonsterName = monsterName
+
+                        PrintLog(string.format(
+                            "开始等待 %s 归属变更 (等待 %d 秒)",
+                            monsterName,
+                            gatherConfig.ATTACK_WAIT_TIME
+                        ))
+                        return
+                    end
+
+                    PrintLog(string.format(
+                        "锁定怪物 %s 失败",
+                        monsterName
+                    ))
+                    gatherState.cursor = index + 1
+                    return
+                end
+            end
+        end
+
+        if allOwnersResolved
+            and gatherState.ownedCount >= #gatherState.targets
+        then
+            PrintLog("所有怪物归属已获取，切换到攻击状态")
+            gatherState.cursor = 1
+            FormatStateChange(gatherStatusText.ATTACKING)
+            return
+        end
+
+        PrintLog("怪物列表处理完毕但未全部获取归属，重新扫描")
+        FormatStateChange(gatherStatusText.IDLE)
+        ResetGatherMonsterData()
+        return
+    end
+
+    if gatherState.currentState == gatherStatusText.ATTACKING then
+        PrintLog("攻击中")
+
+        local actorMap = FindMonsterInCurrViewField()
+
+        for index = gatherState.cursor, #gatherState.targets do
+            local targetID = gatherState.targets[index]
+            local actor = actorMap[targetID]
+
+            if actor and IsDie(actor) then
+                local monsterName = actor:GetName()
+                if not monsterName then
+                    monsterName = "未知怪物"
+                end
+
+                PrintLog(string.format(
+                    "攻击怪物 %d: %s (ID: %s)",
+                    index,
+                    monsterName,
+                    tostring(targetID)
+                ))
+
+                -- 保留共享目标ID去重：同一目标未变化时不重复设置。
+                if gatherState.pendingTargetID ~= targetID then
+                    if SetTargetID(targetID) then
+                        gatherState.pendingTargetID = targetID
+                    end
+                end
+                return
+            end
+
+            PrintLog(string.format(
+                "怪物 %d (ID: %s) 已死亡或离开视野",
+                index,
+                tostring(targetID)
+            ))
+            gatherState.cursor = index + 1
+        end
+
+        PrintLog("所有目标怪物已死亡或离开视野，切换到空闲状态")
+        FormatStateChange(gatherStatusText.IDLE)
+        ResetGatherMonsterData()
+        return
+    end
+end
+
+-- root.children[23]：初始化引怪定时循环。
+local function InitGatherMonsters()
+    if timerState.gatherTimer then
+        SL:UnSchedule(timerState.gatherTimer)
+        timerState.gatherTimer = nil
+    end
+
+    gatherState.isRunning = true
+    FormatStateChange(gatherStatusText.IDLE)
+    ResetGatherMonsterData()
+
+    timerState.gatherTimer = SL:Schedule(
+        MainLoop,
+        gatherConfig.CHECK_INTERVAL
+    )
+
+    PrintLog(string.format(
+        "引怪功能已启动 (阈值: %d)",
+        gatherConfig.GATHER_THRESHOLD
+    ))
+end
+
+-- root.children[41]：停止引怪，清理定时器、目标和状态。
+-- VM原始顺序包含ClearTargetID_2与ResetGatherMonsterData内部再次清目标。
+local function StopGatherMonsters()
+    gatherState.isRunning = false
+
+    if timerState.gatherTimer then
+        SL:UnSchedule(timerState.gatherTimer)
+        timerState.gatherTimer = nil
+    end
+
+    ClearTargetID_2()
+    FormatStateChange(gatherStatusText.IDLE)
+    ResetGatherMonsterData()
+    PrintLog("引怪功能已停止")
+end
+
+-- 当前静态恢复范围：引怪状态数据、候选筛选、目标/归属辅助、
+-- MainLoop新增技能段、初始化和停止函数已写入。
+-- MainLeftBottom.doInit中的按钮回调登记与完整root模块装配不属于本轮范围。
+
 
 -- ============================================================
 --  6. 物品处理与仓库系统
