@@ -1558,7 +1558,7 @@ end
 
 -- 对应doInit中PC155-PC175的cruiseTimer替换与注册流程。
 -- 先取消旧句柄并清空共享字段，再创建每日回调，以1秒周期注册。
--- initialLastSentDate/unusedCapturedState/notify由doInit闭包捕获链传入。
+-- unusedCapturedState与notify按doInit闭包捕获链传入；日期标记由回调内部从nil开始维护。
 local function ReplaceCruiseTimer(
     timerState,
     unusedCapturedState,
