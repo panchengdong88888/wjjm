@@ -406,6 +406,54 @@
 - 明文源码最新提交：`0ff645b891e1ff5d9b0ed754c2631a47ebb13d71`
 - 明文源码content SHA：`b56f44754986744832c72e76fd428194107f9377`
 
+### doInit_UI的20项捕获与黑名单按钮回调（2026-11-13）
+
+本轮重新对照函数状态清单与静态反汇编，确认根级PC390创建的是`MainLeftBottom.doInit`，对应原型路径`root/43`，419条指令、23个子原型。不要把它与相邻的`root/42`快捷栏移动函数混淆。
+
+#### doInit的20项捕获顺序
+
+root PC390创建闭包，PC391-PC410依次捕获：
+`T4,T2,T3,T0,T1,T41,T48,T7,T8,T50,T49,T5,T44,T42,T51,T43,T47,T11,T12,T9`。
+
+已由既有检查点记录确认的身份：
+- doInit UP[0] = T4：PrintLog。
+- UP[1] = T2：MainLeftBottom.z功能状态表。
+- UP[2] = T3：共享timerState。
+- UP[3] = T0：MainLeftBottom.a状态表。
+- UP[5] = T41：blacklistState。
+- UP[6] = T48：读取`blacklist_distance.txt`的数值配置函数。
+- UP[9] = T50：读取`gather_monster_count.txt`的数值配置函数。
+- UP[10] = T49：写入`blacklist_distance.txt`的数值配置函数。
+- UP[11] = T5：ShowLocalNoticeByType。
+- UP[12] = T44：GetWritablePath。
+- UP[13] = T42：`blacklist_distance.txt`文件名。
+- UP[14] = T51：写入`gather_monster_count.txt`的数值配置函数。
+- UP[15] = T43：`gather_monster_count.txt`文件名。
+- UP[16] = T47：FileExistCheck的pcall包装函数。
+- UP[17] = T11：18000。
+- UP[18] = T12：奖励记录表。
+- UP[4]=T1、UP[7]=T7、UP[8]=T8、UP[19]=T9的语义尚未在本轮重新展开，先保留原寄存器身份，不猜测名称。
+
+#### 黑名单相关UI回调的原型链
+
+- root/43 PC239创建`root/43/18`（28条指令）：黑名单定时器启动工厂，捕获5项，依次为距离配置表、距离读取函数、timerState、调度函数、格式化通知函数。
+- root/43 PC296创建`root/43/14`（6条指令）：清空黑名单按钮包装回调，捕获通知函数；先显示“清空黑名单”，再读取当前chunk ENV的`ClearBlacklistItems`并调用。
+- root/43 PC299创建`root/43/19`（39条指令）：黑名单按钮点击回调，捕获6项，依次为timerState、PrintLog、MainLeftBottom.z、距离读取函数、距离输入提示包装器、黑名单定时器启动函数。
+- root/43/19行为：已有`blacklistTimer`时通知关闭、取消定时器、清空句柄并将`isBlacklisting=false`；无定时器时读取距离，缺失则通知并打开输入提示；有距离则通知、启动黑名单检测并返回true。
+
+#### 已写入唯一明文源码的工厂
+
+- `MakeBlacklistTimer(distanceConfig, readBlacklistDistance, timerState, schedule, notify)`
+- `MakeBlacklistButtonHandler(timerState, notify, featureState, readBlacklistDistance, showDistancePrompt, startBlacklistTimer)`
+- `MakeClearBlacklistButtonHandler(notify)`
+
+这些工厂保留了字节码中的调用顺序和返回值。当前只恢复了函数工厂，尚未把它们实例化并接到doInit_UI的实际按钮事件链；没有重写新版完整UI，也没有修改旧版文件。
+
+#### 本轮提交
+
+- 明文源码提交：`9749222b464101f9e31271f0b5d38cc5e2725906`
+- 明文源码content SHA：`4b4ab866696048d9ad2e2c588665111c7dd19800`
+
 ### 后续恢复顺序
 
 - 下一项优先恢复黑名单玩家检测闭包（新版root/48，根级导出名 `BlacklistItems`），它在PC134调用 `MakeGetMapData2DPtr` 作为距离计算器；需要按13项捕获顺序逐一映射后再写入主明文，不可只凭函数名猜测。
