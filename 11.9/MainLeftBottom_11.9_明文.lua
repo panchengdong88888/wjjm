@@ -2148,11 +2148,11 @@ end
 --  8.2 奖励功能按钮业务（11.9新版 rewardbut）
 -- ============================================================
 
--- 根函数PC90-PC96：奖励回调间隔为0.2秒，轮询取模范围为300。
+-- 根函数PC90-PC95：先计算floor(3600 / 0.2)，得到奖励序列模数18000；调度周期为0.2秒。
 -- PC97-PC167构造14条三元素奖励记录；字段按原始VM顺序保留，
 -- 不对消息ID和末尾数字擅自赋予协议含义。
 local rewardScheduleInterval = 0.2
-local rewardSequenceModulus = 300
+local rewardSequenceModulus = 18000
 
 local loginAndOnlineRewardEntries = {
     { 56061, "累计登录 1 天", 18 },
@@ -2172,7 +2172,7 @@ local loginAndOnlineRewardEntries = {
 }
 
 -- 对应奖励周期回调子原型（22条指令）。
--- 闭包计数器每次调度递增，按((counter - 1) % 300) + 1循环查找奖励表。
+-- 闭包计数器每次调度递增，按((counter - 1) % modulus) + 1循环查找奖励表；新版doInit传入18000。
 -- 当前槽位没有记录时不发送消息；有记录时按VM实参顺序调用全局LuaSendMsg。
 local function MakeRewardTimerCallback(initialCounter, modulus, rewardEntries)
     local counter = initialCounter
@@ -2198,24 +2198,24 @@ local function MakeRewardTimerCallback(initialCounter, modulus, rewardEntries)
 end
 
 -- 对应新版奖励按钮处理器（33条指令）。
--- 捕获顺序：timerState、ShowLocalNoticeByType包装函数、取模基数、
--- 奖励记录表、Schedule周期。已有rewardTimer时取消；否则启动0.2秒轮询。
+-- 捕获顺序：共享timerState、PrintLog、取模基数、奖励记录表、Schedule周期。
+-- 新版root/43/2的第二项捕获来自root/43 UP[0]，即PrintLog，而不是通知包装器。
 local function MakeRewardButtonHandler(
     timerState,
-    showLocalNotice,
+    printLog,
     modulus,
     rewardEntries,
     scheduleInterval
 )
     return function()
         if timerState.rewardTimer then
-            showLocalNotice("关闭奖励功能")
+            printLog("关闭奖励功能")
             SL:UnSchedule(timerState.rewardTimer)
             timerState.rewardTimer = nil
             return true
         end
 
-        showLocalNotice("开启奖励功能")
+        printLog("开启奖励功能")
         local callback = MakeRewardTimerCallback(0, modulus, rewardEntries)
         timerState.rewardTimer = SL:Schedule(callback, scheduleInterval)
         return true
