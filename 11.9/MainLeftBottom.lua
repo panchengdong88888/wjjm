@@ -1523,11 +1523,6 @@ local function DestroyUI()
         SL:UnSchedule(timerState.resTimer)
         timerState.resTimer = nil
     end
-    -- 11.9新增购买金条定时器：销毁UI时同步取消，避免遗留后台轮询。
-    if timerState.buygoldTimer then
-        SL:UnSchedule(timerState.buygoldTimer)
-        timerState.buygoldTimer = nil
-    end
     a.resWin = nil
     GUI:Win_CloseAll()
     -- root.children[37]的VM布尔常量为false：真正隐藏所有功能按钮。
@@ -1543,6 +1538,11 @@ local function ShowHideAllButtons()
     if timerState.rewardTimer then
         SL:UnSchedule(timerState.rewardTimer)
         timerState.rewardTimer = nil
+    end
+    -- 11.9 MainLeftBottom.destroy闭包会清理购买金条定时器。
+    if timerState.buygoldTimer then
+        SL:UnSchedule(timerState.buygoldTimer)
+        timerState.buygoldTimer = nil
     end
     if timerState.cruiseTimer then
         SL:UnSchedule(timerState.cruiseTimer)
