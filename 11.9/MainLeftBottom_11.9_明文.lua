@@ -676,6 +676,139 @@ end
 -- 首条LuaSendMsg的完整实参、ScheduleOnce句柄赋值/取消路径，以及
 -- 原型93逐个背包物品筛选和发包参数仍在定点核对；未确认前不补写猜测代码。
 
+-- 新区物品名称匹配表：对应新版root在创建proto93前构建的38项数组。
+-- 保留原始顺序和重复项；string.find使用plain=true进行字面子串匹配。
+local NEW_ZONE_ITEM_NAME_KEYWORDS = {
+    "开天",
+    "雷霆战甲(男)",
+    "雷霆战盔",
+    "雷霆项链",
+    "雷霆护腕",
+    "雷霆护腕",
+    "雷霆戒指",
+    "雷霆戒指",
+    "雷霆腰带",
+    "雷霆战靴",
+    "逐日剑法",
+    "半月弯刀",
+    "施毒术",
+    "烈火剑法",
+    "自动回收",
+    "自动拾取",
+    "自动合成",
+    "自由发言",
+    "解锁绑定",
+    "自由交易",
+    "超级狂暴",
+    "超级神器",
+    "超级复活",
+    "超级回血",
+    "超级四神",
+    "回血石Lv.1",
+    "雷霆の护盾",
+    "龙腾玉佩",
+    "龙腾战鼓",
+    "龙腾血符",
+    "斩尽天下不收刀",
+    "梦幻斗笠Lv.1",
+    "复活BUFF",
+    "青铜会员卡",
+    "白银会员卡",
+    "黄金会员卡",
+    "钻石会员卡",
+    "至尊会员卡",
+}
+
+-- 对应root.children[44]（原型93）：新区物品周期使用回调。
+-- 捕获顺序：新区物品名称表、PrintLog、timerState。
+-- 每次回调最多使用一件匹配物品；命中后立即返回，等待下一轮定时调用。
+local function MakeNewZoneItemTimerCallback(
+    itemNameKeywords,
+    printLog,
+    timerState
+)
+    return function()
+        local bagData = SL:GetMetaValue("BAG_DATA")
+        if not bagData then
+            return
+        end
+
+        -- 外层按新版38项名称表顺序遍历，内层遍历当前背包数据。
+        for _, keyword in ipairs(itemNameKeywords) do
+            for _, item in pairs(bagData) do
+                if item and item.MakeIndex and item.Name then
+                    -- 第四参数true：按字面子串查找，不把名称当Lua模式串。
+                    local matchStart = string.find(
+                        item.Name,
+                        keyword,
+                        1,
+                        true
+                    )
+
+                    if matchStart then
+                        LuaSendMsg(
+                            global.MsgType.MSG_CS_USE_BAG_ITEM,
+                            item.MakeIndex,
+                            0,
+                            0,
+                            0,
+                            item.Name,
+                            string.len(item.Name)
+                        )
+
+                        printLog("新区使用：%s", item.Name)
+                        return
+                    end
+                end
+            end
+        end
+
+        -- 38项名称全部扫描完仍未命中：取消新区周期定时器并清空句柄。
+        local newZoneTimer = timerState.newzoneTimer
+        if newZoneTimer then
+            SL:UnSchedule(newZoneTimer)
+            timerState.newzoneTimer = nil
+        end
+
+        printLog("新区物品已全部使用完毕，停止定时器")
+        SL:ShowSystemTips("新区物品已全部使用完毕")
+        Gbtc()
+    end
+end
+
+-- 对应root.children[38]（原型83）：新版“开新区”按钮业务处理器。
+-- 捕获顺序：PrintLog、MainLeftBottom模块表、timerState、
+-- Schedule包装函数、root.children[44]新区物品周期回调。
+-- 不创建按钮、不登记callback、不进行UI接线。
+local function MakeNewZoneButtonHandler(
+    printLog,
+    mainLeftBottom,
+    timerState,
+    schedule,
+    processNewZoneItems
+)
+    return function()
+        printLog("开启新区功能")
+        mainLeftBottom.isNewzone = true
+
+        -- 新区启动消息：原VM完整参数为9002、22302、1、2、3、空串、0。
+        LuaSendMsg(9002, 22302, 1, 2, 3, "", 0)
+
+        Gbtc()
+
+        -- 0.5秒后发送第二条消息（由原型84执行）。
+        SL:ScheduleOnce(SendNewZoneDelayedCommand, 0.5)
+
+        -- 若已有新区周期定时器，先取消旧句柄。
+        if timerState.newzoneTimer then
+            SL:UnSchedule(timerState.newzoneTimer)
+        end
+
+        -- 按新版root捕获的Schedule包装函数，以0.05秒周期运行背包物品回调。
+        timerState.newzoneTimer = schedule(processNewZoneItems, 0.05)
+    end
+end
+
 -- ============================================================
 --  8.3 停止脚本按钮业务（11.9新版 stopallbut）
 -- ============================================================
