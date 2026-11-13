@@ -994,3 +994,24 @@
 - 本次提交只新增奖励业务数据和两个函数，不做UI按钮登记、不改ButtonFactory、不改旧版文件、不改新版原始加密文件。
 - 静态核对：奖励表唯一一份、14条记录、56061七项/56011七项；回调与处理器函数各一份；Lua 5.1兼容语法扫描无新版本语法命中。未做Lua编译、APK打包或游戏运行测试。
 - 明文源码提交：`145f2eae90847ffde4d1291f86994895953c9cd4`；当前content SHA：`ba9d8468540343904afd64a8eb4141d4484fcfad`。
+
+
+### 2026-11-13：新版每日巡航回调与定时器替换逻辑已写入唯一明文源码
+
+- 原始文件重新解码：Base36/LZW解码后79573字节全部消费；当前0-based路径仍为`root.children[37]`（MainLeftBottom.doInit），巡航回调为`root.children[37].children[13]`，43条指令。
+- 巡航回调指令确认：
+  - 通过`os.date("*t")`读取本地系统日期时间；日期表不存在时直接返回。
+  - 计算`hour*3600 + min*60 + sec`；仅当秒数处于79205至79208（含边界）时继续，即每天22:00:05至22:00:08。
+  - 用`string.format("%04d%02d%02d", year, month, day)`构造日期键；与闭包捕获的上次发送日期相同则返回。
+  - opcode391将本次日期键写回闭包捕获的日期变量；写入发生在发送协议之前。
+  - 从chunk全局环境读取`LuaSendMsg`，实参精确为`LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)`。
+  - 随后调用捕获的通知函数，文本为“到达 22:00:05，发送开启巡航协议”。
+- doInit父级创建闭包点：PC169创建child index 13，捕获顺序为当前局部寄存器V[5]、父闭包upvalue A[2]、父闭包upvalue A[0]。回调内部第2项捕获值被加载后随即被全局LuaSendMsg读取覆盖，回调主体未实际使用；因此明文工厂保留`unusedCapturedState`形参位置。第1项是会被opcode391回写的日期标记，第3项是通知回调。
+- doInit PC155-PC175处理共享`timerState.cruiseTimer`：检测已有句柄则调用`SL:UnSchedule`并清空字段；随后创建child13回调，使用`SL:Schedule`按1秒周期注册，并将返回句柄写回`cruiseTimer`。PC173的周期常量为1。
+- 已在唯一明文文件新增：
+  - `MakeCruiseTimerCallback(initialLastSentDate, unusedCapturedState, notify)`；
+  - `ReplaceCruiseTimer(timerState, initialLastSentDate, unusedCapturedState, notify)`。
+- `ReplaceCruiseTimer`保留父级捕获值作为显式参数，不擅自猜测doInit局部V[5]在闭包创建瞬间的初值；实际父级装配调用尚未接入，当前仍只恢复业务函数，不做UI按钮登记或模块初始化重构。
+- 静态核对：回调与替换函数各唯一一份；时间上下界、日期去重、先更新日期再发送、9002/55556完整协议参数、通知文本、1秒周期、共享timerState字段及旧句柄取消均命中；新增代码Lua 5.1语法扫描无新版本语法命中。
+- 未进行Lua编译、APK打包或游戏运行测试；未修改新版原始加密文件或旧版源码。
+- 明文源码提交：`2b076f817441469f6e576f4d830c52c4a3bb3f0e`；当前content SHA：`7cb3d4c7adade489a58bf47bcdd410b39390fed3`。
