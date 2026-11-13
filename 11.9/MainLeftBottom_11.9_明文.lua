@@ -31,7 +31,17 @@
 --  2. 基础框架 API 包装函数
 -- ============================================================
 
--- TODO：优先根据新框架开发文档恢复参数、返回值明确的包装函数。
+-- 新版root子原型3：GetMapId（9条指令）。
+-- 原型常量与调用窗口对应SL:GetMetaValue("MAP_ID")，返回元变量结果。
+local function GetMapId()
+    return SL:GetMetaValue("MAP_ID")
+end
+
+-- 新版root子原型34：地图名称读取包装函数（9条指令）。
+-- 常量包含SL、GetMetaValue、MAP_NAME；按框架文档使用SL冒号调用。
+local function GetMapName()
+    return SL:GetMetaValue("MAP_NAME")
+end
 
 -- ============================================================
 --  3. 通用辅助函数与配置
