@@ -2929,7 +2929,7 @@ local function MakeResourceStatisticsWindow(moduleState, printLog, timerState, i
             (moduleState.screenW - listWidth) / 2, moduleState.screenH / 2,
             listWidth, listHeight, 1.0
         )
-        gui:setAnchorPoint(resList, 0.5, 0.5)
+        gui:setAnchorPoint(resList, 0, 0.5)
         gui:ListView_setBackGroundColorType(resList, 1)
         gui:ListView_setBackGroundColor(resList, "#CEB5F7")
         gui:ListView_setBackGroundColorOpacity(resList, 255)
