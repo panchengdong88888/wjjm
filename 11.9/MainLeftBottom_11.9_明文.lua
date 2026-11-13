@@ -1516,11 +1516,11 @@ end
 -- 闭包捕获顺序：上次发送日期、未在回调主体使用的状态值、通知函数。
 -- 每秒检查一次本地系统时间；仅在22:00:05至22:00:08（含边界）窗口内继续。
 local function MakeCruiseTimerCallback(
-    initialLastSentDate,
     unusedCapturedState,
     notify
 )
-    local lastSentDate = initialLastSentDate
+    -- doInit在创建巡航闭包前通过opcode299清空局部V[5]，初值确认为nil。
+    local lastSentDate = nil
 
     return function()
         local dateParts = os.date("*t")
@@ -1561,7 +1561,6 @@ end
 -- initialLastSentDate/unusedCapturedState/notify由doInit闭包捕获链传入。
 local function ReplaceCruiseTimer(
     timerState,
-    initialLastSentDate,
     unusedCapturedState,
     notify
 )
@@ -1571,7 +1570,6 @@ local function ReplaceCruiseTimer(
     end
 
     local callback = MakeCruiseTimerCallback(
-        initialLastSentDate,
         unusedCapturedState,
         notify
     )
