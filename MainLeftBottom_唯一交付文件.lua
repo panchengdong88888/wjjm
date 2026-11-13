@@ -2162,7 +2162,7 @@ local function BlacklistPlayerDetection()
                         blacklistState.nextTryAt = now + blacklistShortRetryDelay
                         blacklistState.noStoneWarned = false
 
-                        ShowLocalNotice(string.format(
+                        ShowLocalNoticeByType(string.format(
                             "黑名单玩家：%s（%d格），飞随机",
                             actorName,
                             distance or 0.0
@@ -2179,7 +2179,7 @@ local function BlacklistPlayerDetection()
 
                         if not blacklistState.noStoneWarned then
                             blacklistState.noStoneWarned = true
-                            ShowLocalNotice("没有随机传送石，黑名单玩家传送暂停")
+                            ShowLocalNoticeByType("没有随机传送石，黑名单玩家传送暂停")
                             PrintLog(
                                 "没有可用的随机传送道具（%s）",
                                 table.concat(randomTeleportItemNames, "/")
