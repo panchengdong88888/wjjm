@@ -1506,3 +1506,84 @@ root/43 UP[0..19] <- root local registers:
 1. 继续按child17、child18的PC指令逐项追踪五/六个捕获值的实际读取与调用点，确定R48、R4、R2、R3的真实用途。
 2. 核对父函数局部R19、R16在创建child18前的赋值来源。
 3. 只有捕获对象全部明确后，才把黑名单定时器、黑名单按钮和清空按钮闭包接入唯一明文源码的初始化链。
+
+
+## 2026-11-13 继续审计：黑名单按钮回调捕获值已闭合
+
+本轮继续只读核对新版VM反汇编，重点追踪 `root/43/18`（黑名单启动定时器闭包）和 `root/43/19`（黑名单按钮回调）的实际捕获值，并回查父函数局部寄存器生命周期。
+
+### 一、父函数upvalue真实对象身份
+
+根函数在PC390创建新版doInit/UI父函数 `root/43` 时，捕获序列为：
+
+```text
+UP[0..19] <- [R4,R2,R3,R0,R1,R41,R48,R7,R8,R50,
+              R49,R5,R44,R42,R51,R43,R47,R11,R12,R9]
+```
+
+本轮进一步确认：
+- 根R4：`root/17`闭包，即日志输出辅助函数。其主体处理参数类型、表/字符串转储，并调用`SL.Print`等路径；在黑名单按钮逻辑中用于输出提示。
+- 根R2：根函数PC31-PC42创建并初始化的`MainLeftBottom.z`共享运行状态表，包含`isPaused`、`isRunning`、`isStoring`、`isTaking`、`isDiuing`、`isOutputted`等字段。
+- 根R3：全局`MainLeftBottom`表本身。黑名单按钮回调直接在该表上读写`blacklistTimer`。
+- 根R7：`root/35`两参数Schedule包装闭包，内部通过`SL:Schedule`调度。
+- 根R41：黑名单专属状态表，含`distance`、`lastHp`、`deathHandled`、`alertAt`、`nextTryAt`、`noStoneWarned`等字段。
+- 根R48：小型文件配置读取包装闭包，捕获根R45和文件名字符串根R42（`blacklist_distance.txt`）；黑名单按钮通过它读取已保存的距离配置。不要把它误认为Schedule包装函数。
+
+### 二、child17：黑名单启动定时器闭包的捕获和行为
+
+父函数PC239创建child-index 17（反汇编路径`root/43/18`），捕获顺序为父函数UP[5,6,2,7,0]，映射到根级对象后为：
+
+```text
+child17 UP[0] = root R41：黑名单专属状态表
+child17 UP[1] = root R48：读取 blacklist_distance.txt 的包装闭包
+child17 UP[2] = root R3：MainLeftBottom全局表
+child17 UP[3] = root R7：SL.Schedule包装函数
+child17 UP[4] = root R4：日志输出辅助函数
+```
+
+指令确认：
+- 将传入距离写入黑名单状态表的`distance`字段。
+- 读取状态表中的`distance`；没有有效距离时返回。
+- 立即调用全局`BlacklistItems`。
+- 用Schedule包装函数注册`BlacklistItems`回调，周期为0.1秒。
+- 将定时器句柄写入`MainLeftBottom.blacklistTimer`。
+- 通过日志辅助函数输出`开启黑名单功能，距离格子：%d`。
+
+因此child17就是黑名单启动定时器/启动动作闭包，其对象捕获来源已经闭合。
+
+### 三、child18：黑名单按钮回调的捕获和行为
+
+父函数PC299创建child-index 18（反汇编路径`root/43/19`），捕获顺序为父函数UP[2,0,1,6]，再捕获父函数局部R19、R16：
+
+```text
+child18 UP[0] = root R3：MainLeftBottom全局表（blacklistTimer）
+child18 UP[1] = root R4：日志输出辅助函数
+child18 UP[2] = root R2：MainLeftBottom.z共享运行状态表（isBlacklisting）
+child18 UP[3] = root R48：读取 blacklist_distance.txt 的包装闭包
+child18 UP[4] = parent local R19：黑名单距离输入提示闭包（root/43/12）
+child18 UP[5] = parent local R16：child17黑名单启动定时器闭包
+```
+
+这里特别核实了R16的生命周期：虽然它在较早的PC207-PC230暂时承载按钮配置表，但PC239已将R16覆盖为child17闭包；PC305捕获发生在覆盖之后。因此child18 UP[5]确实是可调用的黑名单启动闭包，不是按钮配置表。此前可能出现的“表被当作函数调用”矛盾已经排除。
+
+child18指令行为：
+- 若`MainLeftBottom.blacklistTimer`已有句柄：输出关闭提示，调用`SL:UnSchedule`取消句柄，清空`blacklistTimer`，并把共享状态表`isBlacklisting`设为false，然后返回。
+- 若没有定时器：调用文件读取包装闭包读取已保存的距离。
+- 若距离缺失：输出“路径中没有黑名单的距离格子，弹出输入框”，调用父函数局部R19（黑名单距离输入提示闭包），然后返回。
+- 若距离存在：输出开启提示，再调用父函数局部R16（child17黑名单启动闭包）并传入距离值。
+
+### 四、清空黑名单按钮回调
+
+child13（反汇编路径`root/43/14`）捕获父函数UP[0]，即根R4日志输出辅助函数。主体先输出“清空黑名单”，再调用全局`ClearBlacklistItems`。这与之前记录的捕获映射一致。
+
+### 五、本轮结论和源码边界
+
+黑名单启动闭包、黑名单按钮回调、清空按钮回调所需的父级对象捕获来源已经闭合，关键局部R19/R16也已确认：
+- R19是黑名单距离输入提示闭包；
+- R16在捕获时已是child17黑名单启动闭包。
+
+本轮只更新本接续文档，没有修改`11.9/MainLeftBottom_11.9_明文.lua`，没有把这些闭包接入根初始化，也没有修改任何其他源码/资料文件；没有进行Lua编译、APK打包或游戏运行测试。
+
+### 下一步
+
+现在可以按已确认的真实对象关系，审计父函数后续如何将child17、child18和child13登记到`buttonHandlers.blacklistbut`、`buttonHandlers.clearblacklistbut`，以及对应按钮配置表如何交给UI创建机制。确认登记链后，再把黑名单业务闭包接入唯一明文源码的初始化流程；不要重写新版通用UI框架。
