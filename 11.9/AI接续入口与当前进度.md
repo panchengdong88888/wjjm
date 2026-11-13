@@ -2077,3 +2077,30 @@ root/43的20项捕获现已全部映射到对象或具体用途：R4日志、R2�
 ### 当前黑名单UI接线状态
 
 上述工厂现已恢复/修正定义，但尚未组装进真实`MainLeftBottom.doInit`。还需按VM PC236-PC340的局部寄存器生命周期，将按钮状态同步闭包、黑名单启动闭包、通用输入包装器、距离提示闭包、黑名单按钮回调、清空黑名单回调、清空距离回调及其他按钮回调按原始顺序实例化并登记到callbackMap。不能因为工厂已存在就宣称按钮已可用。
+
+
+### 2026-11-13追加：root/43 PC268-PC337回调映射表登记顺序核实
+
+本轮继续读取root/43 PC236-PC340，明确了真正的`callbackMap`创建点和各业务handler登记顺序：
+
+- PC268创建空的callbackMap（局部R21）。之后所有按钮回调先写入这张表，通用ButtonFactory在PC340创建，按钮遍历在PC346之后执行。
+- PC269创建root/43/7引怪按钮handler，PC276登记`callbackMap.yinguaibut`。
+- PC277创建root/43/3清空怪物阈值handler，PC282登记`callbackMap.clearmonsterbut`。
+- PC283创建root/43/21清空黑名单距离handler，PC288登记`callbackMap.cleardistancebut`。
+- PC289创建root/43/2奖励handler，PC295登记`callbackMap.rewardbut`。
+- PC296创建root/43/14清空黑名单数据handler，PC298登记`callbackMap.clearblacklistbut`。
+- PC299创建root/43/19黑名单开关handler，PC306登记`callbackMap.blacklistbut`。
+- PC307创建存仓handler，PC312登记`callbackMap.storagebut`。
+- PC313创建取物handler，PC318登记`callbackMap.takebut`。
+- PC319创建拾取handler，PC323登记`callbackMap.shiqubut`。
+- PC324创建丢弃handler，PC329登记`callbackMap.diuqibut`。
+- PC330创建资源统计窗口handler，PC335登记`callbackMap.moneybut`。
+- PC336创建快速小退handler，PC337登记`callbackMap.xiaotuibut`。
+
+注意：`storagebut`、`takebut`也会登记到callbackMap，但不在当前root/43三组可见按钮配置中；不能因此把它们擅自添加到三组按钮数组。`moneybut`对应资源统计窗口handler，`xiaotuibut`对应快速小退handler，两者没有混淆。
+
+黑名单所需登记链已经明确：PC268先创建callbackMap；PC296-PC298登记`clearblacklistbut`；PC299-PC306登记`blacklistbut`；PC340之后ButtonFactory按配置key从callbackMap取回调。清空黑名单距离存档的`cleardistancebut`则在PC283-PC288登记。
+
+唯一明文源码当前已包含黑名单开关、清空黑名单、清空黑名单距离、清空怪物阈值等独立工厂定义，但尚未在真实doInit中创建callbackMap并按上述顺序登记。下一步应继续核对PC236-PC268之前的局部寄存器生命周期，以及PC340-PC419的UI父容器/按钮创建与布局关系，再一次性组装真实doInit，不要提前宣称按钮可用。
+
+本轮只更新接续文档；唯一明文源码保持上一提交`7d578a95cd93a7d3542d11b7e8523838f2bce065`，没有修改原始加密文件或旧版整合文件。未做Lua编译、APK打包或游戏运行测试。
