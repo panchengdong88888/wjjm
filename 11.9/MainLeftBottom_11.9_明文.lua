@@ -967,6 +967,13 @@ local function MakeClearBlacklistButtonHandler(notify)
     end
 end
 
+-- Lua 5.1前向声明：根装配工厂在这些工厂定义之前，必须先声明局部名，
+-- 后续用赋值形式定义，避免被解析成全局变量。
+local MakeUseItemByIndex
+local MakeInstallDamageHook
+local MakeDeathAutoBlacklist
+local MakeBlacklistPlayerDetection
+
 -- root PC352-PC382：按真实父级寄存器捕获关系组装BlacklistItems闭包链。
 -- 参数对应root模块已建立的共享对象；本函数不创建第二份状态表。
 -- 调用时必须传入rootEnvironment、MainLeftBottom.a、MainLeftBottom.z、
@@ -1054,7 +1061,7 @@ local function MakeBlacklistRootBindings(
     }
 end
 
-local function MakeInstallDamageHook(mainLeftBottomState, printLog)
+MakeInstallDamageHook = function(mainLeftBottomState, printLog)
     return function()
         local gameMapController = global.gameMapController
         if not gameMapController then
@@ -1100,7 +1107,7 @@ local function MakeInstallDamageHook(mainLeftBottomState, printLog)
 end
 
 -- root/26：DeathAutoBlacklist，使用共享blacklistState及黑名单查询闭包。
-local function MakeDeathAutoBlacklist(blacklistState, printLog, findBlacklistPlayer, showLocalNotice)
+MakeDeathAutoBlacklist = function(blacklistState, printLog, findBlacklistPlayer, showLocalNotice)
     return function()
         local lastAttacker = blacklistState.lastAttacker
         blacklistState.lastAttacker = nil
@@ -1128,7 +1135,7 @@ end
 
 -- root/25：UseItemByIndex，UP[0]=randomTeleportItemNames。
 -- 按名称表顺序查询物品索引和数量，找到第一件可用道具后使用并返回名称。
-local function MakeUseItemByIndex(randomTeleportItemNames)
+MakeUseItemByIndex = function(randomTeleportItemNames)
     return function()
         for _, itemName in ipairs(randomTeleportItemNames) do
             local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)
@@ -1149,7 +1156,7 @@ end
 -- UP[3]=DeathAutoBlacklist；UP[4]=FindBlacklistPlayer；UP[5]=GetMapData2DPtr；
 -- UP[6]=2.0；UP[7]=PrintLog；UP[8]=UseItemByIndex；UP[9]=0.01；
 -- UP[10]=ShowLocalNoticeByType；UP[11]=30.0；UP[12]=randomTeleportItemNames。
-local function MakeBlacklistPlayerDetection(
+MakeBlacklistPlayerDetection = function(
     featureState,
     installDamageHook,
     blacklistState,
