@@ -1439,3 +1439,14 @@ root PC390创建闭包，PC391-PC410依次捕获：
 
 - 按函数状态清单与反汇编路径，InstallDamageHook对应VM原型路径为`root/7`（0-based `root.children[6]`），此前明文注释误写为`root/6`，已修正注释，不涉及函数主体。
 - 最新明文源码提交：`2b7725bb784984a98a0b4b3ce09e8048da4981ae`；content SHA：`51be07fd7c5e7628bd59e969a816fa894e5df8ad`。
+
+
+### 2026-11-13：黑名单根装配工厂的Lua 5.1局部作用域修正
+
+- 重新fetch main上的唯一明文源码后，发现`MakeBlacklistRootBindings`定义位置早于四个被调用的局部工厂：`MakeUseItemByIndex`、`MakeInstallDamageHook`、`MakeDeathAutoBlacklist`、`MakeBlacklistPlayerDetection`。
+- Lua 5.1中，后置的`local function`声明不会回溯绑定到前面已编译的函数体；原写法会使根装配工厂中的这些标识符解析为外层/全局环境名称，可能在装配时得到nil。
+- 已在根装配工厂之前增加四个局部前向声明，并将对应后置定义改为对这些局部变量赋值的函数表达式，确保闭包引用的是正确局部函数。
+- 本次只修复词法作用域，不改变任何函数业务逻辑、参数顺序、共享表或UI行为。
+- 源码提交：`035eb9456af7b76b5c1bb1d1d4e7568d61428a68`；新content SHA：`a08111a8fe3cb43a868a2f92618a9d2bce5df8c0`。
+- 未进行Lua编译、APK打包或游戏运行测试。
+- 下一步：继续从新版原始VM的`doInit`原型核对黑名单按钮工厂创建、捕获和callbackMap登记，先确认各捕获源，再决定如何接入现有明文框架；不要假定根装配工厂已被实际调用。
