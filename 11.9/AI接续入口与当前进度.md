@@ -2032,3 +2032,27 @@ root/43的20项捕获现已全部映射到对象或具体用途：R4日志、R2�
 唯一明文源码content SHA：`624901bd318fbac2c47e0436faef320e28fe8353`。
 
 静态替换检查确认本轮指定的6处文本/代码位置均各命中一次并完成替换。未做Lua编译、APK打包或游戏运行测试。后续继续按root/43真实捕获顺序恢复doInit，不要把奖励按钮日志函数重新接成通知包装器。
+
+
+### 2026-11-13追加：新版doInit三组按钮配置已按VM修正
+
+重新逐条读取root/43 PC195-PC235后，确认原始三组配置并非此前某轮笔记中所记的“第三组空表”。真实配置如下：
+
+- 第一组（PC195-PC210，4项）：`yinguaibut`（开拉怪/关拉怪）、`blacklistbut`（开黑名单/关黑名单）、`clearblacklistbut`（清黑名单）、`moneybut`（资源统计）。
+- 第二组（PC211-PC223，3项）：`shiqubut`（开拾取/关拾取）、`diuqibut`（开丢物品/关丢物品）、`xiaotuibut`（快速小退）。
+- 第三组（PC224-PC235，3项）：`clearmonsterbut`（清怪物值）、`cleardistancebut`（清距离值）、`rewardbut`（开奖励/关奖励）。
+
+已将唯一明文源码`BuildMainLeftBottomButtonGroups()`按以上顺序修正：删除不属于这三组的`settingbut`、`stopallbut`、`buygoldbut`、`recyclebut`、`newzone`等配置；补回`clearmonsterbut`、`cleardistancebut`、`rewardbut`；并将第二组丢弃按钮标题修正为VM原始文本“开丢物品/关丢物品”。这只修正按钮配置数组，没有重写通用ButtonFactory，也没有擅自把这些其他业务按钮接入新版root/43 UI。
+
+唯一明文源码提交：`af1b7c7d90cc43e511683d5a7220498cf98427e7`。
+唯一明文源码content SHA：`55c3536f7d59dca28c12bff1841a7143853eb803`。
+
+### 当前纠错提醒
+
+- 先前文档中“第三组空表”的描述作废，以本节PC224-PC235实测反汇编为准。
+- 先前文档中将root/43 UP[17]奖励模数记为300的描述作废，已按PC92-PC95改为18000；奖励按钮日志捕获已修正为PrintLog。
+- 本轮没有进行Lua编译、APK打包或游戏运行测试。
+
+### 下一步
+
+继续按root/43真实PC顺序补齐doInit装配函数：先核对PC236-PC340之间各按钮回调注册与清空配置处理器，之后核对PC340-PC419的父容器、按钮映射、ButtonFactory调用和最终返回/挂接行为。黑名单两个按钮的handler必须在buttonFactory遍历前按key登记；通用按钮工厂保持原样。
