@@ -2926,7 +2926,7 @@ local function MakeResourceStatisticsWindow(moduleState, printLog, timerState, i
         local listHeight = moduleState.screenH * 0.6
         local resList = gui:ListView_Create(
             resWin, "resList",
-            moduleState.screenW / 2, moduleState.screenH / 2,
+            (moduleState.screenW - listWidth) / 2, moduleState.screenH / 2,
             listWidth, listHeight, 1.0
         )
         gui:setAnchorPoint(resList, 0.5, 0.5)
