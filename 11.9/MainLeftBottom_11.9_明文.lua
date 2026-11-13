@@ -898,7 +898,7 @@ local function MakeBlacklistTimer(
     readBlacklistDistance,
     timerState,
     schedule,
-    notify
+    printLog
 )
     return function(distance)
         if not distance then
@@ -917,7 +917,7 @@ local function MakeBlacklistTimer(
         local timerHandle = schedule(blacklistItems, 0.1)
         timerState.blacklistTimer = timerHandle
 
-        notify("开启黑名单功能，距离格子：%d", distanceConfig.distance)
+        printLog("开启黑名单功能，距离格子：%d", distanceConfig.distance)
         return true
     end
 end
@@ -928,7 +928,7 @@ end
 -- UP[5]=启动黑名单定时器。
 local function MakeBlacklistButtonHandler(
     timerState,
-    notify,
+    printLog,
     featureState,
     readBlacklistDistance,
     showDistancePrompt,
@@ -936,7 +936,7 @@ local function MakeBlacklistButtonHandler(
 )
     return function()
         if timerState.blacklistTimer then
-            notify("关闭黑名单功能")
+            printLog("关闭黑名单功能")
             SL:UnSchedule(timerState.blacklistTimer)
             timerState.blacklistTimer = nil
             featureState.isBlacklisting = false
@@ -945,12 +945,12 @@ local function MakeBlacklistButtonHandler(
 
         local distance = readBlacklistDistance()
         if not distance then
-            notify("路径中没有黑名单的距离格子，弹出输入框")
+            printLog("路径中没有黑名单的距离格子，弹出输入框")
             showDistancePrompt()
             return false
         end
 
-        notify("开启黑名单功能，距离格子：%d", distance)
+        printLog("开启黑名单功能，距离格子：%d", distance)
         startBlacklistTimer(distance)
         return true
     end
@@ -1033,12 +1033,13 @@ local function MakeBlacklistDistancePrompt(
 )
     return function()
         local function onDistanceSubmitted(distance)
-            local saved = saveConfig(fileName, distance)
+            -- saveConfig已经绑定blacklist_distance.txt，只传入待保存的距离。
+            local saved = saveConfig(distance)
             if not saved then
                 notify("黑名单距离保存失败")
                 printLog(
                     "黑名单距离保存失败，路径：%s",
-                    getWritablePath()
+                    getWritablePath(fileName)
                 )
                 return
             end
@@ -1060,10 +1061,10 @@ local function MakeBlacklistDistancePrompt(
 end
 
 -- root/43/14：清空黑名单按钮点击回调。
--- 先通知，再从当前chunk ENV读取ClearBlacklistItems并调用。
-local function MakeClearBlacklistButtonHandler(notify)
+-- 捕获root/43 UP[0]=PrintLog；先记录日志，再从当前chunk ENV读取ClearBlacklistItems并调用。
+local function MakeClearBlacklistButtonHandler(printLog)
     return function()
-        notify("清空黑名单")
+        printLog("清空黑名单")
         local currentEnvironment = getfenv(1)
         local clearBlacklistItems = currentEnvironment.ClearBlacklistItems
         return clearBlacklistItems()
