@@ -181,7 +181,7 @@ local function GetPlayerPosition()
     return { x = x, y = y }
 end
 
--- root.children[47]：从actor的地图坐标字段构造坐标。
+-- 新版root.children[44] / 原型索引89：从actor的地图坐标字段构造坐标。
 local function GetPlayerMapPosition(actor)
     if not actor then
         return nil
