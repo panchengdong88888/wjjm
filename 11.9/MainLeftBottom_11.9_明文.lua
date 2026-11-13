@@ -838,6 +838,83 @@ local function MakeOnDamageMsg(blacklistState)
     end
 end
 
+-- root PC352-PC382：按真实父级寄存器捕获关系组装BlacklistItems闭包链。
+-- 参数对应root模块已建立的共享对象；本函数不创建第二份状态表。
+-- 调用时必须传入rootEnvironment、MainLeftBottom.a、MainLeftBottom.z、
+-- root T[41] blacklistState、root T[37]随机传送物品名表、root T[4]/T[5]包装函数。
+local function MakeBlacklistRootBindings(
+    rootEnvironment,
+    mainLeftBottomState,
+    featureState,
+    blacklistState,
+    randomTeleportItemNames,
+    printLog,
+    showLocalNotice,
+    distanceHelperUnusedCapture
+)
+    -- PC352：无捕获PCallHelper_2。
+    local PCallHelper = PCallHelper_2
+
+    -- PC353-PC354：FindBlacklistPlayer捕获PCallHelper。
+    local findBlacklistPlayer = MakeFindBlacklistPlayer(PCallHelper)
+
+    -- PC355-PC356：UseItemByIndex捕获随机传送物品名表。
+    local useItemByIndex = MakeUseItemByIndex(randomTeleportItemNames)
+
+    -- PC357-PC359：onDamageMsg捕获blacklistState，并挂入MainLeftBottom.a。
+    local onDamageMsg = MakeOnDamageMsg(blacklistState)
+    mainLeftBottomState.onDamageMsg = onDamageMsg
+
+    -- PC360-PC362：InstallDamageHook捕获MainLeftBottom.a和PrintLog。
+    local installDamageHook = MakeInstallDamageHook(
+        mainLeftBottomState,
+        printLog
+    )
+
+    -- PC363-PC367：DeathAutoBlacklist捕获顺序：
+    -- blacklistState、PrintLog、FindBlacklistPlayer、ShowLocalNoticeByType。
+    local deathAutoBlacklist = MakeDeathAutoBlacklist(
+        blacklistState,
+        printLog,
+        findBlacklistPlayer,
+        showLocalNotice
+    )
+
+    -- PC350：距离闭包在PC352之前创建；这里按其真实工厂形式创建。
+    local getMapData2DPtr = MakeGetMapData2DPtr(distanceHelperUnusedCapture)
+
+    -- PC368-PC381：BlacklistItems的13项upvalue，严格按VM捕获顺序注入。
+    local blacklistItems = MakeBlacklistPlayerDetection(
+        featureState,              -- UP[0] = root T[2] / MainLeftBottom.z
+        installDamageHook,         -- UP[1] = root T[57] live cell最终值
+        blacklistState,            -- UP[2] = root T[41]
+        deathAutoBlacklist,        -- UP[3] = root T[58]
+        findBlacklistPlayer,       -- UP[4] = root T[55]
+        getMapData2DPtr,           -- UP[5] = root T[53]
+        2.0,                       -- UP[6] = root T[38]
+        printLog,                  -- UP[7] = root T[4]
+        useItemByIndex,            -- UP[8] = root T[56]
+        0.01,                      -- UP[9] = root T[39]
+        showLocalNotice,           -- UP[10] = root T[5]
+        30.0,                      -- UP[11] = root T[40]
+        randomTeleportItemNames   -- UP[12] = root T[37]
+    )
+
+    -- PC382：导出到当前chunk ENV，不假定ENV一定等于_G。
+    rootEnvironment.BlacklistItems = blacklistItems
+
+    return {
+        PCallHelper_2 = PCallHelper,
+        FindBlacklistPlayer = findBlacklistPlayer,
+        UseItemByIndex = useItemByIndex,
+        onDamageMsg = onDamageMsg,
+        InstallDamageHook = installDamageHook,
+        DeathAutoBlacklist = deathAutoBlacklist,
+        GetMapData2DPtr = getMapData2DPtr,
+        BlacklistItems = blacklistItems
+    }
+end
+
 local function MakeInstallDamageHook(mainLeftBottomState, printLog)
     return function()
         local gameMapController = global.gameMapController
