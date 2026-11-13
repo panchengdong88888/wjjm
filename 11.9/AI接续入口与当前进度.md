@@ -2104,3 +2104,75 @@ root/43的20项捕获现已全部映射到对象或具体用途：R4日志、R2�
 唯一明文源码当前已包含黑名单开关、清空黑名单、清空黑名单距离、清空怪物阈值等独立工厂定义，但尚未在真实doInit中创建callbackMap并按上述顺序登记。下一步应继续核对PC236-PC268之前的局部寄存器生命周期，以及PC340-PC419的UI父容器/按钮创建与布局关系，再一次性组装真实doInit，不要提前宣称按钮可用。
 
 本轮只更新接续文档；唯一明文源码保持上一提交`7d578a95cd93a7d3542d11b7e8523838f2bce065`，没有修改原始加密文件或旧版整合文件。未做Lua编译、APK打包或游戏运行测试。
+
+
+### 2026-11-13追加：ButtonFactory坐标、捕获顺序与隐藏按钮恢复
+
+本轮继续核对root/43 PC181-PC194、PC236-PC249、PC340-PC419及子闭包root/43/6、root/43/10、root/43/10/1、root/43/16。发现旧明文ButtonFactory的坐标和状态同步捕获关系仍有实质错配，已修正。
+
+#### 一、按钮布局坐标的VM来源
+
+- PC181-PC183：调用`GUI:Attach_UITop()`得到按钮父容器。
+- PC184-PC188：读取`MainProperty._ui.Panel_mini_chat`并调用`getWorldPosition()`。
+- PC189-PC190：调用`getContentSize()`。
+- PC191-PC193：`baseX = worldPosition.x + contentSize.width`。
+- PC194：`baseY = worldPosition.y`。
+- PC338-PC339：传入ButtonFactory前进一步修正：`baseX = baseX - 10`、`baseY = baseY + 1`。
+
+因此ButtonFactory实际坐标公式：
+- `x = worldPosition.x + panelWidth - 10 - 85 * rowIndex`
+- `y = worldPosition.y + 1 + groupOffset`
+
+三组偏移：第一组40、第二组0、第三组80；各组rowIndex按数组长度从大到小递减。此前明文工厂使用固定`x=1-85*rowIndex`、`y=2+groupOffset`，与VM不符。
+
+#### 二、root/43/10通用ButtonFactory捕获顺序
+
+PC340创建root/43/10时，PC341-PC345依次捕获：
+1. 父函数R6：`GUI:Attach_UITop()`返回的UI父容器。
+2. 父函数R22：修正后的baseX。
+3. 父函数R23：修正后的baseY。
+4. root/43 UP[4]：`MainLeftBottom.b`可见按钮控件表。
+5. 父函数R21：callbackMap回调表。
+
+root/43/10/1点击闭包捕获callbackMap、buttonConfig、button控件。按`callbackMap[buttonConfig.key]`派发；若回调返回false，toggle状态不翻转；非toggle按钮不执行翻转；否则更新toggled、标题和红/白颜色。
+
+#### 三、root/43/6状态同步闭包捕获关系
+
+PC236创建root/43/6，捕获顺序为：
+- UP[0] = 父函数局部R12：第一组按钮配置数组。
+- UP[1] = root/43 UP[4]：`MainLeftBottom.b`可见按钮控件表。
+
+因此它只在第一组配置中按key查找并更新toggled、按钮标题和颜色。已将明文`MakeMainLeftBottomToggleStateSync`改为两参数`(firstGroup, visibleItems)`，不再错误地捕获第二、第三组。
+
+#### 四、独立hidebut按钮与点击闭包
+
+- 普通三组按钮创建完成后，PC379-PC388单独创建`hidebut`，位置为父容器局部坐标(0,0)，贴图`res/public/fuzhu_btn.png`，并将按钮对象存入root/43 UP[3]（MainLeftBottom.a）的`hidebut`字段。
+- PC393-PC410设置标题“隐 藏”、字号18、字体`res/public/kaiti2.ttf`。
+- PC415创建root/43/16点击闭包，PC416-PC417捕获`MainLeftBottom.a`容器和PrintLog。
+- 点击时根据`MainLeftBottom.a.isHidden`分支：未隐藏则记录“隐藏所有按钮”、调用容器hide并把hidebut透明度设为0；已隐藏则记录“显示所有按钮”、调用show并把透明度设为255。
+
+已新增`MakeHideButtonHandler(mainLeftBottomA, printLog)`定义；尚未接入真实doInit的GUI:addOnClickEvent。
+
+#### 五、发现moneybut与快速小退回调映射此前写反
+
+- PC330创建root/43/4（320条指令，5个子原型），PC335登记`callbackMap.moneybut`。该函数是“资源统计”窗口完整UI和资源定时刷新逻辑，不是小退。
+- PC336创建root/43/5（5条指令），PC337登记`callbackMap.xiaotuibut`。它才是`global.gameWorldController:OnGameLeaveWorld()`快速小退回调。
+- 当前明文`V10001ButtonHandler`本身的代码逻辑没变，但此前注释误标成moneybut，已修正为xiaotuibut。
+- `moneybut`资源统计窗口处理器仍未恢复，不能把V10001ButtonHandler登记到moneybut。
+
+另外，PC307-PC318还登记storagebut和takebut，PC319-PC329登记shiqubut和diuqibut；它们虽不属于当前三组可见配置数组，仍是VM callbackMap中的独立条目，需保留对应处理器恢复记录。
+
+#### 六、本轮源码提交
+
+已对唯一明文源码进行三次定点提交：
+- `b6a23e510061722fa9f4a6c3e752b0ca6beeda04`：修正ButtonFactory真实坐标参数和root/43/6状态同步捕获关系。
+- `c84acc2d8af70296738b3ce9a784b0a36a1da7fe`：修正未接线的购买金条初始化片段，使其调用新ButtonFactory时传递baseX/baseY，并明确buygoldbut不属于root/43三组原始按钮配置。
+- `0a84de0cb54c2c77ddd545019f8f75b732d7cc75`：新增隐藏按钮点击处理器，纠正V10001ButtonHandler对应xiaotuibut而非moneybut。
+
+当前唯一明文源码content SHA：`564baf8df51d36cacf355cbe7652586b67eddcf9`。
+
+#### 七、下一步
+
+先恢复`root/43/7`引怪按钮handler、`root/43/8`阈值读取与输入提示、`root/43/15`阈值保存输入闭包；再恢复moneybut资源统计窗口及storage/take/pickup/drop等callbackMap处理器。之后才有条件按PC236-PC419把真实doInit一次性接线。黑名单相关工厂虽然已恢复，但目前仍未挂入宿主实际调用的doInit入口。
+
+本轮未修改原始加密文件、旧版整合文件或其他资料文件；未进行Lua编译、APK打包或游戏运行测试。
