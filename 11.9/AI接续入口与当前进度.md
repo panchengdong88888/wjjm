@@ -2017,3 +2017,18 @@ root/43的20项捕获现已全部映射到对象或具体用途：R4日志、R2�
 接下来不再停留在根级捕获身份分析，转入root/43初始化函数装配：先对照当前唯一明文源码修正奖励模数与参数语义，再按VM PC195-PC235准确恢复按钮配置表，最后按PC236起的闭包创建顺序构建真实`MainLeftBottom.doInit`。黑名单距离提示、读取、保存、启动检测、清空和ButtonFactory回调必须按已核实的局部闭包关系接入，不得另造平行初始化路径。
 
 本轮未修改`11.9/MainLeftBottom_11.9_明文.lua`、原始加密文件或旧版整合文件；未进行Lua编译、APK打包或游戏运行测试。
+
+
+### 2026-11-13追加：奖励模数与按钮日志捕获已按VM修正
+
+上一节确认奖励模数应为18000、奖励按钮的文字输出捕获应为PrintLog后，已对唯一明文源码做定点修正：
+
+- `rewardSequenceModulus`：从300改为18000，对应根PC92-PC95的`math.floor(3600 / 0.2)`。
+- `MakeRewardTimerCallback`注释：改为描述按传入modulus取模，新版doInit传入18000。
+- `MakeRewardButtonHandler`第二参数由`showLocalNotice`更名为`printLog`；开关文字“开启奖励功能/关闭奖励功能”按root/43/2捕获的PrintLog输出，不再误标为ShowLocalNoticeByType。
+- 未改变奖励表14条记录、消息参数顺序、计数器递增逻辑和0.2秒调度周期。
+
+唯一明文源码提交：`b70e29607a41a504560b4d944f7bdcb3be981037`。
+唯一明文源码content SHA：`624901bd318fbac2c47e0436faef320e28fe8353`。
+
+静态替换检查确认本轮指定的6处文本/代码位置均各命中一次并完成替换。未做Lua编译、APK打包或游戏运行测试。后续继续按root/43真实捕获顺序恢复doInit，不要把奖励按钮日志函数重新接成通知包装器。
