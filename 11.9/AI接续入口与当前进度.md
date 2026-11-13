@@ -228,6 +228,56 @@
 - root/52辅助闭包的双返回值结构已确认，第二返回值来自`_blacklistData[输入].Name`。
 - 目前最关键的剩余疑点是A[4]第二返回值为何进入距离闭包第五参数，以及PC108-PC134融合调用的实际参数顺序/类型。先核实这个矛盾，再恢复完整`BlacklistItems`，避免生成运行时参数类型错误的代码。
 
+### BlacklistPlayerDetection最终专项审计记录校正（2026-11-13）
+
+本轮从`资料文件/02_基础索引/03_函数状态清单.csv`中找到检查点83/135/137/138/139/140/145/146/148/149/182/183/184/185/186的完整专项结论，并对照检查点236/255的真实闭包实例化记录。以下结论优先级高于前面未闭合时的临时推断；如有冲突，以本节为准。
+
+#### 原型身份和捕获项校正
+
+- 反汇编展示路径`root/48`对应0-based原型路径`root.children[47]`，真实函数名`BlacklistPlayerDetection`，216条指令。
+- 根级PC368-PC381创建该闭包，捕获13项。
+- A[0]=T[2]=`MainLeftBottom.z`运行状态表。
+- A[1]=T[57] live cell；根级PC360将其写为`InstallDamageHook`，因此A[1]是零参数伤害钩子安装器，不是`onDamageMsg`。原来把它写成onDamageMsg的说明作废。
+- A[2]=T[41]共享`blacklistState`，包含lastAttacker、lastHp、deathHandled、alertAt、nextTryAt、noStoneWarned、distance。
+- A[3]=T[58]自动拉黑死亡处理闭包。
+- A[4]=T[55]实际原型为`FindBlacklistPlayer`（0-based root.children[51]，反汇编展示root/52）。
+- A[5]=T[53]切比雪夫距离闭包（`GetMapData2DPtr`）。
+- A[6]=T[38]=2.0提示节流秒数。
+- A[7]=T[4]=PrintLog。
+- A[8]=T[56]物品查询/使用辅助闭包。
+- A[9]=T[39]=0.01成功使用后的短重试秒数。
+- A[10]=T[5]=_G。
+- A[11]=T[40]=30.0无道具重试秒数。
+- A[12]=T[37]随机传送物品名表。
+
+#### FindBlacklistPlayer真实语义
+
+- 0-based路径`root.children[51]`，固定参数只有targetId，依赖A[0]=`PCallHelper_2`。
+- PCallHelper_2通过pcall安全取得`global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)`；失败或结果false/nil时返回nil。
+- FriendProxy或`_blacklistData`缺失、targetId假值时返回false。
+- 先查`_blacklistData[targetId]`，命中返回`true, entry.Name`。
+- 未命中时调用`SL:GetMetaValue("ACTOR_MASTER_ID", targetId)`；masterActorId为真且不同于targetId时，再查`_blacklistData[masterActorId]`，命中返回`true, entry.Name`。
+- 其他情况返回false。
+- 因此A[4]的第二返回值是命中记录的Name，用于提示名称；它不是距离阈值。
+
+#### 距离参数和循环最终语义
+
+- PC102-PC103从A[2]读取`blacklistState.distance`到R12；PC104-PC107判断该距离配置是否启用。
+- 当`distance`为false/nil时，跳过A[5]距离闭包调用，并将展示距离按0处理。
+- 当`distance`为truthy时，PC108-PC134调用A[5]，第五个参数就是R12（A[2].distance），不是A[4]返回的Name。
+- A[4]返回的Name只用于优先构造提示名；如果第二返回值缺失，则通过`SL:GetMetaValue("ACTOR_NAME", candidateId)`查询角色名；若仍缺失则使用默认名`黑名单玩家`。
+- 视野玩家列表返回`players, playerCount`；playerCount必须大于0。
+- PC74-PC77和PC215组成数值循环：从1到playerCount，步长1；PC78读取`players[index]`。
+- 循环跳过nil候选和本地玩家自身；A[4]首返回值truthy表示黑名单命中。若配置了距离限制，超出范围（距离闭包返回nil）则继续下一个候选。
+- 第一个通过筛选的黑名单目标会进入告警/随机传送处理；处理路径最终跳到PC216 return，不会在同一轮继续处理后续目标。
+- PC142-PC214包含提示节流、nextTryAt控制、物品使用成功后的0.01秒重试、无道具时30秒重试及只提示一次的noStoneWarned状态。
+
+#### 状态与源码写入边界
+
+- 以上专项审计确认216条指令的可达分支、循环回边和闭包捕获均已闭合，静态恢复等级为完整（未运行时验证）。
+- 之前接续记录中“A[1]=onDamageMsg”以及“第二返回值可能是距离阈值”的临时判断已被本节纠正，不得继续沿用。
+- 当前唯一明文源码尚未包含`FindBlacklistPlayer`和`BlacklistPlayerDetection`；下一步可以按已审计语义恢复这两个函数，并把13项捕获按根级PC368-PC381顺序装配。不要将其接入UI，除非后续明确确认新版doInit中存在对应初始化链。
+
 ### 后续恢复顺序
 
 - 下一项优先恢复黑名单玩家检测闭包（新版root/48，根级导出名 `BlacklistItems`），它在PC134调用 `MakeGetMapData2DPtr` 作为距离计算器；需要按13项捕获顺序逐一映射后再写入主明文，不可只凭函数名猜测。
