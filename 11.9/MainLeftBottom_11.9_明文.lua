@@ -729,7 +729,296 @@ end
 --  7. 黑名单、伤害消息与 Hook
 -- ============================================================
 
--- TODO：结合新版函数线索及新框架 API 文档恢复。
+-- 2026-11-13：黑名单检测闭包链（按新版root PC352-PC382及root/48、root/49、root/52恢复）。
+-- 本段恢复函数工厂和业务主体；根模块最终捕获装配仍需在入口恢复时按PC顺序接入。
+--
+-- root/49：PCallHelper_2，无捕获。通过pcall保护FriendProxy代理获取。
+local function PCallHelper_2()
+    local function Nested_FriendProxy()
+        return global.Facade.retrieveProxy(global.ProxyTable.FriendProxy)
+    end
+
+    local ok, result = pcall(Nested_FriendProxy)
+    if not ok then
+        return nil
+    end
+
+    return result or nil
+end
+
+-- root/52：FindBlacklistPlayer，固定参数targetID，UP[0]=PCallHelper_2。
+-- 先按targetID查询_blacklistData；未命中再按ACTOR_MASTER_ID查询主角色记录。
+-- 命中返回true和记录Name，未命中返回false。
+local function MakeFindBlacklistPlayer(PCallHelper)
+    return function(targetID)
+        local friendProxy = PCallHelper()
+        if not friendProxy then
+            return false
+        end
+
+        local blacklistData = friendProxy._blacklistData
+        if not blacklistData or not targetID then
+            return false
+        end
+
+        local entry = blacklistData[targetID]
+        if entry then
+            return true, entry.Name
+        end
+
+        local masterActorID = SL:GetMetaValue("ACTOR_MASTER_ID", targetID)
+        if masterActorID and masterActorID ~= targetID then
+            local masterEntry = blacklistData[masterActorID]
+            if masterEntry then
+                return true, masterEntry.Name
+            end
+        end
+
+        return false
+    end
+end
+
+-- root/6：InstallDamageHook，UP[0]=MainLeftBottom.a状态表，UP[1]=PrintLog。
+-- 挂接后包装原始伤害消息处理器；先pcall调用a.onDamageMsg，再原样返回原处理器结果。
+local function MakeInstallDamageHook(mainLeftBottomState, printLog)
+    return function()
+        local gameMapController = global.gameMapController
+        if not gameMapController then
+            return
+        end
+
+        local messageHandlers = gameMapController.mNetMsgHandle
+        if type(messageHandlers) ~= "table" then
+            return
+        end
+
+        local messageTypes = global.MsgType
+        if not messageTypes then
+            return
+        end
+
+        local damageMessageType = messageTypes.MSG_SC_DAMAGE_HP
+        if not damageMessageType then
+            return
+        end
+
+        local originalHandler = messageHandlers[damageMessageType]
+        if not originalHandler then
+            return
+        end
+
+        if gameMapController.__ylwHookedOrigin == originalHandler then
+            return
+        end
+
+        local wrappedHandler = function(arg1, arg2)
+            local optionalCallback = mainLeftBottomState.onDamageMsg
+            if type(optionalCallback) == "function" then
+                pcall(optionalCallback, arg1, arg2)
+            end
+            return originalHandler(arg1, arg2)
+        end
+
+        messageHandlers[damageMessageType] = wrappedHandler
+        gameMapController.__ylwHookedOrigin = messageHandlers[damageMessageType]
+        printLog("已挂接伤害消息钩子（击杀拉黑用）")
+    end
+end
+
+-- root/26：DeathAutoBlacklist，使用共享blacklistState及黑名单查询闭包。
+local function MakeDeathAutoBlacklist(blacklistState, printLog, showLocalNotice, findBlacklistPlayer)
+    return function()
+        local lastAttacker = blacklistState.lastAttacker
+        blacklistState.lastAttacker = nil
+
+        if not lastAttacker or not lastAttacker.name or lastAttacker.name == "" then
+            printLog("本次死亡没记录到凶手，跳过自动拉黑")
+            return
+        end
+
+        if findBlacklistPlayer(lastAttacker.id) then
+            printLog("凶手已在黑名单中：%s", lastAttacker.name)
+            return
+        end
+
+        printLog("被 %s 击杀，自动加入黑名单", lastAttacker.name)
+        showLocalNotice("自动拉黑：" .. lastAttacker.name)
+
+        for retryIndex = 0, 5 do
+            SL:ScheduleOnce(function()
+                SL:RequestAddBlacklistByName(lastAttacker.name)
+            end, 0.5 * retryIndex)
+        end
+    end
+end
+
+-- root/25：UseItemByIndex，UP[0]=randomTeleportItemNames。
+-- 按名称表顺序查询物品索引和数量，找到第一件可用道具后使用并返回名称。
+local function MakeUseItemByIndex(randomTeleportItemNames)
+    return function()
+        for _, itemName in ipairs(randomTeleportItemNames) do
+            local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)
+            local itemCount = tonumber(
+                SL:GetMetaValue("ITEM_COUNT", itemName)
+            ) or 0
+
+            if itemIndex and itemCount > 0 then
+                SL:UseItemByIndex(itemIndex)
+                return itemName
+            end
+        end
+    end
+end
+
+-- root/48：BlacklistPlayerDetection，216条指令，13项捕获顺序严格对应：
+-- UP[0]=z；UP[1]=InstallDamageHook；UP[2]=blacklistState；
+-- UP[3]=DeathAutoBlacklist；UP[4]=FindBlacklistPlayer；UP[5]=GetMapData2DPtr；
+-- UP[6]=2.0；UP[7]=PrintLog；UP[8]=UseItemByIndex；UP[9]=0.01；
+-- UP[10]=ShowLocalNoticeByType；UP[11]=30.0；UP[12]=randomTeleportItemNames。
+local function MakeBlacklistPlayerDetection(
+    featureState,
+    installDamageHook,
+    blacklistState,
+    deathAutoBlacklist,
+    findBlacklistPlayer,
+    getMapData2DPtr,
+    alertThreshold,
+    printLog,
+    useItemByIndex,
+    shortRetryDelay,
+    showLocalNotice,
+    noItemRetryDelay,
+    randomTeleportItemNames
+)
+    return function()
+        featureState.isBlacklisting = true
+        installDamageHook()
+
+        local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
+        if not mainActorID then
+            return
+        end
+
+        local hp = tonumber(SL:GetMetaValue("HP")) or 0.0
+        local previousHP = blacklistState.lastHp
+
+        if previousHP == nil then
+            blacklistState.lastHp = hp
+            blacklistState.deathHandled = (hp <= 0)
+        elseif hp > 0 then
+            blacklistState.lastHp = hp
+            blacklistState.deathHandled = false
+        elseif previousHP > 0 and not blacklistState.deathHandled then
+            blacklistState.deathHandled = true
+            blacklistState.lastHp = 0.0
+            deathAutoBlacklist()
+        end
+
+        if hp <= 0 then
+            return
+        end
+
+        if IsInWhitelistMap() then
+            return
+        end
+
+        -- 元数据明确返回players与playerCount两个值；不能用#players替代数量。
+        local players, playerCount = SL:GetMetaValue("FIND_IN_VIEW_PLAYER_LIST")
+        if not players or not playerCount or playerCount <= 0 then
+            return
+        end
+
+        for index = 1, playerCount do
+            local actorID = players[index]
+
+            if actorID and actorID ~= mainActorID then
+                local isBlacklisted, blacklistDisplayName = findBlacklistPlayer(actorID)
+
+                if isBlacklisted then
+                    local actorName = blacklistDisplayName
+                    if not actorName then
+                        actorName = SL:GetMetaValue("ACTOR_NAME", actorID)
+                    end
+                    if not actorName then
+                        actorName = "黑名单玩家"
+                    end
+
+                    -- 未配置距离时不读取坐标，按原控制流直接进入告警/随机传送。
+                    local distance
+                    local distanceAccepted = true
+                    local configuredDistance = blacklistState.distance
+
+                    if configuredDistance then
+                        local mainX = SL:GetMetaValue("ACTOR_MAP_X", mainActorID)
+                        local mainY = SL:GetMetaValue("ACTOR_MAP_Y", mainActorID)
+                        local actorX = SL:GetMetaValue("ACTOR_MAP_X", actorID)
+                        local actorY = SL:GetMetaValue("ACTOR_MAP_Y", actorID)
+
+                        distance = getMapData2DPtr(
+                            mainX, mainY, actorX, actorY, configuredDistance
+                        )
+                        distanceAccepted = (distance ~= nil)
+                    end
+
+                    if distanceAccepted then
+                        local now = os.time()
+                        local lastAlertAt = blacklistState.alertAt or 0
+                        local elapsed = now - lastAlertAt
+
+                        if alertThreshold <= elapsed then
+                            blacklistState.alertAt = now
+                            printLog(
+                                "野外观测到黑名单玩家：%s（%d格）",
+                                actorName,
+                                distance or 0.0
+                            )
+                        end
+
+                        -- 在重试等待期内直接结束本轮检测，不继续扫描其他玩家。
+                        if (blacklistState.nextTryAt or 0) > now then
+                            return
+                        end
+
+                        local usedTeleportItemName = useItemByIndex()
+                        if usedTeleportItemName then
+                            blacklistState.nextTryAt = now + shortRetryDelay
+                            blacklistState.noStoneWarned = false
+
+                            showLocalNotice(string.format(
+                                "黑名单玩家：%s（%d格），飞随机",
+                                actorName,
+                                distance or 0.0
+                            ))
+
+                            printLog(
+                                "黑名单玩家 %s，距离 %d 格，使用 %s 随机传送",
+                                actorName,
+                                distance or 0.0,
+                                usedTeleportItemName
+                            )
+                        else
+                            blacklistState.nextTryAt = now + noItemRetryDelay
+
+                            if not blacklistState.noStoneWarned then
+                                blacklistState.noStoneWarned = true
+                                showLocalNotice("没有随机传送石，黑名单玩家传送暂停")
+                                printLog(
+                                    "没有可用的随机传送道具（%s）",
+                                    table.concat(randomTeleportItemNames, "/")
+                                )
+                            end
+                        end
+
+                        -- 处理首个通过距离门槛的黑名单玩家后立即返回。
+                        return
+                    end
+                end
+            end
+        end
+    end
+end
+
+
 
 -- ============================================================
 --  8. 新版新增功能及其他业务模块
