@@ -838,6 +838,58 @@ local function MakeOnDamageMsg(blacklistState)
     end
 end
 
+-- root/16/1：清理单个黑名单条目的延迟回调。
+-- 捕获当前条目key与FriendProxy；先请求服务端移除，再同步本地_blacklistData。
+local function MakeRequestOutBlacklistCallback(itemKey, friendProxy)
+    return function()
+        SL:RequestOutBlacklist(itemKey)
+
+        local blacklistData = friendProxy and friendProxy._blacklistData
+        if blacklistData and blacklistData[itemKey] then
+            blacklistData[itemKey] = nil
+        end
+    end
+end
+
+-- root/16：ClearBlacklistItems，捕获顺序：
+-- UP[0]=PCallHelper_2、UP[1]=PrintLog、UP[2]=ShowLocalNoticeByType、UP[3]=blacklistState。
+local function MakeClearBlacklistItems(PCallHelper, printLog, showLocalNotice, blacklistState)
+    return function()
+        local friendProxy = PCallHelper()
+        if not friendProxy then
+            printLog("取不到好友代理，清空失败")
+            showLocalNotice("清空黑名单失败")
+            return
+        end
+
+        local blacklistData = friendProxy._blacklistData
+        if not blacklistData then
+            return
+        end
+
+        local itemKeys = {}
+        for key in pairs(blacklistData) do
+            itemKeys[#itemKeys + 1] = key
+        end
+
+        if #itemKeys == 0 then
+            printLog("黑名单本来就是空的")
+            showLocalNotice("黑名单为空")
+            return
+        end
+
+        printLog("开始清空黑名单，共 %d 人", #itemKeys)
+        showLocalNotice("清空黑名单 " .. #itemKeys .. " 人")
+
+        for index, itemKey in ipairs(itemKeys) do
+            local callback = MakeRequestOutBlacklistCallback(itemKey, friendProxy)
+            SL:ScheduleOnce(callback, 0.01 * (index - 1))
+        end
+
+        blacklistState.lastAttacker = nil
+    end
+end
+
 -- root PC352-PC382：按真实父级寄存器捕获关系组装BlacklistItems闭包链。
 -- 参数对应root模块已建立的共享对象；本函数不创建第二份状态表。
 -- 调用时必须传入rootEnvironment、MainLeftBottom.a、MainLeftBottom.z、
@@ -884,6 +936,13 @@ local function MakeBlacklistRootBindings(
     )
 
     -- PC368-PC381：BlacklistItems的13项upvalue，严格按VM捕获顺序注入。
+    local clearBlacklistItems = MakeClearBlacklistItems(
+        PCallHelper,
+        printLog,
+        showLocalNotice,
+        blacklistState
+    )
+
     local blacklistItems = MakeBlacklistPlayerDetection(
         featureState,              -- UP[0] = root T[2] / MainLeftBottom.z
         installDamageHook,         -- UP[1] = root T[57] live cell最终值
@@ -902,6 +961,7 @@ local function MakeBlacklistRootBindings(
 
     -- PC382：导出到当前chunk ENV，不假定ENV一定等于_G。
     rootEnvironment.BlacklistItems = blacklistItems
+    rootEnvironment.ClearBlacklistItems = clearBlacklistItems
 
     return {
         PCallHelper_2 = PCallHelper,
@@ -911,7 +971,8 @@ local function MakeBlacklistRootBindings(
         InstallDamageHook = installDamageHook,
         DeathAutoBlacklist = deathAutoBlacklist,
         GetMapData2DPtr = getMapData2DPtr,
-        BlacklistItems = blacklistItems
+        BlacklistItems = blacklistItems,
+        ClearBlacklistItems = clearBlacklistItems
     }
 end
 
