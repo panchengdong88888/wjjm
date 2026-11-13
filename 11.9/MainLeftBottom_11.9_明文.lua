@@ -664,18 +664,15 @@ end
 
 -- 新区功能原始指令核对记录（11.9原始文件，105原型/79573字节完整消费）：
 --   * root.children[38]（原型83）：零参数、37条指令、1个子原型（原型84）。
---     常量含 Gbtc、isNewzone、LuaSendMsg、9002、22302、开启新区功能、
---     SL.ScheduleOnce、0.5、UnSchedule、newzoneTimer。
---   * 原型84：零参数、10条指令，唯一业务动作是
+--     捕获顺序为PrintLog、MainLeftBottom模块表、timerState、Schedule包装函数、
+--     root.children[44]新区物品周期回调。
+--   * 原型84：零参数、10条指令，执行
 --     LuaSendMsg(9002, 22502, 1, 2, "", 0, 0)。
---   * root.children[44]（原型93）：零参数、76条指令，涉及
---     SL:GetMetaValue("BAG_DATA")、遍历背包、MSG_CS_USE_BAG_ITEM、
---     newzoneTimer清理、Gbtc调用及结束提示。
+--   * root.children[44]（原型93）：零参数、76条指令，捕获38项新区物品名称表、
+--     PrintLog、timerState；按名称表和BAG_DATA双层遍历，每次最多使用一件物品。
 --
--- 当前只写入原型84中调用参数已闭合的函数。原型83的开关分支、
--- 首条LuaSendMsg的完整实参、ScheduleOnce句柄赋值/取消路径，以及
--- 原型93逐个背包物品筛选和发包参数仍在定点核对；未确认前不补写猜测代码。
-
+-- 启动处理器、延迟消息回调和背包周期使用回调均已恢复为独立业务函数；
+-- 只恢复业务，不创建按钮、不登记callback、不进行UI接线。
 -- 新区物品名称匹配表：对应新版root在创建proto93前构建的38项数组。
 -- 保留原始顺序和重复项；string.find使用plain=true进行字面子串匹配。
 local NEW_ZONE_ITEM_NAME_KEYWORDS = {
