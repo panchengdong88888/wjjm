@@ -2825,3 +2825,28 @@ PC236创建root/43/6，捕获顺序为：
 ### 当前下一步
 
 继续恢复`DiuItems`（新版`root/47`，169条指令），然后按依赖顺序恢复`StorageItems`、`TakeItems`和`PickUpItems`。所有函数必须保留root PC64-PC85的ENV导出语义，禁止只添加未导出的local同名函数。
+
+
+### DiuItems 新版VM原型恢复（2026-11-14）
+
+已将新版`root/47`（169条指令、1个子原型）恢复并写入唯一明文源码，按root PC64-PC67完成导出：
+
+- root PC64创建`DiuItems`闭包，捕获`MainLeftBottom.z`共享功能状态表和本地通知函数；PC67导出`ENV.DiuItems`。
+- 入口检查`isDiuing`，运行中直接返回；否则先置true。
+- 读取`GetDroppedItems()`第二返回值作为当前地面物品数；超过35时提示`地面物品(n)超过上限(35)`，复位状态并返回。
+- 读取`SL:GetMetaValue("BAG_DATA")`；不存在则复位状态并返回。
+- 按VM PC36-PC65创建28项物品关键词表和字符串匹配子闭包（子原型`root/47/1`）。PC89-PC90的常量1比较分支使关键词匹配闭包不参与候选过滤；因此不能擅自将关键词匹配作为实际丢弃条件。
+- 遍历背包`pairs`；仅收录存在`Name`、`MakeIndex`且`SL:GetMetaValue("ITEM_IS_BIND", item)`为假的物品。候选记录包含`makeIndex`、`count = item.OverLap or 1`、`name`。
+- 无候选时提示`背包无可丢弃物品`，复位状态并返回。
+- 逐个候选发送`global.MsgType.MSG_CS_MAP_ITEM_DISCARD`，参数为物品MakeIndex、数量、0、0、名称、名称字节长度；每发送一个候选，本地地面物品计数加1。计数达到35时提示地面已满并停止后续发送。
+- 结束提示`共丢弃 n 件物品`并复位`isDiuing`。
+
+静态核对：
+- `DiuItems`定义、`rootEnvironment.DiuItems`导出、35件上限、丢弃消息标识和主要提示文本均各自只有一处。
+- 唯一明文源码Blob SHA：`7dfb26d54b96414371d72fc3b67f2c4fcf3c38ce`。
+- 源码提交：`eb8d8142f9fa3bf060b09a9368ffffcf620ae4f3`。
+- 尚未执行Lua语法编译、APK打包或游戏实测。
+
+### 当前下一步
+
+继续恢复新版`StorageItems`（`root/51`，224条指令，3个捕获）及其子原型，先还原存仓状态保护、仓库可用页计算、背包候选和消息处理；随后恢复`TakeItems`和`PickUpItems`。
