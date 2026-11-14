@@ -2533,28 +2533,30 @@ end
 --  8.3 停止脚本按钮业务（11.9新版 stopallbut）
 -- ============================================================
 
--- root/43/6：按key同步第一组已有按钮的toggle状态。
--- 此函数只更新已有按钮状态/标题/颜色，不创建按钮、不绑定点击事件。
--- 闭包只捕获第一组配置表和MainLeftBottom.b控件表。
--- 它按key在第一组配置中查找，更新toggled，并同步对应按钮标题和颜色。
-local function MakeMainLeftBottomToggleStateSync(firstGroup, visibleItems)
+-- root/42 child5：按key同步三组按钮配置中的toggle状态。
+-- VM子原型捕获完整buttonGroups和MainLeftBottom.b控件映射；
+-- 先遍历外层三组，再遍历组内配置。这里只更新状态/标题/颜色，
+-- 不创建按钮、不绑定点击事件。
+local function MakeMainLeftBottomToggleStateSync(buttonGroups, visibleItems)
     return function(buttonKey, toggled)
-        for _, buttonConfig in ipairs(firstGroup) do
-            if buttonConfig.key == buttonKey then
-                buttonConfig.toggled = toggled
+        for _, buttonGroup in ipairs(buttonGroups) do
+            for _, buttonConfig in ipairs(buttonGroup) do
+                if buttonConfig.key == buttonKey then
+                    buttonConfig.toggled = toggled
 
-                local button = visibleItems[buttonKey]
-                if button then
-                    GUI:Button_setTitleText(
-                        button,
-                        toggled and buttonConfig.toggle or buttonConfig.name
-                    )
-                    GUI:Button_setTitleColor(
-                        button,
-                        toggled and "#ff0000" or "#ffffff"
-                    )
+                    local button = visibleItems[buttonKey]
+                    if button then
+                        GUI:Button_setTitleText(
+                            button,
+                            toggled and buttonConfig.toggle or buttonConfig.name
+                        )
+                        GUI:Button_setTitleColor(
+                            button,
+                            toggled and "#ff0000" or "#ffffff"
+                        )
+                    end
+                    return
                 end
-                return
             end
         end
     end
@@ -3096,16 +3098,17 @@ end
 --   gatherThresholdFileName=UP[15]，deleteConfig=UP[16]，
 --   rewardModulus=UP[17]，rewardEntries=UP[18]，
 --   rewardScheduleInterval=UP[19]。
---   firstGroup=R[12]；以下四个局部闭包按VM顺序在callbackMap前构造：
+--   buttonGroups=doInit_UI PC196-PC235构造的完整三组配置表；visibleItems=UP[4]；
+--   以下局部闭包按VM顺序在callbackMap前构造：
 --   syncButtonState=R[15]、startBlacklistTimer=R[16]、
 --   startGather=R[17]、commonInputPrompt=R[18]。
 --
 -- 本函数只负责业务回调表，不创建按钮、不设置布局、不绑定GUI点击事件。
 -- 调用者必须把doInit_UI当时的同一批upvalue/局部值传入，不能另建状态表。
 local function BuildDoInitCallbackMap(deps)
-    -- PC235-PC237：R[15]，捕获firstGroup和visibleItems。
+    -- PC235-PC237：R[15]，捕获完整buttonGroups和visibleItems。
     local syncButtonState = MakeMainLeftBottomToggleStateSync(
-        deps.firstGroup,
+        deps.buttonGroups,
         deps.visibleItems
     )
 
