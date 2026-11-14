@@ -2421,3 +2421,35 @@ PC236创建root/43/6，捕获顺序为：
 - PC339以后ButtonFactory、按钮创建、布局和GUI点击绑定仍不在本轮范围。
 - 本轮只修改唯一明文源码和本接续文档；未修改新版原始加密文件、旧版交付源码或其他资料。
 - 环境未发现可用的lua/luac/luajit命令；未执行Lua 5.1编译、APK打包或游戏实测。当前结论为静态VM/源码核对，不代表运行测试通过。
+
+
+### 2026-11-14追加：修正callbackMap前置的按钮状态同步闭包捕获对象
+
+本轮重新读取当前main分支的VM dump、原型索引、唯一明文源码，以及检查点331-334和root PC324/326/327/329审计记录。没有重新反汇编已完成的PC1-PC234。
+
+#### 一、纠正此前错误的局部对象映射
+
+- 检查点331确认doInit_UI PC196-PC235构造的是完整三组按钮配置表。
+- root/42 child5的父级创建点在PC235，后续捕获指令分别捕获doInit_UI局部寄存器R12和upvalue UP[4]。
+- R12对应完整的buttonGroups（三组按钮配置表），UP[4]对应MainLeftBottom.b按钮控件映射visibleItems。
+- child5本体按外层组表、内层配置项两层遍历，匹配buttonConfig.key后更新toggled，并按已有按钮句柄更新标题和颜色。
+- 因此之前将R12描述为firstGroup、并只遍历单组配置的恢复写法不正确；已改为传入完整buttonGroups并执行双层遍历。
+
+#### 二、唯一明文源码修正
+
+文件：`11.9/MainLeftBottom_11.9_明文.lua`
+
+1. `MakeMainLeftBottomToggleStateSync(buttonGroups, visibleItems)`现按VM child5的嵌套遍历结构遍历所有组。
+2. `BuildDoInitCallbackMap`现从`deps.buttonGroups`构建R15，不再读取不存在/不准确的`deps.firstGroup`。
+3. 修正文件第4节入口注释：新版doInit_UI是规范路径`root/42`、419条指令，不是旧注释中的“proto48、433条指令”。PC0-PC234既有静态核对记录见检查点331；本轮只处理PC235-PC336业务回调登记，不扩展PC338以后按钮工厂与布局。
+
+源码提交：`d90360e41fd9025f096b3f6629d3e61fc8889f98`（完整三组遍历修正）；随后提交`05286692069c8a8f29d93b8334a13f63aaacb044`（doInit原型身份注释修正）。
+
+#### 三、当前准确状态与下一步
+
+- callbackMap辅助函数已按VM PC235-PC336构造R15-R20及12个业务处理器。
+- R15现已修正为捕获完整buttonGroups和UP[4] visibleItems；这是上一轮builder里发现并修正的一个实质错配。
+- PC0-PC234的初始化/资源快照/快捷栏/仓库请求/Attach_UITop/按钮组构建，已有检查点331逐段审计结论；本轮不重复反汇编。
+- 当前唯一明文文件仍没有把完整doInit_UI主函数及其PC0-PC234初始化主体接到BuildDoInitCallbackMap；因此builder仍是独立辅助函数，不能宣称运行时回调登记已经接通。
+- 下一步仍锁定业务回调登记范围：核对builder的每一个deps字段与root/42的20个upvalue及R12局部值；尤其确认UP[0]-UP[19]与root T寄存器对应关系。已由root PC329及检查点284/329给出捕获序列，后续应按当前新版root VM dump复核并整理成明确调用参数表。不要恢复ButtonFactory、按钮创建、布局或GUI点击绑定。
+- 未执行Lua 5.1编译、APK打包或目标游戏运行测试。
