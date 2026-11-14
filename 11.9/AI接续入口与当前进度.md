@@ -2509,3 +2509,27 @@ PC236创建root/43/6，捕获顺序为：
 本轮未修改唯一明文源码；未执行Lua编译、APK打包或游戏运行测试。
 
 **下一步：**依据检查点331已完成的PC0-PC234静态结论，在唯一明文源码中恢复doInit_UI的必要前置装配，使其在正确的PC267位置调用BuildDoInitCallbackMap。本次只做到PC336业务回调表登记为止，不恢复PC338以后任何按钮创建/布局/点击绑定代码。若入口所需的某个root共享对象或配置包装器尚未在当前源码中建立，先从新版root初始化证据恢复其来源，不用旧版变量猜测。
+### 2026-11-14追加：doInit_UI前置装配依赖核对（PC1-PC234，不重做反汇编）
+
+本轮从当前新版VM dump的root/42和既有检查点331/334核对了PC1-PC234的接入依赖，并与唯一明文源码逐项对照。没有修改唯一明文源码。
+
+#### 已有可复用的当前源码实现
+- PC1-PC99资源快照：当前源码已有InitializeResourceStatisticsSnapshot(initState, moneyNames, itemNames, getItemCount)，其职责覆盖initTime/initTimeStr/initSnapshot、MoneyProxy货币快照及6项背包资源快照。调用时必须传UP[1]那张共享z表；它不是新建状态表。
+- PC102-PC130四组快捷栏配置：当前源码没有对应的完整装配函数；VM配置为slot1三种回城石、slot2两种随机传送石、slot3大陆传送石、slot4免战回城石。
+- PC131-PC145：VM对四组配置逐项创建root/42 child16回调，并通过SL:ScheduleOnce以0.1秒延迟调度。child16遍历names，按SL:GetMetaValue('ITEM_INDEX_BY_NAME', name)取索引，命中后调用MoveItemToQuickUse(itemIndex, slot)。当前唯一明文源码没有MoveItemToQuickUse函数/全局导出，因此不能直接调用后声称链路完整。
+- PC146-PC166：VM先取消并清空共享timerState.cruiseTimer，再创建每日巡航回调并以1秒间隔Schedule。当前MakeCruiseTimerCallback/ReplaceCruiseTimer的参数/捕获说明尚未与新版root/42 child12的三项捕获完整对齐，不能未经复核直接接入。
+- PC167-PC180：从global.Facade取NPCStorageProxy；存在时写入当前chunk ENV的NPCStorageProxy，并调用RequestStorageData(4)。
+- PC181-PC195：调用GUI:Attach_UITop(4)，读取MainProperty._ui.Panel_mini_chat的世界坐标与尺寸，计算后续按钮基准位置；PC195创建R[12]外层表，PC196-PC235才填入三组按钮配置。
+
+#### 接入阻塞项（均为当前唯一明文源码的真实缺口）
+- 唯一明文源码第1节仍是加载入口TODO；没有创建MainLeftBottom根表及a/b/z共享表的root PC1-PC42初始化。
+- 当前文件有timerState与gatherConfig，但缺少把它们连同MainLeftBottom.a、.b、.z、blacklistState组成同一根作用域的初始化入口；禁止再调用MakeBuyGoldRootContext来创建第二张timerState或b表。
+- 当前文件缺少root PC297-PC315配置文件包装链：GetWritablePath、ReadNumericConfig、PCallHelper、FileExistCheck_pcall_wrapper、固定文件名读取/保存闭包；BuildDoInitCallbackMap需要的UP[6]/[9]/[10]/[12]/[14]/[16]目前没有可直接注入的完整对象。
+- root PC46的ShowLocalNoticeByType是捕获MainLeftBottom.a的局部闭包，不是root导出的全局函数。当前Builtsetting_11_9直接引用全局ShowLocalNoticeByType，不能视为root child23捕获T[5]的等价实现；应先恢复正确的通知闭包绑定。
+- 当前唯一明文源码没有MoveItemToQuickUse实现；快捷栏ScheduleOnce链不能假定该全局函数已存在。
+- root/42 child12巡航回调有3项upvalue捕获；当前MakeCruiseTimerCallback的注释和参数列表只有2项，必须按当前VM child12重新核对后才能接入。
+
+#### 本轮结论与下一步
+- 不能只添加一个BuildDoInitCallbackMap调用点：根模块共享对象和配置读写闭包目前没有在唯一明文源码中建立，直接构造deps会缺字段或产生状态副本。
+- 下一步先在唯一明文源码恢复最小且身份正确的root上下文：MainLeftBottom/a/b/z、共享timerState、blacklistState、通知包装器、Schedule包装器及PC297-PC315配置读写包装链；复用现有timerState/gatherConfig，不重新创建。然后核实/恢复快捷栏MoveItemToQuickUse和巡航回调捕获，最后再恢复doInit_UI PC1-PC266前置流程并在PC267调用BuildDoInitCallbackMap，登记止于PC336。
+- 本轮仅做静态依赖对照；未修改唯一明文源码，未执行Lua 5.1编译、APK打包或游戏运行测试。
