@@ -2914,3 +2914,40 @@ PC236创建root/43/6，捕获顺序为：
 ### 当前下一步
 
 继续恢复新版`PickUpItems`（`root/22`，172条指令、2个无捕获子原型），重点核对地面物品字段兼容顺序、坐标距离计算、候选排序、移动与最终拾取调用；父级root PC83-PC85的导出对象只有一个捕获，即`ShowLocalNoticeByType`。
+
+### PickUpItems 新版VM原型恢复（2026-11-14）
+
+已将新版`root/22`（172条指令、2个无捕获子原型）恢复并写入唯一明文源码，按root PC83-PC85完成ENV导出。
+
+#### 捕获关系及子原型
+
+- root PC83创建`root/22`闭包，捕获数为1；PC84捕获UP[0]=`ShowLocalNoticeByType`；PC85执行`ENV.PickUpItems = R[8]`。
+- `root/22/1`（19条指令）是优先候选比较器：先比较`kIdx`升序，索引相同时比较`dist`升序。
+- `root/22/2`（8条指令）是普通候选比较器：按`dist`升序。
+- 两个子原型均无捕获。
+
+#### 恢复的业务行为
+
+1. 调用全局`GetDroppedItems()`取得地面物品列表及数量；数量等于0时通过捕获的本地提示函数输出`地面无可拾取物品`并返回。
+2. 调用全局`PlayerPos()`取得玩家X、Y两个坐标值。
+3. 初始化优先候选、普通候选和名称规则表；名称规则表在VM中明确初始化为空表，不能擅自填充优先拾取规则。
+4. 按`ipairs`遍历地面物品。名称字段依次回退`mName`、`mONameStr`、`Name`、`name`、空字符串；X坐标依次读取`mCurrMapX`、`MapX`、`mapX`、`x`；Y坐标依次读取`mCurrMapY`、`MapY`、`mapY`、`y`。
+5. 只有X和Y均存在时才建立候选。距离是曼哈顿距离：`abs(playerX-x) + abs(playerY-y)`。
+6. 对名称规则表逐项执行`string.find`匹配；由于该表为空，当前VM版本所有有效坐标物品都进入普通候选，优先候选保持为空。保留了匹配及优先候选逻辑，但不擅自添加规则。
+7. 优先候选按`kIdx`再按`dist`排序；普通候选只按`dist`排序。合并顺序是优先候选在前、普通候选在后。
+8. 无候选时直接返回。否则只取合并列表第一项，调用`MoveTo(target.x, target.y, 0)`。
+9. 只有玩家与目标的X轴绝对差、Y轴绝对差都不超过1时，才调用`global.dropItemController:PickMainPlayerPosItem()`立即拾取；否则本次只移动，不执行拾取。
+10. 拾取后显示`拾取: `加`target.item.mName`。这里严格保留VM使用的`mName`字段，没有改用上方用于候选构建的名称回退值。
+
+#### 本轮源码及检查结果
+
+- 源码提交：`84ccc757c0b887feddad38fffd2b2d6dedd81be0`。
+- 最新唯一明文源码Blob SHA：`38a6a0b0fc42b063a42c4e8aed465dfbec2029fd`。
+- 静态检查：`MakePickUpItemsHandler`定义、实例化、`rootEnvironment.PickUpItems`导出各1处；`MoveTo`调用、`PickMainPlayerPosItem`调用、空名称规则表及两组坐标回退字段均存在；`StorageItems`、`TakeItems`、`PickUpItems`三个函数的ENV导出均各1处。
+- 当前运行环境未发现`lua`/`luac`/`luajit`命令，因此未执行Lua语法编译；未进行APK打包或游戏实测。
+
+### 当前阶段结果
+
+本轮开新区关联的六项主要入口/依赖函数均已有新版明文实现：`DiuItems`、`GetAvailableStoragePage`、`GetStorageItemData`、`StorageItems`、`TakeItems`、`PickUpItems`。其中`GetAvailableStoragePage`和`GetStorageItemData`是存仓/取仓使用的仓库辅助函数；其余四项分别处理丢弃、存仓、取仓和地面拾取。
+
+下一步应对这六项函数做一次跨函数接口和VM行为复核，尤其核对`TakeItems`调用的`GetStorageItemData`、存仓和取仓的ENV `LuaSendMsg`调用形式，以及`PickUpItems`的空名称规则表行为；复核后再决定是否开始APK集成测试。
