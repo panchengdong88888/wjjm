@@ -2490,6 +2490,23 @@ local function MakeNewZoneButtonHandler(
     end
 end
 
+-- 对应新版root PC426-PC435：按VM创建顺序实例化新区两个闭包。
+-- root.children[44]（原型93）捕获：38项关键词表、PrintLog、共享timerState。
+local processNewZoneItems = MakeNewZoneItemTimerCallback(
+    NEW_ZONE_ITEM_NAME_KEYWORDS,
+    PrintLog,
+    timerState
+)
+-- root.children[38]（原型83）捕获：PrintLog、MainLeftBottom根表、共享timerState、
+-- Schedule包装函数、上方刚创建的物品周期回调。
+local newZoneHandler = MakeNewZoneButtonHandler(
+    PrintLog,
+    MainLeftBottom,
+    timerState,
+    Schedule,
+    processNewZoneItems
+)
+
 -- ============================================================
 --  8.2 奖励功能按钮业务（11.9新版 rewardbut）
 -- ============================================================
@@ -3265,7 +3282,7 @@ end
 
 -- 本函数只负责业务回调表，不创建按钮、不设置布局、不绑定GUI点击事件。
 -- 调用者必须把doInit_UI当时的同一批upvalue/局部值传入，不能另建状态表。
--- deps.newZoneHandler必须是root.children[38]已实例化的处理器闭包（doInit_UI UP[9]）。
+-- newZoneHandler即root.children[38]实例；在新版doInit_UI中对应UP[9]。
 local function BuildDoInitCallbackMap(deps)
     -- PC235-PC237：R[15]，捕获完整buttonGroups和visibleItems。
     local syncButtonState = MakeMainLeftBottomToggleStateSync(
@@ -3321,7 +3338,7 @@ local function BuildDoInitCallbackMap(deps)
 
     -- 新版root.children[37] PC269-PC271：child2捕获doInit_UI UP[9]，
     -- 并将包装闭包登记到callbackMap.newzone。
-    callbackMap.newzone = MakeNewZoneCallbackAdapter(deps.newZoneHandler)
+    callbackMap.newzone = MakeNewZoneCallbackAdapter(newZoneHandler)
 
     -- PC268-PC275：yinguaibut。
     callbackMap.yinguaibut = MakeGatherButtonHandler(
