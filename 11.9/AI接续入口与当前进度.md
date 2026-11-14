@@ -2668,3 +2668,52 @@ PC236创建root/43/6，捕获顺序为：
 - 未执行Lua 5.1编译、APK打包或游戏运行测试。
 
 **下一步唯一重点：**继续核对新版原始UI工厂原型的按钮配置数组与callbackMap登记PC区间，确认`newzone`按钮真实接线方式；同时寻找宿主ENV中`Gbtc`全局的注册来源。
+
+### 2026-11-14关键更正：从新版原始VM闭合开新区按钮接线
+
+本轮直接读取并解析`11.9/MainLeftBottom_11.9.lua`原始加密载荷，而不是依赖旧版110原型索引或候选源码注释。
+
+#### 原始VM解码结果
+
+- 按原始加载器中的Base36 LZW解码及逐字节XOR 74处理后，得到79,573字节二进制载荷。
+- 按载荷内置的常量、子原型、参数标志和指令结构递归解析，105个原型全部解析，字节流恰好消费79,573/79,573字节。
+- 新版UI初始化原型为`root.children[37]`：433条指令、26个子原型。
+- 新区启动处理器为`root.children[38]`：37条指令、1个子原型。
+- 新区物品周期处理器为`root.children[44]`：76条指令。
+- 本轮使用的是11.9原始加密文件自身的105原型结构；旧版110原型总索引不能拿来代替新版结构。
+
+#### 新区按钮和callbackMap的原始指令证据
+
+1. `root.children[37]` PC234-PC235明确创建按钮配置：
+   - `key = "newzone"`
+   - `name = "开新区"`
+2. PC269创建`root.children[37].children[2]`包装闭包；PC270捕获doInit_UI的UP[9]；PC271执行`callbackMap["newzone"] = R[19]`。这证明新区处理器确实登记在`callbackMap.newzone`，不是猜测。
+3. 根模块PC430创建`root.children[38]`处理器实例，5项捕获依次来自父级寄存器T[4]、T[2]、T[3]、T[7]、T[53]，分别对应PrintLog、MainLeftBottom根表、共享timerState、Schedule包装函数、新区物品周期处理器。
+4. 根模块PC426先创建`root.children[44]`物品周期处理器，捕获顺序为关键词表、PrintLog、共享timerState。
+5. 根模块PC438创建`root.children[37]`doInit_UI，15项捕获中的UP[9]正是PC430创建的`root.children[38]`新区处理器实例。由此形成完整链路：root PC426/430创建新区闭包 → doInit_UI UP[9] → child2包装闭包 → PC271登记callbackMap.newzone → PC234/235的开新区按钮配置 → 通用ButtonFactory点击时按key取回调。
+
+#### 三组按钮配置已按新版VM纠正
+
+新版UI原型PC205-PC250创建的按钮配置并非旧候选中的4/3/3分组，而是：
+- 第一组6项：moneybut(V10001)、settingbut(内挂设置)、shiqubut(开拾取)、diuqibut(开丢弃)、clearblacklistbut(清黑名单)、stopallbut(停止脚本)。
+- 第二组7项：buygoldbut(购买金条)、recyclebut(回收装备)、newzone(开新区)、rewardbut(开奖励)、yinguaibut(开拉怪)、blacklistbut(开黑名单)、xiaotuibut(快速小退)。
+- 第三组为空表。
+
+#### 本轮已修改的唯一明文源码
+
+- `BuildMainLeftBottomButtonGroups`已改为新版VM确认的6/7/0三组按钮和原始名称；恢复`newzone`按钮配置。
+- 新增`MakeNewZoneCallbackAdapter`，对应`root.children[37].children[2]`的单捕获包装闭包。
+- 按root PC426-PC435顺序实例化`processNewZoneItems`与`newZoneHandler`，复用同一张`NEW_ZONE_ITEM_NAME_KEYWORDS`、PrintLog、MainLeftBottom根表、timerState和Schedule。
+- `BuildDoInitCallbackMap`现在将包装闭包登记到`callbackMap.newzone`。
+- 静态核对：关键词表、三个新区工厂、两个新区实例、适配器和newzone登记均各一处；按钮组数量为6/7/0；newzone按钮配置一处。
+- 本轮源码提交：`8092a4560aa376a83d7bc5897763bad5535edb2c`（按钮组及登记）；`2d8e2774314de8bfa6257d71e8369545da025fb5`（新区闭包实例化及接线）。
+- 当前唯一明文源码Blob SHA：`c5b848996fe1c1efb45c963e9cb4b96ef5f88e38`。
+
+#### 仍需保留的限制
+
+- 之前“当前原型中没有newzone按钮/没有callbackMap.newzone”的结论已被本轮原始VM证据推翻；以本节为准。
+- `Gbtc()`仍然是新版chunk ENV中的全局读取，当前文件、旧版源码和新框架API文档未找到其定义；两处原始调用继续保留，不虚构实现。
+- `BuildDoInitCallbackMap`仍属于分段恢复辅助函数，整个`doInit_UI`PC1-PC419的连续入口/调用组装尚未完成；因此本轮已恢复新区真实业务闭包及按钮回调关系，但不能声称整个UI初始化已经完整运行。
+- 未执行Lua 5.1编译、APK打包或游戏运行测试。
+
+**下一步：**继续追查`Gbtc`在新版宿主ENV中的定义/注册来源，并核对当前分段恢复的`BuildDoInitCallbackMap`与完整doInit_UI装配方式，避免把正确的新区回调接入错误的初始化时机。
