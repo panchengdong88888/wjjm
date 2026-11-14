@@ -207,6 +207,77 @@ local function Schedule(callback, interval)
     return SL:Schedule(callback, interval)
 end
 
+-- root.children[12]：LuaSendMsg六参数包装闭包（92条指令，检查点221）。
+-- 捕获顺序严格对应root PC48：UP[0]=MainLeftBottom.a，UP[1]=PrintLog。
+-- 该函数只挂入MainLeftBottom.a.LuaSendMsg，不导出为全局LuaSendMsg。
+local function MakeLuaSendMsg(mainLeftBottomState, printLog)
+    return function(hookKey, param1, param2, param3, param4, messageId)
+        -- 按VM字段写入消息对象；recog固定为0。
+        local message = {
+            recog = 0,
+            msgId = messageId,
+            param1 = param1,
+            param2 = param2,
+            param3 = param3,
+            param4 = param4,
+        }
+
+        -- Blocklist只控制是否输出调试日志，不阻止消息发送或Hook执行。
+        -- table.find与tonumber均按新版VM实际调用形式保留。
+        if not table.find(mainLeftBottomState.Blocklist, tonumber(hookKey)) then
+            local logArguments = {
+                hookKey,
+                param1,
+                param2,
+                param3,
+                param4,
+                messageId,
+            }
+            local formattedArguments = {}
+            for _, value in ipairs(logArguments) do
+                if type(value) == "string" then
+                    table.insert(formattedArguments, "'" .. value .. "'")
+                else
+                    table.insert(formattedArguments, tostring(value))
+                end
+            end
+            printLog("LuaSendMsg(" .. table.concat(formattedArguments, ", ") .. ")")
+        end
+
+        -- VM对SendHookList[hookKey]执行两次索引：
+        -- 第一次只作truthy门控，第二次取值后再检查是否为function。
+        if mainLeftBottomState.SendHookList[hookKey] then
+            local hook = mainLeftBottomState.SendHookList[hookKey]
+            if type(hook) == "function" then
+                local ok, shouldIntercept = pcall(
+                    hook,
+                    hookKey,
+                    messageId,
+                    message
+                )
+                -- 只有pcall成功且Hook第二返回值严格等于true才拦截发送。
+                if ok and shouldIntercept == true then
+                    return
+                end
+            end
+        end
+
+        -- Hook未拦截（包括Hook报错）时，按原六参数顺序转发网络消息。
+        return global.networkCtl:SendMsg(
+            hookKey,
+            param1,
+            param2,
+            param3,
+            param4,
+            messageId
+        )
+    end
+end
+
+-- root PC48-PC51：实例化闭包并写入MainLeftBottom.a.LuaSendMsg。
+-- 不创建第二张状态表，也不写入_ENV.LuaSendMsg。
+moduleState.LuaSendMsg = MakeLuaSendMsg(moduleState, PrintLog)
+
 -- root.children[5]：主玩家ID包装函数。
 local function GetMainPlayerID()
     return global.gamePlayerController:GetMainPlayerID()
