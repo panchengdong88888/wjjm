@@ -2885,6 +2885,60 @@ local function MakeResourceStatisticsClose(printLog, timerState, moduleState)
     end
 end
 
+-- root/43 PC19-PC99：资源统计初始时间与资源快照初始化。
+-- 这是供doInit装配使用的等价辅助函数；不自行创建UI或注册按钮。
+local function InitializeResourceStatisticsSnapshot(
+    initState, moneyNames, itemNames, getItemCount
+)
+    -- VM先写入默认值，只有系统时间读取成功才覆盖。
+    initState.initTime = 0
+    initState.initTimeStr = "--"
+
+    local osLibrary = os
+    if osLibrary and osLibrary.time and osLibrary.date then
+        local timeOk, timestamp = pcall(osLibrary.time)
+        if timeOk and timestamp then
+            initState.initTime = timestamp
+
+            local dateOk, dateText = pcall(
+                osLibrary.date,
+                "%Y-%m-%d %H:%M:%S",
+                timestamp
+            )
+            if dateOk and dateText then
+                initState.initTimeStr = dateText
+            end
+        end
+    end
+
+    local initSnapshot = {}
+    initState.initSnapshot = initSnapshot
+
+    -- VM通过Facade取得MoneyProxy；代理不可用时跳过货币快照。
+    local moneyProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.MoneyProxy
+    )
+    if moneyProxy then
+        for _, moneyName in ipairs(moneyNames) do
+            local moneyId = moneyProxy:GetMoneyIdByName(moneyName)
+            if moneyId then
+                local count = moneyProxy:GetMoneyCountById(moneyId)
+                if not count then
+                    count = 0
+                end
+                initSnapshot[moneyId] = count
+            end
+        end
+    end
+
+    -- 背包资源快照以物品名称为键。
+    for _, itemName in ipairs(itemNames) do
+        initSnapshot[itemName] = getItemCount(itemName)
+    end
+
+    return moneyProxy
+end
+
 -- root/43/4：资源统计窗口开关处理器。
 -- moduleState提供screenW/screenH/resWin；initState提供initTime/initTimeStr/initSnapshot。
 local function MakeResourceStatisticsWindow(moduleState, printLog, timerState, initState)
