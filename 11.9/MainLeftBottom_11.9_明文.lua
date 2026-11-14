@@ -106,7 +106,7 @@ local function MakeGetMapData2DPtr(unusedCapturedValue)
     end
 end
 
--- 新版root子原型34：地图名称读取包装函数（9条指令）。
+-- 新版root.children[30]：地图名称读取包装函数（9条指令）。
 -- 常量包含SL、GetMetaValue、MAP_NAME；按框架文档使用SL冒号调用。
 local function GetMapName()
     return SL:GetMetaValue("MAP_NAME") or ""
