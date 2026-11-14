@@ -2794,3 +2794,34 @@ PC236创建root/43/6，捕获顺序为：
 本轮未修改唯一明文源码，源码Blob SHA仍为`5356b57585df68899bf2f53d6d0a383b0f9cf52b`。本轮只更新接续文档，提交SHA见本次提交记录。未执行Lua 5.1编译、APK打包或游戏实测。
 
 **下一步：**先完整恢复`GetAvailableStoragePage`与`GetStorageItemData`两个分页基础函数（较短且是`StorageItems`/`TakeItems`的依赖），随后恢复`DiuItems`，再处理较长的`StorageItems`、`TakeItems`和`PickUpItems`。恢复时必须按原型PC和upvalue顺序核对，并将函数导出到当前chunk ENV。
+
+
+### 仓库分页基础函数恢复（2026-11-14）
+
+本轮按新版root PC68-PC73及两个原型的完整反汇编，将两个分页基础函数写入唯一明文源码：
+
+- `GetAvailableStoragePage`（新版`root/37`，51条指令）：
+  - root PC68创建时捕获UP[0]，来源为root PC43创建的`root/17`日志函数`PrintLog`。
+  - 检查`NPCStorageProxy`；缺失时调用捕获日志输出“仓库代理未初始化”，然后返回。
+  - 读取`GetMaxPage()`、`GUIDefine.STORAGE_PER_PAGE_MAX`（缺失时回退`global.MMO.NPC_STORAGE_MAX_PAGE`）及`GetOpenSize()`。
+  - 按页从1遍历到最大页，读取`GetStorageDataByPage(page)`；数据长度为空/不存在按0处理。
+  - 计算本页实际开放格数`min(pageSize, openSize - (page - 1) * pageSize)`；当实际开放格数大于当前页物品数量时，返回该页页码。遍历完毕无空位则返回nil。
+  - 已通过`rootEnvironment.GetAvailableStoragePage`导出，导出闭包捕获PrintLog。
+
+- `GetStorageItemData`（新版`root/2`，77条指令）：
+  - root PC71创建时捕获UP[0]，同样为`PrintLog`。
+  - `NPCStorageProxy`不存在时直接返回nil。
+  - 遍历`GetMaxPage()`页；仅对table类型分页数据使用`ipairs`，并按原顺序用`table.insert`合并到一个连续数组。
+  - 按`GUIDefine.STORAGE_PER_PAGE_MAX`或`global.MMO.NPC_STORAGE_MAX_PAGE`回退值，结合`GetOpenSize()`逐页累计实际开放格数；通过捕获日志函数输出`仓库总可用格子: `及累计值；最终返回合并后的物品数组。
+  - 已通过`rootEnvironment.GetStorageItemData`导出，导出闭包捕获PrintLog。
+
+静态核对：
+- 两个函数定义各1处，ENV导出各1处；分页代理API和容量常量均存在。
+- 唯一明文源码最新Blob SHA：`04ad4030cc8f01be7301e8d04afc27cbe3cf7eb4`。
+- 源码提交：`41f7250aca4b27781059f7c01ca1bdb98ca10a6c`。
+- 前一笔单独恢复`GetAvailableStoragePage`的提交：`bd84c8cd11e1ef6bee6bb79c03a90e7f4e049998`。
+- 未执行Lua 5.1语法编译、APK打包或游戏实测；当前运行环境未发现`lua/luac`命令。
+
+### 当前下一步
+
+继续恢复`DiuItems`（新版`root/47`，169条指令），然后按依赖顺序恢复`StorageItems`、`TakeItems`和`PickUpItems`。所有函数必须保留root PC64-PC85的ENV导出语义，禁止只添加未导出的local同名函数。
