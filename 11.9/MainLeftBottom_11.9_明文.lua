@@ -2114,17 +2114,14 @@ local function MakeShowLocalNoticeByType(mainLeftBottom)
     end
 end
 
--- 对应root PC30-PC46：创建MainLeftBottom.b界面控件表、定时器状态表及本地提示闭包。
--- root PC30创建空控件表，PC32赋值MainLeftBottom.b；root PC42创建空timerState；
--- root PC46创建ShowLocalNoticeByType闭包，捕获MainLeftBottom模块表。
+-- root PC30-PC46的共享对象已在文件入口按真实PC顺序创建。
+-- 此辅助函数只取回同一张b映射表和同一张timerState，不允许另建副本。
+-- 通知闭包仍按root PC46捕获传入的MainLeftBottom模块表。
 local function MakeBuyGoldRootContext(mainLeftBottom)
-    local visibleItems = {}
-    local timerState = {}
-
-    mainLeftBottom.b = visibleItems
+    local sharedVisibleItems = mainLeftBottom.b
     local showLocalNotice = MakeShowLocalNoticeByType(mainLeftBottom)
 
-    return timerState, visibleItems, showLocalNotice
+    return timerState, sharedVisibleItems, showLocalNotice
 end
 
 
