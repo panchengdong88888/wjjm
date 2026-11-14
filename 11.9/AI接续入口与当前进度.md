@@ -2757,3 +2757,40 @@ PC236创建root/43/6，捕获顺序为：
 静态检查：`PlayerPos`定义/导出各1处，`MoveTo`定义/导出各1处，`GetWritablePath`本地定义1处；旧的错误赋值`rootEnvironment.PlayerPos = GetPlayerPosition`已不存在；移动通知、X/Y双轴范围判断均存在。未执行Lua 5.1编译、APK打包或游戏运行测试。
 
 **下一步：**继续核对root PC64-PC85的函数创建/全局导出顺序，重点先还原`DiuItems`及仓库分页/取物/拾取相关入口的捕获对象和ENV函数身份；不要把旧整理稿中的同名代码未经新版VM核对直接复制。
+
+
+### 2026-11-14继续：root PC64-PC85函数导出链定位
+
+本轮直接按新版`MainLeftBottom_vm_disassembly_corrected_phase3.txt`的root指令表核对PC64-PC85，并与唯一明文源码逐项比对。没有把尚未恢复的函数伪装成已完成，也没有修改旧版或原始加密文件。
+
+#### root PC64-PC85的原始导出顺序
+
+| root PC | 新建/导出动作 | 原型路径 | 捕获数 |
+|---|---|---|---:|
+| 64-67 | 创建并导出`DiuItems` | `root/47`（child index 46） | 2 |
+| 68-70 | 创建并导出`GetAvailableStoragePage` | `root/37`（child index 36） | 1 |
+| 71-73 | 创建并导出`GetStorageItemData` | `root/2`（child index 1） | 1 |
+| 74-78 | 创建并导出`StorageItems` | `root/51`（child index 50） | 3 |
+| 79-82 | 创建并导出`TakeItems` | `root/6`（child index 5） | 2 |
+| 83-85 | 创建并导出`PickUpItems` | `root/22`（child index 21） | 1 |
+
+注意：表中的`root/N`是反汇编文件给出的规范原型路径；父级closure创建指令的child index按0起始，因此两者数字差1。PC85之后PC86开始创建引怪配置表，不属于上述导出链。
+
+#### 本轮确认的具体证据
+
+- `DiuItems`原型`root/47`：169条VM记录、64个常量、1个子原型。入口先检查共享功能状态表的`isDiuing`，已在运行则立即return；否则将`isDiuing=true`，读取全局ENV的`GetDroppedItems()`并检查地面物品状态，后续还会读取`SL:GetMetaValue("BAG_DATA")`、使用`ITEM_IS_BIND`、`OverLap`、`MSG_CS_MAP_ITEM_DISCARD`等字段/接口。该函数有较长的物品名称/品质过滤及数量上限分支，必须继续完整恢复，不能只凭常量表拼接简化版。
+- `GetAvailableStoragePage`原型`root/37`：51条VM记录。先检查`NPCStorageProxy`，缺失时调用捕获的日志/提示函数并返回；存在时读取`GetMaxPage()`、逐页调用`GetStorageDataByPage(page)`，结合`GUIDefine.STORAGE_PER_PAGE_MAX`、`global.MMO.NPC_STORAGE_MAX_PAGE`和`NPCStorageProxy:GetOpenSize()`计算可用仓库页。后续要逐条还原循环边界及返回值。
+- `GetStorageItemData`原型`root/2`：77条VM记录。检查`NPCStorageProxy`及其`GetMaxPage`、`GetStorageDataByPage`；对分页数据进行类型判断、遍历和合并，日志常量含“仓库总可用格子: ”。需保留其完整返回结构，不能假设只是单页数据。
+- `StorageItems`原型`root/51`：224条VM记录、57个常量、2个子原型。入口检查并设置`isStoring`，依赖全局`GetAvailableStoragePage`，使用`NPCStorageProxy`、`GUIDefine.STORAGE_PER_PAGE_MAX`、`GetOpenSize`、`GetMaxPage`、`GetStorageDataByPage`、`BAG_DATA`、`ITEM_INDEX_BY_NAME`、`ITEM_IS_BIND`、`UseItemByIndex`和`LuaSendMsg`。有存仓候选列表、分页容量及消息处理，后续需完整还原。
+- `TakeItems`原型`root/6`：99条VM记录。入口检查/设置`isTaking`，调用全局`GetStorageItemData()`，遍历仓库物品并使用`MakeIndex`、`string.trim`、`Name`字段及`MSG_CS_STORAGE_PICK_OUT_REQUEST`发送取出请求，结束时复位状态并输出统计提示。
+- `PickUpItems`原型`root/22`：172条VM记录、2个子原型。读取全局`GetDroppedItems()`、`PlayerPos()`，检查地面物品的名称及地图坐标字段（`mName`/`mONameStr`/`Name`/`name`、`mCurrMapX`/`MapX`/`mapX`/`x`、Y轴对应字段），用`math.abs`计算距离并排序，后续调用`MoveTo`及拾取控制器。必须保留其原始坐标兼容顺序和排序行为。
+
+#### 与唯一明文源码比对
+
+当前唯一明文源码中这些函数没有对应定义：`DiuItems`、`GetAvailableStoragePage`、`GetStorageItemData`、`StorageItems`、`TakeItems`、`PickUpItems`；仅在定时器启动/回调位置出现对`DiuItems`、`StorageItems`、`TakeItems`、`PickUpItems`的调用。因此这些调用当前存在未定义全局函数风险，不能视为已经恢复。
+
+另一个重要点：root PC64-PC85的导出顺序是运行时初始化的一部分。补齐函数时应保留当前chunk ENV赋值（例如`rootEnvironment.DiuItems = ...`）及捕获关系，不要只在文件中写同名local函数却忘记导出。
+
+本轮未修改唯一明文源码，源码Blob SHA仍为`5356b57585df68899bf2f53d6d0a383b0f9cf52b`。本轮只更新接续文档，提交SHA见本次提交记录。未执行Lua 5.1编译、APK打包或游戏实测。
+
+**下一步：**先完整恢复`GetAvailableStoragePage`与`GetStorageItemData`两个分页基础函数（较短且是`StorageItems`/`TakeItems`的依赖），随后恢复`DiuItems`，再处理较长的`StorageItems`、`TakeItems`和`PickUpItems`。恢复时必须按原型PC和upvalue顺序核对，并将函数导出到当前chunk ENV。
