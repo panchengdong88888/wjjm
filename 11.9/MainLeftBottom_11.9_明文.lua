@@ -447,6 +447,180 @@ rootEnvironment.GetStorageItemData = function()
     return GetStorageItemData(PrintLog)
 end
 
+-- 新版VM root/51：StorageItems（224条指令，2个子原型）。
+-- root PC74-PC78捕获顺序：UP[0]=MainLeftBottom.z共享状态表，
+-- UP[1]=PrintLog，UP[2]=ShowLocalNoticeByType；PC78导出到当前chunk ENV。
+local function MakeStorageItemsHandler(featureState, printLog, showLocalNotice)
+    -- 对应root/51/1：UP[0]=featureState，UP[1]=printLog。
+    -- VM只在物品名称含“聚灵珠”时输出诊断信息；耐久字段缺失时返回false。
+    local function isOutputted(item, itemText)
+        if not string.find(itemText, "聚灵珠", 1, true) then
+            return true
+        end
+
+        if not featureState.isOutputted then
+            featureState.isOutputted = true
+            printLog(item)
+
+            local info = "聚灵珠信息: " .. tostring(item.Name)
+                .. " StdMode=" .. tostring(item.StdMode)
+                .. " Dura=" .. tostring(item.Dura)
+                .. " DuraMax=" .. tostring(item.DuraMax)
+            printLog(info)
+        end
+
+        if not item.Dura then
+            return false
+        end
+        if not item.DuraMax then
+            return false
+        end
+        return item.Dura <= item.DuraMax
+    end
+
+    return function()
+        if featureState.isStoring then
+            return
+        end
+        featureState.isStoring = true
+
+        -- PC14-PC23：先用独立的全局分页函数检查是否还有空位。
+        if not GetAvailableStoragePage() then
+            showLocalNotice("仓库已满,无法存仓")
+            featureState.isStoring = false
+            return
+        end
+
+        local storageProxy = NPCStorageProxy
+        local maxPage = storageProxy:GetMaxPage()
+        local pageCapacity = GUIDefine.STORAGE_PER_PAGE_MAX
+        if not pageCapacity then
+            pageCapacity = global.MMO.NPC_STORAGE_MAX_PAGE
+        end
+        local openSize = storageProxy:GetOpenSize()
+
+        -- PC37-PC53：先记录每页当前物品数量。
+        local storedPageData = {}
+        for page = 1, maxPage do
+            local pageData = storageProxy:GetStorageDataByPage(page)
+            storedPageData[page] = pageData and #pageData or 0
+        end
+
+        -- 对应root/51/2：4个捕获依次为maxPage、pageCapacity、
+        -- openSize、storedPageData；返回第一个仍有开放空格的页码。
+        local function findAvailablePage()
+            for page = 1, maxPage do
+                local remainingOpenSize = openSize - (page - 1) * pageCapacity
+                local pageLimit = remainingOpenSize
+                if pageCapacity < remainingOpenSize then
+                    pageLimit = pageCapacity
+                end
+                if pageLimit > storedPageData[page] then
+                    return page
+                end
+            end
+            return
+        end
+
+        -- PC61-PC80：18项特殊物品名称，按VM原始顺序匹配。
+        local specialNames = {
+            "金刚石", "玄铁", "真金矿石", "BOSS头骨", "转生证明", "魔神石",
+            "神装碎片", "涅槃石", "宝石精魄", "天神令", "神彩", "金罡",
+            "至尊", "圣皇", "凤凰", "麻痹戒指", "复活戒指", "切割神戒",
+        }
+        -- PC81-PC83：过滤名称表只有一项“待定”。
+        local filterNames = {"待定"}
+
+        local bagData = SL:GetMetaValue("BAG_DATA")
+        if not bagData then
+            printLog("背包物品为空")
+            featureState.isStoring = false
+            return
+        end
+
+        local processedMakeIndexes = {}
+        local queuedCount = 0
+
+        -- PC105-PC150：遍历背包，排除已处理及绑定物品；
+        -- 命中“待定”时按ITEM_INDEX_BY_NAME取索引并使用物品。
+        for _, item in pairs(bagData) do
+            local makeIndex = item.MakeIndex
+            if makeIndex and not processedMakeIndexes[makeIndex] then
+                local isBound = SL:GetMetaValue("ITEM_IS_BIND", item)
+                if not isBound then
+                    for _, filterName in ipairs(filterNames) do
+                        if string.find(item.Name, filterName, 1, true) then
+                            local itemIndex = SL:GetMetaValue(
+                                "ITEM_INDEX_BY_NAME", item.Name
+                            )
+                            SL:UseItemByIndex(itemIndex)
+                            showLocalNotice("使用: " .. item.Name)
+                        end
+                    end
+
+                    -- PC151-PC180：仅匹配18项特殊名称；聚灵珠耐久检查
+                    -- 使用子闭包返回值决定是否继续存仓。
+                    local matchedSpecialName = false
+                    local shouldStore = true
+                    for _, specialName in ipairs(specialNames) do
+                        if string.find(item.Name, specialName, 1, true) then
+                            matchedSpecialName = true
+                            if not isOutputted(item, item.Name) then
+                                shouldStore = false
+                                break
+                            end
+                        end
+                    end
+
+                    if matchedSpecialName and shouldStore then
+                        local targetPage = findAvailablePage()
+                        if not targetPage then
+                            showLocalNotice("仓库已满,无法存仓")
+                            featureState.isStoring = false
+                            return
+                        end
+
+                        showLocalNotice("存: " .. item.Name)
+
+                        -- PC192-PC205：直接调用当前chunk ENV的LuaSendMsg，
+                        -- 七个实参依VM顺序传递，不替换为模块内LuaSendMsg包装器。
+                        LuaSendMsg(
+                            global.MsgType.MSG_CS_STORAGE_STORE_REQUEST,
+                            999999999,
+                            item.MakeIndex,
+                            targetPage,
+                            0,
+                            item.Name,
+                            string.len(item.Name)
+                        )
+
+                        processedMakeIndexes[makeIndex] = true
+                        storedPageData[targetPage] = storedPageData[targetPage] + 1
+                        queuedCount = queuedCount + 1
+                    end
+                end
+            end
+        end
+
+        -- PC212-PC215：完成背包迭代后复位isStoring。
+        featureState.isStoring = false
+
+        -- PC216-PC223：只有确实发送了存仓请求才显示汇总提示。
+        if queuedCount > 0 then
+            showLocalNotice(
+                "存仓完成, 共存入 " .. tostring(queuedCount) .. " 件物品"
+            )
+        end
+    end
+end
+
+local StorageItems = MakeStorageItemsHandler(
+    MainLeftBottom.z,
+    PrintLog,
+    ShowLocalNoticeByType
+)
+rootEnvironment.StorageItems = StorageItems
+
 -- root PC52-PC53：调度包装闭包，保留SL方法接收者和实参顺序。
 local function ScheduleOnce(callback, delay)
     return SL:ScheduleOnce(callback, delay)
