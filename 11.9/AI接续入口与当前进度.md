@@ -2281,3 +2281,19 @@ PC236创建root/43/6，捕获顺序为：
 - 唯一明文源码提交：`cc416ea80dd422569f8a192e22b8b328acdce6a4`；当前content SHA：`ec9c8c4b382b08a7a0d947d8efe5217972c5cf01`。
 - 本轮没有修改11.9原始加密文件、旧版源码或其他业务函数；没有创建第二份源码；没有做按钮/UI接线。静态复核通过，未执行Lua 5.1编译、APK打包或游戏运行测试。
 - 状态：开新区业务函数此前已恢复，本轮只修正了两处Gbtc调用与原始VM不一致的问题。若实测有故障，再针对原型83/84/93复核；不要重新使用旧版110原型反汇编。
+
+### 2026-11-14：资源统计窗口 root/43/4 四项捕获来源闭合
+
+- 按新版VM原始dump与原型索引，复核root/42/3（旧标注root/43/4）资源统计窗口的闭包创建点。父函数root/42在PC329创建该闭包，PC330-PC333的四条OP_325捕获描述依次取父级upvalue槽位3、0、2、1。
+- root/42本身由root PC389创建；其20项捕获描述中，doInit UP[0]=root T[4]、UP[1]=root T[2]、UP[2]=root T[3]、UP[3]=root T[0]。交叉已确认的root对象映射：
+  - root T[0] = MainLeftBottom.a模块UI状态表（screenW/screenH/resWin）；
+  - root T[4] = PrintLog；
+  - root T[3] = 共享timerState；
+  - root T[2] = MainLeftBottom.z功能状态表。
+- 因此资源窗口真实捕获顺序闭合为：MainLeftBottom.a、PrintLog、timerState、MainLeftBottom.z。doInit PC18-PC57将initTime、initTimeStr、initSnapshot写入root T[2]所指向的同一张MainLeftBottom.z表；不能另建资源统计状态表。
+- 继续核对root/42 PC329-PC334：PC329创建资源窗口闭包；PC330-PC333完成四项捕获；PC334将该闭包写入同一callbackMap的moneybut键。唯一明文源码已有MakeResourceStatisticsWindow(moduleState, printLog, timerState, initState)及RegisterResourceStatisticsButtonHandler(callbackMap, moduleState, printLog, timerState, initState)，参数次序与VM一致。
+- 已仅补充唯一明文源码注释，明确四项捕获来源及PC329-PC334登记位置；没有改变业务行为。源码提交：035c3eb6d027a3edc85bb329c9108523ff579075；当前content SHA：3b685658f3641d0495f6ce0a3e9d86f173cbc897。
+- 当前边界：RegisterResourceStatisticsButtonHandler仍是独立辅助函数，尚未接入真实doInit_UI执行主干；不能宣称moneybut回调已在运行时登记。没有恢复ButtonFactory、按钮创建或UI布局。
+- 下一步：继续恢复root/42真实doInit_UI中callbackMap构建与业务处理器登记段，先按VM PC顺序核对各回调的捕获对象和登记key；只恢复业务处理器登记，不擅自扩展按钮创建/布局。之后再决定是否恢复完整UI入口。
+- 未修改新版原始加密文件、旧版整合文件或其他资料；未进行Lua 5.1编译、APK打包或游戏运行测试。
+
