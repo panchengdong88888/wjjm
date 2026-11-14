@@ -302,6 +302,52 @@ rootEnvironment.GetAvailableStoragePage = function()
     return GetAvailableStoragePage(PrintLog)
 end
 
+ 
+-- root.children[1] / VM路径root/2：汇总仓库所有页的物品数据。
+-- 捕获UP[0]为PrintLog；仅合并table类型分页数据，按ipairs顺序保留原条目顺序。
+local function GetStorageItemData(printLog)
+    local allItems = {}
+
+    if not NPCStorageProxy then
+        return
+    end
+
+    local maxPage = NPCStorageProxy:GetMaxPage()
+    for page = 1, maxPage do
+        local pageData = NPCStorageProxy:GetStorageDataByPage(page)
+        if pageData and type(pageData) == "table" then
+            for _, item in ipairs(pageData) do
+                table.insert(allItems, item)
+            end
+        end
+    end
+
+    -- VM按每页开放容量累加仓库总可用格子，并输出统计日志。
+    local totalOpenSlots = 0
+    local pageSize = GUIDefine.STORAGE_PER_PAGE_MAX
+    if not pageSize then
+        pageSize = global.MMO.NPC_STORAGE_MAX_PAGE
+    end
+
+    local openSize = NPCStorageProxy:GetOpenSize()
+    for page = 1, maxPage do
+        local remaining = openSize - (page - 1) * pageSize
+        if pageSize < remaining then
+            remaining = pageSize
+        end
+        if remaining > 0 then
+            totalOpenSlots = totalOpenSlots + remaining
+        end
+    end
+
+    printLog("仓库总可用格子: " .. tostring(totalOpenSlots))
+    return allItems
+end
+
+rootEnvironment.GetStorageItemData = function()
+    return GetStorageItemData(PrintLog)
+end
+
 -- root PC52-PC53：调度包装闭包，保留SL方法接收者和实参顺序。
 local function ScheduleOnce(callback, delay)
     return SL:ScheduleOnce(callback, delay)
