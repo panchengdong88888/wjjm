@@ -2496,3 +2496,16 @@ PC236创建root/43/6，捕获顺序为：
 - 当前文件尚未包含真实root模块初始化和完整doInit_UI主函数，BuildDoInitCallbackMap仍是独立辅助函数。不能宣称实际加载时已经执行回调登记。
 - 当前范围只恢复业务callbackMap，不接入ButtonFactory/按钮创建/布局/GUI点击事件。
 - 未执行Lua 5.1编译、APK打包或游戏实测。
+### 2026-11-14追加：doInit_UI真实接入点复核（callbackMap尚未运行时接通）
+
+本轮重新读取main分支唯一明文源码、新版加密文件、VM dump、原型索引及检查点331-334，确认：
+
+- 当前唯一明文源码仍没有doInit_UI函数定义；BuildDoInitCallbackMap(deps)也没有任何调用点。
+- 新版root.children[42]（规范路径root/42，419条指令）在PC196-PC235构造三组按钮配置，PC235-PC266按VM顺序构造R15-R20局部闭包，PC267创建callbackMap，PC268-PC336登记12个业务处理器。
+- BuildMainLeftBottomButtonGroups()已存在于唯一明文源码；其三组内容及顺序与新版VM PC196-PC235的配置一致，但它以三个返回值分别返回三组，并未构造外层R12表。真正接入时必须在同一函数作用域内组装buttonGroups={firstGroup,secondGroup,thirdGroup}，并把该同一张表传给BuildDoInitCallbackMap，不能传单独第一组，也不能另建状态同步专用副本。
+- deps的20项upvalue来源及R12语义已经在前一轮闭合；无需重新审计PC0-PC234，也无需重做child0-child22子原型核对。
+- PC338以后才开始ButtonFactory、按钮创建、布局和GUI点击绑定，仍明确排除在本轮范围之外。
+
+本轮未修改唯一明文源码；未执行Lua编译、APK打包或游戏运行测试。
+
+**下一步：**依据检查点331已完成的PC0-PC234静态结论，在唯一明文源码中恢复doInit_UI的必要前置装配，使其在正确的PC267位置调用BuildDoInitCallbackMap。本次只做到PC336业务回调表登记为止，不恢复PC338以后任何按钮创建/布局/点击绑定代码。若入口所需的某个root共享对象或配置包装器尚未在当前源码中建立，先从新版root初始化证据恢复其来源，不用旧版变量猜测。
