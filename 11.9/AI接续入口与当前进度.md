@@ -2608,3 +2608,15 @@ PC236创建root/43/6，捕获顺序为：
 静态检查：GetMapId/GetMapName/GetDroppedItems各有一个函数定义；四个导出字段各出现一次；GetDroppedItems保留底层函数多返回值；GetMapName原型身份注释已校正。未执行Lua 5.1编译、APK打包或游戏运行测试。
 
 **下一步：**继续恢复root PC62-PC85。优先逐条核对`MoveTo`（root.children[3]）的参数、自动移动调用和通知分支；之后再处理`DiuItems`及仓库/取物/拾取函数的真实导出链。
+
+### 2026-11-14追加：11.9新版「开新区」业务代码专项复核
+
+本轮按用户最新任务，优先复核新版新区功能，不转去处理其他模块。
+
+- 新版身份映射：原型83为新区功能（职责高置信）；子原型84为延迟消息回调；原型93为新区背包物品周期使用回调。原型身份依据 `11.9/MainLeftBottom_11.9_原型身份映射与旧版对照.md` 中的直接线索：`isNewzone`、`newzoneTimer`、`LuaSendMsg`、新区提示及背包物品字段。
+- 唯一明文源码中已存在三段业务实现：`SendNewZoneDelayedCommand`、`MakeNewZoneItemTimerCallback`、`MakeNewZoneButtonHandler`；以及38项 `NEW_ZONE_ITEM_NAME_KEYWORDS` 名称表。
+- 启动处理器已表达的业务顺序：记录“开启新区功能”→设置 `MainLeftBottom.isNewzone=true` →发送协议 `9002/22302` →调用 `Gbtc()` →0.5秒后发送 `9002/22502` 延迟协议 →取消旧 `newzoneTimer` →以0.05秒周期启动背包物品处理回调。
+- 周期回调按38项名称关键词顺序扫描 `BAG_DATA`；匹配时发送 `MSG_CS_USE_BAG_ITEM` 并立即返回，因此每轮最多使用一件；全部无匹配项时取消并清空 `newzoneTimer`、提示完成并调用 `Gbtc()`。
+- 该段业务代码已在唯一明文源码中，不重复追加第二份实现，也不改写原始加密文件或旧版源码。当前只做业务函数恢复/核对，不做按钮创建、callbackMap登记或UI接线；因此“业务函数已恢复”不等于新版UI入口已接通。
+- 新区专项静态检查：{"itemKeywordTableOnce":1,"itemNames":76,"delayedCallbackOnce":1,"itemCallbackOnce":1,"startHandlerOnce":1,"startPacket":true,"delayedPacket":true,"interval":true,"delayedInterval":true,"stopWhenExhausted":true}。本轮未执行Lua 5.1编译、APK打包或游戏运行测试。
+- 本轮唯一明文源码未改动，Blob SHA仍为 `f800a2a0a656b2e12ec06fc5aa92bcf3965f7f75`；本接续文档新增本节作为后续AI唯一接续依据。
