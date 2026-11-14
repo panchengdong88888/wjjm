@@ -3089,17 +3089,24 @@ end
 -- ============================================================
 --  11.9 doInit_UI：业务callbackMap构建与登记（对应VM PC235-PC336）
 -- ============================================================
--- deps字段与root/42的upvalue/局部寄存器一一对应：
---   printLog=UP[0]，featureState/initState=UP[1]，timerState=UP[2]，
---   moduleState=UP[3]，visibleItems=UP[4]；
---   blacklistState=UP[5]，readBlacklistDistance=UP[6]，schedule=UP[7]，
---   gatherConfig=UP[8]，readGatherThreshold=UP[9]；
---   saveBlacklistDistance=UP[10]，notify=UP[11]，getWritablePath=UP[12]，
---   blacklistDistanceFileName=UP[13]，saveGatherThreshold=UP[14]，
---   gatherThresholdFileName=UP[15]，deleteConfig=UP[16]，
---   rewardModulus=UP[17]，rewardEntries=UP[18]，
---   rewardScheduleInterval=UP[19]。
---   buttonGroups=doInit_UI PC196-PC235构造的完整三组配置表；visibleItems=UP[4]；
+-- deps字段与root/42的20项upvalue及局部R[12]一一对应。
+-- 20项upvalue的root捕获源（root PC391-PC410）：
+--   UP[0]=root T[4] PrintLog；
+--   UP[1]=root T[2] MainLeftBottom.z（featureState/initState，同一张表）；
+--   UP[2]=root T[3] timerState；UP[3]=root T[0] MainLeftBottom.a；
+--   UP[4]=root T[1] MainLeftBottom.b（visibleItems）；
+--   UP[5]=root T[41] blacklistState（同时挂在a.blacklist）；
+--   UP[6]=root T[48] blacklist_distance.txt读取包装器；
+--   UP[7]=root T[7] Schedule包装器；UP[8]=root T[8] gatherConfig；
+--   UP[9]=root T[50] gather_monster_count.txt读取包装器；
+--   UP[10]=root T[49] blacklist_distance.txt保存包装器；
+--   UP[11]=root T[5] ShowLocalNoticeByType通知包装器；
+--   UP[12]=root T[44] GetWritablePath；UP[13]=root T[42]黑名单距离文件名；
+--   UP[14]=root T[51] gather_monster_count.txt保存包装器；
+--   UP[15]=root T[43]引怪阈值文件名；UP[16]=root T[47]安全删除配置文件包装器；
+--   UP[17]=root T[11]奖励轮询取模基数18000；
+--   UP[18]=root T[12]14项奖励记录表；UP[19]=root T[9]调度间隔0.2。
+--   R[12]=PC196-PC235构造的完整三组buttonGroups；R[15]=按钮状态同步闭包。
 --   以下局部闭包按VM顺序在callbackMap前构造：
 --   syncButtonState=R[15]、startBlacklistTimer=R[16]、
 --   startGather=R[17]、commonInputPrompt=R[18]。
