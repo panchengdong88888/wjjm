@@ -2963,3 +2963,56 @@ PC236创建root/43/6，捕获顺序为：
 - 修正提交：`a85a3bec8d465d56fe532f60b15a16733eb1bb27`。
 - 修正后的唯一明文源码Blob SHA：`9c824bf2cbbb1c4179dde8d7f9e6464fdc22b4d3`。
 - 此次修正后仍未执行Lua编译、APK打包或游戏实测。
+### 六项函数跨接口复核（2026-11-14 夜间）
+
+本轮对唯一明文源码、MainLeftBottom_vm_disassembly_corrected_phase3.txt及六项函数的父级创建/导出指令进行交叉核对。发现并修正一处接口调用对象错误，其余已核对接口未发现需要改动的参数或接线错误。
+
+#### 已修正问题
+
+- DiuItems（VM原型root/47）的PC143明确从当前chunk ENV读取全局LuaSendMsg，PC144-PC155构造global.MsgType.MSG_CS_MAP_ITEM_DISCARD及后续参数。
+- 原明文错误调用了MainLeftBottom.a.LuaSendMsg模块包装器。该包装器不是VM在此处读取的调用对象。
+- 已改为直接调用当前chunk ENV的LuaSendMsg，并保留消息参数顺序：消息标识、MakeIndex、数量、0、0、物品名称、名称字节长度。
+- 修正提交：bfcbd541401f7d54086d1aba7a98e3ee247f0242。
+- 修正后源码Blob SHA：1061b9b03c72b6508c2e3de8e0e0baa7878fac10。
+
+#### 其余接口复核结果
+
+1. **DiuItems / GetDroppedItems**
+   - GetDroppedItems包装函数直接返回global.dropItemManager:FindDropItemInCurrViewFieldAll()的多返回值。
+   - DiuItems读取第二返回值作为当前地面物品数量；VM常量35为上限。发送每个丢弃请求后本地计数加1，达到35时停止。
+   - 背包物品仍按Name、MakeIndex存在且ITEM_IS_BIND为假的条件进入候选；VM恒真分支说明已创建的关键词匹配闭包不参与候选过滤，明文没有擅自启用关键词过滤。
+2. **GetAvailableStoragePage / StorageItems**
+   - GetAvailableStoragePage按NPCStorageProxy:GetMaxPage()遍历分页，结合GetOpenSize()、每页容量及当前页物品数返回第一个有空格的页码；代理缺失时使用捕获的PrintLog输出提示并返回。
+   - StorageItems通过当前ENV全局GetAvailableStoragePage()调用该辅助函数；调用发生在背包遍历和发送存仓请求之前。父级root创建及ENV导出均已核对。
+3. **GetStorageItemData / TakeItems**
+   - GetStorageItemData通过仓库代理逐页读取数据，按ipairs合并为连续数组；代理不存在时返回nil。
+   - TakeItems通过当前ENV全局GetStorageItemData()调用该函数；nil或空数组分支提示并复位状态。接口名和返回数据形态一致。
+4. **存仓与取仓消息**
+   - StorageItems使用当前ENV全局LuaSendMsg，消息标识MSG_CS_STORAGE_STORE_REQUEST，后续参数顺序为999999999、MakeIndex、targetPage、0、Name、string.len(Name)。
+   - TakeItems使用当前ENV全局LuaSendMsg，消息标识MSG_CS_STORAGE_PICK_OUT_REQUEST，后续参数顺序为999999999、MakeIndex、0、0、trimmedName、string.len(trimmedName)。
+   - 两处均未误用模块包装器。
+5. **PickUpItems / PlayerPos / MoveTo**
+   - GetDroppedItems返回地面物品列表和数量；数量为0时提示并返回。
+   - PlayerPos返回X、Y两个值；MoveTo(x,y,0)按原型发送自动移动通知，再比较玩家当前位置。
+   - PickUpItems只选排序后的首个候选；玩家与目标两轴距离均不超过1时，才调用global.dropItemController:PickMainPlayerPosItem()，调用不带额外业务参数。
+   - VM中的名称规则表为空，当前有效坐标物品进入普通候选；明文没有增加自定义优先拾取规则。
+6. **共享状态、捕获和ENV导出**
+   - DiuItems捕获共享功能状态和本地提示函数；StorageItems捕获共享功能状态、PrintLog和本地提示函数；TakeItems捕获共享功能状态和本地提示函数；PickUpItems捕获本地提示函数。
+   - GetAvailableStoragePage与GetStorageItemData各自使用捕获的PrintLog；两者作为全局辅助入口供其他函数调用。
+   - 六项入口/辅助函数的ENV导出均存在且各1处：DiuItems、GetAvailableStoragePage、GetStorageItemData、StorageItems、TakeItems、PickUpItems。
+
+#### 修正后静态检查
+
+- DiuItems丢弃请求已使用ENV LuaSendMsg；旧的MainLeftBottom.a.LuaSendMsg丢弃调用已不存在。
+- 存仓和取仓请求仍各自直接调用ENV LuaSendMsg，消息标识及参数顺序未改变。
+- StorageItems -> GetAvailableStoragePage、TakeItems -> GetStorageItemData接口调用均存在。
+- 六项ENV导出均各1处；PickUpItems的移动与最终拾取调用顺序正确。
+- 本轮只做静态源码/VM核对，未执行Lua语法编译、APK打包或游戏实测。
+
+#### 当前最新唯一交付文件
+
+- 路径：11.9/MainLeftBottom_11.9_明文.lua
+- 最新源码提交：bfcbd541401f7d54086d1aba7a98e3ee247f0242
+- 最新源码Blob SHA：1061b9b03c72b6508c2e3de8e0e0baa7878fac10
+- 原始加密文件仍保持只读，未修改。
+- 当前下一步：完成六项函数复核记录后，整理一份交给另一个AI进行APK集成的准确说明；打包和游戏实测结果必须由实际测试确认，不得把静态复核描述为运行通过。
