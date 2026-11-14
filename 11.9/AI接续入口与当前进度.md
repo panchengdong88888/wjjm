@@ -2297,3 +2297,60 @@ PC236创建root/43/6，捕获顺序为：
 - 下一步：继续恢复root/42真实doInit_UI中callbackMap构建与业务处理器登记段，先按VM PC顺序核对各回调的捕获对象和登记key；只恢复业务处理器登记，不擅自扩展按钮创建/布局。之后再决定是否恢复完整UI入口。
 - 未修改新版原始加密文件、旧版整合文件或其他资料；未进行Lua 5.1编译、APK打包或游戏运行测试。
 
+
+
+### 2026-11-14追加：doInit_UI callbackMap 登记段静态闭合
+
+本轮重新读取当前VM dump、原型索引、唯一明文源码和接续文档。确认规范路径为 `root/42`（旧报告一基标签 `root/43`），原型索引记录该函数419条指令、23个子原型；不要再把旧版阶段三反汇编中的proto48/433条指令套用到11.9新版。
+
+#### 一、callbackMap创建与真实登记顺序
+
+- PC267：创建唯一callbackMap空表。
+- 以下处理器均写入该表，按VM执行顺序：
+  1. PC268创建child6，PC275登记 `yinguaibut`。
+  2. PC276创建child2，PC281登记 `clearmonsterbut`。
+  3. PC282创建child20，PC287登记 `cleardistancebut`。
+  4. PC288创建child1，PC294登记 `rewardbut`。
+  5. PC295创建child13，PC297登记 `clearblacklistbut`。
+  6. PC298创建child18，PC305登记 `blacklistbut`。
+  7. PC306创建child8，PC311登记 `storagebut`。
+  8. PC312创建child19，PC317登记 `takebut`。
+  9. PC318创建child10，PC322登记 `shiqubut`。
+  10. PC323创建child21，PC328登记 `diuqibut`。
+  11. PC329创建child3，PC334登记 `moneybut`。
+  12. PC335创建child4，PC336登记 `xiaotuibut`。
+- 以上是业务回调表的实际登记，不等于按钮创建或GUI点击绑定；按钮创建代码位于PC339之后的另一段，当前不扩展该范围。
+- `buygoldbut` 不在这份新版root/42的上述callbackMap登记序列中，不能将旧版/其他阶段的购买金条处理器硬塞进来。
+
+#### 二、闭包捕获序列（按子原型参数顺序）
+
+捕获操作按闭包创建指令后的capture指令逐条读取；`UP[n]`表示doInit_UI父函数的upvalue，`R[n]`表示doInit_UI当前局部寄存器。
+
+| 登记key | 子原型 | 捕获来源（按序） | 对应已恢复工厂 |
+|---|---:|---|---|
+| yinguaibut | child6 | UP2、UP11、UP9、UP0、R20、R17 | MakeGatherButtonHandler |
+| clearmonsterbut | child2 | UP16、UP15、UP11、UP0 | MakeClearMonsterThresholdButtonHandler |
+| cleardistancebut | child20 | UP16、UP13、UP11、UP0 | MakeClearBlacklistDistanceButtonHandler |
+| rewardbut | child1 | UP2、UP0、UP17、UP18、UP19 | MakeRewardButtonHandler |
+| clearblacklistbut | child13 | UP0 | MakeClearBlacklistButtonHandler |
+| blacklistbut | child18 | UP2、UP0、UP1、UP6、R19、R16 | MakeBlacklistButtonHandler |
+| storagebut | child8 | UP2、UP0、UP1、UP7 | MakeStorageButtonHandler |
+| takebut | child19 | UP2、UP0、UP1、UP7 | MakeTakeButtonHandler |
+| shiqubut | child10 | UP10、UP2、UP7 | MakePickupButtonHandler |
+| diuqibut | child21 | UP2、UP0、UP1、UP7 | MakeDropButtonHandler |
+| moneybut | child3 | UP3、UP0、UP2、UP1 | MakeResourceStatisticsWindow |
+| xiaotuibut | child4 | 无捕获 | child4直接调用global.gameWorldController:OnGameLeaveWorld() |
+
+其中child6、child18等处理器的捕获顺序与现有工厂参数顺序逐项对应；child4不是隐藏按钮处理器，它是离开世界回调。隐藏按钮另有child15，不能混淆。
+
+#### 三、当前已确认与尚未完成
+
+- 已确认callbackMap唯一创建点、12个真实登记key、登记顺序、各子原型创建PC和捕获来源。
+- 现有明文源码中，前11个处理器的业务工厂均已存在；child4的5条指令也已确认其行为，但尚需核对源码是否已有完全等价的独立函数。
+- 尚未把这些工厂按真实捕获对象和PC顺序装入一个可由doInit调用的主干；当前仍不能声称新版doInit已运行时登记这些处理器。
+- 尚未恢复PC339以后ButtonFactory及UI创建链，本轮不处理。
+- 本轮只做静态字节码映射，没有修改唯一明文源码；未修改原始加密文件、旧版源码或其他资料；未执行Lua 5.1编译、APK打包或游戏实测。
+
+#### 四、下一步
+
+先将上表每一项捕获来源映射到doInit_UI现有upvalue/局部变量的准确语义，尤其核对UP10（拾取处理器首捕获）及R20/R19/R17/R16等局部闭包的创建来源；然后在唯一明文文件中恢复与VM顺序一致的callbackMap构建/登记段。只有当所需局部依赖均闭合后，才接入doInit主干，不能用猜测参数调用工厂。
