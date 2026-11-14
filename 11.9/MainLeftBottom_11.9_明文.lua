@@ -339,7 +339,7 @@ local function DiuItems()
         end
 
         ShowLocalNoticeByType("丢: " .. candidate.name)
-        MainLeftBottom.a.LuaSendMsg(
+        LuaSendMsg(
             global.MsgType.MSG_CS_MAP_ITEM_DISCARD,
             candidate.makeIndex,
             candidate.count,
