@@ -2620,3 +2620,22 @@ PC236创建root/43/6，捕获顺序为：
 - 该段业务代码已在唯一明文源码中，不重复追加第二份实现，也不改写原始加密文件或旧版源码。当前只做业务函数恢复/核对，不做按钮创建、callbackMap登记或UI接线；因此“业务函数已恢复”不等于新版UI入口已接通。
 - 新区专项静态检查：{"itemKeywordTableOnce":1,"itemNames":76,"delayedCallbackOnce":1,"itemCallbackOnce":1,"startHandlerOnce":1,"startPacket":true,"delayedPacket":true,"interval":true,"delayedInterval":true,"stopWhenExhausted":true}。本轮未执行Lua 5.1编译、APK打包或游戏运行测试。
 - 本轮唯一明文源码未改动，Blob SHA仍为 `f800a2a0a656b2e12ec06fc5aa92bcf3965f7f75`；本接续文档新增本节作为后续AI唯一接续依据。
+
+
+### 2026-11-14继续：新区定时器与接线边界复核
+
+本轮继续按“1=继续”处理新区专项，未改动唯一明文源码。
+
+1. 重新读取唯一明文文件并逐段核对新区函数。确认新区逻辑只有一套定义：
+   - `SendNewZoneDelayedCommand()`：执行7参数消息 `LuaSendMsg(9002, 22502, 1, 2, "", 0, 0)`。
+   - `MakeNewZoneItemTimerCallback(itemNameKeywords, printLog, timerState)`：按38项名称表外层顺序、BAG_DATA内层遍历；匹配后发送 `MSG_CS_USE_BAG_ITEM`，每轮最多一件；全部扫描未命中才取消 `newzoneTimer`、提示并调用 `Gbtc()`。
+   - `MakeNewZoneButtonHandler(printLog, mainLeftBottom, timerState, schedule, processNewZoneItems)`：设置 `isNewzone`、发启动消息、调用 `Gbtc()`、0.5秒延迟消息、取消旧句柄后按0.05秒重新调度。
+2. 核对38项关键词表：数量为38；原始顺序和重复项均保留，包括“雷霆护腕”“雷霆戒指”各重复一次。
+3. 新框架API文档确认 `SL:Schedule(callback, time)`、`SL:ScheduleOnce(callback, time)`、`SL:UnSchedule(scheduleID)` 的receiver及参数形式与当前代码一致；`BAG_DATA`也是文档列出的元变量。
+4. 发现当前 `BuildDoInitCallbackMap`（恢复至VM PC235-PC336）明确登记了引怪、奖励、黑名单、仓库、拾取、丢弃、资源统计和V10001等回调，但没有新区登记项。这只能说明当前已恢复的callbackMap区段尚未接入新区；不能据此断言原版新区没有UI入口，因为原版UI按钮工厂/按钮分组链尚未完成恢复。
+5. `Gbtc()` 在新区启动及物品耗尽两处被调用，但本轮尚未确认其全局定义/来源。暂保留原调用，不改名、不虚构实现。此项列为下一轮必须追查的依赖。
+6. 共享定时器表沿用模块入口创建的同一张 `timerState`；不得为新区另建表。原型83捕获的MainLeftBottom模块表与timerState继续按既有捕获顺序传入。
+
+**下一步唯一重点：** 定点查明 `Gbtc()` 的定义/来源及其与新版原型调用关系；随后沿原版UI按钮工厂/按钮分组证据，确认新区处理器应登记到哪个按钮回调名。没有原始证据前不擅自把新区塞入callbackMap，也不改动已恢复的38项表和三个业务函数。
+
+本轮未执行Lua 5.1编译、APK打包或游戏运行测试。
