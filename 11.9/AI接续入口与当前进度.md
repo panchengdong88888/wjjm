@@ -2729,3 +2729,31 @@ PC236创建root/43/6，捕获顺序为：
 5. 未找到可靠定义前，不增加空函数、不改成条件调用、不删除调用。将其保留为待确认外部依赖，避免改变原始VM行为。
 
 **下一步：**转入新版doInit_UI连续初始化链恢复。当前根模块PC1-PC61中，模块共享状态、PrintLog/通知/调度、LuaSendMsg及PC54-PC61基础函数导出已有部分恢复；接下来先核对root PC62-PC85剩余闭包和全局导出，再补PC286-PC315配置读写/黑名单状态依赖，最后按真实20项upvalue装配doInit_UI，避免新区回调虽然登记却未在正确初始化时机创建。
+
+
+### 2026-11-14继续：root PC62-PC63基础函数恢复与PlayerPos语义纠正
+
+本轮在唯一明文源码中继续恢复root初始化导出链，并修正一个此前存在的基础函数返回值错误。
+
+#### 原始VM证据
+
+- corrected phase3反汇编root PC62创建child-index 3（规范路径root/4，函数常量包含`sendNotification`、`PlayerPos`、`INPUT_MOVE_TYPE_AUTOMOVE`、`MAP_ID`），PC63将该闭包写入当前chunk ENV的`MoveTo`。
+- `MoveTo(x,y,range)`先创建移动信息表并写入`mapID=SL:GetMetaValue("MAP_ID")`；x/y分别经`tonumber`转换；`type=global.MMO.INPUT_MOVE_TYPE_AUTOMOVE`；range为假时默认0；随后调用`global.Facade:sendNotification(global.NoticeTable.InputMove, moveInfo)`。
+- 随后调用全局`PlayerPos()`接收两个返回值，分别计算X、Y轴绝对差；两个轴都不超过range时返回true，任一超出时返回false。
+- root PC58-PC59创建并导出child-index 57（规范路径root/58）的`PlayerPos`。其10条指令分别读取`SL:GetMetaValue("X")`和`SL:GetMetaValue("Y")`，最后通过多返回值return返回X、Y两个独立值，而不是`{x=...,y=...}`坐标表。
+- root child-index 2（规范路径root/3）是零参数本地路径包装器：`cc.FileUtils:getInstance():getWritablePath()`。root PC297创建它，后续作为doInit_UI配置文件读写闭包的捕获依赖；它不作为全局ENV导出。
+
+#### 本轮唯一明文源码修改
+
+- 新增`PlayerPos()`，严格返回`SL:GetMetaValue("X"), SL:GetMetaValue("Y")`。
+- 修正`rootEnvironment.PlayerPos`，不再错误复用返回坐标表的`GetPlayerPosition()`。
+- 新增本地`GetWritablePath()`，按VM的`cc.FileUtils:getInstance():getWritablePath()`调用链返回路径。
+- 新增`MoveTo(x,y,range)`，按VM顺序构造自动移动信息、发送`InputMove`通知、检查两个坐标轴与range并返回布尔值；将函数导出到当前chunk ENV的`MoveTo`。
+- `GetPlayerPosition()`仍保留其原有坐标表返回结构，供内部其他业务使用；不与`PlayerPos()`混为一谈。
+
+源码提交：`0263f2605b600d99b553c9c54f112c66eb8601ae`  
+唯一明文源码Blob SHA：`5356b57585df68899bf2f53d6d0a383b0f9cf52b`
+
+静态检查：`PlayerPos`定义/导出各1处，`MoveTo`定义/导出各1处，`GetWritablePath`本地定义1处；旧的错误赋值`rootEnvironment.PlayerPos = GetPlayerPosition`已不存在；移动通知、X/Y双轴范围判断均存在。未执行Lua 5.1编译、APK打包或游戏运行测试。
+
+**下一步：**继续核对root PC64-PC85的函数创建/全局导出顺序，重点先还原`DiuItems`及仓库分页/取物/拾取相关入口的捕获对象和ENV函数身份；不要把旧整理稿中的同名代码未经新版VM核对直接复制。
