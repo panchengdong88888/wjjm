@@ -2951,3 +2951,15 @@ PC236创建root/43/6，捕获顺序为：
 本轮开新区关联的六项主要入口/依赖函数均已有新版明文实现：`DiuItems`、`GetAvailableStoragePage`、`GetStorageItemData`、`StorageItems`、`TakeItems`、`PickUpItems`。其中`GetAvailableStoragePage`和`GetStorageItemData`是存仓/取仓使用的仓库辅助函数；其余四项分别处理丢弃、存仓、取仓和地面拾取。
 
 下一步应对这六项函数做一次跨函数接口和VM行为复核，尤其核对`TakeItems`调用的`GetStorageItemData`、存仓和取仓的ENV `LuaSendMsg`调用形式，以及`PickUpItems`的空名称规则表行为；复核后再决定是否开始APK集成测试。
+
+#### 后续VM交叉复核修正（同日追加）
+
+对`root/51`、`root/51/1`和`root/6`中段指令再次逐条核对后，发现并修正了StorageItems初稿的两个细节：
+
+1. `StorageItems`入口在设置`isStoring=true`后，先检查`NPCStorageProxy`。代理不存在时，VM直接复位状态并返回，不显示“仓库已满”提示。本轮已按此顺序修正。
+2. 聚灵珠子闭包的第二个实参是当前特殊名称循环变量`specialName`，不是整个`item.Name`。18项特殊名称中没有“聚灵珠”，所以按VM实参，聚灵珠诊断子分支在当前特殊名称表下不会被触发；仍保留子闭包的原始行为，但不应将它描述为对背包名称中包含聚灵珠的物品进行诊断。本轮已将调用改为`isOutputted(item, specialName)`。
+3. `TakeItems`的“待定”过滤逻辑已核对：先对物品名称执行`string.trim`，再用`string.find(trimmedName, filterName, 1, true)`检查；命中时跳过该物品，不命中才发送取出请求。当前明文实现与该逻辑一致。
+
+- 修正提交：`a85a3bec8d465d56fe532f60b15a16733eb1bb27`。
+- 修正后的唯一明文源码Blob SHA：`9c824bf2cbbb1c4179dde8d7f9e6464fdc22b4d3`。
+- 此次修正后仍未执行Lua编译、APK打包或游戏实测。
