@@ -3080,3 +3080,19 @@ PC236创建root/43/6，捕获顺序为：
 - 当前唯一明文文件虽有`BuildDoInitCallbackMap`、`MakeMainLeftBottomButtonFactory`、`CreateMainLeftBottomButtons`等旧版UI恢复辅助片段，但没有真正的新版`AccountIDValidation`函数、没有新版24指令`doInit_UI`函数，也没有将新版433指令`createButton`完整实现并赋给`MainLeftBottom.doInit`。因此当前UI主链确实未完成。
 - 正确恢复顺序：先闭合`root/34`及其两个子原型的账号验证/调度关系；再恢复`root/37`的完整按钮配置、回调注册、按钮创建与26个子原型；最后将`root/34/1`检查就绪后调用`MainLeftBottom.doInit`的逻辑接入。旧版110原型的419指令`doInit_UI`不可替代这条新版链。
 - 本轮仅新增该缺口定位记录，尚未写入上述三个新版函数体；避免在未闭合opcode调用帧前臆写逻辑。
+
+### 2026-11-14：恢复新版账号验证与延迟UI初始化链（root/34）
+
+本轮以11.9原始105原型树为准，并查阅旧版源码历史提交`24de5075e9ac1a46462ebf1de05f5e1f63c15700`（账号白名单屏蔽前的原始实现）作为业务逻辑参考。新版root/34常量与该逻辑一致：GAME_ID=204208、UID、9个白名单ID、成功/失败提示、Schedule及延迟UI等待提示；两个子原型分别承担UID匹配和等待UI就绪回调。
+
+- `root/34`：64条指令，身份`AccountIDValidation`；捕获`PrintLog`与`ShowLocalNoticeByType`，挂接到`MainLeftBottom.main`。
+- `root/34/0`：27条指令，身份`Nested_ID`；遍历9项允许UID列表，逐项转字符串比较；命中记录提示并返回true，未命中显示动态账号限制通知并返回false。
+- `root/34/1`：24条指令，身份是等待`MainProperty._ui.Panel_mini_chat`就绪的延迟回调，不是`doInit_UI`主体。就绪后执行`SL:UnSchedule(nil)`，再调用`getfenv(1).MainLeftBottom.doInit()`；之后仍按原代码输出等待提示。父函数以`SL:Schedule(callback,0.5)`注册周期回调。
+- `root/37`：433条指令、26个子原型，才是新版`doInit_UI`主体，包含按钮组、事件回调、UI窗口及定时任务等初始化。此前把root/34/1误标为doInit_UI、把root/37误标为createButton的说明作废。
+- 账号验证完整恢复写入唯一明文文件，`MainLeftBottom.main = AccountIDValidation`；白名单值按新版原始常量/历史未屏蔽实现恢复：`6324648`、`39770358`、`3548598`、`1957840929`、`1488903257`、`1585201915`、`1627987432`、`1580027021`、`1304755149`。GAME_ID不等于204208时记录错误并return；UID不在列表中时发通知和失败日志，但原始父函数不会因此提前return，仍继续注册UI等待回调。
+- 本次没有修改旧版源码、11.9原始加密文件或创建其他源码文件；没有执行Lua编译、APK打包或游戏实测。
+- 明文源码提交：`a2c52e069b1d4ac1763e612786db6793bca8656a`（随后白名单常量校正提交：`0eb0bc457e9a73a73c7af554a6b067ce6a2d9773`）。
+
+#### 本轮核对注意
+
+账号验证的业务逻辑参考自旧版屏蔽前的历史版本，但函数归属、常量集合、捕获关系与入口挂接均已对照11.9新版root/34及两个子原型；不能再沿用测试打包期间将脚本白名单验证整体屏蔽的旧版改动。
