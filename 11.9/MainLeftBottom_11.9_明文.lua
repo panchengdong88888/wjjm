@@ -112,6 +112,23 @@ local function GetMapName()
     return SL:GetMetaValue("MAP_NAME") or ""
 end
 
+
+-- root PC54-PC61：恢复地图信息、玩家坐标和地面物品查询函数的全局导出。
+-- PC54/55：root.children[13] GetMapId，读取MAP_ID，缺省值为0。
+-- PC56/57：root.children[30] GetMapName，读取MAP_NAME，缺省值为空字符串。
+-- PC58/59：root.children[18] PlayerPos，返回{x=..., y=...}坐标表；
+-- 其活动路径与上方GetPlayerPosition的字段及缺省值一致，复用同一实现。
+-- PC60/61：root.children[4] GetDroppedItems，转发dropItemManager的原始多返回值。
+local function GetDroppedItems()
+    return global.dropItemManager:FindDropItemInCurrViewFieldAll()
+end
+
+-- 按root PC55/57/59/61写入当前chunk ENV；不污染_G或其他环境表。
+rootEnvironment.GetMapId = GetMapId
+rootEnvironment.GetMapName = GetMapName
+rootEnvironment.PlayerPos = GetPlayerPosition
+rootEnvironment.GetDroppedItems = GetDroppedItems
+
 -- ============================================================
 --  3. 通用辅助函数与配置
 -- ============================================================
