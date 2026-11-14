@@ -259,6 +259,105 @@ end
 -- root PC45：按VM目标写入当前chunk环境的_ENV._G.log。
 rootEnvironment._G.log = PrintLog
 
+
+-- 新版VM root/47：DiuItems（169条指令，1个关键词匹配子闭包）。
+-- root PC64创建时捕获共享状态表和本地提示函数；PC67导出到ENV.DiuItems。
+local function DiuItems()
+    local MAX_GROUND_ITEMS = 35
+
+    if MainLeftBottom.z.isDiuing then
+        return
+    end
+    MainLeftBottom.z.isDiuing = true
+
+    local _, groundItemCount = GetDroppedItems()
+    groundItemCount = groundItemCount or 0
+
+    if MAX_GROUND_ITEMS < groundItemCount then
+        ShowLocalNoticeByType(
+            "地面物品(" .. tostring(groundItemCount) .. ")超过上限(" ..
+            tostring(MAX_GROUND_ITEMS) .. ")"
+        )
+        MainLeftBottom.z.isDiuing = false
+        return
+    end
+
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then
+        MainLeftBottom.z.isDiuing = false
+        return
+    end
+
+    -- VM PC36-PC65建立的28项关键词表及匹配闭包。
+    -- PC89-PC90的常量真分支使匹配闭包不参与候选筛选，但原型仍被创建。
+    local discardKeywords = {
+        "声望卷", "称号卷", "悟道茶", "转生水晶",
+        "时装晶魄", "血龙宝珠", "洗髓丹", "恶魔令牌",
+        "晶石", "经验卷", "技能残页", "熬光",
+        "敖顺", "敖闰", "点点", "之力",
+        "复活", "麻痹", "护身", "主印",
+        "副印", "神凤", "龙傲", "冰雪",
+        "上古", "起源", "残", "鸿蒙",
+    }
+
+    local function MatchDiscardKeyword(itemName)
+        for _, keyword in ipairs(discardKeywords) do
+            if string.find(itemName, keyword, 1, true) then
+                return true
+            end
+        end
+        return false
+    end
+
+    local candidates = {}
+    for _, item in pairs(bagData) do
+        if item and item.Name and item.MakeIndex
+            and not SL:GetMetaValue("ITEM_IS_BIND", item) then
+            -- VM PC89-PC90：常量1比较分支恒为真，直接收录所有符合基础条件的物品。
+            -- 后续关键词匹配子闭包虽然已创建，但不参与此候选分支。
+            candidates[#candidates + 1] = {
+                makeIndex = item.MakeIndex,
+                count = item.OverLap or 1,
+                name = item.Name,
+            }
+        end
+    end
+
+    if #candidates == 0 then
+        ShowLocalNoticeByType("背包无可丢弃物品")
+        MainLeftBottom.z.isDiuing = false
+        return
+    end
+
+    local sentCount = 0
+    for _, candidate in ipairs(candidates) do
+        if MAX_GROUND_ITEMS <= groundItemCount then
+            ShowLocalNoticeByType(
+                "地面物品已满" .. tostring(MAX_GROUND_ITEMS) .. "件，停止丢弃"
+            )
+            break
+        end
+
+        ShowLocalNoticeByType("丢: " .. candidate.name)
+        MainLeftBottom.a.LuaSendMsg(
+            global.MsgType.MSG_CS_MAP_ITEM_DISCARD,
+            candidate.makeIndex,
+            candidate.count,
+            0,
+            0,
+            candidate.name,
+            string.len(candidate.name)
+        )
+        sentCount = sentCount + 1
+        groundItemCount = groundItemCount + 1
+    end
+
+    ShowLocalNoticeByType("共丢弃 " .. tostring(sentCount) .. " 件物品")
+    MainLeftBottom.z.isDiuing = false
+end
+
+rootEnvironment.DiuItems = DiuItems
+
  
 -- root.children[36] / VM路径root/37：查找第一个仍有空位的仓库页。
 -- root PC68捕获的UP[0]为PrintLog；仓库代理缺失时按原型输出提示并返回。
