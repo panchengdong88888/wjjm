@@ -25,7 +25,41 @@
 --  1. 加载入口与全局初始化
 -- ============================================================
 
--- TODO：依据 11.9 新框架开发文档及新版入口线索恢复。
+-- root PC1-PC42：恢复新版模块根表及共享状态对象。
+-- 目标引擎为Lua 5.1；getfenv(1)取得当前chunk环境，与VM的_ENV读写一致。
+local rootEnvironment = getfenv(1)
+local MainLeftBottom = {}
+rootEnvironment.MainLeftBottom = MainLeftBottom
+
+-- PC3-PC5：MainLeftBottom.a UI/模块状态表。
+local moduleState = {}
+MainLeftBottom.a = moduleState
+moduleState.version = "10000"
+moduleState.screenW = SL:GetMetaValue("SCREEN_WIDTH")
+moduleState.screenH = SL:GetMetaValue("SCREEN_HEIGHT")
+moduleState.Blocklist = { 1.0, 9.0, 10.0, 60000.0 }
+moduleState.SendHookList = {}
+moduleState.RecvHookList = {}
+moduleState.isHidden = true
+moduleState.hidebut = nil
+
+-- PC30-PC32：MainLeftBottom.b按钮控件映射表。
+local visibleItems = {}
+MainLeftBottom.b = visibleItems
+
+-- PC33-PC41：MainLeftBottom.z功能状态表。
+local featureState = {
+    isPaused = false,
+    isRunning = false,
+    isStoring = false,
+    isTaking = false,
+    isDiuing = false,
+    isOutputted = false
+}
+MainLeftBottom.z = featureState
+
+-- PC42：全模块共享的定时器状态表。后续所有定时器闭包必须捕获此同一张表。
+local timerState = {}
 
 -- ============================================================
 --  2. 基础框架 API 包装函数
@@ -109,10 +143,10 @@ end
 -- 新区与购买金条业务同样通过该状态表读写各自定时器字段。
 -- 因此这些功能必须共用本表，不能在各业务模块另建互不关联的定时器表。
 
-local timerState = {}
+-- timerState已按root PC42在模块入口创建；此处不再创建第二张表。
 
 local gatherConfig = {
-    GATHER_THRESHOLD = 11,
+    GATHER_THRESHOLD = 10,
     CHECK_INTERVAL = 0.5,
     ATTACK_WAIT_TIME = 1
 }
