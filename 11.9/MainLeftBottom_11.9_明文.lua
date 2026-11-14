@@ -693,6 +693,126 @@ local TakeItems = MakeTakeItemsHandler(
 )
 rootEnvironment.TakeItems = TakeItems
 
+-- 新版VM root/22：PickUpItems（172条指令、2个无捕获比较器子原型）。
+-- root PC83创建时仅捕获UP[0]=ShowLocalNoticeByType；PC85导出ENV.PickUpItems。
+local function MakePickUpItemsHandler(showLocalNotice)
+    -- 对应root/22/1：先按kIdx升序，再按dist升序。
+    local function comparePreferredItems(left, right)
+        if left.kIdx ~= right.kIdx then
+            return left.kIdx < right.kIdx
+        end
+        return left.dist < right.dist
+    end
+
+    -- 对应root/22/2：普通物品只按dist升序。
+    local function compareOrdinaryItems(left, right)
+        return left.dist < right.dist
+    end
+
+    return function()
+        -- PC1-PC9：获取地面物品列表及数量；数量为0时提示并返回。
+        local droppedItems, droppedCount = GetDroppedItems()
+        if droppedCount == 0 then
+            showLocalNotice("地面无可拾取物品")
+            return
+        end
+
+        -- PC10-PC11：PlayerPos返回两个值，分别为玩家X、Y坐标。
+        local playerX, playerY = PlayerPos()
+        local preferredItems = {}
+        local ordinaryItems = {}
+        local nameRules = {}
+
+        -- PC17-PC103：兼容多种地面物品名称及坐标字段。
+        for _, item in ipairs(droppedItems) do
+            local name = item.mName
+                or item.mONameStr
+                or item.Name
+                or item.name
+                or ""
+
+            local x = item.mCurrMapX
+                or item.MapX
+                or item.mapX
+                or item.x
+
+            local y = item.mCurrMapY
+                or item.MapY
+                or item.mapY
+                or item.y
+
+            if x and y then
+                local distance = math.abs(playerX - x)
+                    + math.abs(playerY - y)
+                local matchedRuleIndex = 0
+
+                -- VM中的nameRules由空表初始化；保留原始匹配循环，
+                -- 不擅自添加用户偏好物品规则。
+                for ruleIndex, rule in ipairs(nameRules) do
+                    if string.find(name, rule) then
+                        matchedRuleIndex = ruleIndex
+                        break
+                    end
+                end
+
+                if matchedRuleIndex > 0 then
+                    table.insert(preferredItems, {
+                        item = item,
+                        dist = distance,
+                        kIdx = matchedRuleIndex,
+                        x = x,
+                        y = y,
+                    })
+                else
+                    table.insert(ordinaryItems, {
+                        item = item,
+                        dist = distance,
+                        x = x,
+                        y = y,
+                    })
+                end
+            end
+        end
+
+        -- PC104-PC114：分别按两个VM子原型的比较规则排序。
+        table.sort(preferredItems, comparePreferredItems)
+        table.sort(ordinaryItems, compareOrdinaryItems)
+
+        -- PC115-PC137：先合并优先物品，再合并普通物品。
+        local candidates = {}
+        for _, entry in ipairs(preferredItems) do
+            table.insert(candidates, entry)
+        end
+        for _, entry in ipairs(ordinaryItems) do
+            table.insert(candidates, entry)
+        end
+
+        -- PC138-PC141：没有有效坐标候选时直接返回。
+        if #candidates == 0 then
+            return
+        end
+
+        -- PC142-PC147：只选择合并列表的第一个候选，发起自动移动。
+        local target = candidates[1]
+        MoveTo(target.x, target.y, 0)
+
+        -- PC148-PC161：玩家与目标的X、Y轴距离都不超过1时，
+        -- 才执行立即拾取；否则只移动，等待后续调用再次判断。
+        if math.abs(playerX - target.x) <= 1
+            and math.abs(playerY - target.y) <= 1 then
+            -- PC162-PC165：通过global.dropItemController调用拾取接口。
+            global.dropItemController:PickMainPlayerPosItem()
+
+            -- PC166-PC171：原始提示使用target.item.mName字段，
+            -- 不使用上面用于排序的名称回退值。
+            showLocalNotice("拾取: " .. target.item.mName)
+        end
+    end
+end
+
+local PickUpItems = MakePickUpItemsHandler(ShowLocalNoticeByType)
+rootEnvironment.PickUpItems = PickUpItems
+
 -- root PC52-PC53：调度包装闭包，保留SL方法接收者和实参顺序。
 local function ScheduleOnce(callback, delay)
     return SL:ScheduleOnce(callback, delay)
