@@ -113,21 +113,65 @@ local function GetMapName()
 end
 
 
--- root PC54-PC61：恢复地图信息、玩家坐标和地面物品查询函数的全局导出。
+-- root PC54-PC63：恢复地图信息、坐标、地面物品及移动包装函数。
 -- PC54/55：root.children[13] GetMapId，读取MAP_ID，缺省值为0。
 -- PC56/57：root.children[30] GetMapName，读取MAP_NAME，缺省值为空字符串。
--- PC58/59：root.children[18] PlayerPos，返回{x=..., y=...}坐标表；
--- 其活动路径与上方GetPlayerPosition的字段及缺省值一致，复用同一实现。
+-- PC58/59：root.children[57] PlayerPos，分别返回X、Y两个值（不是坐标表）。
 -- PC60/61：root.children[4] GetDroppedItems，转发dropItemManager的原始多返回值。
+-- PC62/63：root.children[3] MoveTo，并导出到当前chunk ENV。
+local function PlayerPos()
+    return SL:GetMetaValue("X"), SL:GetMetaValue("Y")
+end
+
 local function GetDroppedItems()
     return global.dropItemManager:FindDropItemInCurrViewFieldAll()
 end
 
--- 按root PC55/57/59/61写入当前chunk ENV；不污染_G或其他环境表。
+-- root.children[2]：本地路径包装器，供doInit_UI的配置文件读写闭包捕获。
+-- VM调用cc.FileUtils:getInstance():getWritablePath()，不导出为全局函数。
+local function GetWritablePath()
+    return cc.FileUtils:getInstance():getWritablePath()
+end
+
+-- root.children[3]：移动到指定地图坐标，并返回当前位置是否已进入range范围。
+-- 先发送自动寻路通知，再分别比较X/Y轴绝对差；任一轴超出range即返回false。
+local function MoveTo(x, y, range)
+    local moveInfo = {
+        mapID = SL:GetMetaValue("MAP_ID")
+    }
+
+    moveInfo.x = tonumber(x)
+    moveInfo.y = tonumber(y)
+    moveInfo.type = global.MMO.INPUT_MOVE_TYPE_AUTOMOVE
+
+    if not range then
+        range = 0.0
+    end
+    moveInfo.range = range
+
+    global.Facade:sendNotification(
+        global.NoticeTable.InputMove,
+        moveInfo
+    )
+
+    local playerX, playerY = PlayerPos()
+    if not (math.abs(moveInfo.x - playerX) <= moveInfo.range) then
+        return false
+    end
+
+    if not (math.abs(moveInfo.y - playerY) <= moveInfo.range) then
+        return false
+    end
+
+    return true
+end
+
+-- 按root PC55/57/59/61/63写入当前chunk ENV；不污染_G或其他环境表。
 rootEnvironment.GetMapId = GetMapId
 rootEnvironment.GetMapName = GetMapName
-rootEnvironment.PlayerPos = GetPlayerPosition
+rootEnvironment.PlayerPos = PlayerPos
 rootEnvironment.GetDroppedItems = GetDroppedItems
+rootEnvironment.MoveTo = MoveTo
 
 -- ============================================================
 --  3. 通用辅助函数与配置
