@@ -3069,7 +3069,9 @@ local function MakeResourceStatisticsWindow(moduleState, printLog, timerState, i
     end
 end
 
--- 在doInit恢复阶段将此处理器登记为callbackMap.moneybut。
+-- 对应新版doInit PC329-PC334：先创建root/43/4闭包，再按捕获顺序
+-- 注入MainLeftBottom.a、PrintLog、timerState、MainLeftBottom.z，
+-- 最后写入callbackMap.moneybut。当前保留为独立登记辅助函数，等待真实doInit主干接入。
 local function RegisterResourceStatisticsButtonHandler(
     callbackMap, moduleState, printLog, timerState, initState
 )
