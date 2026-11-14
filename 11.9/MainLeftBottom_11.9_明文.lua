@@ -183,10 +183,10 @@ rootEnvironment.MoveTo = MoveTo
 --  4. UI 初始化、窗口与按钮创建
 -- ============================================================
 
--- 新版MainLeftBottom.doInit对应root.children[42]（419条指令，规范路径root/42）。
--- PC0-PC234的初始化、快照、快捷栏、仓库请求、Attach_UITop及三组按钮配置，
--- 已有资料文件/docs/audit/检查点331_doInit_UI主体PC1-PC419核对与全局身份修正.md记录。
--- 当前只恢复PC235-PC336业务callbackMap构建/登记，不扩展PC338以后按钮工厂和布局。
+-- 新版MainLeftBottom.doInit对应root/37（433条指令、26个子原型）。
+-- root/34是AccountIDValidation；root/34/1只是等待MainProperty就绪后调用doInit的延迟回调。
+-- 当前已恢复root/34账号验证入口；root/37的完整初始化主体及26个子原型仍需逐段补齐。
+-- BuildDoInitCallbackMap等现有辅助函数只是初始化过程中的片段，尚未赋给MainLeftBottom.doInit。
 
 -- ============================================================
 --  5. 怪物查找与引怪系统
