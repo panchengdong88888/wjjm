@@ -2845,7 +2845,7 @@ local function AccountIDValidation()
     accountPrintLog("账号ID：" .. tostring(accountID))
 
     local allowedAccountIDs = {
-        "6324648", "39770358", "3548598", "1957840929", "1485201915",
+        "6324648", "39770358", "3548598", "1957840929", "1488903257",
         "1585201915", "1627987432", "1580027021", "1304755149"
     }
 
