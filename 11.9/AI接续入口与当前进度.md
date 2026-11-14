@@ -2354,3 +2354,70 @@ PC236创建root/43/6，捕获顺序为：
 #### 四、下一步
 
 先将上表每一项捕获来源映射到doInit_UI现有upvalue/局部变量的准确语义，尤其核对UP10等公共包装器upvalue的语义，以及R20/R19/R17/R16等局部闭包的创建来源；然后在唯一明文文件中恢复与VM顺序一致的callbackMap构建/登记段。只有当所需局部依赖均闭合后，才接入doInit主干，不能用猜测参数调用工厂。
+
+
+### 2026-11-14追加：doInit_UI upvalue/局部闭包映射完成，callbackMap构建辅助函数已恢复
+
+本轮先重新读取main分支最新接续文档、唯一明文源码、11.9 VM dump及原型索引。确认源码开始时SHA为 `3b685658f3641d0495f6ce0a3e9d86f173cbc897`，VM dump和索引均来自当前仓库资料。
+
+#### 一、doInit_UI公共upvalue语义映射
+
+按root PC389-PC409创建doInit_UI闭包时的捕获序列，并与root/42子原型调用参数、现有工厂签名交叉核对，确认本轮callbackMap相关槽位：
+
+| doInit_UI槽位 | 语义 |
+|---|---|
+| UP[0] | PrintLog |
+| UP[1] | MainLeftBottom.z，共享功能状态表；资源统计初始状态也保存在此表 |
+| UP[2] | 共享timerState |
+| UP[3] | MainLeftBottom.a模块UI状态表 |
+| UP[4] | visibleItems按钮控件映射 |
+| UP[5] | root T[41]共享黑名单状态/距离配置表 |
+| UP[6] | 读取blacklist_distance.txt的包装函数 |
+| UP[7] | SL:Schedule定时调度包装函数 |
+| UP[8] | 引怪配置表 |
+| UP[9] | 读取gather_monster_count.txt的包装函数 |
+| UP[10] | 保存blacklist_distance.txt的包装函数 |
+| UP[11] | 本地通知包装函数 |
+| UP[12] | GetWritablePath包装函数 |
+| UP[13] | blacklist_distance.txt文件名 |
+| UP[14] | 保存gather_monster_count.txt的包装函数 |
+| UP[15] | gather_monster_count.txt文件名 |
+| UP[16] | 安全删除配置文件包装函数 |
+| UP[17] | 奖励计算modulus参数 |
+| UP[18] | 奖励条目表 |
+| UP[19] | 奖励定时周期参数 |
+
+说明：UP[1]既是各功能处理器使用的featureState，也是资源统计处理器使用的initState；两者必须引用同一张MainLeftBottom.z表，不得复制成两张表。
+
+#### 二、PC235-PC266局部闭包来源闭合
+
+- R[12]：第一组按钮配置表；与UP[4] visibleItems一起创建R[15]同步按钮toggle状态闭包。
+- R[15]：`MakeMainLeftBottomToggleStateSync(firstGroup, visibleItems)`。
+- R[16]：`MakeBlacklistTimer(UP[5], UP[6], UP[2], UP[7], UP[0]))，即黑名单定时器启动闭包。
+- R[17]：`MakeGatherInitializationHandler(UP[8], UP[9]))，即引怪启动闭包。
+- R[18]：`MakeCommonInputPrompt(UP[0]))，即通用数字输入弹窗包装器。
+- R[19]：`MakeBlacklistDistancePrompt(R[18], UP[10], UP[11], UP[0], UP[12], UP[13], R[16], R[15]))。
+- R[20]：`MakeGatherThresholdPrompt(R[18], UP[14], UP[11], UP[0], UP[12], UP[15], R[17], R[15]))。
+
+上述顺序已按PC235、238、244、247、249、258核对。由此开拉怪、黑名单处理器最后两项捕获也已闭合，不再是未解释的局部函数。
+
+#### 三、唯一明文源码本轮修改
+
+在唯一文件 `11.9/MainLeftBottom_11.9_明文.lua` 末尾新增 `BuildDoInitCallbackMap(deps)`，只负责业务callbackMap及回调闭包，不创建按钮、不设置布局、不绑定GUI点击事件。
+
+- 按PC235-PC266顺序构造R[15]-R[20]六个局部闭包。
+- 按PC267创建唯一callbackMap。
+- 按PC268-PC336顺序登记12个业务回调：yinguaibut、clearmonsterbut、cleardistancebut、rewardbut、clearblacklistbut、blacklistbut、storagebut、takebut、shiqubut、diuqibut、moneybut、xiaotuibut。
+- moneybut通过既有 `RegisterResourceStatisticsButtonHandler` 登记，参数仍是MainLeftBottom.a、PrintLog、timerState、MainLeftBottom.z。
+- xiaotuibut使用已有 `V10001ButtonHandler`，其行为是调用 `global.gameWorldController:OnGameLeaveWorld()`。
+- builder的deps字段按上表upvalue和局部寄存器语义命名，调用方应传入doInit_UI同一执行环境中的原对象/函数，不应新建替代状态。
+
+源码提交：`e5adf9118d6bf235c19f2d703d3a26f83365f856`；提交后重新fetch确认content SHA：`3453c16c9ce4055a484170074e83818ba0a3ecb7`，文件长度98733字符。
+
+#### 四、当前边界与下一步
+
+- 已恢复一个按VM顺序组装12个业务回调的辅助函数；12个key和各工厂实参来源已静态闭合。
+- **BuildDoInitCallbackMap目前尚未由真实doInit_UI入口调用**，所以不能说新版运行时callbackMap已经接通。下一步应恢复/核对doInit_UI入口中PC0-PC234的局部对象准备过程，确认deps字段在原始VM中的准确局部来源，再把builder调用放到与PC267-PC336相对应的位置。
+- PC339以后ButtonFactory、按钮创建、布局和GUI点击绑定仍不在本轮范围。
+- 本轮只修改唯一明文源码和本接续文档；未修改新版原始加密文件、旧版交付源码或其他资料。
+- 环境未发现可用的lua/luac/luajit命令；未执行Lua 5.1编译、APK打包或游戏实测。当前结论为静态VM/源码核对，不代表运行测试通过。
