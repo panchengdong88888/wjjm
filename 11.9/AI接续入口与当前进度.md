@@ -2589,3 +2589,22 @@ PC236创建root/43/6，捕获顺序为：
 静态检查：工厂定义1处、模块字段赋值1处；未发现全局`rootEnvironment.LuaSendMsg`导出；六参数入口、严格true拦截判断和六参数网络转发均存在。未执行Lua 5.1编译、APK打包或游戏运行测试。
 
 **下一步：**继续核对root PC54-PC85其余闭包创建和全局导出，重点保持root T寄存器复用身份；随后恢复root PC286-PC315的blacklistState及配置读写包装链。完成这些真实根依赖后，再装配doInit_UI的20项upvalue与PC267业务callbackMap。
+### 2026-11-14追加：root PC54-PC61基础查询函数与导出
+
+本轮按当前新版VM dump（root 412条指令、58个直接子原型）恢复PC54-PC61中的四项基础函数导出：
+
+- PC54-PC55 / `root.children[13]`：`GetMapId`，读取`SL:GetMetaValue("MAP_ID")`，缺省返回0；导出到当前chunk ENV的`GetMapId`。
+- PC56-PC57 / `root.children[30]`：`GetMapName`，读取`SL:GetMetaValue("MAP_NAME")`，缺省返回空字符串；导出到当前chunk ENV的`GetMapName`。同时修正源码中将其误标为child34的旧注释。
+- PC58-PC59 / `root.children[18]`：`PlayerPos`，其返回结构与已恢复的`GetPlayerPosition`相同，均为含x/y字段的坐标表，缺省坐标为0；复用同一函数对象并导出到当前chunk ENV的`PlayerPos`。
+- PC60-PC61 / `root.children[4]`：`GetDroppedItems`，转发`global.dropItemManager:FindDropItemInCurrViewFieldAll()`的原始返回值；导出到当前chunk ENV的`GetDroppedItems`。
+
+本轮未将`MoveTo`、`DiuItems`、仓库读写函数、`TakeItems`或`PickUpItems`标记为完成；这些原型仍需逐个核对主体及调用契约。root PC54-PC85整体也尚未完成。
+
+本轮仅修改唯一明文源码及本接续文档，未修改旧版源码、加密文件或参考候选文件。
+
+源码最近提交：`e2841f3076502c754ba54bc0bcd39331ecf56c02`  
+唯一明文源码Blob SHA：`f800a2a0a656b2e12ec06fc5aa92bcf3965f7f75`
+
+静态检查：GetMapId/GetMapName/GetDroppedItems各有一个函数定义；四个导出字段各出现一次；GetDroppedItems保留底层函数多返回值；GetMapName原型身份注释已校正。未执行Lua 5.1编译、APK打包或游戏运行测试。
+
+**下一步：**继续恢复root PC62-PC85。优先逐条核对`MoveTo`（root.children[3]）的参数、自动移动调用和通知分支；之后再处理`DiuItems`及仓库/取物/拾取函数的真实导出链。
