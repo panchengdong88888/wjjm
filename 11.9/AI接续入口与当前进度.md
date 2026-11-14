@@ -2888,3 +2888,29 @@ PC236创建root/43/6，捕获顺序为：
 ### 当前下一步
 
 继续恢复新版`TakeItems`（`root/6`，99条指令，2个捕获）和`PickUpItems`（`root/22`，172条指令，1个捕获）。优先先做较短的`TakeItems`，并严格核对父级root PC79-PC82的两个捕获对象及ENV导出。
+
+### TakeItems 新版VM原型恢复（2026-11-14）
+
+已将新版`root/6`（99条指令、无子原型）恢复并写入唯一明文源码，按root PC79-PC82完成ENV导出。
+
+#### 捕获关系与执行链
+
+- root PC79创建`root/6`闭包，捕获数为2；PC80-PC81捕获顺序：UP[0]=`MainLeftBottom.z`共享状态表、UP[1]=`ShowLocalNoticeByType`；PC82导出`ENV.TakeItems`。
+- 入口检查`isTaking`，已在执行时直接返回；否则置true。
+- 调用全局`GetStorageItemData()`取得仓库全部物品。结果为nil或空数组时，显示`仓库无可取物品`、复位状态并返回。
+- 遍历使用`ipairs`，只处理同时具有`Name`和`MakeIndex`的物品；名称先调用`string.trim`清理。
+- VM常量及循环指令确认过滤词表只有`待定`。名称命中该词时跳过该物品；未命中则显示`取: 名称`并发送取出请求。
+- 取出请求直接调用当前chunk ENV的`LuaSendMsg`，消息标识为`global.MsgType.MSG_CS_STORAGE_PICK_OUT_REQUEST`，七个实参依次为消息标识、`999999999`、物品MakeIndex、0、0、清理后的名称、名称长度；不经过`MainLeftBottom.a.LuaSendMsg`模块包装器。
+- 每发出一个请求，计数加1。遍历结束复位`isTaking`；只有计数大于0时才显示`取出物品完成, 共取出 n 件`。
+
+#### 本轮源码及检查结果
+
+- 源码提交：`0365dfc34ae1e2f2f912ae9223700c3af79ed0da`。
+- 最新唯一明文源码Blob SHA：`9b8c1651ac8ed24ebd0a534f27c2c6f1998ab399`。
+- 静态检查：工厂定义、实例化、`rootEnvironment.TakeItems`导出各1处；取出消息标识、`string.trim(item.Name)`均存在；未发现使用模块内LuaSendMsg包装器的误调用。
+- 结合StorageItems恢复后的当前文件，`StorageItems`和`TakeItems`的定义/ENV导出均各1处。
+- 尚未执行Lua语法编译、APK打包或游戏实测。
+
+### 当前下一步
+
+继续恢复新版`PickUpItems`（`root/22`，172条指令、2个无捕获子原型），重点核对地面物品字段兼容顺序、坐标距离计算、候选排序、移动与最终拾取调用；父级root PC83-PC85的导出对象只有一个捕获，即`ShowLocalNoticeByType`。
