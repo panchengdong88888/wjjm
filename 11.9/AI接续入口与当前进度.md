@@ -2453,3 +2453,46 @@ PC236创建root/43/6，捕获顺序为：
 - 当前唯一明文文件仍没有把完整doInit_UI主函数及其PC0-PC234初始化主体接到BuildDoInitCallbackMap；因此builder仍是独立辅助函数，不能宣称运行时回调登记已经接通。
 - 下一步仍锁定业务回调登记范围：核对builder的每一个deps字段与root/42的20个upvalue及R12局部值；尤其确认UP[0]-UP[19]与root T寄存器对应关系。已由root PC329及检查点284/329给出捕获序列，后续应按当前新版root VM dump复核并整理成明确调用参数表。不要恢复ButtonFactory、按钮创建、布局或GUI点击绑定。
 - 未执行Lua 5.1编译、APK打包或目标游戏运行测试。
+
+
+### 2026-11-14追加：callbackMap deps字段到root T寄存器映射闭合
+
+本轮按当前main分支VM dump的root PC389-PC410真实捕获序列，并结合检查点324、326、327、329核对了builder依赖字段的根级来源。确认如下：
+
+| builder字段 | doInit_UI来源 | root来源/语义 |
+|---|---|---|
+| printLog | UP[0] | T[4] PrintLog |
+| featureState / initState | UP[1] | T[2] MainLeftBottom.z，同一张共享表 |
+| timerState | UP[2] | T[3] timerState |
+| moduleState | UP[3] | T[0] MainLeftBottom.a |
+| visibleItems | UP[4] | T[1] MainLeftBottom.b |
+| blacklistState | UP[5] | T[41] blacklistState，同时挂在a.blacklist |
+| readBlacklistDistance | UP[6] | T[48] blacklist_distance.txt读取包装器 |
+| schedule | UP[7] | T[7] Schedule包装器 |
+| gatherConfig | UP[8] | T[8] gatherConfig |
+| readGatherThreshold | UP[9] | T[50] gather_monster_count.txt读取包装器 |
+| saveBlacklistDistance | UP[10] | T[49] blacklist_distance.txt保存包装器 |
+| notify | UP[11] | T[5] ShowLocalNoticeByType通知包装器 |
+| getWritablePath | UP[12] | T[44] GetWritablePath |
+| blacklistDistanceFileName | UP[13] | T[42] blacklist_distance.txt |
+| saveGatherThreshold | UP[14] | T[51] gather_monster_count.txt保存包装器 |
+| gatherThresholdFileName | UP[15] | T[43] gather_monster_count.txt |
+| deleteConfig | UP[16] | T[47]安全删除配置文件包装器 |
+| rewardModulus | UP[17] | T[11]奖励轮询取模基数18000 |
+| rewardEntries | UP[18] | T[12] 14项奖励记录表 |
+| rewardScheduleInterval | UP[19] | T[9] 0.2秒调度间隔 |
+| buttonGroups | R[12] | doInit_UI PC196-PC235构造的完整三组按钮配置表 |
+
+注意：`featureState`和`initState`都是UP[1]，即同一张MainLeftBottom.z表；不得复制。R[12]是完整三组buttonGroups，不是单独第一组；child5的第二项捕获是UP[4] visibleItems。
+
+源码已把以上root T映射写入BuildDoInitCallbackMap注释。提交：`8296ad7df64932b03b9daf2ea01317a0419f0cfc`。
+
+#### 当前源码静态检查
+
+- 唯一源码：`11.9/MainLeftBottom_11.9_明文.lua`，本轮最新提交内容SHA：`5d5bdd4819dcad5ade5f4cc529a771f806e3796a`。
+- builder依赖不再引用`deps.firstGroup`；改为`deps.buttonGroups`。
+- child5同步闭包使用两层循环，覆盖完整buttonGroups；更新状态、标题、颜色后返回。
+- callbackMap登记仍是12项；moneybut通过RegisterResourceStatisticsButtonHandler写入。
+- 当前文件尚未包含真实root模块初始化和完整doInit_UI主函数，BuildDoInitCallbackMap仍是独立辅助函数。不能宣称实际加载时已经执行回调登记。
+- 当前范围只恢复业务callbackMap，不接入ButtonFactory/按钮创建/布局/GUI点击事件。
+- 未执行Lua 5.1编译、APK打包或游戏实测。
