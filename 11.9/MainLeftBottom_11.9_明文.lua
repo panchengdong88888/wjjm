@@ -2940,7 +2940,11 @@ local function InitializeResourceStatisticsSnapshot(
 end
 
 -- root/43/4：资源统计窗口开关处理器。
--- moduleState提供screenW/screenH/resWin；initState提供initTime/initTimeStr/initSnapshot。
+-- 捕获来源已按VM闭合：UP[0]=doInit UP[3]=root T[0]=MainLeftBottom.a；
+-- UP[1]=doInit UP[0]=root T[4]=PrintLog；UP[2]=doInit UP[2]=root T[3]=timerState；
+-- UP[3]=doInit UP[1]=root T[2]=MainLeftBottom.z。
+-- MainLeftBottom.a提供screenW/screenH/resWin；MainLeftBottom.z同时保存
+-- isStoring等功能状态，以及doInit写入的initTime/initTimeStr/initSnapshot。
 local function MakeResourceStatisticsWindow(moduleState, printLog, timerState, initState)
     return function()
         local gui = GUI
