@@ -484,6 +484,13 @@ local function MakeStorageItemsHandler(featureState, printLog, showLocalNotice)
         end
         featureState.isStoring = true
 
+        -- PC8-PC13：仓库代理未初始化时静默复位并返回。
+        local storageProxy = NPCStorageProxy
+        if not storageProxy then
+            featureState.isStoring = false
+            return
+        end
+
         -- PC14-PC23：先用独立的全局分页函数检查是否还有空位。
         if not GetAvailableStoragePage() then
             showLocalNotice("仓库已满,无法存仓")
@@ -491,7 +498,6 @@ local function MakeStorageItemsHandler(featureState, printLog, showLocalNotice)
             return
         end
 
-        local storageProxy = NPCStorageProxy
         local maxPage = storageProxy:GetMaxPage()
         local pageCapacity = GUIDefine.STORAGE_PER_PAGE_MAX
         if not pageCapacity then
@@ -565,7 +571,7 @@ local function MakeStorageItemsHandler(featureState, printLog, showLocalNotice)
                     for _, specialName in ipairs(specialNames) do
                         if string.find(item.Name, specialName, 1, true) then
                             matchedSpecialName = true
-                            if not isOutputted(item, item.Name) then
+                            if not isOutputted(item, specialName) then
                                 shouldStore = false
                                 break
                             end
