@@ -2827,6 +2827,68 @@ end
 -- root PC46：实例化捕获MainLeftBottom.a的本地通知闭包；VM没有把它导出为全局函数。
 ShowLocalNoticeByType = MakeShowLocalNoticeByType(MainLeftBottom.a)
 
+-- 新版 root/34（64条指令）：AccountIDValidation。
+-- 根模块创建该闭包时捕获UP[0]=PrintLog、UP[1]=ShowLocalNoticeByType，
+-- 并将其挂入MainLeftBottom.main，供宿主入口调用。
+local accountPrintLog = PrintLog
+local accountShowLocalNotice = ShowLocalNoticeByType
+
+local function AccountIDValidation()
+    local gameID = SL:GetMetaValue("GAME_ID")
+    accountPrintLog("游戏id：" .. tostring(gameID))
+    if gameID ~= 204208 then
+        accountPrintLog("游戏不一致，id：" .. tostring(gameID))
+        return
+    end
+
+    local accountID = SL:GetMetaValue("UID")
+    accountPrintLog("账号ID：" .. tostring(accountID))
+
+    local allowedAccountIDs = {
+        "6324648", "39770358", "3548598", "1957840929", "1485201915",
+        "1585201915", "1627987432", "1580027021", "1304755149"
+    }
+
+    -- root/34/0（27条指令）：账号UID白名单匹配子闭包。
+    local function Nested_ID(checkAccountID)
+        for _, allowedID in ipairs(allowedAccountIDs) do
+            if tostring(checkAccountID) == tostring(allowedID) then
+                accountPrintLog("[提示] 账号ID在允许列表中，功能已开启")
+                return true
+            end
+        end
+
+        accountShowLocalNotice(
+            "账号不存在，功能已限制，账号ID：" .. tostring(checkAccountID)
+        )
+        return false
+    end
+
+    -- 原始控制流只用匹配结果输出成功/失败日志；未命中不会在此处提前return。
+    local validationResult = Nested_ID(accountID)
+    if validationResult then
+        accountPrintLog("[验证成功] 账号ID验证通过")
+    else
+        accountPrintLog("[验证失败] 账号ID未在允许列表中")
+    end
+
+    -- root/34/1（24条指令）：每0.5秒检查主界面是否就绪。
+    -- VM在创建该回调前已将UnSchedule实参寄存器清空，故原行为是UnSchedule(nil)。
+    local unScheduleArgument = nil
+    local scheduledCallback = function()
+        local mainProperty = MainProperty
+        if mainProperty and mainProperty._ui and mainProperty._ui.Panel_mini_chat then
+            SL:UnSchedule(unScheduleArgument)
+            getfenv(1).MainLeftBottom.doInit()
+        end
+        accountPrintLog("等待主界面属性栏(MainProperty)初始化完成...")
+    end
+
+    SL:Schedule(scheduledCallback, 0.5)
+end
+
+MainLeftBottom.main = AccountIDValidation
+
 -- root PC30-PC46的共享对象已在文件入口按真实PC顺序创建。
 -- 此辅助函数只取回同一张b映射表和同一张timerState，不允许另建副本。
 -- 通知闭包仍按root PC46捕获传入的MainLeftBottom模块表。
