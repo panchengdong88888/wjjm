@@ -2336,7 +2336,7 @@ PC236创建root/43/6，捕获顺序为：
 | blacklistbut | child18 | UP2、UP0、UP1、UP6、R19、R16 | MakeBlacklistButtonHandler |
 | storagebut | child8 | UP2、UP0、UP1、UP7 | MakeStorageButtonHandler |
 | takebut | child19 | UP2、UP0、UP1、UP7 | MakeTakeButtonHandler |
-| shiqubut | child10 | UP10、UP2、UP7 | MakePickupButtonHandler |
+| shiqubut | child10 | UP2、UP0、UP7 | MakePickupButtonHandler |
 | diuqibut | child21 | UP2、UP0、UP1、UP7 | MakeDropButtonHandler |
 | moneybut | child3 | UP3、UP0、UP2、UP1 | MakeResourceStatisticsWindow |
 | xiaotuibut | child4 | 无捕获 | child4直接调用global.gameWorldController:OnGameLeaveWorld() |
