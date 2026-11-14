@@ -2312,7 +2312,7 @@ local function MakeNewZoneItemTimerCallback(
 
         printLog("新区物品已全部使用完毕，停止定时器")
         SL:ShowSystemTips("新区物品已全部使用完毕")
-        if type(Gbtc) == "function" then Gbtc() end
+        Gbtc()
     end
 end
 
@@ -2334,7 +2334,7 @@ local function MakeNewZoneButtonHandler(
         -- 新区启动消息：原VM完整参数为9002、22302、1、2、3、空串、0。
         LuaSendMsg(9002, 22302, 1, 2, 3, "", 0)
 
-        if type(Gbtc) == "function" then Gbtc() end
+        Gbtc()
 
         -- 0.5秒后发送第二条消息（由原型84执行）。
         SL:ScheduleOnce(SendNewZoneDelayedCommand, 0.5)
