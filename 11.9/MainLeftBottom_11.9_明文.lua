@@ -198,7 +198,11 @@ end
 -- root PC45：按VM目标写入当前chunk环境的_ENV._G.log。
 rootEnvironment._G.log = PrintLog
 
--- root PC53：Schedule包装器；业务闭包共享该同一函数对象。
+-- root PC52-PC53：调度包装闭包，保留SL方法接收者和实参顺序。
+local function ScheduleOnce(callback, delay)
+    return SL:ScheduleOnce(callback, delay)
+end
+
 local function Schedule(callback, interval)
     return SL:Schedule(callback, interval)
 end
