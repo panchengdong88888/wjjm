@@ -3128,10 +3128,19 @@ local function BuildDoInitCallbackMap(deps)
     -- PC247-PC248：R[18]，捕获PrintLog。
     local commonInputPrompt = MakeCommonInputPrompt(deps.printLog)
 
-    -- PC267：创建唯一callbackMap。
-    local callbackMap = {}
+    -- PC249-PC257：R[19]，黑名单距离输入提示闭包。
+    local showBlacklistDistancePrompt = MakeBlacklistDistancePrompt(
+        commonInputPrompt,
+        deps.saveBlacklistDistance,
+        deps.notify,
+        deps.printLog,
+        deps.getWritablePath,
+        deps.blacklistDistanceFileName,
+        startBlacklistTimer,
+        syncButtonState
+    )
 
-    -- PC268-PC275：yinguaibut。
+    -- PC258-PC266：R[20]，拉怪数量阈值输入提示闭包。
     local showGatherThresholdPrompt = MakeGatherThresholdPrompt(
         commonInputPrompt,
         deps.saveGatherThreshold,
@@ -3142,6 +3151,11 @@ local function BuildDoInitCallbackMap(deps)
         startGather,
         syncButtonState
     )
+
+    -- PC267：创建唯一callbackMap。
+    local callbackMap = {}
+
+    -- PC268-PC275：yinguaibut。
     callbackMap.yinguaibut = MakeGatherButtonHandler(
         deps.timerState,
         deps.notify,
@@ -3181,17 +3195,7 @@ local function BuildDoInitCallbackMap(deps)
         deps.printLog
     )
 
-    -- PC298-PC305：blacklistbut。
-    local showBlacklistDistancePrompt = MakeBlacklistDistancePrompt(
-        commonInputPrompt,
-        deps.saveBlacklistDistance,
-        deps.notify,
-        deps.printLog,
-        deps.getWritablePath,
-        deps.blacklistDistanceFileName,
-        startBlacklistTimer,
-        syncButtonState
-    )
+    -- PC298-PC305：blacklistbut，使用PC249已创建的R[19]。
     callbackMap.blacklistbut = MakeBlacklistButtonHandler(
         deps.timerState,
         deps.printLog,
