@@ -3081,3 +3081,168 @@ local function RegisterResourceStatisticsButtonHandler(
     callbackMap.moneybut = handler
     return handler
 end
+
+
+-- ============================================================
+--  11.9 doInit_UI：业务callbackMap构建与登记（对应VM PC235-PC336）
+-- ============================================================
+-- deps字段与root/42的upvalue/局部寄存器一一对应：
+--   printLog=UP[0]，featureState/initState=UP[1]，timerState=UP[2]，
+--   moduleState=UP[3]，visibleItems=UP[4]；
+--   blacklistState=UP[5]，readBlacklistDistance=UP[6]，schedule=UP[7]，
+--   gatherConfig=UP[8]，readGatherThreshold=UP[9]；
+--   saveBlacklistDistance=UP[10]，notify=UP[11]，getWritablePath=UP[12]，
+--   blacklistDistanceFileName=UP[13]，saveGatherThreshold=UP[14]，
+--   gatherThresholdFileName=UP[15]，deleteConfig=UP[16]，
+--   rewardModulus=UP[17]，rewardEntries=UP[18]，
+--   rewardScheduleInterval=UP[19]。
+--   firstGroup=R[12]；以下四个局部闭包按VM顺序在callbackMap前构造：
+--   syncButtonState=R[15]、startBlacklistTimer=R[16]、
+--   startGather=R[17]、commonInputPrompt=R[18]。
+--
+-- 本函数只负责业务回调表，不创建按钮、不设置布局、不绑定GUI点击事件。
+-- 调用者必须把doInit_UI当时的同一批upvalue/局部值传入，不能另建状态表。
+local function BuildDoInitCallbackMap(deps)
+    -- PC235-PC237：R[15]，捕获firstGroup和visibleItems。
+    local syncButtonState = MakeMainLeftBottomToggleStateSync(
+        deps.firstGroup,
+        deps.visibleItems
+    )
+
+    -- PC238-PC243：R[16]，捕获黑名单状态/距离配置、读取函数、定时器、
+    -- Schedule包装器和PrintLog。
+    local startBlacklistTimer = MakeBlacklistTimer(
+        deps.blacklistState,
+        deps.readBlacklistDistance,
+        deps.timerState,
+        deps.schedule,
+        deps.printLog
+    )
+
+    -- PC244-PC246：R[17]，捕获拉怪配置表和阈值读取函数。
+    local startGather = MakeGatherInitializationHandler(
+        deps.gatherConfig,
+        deps.readGatherThreshold
+    )
+
+    -- PC247-PC248：R[18]，捕获PrintLog。
+    local commonInputPrompt = MakeCommonInputPrompt(deps.printLog)
+
+    -- PC267：创建唯一callbackMap。
+    local callbackMap = {}
+
+    -- PC268-PC275：yinguaibut。
+    local showGatherThresholdPrompt = MakeGatherThresholdPrompt(
+        commonInputPrompt,
+        deps.saveGatherThreshold,
+        deps.notify,
+        deps.printLog,
+        deps.getWritablePath,
+        deps.gatherThresholdFileName,
+        startGather,
+        syncButtonState
+    )
+    callbackMap.yinguaibut = MakeGatherButtonHandler(
+        deps.timerState,
+        deps.notify,
+        deps.readGatherThreshold,
+        deps.printLog,
+        showGatherThresholdPrompt,
+        startGather
+    )
+
+    -- PC276-PC281：clearmonsterbut。
+    callbackMap.clearmonsterbut = MakeClearMonsterThresholdButtonHandler(
+        deps.deleteConfig,
+        deps.gatherThresholdFileName,
+        deps.notify,
+        deps.printLog
+    )
+
+    -- PC282-PC287：cleardistancebut。
+    callbackMap.cleardistancebut = MakeClearBlacklistDistanceButtonHandler(
+        deps.deleteConfig,
+        deps.blacklistDistanceFileName,
+        deps.notify,
+        deps.printLog
+    )
+
+    -- PC288-PC294：rewardbut。
+    callbackMap.rewardbut = MakeRewardButtonHandler(
+        deps.timerState,
+        deps.printLog,
+        deps.rewardModulus,
+        deps.rewardEntries,
+        deps.rewardScheduleInterval
+    )
+
+    -- PC295-PC297：clearblacklistbut。
+    callbackMap.clearblacklistbut = MakeClearBlacklistButtonHandler(
+        deps.printLog
+    )
+
+    -- PC298-PC305：blacklistbut。
+    local showBlacklistDistancePrompt = MakeBlacklistDistancePrompt(
+        commonInputPrompt,
+        deps.saveBlacklistDistance,
+        deps.notify,
+        deps.printLog,
+        deps.getWritablePath,
+        deps.blacklistDistanceFileName,
+        startBlacklistTimer,
+        syncButtonState
+    )
+    callbackMap.blacklistbut = MakeBlacklistButtonHandler(
+        deps.timerState,
+        deps.printLog,
+        deps.featureState,
+        deps.readBlacklistDistance,
+        showBlacklistDistancePrompt,
+        startBlacklistTimer
+    )
+
+    -- PC306-PC311：storagebut。
+    callbackMap.storagebut = MakeStorageButtonHandler(
+        deps.timerState,
+        deps.printLog,
+        deps.featureState,
+        deps.schedule
+    )
+
+    -- PC312-PC317：takebut。
+    callbackMap.takebut = MakeTakeButtonHandler(
+        deps.timerState,
+        deps.printLog,
+        deps.featureState,
+        deps.schedule
+    )
+
+    -- PC318-PC322：shiqubut。
+    callbackMap.shiqubut = MakePickupButtonHandler(
+        deps.timerState,
+        deps.printLog,
+        deps.schedule
+    )
+
+    -- PC323-PC328：diuqibut。
+    callbackMap.diuqibut = MakeDropButtonHandler(
+        deps.timerState,
+        deps.printLog,
+        deps.featureState,
+        deps.schedule
+    )
+
+    -- PC329-PC334：moneybut，复用已核实的资源统计登记辅助函数。
+    RegisterResourceStatisticsButtonHandler(
+        callbackMap,
+        deps.moduleState,
+        deps.printLog,
+        deps.timerState,
+        deps.initState
+    )
+
+    -- PC335-PC336：xiaotuibut，无upvalue捕获。
+    callbackMap.xiaotuibut = V10001ButtonHandler
+
+    return callbackMap
+end
