@@ -2551,3 +2551,19 @@ PC236创建root/43/6，捕获顺序为：
 静态检查：唯一顶层rootEnvironment/MainLeftBottom/moduleState/visibleItems/featureState/timerState均已定义；顶层timerState只有一处声明，MakeBuyGoldRootContext不再创建副本；gatherConfig默认阈值为10。未执行Lua 5.1编译、APK打包或游戏运行测试。
 
 **下一步：**继续按新版root PC43-PC85恢复PrintLog、ShowLocalNoticeByType、ScheduleOnce/Schedule和相关全局导出；再恢复root PC286-PC315的blacklistState及配置读写包装链。完成这些真实根依赖后，才能安全装配doInit_UI的20项upvalue并接入PC267 callbackMap。
+### 2026-11-14追加：root PC43-PC53日志/通知/调度闭包接入
+
+在PC1-PC42共享状态初始化之后，本轮继续恢复了root PC43-PC53中与doInit依赖直接相关的部分：
+
+- PC43-PC45：保留现有PrintLog函数，并按VM目标写入rootEnvironment._G.log。
+- PC46：声明并实例化捕获MainLeftBottom.a的ShowLocalNoticeByType本地闭包；没有错误地把该通知函数导出为全局函数。Builtsetting_11_9通过词法cell读取该通知闭包。
+- PC52-PC53：补齐ScheduleOnce(callback, delay)和Schedule(callback, interval)包装闭包，均使用SL冒号调用并保留参数顺序；Schedule函数对象可作为doInit_UI UP[7]的来源。
+- PC258：将Builtsetting_11_9导出为rootEnvironment.Builtsetting，符合doInit_UI PC100-PC101的全局调用入口。
+
+本轮未恢复root PC48-PC51 LuaSendMsg复杂包装器，也未恢复PC54-PC85其余全局函数导出；不能把root PC43-PC85整体标记为完成。
+
+当前唯一明文源码Blob SHA：`da001af44bd5c438fa47d1c5f198f38591e1bcb9`。本轮源码提交：`5a893faeb78ea99d23a08d1c5a48fd5ede36f800`。
+
+静态核对确认：ShowLocalNoticeByType是局部词法绑定；Builtsetting通过该局部通知闭包工作；Schedule/ScheduleOnce均只定义一次。未执行Lua 5.1编译、APK打包或游戏运行测试。
+
+**下一步：**核对并恢复root PC48-PC51的LuaSendMsg闭包及MainLeftBottom.a.LuaSendMsg赋值，再恢复doInit依赖以外的PC54-PC85导出时注意保持root T寄存器复用身份；随后转入PC286-PC315配置读写包装链。
