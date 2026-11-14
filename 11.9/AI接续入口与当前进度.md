@@ -2533,3 +2533,21 @@ PC236创建root/43/6，捕获顺序为：
 - 不能只添加一个BuildDoInitCallbackMap调用点：根模块共享对象和配置读写闭包目前没有在唯一明文源码中建立，直接构造deps会缺字段或产生状态副本。
 - 下一步先在唯一明文源码恢复最小且身份正确的root上下文：MainLeftBottom/a/b/z、共享timerState、blacklistState、通知包装器、Schedule包装器及PC297-PC315配置读写包装链；复用现有timerState/gatherConfig，不重新创建。然后核实/恢复快捷栏MoveItemToQuickUse和巡航回调捕获，最后再恢复doInit_UI PC1-PC266前置流程并在PC267调用BuildDoInitCallbackMap，登记止于PC336。
 - 本轮仅做静态依赖对照；未修改唯一明文源码，未执行Lua 5.1编译、APK打包或游戏运行测试。
+### 2026-11-14追加：恢复root PC1-PC42模块共享状态初始化
+
+本轮在唯一明文源码第1节恢复了新版root PC1-PC42初始化，并提交main。
+
+- 创建当前chunk环境中的MainLeftBottom根表并写入rootEnvironment.MainLeftBottom。
+- 按PC3-PC5创建MainLeftBottom.a（moduleState），初始化version、SCREEN_WIDTH、SCREEN_HEIGHT、Blocklist、SendHookList、RecvHookList、isHidden和hidebut。
+- 按PC30-PC32创建MainLeftBottom.b（visibleItems）。
+- 按PC33-PC41创建MainLeftBottom.z（featureState），初始化六个状态字段。
+- 按PC42创建唯一共享timerState；移除了原先位于第3节的第二个顶层timerState声明。
+- 将gatherConfig.GATHER_THRESHOLD从11修正为新版root PC87常量10；CHECK_INTERVAL=0.5、ATTACK_WAIT_TIME=1保持不变。
+- 修正MakeBuyGoldRootContext：不再自行创建timerState/b表，而是返回入口已经创建的共享timerState及mainLeftBottom.b，避免调用后状态分裂。
+
+源码提交：714933a3bfe0206ea37d40d3f29714e041c79902（PC1-PC42初始化）；acb0cb86e3dfe1edf898f23ff639d9f2ed0b1f43（共享状态复用修正）。
+当前唯一明文源码Blob SHA：`61e31afde3f1007d9978cd4af4b47230ecfcde8e`。
+
+静态检查：唯一顶层rootEnvironment/MainLeftBottom/moduleState/visibleItems/featureState/timerState均已定义；顶层timerState只有一处声明，MakeBuyGoldRootContext不再创建副本；gatherConfig默认阈值为10。未执行Lua 5.1编译、APK打包或游戏运行测试。
+
+**下一步：**继续按新版root PC43-PC85恢复PrintLog、ShowLocalNoticeByType、ScheduleOnce/Schedule和相关全局导出；再恢复root PC286-PC315的blacklistState及配置读写包装链。完成这些真实根依赖后，才能安全装配doInit_UI的20项upvalue并接入PC267 callbackMap。
