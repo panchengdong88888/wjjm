@@ -3069,3 +3069,14 @@ PC236创建root/43/6，捕获顺序为：
 - 当前最高优先级为完整恢复新版`createButton`（原型48，433条指令及26个子原型）及`doInit_UI`（原型44，24条指令）之间的调用/等待/生命周期关系。
 - 现有明文文件中的旧版UI工厂/回调表片段不能直接视为新版原型48完整恢复；必须逐PC对照新版真实指令后再决定复用、修正或替换。
 - 本轮只完成原始payload解码与原型身份确认，尚未将新版完整UI入口写入明文文件；未执行Lua编译、APK打包或游戏实测。
+
+#### 新版账号验证到UI初始化的实际缺口（继续核对）
+
+从11.9原始payload解析出的父子关系进一步确认：
+
+- `root/34`（原型42）是64条指令、2个子原型的账号验证/启动调度函数；子原型分别是`root/34/0`（27条指令）与`root/34/1`（24条指令）。
+- `root/34/1`（原型44）是新版`doInit_UI`；其24条指令直接检查`MainProperty`、`MainProperty._ui`及`Panel_mini_chat`，常量还包括`SL.UnSchedule`、`MainLeftBottom.doInit`及等待提示文本。
+- `root/37`（原型48）是新版`createButton`，433条指令、26个子原型；它是当前需要逐PC恢复的UI主体。
+- 当前唯一明文文件虽有`BuildDoInitCallbackMap`、`MakeMainLeftBottomButtonFactory`、`CreateMainLeftBottomButtons`等旧版UI恢复辅助片段，但没有真正的新版`AccountIDValidation`函数、没有新版24指令`doInit_UI`函数，也没有将新版433指令`createButton`完整实现并赋给`MainLeftBottom.doInit`。因此当前UI主链确实未完成。
+- 正确恢复顺序：先闭合`root/34`及其两个子原型的账号验证/调度关系；再恢复`root/37`的完整按钮配置、回调注册、按钮创建与26个子原型；最后将`root/34/1`检查就绪后调用`MainLeftBottom.doInit`的逻辑接入。旧版110原型的419指令`doInit_UI`不可替代这条新版链。
+- 本轮仅新增该缺口定位记录，尚未写入上述三个新版函数体；避免在未闭合opcode调用帧前臆写逻辑。
