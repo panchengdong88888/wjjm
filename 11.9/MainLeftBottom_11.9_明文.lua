@@ -61,6 +61,10 @@ MainLeftBottom.z = featureState
 -- PC42：全模块共享的定时器状态表。后续所有定时器闭包必须捕获此同一张表。
 local timerState = {}
 
+-- root PC46创建的通知闭包在稍后定义其工厂后赋值；先声明词法cell，
+-- 使Builtsetting_11_9等闭包捕获局部通知函数，而不是误读全局同名字段。
+local ShowLocalNoticeByType
+
 -- ============================================================
 --  2. 基础框架 API 包装函数
 -- ============================================================
@@ -189,6 +193,14 @@ local function PrintLog(value, ...)
     if SL and SL.Print then
         -- 原始VM没有执行SL.Print的指令。
     end
+end
+
+-- root PC45：按VM目标写入当前chunk环境的_ENV._G.log。
+rootEnvironment._G.log = PrintLog
+
+-- root PC53：Schedule包装器；业务闭包共享该同一函数对象。
+local function Schedule(callback, interval)
+    return SL:Schedule(callback, interval)
 end
 
 -- root.children[5]：主玩家ID包装函数。
@@ -2114,6 +2126,9 @@ local function MakeShowLocalNoticeByType(mainLeftBottom)
     end
 end
 
+-- root PC46：实例化捕获MainLeftBottom.a的本地通知闭包；VM没有把它导出为全局函数。
+ShowLocalNoticeByType = MakeShowLocalNoticeByType(MainLeftBottom.a)
+
 -- root PC30-PC46的共享对象已在文件入口按真实PC顺序创建。
 -- 此辅助函数只取回同一张b映射表和同一张timerState，不允许另建副本。
 -- 通知闭包仍按root PC46捕获传入的MainLeftBottom模块表。
@@ -2744,6 +2759,9 @@ local function Builtsetting_11_9()
         end
     end
 end
+
+-- root PC258：Builtsetting闭包按VM导出到当前chunk全局环境；其通知函数由上方词法cell捕获。
+rootEnvironment.Builtsetting = Builtsetting_11_9
 
 
 -- ============================================================
