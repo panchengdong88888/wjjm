@@ -2850,3 +2850,41 @@ PC236创建root/43/6，捕获顺序为：
 ### 当前下一步
 
 继续恢复新版`StorageItems`（`root/51`，224条指令，3个捕获）及其子原型，先还原存仓状态保护、仓库可用页计算、背包候选和消息处理；随后恢复`TakeItems`和`PickUpItems`。
+
+### StorageItems 新版VM原型恢复（2026-11-14）
+
+已将新版`root/51`（224条指令、2个子原型）恢复并写入唯一明文源码，按root PC74-PC78完成ENV导出。
+
+#### 捕获关系更正
+
+- root PC74创建`root/51`闭包，捕获数为3。
+- PC75-PC77对应捕获顺序：UP[0]=`MainLeftBottom.z`共享状态表、UP[1]=`PrintLog`、UP[2]=`ShowLocalNoticeByType`。
+- PC78执行`ENV.StorageItems = R[8]`。
+- 本原型只有两个子原型：`root/51/1`（52条指令）和`root/51/2`（27条指令）。此前接续记录写成3个子原型，现以反汇编文件的子原型目录为准。
+- `root/51/1`捕获共享状态表和日志函数，用于聚灵珠信息的一次性输出及耐久字段判断。
+- `root/51/2`捕获最大页数、每页容量、仓库开放格数和各页当前物品数量，返回第一个仍有空位的页码。
+
+#### 恢复的业务行为
+
+1. 入口检查`isStoring`，运行中直接返回；否则置为true。
+2. 先调用全局`GetAvailableStoragePage()`检查仓库是否有空位；无空位时通过本地提示函数输出`仓库已满,无法存仓`并复位状态。
+3. 读取仓库最大页数、每页容量（优先`GUIDefine.STORAGE_PER_PAGE_MAX`，缺失时回退`global.MMO.NPC_STORAGE_MAX_PAGE`）、开放格数，并逐页记录当前物品数量。
+4. 建立18项特殊物品名称表，顺序为：金刚石、玄铁、真金矿石、BOSS头骨、转生证明、魔神石、神装碎片、涅槃石、宝石精魄、天神令、神彩、金罡、至尊、圣皇、凤凰、麻痹戒指、复活戒指、切割神戒。
+5. 过滤名称表只有一项`待定`。对未绑定且未处理的背包物品，名称命中该词时读取`ITEM_INDEX_BY_NAME`并调用`SL:UseItemByIndex`，随后显示`使用: 名称`。
+6. 对命中18项特殊名称的物品，调用`root/51/1`子闭包；若该物品名称包含“聚灵珠”，首次输出物品及其`Name/StdMode/Dura/DuraMax`诊断信息，并按`Dura <= DuraMax`判断是否继续存仓；缺少任一耐久字段时返回false。其他名称不触发此诊断分支。
+7. 找到可用页后显示`存: 名称`，并直接调用当前chunk ENV中的`LuaSendMsg`，消息标识为`global.MsgType.MSG_CS_STORAGE_STORE_REQUEST`，实参依次为消息标识、`999999999`、物品MakeIndex、目标页、0、物品名称、名称长度。这里按VM直接调用七参数ENV函数，不替换成`MainLeftBottom.a.LuaSendMsg`模块包装器。
+8. 发送后记录MakeIndex已处理、目标页物品数加1、存入计数加1。若遍历过程中找不到可用页，显示仓库已满提示、复位状态并返回。
+9. 完成遍历后复位`isStoring`；只有存入计数大于0时，才显示`存仓完成, 共存入 n 件物品`。
+
+#### 本轮源码及检查结果
+
+- 唯一明文文件：`11.9/MainLeftBottom_11.9_明文.lua`。
+- 源码提交：`47463aa76f49e3d63646f5b72375c2cab5ca3a59`。
+- 最新源码Blob SHA：`ad584983f67020b118cbf4bd6fb18974027d612f`。
+- 静态检查：工厂定义、实例化、`rootEnvironment.StorageItems`导出各1处；存仓消息标识调用1处；状态锁设置及复位均存在；未发现误用`MainLeftBottom.a.LuaSendMsg`包装器发送存仓消息。
+- 当前环境未找到`lua`/`luac`命令，因此未执行Lua语法编译；未进行APK打包或游戏实测。
+- 旧整理稿`11.9/MainLeftBottom.lua`中的StorageItems只能作为交叉参考。本轮按新版VM修正了聚灵珠诊断输出使用捕获日志函数、存仓请求直接调用ENV LuaSendMsg等关键细节。
+
+### 当前下一步
+
+继续恢复新版`TakeItems`（`root/6`，99条指令，2个捕获）和`PickUpItems`（`root/22`，172条指令，1个捕获）。优先先做较短的`TakeItems`，并严格核对父级root PC79-PC82的两个捕获对象及ENV导出。
