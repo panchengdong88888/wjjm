@@ -621,6 +621,78 @@ local StorageItems = MakeStorageItemsHandler(
 )
 rootEnvironment.StorageItems = StorageItems
 
+-- 新版VM root/6：TakeItems（99条指令，无子原型）。
+-- root PC79-PC82捕获顺序：UP[0]=MainLeftBottom.z共享状态表、
+-- UP[1]=ShowLocalNoticeByType；PC82导出到当前chunk ENV。
+local function MakeTakeItemsHandler(featureState, showLocalNotice)
+    return function()
+        if featureState.isTaking then
+            return
+        end
+        featureState.isTaking = true
+
+        -- PC12-PC18：读取全局仓库物品汇总；空表或nil均提示并退出。
+        local storageItems = GetStorageItemData()
+        if not storageItems or #storageItems == 0 then
+            showLocalNotice("仓库无可取物品")
+            featureState.isTaking = false
+            return
+        end
+
+        local takenCount = 0
+        local filterNames = {"待定"}
+
+        -- PC25-PC87：按仓库数组顺序逐项检查，名称先经过string.trim。
+        for _, item in ipairs(storageItems) do
+            if item and item.Name and item.MakeIndex then
+                local itemName = string.trim(item.Name)
+                local shouldTake = true
+
+                -- VM常量表中的唯一过滤词为“待定”；名称命中则不发送取出请求。
+                for _, filterName in ipairs(filterNames) do
+                    if string.find(itemName, filterName, 1, true) then
+                        shouldTake = false
+                        break
+                    end
+                end
+
+                if shouldTake then
+                    showLocalNotice("取: " .. itemName)
+
+                    -- PC72-PC85：直接调用当前chunk ENV的LuaSendMsg，
+                    -- 七个参数保持原始顺序，不经过模块内LuaSendMsg包装器。
+                    LuaSendMsg(
+                        global.MsgType.MSG_CS_STORAGE_PICK_OUT_REQUEST,
+                        999999999,
+                        item.MakeIndex,
+                        0,
+                        0,
+                        itemName,
+                        string.len(itemName)
+                    )
+                    takenCount = takenCount + 1
+                end
+            end
+        end
+
+        -- PC89-PC90：遍历结束后复位状态。
+        featureState.isTaking = false
+
+        -- PC91-PC98：仅在确实发出取出请求时显示汇总提示。
+        if takenCount > 0 then
+            showLocalNotice(
+                "取出物品完成, 共取出 " .. tostring(takenCount) .. " 件"
+            )
+        end
+    end
+end
+
+local TakeItems = MakeTakeItemsHandler(
+    MainLeftBottom.z,
+    ShowLocalNoticeByType
+)
+rootEnvironment.TakeItems = TakeItems
+
 -- root PC52-PC53：调度包装闭包，保留SL方法接收者和实参顺序。
 local function ScheduleOnce(callback, delay)
     return SL:ScheduleOnce(callback, delay)
