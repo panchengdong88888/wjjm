@@ -2567,3 +2567,25 @@ PC236创建root/43/6，捕获顺序为：
 静态核对确认：ShowLocalNoticeByType是局部词法绑定；Builtsetting通过该局部通知闭包工作；Schedule/ScheduleOnce均只定义一次。未执行Lua 5.1编译、APK打包或游戏运行测试。
 
 **下一步：**核对并恢复root PC48-PC51的LuaSendMsg闭包及MainLeftBottom.a.LuaSendMsg赋值，再恢复doInit依赖以外的PC54-PC85导出时注意保持root T寄存器复用身份；随后转入PC286-PC315配置读写包装链。
+
+### 2026-11-14追加：root PC48-PC51 LuaSendMsg闭包恢复
+
+本轮已将新版 `root.children[12]`（92条指令）的 `LuaSendMsg` 包装闭包写入唯一明文源码：
+
+- 工厂：`MakeLuaSendMsg(mainLeftBottomState, printLog)`。
+- 捕获顺序：UP[0]为`MainLeftBottom.a`状态表；UP[1]为`PrintLog`。
+- 参数：六个固定参数，依次为`hookKey, param1, param2, param3, param4, messageId`。
+- 消息对象字段：`recog=0`、`msgId`、`param1`至`param4`。
+- 日志路径：按`table.find(Blocklist, tonumber(hookKey))`判断是否跳过日志；未命中时按`ipairs`、`type`、`tostring`、字符串单引号包裹及`table.concat`构造`LuaSendMsg(...)`日志，再交给捕获的PrintLog。
+- Hook路径：先检查`SendHookList[hookKey]` truthy，再二次索引并检查类型为function；通过`pcall(hook, hookKey, messageId, message)`调用。只有pcall成功且第二返回值严格为`true`才拦截发送。
+- 未被Hook拦截时，使用`global.networkCtl:SendMsg(hookKey, param1, param2, param3, param4, messageId)`按原六参数顺序转发。
+- root PC51只将闭包赋给`MainLeftBottom.a.LuaSendMsg`；没有错误地导出为全局`LuaSendMsg`，也没有另建状态表。
+
+本轮只修改唯一明文源码和本接续文档，没有修改旧版源码、11.9原始加密文件或其他参考文件。
+
+源码提交：`225c45ff6b3d3ed6789690273dc696fd5db8303a`  
+唯一明文源码Blob SHA：`e032b90332520587cabddfeb35a1aa2e121133ed`
+
+静态检查：工厂定义1处、模块字段赋值1处；未发现全局`rootEnvironment.LuaSendMsg`导出；六参数入口、严格true拦截判断和六参数网络转发均存在。未执行Lua 5.1编译、APK打包或游戏运行测试。
+
+**下一步：**继续核对root PC54-PC85其余闭包创建和全局导出，重点保持root T寄存器复用身份；随后恢复root PC286-PC315的blacklistState及配置读写包装链。完成这些真实根依赖后，再装配doInit_UI的20项upvalue与PC267业务callbackMap。
