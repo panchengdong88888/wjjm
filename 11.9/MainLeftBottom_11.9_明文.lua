@@ -259,6 +259,49 @@ end
 -- root PC45：按VM目标写入当前chunk环境的_ENV._G.log。
 rootEnvironment._G.log = PrintLog
 
+ 
+-- root.children[36] / VM路径root/37：查找第一个仍有空位的仓库页。
+-- root PC68捕获的UP[0]为PrintLog；仓库代理缺失时按原型输出提示并返回。
+local function GetAvailableStoragePage(printLog)
+    if not NPCStorageProxy then
+        printLog("仓库代理未初始化")
+        return
+    end
+
+    local maxPage = NPCStorageProxy:GetMaxPage()
+    local pageSize = GUIDefine.STORAGE_PER_PAGE_MAX
+    if not pageSize then
+        pageSize = global.MMO.NPC_STORAGE_MAX_PAGE
+    end
+
+    local openSize = NPCStorageProxy:GetOpenSize()
+
+    for page = 1, maxPage do
+        local pageData = NPCStorageProxy:GetStorageDataByPage(page)
+        local itemCount = 0
+        if pageData then
+            itemCount = #pageData
+        end
+
+        -- 每页容量不能超过该页在仓库总开放格数中实际剩余的格数。
+        local remaining = openSize - (page - 1) * pageSize
+        if pageSize < remaining then
+            remaining = pageSize
+        end
+
+        -- 当前页必须至少还有一个空格。
+        if remaining > 0 and (remaining - itemCount) > 0 then
+            return page
+        end
+    end
+
+    return
+end
+
+rootEnvironment.GetAvailableStoragePage = function()
+    return GetAvailableStoragePage(PrintLog)
+end
+
 -- root PC52-PC53：调度包装闭包，保留SL方法接收者和实参顺序。
 local function ScheduleOnce(callback, delay)
     return SL:ScheduleOnce(callback, delay)
