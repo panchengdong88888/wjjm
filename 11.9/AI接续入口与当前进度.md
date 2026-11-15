@@ -3136,3 +3136,51 @@ PC236创建root/43/6，捕获顺序为：
 - 本轮只更新本接续文档，未新增源码候选、未创建分支、未打包。
 
 **下一步：**继续恢复新版root.children[37]中与新区有关的真实创建链：核对按钮配置中key是否为`newzone`、该配置所在按钮组、`callbackMap.newzone`被实际读取/绑定的PC位置，以及对应GUI点击事件的完整调用链。只在证据闭合后补入唯一明文文件；不擅自补写其他按钮或整套UI。
+
+
+### 2026-11-15续：新区按钮原始VM创建链复核闭合（不重复写业务函数）
+
+本轮从最新main重新读取唯一明文源码、11.9原始加密文件及接续记录，继续核对新版「开新区」从root实例创建到按钮回调派发的关系。
+
+#### 一、原始VM链路（以11.9原始105原型解析结果为准）
+
+1. 根函数PC426创建新区物品周期处理器实例（root.children[44] / 原型93），捕获38项名称表、PrintLog、共享timerState。
+2. 根函数PC430创建新区启动处理器实例（root.children[38] / 原型83），捕获PrintLog、MainLeftBottom根表、共享timerState、Schedule包装函数和上一步的物品周期处理器。
+3. 根函数PC438创建doInit_UI（root.children[37]），其UP[9]捕获上述新区启动处理器实例。
+4. doInit_UI PC234-PC235创建按钮配置项：key为`newzone`，name为`开新区`。
+5. doInit_UI PC269创建child index 2薄包装闭包，PC270捕获UP[9]，PC271将该闭包写入`callbackMap.newzone`。
+6. 通用ButtonFactory点击闭包按`buttonConfig.key`从callbackMap取处理器并调用。因此按钮配置、callbackMap登记和点击分发的key完全一致，最终链路为：
+   `root PC430新区处理器实例 → doInit_UI UP[9] → child2适配闭包 → callbackMap.newzone → newzone按钮配置 → ButtonFactory点击分发`。
+
+#### 二、唯一明文源码复核
+
+当前唯一明文文件已经具备上述各段实现，本轮检查结果：
+
+- `NEW_ZONE_ITEM_NAME_KEYWORDS`：定义1处，38项。
+- `MakeNewZoneItemTimerCallback`：定义1处。
+- `MakeNewZoneButtonHandler`：定义1处。
+- `SendNewZoneDelayedCommand`：定义1处。
+- `processNewZoneItems`与`newZoneHandler`：按root PC426/430顺序各实例化1处。
+- `MakeNewZoneCallbackAdapter`：定义1处。
+- `callbackMap.newzone = MakeNewZoneCallbackAdapter(newZoneHandler)`：登记1处。
+- 按钮配置`{ key = "newzone", name = "开新区" }`：1处。
+- ButtonFactory按`callbackMap[buttonConfig.key]`取回调：1处。
+- Gbtc直接调用：2处，与新版原型83/93的调用形式一致。
+
+因此，本轮没有重复添加新区函数、没有创建第二份实现，也没有改动已经正确的协议参数、38项名称表或定时器逻辑。
+
+#### 三、仍未完成的运行时边界
+
+- `BuildDoInitCallbackMap(deps)`目前仍只有函数定义，没有真实调用点。它内部已按VM顺序登记`newzone`及其他业务回调，但完整doInit_UI前置装配尚未完成，因此不能宣称宿主运行时已经执行callbackMap登记。
+- 新版UI总入口的其他初始化流程尚未完整恢复。本轮只闭合新区相关的PC234-PC235配置、PC269-PC271回调登记和点击分发关系，不把整套doInit_UI标记为完成。
+- `Gbtc()`仍是原型中直接读取的chunk ENV全局依赖；当前源码没有定义，不补造空函数、不改为条件调用。
+- 未执行Lua 5.1编译、APK打包或游戏实测。
+
+#### 四、仓库状态与下一步
+
+- 唯一明文源码：`11.9/MainLeftBottom_11.9_明文.lua`
+- 当前源码Blob SHA：`c9bdbf74fc4d97a748260ac6082e8d2e6d171f66`（本轮未修改源码）。
+- 新版原始加密文件Blob SHA：`e9d3afa16bbc0e306ce764ecb749954a304c4715`（只读，未修改）。
+- 本轮只补充本接续文档，不创建候选源码、不创建分支、不打包。
+
+**下一步：**新区自身的业务函数、原型实例、按钮配置和callbackMap.newzone适配链已有静态明文实现；后续应继续恢复真实doInit_UI前置装配及callbackMap的实际调用时机。不要重复恢复新区函数，也不要在缺少原始证据时改写Gbtc依赖。
