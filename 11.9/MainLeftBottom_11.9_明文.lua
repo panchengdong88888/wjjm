@@ -2715,10 +2715,11 @@ local function MakeMainLeftBottomButtonFactory(
                 allowed = callback()
             end
 
-            if not buttonConfig.toggle then
+            -- 新版VM要求回调结果为truthy才继续；false和nil都必须阻止toggle更新。
+            if not allowed then
                 return
             end
-            if allowed == false then
+            if not buttonConfig.toggle then
                 return
             end
 
@@ -2738,7 +2739,7 @@ local function MakeMainLeftBottomButtonFactory(
 end
 
 
--- root/43 PC346-PC378：按VM原顺序遍历三组按钮配置。
+-- root/37 PC346-PC384：按VM原顺序遍历三组按钮配置。
 -- groupOffset分别为40、0、80；每组rowIndex从组长度倒序递减到1。
 local function CreateMainLeftBottomButtons(
     uiParent,
