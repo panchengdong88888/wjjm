@@ -2670,11 +2670,11 @@ local function RegisterBuyGoldButtonHandler(
 end
 
 
--- 对应proto48 child index 18（50条指令）：新版通用ButtonFactory。
+-- 对应root/37 child index 17（第18个子原型，50条指令）：新版通用ButtonFactory。
 -- 三个显式参数：buttonConfig、rowIndex、groupOffset。
 -- 五项捕获：uiParent、两个当前未被函数体读取的父级值、visibleItems、callbackMap。
 -- 原始指令坐标公式：x=1-85*rowIndex；y=2+groupOffset。
--- root/43/10：ButtonFactory捕获UI父容器、X基准、Y基准、控件表和回调表。
+-- root/37/17：ButtonFactory通过5项upvalue捕获UI父容器、X/Y基准、控件表和回调表；各捕获槽位仍以原始PC341-PC345映射为准。
 -- x = baseX - 85 * rowIndex；y = baseY + groupOffset。
 local function MakeMainLeftBottomButtonFactory(
     uiParent,
