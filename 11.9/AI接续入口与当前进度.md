@@ -3435,3 +3435,47 @@ root/37/17的常量及50条指令再次确认：
 - 不能把原型解析完成率当作业务明文恢复完成率；完整createButton主函数装配仍未完成。
 
 **进度口径：** root/37原始结构解析433/433；child17固定参数数已纠正为3；点击回调false/nil早退语义已落入唯一明文源码并提交；PC17-PC48逐寄存器状态更新、三组布局公式、完整主函数装配仍待完成。
+
+
+### 2026-11-15续：ButtonFactory源码路径注释与布局捕获关系复核
+
+本轮重新读取main分支唯一明文源码、接续文档和新版原始文件。原始文件SHA仍为`e9d3afa16bbc0e306ce764ecb749954a304c4715`；本轮没有修改原始文件。
+
+#### 一、确定的源码注释校正
+
+唯一明文源码中ButtonFactory辅助实现附近仍有旧路径注释：
+- 将“proto48 child index 18”明确改为“root/37 child index 17（第18个子原型）”。
+- 将“root/43/10”改为“root/37/17”。
+- 将购买金条按钮片段中的“root/43三组按钮配置”改为“root/37三组按钮配置”。
+
+源码提交：`88dafa67275e2b4527baecf2cbd0808f5ec2b5c6`。
+更新后的唯一明文源码Blob SHA：`67faf28fd3123afaf4e1fdfabb1611605dcc7e1c`。
+
+#### 二、三组布局公式的现状
+
+重新检查`BuildMainLeftBottomButtonGroups`、`MakeMainLeftBottomButtonFactory`和`CreateMainLeftBottomButtons`后，确认唯一明文源码目前已经实现：
+- 第一组：`rowIndex = #firstGroup - index + 1`，`groupOffset = 40`；
+- 第二组：`rowIndex = #secondGroup - index + 1`，`groupOffset = 0`；
+- 第三组：`rowIndex = #thirdGroup - index + 1`，`groupOffset = 80`；
+- 工厂中的坐标表达式为`x = baseX - 85 * rowIndex`、`y = baseY + groupOffset`。
+
+因此，“源码尚未写入三组倒序行号/偏移公式”这一说法不准确；这些公式已经存在于当前辅助实现中。但还不能把它们标为与新版VM完全等价，因为捕获值映射仍有一处矛盾需要解决。
+
+#### 三、必须继续核对的捕获值矛盾
+
+- root/37 PC340创建child17，PC341-PC345依次提供5项捕获。
+- 当前源码把这5项按`uiParent、baseX、baseY、visibleItems、callbackMap`组织；工厂随后用baseX/baseY计算按钮坐标。
+- 但明文源码前面的历史注释又把捕获槽位A[1]/A[2]描述为“当前工厂函数体未读取”，与现有工厂代码实际使用baseX/baseY不一致。
+- 在重新从原始VM逐条确认PC341-PC345的寄存器来源、并确认PC190-PC203布局锚点结果如何进入这些捕获槽位之前，不把baseX/baseY的来源或坐标绝对值写成已证实事实。
+- 第三组配置在当前源码中保持空表；目前证据仍不允许擅自向其中添加按钮。
+
+#### 四、当前剩余工作
+
+1. 继续从原始VM分派器核对root/37/17/0 PC17-PC48每个融合opcode的寄存器效果，闭合toggled取反、标题选择、颜色条件和分支目标。
+2. 逐项映射root/37 PC341-PC345的5个捕获值，解决baseX/baseY是否确实为对应捕获项的矛盾。
+3. 将PC190-PC203布局锚点、PC346-PC384三组遍历与ButtonFactory参数流闭合。
+4. 最后再评估现有辅助实现能否无损组成完整createButton主体；当前仍未完成完整入口装配。
+
+本轮只修改了唯一明文源码中的三处路径注释，没有改变业务代码；接续文档本身本轮待提交更新。未修改旧版或新版原始文件，未编译、未打包、未进行游戏实测。
+
+**进度口径：** root/37原始结构仍为433/433条记录、26/26个直接子原型；ButtonFactory三参数及三组布局公式已有源码实现；点击闭包PC17-PC48逐融合指令语义、5项捕获映射和完整createButton入口装配仍未完成。不得把结构解析进度当作业务明文完成率。
