@@ -3329,3 +3329,53 @@ root模块创建root/37(createButton)并将其挂接为MainLeftBottom.doInit →
 - 本轮接续文档更新后提交；下轮优先逐指令复核root/37/17及其child0点击闭包，重点确认回调返回值false分支、按钮坐标公式、三组数组的顺序和偏移；然后再决定是否可将现有辅助代码整理成唯一明文文件中的完整createButton主体。
 
 **进度口径：** root/37原始数据结构解析433/433、子原型结构26/26；PC1-PC433的主要阶段已分段识别；完整Lua 5.1语义恢复与createButton主函数装配仍未完成。源码业务明文进度不能按PC数直接计为100%。
+
+
+
+### 2026-11-15续：ButtonFactory点击闭包的false返回分支已核实
+
+本轮再次直接读取11.9原始加密文件，并独立重跑Base36/LZW、XOR 0x4A和递归原型解析。不是引用上一轮的文本摘要。
+
+#### 一、原始解析校验
+
+- 原始文件Blob SHA：`e9d3afa16bbc0e306ce764ecb749954a304c4715`。
+- LZW解码后数据长度：79,573字节；解析器消费79,573字节，完全吻合。
+- root直接子原型54个；root/37为111个常量、433条指令、26个子原型。
+- root/37/17（通用ButtonFactory）为17个常量、50条指令、3个显式参数、1个子原型。
+- root/37/17/0（点击事件闭包）为10个常量、48条指令、0个显式参数。
+- 两个目标原型的全部常量和指令记录均已重新导出。本轮没有改动原始文件或唯一明文源码。
+
+#### 二、点击闭包的关键寄存器与分支
+
+点击闭包常量表（0-based常量序号）：
+`toggled`、`Button_setTitleColor`、`Button_setTitleText`、`key`、`GUI`、`#ff0000`、`name`、`#ffffff`、`false`、`toggle`。
+
+- PC1-PC4：先从捕获的callbackMap取出buttonConfig.key对应的回调函数，即逻辑关系为`callbackMap[buttonConfig.key]`。
+- PC5-PC13：准备回调调用及结果判断。PC13是truthiness条件分支，比较回调结果是否truthy。
+- **PC14和PC16均为跳转到PC47的早退路径。** PC13在回调结果为false/nil时不跳过PC14，因此直接跳到PC47；回调结果truthy时跳过PC14，继续经过PC15。
+- PC15比较回调结果与false。回调结果为false时不会跳过PC16，执行PC16跳到PC47；回调结果truthy时跳过PC16，才进入PC17以后的按钮状态更新逻辑。
+- 因此可以确认：**按钮业务回调返回false或nil时，不执行后续toggle状态更新、标题更新和颜色切换；回调返回truthy时才继续更新按钮状态。** 之前唯一明文工厂中`allowed == false`的意图方向是对的，但仍应核对它是否也正确覆盖nil返回值，以及是否与VM中“truthy才继续”的完整语义一致。不能只检查false而忽略nil。
+- PC17-PC48包含toggle字段判断、toggled状态更新、标题文本选择以及红/白标题色设置；其具体寄存器复用和融合指令仍需完整映射后，才能确认现有辅助函数每个表达式和分支目标完全等价。
+
+#### 三、一个必须避免的反汇编误区
+
+原始VM分派器存在大量融合opcode：单条opcode会消费后续一条或多条指令记录。因此不能把解析器导出的48条记录简单理解成48条独立Lua语句。例如点击闭包PC1、PC6、PC13等记录会触发融合操作，解释时必须同时查看被消费的后续记录和实际跳转目标。上面的false/nil早退结论是按分派器真实跳转条件与PC14/PC16目标核对得出，不是按常量或伪代码猜测。
+
+#### 四、ButtonFactory父函数核对
+
+root/37/17的常量及50条指令再次确认：
+- 通过`GUI.Button_Create`创建按钮，资源为`res/public/fuzhu_btn.png`。
+- 使用buttonConfig.key作为按钮标识，buttonConfig.name作为初始标题。
+- 字体大小18，字体文件`res/public/kaiti2.ttf`，初始标题色`#ffffff`。
+- 若buttonConfig.toggle为truthy，初始化buttonConfig.toggled=false。
+- 通过`GUI.addOnClickEvent`绑定root/37/17/0点击闭包。
+- 这些事实确认了工厂的大体职责；创建参数的完整顺序、位置参数及点击闭包PC17-PC48的逐寄存器映射仍未全部闭合。
+
+#### 五、本轮结论与下一步
+
+- 已将“回调返回false是否阻止toggle更新”从待确认推进为已确认：false/nil都会走PC14或PC16的早退跳转，truthy才进入toggle更新段。
+- 现有明文代码的`allowed == false`检查需要进一步对照nil路径；暂不直接改写，以免漏掉truthiness分支。
+- 下一步继续逐条映射点击闭包PC17-PC48，核对toggle是否存在、toggled取反、标题文本选择、红白颜色条件及buttonConfig的捕获顺序；之后再核对ButtonFactory的GUI创建参数和三组按钮布局算式。
+- 唯一明文源码Blob SHA仍为`c9bdbf74fc4d97a748260ac6082e8d2e6d171f66`，本轮未修改。新版原始文件只读；未修改旧版、未建候选源码、未编译、未打包、未实测。
+
+**进度口径：** root/37原始结构解析433/433、子原型结构26/26；ButtonFactory点击闭包已确认回调false/nil早退语义，但PC17-PC48状态更新细节、父工厂完整参数、布局算式及完整createButton装配仍未完成。不得将解析完成率当作明文恢复完成率。
