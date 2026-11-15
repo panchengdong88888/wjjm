@@ -3184,3 +3184,41 @@ PC236创建root/43/6，捕获顺序为：
 - 本轮只补充本接续文档，不创建候选源码、不创建分支、不打包。
 
 **下一步：**新区自身的业务函数、原型实例、按钮配置和callbackMap.newzone适配链已有静态明文实现；后续应继续恢复真实doInit_UI前置装配及callbackMap的实际调用时机。不要重复恢复新区函数，也不要在缺少原始证据时改写Gbtc依赖。
+
+### 2026-11-15续：纠正新区按钮链与新版UI原型身份混用
+
+本轮继续前重新审计接续文档、原型身份映射、唯一明文文件和11.9原始加密文件的原型结构。发现上一条“新区按钮原始VM创建链复核闭合”记录把原型职责与PC区间拼接错了，现明确作废其中错误的归属描述，避免后续把旧版UI辅助函数误接到新版入口。
+
+#### 一、以新版105原型树为准的身份
+
+- root/34（原型42，64条指令）是账号验证/启动调度函数，两个子原型分别为UID匹配闭包和UI就绪等待回调。
+- root/34/1（原型44，24条指令）不是完整UI主体。它检查MainProperty._ui.Panel_mini_chat；就绪后执行SL:UnSchedule(nil)，再调用getfenv(1).MainLeftBottom.doInit()。
+- root/37（原型48，433条指令、26个子原型）是createButton，是实际的新版UI主体。它应当由上述等待回调通过MainLeftBottom.doInit()进入。
+- 因而root/37内部PC234-PC235按钮配置、PC269-PC271回调表写入（若这些PC点经当前原始指令复核无误）均属于createButton，不能称为另一个doInit_UI函数里的代码。
+- createButton与doInit_UI的关系是：前者作为MainLeftBottom.doInit被后者的等待回调调用；不能把两者合并成一个函数名。
+
+#### 二、纠正上一条新区链路记录中的错误
+
+上一条记录将“根PC438创建root.children[37]”描述成“创建doInit_UI”，并将PC234/PC269称为doInit_UI内部PC。这种说法与新版原型身份表冲突，现作废。准确表达应为：
+
+root模块创建root/37(createButton)并将其挂接为MainLeftBottom.doInit → root/34/1等待Panel_mini_chat就绪 → 调用MainLeftBottom.doInit() → createButton内部构造按钮配置与回调表 → 创建按钮并绑定事件。
+
+新区处理器的捕获/回调接入必须继续在createButton（root/37）433条指令中逐PC核对；不能只凭旧版root/42的BuildDoInitCallbackMap或当前源码中的同名辅助代码，宣称新版运行时已接通。
+
+#### 三、当前唯一明文文件审计
+
+- AccountIDValidation及MainLeftBottom.main挂接代码在当前唯一明文文件中确实存在；此前“没有AccountIDValidation”的旧缺口描述已过时。
+- 当前唯一明文文件含BuildDoInitCallbackMap、MakeMainLeftBottomButtonFactory、CreateMainLeftBottomButtons等分段辅助代码，但未找到新版createButton的完整函数定义，也未找到一个完整的新版本函数体按原始PC顺序接起所有初始化、回调登记、按钮工厂和布局流程。
+- BuildDoInitCallbackMap只有定义、没有真实调用点；且其PC注释/依赖来自较早的旧版419指令UI恢复工作，不得把它当作新版root/37完整恢复的证明。
+- 文件中MakeNewZoneCallbackAdapter和callbackMap.newzone登记片段可以作为待核对候选，但必须与root/37的子原型索引、capture顺序和真实写表PC逐项一致后，才可接入新版createButton。
+- 本轮没有修改唯一明文源码；没有把任何推测性的UI代码追加进去。
+
+#### 四、接下来唯一正确的恢复方向
+
+1. 以原始11.9/MainLeftBottom_11.9.lua重新生成/读取root/37（原型48）的完整433条指令清单，不能使用旧版110原型dump或旧版419指令UI反汇编替代。
+2. 先恢复root/37的局部寄存器/15项upvalue映射与PC0-PC195初始化，再核对PC196-PC235三组按钮配置。
+3. 接着逐个核对PC236以后26个子原型的创建点、捕获来源和写入callbackMap的实际PC；新区回调属于此阶段。
+4. 再恢复通用ButtonFactory、三组按钮创建、GUI点击事件及其布局；最后把完整createButton挂接到MainLeftBottom.doInit，与root/34/1等待回调闭合。
+5. 若当前会话没有可用的新版root/37逐指令反汇编数据，必须先取得该数据再写函数体；不得凭旧版源码或PC号相似度猜写。
+
+状态：新区业务处理器本体已存在于唯一明文文件；新版UI主链尚未完成。上一条中关于“root.children[37]是doInit_UI”的称呼以及把其PC234/PC269称为doInit_UI内部指令的表述已纠正。源码保持不变。
