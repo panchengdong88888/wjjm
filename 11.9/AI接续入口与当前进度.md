@@ -3260,3 +3260,72 @@ root模块创建root/37(createButton)并将其挂接为MainLeftBottom.doInit →
 - 唯一明文源码本轮未修改，Blob SHA仍为：`c9bdbf74fc4d97a748260ac6082e8d2e6d171f66`。没有修改新版原始文件、旧版文件，没有创建候选源码，没有编译、打包或游戏实测。
 
 **进度口径：** 新版root/37原始payload解析完成（433/433条记录、26/26个子原型已读出结构）；源码语义恢复仅完成若干已核实区段，完整createButton尚未完成，不能按“433条已明文”计算。
+
+
+### 2026-11-15续：createButton主体分段恢复至PC433，并核对真实ButtonFactory
+
+本轮再次从main读取最新接续文档、唯一明文源码和11.9原始载荷；重新按原始VM内置Base36/LZW + XOR解码器解析root/37（原型48）。没有使用旧版反汇编。原始payload及唯一明文Blob SHA均未变化。
+
+#### 一、root/37 PC1-PC203：初始化和父节点定位
+
+- PC1-PC18：构造初始化所需的局部表/值，并创建早期子闭包；这里仍需结合opcode逐项补齐，不将每个寄存器赋值猜成业务变量。
+- PC19-PC58：初始化时间字段，出现`initTime`、`initTimeStr`、`os.time`、`os.date`、`pcall`等调用，随后保存`initSnapshot`。
+- PC59-PC100：通过`global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)`读取MoneyProxy，并调用`GetMoneyIdByName`、`GetMoneyCountById`；该段遍历资源名称并形成初始化快照数据。
+- PC101-PC128：构造多个物品名称/槽位配置，涉及永久回城石、盟重回城石、盟重传送石、永久随机石、随机传送石、免战回城石和大陆传送石等名称，并写入`names`表。
+- PC133-PC140：通过`SL:ScheduleOnce`注册一个0.1秒延迟回调；对应子原型root/37/3（0-based child index 3，26条指令），其常量涉及`ITEM_INDEX_BY_NAME`、`MoveItemToQuickUse`、`GetMetaValue`、`BAG_DATA`相关流程，需后续恢复其函数体。
+- PC141-PC154：注册后续调度/回调片段，涉及`SL:Schedule`；具体业务作用暂不扩大推断。
+- PC155-PC175：处理已有`cruiseTimer`，调用`SL:UnSchedule`清理旧句柄，再创建并调度root/37/13（43条指令）的巡航时间回调；该子原型常量含`22:00:05`、`LuaSendMsg`、`os.date`等。
+- PC176-PC189：通过Facade取`NPCStorageProxy`并调用`RequestStorageData`。
+- PC190-PC203：从`GUI`调用`Attach_UITop`，读取`MainProperty._ui.Panel_mini_chat`，再取得该节点的世界坐标和内容尺寸，形成后续布局使用的x/y/width数据。
+- 这些阶段说明createButton在真正创建主按钮前还有初始化、数据快照、定时任务和UI锚点准备；不能只保留按钮数组与ButtonFactory就称作完整函数。
+
+#### 二、root/37 PC204-PC250：按钮配置表
+
+原始常量和写表指令已确认按钮配置字段使用`key`、`name`、可选`toggle`。当前PC段建立的配置包括：
+
+- PC205-PC224：`moneybut`（V10001）、`settingbut`（内挂设置）、`shiqubut`（开拾取/关拾取）、`diuqibut`（开丢弃/关丢弃）、`clearblacklistbut`（清黑名单）、`stopallbut`（停止脚本）。
+- PC225-PC235：`buygoldbut`（购买金条）、`recyclebut`（回收装备）、`newzone`（开新区）。
+- PC236-PC250：`rewardbut`（开奖励/关奖励）、`yinguaibut`（开拉怪/关拉怪）、`blacklistbut`（开黑名单/关黑名单）、`xiaotuibut`（快速小退）。
+- 因此按钮配置表一共涉及13个key；其中部分key后续会在callbackMap登记，部分按钮可能由子闭包或其他处理逻辑负责。不要把配置表的存在等同于所有回调已成功绑定。
+
+#### 三、root/37 PC251-PC345：回调闭包和callbackMap登记
+
+- PC253创建child9（0-based index 9，51条指令，2个显式参数），捕获4项。
+- PC258创建child6（黑名单相关，18条指令），捕获5项。
+- PC264创建child25（7条指令，常量含`GATHER_THRESHOLD`、`InitGatherMonsters`），捕获1项。
+- PC267创建child12（3条指令，常量`Builtsetting`），无捕获。
+- PC269创建child2（5条指令，1项捕获）：PC270读取createButton upvalue索引9（新区处理器实例），PC271写入`callbackMap["newzone"]`。这条已由原始VM证据闭合。
+- PC272创建child1（23条指令，金币购买定时器），捕获4项；PC277登记`buygoldbut`。
+- PC278创建child0（38条指令，丢弃/拾取开关逻辑），捕获4项。
+- PC284创建child21（16条指令，回收装备按钮回调），无捕获；PC285登记`recyclebut`。
+- PC286创建child8（29条指令，引怪回调），捕获3项；PC290登记`yinguaibut`。
+- PC291创建child16（33条指令，奖励开关），捕获5项；PC297登记`rewardbut`。
+- PC298创建child19（6条指令，清黑名单），捕获1项；PC300登记`clearblacklistbut`。
+- PC301创建child18（23条指令，黑名单开关），捕获4项；PC306登记`blacklistbut`。
+- PC307创建child7（29条指令，存仓开关），捕获4项；PC312登记`storagebut`。
+- PC313创建child11（29条指令，取物开关），捕获4项；PC318登记`takebut`。
+- PC319创建child20（25条指令，拾取开关），捕获3项；PC323登记`shiqubut`。
+- PC324创建child22（29条指令，丢弃开关），捕获4项；PC329登记`diuqibut`。
+- PC330创建child15（320条指令资源统计窗口），捕获4项；PC335登记`moneybut`。
+- PC336创建child14（5条指令，`OnGameLeaveWorld`相关），无捕获。
+- PC340创建child17（50条指令、3个显式参数、1个子原型），捕获5项。该函数是通用ButtonFactory；PC341-PC345提供它的5项捕获值。
+- 上述child编号采用解析器原型树的0-based索引；例如child2即root/37/2，不能和Lua数组的1-based写法混用。
+
+#### 四、root/37 PC346-PC433：按钮组遍历、通用工厂和隐藏按钮
+
+- PC346-PC358遍历第一组按钮配置；PC359-PC371遍历第二组；PC372-PC384遍历第三组。三段均使用`ipairs`并调用通用ButtonFactory。各组具体位置偏移与行序计算还需把PC级算术和捕获寄存器逐条写成无歧义伪码后再接入主函数。
+- PC385-PC393通过`SL:ScheduleOnce`注册一个延迟状态同步回调，创建child23（34条指令，捕获3项）。
+- PC394-PC433单独创建`hidebut`按钮：使用`GUI.Button_Create`、设置标题`隐 藏`、字体大小18、字体`res/public/kaiti2.ttf`，并通过`GUI.addOnClickEvent`绑定child24（30条指令、捕获2项）实现隐藏/显示按钮切换。
+- root/37/17（0-based child index 17，50条指令）已完整读取。其函数体调用`GUI.Button_Create`，设置按钮标题、字号18、字体`res/public/kaiti2.ttf`、白色标题色；若配置含toggle则将toggled初始化为false；最后绑定子闭包child0作为点击事件。
+- child17/0（48条指令）负责点击处理：按配置key查callbackMap并在回调存在时调用；随后处理toggle状态、标题文本和红/白颜色切换。现有`MakeMainLeftBottomButtonFactory`大体覆盖这些动作，但仍需逐指令核对参数寄存器、callback返回false的分支和早退条件，不能仅凭相似结构认定完全一致。
+
+#### 五、唯一明文源码对照及本轮结论
+
+- 唯一明文文件已有`MakeMainLeftBottomButtonFactory`、`CreateMainLeftBottomButtons`等分段辅助实现，通用ButtonFactory的可见业务操作与root/37/17主体高度对应；但这些辅助函数尚未构成完整的新版createButton函数，也没有完成全部root/37 PC顺序装配。
+- 当前源码相关注释仍有旧归属残留，例如将root/37/17称为“proto48 child index 18”，以及将PC346-PC378称为“root/43”。按本轮解析结果，应分别校正为“root/37的0-based child index 17”和“root/37 PC346-PC384”。本轮先记录，尚未改动唯一源码。
+- 当前已有ButtonFactory点击回调代码中含`allowed == false`分支；child17/0原始指令虽出现false常量及返回值相关操作，但尚未完成寄存器级验证，本轮不判定该分支正确或错误，也不擅自删除。
+- 解析器本轮再次确认root/37共433条有效指令、26个直接子原型；原始载荷完整解析。该数据解析完成不等于433条业务逻辑已全部明文。
+- 本轮唯一明文源码未修改，Blob SHA仍为`c9bdbf74fc4d97a748260ac6082e8d2e6d171f66`；新版原始文件只读，Blob SHA仍为`e9d3afa16bbc0e306ce764ecb749954a304c4715`。未改旧版、未建候选源码、未编译、未打包、未实测。
+- 本轮接续文档更新后提交；下轮优先逐指令复核root/37/17及其child0点击闭包，重点确认回调返回值false分支、按钮坐标公式、三组数组的顺序和偏移；然后再决定是否可将现有辅助代码整理成唯一明文文件中的完整createButton主体。
+
+**进度口径：** root/37原始数据结构解析433/433、子原型结构26/26；PC1-PC433的主要阶段已分段识别；完整Lua 5.1语义恢复与createButton主函数装配仍未完成。源码业务明文进度不能按PC数直接计为100%。
