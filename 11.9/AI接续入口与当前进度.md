@@ -3222,3 +3222,41 @@ root模块创建root/37(createButton)并将其挂接为MainLeftBottom.doInit →
 5. 若当前会话没有可用的新版root/37逐指令反汇编数据，必须先取得该数据再写函数体；不得凭旧版源码或PC号相似度猜写。
 
 状态：新区业务处理器本体已存在于唯一明文文件；新版UI主链尚未完成。上一条中关于“root.children[37]是doInit_UI”的称呼以及把其PC234/PC269称为doInit_UI内部指令的表述已纠正。源码保持不变。
+
+### 2026-11-15续：直接从11.9原始载荷解析root/37并核实新区捕获链
+
+本轮没有使用旧版110原型/5580指令反汇编。直接读取只读文件`11.9/MainLeftBottom_11.9.lua`，按其内置Base36/LZW解码、逐字段XOR 0x4A读取器及原型递归格式，在本轮重新解析完整payload。
+
+#### 一、原始新版解析结果
+
+- 原始文件Blob SHA仍为：`e9d3afa16bbc0e306ce764ecb749954a304c4715`。
+- 解码后数据长度：79,573字节；解析器完整消费79,573字节，没有剩余或越界。
+- 根原型：147个常量、54个直接子原型、455条指令。
+- 新版`root.children[37]`（路径`root/37`，原型48）实际解析为：111个常量、433条指令、26个直接子原型、0个固定参数。
+- 这次解析出的root/37常量与已知UI身份吻合，包括按钮背景资源、`Panel_mini_chat`、开奖/绑定灵符/丢弃/黑名单/拾取/回收装备/购买金条/开新区等文案，以及`Button_Create`、`addOnClickEvent`、`Button_setTitleText`、`Button_setTitleFontSize`、`Button_setTitleFontName`、`GUI`、`MainProperty`等调用线索。
+- 26个子原型均已从原始payload解析出各自常量数、指令数和子原型数；其中child2为5条指令、1项捕获，child17为50条指令、3个固定参数，资源统计窗口child15为320条指令、5个固定参数。
+- 解析器输出的root/37指令数、子原型数与新版整体框架文档记录完全吻合。旧版phase3反汇编中同名路径root/37属于另一份VM数据，继续禁止混用。
+
+#### 二、新区按钮链的新版原始指令复核
+
+- 根函数PC430：opcode 177创建`root.children[38]`（新区启动处理器原型83），目标寄存器V54，捕获5项。
+- 根函数PC438：opcode 177创建`root.children[37]`（createButton原型48），目标寄存器V57，捕获15项；PC439-PC453依次给出15项捕获描述。
+- createButton的捕获序列（0-based upvalue索引）为：
+  `[V4, V2, V0, V3, V1, V44, V7, V39, V8, V54, V5, V55, V11, V12, V9]`。
+- 因此createButton的UP[9]（0-based索引9，即第10项）确实是根函数V54，也就是PC430创建的新区启动处理器实例。这里必须注明upvalue索引采用0-based，避免与Lua表面1-based序号混淆。
+- createButton PC234-PC235：建立按钮配置项，`key = "newzone"`、`name = "开新区"`。
+- createButton PC269：opcode 177创建child2薄包装闭包，捕获数为1。
+- PC270：opcode 374从createButton的upvalue索引9读取新区启动处理器实例，作为child2唯一捕获。
+- PC271：opcode 156执行表字段写入，将child2闭包写入`callbackMap["newzone"]`。
+- 以上opcode语义已直接从11.9原始文件内置VM分派器核对：opcode177创建子原型闭包并消费后续捕获描述；opcode374读取upvalue；opcode156执行`V[A][B]=V[C]`字段赋值。
+- 所以新版真实链已可确认到：根PC430新区处理器实例 → createButton UP[9] → child2包装闭包 → callbackMap.newzone；按钮配置key与登记key一致。该链条不是从旧版PC号类比推测。
+
+#### 三、当前明文文件对照与剩余工作
+
+- 唯一明文文件已存在新区处理器、child2对应的`MakeNewZoneCallbackAdapter`、`callbackMap.newzone`候选登记及`newzone`按钮配置，逻辑结构与本轮原始捕获关系一致。
+- 但`BuildDoInitCallbackMap(deps)`目前仍只有定义、没有新版createButton完整函数中的实际调用点；不能因此宣称新版UI主链已接通。
+- 当前源码注释中把root/37的UP[9]称为“doInit_UI UP[9]”属于函数名归属错误，应理解为“createButton UP[9]”。本轮暂不改写完整UI主体，也不把旧版UI工厂片段直接接入。
+- 下一步从这次已成功解析的新版root/37数据继续：逐段恢复PC1-PC195初始化与布局状态；再核对PC196-PC235按钮组配置；然后逐个恢复26个子原型的创建点、捕获项和callbackMap登记；最后恢复按钮工厂、GUI事件与布局，并把createButton挂接为`MainLeftBottom.doInit`。
+- 唯一明文源码本轮未修改，Blob SHA仍为：`c9bdbf74fc4d97a748260ac6082e8d2e6d171f66`。没有修改新版原始文件、旧版文件，没有创建候选源码，没有编译、打包或游戏实测。
+
+**进度口径：** 新版root/37原始payload解析完成（433/433条记录、26/26个子原型已读出结构）；源码语义恢复仅完成若干已核实区段，完整createButton尚未完成，不能按“433条已明文”计算。
