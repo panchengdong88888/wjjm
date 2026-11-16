@@ -3548,3 +3548,57 @@ root/37/17的常量及50条指令再次确认：
 本轮只完成并确认toggle状态取反段及后续标题方法准备入口。PC24-PC48的标题文案选择、红白颜色分支及跳转目标仍需继续逐条核实；本轮没有改动唯一明文源码中的业务代码，也没有修改新版原始文件或旧版。未编译、未打包、未实测。
 
 **下一步：** 继续按当前解释器映射PC24-PC48，尤其闭合toggle/name文案选择、#ff0000/#ffffff颜色条件及两个条件跳转的真实目标；完成后再判断现有点击闭包Lua是否需要改动。
+### 2026-11-16续：点击闭包PC24-PC48逐指令闭合，状态/标题/颜色分支已还原
+
+本轮继续使用11.9原始加密文件内嵌解释器I()，并结合完整原型树解析结果逐条还原root/37/17/0。重点确认融合指令消费边界、条件跳转K赋值后解释器循环尾部统一执行K=K+1的规则。跳转目标因此按“设置K=目标值，再由循环尾部递增到下一条记录”计算，不能直接把E3当作下一条执行PC。
+
+#### 一、PC24-PC35：标题文案选择与更新
+
+- PC24 opcode262融合消费PC25、PC26：依次执行V[4]=A[2]、V[5]=A[1]、V[5]=V[5]['toggled']。本闭包中A[1]是buttonConfig，A[2]是button对象。
+- PC27 opcode234：对V[5]做truthy条件判断，E[4]=0。toggled为真时跳过PC28；toggled为假时执行PC28。
+- PC28 opcode51：关闭相应upvalue后设置K=32，循环尾部递增后转到PC33。因此toggled为假时直接进入name分支。
+- PC29 opcode158融合消费PC30：依次执行V[5]=A[1]、V[5]=V[5]['toggle']，取得buttonConfig.toggle。
+- PC31 opcode239：判断toggle字段是否truthy。toggle为假时跳过PC32，继续PC33-PC34的name读取；toggle为真时执行PC32。
+- PC32 opcode125：跳转到PC35，跳过PC33-PC34的name读取，因此保留PC30取得的toggle文案。
+- PC33 opcode158融合消费PC34：依次执行V[5]=A[1]、V[5]=V[5]['name']，取得buttonConfig.name。
+- PC35 opcode91：调用V[2]，参数寄存器范围为V[3]至V[5]。结合PC21-PC23可确认该调用为GUI.Button_setTitleText(GUI, button, title)的VM调用帧，即最终设置按钮标题。
+
+标题选择逻辑由上述条件和跳转直接闭合为：
+
+    if buttonConfig.toggled and buttonConfig.toggle then
+        title = buttonConfig.toggle
+    else
+        title = buttonConfig.name
+    end
+
+#### 二、PC36-PC48：颜色选择与更新
+
+- PC36 opcode387融合消费PC37：先从环境F读取GUI，再取得GUI.Button_setTitleColor方法及receiver。
+- PC38 opcode262融合消费PC39、PC40：依次执行V[4]=A[2]、V[5]=A[1]、V[5]=V[5]['toggled']。
+- PC41 opcode234：toggled为真时跳过PC42，进入红色分支；toggled为假时执行PC42。
+- PC42 opcode85：关闭相应upvalue并设置K=45，循环尾部递增后到PC46，跳过PC43-PC45，直接装入白色常量。
+- PC43 opcode263：将V[5]设为常量#ff0000。
+- PC44 opcode239：对刚装入的红色字符串做truthy判断。该常量为truthy，因此不会跳过PC45。
+- PC45 opcode38：关闭相应upvalue并设置K=46，循环尾部递增后到PC47，跳过白色赋值PC46。
+- PC46 opcode399：将V[5]设为常量#ffffff，仅由toggled为假时的PC42跳转路径到达。
+- PC47 opcode303：调用GUI.Button_setTitleColor，参数寄存器范围为V[3]至V[5]，即向按钮设置选出的颜色。
+- PC48 opcode269：直接return，点击闭包结束。
+
+颜色逻辑由PC38-PC47闭合为：
+
+    color = buttonConfig.toggled and '#ff0000' or '#ffffff'
+
+#### 三、与唯一明文源码核对
+
+重新读取`11.9/MainLeftBottom_11.9_明文.lua`中的MakeMainLeftBottomButtonFactory，现有点击处理器已经按以下顺序实现：回调false/nil早退；无toggle配置则退出；toggled取反；标题按toggled与toggle字段选择toggle/name；颜色按toggled选择#ff0000/#ffffff。与本轮PC17-PC48逐指令结果一致。
+
+因此本轮没有必要改动唯一明文源码，也没有为了制造提交而改写已正确的业务逻辑。PC17-PC48的状态取反、标题选择、颜色条件、两个分支跳转及最终调用/返回现已闭合。
+
+#### 四、ButtonFactory点击闭包当前状态与下一步
+
+- 点击闭包root/37/17/0：48/48条物理记录已完成指令语义映射；融合指令的消费记录也已明确。
+- 回调分发与false/nil早退已在此前提交到唯一明文源码；本轮确认后续toggle更新与标题/颜色逻辑也与原始VM一致。
+- ButtonFactory父函数root/37/17的完整创建流程、父级root/37 PC190-PC203布局锚点、PC338-PC339基值调整、PC346-PC384三组遍历与完整createButton入口装配仍未全部闭合。
+- 本轮只更新接续文档；没有改动唯一明文Lua、11.9原始加密文件或旧版。未编译、未打包、未运行游戏测试。
+
+**下一步：** 转回root/37父函数，先从PC190-PC203恢复UI布局锚点与尺寸读取，再闭合PC338-PC339如何调整baseX/baseY，并核对PC346-PC384三组配置遍历如何调用ButtonFactory。点击闭包不再列为待分析项。
