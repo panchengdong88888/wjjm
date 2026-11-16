@@ -2672,10 +2672,16 @@ end
 
 -- 对应root/37 child index 17（第18个子原型，50条指令）：新版通用ButtonFactory。
 -- 三个显式参数：buttonConfig、rowIndex、groupOffset。
--- 五项捕获：uiParent、两个当前未被函数体读取的父级值、visibleItems、callbackMap。
--- 原始指令坐标公式：x=1-85*rowIndex；y=2+groupOffset。
--- root/37/17：ButtonFactory通过5项upvalue捕获UI父容器、X/Y基准、控件表和回调表；各捕获槽位仍以原始PC341-PC345映射为准。
+-- PC341-PC345五项捕获顺序：
+--   A[0]=uiParent：GUI:Attach_UITop()返回的父容器；
+--   A[1]=baseX：父函数计算出的按钮横向布局基值；
+--   A[2]=baseY：父函数计算出的按钮纵向布局基值；
+--   A[3]=visibleItems：MainLeftBottom.b可见控件表；
+--   A[4]=callbackMap：按buttonConfig.key索引的按钮回调表。
+-- 注意：A[1]/A[2]并非未使用值；ButtonFactory实际用它们计算坐标。
 -- x = baseX - 85 * rowIndex；y = baseY + groupOffset。
+-- 父级PC190-PC203的UI世界坐标/内容尺寸读取及PC338-PC339的基值修正，
+-- 仍按root/37当前原型的寄存器记录继续做逐条闭合；这里不把旧路径PC号直接套用。
 local function MakeMainLeftBottomButtonFactory(
     uiParent,
     baseX,
