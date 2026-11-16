@@ -2619,32 +2619,30 @@ end
 -- proto36的PC1-PC149已恢复为BuyStoreItem；proto50/51的timer字段及四项闭包捕获
 -- 也按新版指令关系表达。按钮事件已有timer时原版直接返回true，不执行取消。
 
--- 对应新版 root.children[37] PC204-PC250：按原始VM配置重建三组按钮。
--- 第一组6项、第二组7项、第三组为空表；newzone明确属于第二组。
+-- 对应新版规范反汇编 root/43 PC195-PC235：按原始VM寄存器顺序重建三组按钮。
+-- 第一组4项、第二组3项、第三组3项；每组的构造顺序就是ipairs显示顺序。
 local function BuildMainLeftBottomButtonGroups()
-    -- PC205-PC224：第一组，按原始构造顺序。
+    -- PC196-PC209建立的四项配置，PC210按R13-R16顺序组为第一组。
     local firstGroup = {
-        { key = "moneybut", name = "V10001" },
-        { key = "settingbut", name = "内挂设置" },
-        { key = "shiqubut", name = "开拾取", toggle = "关拾取" },
-        { key = "diuqibut", name = "开丢弃", toggle = "关丢弃" },
-        { key = "clearblacklistbut", name = "清黑名单" },
-        { key = "stopallbut", name = "停止脚本" },
-    }
-
-    -- PC227-PC250：第二组，包含PC234/235明确创建的“开新区”按钮。
-    local secondGroup = {
-        { key = "buygoldbut", name = "购买金条" },
-        { key = "recyclebut", name = "回收装备" },
-        { key = "newzone", name = "开新区" },
-        { key = "rewardbut", name = "开奖励", toggle = "关奖励" },
         { key = "yinguaibut", name = "开拉怪", toggle = "关拉怪" },
         { key = "blacklistbut", name = "开黑名单", toggle = "关黑名单" },
+        { key = "clearblacklistbut", name = "清黑名单" },
+        { key = "moneybut", name = "资源统计" },
+    }
+
+    -- PC213-PC222建立的三项配置，PC223按R14-R16顺序组为第二组。
+    local secondGroup = {
+        { key = "shiqubut", name = "开拾取", toggle = "关拾取" },
+        { key = "diuqibut", name = "开丢物品", toggle = "关丢物品" },
         { key = "xiaotuibut", name = "快速小退" },
     }
 
-    -- PC251-PC252之后第三组被创建为空表；不擅自追加按钮。
-    local thirdGroup = {}
+    -- PC226-PC234建立的三项配置，PC235按R15-R17顺序组为第三组。
+    local thirdGroup = {
+        { key = "clearmonsterbut", name = "清怪物值" },
+        { key = "cleardistancebut", name = "清距离值" },
+        { key = "rewardbut", name = "开奖励", toggle = "关奖励" },
+    }
 
     return firstGroup, secondGroup, thirdGroup
 end
@@ -2670,18 +2668,16 @@ local function RegisterBuyGoldButtonHandler(
 end
 
 
--- 对应root/37 child index 17（第18个子原型，50条指令）：新版通用ButtonFactory。
+-- 对应规范反汇编 root/43/10（50条指令）：新版通用ButtonFactory。
 -- 三个显式参数：buttonConfig、rowIndex、groupOffset。
--- PC341-PC345五项捕获顺序：
+-- root/43 PC341-PC345五项捕获顺序：
 --   A[0]=uiParent：GUI:Attach_UITop()返回的父容器；
---   A[1]=baseX：父函数计算出的按钮横向布局基值；
---   A[2]=baseY：父函数计算出的按钮纵向布局基值；
+--   A[1]=baseX：Panel_mini_chat世界X坐标 + 内容宽度 - 10；
+--   A[2]=baseY：Panel_mini_chat世界Y坐标 + 1；
 --   A[3]=visibleItems：MainLeftBottom.b可见控件表；
 --   A[4]=callbackMap：按buttonConfig.key索引的按钮回调表。
--- 注意：A[1]/A[2]并非未使用值；ButtonFactory实际用它们计算坐标。
--- x = baseX - 85 * rowIndex；y = baseY + groupOffset。
--- 父级PC190-PC203的UI世界坐标/内容尺寸读取及PC338-PC339的基值修正，
--- 仍按root/37当前原型的寄存器记录继续做逐条闭合；这里不把旧路径PC号直接套用。
+-- ButtonFactory按 x=baseX-85*rowIndex、y=baseY+groupOffset 计算按钮坐标；
+-- 点击闭包为root/43/10/1。
 local function MakeMainLeftBottomButtonFactory(
     uiParent,
     baseX,
@@ -2745,8 +2741,8 @@ local function MakeMainLeftBottomButtonFactory(
 end
 
 
--- root/37 PC346-PC384：按VM原顺序遍历三组按钮配置。
--- groupOffset分别为40、0、80；每组rowIndex从组长度倒序递减到1。
+-- 规范反汇编 root/43 PC346-PC378：按ipairs的原始索引顺序遍历三组配置。
+-- 第一组偏移40，第二组偏移0，第三组偏移80；rowIndex直接使用ipairs返回的index。
 local function CreateMainLeftBottomButtons(
     uiParent,
     baseX,
@@ -2765,15 +2761,15 @@ local function CreateMainLeftBottomButtons(
     )
 
     for index, buttonConfig in ipairs(firstGroup) do
-        buttonFactory(buttonConfig, #firstGroup - index + 1, 40)
+        buttonFactory(buttonConfig, index, 40)
     end
 
     for index, buttonConfig in ipairs(secondGroup) do
-        buttonFactory(buttonConfig, #secondGroup - index + 1, 0)
+        buttonFactory(buttonConfig, index, 0)
     end
 
     for index, buttonConfig in ipairs(thirdGroup) do
-        buttonFactory(buttonConfig, #thirdGroup - index + 1, 80)
+        buttonFactory(buttonConfig, index, 80)
     end
 
     return firstGroup, secondGroup, thirdGroup
