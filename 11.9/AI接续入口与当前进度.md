@@ -3674,3 +3674,95 @@ baseY = worldPosition.y + 1
 本轮已完成PC181-PC194的UI锚点读取、PC195-PC219已显示配置项的字段恢复、PC338-PC339的基值算术关系，并纠正了规范反汇编路径身份。没有修改唯一明文Lua，也没有修改11.9原始加密文件或旧版文件；未编译、未打包、未运行游戏。
 
 下一步：从`root/43` PC220开始继续恢复全部按钮配置表，随后逐项闭合PC341-PC345捕获值、PC346-PC384三组遍历及后续按钮创建流程。源码只有在这些证据与现有明文实现完成对照后才允许修改。
+
+
+### 2026-11-16续：root/43按钮组、坐标公式、捕获顺序与遍历参数闭合
+
+本轮继续以规范反汇编 `资料文件/03_静态反汇编/MainLeftBottom_vm_disassembly_corrected_phase3.txt` 的 `root/43` 为唯一PC路径依据，并重新对照唯一明文源码。此前接续记录中关于PC338横向基值“加10”、按钮组数量/成员以及倒序行号的描述均已被本轮新证据纠正；以本节为准。
+
+#### 一、PC195-PC235：三组按钮配置表全部闭合
+
+根据表创建、字段写入和后续表构造指令，三组数组的顺序及内容为：
+
+第一组（PC196-PC210，4项，PC210按R13-R16顺序组装）：
+1. `yinguaibut`：`开拉怪` / toggle `关拉怪`
+2. `blacklistbut`：`开黑名单` / toggle `关黑名单`
+3. `clearblacklistbut`：`清黑名单`
+4. `moneybut`：`资源统计`
+
+第二组（PC211-PC223，3项，PC223按R14-R16顺序组装）：
+1. `shiqubut`：`开拾取` / toggle `关拾取`
+2. `diuqibut`：`开丢物品` / toggle `关丢物品`
+3. `xiaotuibut`：`快速小退`
+
+第三组（PC224-PC235，3项，PC235按R15-R17顺序组装）：
+1. `clearmonsterbut`：`清怪物值`
+2. `cleardistancebut`：`清距离值`
+3. `rewardbut`：`开奖励` / toggle `关奖励`
+
+因此新版这三组按钮合计10项。此前源码中出现的 `settingbut`、`stopallbut`、`buygoldbut`、`recyclebut`、`newzone` 等不属于这三组原始配置；不能把其他功能按钮/回调登记误并进这三组数组。另需注意：callbackMap中还登记了storage/take等回调，不代表它们属于上述三组可见按钮配置。
+
+#### 二、PC181-PC194与PC338-PC339：布局基值的正确算式
+
+- PC181-PC183：调用 `GUI:Attach_UITop()`，结果作为按钮父容器。
+- PC184-PC186：读取 `MainProperty._ui.Panel_mini_chat`。
+- PC187-PC188：以该面板为receiver调用 `getWorldPosition()`。
+- PC189-PC190：以该面板为receiver调用 `getContentSize()`。
+- PC191-PC194：取得worldPosition.x、contentSize.width、worldPosition.y；PC193先将x与width相加。
+- **PC338是减法**：`R22 = R10 - 10.0`，不是加10。
+- PC339是加法：`R23 = R11 + 1.0`。
+
+准确公式：
+
+```lua
+baseX = worldPosition.x + contentSize.width - 10
+baseY = worldPosition.y + 1
+```
+
+此前接续记录中写成 `+ 10` 的公式作废。
+
+#### 三、PC340-PC345：ButtonFactory五项捕获值闭合
+
+`root/43/10`固定接收3个显式参数：`buttonConfig`、`rowIndex`、`groupOffset`。父函数PC340创建工厂后，PC341-PC345按序传入：
+
+- A[0] = R6：`GUI:Attach_UITop()`返回的uiParent；
+- A[1] = R22：baseX；
+- A[2] = R23：baseY；
+- A[3] = UP[4]：`MainLeftBottom.b`可见控件表；
+- A[4] = R21：callbackMap。
+
+ButtonFactory本体使用：
+- `x = baseX - 85 * rowIndex`
+- `y = baseY + groupOffset`
+
+这次PC341-PC345的实际寄存器来源已经闭合，不再保留捕获顺序矛盾。
+
+#### 四、PC346-PC378：三组遍历与调用实参闭合
+
+三段循环均使用 `ipairs`，将返回的配置项和索引直接传给三参数ButtonFactory：
+
+- PC346-PC356：遍历第一组R12，调用实参为 `(buttonConfig, index, 40)`；
+- PC357-PC367：遍历第二组R13，调用实参为 `(buttonConfig, index, 0)`；
+- PC368-PC378：遍历第三组R14，调用实参为 `(buttonConfig, index, 80)`。
+
+因此每组rowIndex均是ipairs返回的正向索引1、2、3……，**不是组长度倒序计算**。此前源码中的 `#group - index + 1` 逻辑不符合新版VM，现已修正。
+
+#### 五、唯一明文源码已同步修正
+
+本轮在唯一明文文件 `11.9/MainLeftBottom_11.9_明文.lua` 中完成：
+- 将三组按钮配置修正为上述10项及其原始顺序、文案；
+- 将三组循环改为正向 `index`，偏移仍分别为40、0、80；
+- 将ButtonFactory注释路径改为规范路径 `root/43/10`，点击闭包为 `root/43/10/1`；
+- 新增 `GetMainLeftBottomButtonLayout()`，按PC181-PC194、PC338-PC339恢复UI父容器和布局基值计算。该辅助函数尚未接入完整doInit初始化顺序，不能据此宣称整个UI入口已完成。
+
+源码提交：
+- 按钮组/遍历修正：`01afffb77a1d90eac4cea9a133dbf072b0f3e2aa`
+- 布局基值辅助函数：`7abecb23d64266c13938bd11087a7022e09c4cc7`
+- 最新唯一明文源码Blob SHA：`73415d329c87b49b8d75680ea4f11dd6786c228a`
+
+#### 六、剩余工作与验证边界
+
+- `root/43` PC181-PC194、PC195-PC235、PC338-PC345、PC346-PC378的按钮布局与按钮组数据流已闭合。
+- `root/43/10`工厂及其点击闭包的业务动作已在前轮核实；当前唯一明文工厂与已确认的创建、标题、字体、颜色、toggle初始化、点击分发语义相符。
+- 仍需继续核对PC239以后callbackMap中各处理器的登记顺序/捕获来源，以及PC385-PC419隐藏按钮创建、延迟回调和后续UI初始化动作；之后再将这些片段按root/43原始顺序装配到完整doInit入口。
+- 本轮未修改新版原始加密文件、旧版源码或其他参考文件；未执行Lua编译、APK打包或游戏运行测试。
