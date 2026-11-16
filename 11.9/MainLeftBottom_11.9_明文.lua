@@ -2647,6 +2647,21 @@ local function BuildMainLeftBottomButtonGroups()
     return firstGroup, secondGroup, thirdGroup
 end
 
+-- 规范反汇编 root/43 PC181-PC194、PC338-PC339：
+-- 取得UI顶层父容器，并以Panel_mini_chat的世界坐标和内容尺寸计算按钮布局基值。
+-- PC193先计算worldPosition.x + contentSize.width；PC338再减10；
+-- PC339将worldPosition.y加1。此辅助函数尚待接入完整doInit初始化顺序。
+local function GetMainLeftBottomButtonLayout()
+    local uiParent = GUI:Attach_UITop()
+    local miniChatPanel = MainProperty._ui.Panel_mini_chat
+    local worldPosition = miniChatPanel:getWorldPosition()
+    local contentSize = miniChatPanel:getContentSize()
+
+    local baseX = worldPosition.x + contentSize.width - 10
+    local baseY = worldPosition.y + 1
+    return uiParent, baseX, baseY
+end
+
 
 -- proto48 PC272-PC277：只负责创建并登记buygoldbut回调，不创建按钮。
 -- callbackMap由proto48 PC266创建，后续其它按钮处理器也登记在同一张表。
