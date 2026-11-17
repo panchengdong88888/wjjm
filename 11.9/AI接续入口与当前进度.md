@@ -3809,3 +3809,48 @@ ButtonFactory本体使用：
 - 隐藏按钮的创建参数顺序、两个捕获值身份，以及`root/43/23`弹窗闭包的父级触发点仍需核实。
 - 下一步继续追踪root/43/23的创建/调用关系和root/43各upvalue来源，再把确认的隐藏按钮及弹窗回调代码补入唯一明文源码；不确定的部分继续保留待确认。
 - 本轮只更新接续文档；没有修改唯一明文Lua、新版原始加密文件或旧版源码。未编译、未打包、未进行游戏运行测试。
+
+
+### 2026-11-17续：commonInputPrompt与隐藏按钮点击闭包捕获来源闭合
+
+本轮从规范反汇编重新追踪`root/43`的父函数寄存器、闭包创建记录和捕获payload，不再只依据已有Lua注释判断捕获身份。
+
+#### 一、root/43/23：通用数字输入弹窗函数的创建与复用链
+
+- 父函数`root/43` PC247先读取其`UP[9]`到临时寄存器；PC248创建子原型`root/43/23`。
+- PC249是该闭包创建的捕获payload，明确从父函数`UP[0]`取值。结合root父函数PC390-PC410对root/43的捕获顺序，`root/43`的UP[0]来自root局部R4；该值在现有源码中对应`PrintLog`。
+- 因此，`root/43/23`创建时实际捕获的是`PrintLog`，与唯一明文源码的`MakeCommonInputPrompt(printLog)`参数身份一致。PC247的临时读取不是该闭包的捕获payload，不能误把UP[9]写成commonInputPrompt的捕获来源。
+- PC250创建`root/43/12`黑名单距离提示工厂，后续捕获payload包含前面创建的commonInputPrompt；PC259创建`root/43/15`拉怪阈值提示工厂，捕获payload同样包含commonInputPrompt。
+- `root/43/23`自身调用`SL:OpenCommonTipsPop`；其子原型`root/43/23/1`构造编辑弹窗参数，嵌套回调`root/43/23/1/1`负责状态检查、数字字符串校验、转换和错误处理。
+- 这条“一个通用输入弹窗包装器，被黑名单距离和拉怪阈值两个提示工厂共用”的关系现已由父函数创建点、捕获payload和后续子闭包关系闭合。唯一明文源码中已有`MakeCommonInputPrompt`、`MakeBlacklistDistancePrompt`和`MakeGatherThresholdPrompt`，本轮无需改写这些函数。
+
+#### 二、root/43/16：隐藏按钮点击闭包两个捕获值身份闭合
+
+父函数`root/43` PC415创建`root/43/16`，捕获数为2；紧随其后的捕获payload为：
+
+- PC416：从父函数`UP[3]`取值；
+- PC417：从父函数`UP[0]`取值。
+
+结合root父函数PC390-PC410的捕获映射：
+- `root/43 UP[3]`来自root局部R0，即`MainLeftBottom.a`容器对象；
+- `root/43 UP[0]`来自root局部R4，即`PrintLog`。
+
+所以点击闭包的准确捕获顺序为`(MainLeftBottom.a, PrintLog)`。其分支语义仍为：
+- `isHidden`为真：提示“隐藏所有按钮”，调用容器hide，并将hidebut透明度设为0；
+- `isHidden`为假：提示“显示所有按钮”，调用容器show，并将hidebut透明度设为255。
+
+唯一明文源码的`MakeHideButtonHandler(mainLeftBottomA, printLog)`捕获顺序和行为与上述证据一致；本轮不重复改写。
+
+#### 三、隐藏按钮创建主体尚未完全恢复
+
+`root/43` PC379-PC419已确认创建`hidebut`、设置标题“隐 藏”、字号18、字体`res/public/kaiti2.ttf`并绑定`root/43/16`。但PC382-PC387的Button_Create参数寄存器仍需结合当前解释器对应融合分支逐字段展开，尤其要确认父容器、按钮key、坐标和图片参数的实际来源。本轮不凭常量顺序猜测参数含义，也不把已有handler定义误当成按钮已创建。
+
+#### 四、接续状态
+
+- commonInputPrompt的PrintLog捕获来源及其被两个提示工厂复用的链路：已闭合。
+- 隐藏按钮点击闭包的两个捕获值及顺序：已闭合。
+- 隐藏按钮创建PC382-PC387的实参映射：待完成。
+- callbackMap的处理器登记顺序已在唯一明文的`BuildDoInitCallbackMap`中有对应辅助函数，但尚未与完整UI创建入口按VM顺序统一装配。
+- 本轮只更新接续文档；未修改唯一明文Lua、11.9原始加密文件或旧版源码。未编译、未打包、未进行游戏运行测试。
+
+**下一步：** 回到11.9原始解释器I()，精确解析PC382-PC387所用融合opcode，再将隐藏按钮创建代码与现有`MakeHideButtonHandler`连接；随后继续恢复完整初始化入口，避免把尚未确认的参数写进业务源码。
