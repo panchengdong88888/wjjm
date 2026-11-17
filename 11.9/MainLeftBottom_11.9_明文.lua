@@ -302,10 +302,9 @@ rootEnvironment.MoveTo = MoveTo
 --
 -- 本节只恢复业务函数，不创建按钮、不接UI、不修改旧版源码。
 -- 新版root PC42通过opcode 47明确创建寄存器3的空表，即MainLeftBottom共享定时器状态表。
--- InitGatherMonsters（root.children[23]）与StopGatherMonsters（root.children[41]）
--- 捕获该寄存器并读写gatherTimer；root destroy闭包（root.children[2]）也捕获同一寄存器，
--- 并按原始顺序清理rewardTimer、cruiseTimer、newzoneTimer、buygoldTimer。
--- 新区与购买金条业务同样通过该状态表读写各自定时器字段。
+-- 引怪初始化/停止闭包捕获该寄存器并读写gatherTimer；root/41（root子原型索引40）
+-- 是MainLeftBottom.destroy生命周期闭包，也捕获同一寄存器，但只取消rewardTimer与cruiseTimer。
+-- 新区与购买金条业务各自读写其定时器字段；destroy不主动清理这些字段。
 -- 因此这些功能必须共用本表，不能在各业务模块另建互不关联的定时器表。
 
 -- timerState已按root PC42在模块入口创建；此处不再创建第二张表。
@@ -2464,7 +2463,7 @@ end
 --   * proto51 -> MakeBuyGoldTimerCallback(...)，77条指令；
 --     金币大于2000000时调用BuyStoreItem("金条",1)，按返回值显示成功/失败提示；
 --     失败或余额不足时取消定时器并清空buygoldTimer。
---   * proto2 -> MainLeftBottom.destroy清理闭包中包含buygoldTimer取消与清空。
+--   * root/41 -> MainLeftBottom.destroy仅取消rewardTimer与cruiseTimer；不会取消buygoldTimer。
 --
 -- 按钮与事件的新版证据：
 --   * proto48配置数组V13第1项：key="buygoldbut"，name="购买金条"，无toggle字段。
