@@ -2755,7 +2755,7 @@ end
 -- 规范反汇编 root/43 PC181-PC194、PC338-PC339：
 -- 取得UI顶层父容器，并以Panel_mini_chat的世界坐标和内容尺寸计算按钮布局基值。
 -- PC193先计算worldPosition.x + contentSize.width；PC338再减10；
--- PC339将worldPosition.y加1。此辅助函数尚待接入完整doInit初始化顺序。
+-- PC339将worldPosition.y加1。该辅助函数已由文件末尾的doInit按原始顺序调用。
 local function GetMainLeftBottomButtonLayout()
     -- root/43 PC181-PC183复用ipairs第三返回值T7；其值为0。
     local uiParent = GUI:Attach_UITop(0)
@@ -2792,7 +2792,7 @@ end
 -- 对应规范反汇编 root/43/10（50条指令）：新版通用ButtonFactory。
 -- 三个显式参数：buttonConfig、rowIndex、groupOffset。
 -- root/43 PC341-PC345五项捕获顺序：
---   A[0]=uiParent：GUI:Attach_UITop()返回的父容器；
+--   A[0]=uiParent：GUI:Attach_UITop(0)返回的父容器；
 --   A[1]=baseX：Panel_mini_chat世界X坐标 + 内容宽度 - 10；
 --   A[2]=baseY：Panel_mini_chat世界Y坐标 + 1；
 --   A[3]=visibleItems：MainLeftBottom.b可见控件表；
@@ -2872,7 +2872,7 @@ local function CreateMainLeftBottomButtons(
     callbackMap,
     buttonGroups
 )
-    -- doInit_UI必须把同一批buttonGroups同时交给状态同步闭包和按钮工厂；
+    -- doInit必须把同一批buttonGroups同时交给状态同步闭包和按钮工厂；
     -- 仅在独立调用此辅助函数时才自行创建配置表。
     if not buttonGroups then
         buttonGroups = { BuildMainLeftBottomButtonGroups() }
