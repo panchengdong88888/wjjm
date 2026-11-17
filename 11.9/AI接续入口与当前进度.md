@@ -4029,3 +4029,15 @@ ButtonFactory本体使用：
 - child0主体映射推进到PC48，但PC6-PC10的R2=0后调用R2表面矛盾仍未解决，暂不标记为完全无歧义的可执行Lua。
 - 下一步处理child17按钮工厂50条指令的opcode融合、GUI.Button_Create参数和toggle事件绑定，再恢复callbackMap其他闭包与root/37初始化调用链。
 - 唯一明文Lua未修改；未编译、未打包APK、未游戏实测。
+
+
+### 2026-11-17续：child17按钮工厂首11条指令已映射
+
+当前工作位置仍为新版root/37的child17按钮工厂。已从当前原始加载器I()的分派树精确映射PC1-PC11：
+- PC1-PC2融合取得GUI.Button_Create，保留GUI接收者。
+- PC3-PC4融合读取upvalue[0]及config.key。
+- PC5-PC10计算/装载Button_Create调用参数：upvalue[1]、85*R1、upvalue[2]、R8+R2及按钮图片资源路径。
+- PC11以GUI接收者调用Button_Create，实参寄存器R5..R9，结果写回R3。
+详细寄存器级记录见 11.9/root37_createButton_PC204-PC384_原始指令提取.md 新增小节。
+注意：目前仅确认寄存器数据流，尚未给upvalue/函数参数擅自命名为最终业务变量，也未修改唯一明文Lua。
+下一步：继续映射PC12-PC50，保留融合指令消费关系，确认按钮标题/字体/颜色属性及toggle事件绑定；随后处理新版root/37初始化入口。不要重做载荷解码、原型树校验或已完成的PC204-PC271配置提取。
