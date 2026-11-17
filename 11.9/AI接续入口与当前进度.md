@@ -4423,3 +4423,15 @@ main分支已重新读取。child8（root/37 child index 8，19条）与child25�
 - child8已有定时器关闭分支的通知、StopGatherMonsters调用和true返回路径已能解释；无定时器分支后半段与child25连续调用/返回值仍待闭合，尚未改唯一明文Lua，也未将旧版六参数handler装配移植到新版。
 - 当前唯一任务：继续闭合child8 PC12-PC19及child25 PC4-PC7的调用帧；之后恢复新版handler装配并回到root/37真实doInit入口接通newzone。禁止重复LZW全量解码、PC12-PC14按钮工厂、PC253-PC271和PC272-PC337键映射核对。
 - 未进行Lua编译、APK打包或游戏运行测试。
+
+
+### child8捕获语义与分支入口补充（2026-11-17）
+
+根据child8实际指令：
+- UP[0]明确是共享定时器状态表：PC2直接读取其`gatherTimer`字段。
+- UP[1]明确是提示回调：PC7以`关闭引怪功能`调用它，PC14以`开启引怪功能，阈值：11`调用它。
+- UP[2]是父级PC264创建并传入的child25阈值初始化闭包：PC15读取该捕获。
+- 因而新版child8的捕获装配形状已确定为`(timerState, notify, initializeGatherThreshold)`，不是旧版root/43的六参数MakeGatherButtonHandler。
+- 分支控制流：timerState.gatherTimer为真时执行关闭提示、StopGatherMonsters、返回true；为假时opcode38将取指位置设为11，经公共递增从PC12进入开启分支。
+- child25 PC2的opcode132在写入`GATHER_THRESHOLD=11`后融合消费PC3，将`InitGatherMonsters`载入R0。PC4-PC7仍有连续调用/返回值传递，需要按寄存器调用约定继续核对；child8 PC16-PC19也保留待闭合状态，不能把开启分支写成只调用一次InitGatherMonsters。
+- 本轮仍未修改唯一明文Lua。下一步优先厘清opcode412的参数/返回寄存器约定及child25连续调用，再恢复新版MakeGatherButtonHandler装配。
