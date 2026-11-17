@@ -3934,3 +3934,33 @@ ButtonFactory本体使用：
 - 进度账本已提交 `3b0a5836c10c4768060f9651c8d1335dc8f69e47`。
 - **下一步唯一工作：** 从11.9原始VM的root/37（原型48）提取PC204-PC271的真实指令和寄存器/表字段映射，恢复13项配置及callbackMap.newzone；随后恢复PC340-PC384工厂。不得套用旧root/43 PC号或仅凭结构摘要猜写配置。
 - 未编译、未打包、未游戏实测。
+
+
+### 2026-11-17续：从当前11.9原始加载器直接提取root/37按钮配置与新区登记指令
+
+本轮不再使用旧版phase3反汇编。直接读取当前原始文件 `11.9/MainLeftBottom_11.9.lua`（Blob SHA `e9d3afa16bbc0e306ce764ecb749954a304c4715`），按文件内的Base36/LZW、XOR 0x4A和原型解析函数恢复二进制结构。
+
+#### 本轮取得的原始证据
+
+- Base36/LZW解码结果79,573字节；按原始读取器XOR 0x4A后，`M()`递归解析完整消费79,573字节，无剩余。
+- 根原型455条指令、54个直接子原型。
+- `root.children[37]`确认为433条指令、26个子原型、111项常量，即当前新版按钮入口createButton。
+- PC204-PC250已逐字段恢复13项按钮配置：第一组6项（moneybut、settingbut、shiqubut、diuqibut、clearblacklistbut、stopallbut）；第二组7项（buygoldbut、recyclebut、newzone、rewardbut、yinguaibut、blacklistbut、xiaotuibut）；第三组为空。各项name和toggle字段已记录到原始指令提取文档。
+- PC269创建单捕获包装闭包；PC270将createButton的UP[9]传入；PC271以key=`newzone`写入callbackMap。新区处理器实例与根PC430创建、写入R54的闭包为同一对象；createButton的第10个捕获来自R54。
+- PC340创建五捕获按钮工厂；PC341-PC345的父寄存器来源依次为R6、R19、R20、R4、R18。
+- PC346-PC384三组遍历分别读取V12、V13、V14，偏移立即数分别为40、0、80。
+- 根PC430创建子原型38闭包，捕获寄存器顺序R4、R2、R3、R7、R53；根PC438创建root.children[37]按钮入口，捕获数15。
+
+#### 新增持久化原始记录
+
+- `11.9/root37_createButton_PC204-PC384_原始指令提取.md`
+- 创建提交：`e690e63c8d7da7196cbb44be954c872d9158deef`
+
+该记录保留了PC204-PC271、PC340-PC384及根PC430-PC445的原始指令字段和已确认映射，便于新对话直接接续，不必重新解码。
+
+#### 当前完成边界与下一步
+
+- 13项配置的key/name/toggle字段、newzone回调登记点、按钮工厂捕获源寄存器和三组遍历偏移已经从当前原始VM提取。
+- 尚未将root/37全部opcode逐项翻译成可执行Lua，也尚未把新版createButton正确接入唯一明文文件的初始化路径；不能将“原始指令已提取”说成“按钮功能已接通”。
+- 下一步从原始加载器分派器继续映射PC253-PC271及PC340-PC384涉及的opcode，先恢复callbackMap构造和按钮工厂的准确Lua语义，再装配新区回调。
+- 未修改原始加密文件和旧版源码；未执行Lua编译、APK打包或游戏运行测试。
