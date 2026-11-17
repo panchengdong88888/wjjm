@@ -283,11 +283,10 @@ rootEnvironment.MoveTo = MoveTo
 --  4. UI 初始化、窗口与按钮创建
 -- ============================================================
 
--- 新版MainLeftBottom.doInit外层入口对应root/37（433条指令、26个子原型）。
--- root/34是AccountIDValidation；root/34/1是等待MainProperty就绪后调用doInit的延迟回调。
--- 本文件当前接入的是root/43这段UI初始化主体，并暂以MainLeftBottom.doInit_UI暴露为辅助入口；
--- root/37外层函数如何创建/调用该主体、最终宿主字段如何绑定，仍须按root/37指令定点确认。
--- 因此root/43主体接入不等于MainLeftBottom.doInit（root/37）整个入口链已经恢复。
+-- 新版MainLeftBottom.doInit对应root/43（419条指令、23个子原型）。
+-- 根函数PC390创建root/43，PC391-PC410依序传入20项upvalue；
+-- PC411明确执行MainLeftBottom.doInit = doInit。
+-- root/37实际是仓库分页辅助函数（51条指令），不是UI初始化入口。
 
 -- ============================================================
 --  5. 怪物查找与引怪系统
@@ -4287,12 +4286,12 @@ local function BuildDoInitCallbackMap(deps)
 end
 
 -- ============================================================
---  11.9 doInit_UI：完整初始化入口（root/43）
+--  11.9 doInit：完整初始化入口（root/43）
 -- ============================================================
 -- PC1-PC180初始化业务与PC181-PC419的UI创建按VM顺序在同一入口执行。
 -- 关键约束：buttonGroups只创建一次，callbackMap的状态同步闭包和按钮工厂
 -- 必须捕获同一张三组配置表；所有状态表均复用模块入口已创建的共享对象。
-local function doInit_UI()
+local function doInit()
     -- PC1-PC3：初始化完成日志。
     PrintLog("插件初始化完成")
 
@@ -4412,6 +4411,6 @@ local function doInit_UI()
     CreateMainLeftBottomHideButton(uiParent, moduleState, PrintLog)
 end
 
--- 暴露唯一初始化入口；不在模块加载阶段自动执行，交由原有宿主生命周期调用。
-MainLeftBottom.doInit_UI = doInit_UI
+-- root PC411：将root/43闭包写入MainLeftBottom.doInit；模块加载阶段只登记，不主动调用。
+MainLeftBottom.doInit = doInit
 
