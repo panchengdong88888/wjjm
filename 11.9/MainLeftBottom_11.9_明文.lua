@@ -3274,14 +3274,14 @@ end
 -- ============================================================
 
 -- 对应root.children[37].children[13]：每日巡航周期回调（43条指令）。
--- 闭包捕获顺序：上次发送日期、未在回调主体使用的状态值、通知函数。
+-- 闭包捕获顺序：上次发送日期、MainLeftBottom.a（通过LuaSendMsg发送）、PrintLog。
 -- 每秒检查一次本地系统时间；仅在22:00:05至22:00:08（含边界）窗口内继续。
 local function MakeCruiseTimerCallback(
-    unusedCapturedState,
-    notify
+    mainLeftBottomState,
+    printLog
 )
-    -- doInit在创建巡航闭包前通过opcode299清空局部V[5]，初值确认为nil。
-    local lastSentDate = nil
+    -- root/43/13捕获的第二项是MainLeftBottom.a；回调通过其LuaSendMsg字段发送协议。
+    -- 第一项日期标记由父函数在创建闭包前清空，初值为nil。
 
     return function()
         local dateParts = os.date("*t")
@@ -3311,19 +3311,19 @@ local function MakeCruiseTimerCallback(
         end
         lastSentDate = dateKey
 
-        -- VM从当前chunk全局环境读取LuaSendMsg。
-        LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)
-        notify("到达 22:00:05，发送开启巡航协议")
+        -- root/43/13 PC30-PC39从捕获的MainLeftBottom.a读取LuaSendMsg并传入七个参数。
+        mainLeftBottomState.LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)
+        printLog("到达 22:00:05，发送开启巡航协议")
     end
 end
 
 -- 对应doInit中PC155-PC175的cruiseTimer替换与注册流程。
 -- 先取消旧句柄并清空共享字段，再创建每日回调，以1秒周期注册。
--- unusedCapturedState与notify按doInit闭包捕获链传入；日期标记由回调内部从nil开始维护。
+-- MainLeftBottom.a与PrintLog按root/43/13捕获顺序传入；日期标记由回调内部从nil开始维护。
 local function ReplaceCruiseTimer(
     timerState,
-    unusedCapturedState,
-    notify
+    mainLeftBottomState,
+    printLog
 )
     if timerState.cruiseTimer then
         SL:UnSchedule(timerState.cruiseTimer)
@@ -3331,8 +3331,8 @@ local function ReplaceCruiseTimer(
     end
 
     local callback = MakeCruiseTimerCallback(
-        unusedCapturedState,
-        notify
+        mainLeftBottomState,
+        printLog
     )
 
     timerState.cruiseTimer = SL:Schedule(callback, 1.0)
@@ -3622,7 +3622,7 @@ local function GetResourceItemCount(requestedName)
     local totalCount = 0
     for _, item in pairs(bagData) do
         if item and item.Name and item.MakeIndex then
-            local matched = string.find(item.Name, requestedName)
+            local matched = string.find(item.Name, requestedName, 1, true)
             if matched and not SL:GetMetaValue("ITEM_IS_BIND", item) then
                 local overlap = item.OverLap
                 if not overlap then
@@ -3722,12 +3722,12 @@ local function MakeResourceStatisticsRefresh(
             end
         end
 
-        -- 按VM访问路径保留initSnapshot[moneyId]这一索引方式。
+        -- root/43 PC85以货币名称作为initSnapshot键；刷新时也必须使用同一名称键。
         for moneyName, textNode in pairs(moneyRows) do
             local moneyId = moneyProxy:GetMoneyIdByName(moneyName)
             if moneyId then
                 local currentCount = moneyProxy:GetMoneyCountById(moneyId) or 0
-                local initialCount = initState.initSnapshot[moneyId] or 0
+                local initialCount = initState.initSnapshot[moneyName] or 0
                 local delta = currentCount - initialCount
                 gui:Text_setString(
                     textNode,
@@ -3805,7 +3805,8 @@ local function InitializeResourceStatisticsSnapshot(
                 if not count then
                     count = 0
                 end
-                initSnapshot[moneyId] = count
+                -- root/43 PC85以循环中的货币名称R[8]作为快照键，不是moneyId。
+                initSnapshot[moneyName] = count
             end
         end
     end
