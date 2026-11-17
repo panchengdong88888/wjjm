@@ -4122,3 +4122,13 @@ ButtonFactory本体使用：
 - 路径防混淆：root.children[37]=原型ID48 createButton；root.children[38]=原型ID83新区启动处理器；root.children[44]=原型ID93新区物品处理回调；root.children[34].children[1]=原型ID44 doInit_UI。原型ID44不等于root.children[44]。
 - 结论：按钮工厂确实进入正常UI初始化；child17 PC14 return仍阻断PC15-PC50点击绑定代码，当前UI初始化链中未发现其他newzone事件绑定点。
 - 本轮文档提交：原始指令记录9dddf3d4bfddaf17204b205b5c0c591916f8780e；进度账本93435ff578256334e22812ddad5915ce303cbac0。
+
+
+## 2026-11-17续：全原型检索排除第二条模块内newzone绑定路径
+
+- 已重新按确认解析格式读取完整原型树：105个原型，载荷79,573字节完整消费。
+- `newzone`常量只在root.children[37]；`addOnClickEvent`只在root.children[37]父函数、child15、child17；`Button_Create`只在父函数和child17。
+- child15的独立addOnClickEvent只用于资源信息窗口resWin关闭控件，和newzone按钮无关。child17 PC45-PC49仍被PC14 return阻断。
+- 当前模块内部未发现第二条新区按钮事件绑定路径；模块外宿主行为不能由此文件排除。
+- 下一步转入根因定位：局部核验opcode152在加载器中的真实返回语义、同VM其他原型使用上下文和可能的编译/混淆异常；不要跳过return或把不可达尾部直接写进Lua。
+- 本轮文档提交：原始记录e7d2c458eb54c3c2e21374975a251fea94d89ba6；进度账本b2912c494b960e97453979eb63577f4f6f6b3795。唯一明文Lua未修改。
