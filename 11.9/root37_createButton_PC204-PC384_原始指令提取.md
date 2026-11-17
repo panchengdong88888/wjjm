@@ -154,3 +154,45 @@ PC346-PC384三组遍历原始指令（保留原始字段）：
 - 13项按钮配置及key/name/toggle字段已直接恢复；新区callbackMap登记点PC269-PC271已确认；ButtonFactory五个捕获源寄存器及三段遍历偏移已提取。
 - 尚未将这些原始指令完整翻译为可执行Lua，也尚未把新版createButton接入唯一明文文件的正确初始化路径。
 - 本记录不代表Lua编译、APK打包或游戏运行验证通过。
+
+
+## 后续：PC253-PC271 opcode语义与两个关键子闭包
+
+继续直接对照当前原始加载器 `I()` 的opcode分派器，确认本轮接线关键指令语义：
+
+- opcode 177：从当前函数的子原型表取出指定子原型，按后续upvalue描述创建闭包，并写入目标寄存器。
+- opcode 374：读取当前闭包upvalue到目标寄存器（`V[A] = upvalue[B]`）。
+- opcode 57：寄存器间移动（`V[A] = V[B]`）。
+- opcode 156：以常量字符串作为键、寄存器值作为值写入表（`V[A][constantKey] = V[B]`）。因此PC271可直接翻译为`callbackMap["newzone"] = newzoneWrapper`，不是普通寄存器键赋值。
+- opcode 279：按指令参数数量调用目标寄存器中的函数。
+- opcode 269：return。
+- 上述语义来自当前11.9原始加载器分派器，不是旧版opcode表类推。
+
+### child2：新区callbackMap包装闭包
+
+`root.children[37].children[2]`：0参数、5条指令、无子原型、无常量；PC269创建时捕获数1，捕获对象为createButton UP[9]，即根PC430创建的新区处理器闭包。
+
+原始指令：
+```text
+1 [17,0,0,0]
+2 [279,0,0,0]
+3 [412,0,1,0]
+4 [30,0,0,0]
+5 [269,0,0,0]
+```
+
+该闭包只捕获新区处理器一个对象，主体执行一次调用并返回；其用途是把新区处理器包装成按钮callbackMap所需的零参数点击回调。剩余opcode组合（17、412、30）的逐条表达式仍以加载器分派器为准，当前不臆造参数或返回值细节。
+
+### child17：按钮创建工厂的toggle点击回调
+
+`root.children[37].children[17]`：3参数、50条指令、1个子原型。常量表包含`Button_Create`、`GUI`、`addOnClickEvent`、`Button_setTitleText`、`Button_setTitleColor`、`toggle`、`toggled`、按钮名称和字体资源。
+
+- PC1-PC12开始创建GUI按钮、读取配置key并设置初始标题/图标资源。
+- PC15-PC37根据配置name、字体和颜色设置按钮属性。
+- PC38-PC49检查配置是否有`toggle`字段；存在时创建子原型0作为点击处理器，并将其绑定到`addOnClickEvent`。
+- PC45创建的子原型0有48条指令、0参数、3个捕获值。它的常量表包含`toggled`、`toggle`、`name`、`Button_setTitleText`、`Button_setTitleColor`、`#ff0000`、`#ffffff`。因此该闭包承担toggle按钮点击后的状态、标题和颜色切换；具体共享状态写入和UI调用次序仍以其48条指令为准。
+- 本次只恢复到闭包职责和常量/捕获结构，没有把按钮工厂伪写成完整Lua。
+
+## 接线结论更新
+
+现在已经有足够的原始证据把PC269-PC271精确翻译为：创建单捕获零参数包装闭包（捕获新区处理器）并登记到`callbackMap["newzone"]`。尚需完整恢复PC253-PC268周边callbackMap其他回调构造，以及child17按钮工厂的全部50条指令，之后再写入唯一明文Lua并接入正确初始化路径。
