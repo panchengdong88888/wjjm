@@ -2757,7 +2757,8 @@ end
 -- PC193先计算worldPosition.x + contentSize.width；PC338再减10；
 -- PC339将worldPosition.y加1。此辅助函数尚待接入完整doInit初始化顺序。
 local function GetMainLeftBottomButtonLayout()
-    local uiParent = GUI:Attach_UITop()
+    -- root/43 PC181-PC183复用ipairs第三返回值T7；其值为0。
+    local uiParent = GUI:Attach_UITop(0)
     local miniChatPanel = MainProperty._ui.Panel_mini_chat
     local worldPosition = miniChatPanel:getWorldPosition()
     local contentSize = miniChatPanel:getContentSize()
@@ -2868,10 +2869,17 @@ local function CreateMainLeftBottomButtons(
     baseX,
     baseY,
     visibleItems,
-    callbackMap
+    callbackMap,
+    buttonGroups
 )
-    local firstGroup, secondGroup, thirdGroup =
-        BuildMainLeftBottomButtonGroups()
+    -- doInit_UI必须把同一批buttonGroups同时交给状态同步闭包和按钮工厂；
+    -- 仅在独立调用此辅助函数时才自行创建配置表。
+    if not buttonGroups then
+        buttonGroups = { BuildMainLeftBottomButtonGroups() }
+    end
+    local firstGroup = buttonGroups[1]
+    local secondGroup = buttonGroups[2]
+    local thirdGroup = buttonGroups[3]
     local buttonFactory = MakeMainLeftBottomButtonFactory(
         uiParent,
         baseX,
@@ -2894,6 +2902,136 @@ local function CreateMainLeftBottomButtons(
 
     return firstGroup, secondGroup, thirdGroup
 end
+
+
+
+-- ============================================================
+--  11.9 doInit_UI：完整初始化入口（root/43）
+-- ============================================================
+-- PC1-PC180初始化业务与PC181-PC419的UI创建按VM顺序在同一入口执行。
+-- 关键约束：buttonGroups只创建一次，callbackMap的状态同步闭包和按钮工厂
+-- 必须捕获同一张三组配置表；所有状态表均复用模块入口已创建的共享对象。
+local function doInit_UI()
+    -- PC1-PC3：初始化完成日志。
+    PrintLog("插件初始化完成")
+
+    -- PC5-PC17：货币及背包资源名称列表。
+    local moneyNames = { "元宝", "绑定元宝", "灵符", "绑定灵符" }
+    local itemNames = {
+        "声望卷", "悟道茶", "洗髓丹", "转生水晶", "恶魔令牌", "血龙宝珠"
+    }
+
+    -- PC19-PC99：初始化时间及资源快照；MainLeftBottom.z就是共享initState。
+    InitializeResourceStatisticsSnapshot(
+        featureState,
+        moneyNames,
+        itemNames,
+        GetResourceItemCount
+    )
+
+    -- PC100-PC101：通过root环境全局入口调用已导出的Builtsetting。
+    rootEnvironment.Builtsetting()
+
+    -- PC102-PC145：四组快捷栏物品按slot*0.1秒错峰尝试移动。
+    local quickUseGroups = {
+        {
+            slot = 1,
+            names = { "永久回城石", "盟重回城石", "盟重传送石" }
+        },
+        {
+            slot = 2,
+            names = { "永久随机石", "随机传送石" }
+        },
+        {
+            slot = 3,
+            names = { "大陆传送石" }
+        },
+        {
+            slot = 4,
+            names = { "免战回城石" }
+        }
+    }
+
+    for slotIndex, slotConfig in ipairs(quickUseGroups) do
+        ScheduleOnce(function()
+            for _, itemName in ipairs(slotConfig.names) do
+                local itemIndex = SL:GetMetaValue(
+                    "ITEM_INDEX_BY_NAME",
+                    itemName
+                )
+                if itemIndex then
+                    -- VM通过GETGLOBAL调用MoveItemToQuickUse，不改为模块方法。
+                    local succeeded, message =
+                        MoveItemToQuickUse(itemIndex, slotConfig.slot)
+                    PrintLog(message)
+                    if succeeded then
+                        return
+                    end
+                end
+            end
+        end, slotIndex * 0.1)
+    end
+
+    -- PC146-PC166：取消旧巡航句柄并注册新的每日巡航检查。
+    ReplaceCruiseTimer(timerState, moduleState, PrintLog)
+
+    -- PC167-PC180：取得仓库代理；存在时以原始T7=0请求仓库数据。
+    local npcStorageProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.NPCStorageProxy
+    )
+    rootEnvironment.NPCStorageProxy = npcStorageProxy
+    if npcStorageProxy then
+        npcStorageProxy:RequestStorageData(0)
+    end
+
+    -- PC181-PC194、PC338-PC339：取得顶层父容器并计算按钮布局基值。
+    local uiParent, baseX, baseY = GetMainLeftBottomButtonLayout()
+
+    -- PC196-PC235：三组配置只创建一次，供callbackMap与按钮工厂共同捕获。
+    local buttonGroups = { BuildMainLeftBottomButtonGroups() }
+
+    -- PC236-PC337：按规范捕获顺序创建局部闭包并登记callbackMap。
+    local callbackMap = BuildDoInitCallbackMap({
+        printLog = PrintLog,
+        featureState = featureState,
+        timerState = timerState,
+        moduleState = moduleState,
+        visibleItems = visibleItems,
+        blacklistState = blacklistState,
+        readBlacklistDistance = ReadBlacklistDistance,
+        schedule = Schedule,
+        gatherConfig = gatherConfig,
+        readGatherThreshold = ReadGatherThreshold,
+        saveBlacklistDistance = SaveBlacklistDistance,
+        notify = ShowLocalNoticeByType,
+        getWritablePath = GetWritablePath,
+        blacklistDistanceFileName = blacklistDistanceFileName,
+        saveGatherThreshold = SaveGatherThreshold,
+        gatherThresholdFileName = gatherThresholdFileName,
+        deleteConfig = RemoveConfigFile,
+        rewardModulus = rewardSequenceModulus,
+        rewardEntries = loginAndOnlineRewardEntries,
+        rewardScheduleInterval = rewardScheduleInterval,
+        initState = featureState,
+        buttonGroups = buttonGroups
+    })
+
+    -- PC346-PC378：使用callbackMap对应的同一批buttonGroups创建三组按钮。
+    CreateMainLeftBottomButtons(
+        uiParent,
+        baseX,
+        baseY,
+        visibleItems,
+        callbackMap,
+        buttonGroups
+    )
+
+    -- PC379-PC418：创建独立隐藏按钮。
+    CreateMainLeftBottomHideButton(uiParent, moduleState, PrintLog)
+end
+
+-- 暴露唯一初始化入口；不在模块加载阶段自动执行，交由原有宿主生命周期调用。
+MainLeftBottom.doInit_UI = doInit_UI
 
 
 -- 购买金条按钮的独立初始化片段（当前新版root/43三组按钮配置中没有buygoldbut）。
