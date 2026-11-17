@@ -4017,3 +4017,15 @@ ButtonFactory本体使用：
 - PC24-PC26融合读取按钮对象upvalue[2]与配置`upvalue[1]["toggled"]`。
 - PC27条件跳过，PC28跳转PC32；PC29-PC30融合读取配置`["toggle"]`。
 - 继续映射PC31-PC48；唯一明文Lua未修改。
+
+### 2026-11-17续：child0 toggle点击闭包已映射至PC48（仍有未决点）
+
+当前直接从11.9原始加载器I()映射child0 PC31-PC48：
+- PC31判断配置toggle字段的真值；PC32跳转PC34；PC33-PC35在相应分支读取config.name并调用GUI.Button_setTitleText(button, config.name)。
+- PC36-PC37融合读取GUI.Button_setTitleColor方法并保留GUI接收者。
+- PC38-PC40融合读取按钮对象upvalue[2]及config.toggled。
+- PC41-PC46控制颜色路径；PC47以GUI、按钮对象和颜色参数调用Button_setTitleColor；PC48返回。
+- 必须保留的原始控制流异常：PC43写入#ff0000后，PC44对该字符串执行真值判断，PC45跳转PC46；PC46又写入#ffffff，因此PC47最终传入白色。不能自行把代码改成预期的红/白切换。
+- child0主体映射推进到PC48，但PC6-PC10的R2=0后调用R2表面矛盾仍未解决，暂不标记为完全无歧义的可执行Lua。
+- 下一步处理child17按钮工厂50条指令的opcode融合、GUI.Button_Create参数和toggle事件绑定，再恢复callbackMap其他闭包与root/37初始化调用链。
+- 唯一明文Lua未修改；未编译、未打包APK、未游戏实测。
