@@ -4413,3 +4413,13 @@ child9由stopallbut闭包捕获；child6由blacklistbut闭包捕获；child25由
 ### 2026-11-17最新接续位置：child8/child25待补原始指令逐条记录
 
 main分支已重新读取。child8（root/37 child index 8，19条）与child25（child index 25，7条）的结构、常量线索、父捕获关系仍然成立；但当前仓库原始指令提取文档没有保存这两个原型的逐条记录。不得据三捕获值猜写新版引怪handler，也不得复用旧root/43六参数MakeGatherButtonHandler。下一步先从11.9/MainLeftBottom_11.9.lua直接导出child8/child25逐条原始指令和融合消费边界，再恢复业务调用帧。明文Lua本轮未改，未编译/打包/游戏测试。详情见源码恢复进度账本最新追加节。
+
+
+### 2026-11-17最新接续：child8/child25已成功导出逐条指令
+
+- 已修复上一轮独立解析器偏差：严格复现原Lua LZW A()长度前缀和字典扩展，再按M()递归读取。解码79573字节，解析游标恰好到文件末尾；根147常量/54子原型/455指令，root/37为111常量/26子原型/433指令，全部匹配。
+- child8（root/37/8）19条、4常量；child25（root/37/25）7条、3常量。逐条原始操作数已追加到 `root37_createButton_PC204-PC384_原始指令提取.md` 和进度账本。
+- 已确认opcode17读取upvalue；child8 PC1/5/15分别读UP[0]/UP[1]/UP[2]。opcode388读取`gatherTimer`字段。child25 PC2 opcode132设置`GATHER_THRESHOLD=11`，并融合消费PC3将`InitGatherMonsters`载入R0。
+- child8已有定时器关闭分支的通知、StopGatherMonsters调用和true返回路径已能解释；无定时器分支后半段与child25连续调用/返回值仍待闭合，尚未改唯一明文Lua，也未将旧版六参数handler装配移植到新版。
+- 当前唯一任务：继续闭合child8 PC12-PC19及child25 PC4-PC7的调用帧；之后恢复新版handler装配并回到root/37真实doInit入口接通newzone。禁止重复LZW全量解码、PC12-PC14按钮工厂、PC253-PC271和PC272-PC337键映射核对。
+- 未进行Lua编译、APK打包或游戏运行测试。
