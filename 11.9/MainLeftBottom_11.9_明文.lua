@@ -145,6 +145,87 @@ local function GetWritablePath(fileName)
     return writablePath .. fileName
 end
 
+-- root/10：ReadNumericConfig，捕获GetWritablePath，参数为配置文件名。
+-- 文件不存在、读取结果非字符串或内容不是纯数字时均返回nil。
+local function ReadNumericConfig(fileName)
+    local fileUtils = cc.FileUtils:getInstance()
+    local filePath = GetWritablePath(fileName)
+
+    if not fileUtils:isFileExist(filePath) then
+        return nil
+    end
+
+    local fileContent = fileUtils:getStringFromFile(filePath)
+    if type(fileContent) ~= "string" then
+        return nil
+    end
+
+    fileContent = string.gsub(fileContent, "%s", "")
+    if not string.match(fileContent, "^%d+$") then
+        return nil
+    end
+
+    return tonumber(fileContent)
+end
+
+-- root/18：SaveNumericConfig；root/18/1通过writeStringToFile写入tostring(value)，
+-- 外层pcall保护写入过程。返回底层写入结果；异常或明确写入失败均为false。
+local function SaveNumericConfig(fileName, value)
+    local fileUtils = cc.FileUtils:getInstance()
+    local filePath = GetWritablePath(fileName)
+
+    local ok, writeResult = pcall(function()
+        return fileUtils:writeStringToFile(tostring(value), filePath)
+    end)
+
+    if not ok or writeResult == false then
+        return false
+    end
+    return writeResult
+end
+
+-- root/1：安全删除配置文件。先检查存在性，再pcall调用removeFile，
+-- 最后重新检查文件是否仍存在；文件原本不存在视为已清空。
+local function RemoveConfigFile(fileName)
+    local fileUtils = cc.FileUtils:getInstance()
+    local filePath = GetWritablePath(fileName)
+
+    if not fileUtils:isFileExist(filePath) then
+        return true
+    end
+
+    local ok = pcall(function()
+        return fileUtils:removeFile(filePath)
+    end)
+    if not ok then
+        return false
+    end
+
+    return not fileUtils:isFileExist(filePath)
+end
+
+-- root PC295-PC296：两份配置文件名，供固定文件名闭包共用。
+local blacklistDistanceFileName = "blacklist_distance.txt"
+local gatherThresholdFileName = "gather_monster_count.txt"
+
+-- root PC304/307/310/313：固定文件名读写闭包。
+-- 读取闭包分别对应root/50、root/34；保存闭包分别对应root/33、root/55。
+local function ReadBlacklistDistance()
+    return ReadNumericConfig(blacklistDistanceFileName)
+end
+
+local function SaveBlacklistDistance(value)
+    return SaveNumericConfig(blacklistDistanceFileName, value)
+end
+
+local function ReadGatherThreshold()
+    return ReadNumericConfig(gatherThresholdFileName)
+end
+
+local function SaveGatherThreshold(value)
+    return SaveNumericConfig(gatherThresholdFileName, value)
+end
+
 -- root.children[3]：移动到指定地图坐标，并返回当前位置是否已进入range范围。
 -- 先发送自动寻路通知，再分别比较X/Y轴绝对差；任一轴超出range即返回false。
 local function MoveTo(x, y, range)
