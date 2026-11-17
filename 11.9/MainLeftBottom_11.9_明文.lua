@@ -3965,8 +3965,8 @@ end
 -- ============================================================
 --  11.9 doInit_UI：业务callbackMap构建与登记（对应VM PC235-PC336）
 -- ============================================================
--- deps字段与root/42的20项upvalue及局部R[12]一一对应。
--- 20项upvalue的root捕获源（root PC391-PC410）：
+-- deps字段与root/43的20项upvalue及局部R[12]一一对应。
+-- 20项upvalue的root捕获源（root PC390创建闭包，PC391-PC410依序传入）：
 --   UP[0]=root T[4] PrintLog；
 --   UP[1]=root T[2] MainLeftBottom.z（featureState/initState，同一张表）；
 --   UP[2]=root T[3] timerState；UP[3]=root T[0] MainLeftBottom.a；
@@ -3985,29 +3985,31 @@ end
 --   R[12]=PC196-PC235构造的完整三组buttonGroups；R[15]=按钮状态同步闭包。
 --   以下局部闭包按VM顺序在callbackMap前构造：
 --   syncButtonState=R[15]、startBlacklistTimer=R[16]、
---   startGather=R[17]、commonInputPrompt=R[18]。
+--   startGather=R[17]、commonInputPrompt=R[18]、
+--   showBlacklistDistancePrompt=R[19]、showGatherThresholdPrompt=R[20]。
+-- callbackMap登记顺序严格按root/43 PC268-PC337，不包含newzone。
 --
--- 对应新版 root.children[37].children[2]：开新区回调薄包装。
--- 该子闭包捕获doInit_UI的UP[9]（root PC430创建的root.children[38]处理器），
--- 点击时不传入业务参数，直接调用捕获的开新区处理器。
+-- 历史新区回调适配器：保留旧原型映射阶段的业务辅助代码。
+-- 当前11.9规范root/43的PC268-PC337没有newzone登记，且对应原型身份尚未闭合；
+-- 因此本适配器暂不接入当前doInit_UI的callbackMap。
 local function MakeNewZoneCallbackAdapter(newZoneHandler)
     return function()
         newZoneHandler()
     end
 end
 
--- 本函数只负责业务回调表，不创建按钮、不设置布局、不绑定GUI点击事件。
+-- 本函数只负责当前规范root/43的业务callbackMap，不创建按钮、不设置布局、不绑定GUI点击事件。
 -- 调用者必须把doInit_UI当时的同一批upvalue/局部值传入，不能另建状态表。
--- newZoneHandler即root.children[38]实例；在新版doInit_UI中对应UP[9]。
+-- deps与root/43的20项upvalue及PC196-PC235构造的buttonGroups对应。
 local function BuildDoInitCallbackMap(deps)
-    -- PC235-PC237：R[15]，捕获完整buttonGroups和visibleItems。
+    -- PC236-PC238：R[15]，捕获完整buttonGroups(R[12])和visibleItems(UP[4])。
     local syncButtonState = MakeMainLeftBottomToggleStateSync(
         deps.buttonGroups,
         deps.visibleItems
     )
 
-    -- PC238-PC243：R[16]，捕获黑名单状态/距离配置、读取函数、定时器、
-    -- Schedule包装器和PrintLog。
+    -- PC239-PC244：R[16]，捕获blacklistState(UP[5])、读取函数(UP[6])、
+    -- timerState(UP[2])、Schedule包装器(UP[7])和PrintLog(UP[0])。
     local startBlacklistTimer = MakeBlacklistTimer(
         deps.blacklistState,
         deps.readBlacklistDistance,
@@ -4016,16 +4018,16 @@ local function BuildDoInitCallbackMap(deps)
         deps.printLog
     )
 
-    -- PC244-PC246：R[17]，捕获拉怪配置表和阈值读取函数。
+    -- PC245-PC247：R[17]，捕获gatherConfig(UP[8])和阈值读取函数(UP[9])。
     local startGather = MakeGatherInitializationHandler(
         deps.gatherConfig,
         deps.readGatherThreshold
     )
 
-    -- PC247-PC248：R[18]，捕获PrintLog。
+    -- PC248-PC249：R[18]，捕获PrintLog(UP[0])。
     local commonInputPrompt = MakeCommonInputPrompt(deps.printLog)
 
-    -- PC249-PC257：R[19]，黑名单距离输入提示闭包。
+    -- PC250-PC258：R[19]，黑名单距离输入提示闭包；捕获R[18]、保存函数、通知函数、PrintLog、路径函数、文件名、R[16]和R[15]。
     local showBlacklistDistancePrompt = MakeBlacklistDistancePrompt(
         commonInputPrompt,
         deps.saveBlacklistDistance,
@@ -4037,7 +4039,7 @@ local function BuildDoInitCallbackMap(deps)
         syncButtonState
     )
 
-    -- PC258-PC266：R[20]，拉怪数量阈值输入提示闭包。
+    -- PC259-PC267：R[20]，拉怪数量阈值输入提示闭包；捕获R[18]、保存函数、通知函数、PrintLog、路径函数、文件名、R[17]和R[15]。
     local showGatherThresholdPrompt = MakeGatherThresholdPrompt(
         commonInputPrompt,
         deps.saveGatherThreshold,
