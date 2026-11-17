@@ -4103,3 +4103,13 @@ ButtonFactory本体使用：
 - 当前结论：新区处理器存在于callbackMap，但root/37已确认路径没有把它绑定到newzone按钮；不要宣称新版按钮点击链已接通。唯一明文Lua未修改。
 - 下一步只查root级createButton调用入口及其他原型是否存在独立newzone按钮/事件绑定路径，重点检索newzone键、按钮对象引用、addOnClickEvent调用者。
 - 本轮文档提交：原始指令记录754e80185bc5c6e1b454f8fad0c95e2a86c4c18a；进度账本0a0342277ac9dc6e7417cac49c73b04e7abd7833。
+
+
+## 2026-11-17续：根函数外层新区链已追到doInit入口
+
+- 根PC426创建root.children[44]新区背包物品处理回调；PC430创建root.children[38]新区启动处理器，并捕获前者。
+- 根PC438创建root.children[37] createButton，UP[9]是root.children[38]启动处理器；根PC454将createButton赋给MainLeftBottom["doInit"]，作为外部初始化入口。
+- 当前静态链已贯通：新区物品回调→新区启动处理器→createButton→callbackMap["newzone"]→child17→点击绑定尝试。child17 PC14直接return仍阻断PC45-PC49事件绑定代码。
+- root/37的PC385-PC433仅处理hidebut，没有newzone备用绑定。模块外宿主是否另行绑定尚未排除；当前文件内未发现第二条已证实路径。
+- 唯一明文Lua未修改；未编译、未打包、未游戏实测。
+- 本轮文档提交：原始指令记录417253d960036e5984007d6619ecc915186e9c8c；进度账本d724190025ae54b822f0653e77359298b5e1cd61。
