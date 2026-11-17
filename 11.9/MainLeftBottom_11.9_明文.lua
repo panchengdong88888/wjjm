@@ -3281,7 +3281,8 @@ local function MakeCruiseTimerCallback(
     printLog
 )
     -- root/43/13捕获的第二项是MainLeftBottom.a；回调通过其LuaSendMsg字段发送协议。
-    -- 第一项日期标记由父函数在创建闭包前清空，初值为nil。
+    -- 第一项日期标记由父函数在创建闭包前清空，初值为nil；由返回回调闭包持续更新。
+    local lastSentDate = nil
 
     return function()
         local dateParts = os.date("*t")
