@@ -809,3 +809,45 @@ root.children[37].children[15]（原型ID65，320条指令）确实包含一处�
 ### 4. 下一步
 
 优先检查新版父VM的闭包创建/调用分派是否存在除普通调用外的特殊调用形式，并定点检查其他版本是否有与当前新版同源的child17/按钮工厂原型；不重复解码、不重审已闭合的callbackMap和doInit_UI链。
+
+
+## 2026-11-17续：找到旧VM结构树中的同构按钮工厂（强对照证据）
+
+### 1. 新发现的旧版静态恢复材料
+
+本轮从仓库完整文件树中找到并读取：
+- `资料文件/04_源码候选/MainLeftBottom_完整结构树.lua`
+- `资料文件/04_源码候选/MainLeftBottom_恢复源码.lua`
+- `资料文件/04_源码候选/短函数草稿_第七十一批.lua`
+
+旧VM结构树中明确记录：
+- `root.children[42].children[9]`，原型ID68，50条指令、17项常量、1个子原型、5项upvalue；父级创建点为root/42 PC339。
+- 其子原型 `root.children[42].children[9].children[0]`，原型ID69，48条指令、10项常量、0个子原型、3项upvalue；父级创建点为旧按钮工厂PC44。
+- 这组规模和父子结构与新版child17（50条指令、1个子原型）及child0（48条指令）高度吻合，属于非常强的同构按钮工厂对照，但仍是不同版本/不同原型编号，不能把旧版PC编号当成新版PC编号。
+
+### 2. 旧版50指令按钮工厂的已恢复行为
+
+第七十一批草稿给出的旧版工厂顺序为：
+1. 取GUI和5项捕获值；
+2. 调用 `GUI:Button_Create(buttonParent, config.key, baseX-85*offsetX, baseY+offsetY, texture)`；
+3. 创建失败立即return；
+4. 成功后写入 `buttonByKey[config.key]`；
+5. 设置标题、字号18、字体 `kaiti2.ttf`、白色；
+6. 按旧版配置条件初始化 `config.toggled`；
+7. 创建child0点击闭包并调用 `GUI:addOnClickEvent`。
+
+旧版child0按key查找stateGateMap，默认allowed=true；存在gate才调用；非toggle退出；只有allowed严格等于false才退出；之后切换toggled并更新标题/颜色。
+
+### 3. 对新版child17问题的意义
+
+- 新版child17 PC1-PC11同样完成GUI.Button_Create调用；PC12-PC14却无论Button_Create返回真值或假值，最终都进入PC14 opcode152 return。
+- 旧版同构工厂明确在“创建失败”时return，而创建成功时继续执行登记、标题/字体/颜色设置、toggle初始化和事件注册。
+- 新版PC15-PC50的指令内容与这套成功后流程高度吻合；因此现在可以高置信地将PC15-PC50识别为“按钮创建成功后的初始化与事件绑定代码块”。
+- 但这只能确认其业务身份/设计意图，不能改变新版VM的可达性事实：在当前新版PC12-PC14控制流下，PC15-PC50仍不可达。不得直接把旧版函数体复制进新版明文，也不得把新版PC14 return改成条件return。
+- 目前最值得继续追查的是：新版这处PC12-PC14是否是原始字节码真实存在的控制流异常/补丁，或指令解码时对PC12-PC14某条指令的操作数/融合边界仍有局部解释错误。由于opcode239、opcode100、opcode152的分派语义已核对，下一步应以原始VM dump/纠正反汇编记录逐字节复核child17这三条指令的编码字段和线性融合边界，而不是继续搜索外部PC入口。
+
+### 4. 版本与文件边界
+
+- 旧版材料路径为 `资料文件/04_源码候选/...`，旧结构路径为 `root.children[42].children[9]`；新版仍为 `11.9/MainLeftBottom_11.9.lua` 中的 `root.children[37].children[17]`。
+- 旧版恢复源码仅作同构结构和业务行为对照，不能替代新版原始字节码证据。
+- 唯一明文目标 `11.9/MainLeftBottom_11.9_明文.lua` 本轮未修改；本轮仅更新原始指令记录、进度账本和接续入口。未编译、未打包APK、未运行游戏。
