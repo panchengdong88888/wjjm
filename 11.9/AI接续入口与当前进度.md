@@ -4009,3 +4009,11 @@ ButtonFactory本体使用：
 - PC11-PC12：读取upvalue[1]后取`toggle`字段；PC17-PC18：连续读取upvalue[1]两次。
 - 发现PC8写入R2=0而PC9调用R2的表面矛盾，暂不生成Lua假实现；下一步回查原始指令头字节/模式位和捕获值初始化。
 - PC19-PC48尚待翻译，唯一明文Lua未修改。
+### 2026-11-17续：child0 PC19-PC30状态翻转已确认
+
+- PC19-PC20：读取配置`["toggled"]`并取反。
+- PC21-PC22融合：写回配置`["toggled"]`，并读取全局`GUI`（PC22为被融合消费记录）。
+- PC23获取`GUI.Button_setTitleText`方法及接收者。
+- PC24-PC26融合读取按钮对象upvalue[2]与配置`upvalue[1]["toggled"]`。
+- PC27条件跳过，PC28跳转PC32；PC29-PC30融合读取配置`["toggle"]`。
+- 继续映射PC31-PC48；唯一明文Lua未修改。
