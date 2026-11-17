@@ -469,3 +469,42 @@ config["toggled"] = toggled
 - 已确认的局部行为：先把配置 `toggled` 取反并写回；之后按原始分支条件决定是否调用 `Button_setTitleText(button, config.name)`；最后按字节码实际控制流调用 `Button_setTitleColor(button, "#ffffff")`。
 - PC6-PC10的 `R2=0` 后调用R2表面矛盾仍未解决，不能把整个闭包标为完全无歧义的可执行Lua。
 - 本轮没有修改唯一明文Lua；child17按钮工厂50条指令仍待逐项映射；没有编译、打包APK或游戏实测。
+
+
+## 2026-11-17续：child17按钮工厂 PC1-PC11 首段调用链精确映射
+
+本轮从当前原始加载器 I() 的完整分派树定位到 opcode 387、158、17、3、202、400、399、70 的实际叶子分支，并按“融合指令会消费后续记录”的规则映射child17。不是把每条记录都当成独立指令执行。
+
+### 已确认的指令组合
+
+- PC1-PC2：opcode387融合消费PC2。先读取环境全局 GUI 到R3；再从R3取 Button_Create，并把原GUI对象保留在R4作为方法接收者。因此调用目标为 GUI.Button_Create，接收者R4。
+- PC3-PC4：opcode158融合消费PC4。PC3先把createButton的upvalue[0]读入R5；PC4再执行 R6 = R0["key"]。这里R0是child17第一个参数（按钮配置）。
+- PC5 opcode17：R7 = upvalue[1]。
+- PC6 opcode3：R8 = 85 * R1。这是加载器分派器中的真实乘法表达式，不根据常量85猜它的业务含义。
+- PC7 opcode202：R7 = R7 - R8。
+- PC8 opcode17：R8 = upvalue[2]。
+- PC9 opcode400：R8 = R8 + R2。
+- PC10 opcode399：R9 = "res/public/fuzhu_btn.png"。
+- PC11 opcode70：调用R3，参数范围为R4..R9；即以R4中的GUI接收者调用前面取得的 GUI.Button_Create，并传入R5、R6、R7、R8、R9，调用结果写回R3（按钮对象/后续寄存器用途仍按后续指令继续确认）。
+
+### 当前首段可读结构（寄存器名暂保留）
+
+```lua
+local buttonCreate = GUI.Button_Create
+local guiReceiver = GUI
+local captured0 = upvalue0
+local buttonKey = config.key
+local posY = upvalue1 - 85 * arg2
+local posX = upvalue2 + arg3
+local button = buttonCreate(guiReceiver, captured0, buttonKey, posY, posX,
+    "res/public/fuzhu_btn.png")
+```
+
+注意：上面只表达PC1-PC11的寄存器数据流。三个函数参数的业务名称、upvalue[0..2]的真实变量名，以及坐标参数的屏幕布局含义尚未全部闭合；不能把暂用的arg2/arg3直接定为最终源码变量名。
+
+### 边界与下一步
+
+- 本轮把按钮工厂最关键的 GUI.Button_Create 取得方式和调用参数寄存器顺序推进到可追踪状态。
+- PC12-PC50尚未逐条映射；尤其PC12后的分支、按钮标题/字体/颜色setter、toggle闭包捕获值和addOnClickEvent绑定仍待恢复。
+- 此次明确区分了“opcode分派树叶子语义”和“业务字段含义”，避免把寄存器数值解释成未经证实的UI坐标/控件参数。
+- 唯一明文Lua未修改；未编译、未打包APK、未游戏实测。
