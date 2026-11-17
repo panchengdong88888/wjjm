@@ -4302,3 +4302,14 @@ ButtonFactory本体使用：
 - 最新源码提交：`3c0635d5ab4d195fd543bcde0bd59ceac2b04ea6`；源码content SHA：`f2cbb3d662752ec01119e97515dab8cafe472b8e`。
 - 最新进度账本提交：`d671c23d01d177e8d22d1dc9d13cd01eb14bc7a7`。
 - 下一步：只恢复root/37 PC253-PC271及真实buttonGroups/按钮工厂接线；不重做PC12-PC14和已闭合的原型检索。
+
+
+## 最近接续更新（2026-11-17）：新区按钮创建成功路径已恢复
+
+- 纠正了此前对VM循环尾部公共`K=K+1`的遗漏：child17的PC12-PC14不是无条件return。`Button_Create`返回nil时PC14返回；返回有效按钮时PC13跳过PC14并进入PC15-PC50。
+- `MakeMainLeftBottomButtonFactory`现已明确对应新版`root.children[37].children[17]`，五项捕获和三个显式参数均已写入注释；现有函数体包含按钮创建、失败返回、属性设置、点击回调按key分发和toggle处理。
+- 唯一明文文件已新增`RegisterNewZoneButtonHandler(callbackMap, newZoneHandler)`，按root/37 PC266-PC271创建包装闭包并登记`callbackMap.newzone`。
+- 当前开新区业务处理器、包装登记函数和按钮工厂均已恢复；但新版root/37完整PC253-PC271 callbackMap装配、13项配置与实际入口尚未整体替换进唯一明文文件。不能宣称APK中按钮已实测可用。
+- 最新源码提交：`f96c9152defac051eab50d0f05814892e2a4bc91`；content SHA：`5e981008aefa773ae5584ecd997112fb7c02f692`。
+- 最新进度账本提交：`a8f3fecb0f34179c2bcd685b2b628eb0452ec6cc`。
+- 下一步：只继续恢复root/37 PC253-PC271剩余闭包装配及13项按钮配置/循环入口，不重复PC12-PC14审计。
