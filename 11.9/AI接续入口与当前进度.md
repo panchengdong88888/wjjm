@@ -4313,3 +4313,25 @@ ButtonFactory本体使用：
 - 最新源码提交：`f96c9152defac051eab50d0f05814892e2a4bc91`；content SHA：`5e981008aefa773ae5584ecd997112fb7c02f692`。
 - 最新进度账本提交：`a8f3fecb0f34179c2bcd685b2b628eb0452ec6cc`。
 - 下一步：只继续恢复root/37 PC253-PC271剩余闭包装配及13项按钮配置/循环入口，不重复PC12-PC14审计。
+
+
+## 2026-11-17最新接续位置：新版root/37的13项按钮配置已写入
+
+本轮新增到唯一明文源码：
+- BuildMainLeftBottomButtonGroups_11_9：按当前11.9原始root/37 PC204-PC252恢复6/7/0三组、13项按钮配置；明确与旧root/43 4/3/3结构隔离。
+- CreateMainLeftBottomButtons_11_9：按PC346-PC384恢复三组遍历，Y偏移40/0/80，行号为#group-index+1的反向排列；复用root/37 child17按钮工厂。
+- 源码提交：8e435c3532bd052abc5ecb97f84dd0c9496d2f60；content SHA：3dc6491a43a737ac5f82746b7ab219f2928e0636。
+- 进度账本已更新：e2635428b1e86ef2118748381d1b5d2327f80ec5。
+
+### 新版callbackMap原型定点进展
+- child12：零捕获，调用Builtsetting；settingbut身份确认。
+- child25：单捕获UP[8]，常量GATHER_THRESHOLD/11/InitGatherMonsters；拉怪阈值初始化回调身份高度吻合，仍待逐条确认。
+- child6：5捕获，含distance/blacklistTimer/BlacklistItems/距离提示文案；待恢复黑名单启动/距离相关回调。
+- child9：2参数、4捕获，含toggle/toggled与GUI按钮标题/颜色API；捕获三组按钮配置及UP[4]共享对象，待恢复跨组按钮状态同步。
+- PC253-PC271已确认child9/6/25创建与捕获源、callbackMap创建，以及settingbut/newzone登记。
+
+### 当前工作边界
+13项配置和三组布局辅助函数已经写入，但尚未接入新版root/37真实doInit入口；callbackMap其余回调还未全部恢复。不要把旧root/43的BuildDoInitCallbackMap/doInit当成新版入口，也不要重复重做PC12-PC14、child17按钮工厂或新区业务处理器。
+
+### 下一步直接执行
+从root/37 PC272-PC337继续恢复callbackMap映射；优先逐条闭合child6、child9、child25以及它们的调用/捕获关系，再将newzone回调登记接入新版callbackMap。所有源码仍只写入11.9/MainLeftBottom_11.9_明文.lua；每轮同步更新本账本和本接续入口。
