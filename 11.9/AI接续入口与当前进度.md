@@ -4113,3 +4113,12 @@ ButtonFactory本体使用：
 - root/37的PC385-PC433仅处理hidebut，没有newzone备用绑定。模块外宿主是否另行绑定尚未排除；当前文件内未发现第二条已证实路径。
 - 唯一明文Lua未修改；未编译、未打包、未游戏实测。
 - 本轮文档提交：原始指令记录417253d960036e5984007d6619ecc915186e9c8c；进度账本d724190025ae54b822f0653e77359298b5e1cd61。
+
+
+## 2026-11-17续：doInit_UI真实调用链确认
+
+- doInit_UI是原型ID44，实际路径root.children[34].children[1]；它在PC17-PC19读取并调用MainLeftBottom.doInit。
+- 根PC454将MainLeftBottom.doInit赋值为root.children[37] createButton，因此实际UI初始化会进入root/37，并调用三组循环中的child17。
+- 路径防混淆：root.children[37]=原型ID48 createButton；root.children[38]=原型ID83新区启动处理器；root.children[44]=原型ID93新区物品处理回调；root.children[34].children[1]=原型ID44 doInit_UI。原型ID44不等于root.children[44]。
+- 结论：按钮工厂确实进入正常UI初始化；child17 PC14 return仍阻断PC15-PC50点击绑定代码，当前UI初始化链中未发现其他newzone事件绑定点。
+- 本轮文档提交：原始指令记录9dddf3d4bfddaf17204b205b5c0c591916f8780e；进度账本93435ff578256334e22812ddad5915ce303cbac0。
