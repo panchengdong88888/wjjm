@@ -2838,8 +2838,9 @@ local function MakeMainLeftBottomButtonFactory(
                 allowed = callback()
             end
 
-            -- 新版VM要求回调结果为truthy才继续；false和nil都必须阻止toggle更新。
-            if not allowed then
+            -- root/43/10/1 PC15-PC16：只有回调明确返回false才提前结束；
+            -- nil与其他返回值一样继续执行后续toggle状态切换。
+            if allowed == false then
                 return
             end
             if not buttonConfig.toggle then
