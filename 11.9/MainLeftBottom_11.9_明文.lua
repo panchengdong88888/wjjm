@@ -1519,6 +1519,9 @@ local function MainLoop()
 end
 
 -- root.children[23]：初始化引怪定时循环。
+-- root PC237-PC238：将MainLoop闭包导出到chunk全局环境。
+rootEnvironment.MainLoop = MainLoop
+
 local function InitGatherMonsters()
     if timerState.gatherTimer then
         SL:UnSchedule(timerState.gatherTimer)
@@ -1540,6 +1543,9 @@ local function InitGatherMonsters()
     ))
 end
 
+-- root PC246-PC247：将InitGatherMonsters闭包导出到chunk全局环境。
+rootEnvironment.InitGatherMonsters = InitGatherMonsters
+
 -- root.children[41]：停止引怪，清理定时器、目标和状态。
 -- VM原始顺序包含ClearTargetID_2与ResetGatherMonsterData内部再次清目标。
 local function StopGatherMonsters()
@@ -1555,6 +1561,9 @@ local function StopGatherMonsters()
     ResetGatherMonsterData()
     PrintLog("引怪功能已停止")
 end
+
+-- root PC255-PC256：将StopGatherMonsters闭包导出到chunk全局环境。
+rootEnvironment.StopGatherMonsters = StopGatherMonsters
 
 -- 当前静态恢复范围：引怪状态数据、候选筛选、目标/归属辅助、
 -- MainLoop新增技能段、初始化和停止函数已写入。
@@ -3751,6 +3760,126 @@ end
 
 -- root PC258：Builtsetting闭包按VM导出到当前chunk全局环境；其通知函数由上方词法cell捕获。
 rootEnvironment.Builtsetting = Builtsetting_11_9
+
+-- root PC259-PC260：无捕获快捷栏移动函数，导出为全局MoveItemToQuickUse。
+local function MoveItemToQuickUse(itemIndex, targetPos)
+    -- PC1-PC14：分别取得QuickUseProxy与Bag代理。
+    local quickUseProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.QuickUseProxy
+    )
+    local bagProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.Bag
+    )
+
+    -- PC15-PC21：任一代理缺失均返回false和固定提示。
+    if not quickUseProxy or not bagProxy then
+        return false, "参数无效"
+    end
+
+    -- PC22-PC30：检查目标位置范围[1, GetQuickUseSize()]。
+    local quickUseSize = quickUseProxy:GetQuickUseSize()
+    if targetPos < 1 or targetPos > quickUseSize then
+        return false, "目标位置超出范围"
+    end
+
+    -- PC31-PC35：取得快捷栏数据，按pairs遍历位置与条目。
+    local quickUseData = quickUseProxy:GetQuickUseData()
+
+    -- PC36-PC90：查找物品是否已经存在于快捷栏。
+    for position, quickUseEntry in pairs(quickUseData) do
+        if quickUseEntry.Index == itemIndex then
+            -- PC42-PC46：物品已经处于目标位置。
+            if position == targetPos then
+                return false, "物品已在目标位置"
+            end
+
+            -- PC47-PC49：读取目标位置当前条目。
+            local targetEntry =
+                quickUseProxy:GetQucikUseDataByPos(targetPos)
+
+            -- PC50-PC54：先按原始调用顺序写回当前位置条目。
+            -- 第三个显式参数为true；其宿主含义未知，按原值保留。
+            quickUseProxy:SetQuickUsePosData(
+                position,
+                quickUseEntry,
+                true
+            )
+
+            if targetEntry then
+                -- PC55-PC66：目标位置已有条目，执行双位置交换。
+                quickUseProxy:SetQuickUsePosData(
+                    targetPos,
+                    quickUseEntry,
+                    false
+                )
+                quickUseProxy:SetQuickUsePosData(
+                    position,
+                    targetEntry,
+                    false
+                )
+
+                -- PC67-PC74：返回成功状态及“交换”格式提示。
+                return true, string.format(
+                    "快捷栏交换: %d ↔ %d",
+                    position,
+                    targetPos
+                )
+            end
+
+            -- PC75-PC88：目标位置无条目，写入目标位置并返回移动提示。
+            quickUseProxy:SetQuickUsePosData(
+                targetPos,
+                quickUseEntry,
+                true
+            )
+            return true, string.format(
+                "快捷栏移动: %d → %d",
+                position,
+                targetPos
+            )
+        end
+    end
+
+    -- PC89-PC103：快捷栏中未找到该Index，转查背包。
+    local itemDataList =
+        bagProxy:GetItemDataByItemIndex(itemIndex)
+
+    -- PC94-PC103：不仅检查返回值truthy，还调用next确认表非空。
+    if not itemDataList or not next(itemDataList) then
+        return false, "物品不存在"
+    end
+
+    -- PC104-PC106：读取目标快捷栏位置原有条目。
+    local targetEntry =
+        quickUseProxy:GetQucikUseDataByPos(targetPos)
+
+    if targetEntry then
+        -- PC107-PC116：目标位置原有条目时，按原始顺序写入并退回背包。
+        quickUseProxy:SetQuickUsePosData(
+            targetPos,
+            targetEntry,
+            true
+        )
+        bagProxy:addItemData(targetEntry)
+    end
+
+    -- PC117-PC125：取返回表的第1项，按原始顺序删除并写入目标位置。
+    -- 保留itemDataList[1]，不擅自改写为.Index或MakeIndex。
+    local itemEntry = itemDataList[1]
+    quickUseProxy:DelItemData(itemEntry)
+    quickUseProxy:SetQuickUsePosData(
+        targetPos,
+        itemEntry,
+        false
+    )
+
+    -- PC126-PC132：返回成功状态及背包移入快捷栏提示。
+    return true, string.format(
+        "已从背包移动到快捷栏位置%d",
+        targetPos
+    )
+end
+rootEnvironment.MoveItemToQuickUse = MoveItemToQuickUse
 
 
 -- ============================================================
