@@ -283,10 +283,11 @@ rootEnvironment.MoveTo = MoveTo
 --  4. UI 初始化、窗口与按钮创建
 -- ============================================================
 
--- 新版MainLeftBottom.doInit对应root/37（433条指令、26个子原型）。
--- root/34是AccountIDValidation；root/34/1只是等待MainProperty就绪后调用doInit的延迟回调。
--- 当前已恢复root/34账号验证入口；root/37的完整初始化主体及26个子原型仍需逐段补齐。
--- BuildDoInitCallbackMap等现有辅助函数只是初始化过程中的片段，尚未赋给MainLeftBottom.doInit。
+-- 新版MainLeftBottom.doInit外层入口对应root/37（433条指令、26个子原型）。
+-- root/34是AccountIDValidation；root/34/1是等待MainProperty就绪后调用doInit的延迟回调。
+-- 本文件当前接入的是root/43这段UI初始化主体，并暂以MainLeftBottom.doInit_UI暴露为辅助入口；
+-- root/37外层函数如何创建/调用该主体、最终宿主字段如何绑定，仍须按root/37指令定点确认。
+-- 因此root/43主体接入不等于MainLeftBottom.doInit（root/37）整个入口链已经恢复。
 
 -- ============================================================
 --  5. 怪物查找与引怪系统
