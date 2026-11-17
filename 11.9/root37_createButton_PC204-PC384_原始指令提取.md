@@ -617,3 +617,21 @@ local button = buttonCreate(guiReceiver, captured0, buttonKey, coord1, coord2,
 - 当前不能宣称新版开新区按钮的点击回调已经接通。可以确认的是父函数会调用GUI.Button_Create创建对应按钮对象；其后标题/字体/toggle/点击事件绑定代码因PC14 return而未执行。
 - 这一结论只针对当前已解析的root/37函数路径；若要排除模块外部另有绑定，仍需检查root级调用入口及是否有其他原型直接操作该按钮对象。
 - 唯一明文Lua未修改；未编译、未打包APK、未运行游戏。
+
+
+## 2026-11-17续：根函数入口与新区处理器的外层闭包链
+
+本轮继续检查原始根原型PC426-PC455，确认root/37的外层入口及新区处理器的来源：
+
+- 根PC426 [177,53,44,3]创建root.children[44]，捕获源依次为根寄存器R52、R4、R3。该原型有76条指令，常量包含BAG_DATA、MSG_CS_USE_BAG_ITEM、newzoneTimer、Gbtc等，是新区背包物品处理回调。
+- 根PC430 [177,54,38,5]创建root.children[38]，捕获源依次为R4、R2、R3、R7、R53；其中R53就是刚在PC426创建的root.children[44]闭包。因此root.children[38]是持有新区物品处理回调的启动处理器。
+- 根PC438 [177,57,37,15]创建root.children[37]（createButton），15项捕获中的第10项来自R54，即PC430创建的root.children[38]启动处理器。
+- 根PC437取得MainLeftBottom表，根PC454执行MainLeftBottom["doInit"] = createButton闭包。根函数本身没有在PC454后直接调用createButton，而是把它作为doInit入口暴露给外部初始化流程。
+
+### 外层新区链与按钮绑定链合并
+
+root.children[44]物品处理回调 → root.children[38]新区启动处理器 → createButton UP[9] → callbackMap["newzone"]包装闭包 → createButton本地callbackMap → child17 UP[4] → child17 PC45-PC49创建点击闭包并调用GUI.addOnClickEvent。
+
+最后一段仍受child17 PC14直接return阻断。因此目前已确认新区业务处理器、包装闭包和callbackMap登记都存在；root/37通过MainLeftBottom.doInit作为外部入口创建按钮时，也会调用child17；但新区点击事件的已知绑定段不可达。父函数PC385-PC433只另行处理hidebut，不存在callbackMap备用绑定。
+
+**当前结论边界：** 已闭合当前文件中从根原型新区处理器创建到createButton、callbackMap登记、child17调用及点击事件绑定尝试的静态链路。仍不能排除外部宿主或其他独立原型在模块外另行操作按钮，但当前root/37内部没有第二条已证实的newzone绑定路径。唯一明文Lua未修改；未编译、未打包、未游戏实测。
