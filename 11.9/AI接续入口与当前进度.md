@@ -4339,3 +4339,34 @@ ButtonFactory本体使用：
 
 ### 本轮最后修正
 新增的CreateMainLeftBottomButtons_11_9已移动到MakeMainLeftBottomButtonFactory的local声明之后，避免Lua词法作用域下误引用全局同名函数。修正提交：f97f6d546e1f8c7b7dec99ef0ce44befe0f52e21；唯一明文文件最新content SHA：5ac510c4ceac032948a8d32f35f91bdab427ab7f。未进行Lua编译或运行验证。
+
+
+## 2026-11-17最新接续位置：root/37 PC272-PC337的callbackMap键映射已提取
+
+本轮从当前原始11.9加载器M()规则重新提取root.children[37] PC272-PC337，完成全部登记键与子原型索引对应关系；没有重做旧PC12-PC14、按钮13项配置或PC253-PC271。
+
+已确认新增映射：
+- child1 → buygoldbut（4捕获）
+- child0 → stopallbut（4捕获）
+- child21 → recyclebut（0捕获）
+- child8 → yinguaibut（3捕获）
+- child16 → rewardbut（5捕获）
+- child19 → clearblacklistbut（1捕获）
+- child18 → blacklistbut（4捕获）
+- child7 → storagebut（4捕获）
+- child11 → takebut（4捕获）
+- child20 → shiqubut（3捕获）
+- child22 → diuqibut（4捕获）
+- child15 → moneybut（4捕获）
+- child14 → xiaotuibut（0捕获）
+
+加上PC267-PC271的child12→settingbut、child2→newzone，callbackMap键映射共15项。storagebut/takebut是额外功能键，不在13项可见按钮配置数组内。
+
+child9由stopallbut闭包捕获；child6由blacklistbut闭包捕获；child25由yinguaibut闭包捕获。它们不是直接callbackMap键。
+
+已有明文可复用候选函数包括MakeBuyGoldButtonHandler、MakeStopAllScriptButtonHandler、MakeGatherButtonHandler、MakeBlacklistButtonHandler、MakeRewardButtonHandler、MakeStorageButtonHandler、MakeTakeItemsHandler、MakePickUpItemsHandler、Builtsetting_11_9、MakeNewZoneButtonHandler等；但不能仅凭key相同就认为新旧闭包捕获/调用参数完全一致。
+
+进度账本最新提交：f3bbbda94499564bbb0c89426c165b02e6b8c3fd；content SHA：a09e914364cc89363358ae5eb30cab754d95582e。
+
+### 下一步直接执行
+逐个恢复上述子原型闭包的捕获和函数调用，优先child1、child0、child8、child16、child18；确认其调用参数和依赖后再写入唯一明文Lua的新版callbackMap装配函数。继续严格区分root/37与root/43；不重复解析完整载荷或重审已确认键映射。不要把键映射提取视为回调业务全部明文。未编译、未打包、未运行游戏。
