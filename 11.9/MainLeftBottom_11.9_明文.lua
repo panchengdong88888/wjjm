@@ -3421,6 +3421,38 @@ local function MakeHideButtonHandler(mainLeftBottomA, printLog)
     end
 end
 
+ 
+-- 规范反汇编 root/43 PC379-PC418：创建并绑定独立隐藏按钮。
+-- PC379取得MainLeftBottom.a；PC382-PC387调用GUI:Button_Create(uiParent,"hidebut",0,0,image)。
+-- PC388将返回对象写入MainLeftBottom.a.hidebut；对象有效时设置标题/字体并登记点击闭包。
+-- root/43/16的捕获顺序为(MainLeftBottom.a, PrintLog)。
+local function CreateMainLeftBottomHideButton(
+    uiParent,
+    mainLeftBottomA,
+    printLog
+)
+    mainLeftBottomA.hidebut = GUI:Button_Create(
+        uiParent,
+        "hidebut",
+        0,
+        0,
+        "res/public/fuzhu_btn.png"
+    )
+
+    local hideButton = mainLeftBottomA.hidebut
+    if hideButton then
+        GUI:Button_setTitleText(hideButton, "隐 藏")
+        GUI:Button_setTitleFontSize(hideButton, 18)
+        GUI:Button_setTitleFontName(hideButton, "res/public/kaiti2.ttf")
+        GUI:addOnClickEvent(
+            hideButton,
+            MakeHideButtonHandler(mainLeftBottomA, printLog)
+        )
+    end
+
+    return hideButton
+end
+
 
 -- 对应新版stopallbut处理器（proto48 child index 0，38条指令）。
 -- 捕获顺序：timerState、脚本状态表、按钮toggle同步闭包、本地提示闭包。
