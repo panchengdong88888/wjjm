@@ -4442,3 +4442,16 @@ main分支已重新读取。child8（root/37 child index 8，19条）与child25�
 解释器分派树中D=331进入连续4条指令的融合分支：首条执行`V[dst]=F[src]`，随后连续消费三条记录执行`V[dst]=V[src][key]`表索引。因此child8 PC16 opcode331融合消费PC17-PC19（其记录opcode字段412/30/152不独立执行）；child25 PC4 opcode331融合消费PC5-PC7（412/223/396不独立执行）。此前将opcode412单独解释为调用并接收返回值是错误的，现已撤销该解释。
 
 child25 PC2 opcode132另有两记录融合行为：先设置`GATHER_THRESHOLD=11`，再消费PC3执行`V[dst]=F[src]`，其常量键为`InitGatherMonsters`。目前仅能确认融合边界和寄存器表索引形式；F[0]及索引链最终运行时对象尚未识别。下一步追踪root/37父函数PC253-PC271中child25的UP[8]捕获来源，解释其环境表结构。唯一明文Lua未修改；未编译/打包/游戏测试。
+
+
+## 2026-11-17续：child25捕获来源已闭合到根函数R8
+
+本轮已从当前main分支原始加密载荷定点解析root PC430-PC455及root/37 PC253-PC271，不重做全量业务核对。关键捕获序列：
+- root PC438创建root/37时，15项upvalue来源依次为[R4,R2,R0,R3,R1,R44,R7,R39,R8,R54,R5,R55,R11,R12,R9]，索引为0-based。
+- root/37 PC265读取UP[8]，所以child25捕获根R8；PC270读取UP[9]，才是根R54（root PC430创建的新区处理器）。不能把UP[8]和UP[9]混淆。
+- 根PC86创建R8空表，PC87-PC89写入GATHER_THRESHOLD=11、CHECK_INTERVAL=0.5、ATTACK_WAIT_TIME=1。child25修改的就是共享引怪配置表，阈值写入已确认。
+- child25 PC2 opcode132设置阈值并融合消费PC3读取F["InitGatherMonsters"]；PC4 opcode331再融合消费PC5-PC7，最终执行环境表索引链F[0][1][0][0]。加载器的F参数来自getfenv()，但数值键0对应的对象/嵌套结构尚未在静态资料中确认。
+- child8 PC15读取child25闭包后，PC16融合链也立即覆盖R0并执行环境表索引；目前不能宣称它调用了child25。暂不改写唯一明文Lua。
+
+### 当前任务
+定点检查框架API与宿主初始化资料中环境表数值键0、F[0][1][0][0]链的定义；没有证据则保留待确认。随后继续child9、child6、child12职责与新版callbackMap装配。不要重新解码载荷，不重审已闭合的PC272-PC337按钮键映射或13项配置。
