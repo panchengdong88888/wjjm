@@ -4435,3 +4435,10 @@ main分支已重新读取。child8（root/37 child index 8，19条）与child25�
 - 分支控制流：timerState.gatherTimer为真时执行关闭提示、StopGatherMonsters、返回true；为假时opcode38将取指位置设为11，经公共递增从PC12进入开启分支。
 - child25 PC2的opcode132在写入`GATHER_THRESHOLD=11`后融合消费PC3，将`InitGatherMonsters`载入R0。PC4-PC7仍有连续调用/返回值传递，需要按寄存器调用约定继续核对；child8 PC16-PC19也保留待闭合状态，不能把开启分支写成只调用一次InitGatherMonsters。
 - 本轮仍未修改唯一明文Lua。下一步优先厘清opcode412的参数/返回寄存器约定及child25连续调用，再恢复新版MakeGatherButtonHandler装配。
+
+
+### 2026-11-17重要更正：opcode331融合消费后续三条记录
+
+解释器分派树中D=331进入连续4条指令的融合分支：首条执行`V[dst]=F[src]`，随后连续消费三条记录执行`V[dst]=V[src][key]`表索引。因此child8 PC16 opcode331融合消费PC17-PC19（其记录opcode字段412/30/152不独立执行）；child25 PC4 opcode331融合消费PC5-PC7（412/223/396不独立执行）。此前将opcode412单独解释为调用并接收返回值是错误的，现已撤销该解释。
+
+child25 PC2 opcode132另有两记录融合行为：先设置`GATHER_THRESHOLD=11`，再消费PC3执行`V[dst]=F[src]`，其常量键为`InitGatherMonsters`。目前仅能确认融合边界和寄存器表索引形式；F[0]及索引链最终运行时对象尚未识别。下一步追踪root/37父函数PC253-PC271中child25的UP[8]捕获来源，解释其环境表结构。唯一明文Lua未修改；未编译/打包/游戏测试。
