@@ -3058,7 +3058,7 @@ local function MakeBuyGoldRootContext(mainLeftBottom)
 end
 
 
--- root PC266-PC269：创建并导出MainLeftBottom.show生命周期闭包。
+-- root PC266-PC269：创建并写入MainLeftBottom.a.show生命周期闭包。
 -- root/11捕获顺序：(MainLeftBottom.a, MainLeftBottom.b)。
 local function MakeMainLeftBottomShowCallback(moduleState, visibleItems)
     return function()
@@ -3070,7 +3070,7 @@ local function MakeMainLeftBottomShowCallback(moduleState, visibleItems)
     end
 end
 
--- root PC261-PC265：创建并导出MainLeftBottom.hide生命周期闭包。
+-- root PC261-PC265：创建并写入MainLeftBottom.a.hide生命周期闭包。
 -- root/38捕获顺序：(MainLeftBottom.a, timerState, MainLeftBottom.b)。
 local function MakeMainLeftBottomHideLifecycleCallback(
     moduleState,
@@ -3094,12 +3094,12 @@ local function MakeMainLeftBottomHideLifecycleCallback(
     end
 end
 
--- root PC270-PC274：创建并导出MainLeftBottom.destroy生命周期闭包。
+-- root PC270-PC274：创建并写入MainLeftBottom.a.destroy生命周期闭包。
 -- root/41捕获顺序：(timerState, MainLeftBottom.b, MainLeftBottom)。
 local function MakeMainLeftBottomDestroyCallback(
     timerState,
     visibleItems,
-    mainLeftBottom
+    moduleState
 )
     return function()
         -- root/41 PC1-PC22只取消rewardTimer和cruiseTimer，不能扩大清理范围。
@@ -3117,27 +3117,28 @@ local function MakeMainLeftBottomDestroyCallback(
             GUI:setVisible(uiItem, false)
         end
 
-        if mainLeftBottom.hidebut then
-            GUI:setVisible(mainLeftBottom.hidebut, false)
-            mainLeftBottom.hidebut = nil
+        if moduleState.hidebut then
+            GUI:setVisible(moduleState.hidebut, false)
+            moduleState.hidebut = nil
         end
     end
 end
 
--- 按root原始导出顺序挂接：PC265先写hide，PC274再写destroy。
-MainLeftBottom.hide = MakeMainLeftBottomHideLifecycleCallback(
+-- 按root原始顺序挂接到同一张MainLeftBottom.a状态表：
+-- PC265写a.hide，PC269写a.show，PC274写a.destroy。
+moduleState.hide = MakeMainLeftBottomHideLifecycleCallback(
     moduleState,
     timerState,
     visibleItems
 )
-MainLeftBottom.show = MakeMainLeftBottomShowCallback(
+moduleState.show = MakeMainLeftBottomShowCallback(
     moduleState,
     visibleItems
 )
-MainLeftBottom.destroy = MakeMainLeftBottomDestroyCallback(
+moduleState.destroy = MakeMainLeftBottomDestroyCallback(
     timerState,
     visibleItems,
-    MainLeftBottom
+    moduleState
 )
 
 
