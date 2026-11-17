@@ -3964,3 +3964,15 @@ ButtonFactory本体使用：
 - 尚未将root/37全部opcode逐项翻译成可执行Lua，也尚未把新版createButton正确接入唯一明文文件的初始化路径；不能将“原始指令已提取”说成“按钮功能已接通”。
 - 下一步从原始加载器分派器继续映射PC253-PC271及PC340-PC384涉及的opcode，先恢复callbackMap构造和按钮工厂的准确Lua语义，再装配新区回调。
 - 未修改原始加密文件和旧版源码；未执行Lua编译、APK打包或游戏运行测试。
+
+
+### 2026-11-17续：确认新区callbackMap登记的关键opcode语义及包装闭包
+
+- 继续读取当前11.9原始加载器`I()`分派器，确认opcode 177为创建子原型闭包、374为读取upvalue、57为寄存器移动、156为以常量键写表、279为函数调用、269为return。
+- 因此root/37 PC269-PC271的准确结构已闭合：创建一个捕获数为1的零参数包装闭包，唯一捕获值是createButton UP[9]（即根PC430创建的新区处理器），然后执行`callbackMap["newzone"] = newzoneWrapper`。
+- 直接提取`root.children[37].children[2]`：0参数、5条指令、无子原型、捕获数1。其指令显示该包装闭包调用捕获的处理器并返回；剩余17/412/30逐条表达式未猜写。
+- 直接提取`root.children[37].children[17]`：3参数、50条指令、1个子原型；常量表明确包含Button_Create、GUI、addOnClickEvent、Button_setTitleText、Button_setTitleColor、toggle、toggled及颜色值。PC38-PC49按toggle字段创建并绑定child0点击回调；child0为48条指令、3捕获，职责是切换toggle状态、按钮标题与颜色。
+- 原始记录已追加到`11.9/root37_createButton_PC204-PC384_原始指令提取.md`，提交`aa82592e1a056e2264a93ec2fb54f176b0432128`。
+- 当前边界：新区回调在callbackMap中的登记表达式已可准确恢复；PC253-PC268其它回调、按钮工厂完整50条指令、root/37初始化装配仍未完成。唯一明文Lua尚未修改，未声称功能已接通。
+- 下一步继续恢复PC253-PC268与child17/child0的真实回调构造和toggle语义，然后再修改唯一明文文件。
+- 未编译、未打包、未进行游戏实测。
