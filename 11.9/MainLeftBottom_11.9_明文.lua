@@ -178,10 +178,10 @@ local function SaveNumericConfig(fileName, value)
         return fileUtils:writeStringToFile(tostring(value), filePath)
     end)
 
-    if not ok or writeResult == false then
+    if not ok then
         return false
     end
-    return writeResult
+    return writeResult ~= false
 end
 
 -- root/1：安全删除配置文件。先检查存在性，再pcall调用removeFile，
