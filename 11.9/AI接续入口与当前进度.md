@@ -4408,3 +4408,8 @@ child9由stopallbut闭包捕获；child6由blacklistbut闭包捕获；child25由
 - yinguaibut（root/37 child8）：19条指令、3捕获（UP[3]、UP[10]、child25阈值初始化闭包）。现有MakeGatherButtonHandler是root/43六参数候选，禁止直接复制旧装配。下一步只处理child8的19条指令和child25调用链。
 - child9跨组按钮状态同步闭包尚未恢复；child6黑名单辅助闭包后续处理。
 - 唯一明文源码本轮未修改；没有编译、打包或游戏测试。进度详情以源码恢复进度账本.md最新追加节为准。
+
+
+### 2026-11-17最新接续位置：child8/child25待补原始指令逐条记录
+
+main分支已重新读取。child8（root/37 child index 8，19条）与child25（child index 25，7条）的结构、常量线索、父捕获关系仍然成立；但当前仓库原始指令提取文档没有保存这两个原型的逐条记录。不得据三捕获值猜写新版引怪handler，也不得复用旧root/43六参数MakeGatherButtonHandler。下一步先从11.9/MainLeftBottom_11.9.lua直接导出child8/child25逐条原始指令和融合消费边界，再恢复业务调用帧。明文Lua本轮未改，未编译/打包/游戏测试。详情见源码恢复进度账本最新追加节。
