@@ -494,9 +494,9 @@ local buttonCreate = GUI.Button_Create
 local guiReceiver = GUI
 local captured0 = upvalue0
 local buttonKey = config.key
-local posY = upvalue1 - 85 * arg2
-local posX = upvalue2 + arg3
-local button = buttonCreate(guiReceiver, captured0, buttonKey, posY, posX,
+local coord1 = upvalue1 - 85 * arg2
+local coord2 = upvalue2 + arg3
+local button = buttonCreate(guiReceiver, captured0, buttonKey, coord1, coord2,
     "res/public/fuzhu_btn.png")
 ```
 
