@@ -4400,3 +4400,11 @@ child9由stopallbut闭包捕获；child6由blacklistbut闭包捕获；child25由
 - 已重新导出child1/0/8/16/18的常量和指令流，确认业务线索：child1自动买金条；child0停止丢弃与拾取并同步两个toggle；child8引怪开关；child16奖励开关；child18黑名单开关。捕获源也已记入账本。
 - 下一步直接逐条闭合上述五个子原型的寄存器调用帧，先child0与child8，再child1/16/18；确认与现有明文工厂的参数顺序后再接线。不要重复全量解码、全局原型身份审计、PC12-PC14或PC272-PC337键映射。
 - 唯一明文源码本轮未修改；未编译、未打包、未游戏实测。
+
+
+### 最新接续位置（2026-11-17夜间）
+
+- stopallbut（root/37 child0）：已确认4捕获顺序为UP[3]、UP[1]、child9同步闭包、UP[0]；现有MakeStopAllScriptButtonHandler四参数形状吻合，但除第三项外，其余UP槽位尚未逐一语义命名，不能声称参数装配完全闭合。
+- yinguaibut（root/37 child8）：19条指令、3捕获（UP[3]、UP[10]、child25阈值初始化闭包）。现有MakeGatherButtonHandler是root/43六参数候选，禁止直接复制旧装配。下一步只处理child8的19条指令和child25调用链。
+- child9跨组按钮状态同步闭包尚未恢复；child6黑名单辅助闭包后续处理。
+- 唯一明文源码本轮未修改；没有编译、打包或游戏测试。进度详情以源码恢复进度账本.md最新追加节为准。
