@@ -592,3 +592,28 @@ local button = buttonCreate(guiReceiver, captured0, buttonKey, coord1, coord2,
 - 本轮只完成父函数创建/调用链与child17入口控制流的闭合；没有修改唯一明文Lua。
 - 下一步应检查root/37中创建的其他子闭包及按钮回调接线，尤其确认callbackMap["newzone"]包装闭包与三组按钮配置之间是否存在可达绑定路径；不要把child17的PC15-PC50直接拼进Lua。
 - 未进行Lua编译、APK打包或游戏运行测试。
+
+
+## 2026-11-17续：newzone回调映射已构建，但绑定指令位于不可达尾部
+
+本轮结合已确认的PC253-PC271、PC340-PC384及child17 PC38-PC50，继续追踪callbackMap["newzone"]的完整数据流，并检查父函数PC385-PC433是否存在第二条事件绑定路径。
+
+### callbackMap数据流
+
+- PC266创建callbackMap空表；PC268登记settingbut回调。
+- PC269创建child2零参数包装闭包，PC270捕获createButton的UP[9]（根PC430创建的新区处理器实例），PC271执行callbackMap["newzone"] = child2。
+- PC340创建child17时，第5个捕获源为父函数R18；而R18正是PC266创建并在PC271写入newzone回调的callbackMap。因此child17的UP[4]就是这张callbackMap。
+- child17 PC45创建child0点击闭包；PC46读取child17 UP[4]（callbackMap），PC47-PC48再捕获当前按钮配置和按钮对象。child0开头的指令随后按config.key读取callbackMap[key]。这确认PC45-PC49原本就是将对应业务回调绑定到按钮点击事件的路径。
+- 但PC45-PC49位于child17 PC14直接return之后，正常调用无法执行；因此callbackMap["newzone"]虽已创建并登记，却没有经这条按钮工厂路径绑定到新区按钮。
+
+### 父函数PC385-PC433排查
+
+- PC385-PC433是独立的hidebut隐藏按钮创建/设置/事件绑定尾段：使用GUI.Button_Create创建hidebut，设置“隐 藏”标题、字号和字体，再创建并绑定隐藏按钮自己的child24处理闭包。
+- 该段没有再次读取callbackMap，也没有引用newzone键或新区处理器；因此它不是新区按钮回调的备用绑定路径。
+
+### 当前可下的结论
+
+- 已确认的createButton父函数路径中：新区处理器实例已进入callbackMap["newzone"]；child17也确实被三组循环调用；但负责读取callbackMap并执行addOnClickEvent绑定的child17尾部路径不可达。
+- 当前不能宣称新版开新区按钮的点击回调已经接通。可以确认的是父函数会调用GUI.Button_Create创建对应按钮对象；其后标题/字体/toggle/点击事件绑定代码因PC14 return而未执行。
+- 这一结论只针对当前已解析的root/37函数路径；若要排除模块外部另有绑定，仍需检查root级调用入口及是否有其他原型直接操作该按钮对象。
+- 唯一明文Lua未修改；未编译、未打包APK、未运行游戏。
