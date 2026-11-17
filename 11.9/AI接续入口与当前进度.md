@@ -4093,3 +4093,13 @@ ButtonFactory本体使用：
 - 本轮文档提交：原始指令记录0f15b8d7ca01484fd74aff816057d3076426d9ae；进度账本ddb2e3179700e6355103a045282ccec68eabacf5。
 - 下一步：定点检查root/37其他子原型和callbackMap["newzone"]包装闭包，查明是否存在另一条可达路径把新区处理器绑定到按钮；不要重新做载荷解码、解析器审计或child17 PC12-PC14分析。
 - 未进行Lua编译、APK打包或游戏测试。
+
+
+## 2026-11-17续：newzone回调已登记但未由root/37绑定
+
+- callbackMap在PC266创建，PC269-PC271将新区零参数包装闭包登记到callbackMap["newzone"]；包装闭包捕获根PC430创建的新区处理器实例。
+- createButton的UP[4]是callbackMap，child17也确实捕获该表。child17 PC45-PC49原本负责创建点击闭包、按config.key读取callbackMap并调用GUI.addOnClickEvent。
+- 但PC45-PC49在child17 PC14直接return之后，不会由正常入口执行。父函数PC385-PC433只创建和绑定hidebut隐藏按钮，没有newzone备用绑定。
+- 当前结论：新区处理器存在于callbackMap，但root/37已确认路径没有把它绑定到newzone按钮；不要宣称新版按钮点击链已接通。唯一明文Lua未修改。
+- 下一步只查root级createButton调用入口及其他原型是否存在独立newzone按钮/事件绑定路径，重点检索newzone键、按钮对象引用、addOnClickEvent调用者。
+- 本轮文档提交：原始指令记录754e80185bc5c6e1b454f8fad0c95e2a86c4c18a；进度账本0a0342277ac9dc6e7417cac49c73b04e7abd7833。
