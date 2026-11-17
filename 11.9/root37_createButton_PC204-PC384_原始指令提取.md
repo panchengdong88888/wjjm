@@ -635,3 +635,35 @@ root.children[44]物品处理回调 → root.children[38]新区启动处理器 �
 最后一段仍受child17 PC14直接return阻断。因此目前已确认新区业务处理器、包装闭包和callbackMap登记都存在；root/37通过MainLeftBottom.doInit作为外部入口创建按钮时，也会调用child17；但新区点击事件的已知绑定段不可达。父函数PC385-PC433只另行处理hidebut，不存在callbackMap备用绑定。
 
 **当前结论边界：** 已闭合当前文件中从根原型新区处理器创建到createButton、callbackMap登记、child17调用及点击事件绑定尝试的静态链路。仍不能排除外部宿主或其他独立原型在模块外另行操作按钮，但当前root/37内部没有第二条已证实的newzone绑定路径。唯一明文Lua未修改；未编译、未打包、未游戏实测。
+
+
+## 2026-11-17续：doInit_UI确实调用MainLeftBottom.doInit
+
+本轮按整体框架索引定位到UI初始化原型：原型ID42是根直接子原型，其子原型ID44为doInit_UI。注意这里的原型ID与root.children数组下标不同：实际路径为root.children[34].children[1]，不是root.children[44]。
+
+### doInit_UI调用点
+
+root.children[34].children[1]：0参数、24条指令，常量包含MainLeftBottom、doInit、SL、UnSchedule、Panel_mini_chat、MainProperty。
+
+- PC1-PC12：检查MainProperty、MainProperty._ui及Panel_mini_chat等UI对象是否就绪；未满足条件时跳到函数尾部。
+- PC13-PC16：取得SL.UnSchedule并执行对应清理调用。
+- PC17 [402,0,"MainLeftBottom"]取得MainLeftBottom对象；PC18 [73,0,0,"doInit"]读取其doInit字段；PC19 [279,0,0,0]以零参数调用该函数。
+- 根PC454此前已明确执行MainLeftBottom["doInit"] = root.children[37]创建的createButton闭包。
+
+因此实际初始化链已经确认：doInit_UI → MainLeftBottom.doInit() → root.children[37] createButton → 三组循环调用child17。
+
+### 路径索引防混淆
+
+- root.children[37]：433条指令的createButton父函数（原型ID48）。
+- root.children[38]：37条指令的新区启动处理器（原型ID83）。
+- root.children[44]：76条指令的新区背包物品处理回调（原型ID93）。
+- root.children[34].children[1]：24条指令的doInit_UI（原型ID44）。
+
+特别注意：表格里的“原型ID44”不是数组路径root.children[44]。后者是原型ID93的新区物品处理回调。今后记录路径时必须同时保留数组路径和原型ID，不能只写“原型44”。
+
+### 当前链路结论更新
+
+- 已确认doInit_UI会实际调用MainLeftBottom.doInit；该属性由根PC454赋值为createButton闭包。
+- 因而root/37并非未使用的函数，child17也会在正常UI初始化时被调用。
+- child17 PC14提前return仍然阻断其PC15-PC50的标题/字体/颜色/toggle和addOnClickEvent逻辑；目前在该UI初始化链中没有发现其他newzone按钮事件绑定点。
+- 唯一明文Lua未修改；未编译、未打包APK、未游戏实测。
