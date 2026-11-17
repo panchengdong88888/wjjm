@@ -4500,9 +4500,13 @@ local function doInit()
                     itemName
                 )
                 if itemIndex then
-                    -- VM通过GETGLOBAL调用MoveItemToQuickUse，不改为模块方法。
+                    -- VM通过GETGLOBAL调用MoveItemToQuickUse；显式从chunk环境读取，
+                    -- 避免本文件的局部实现遮蔽原始全局调用语义。
                     local succeeded, message =
-                        MoveItemToQuickUse(itemIndex, currentSlotConfig.slot)
+                        rootEnvironment.MoveItemToQuickUse(
+                            itemIndex,
+                            currentSlotConfig.slot
+                        )
                     PrintLog(message)
                     if succeeded then
                         return
