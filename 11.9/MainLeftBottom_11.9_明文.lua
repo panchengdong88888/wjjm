@@ -4286,13 +4286,21 @@ end
 --   showBlacklistDistancePrompt=R[19]、showGatherThresholdPrompt=R[20]。
 -- callbackMap登记顺序严格按root/43 PC268-PC337，不包含newzone。
 --
--- 历史新区回调适配器：保留旧原型映射阶段的业务辅助代码。
--- 当前11.9规范root/43的PC268-PC337没有newzone登记，且对应原型身份尚未闭合；
--- 因此本适配器暂不接入当前doInit的callbackMap。
+-- 新版root.children[37] PC269-PC271：把新区启动处理器包装成零参数按钮回调。
+-- child2仅捕获newZoneHandler；点击时直接调用，不改写返回值或参数。
 local function MakeNewZoneCallbackAdapter(newZoneHandler)
     return function()
         newZoneHandler()
     end
+end
+
+-- 新版root.children[37] PC266-PC271：callbackMap创建后登记newzone。
+-- callbackMap由父函数PC266创建；本函数只完成PC269-PC271对应的包装与键写入，
+-- 不把newzone误加进旧版root/43候选callbackMap。
+local function RegisterNewZoneButtonHandler(callbackMap, newZoneHandler)
+    local callback = MakeNewZoneCallbackAdapter(newZoneHandler)
+    callbackMap.newzone = callback
+    return callback
 end
 
 -- 本函数只负责当前规范root/43的业务callbackMap，不创建按钮、不设置布局、不绑定GUI点击事件。
