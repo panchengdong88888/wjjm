@@ -2801,16 +2801,18 @@ local function RegisterBuyGoldButtonHandler(
 end
 
 
--- 对应规范反汇编 root/43/10（50条指令）：新版通用ButtonFactory。
+-- 对应新版root.children[37].children[17]（50条指令）：通用ButtonFactory。
 -- 三个显式参数：buttonConfig、rowIndex、groupOffset。
--- root/43 PC341-PC345五项捕获顺序：
---   A[0]=uiParent：GUI:Attach_UITop(0)返回的父容器；
---   A[1]=baseX：Panel_mini_chat世界X坐标 + 内容宽度 - 10；
---   A[2]=baseY：Panel_mini_chat世界Y坐标 + 1；
---   A[3]=visibleItems：MainLeftBottom.b可见控件表；
---   A[4]=callbackMap：按buttonConfig.key索引的按钮回调表。
--- ButtonFactory按 x=baseX-85*rowIndex、y=baseY+groupOffset 计算按钮坐标；
--- 点击闭包为root/43/10/1。
+-- root/37 PC340-PC345五项捕获顺序：
+--   UP[0]=uiParent；UP[1]=baseX；UP[2]=baseY；
+--   UP[3]=visibleItems（MainLeftBottom.b可见控件表）；
+--   UP[4]=callbackMap（按buttonConfig.key索引的按钮回调表）。
+-- ButtonFactory按x=baseX-85*rowIndex、y=baseY+groupOffset计算按钮坐标。
+-- PC12-PC14控制流：Button_Create返回nil时走PC14 return；
+-- 返回有效按钮时PC13设置K=14，经解释器循环尾部公共K=K+1进入PC15，
+-- 继续完成按钮登记、标题/字体/颜色设置及addOnClickEvent绑定。
+-- 点击闭包对应child17.child0，捕获callbackMap、buttonConfig和button。
+-- 此工厂实现可复用于当前root/37；旧root/43候选入口仍是未替换的历史占位，不代表新版入口已接通。
 local function MakeMainLeftBottomButtonFactory(
     uiParent,
     baseX,
