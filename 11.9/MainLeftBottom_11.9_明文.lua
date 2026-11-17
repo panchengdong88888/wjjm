@@ -4049,14 +4049,12 @@ local function BuildDoInitCallbackMap(deps)
         syncButtonState
     )
 
-    -- PC267：创建唯一callbackMap。
+    -- PC268：创建唯一callbackMap。
     local callbackMap = {}
 
-    -- 新版root.children[37] PC269-PC271：child2捕获doInit_UI UP[9]，
-    -- 并将包装闭包登记到callbackMap.newzone。
-    callbackMap.newzone = MakeNewZoneCallbackAdapter(newZoneHandler)
-
-    -- PC268-PC275：yinguaibut。
+    -- 当前规范root/43在PC269-PC337登记的回调中没有newzone项；
+    -- 新区相关辅助函数暂时保留，但不接入这份UI初始化回调表。
+    -- PC269-PC276：创建并登记yinguaibut。
     callbackMap.yinguaibut = MakeGatherButtonHandler(
         deps.timerState,
         deps.notify,
@@ -4066,7 +4064,7 @@ local function BuildDoInitCallbackMap(deps)
         startGather
     )
 
-    -- PC276-PC281：clearmonsterbut。
+    -- PC277-PC282：创建并登记clearmonsterbut。
     callbackMap.clearmonsterbut = MakeClearMonsterThresholdButtonHandler(
         deps.deleteConfig,
         deps.gatherThresholdFileName,
@@ -4074,7 +4072,7 @@ local function BuildDoInitCallbackMap(deps)
         deps.printLog
     )
 
-    -- PC282-PC287：cleardistancebut。
+    -- PC283-PC288：创建并登记cleardistancebut。
     callbackMap.cleardistancebut = MakeClearBlacklistDistanceButtonHandler(
         deps.deleteConfig,
         deps.blacklistDistanceFileName,
@@ -4082,7 +4080,7 @@ local function BuildDoInitCallbackMap(deps)
         deps.printLog
     )
 
-    -- PC288-PC294：rewardbut。
+    -- PC289-PC295：创建并登记rewardbut。
     callbackMap.rewardbut = MakeRewardButtonHandler(
         deps.timerState,
         deps.printLog,
@@ -4091,12 +4089,12 @@ local function BuildDoInitCallbackMap(deps)
         deps.rewardScheduleInterval
     )
 
-    -- PC295-PC297：clearblacklistbut。
+    -- PC296-PC298：创建并登记clearblacklistbut。
     callbackMap.clearblacklistbut = MakeClearBlacklistButtonHandler(
         deps.printLog
     )
 
-    -- PC298-PC305：blacklistbut，使用PC249已创建的R[19]。
+    -- PC299-PC306：创建并登记blacklistbut，使用PC249已创建的R[19]。
     callbackMap.blacklistbut = MakeBlacklistButtonHandler(
         deps.timerState,
         deps.printLog,
@@ -4106,7 +4104,7 @@ local function BuildDoInitCallbackMap(deps)
         startBlacklistTimer
     )
 
-    -- PC306-PC311：storagebut。
+    -- PC307-PC312：创建并登记storagebut。
     callbackMap.storagebut = MakeStorageButtonHandler(
         deps.timerState,
         deps.printLog,
@@ -4114,7 +4112,7 @@ local function BuildDoInitCallbackMap(deps)
         deps.schedule
     )
 
-    -- PC312-PC317：takebut。
+    -- PC313-PC318：创建并登记takebut。
     callbackMap.takebut = MakeTakeButtonHandler(
         deps.timerState,
         deps.printLog,
@@ -4122,14 +4120,14 @@ local function BuildDoInitCallbackMap(deps)
         deps.schedule
     )
 
-    -- PC318-PC322：shiqubut。
+    -- PC319-PC323：创建并登记shiqubut。
     callbackMap.shiqubut = MakePickupButtonHandler(
         deps.timerState,
         deps.printLog,
         deps.schedule
     )
 
-    -- PC323-PC328：diuqibut。
+    -- PC324-PC329：创建并登记diuqibut。
     callbackMap.diuqibut = MakeDropButtonHandler(
         deps.timerState,
         deps.printLog,
@@ -4137,7 +4135,7 @@ local function BuildDoInitCallbackMap(deps)
         deps.schedule
     )
 
-    -- PC329-PC334：moneybut，复用已核实的资源统计登记辅助函数。
+    -- PC330-PC335：创建并登记moneybut，复用已核实的资源统计登记辅助函数。
     RegisterResourceStatisticsButtonHandler(
         callbackMap,
         deps.moduleState,
@@ -4146,7 +4144,7 @@ local function BuildDoInitCallbackMap(deps)
         deps.initState
     )
 
-    -- PC335-PC336：xiaotuibut，无upvalue捕获。
+    -- PC336-PC337：xiaotuibut，无upvalue捕获。
     callbackMap.xiaotuibut = V10001ButtonHandler
 
     return callbackMap
