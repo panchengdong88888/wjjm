@@ -3976,3 +3976,14 @@ ButtonFactory本体使用：
 - 当前边界：新区回调在callbackMap中的登记表达式已可准确恢复；PC253-PC268其它回调、按钮工厂完整50条指令、root/37初始化装配仍未完成。唯一明文Lua尚未修改，未声称功能已接通。
 - 下一步继续恢复PC253-PC268与child17/child0的真实回调构造和toggle语义，然后再修改唯一明文文件。
 - 未编译、未打包、未进行游戏实测。
+
+
+### 2026-11-17续：新区按钮 callbackMap 构造语义已增量确认
+
+本轮已从11.9原始加载器分派器确认root/37 PC253-PC271中的新增语义：
+- PC266创建callbackMap空表；
+- PC268写入callbackMap[settingbut]；
+- PC271写入callbackMap[newzone]；
+- PC253/258/264/267分别创建child9/child6/child25/child12闭包，其捕获数量和来源已记录到root37_createButton_PC204-PC384_原始指令提取.md。
+
+当前仍未将新版createButton写入唯一明文Lua；下一步继续恢复child17按钮工厂与child0 toggle闭包，并确认callbackMap其余回调映射。禁止拿旧root/43按钮工厂代替新版root/37。
