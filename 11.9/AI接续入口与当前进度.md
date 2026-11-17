@@ -4291,3 +4291,14 @@ ButtonFactory本体使用：
 - 旧版材料路径为 `资料文件/04_源码候选/...`，旧结构路径为 `root.children[42].children[9]`；新版仍为 `11.9/MainLeftBottom_11.9.lua` 中的 `root.children[37].children[17]`。
 - 旧版恢复源码仅作同构结构和业务行为对照，不能替代新版原始字节码证据。
 - 唯一明文目标 `11.9/MainLeftBottom_11.9_明文.lua` 本轮未修改；本轮仅更新原始指令记录、进度账本和接续入口。未编译、未打包APK、未运行游戏。
+
+
+## 最近接续更新（2026-11-17）：新区按钮工厂控制流已纠正
+
+- 已确认解释器每轮分派结束后有公共`K=K+1`。child17 PC12-PC14的正确路径为：Button_Create返回nil时进入PC14 return；返回按钮对象时执行PC13设置K=14，再经公共递增进入PC15，继续完成属性设置和点击事件绑定。
+- 因此旧记录中“PC15-PC50不可达”的结论作废。PC15-PC50是按钮创建成功路径上的真实代码。
+- 唯一明文源码已新增`RegisterNewZoneButtonHandler(callbackMap, newZoneHandler)`，对应root.children[37] PC266-PC271，登记`callbackMap.newzone`。
+- 新区业务处理器、按钮回调包装、通用按钮工厂和点击分发代码均已有明文；但root/37的完整真实13项按钮配置、callbackMap构造和三组循环尚未接入唯一明文入口。当前不标记“新版开新区按钮完全接通”。
+- 最新源码提交：`3c0635d5ab4d195fd543bcde0bd59ceac2b04ea6`；源码content SHA：`f2cbb3d662752ec01119e97515dab8cafe472b8e`。
+- 最新进度账本提交：`d671c23d01d177e8d22d1dc9d13cd01eb14bc7a7`。
+- 下一步：只恢复root/37 PC253-PC271及真实buttonGroups/按钮工厂接线；不重做PC12-PC14和已闭合的原型检索。
