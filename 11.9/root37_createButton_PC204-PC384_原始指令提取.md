@@ -371,3 +371,34 @@ R1 = true
 
 - child0 PC6之后的状态条件、跳转方向、共享状态写回及GUI调用还没有全部逐条映射；尤其不能只根据`toggled`/`toggle`常量推断开关方向。
 - 本轮没有改唯一明文Lua；只完成分派器语义与child0首段表达式确认。
+## 2026-11-17续：child0 PC6-PC18控制流与upvalue读取继续映射
+
+本轮直接核对I()分派器对应D分支，新增确认：
+
+- opcode 165：条件跳过下一条，条件为`(not not V[E[2]]) ~= (E[4] ~= 0)`时令指令游标前进一条。child0 PC6为`R0`真值判断，比较值为false。
+- opcode 85：当D=85时走`D>84`分支，执行跳转`K=E[3]`（若目标寄存器索引大于0还会先处理开放upvalue）。child0 PC7的跳转目标操作数为10。
+- opcode 95：`V[E[2]]=E[3]`。child0 PC8将立即数0写入R2。
+- opcode 64：`V[E[2]]=V[E[2]](H(V,E[2]+1,E[3]))`，是以目标寄存器当前值作为函数调用目标的调用指令。child0 PC9的调用目标为R2。PC8/PC9组合出现了`R2=0`后调用R2的表面矛盾，当前不擅自改写或推断；需结合原始指令头模式字段/寄存器初始化与实际控制流再核实。
+- opcode 158：分派器连续消费两条记录，先`V[E[2]]=A[E[3]]`，再`V[E[2]]=V[E[3]][E[4]]`。child0 PC11-PC12合并表达为：`R2=upvalue[1]`，随后`R2=R2["toggle"]`。
+- opcode 234：条件跳过下一条，条件为`(not not V[E[2]]) ~= (E[4] ~= 0)`。child0 PC13对R2做真值条件跳过。
+- opcode 51：跳转指令；执行`K=E[3]`，并在必要时关闭目标寄存器范围内的开放upvalue。child0 PC14、PC16均为跳转目标47。
+- opcode 265：条件跳过下一条，条件为`(V[E[3]] == E[4]) ~= (E[2] ~= 0)`。child0 PC15比较R1与false。
+- opcode 46：连续消费两条记录，分别执行`V[E[2]]=A[E[3]]`。child0 PC17-PC18分别将upvalue[1]读入R2和R3。
+
+### 当前可直接还原的局部表达式（仍非完整业务函数）
+
+~~~lua
+-- PC11-PC12（融合指令）
+local toggleConfig = upvalue1
+local toggleText = toggleConfig["toggle"]
+
+-- PC17-PC18（融合指令）
+local configForTitle = upvalue1
+local configForColor = upvalue1
+~~~
+
+### 必须保留的未决点
+
+- PC6-PC10的跳转/调用组合目前出现`PC8写R2=0`后PC9又调用R2的表面矛盾。本轮只记录分派器真实语义，不把它翻译成看似合理的Lua；下一步要回查原始指令头字节的模式位、常量标志和指令记录边界，并检查child0捕获值初始化，确认这是否为操作数解码呈现问题或真实运行路径。
+- PC19-PC48涉及toggled字段读写、按钮标题/颜色调用，尚未完成逐条映射。
+- 唯一明文Lua未修改；本轮不计为toggle业务代码完成。
