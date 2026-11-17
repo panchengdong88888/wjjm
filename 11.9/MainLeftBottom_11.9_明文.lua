@@ -2169,12 +2169,12 @@ local function MakeBlacklistRootBindings(
         deathAutoBlacklist,        -- UP[3] = root T[58]
         findBlacklistPlayer,       -- UP[4] = root T[55]
         getMapData2DPtr,           -- UP[5] = root T[53]
-        2.0,                       -- UP[6] = root T[38]
+        blacklistAlertInterval,   -- UP[6] = root T[38]
         printLog,                  -- UP[7] = root T[4]
         useItemByIndex,            -- UP[8] = root T[56]
-        0.01,                      -- UP[9] = root T[39]
+        blacklistRetryInterval,    -- UP[9] = root T[39]
         showLocalNotice,           -- UP[10] = root T[5]
-        30.0,                      -- UP[11] = root T[40]
+        blacklistNoItemRetryInterval, -- UP[11] = root T[40]
         randomTeleportItemNames   -- UP[12] = root T[37]
     )
 
