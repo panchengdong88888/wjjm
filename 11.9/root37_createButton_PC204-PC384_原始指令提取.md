@@ -402,3 +402,33 @@ local configForColor = upvalue1
 - PC6-PC10的跳转/调用组合目前出现`PC8写R2=0`后PC9又调用R2的表面矛盾。本轮只记录分派器真实语义，不把它翻译成看似合理的Lua；下一步要回查原始指令头字节的模式位、常量标志和指令记录边界，并检查child0捕获值初始化，确认这是否为操作数解码呈现问题或真实运行路径。
 - PC19-PC48涉及toggled字段读写、按钮标题/颜色调用，尚未完成逐条映射。
 - 唯一明文Lua未修改；本轮不计为toggle业务代码完成。
+## 2026-11-17续：child0 PC19-PC30状态翻转与标题分支映射
+
+本轮继续按当前11.9加载器I()分派器逐条确认，新增映射如下：
+
+- PC19 `[388,3,3,"toggled"]`：opcode388在当前分派树对应`V[E[2]]=V[E[3]][E[4]]`，即`R3 = R3["toggled"]`。
+- PC20 `[334,3,3,0]`：opcode334执行`V[E[2]]=not V[E[3]]`，即`R3 = not R3`。结合PC19，这一段明确读取并反转`toggled`布尔状态。
+- PC21-PC22 `[308,2,"toggled",3]` + 后继记录：opcode308为融合操作，先执行`V[E[2]][E[3]]=V[E[4]]`，随后消费下一条记录执行`V[E[2]]=F[E[3]]`。因此先把反转后的R3写回配置表`R2["toggled"]`，再把环境全局`GUI`读入R2；PC22记录被融合消费，不可再独立执行。
+- PC23 `[305,2,2,"Button_setTitleText"]`：opcode305按`local P=V[E[3]]; V[E[2]+1]=P; V[E[2]]=P[E[4]]`取出GUI的`Button_setTitleText`方法，并保留GUI接收者。
+- PC24-PC26 `[262,4,2,0]` + 后两条：opcode262融合三条记录，读取`upvalue[2]`到R4、读取`upvalue[1]`到R5，再取`R5["toggled"]`写回R5。即取得按钮对象和配置当前`toggled`值，后续用于标题分支。
+- PC27 `[234,5,0,0]`：按R5真值条件跳过下一条。
+- PC28 `[51,0,32,null]`：跳转到PC32。
+- PC29-PC30 `[158,5,1,0]` + 后继记录：opcode158融合两条记录，先从`upvalue[1]`取配置表，再按PC30给出的常量键`toggle`取字段。该读取用于另一标题分支。
+
+### 当前可确认的局部业务逻辑（伪代码表达，不是完整闭包）
+
+~~~lua
+local config = upvalue1
+local toggled = config["toggled"]
+toggled = not toggled
+config["toggled"] = toggled
+
+-- 随后取GUI.Button_setTitleText方法；
+-- 根据按钮配置的toggled状态选择后续标题文本。
+~~~
+
+### 边界
+
+- PC21 opcode308会消费PC22记录；PC24 opcode262会消费PC25-PC26；PC29 opcode158会消费PC30。融合消费关系必须保留，不能重复执行被消费记录。
+- PC31-PC48仍未全部映射，尤其按钮标题最终参数、`name`字段读取及红/白颜色分支尚待确认。
+- 唯一明文Lua未修改，本轮仅增加指令语义映射。
