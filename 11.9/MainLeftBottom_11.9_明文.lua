@@ -61,8 +61,15 @@ MainLeftBottom.z = featureState
 -- PC42：全模块共享的定时器状态表。后续所有定时器闭包必须捕获此同一张表。
 local timerState = {}
 
+-- root PC280-PC285：黑名单检测使用的随机传送物品名表及节流参数。
+-- PC280-PC282建立单元素数组；PC281唯一元素为“随机传送石”。
+local randomTeleportItemNames = { "随机传送石" }
+local blacklistAlertInterval = 2.0
+local blacklistRetryInterval = 0.01
+local blacklistNoItemRetryInterval = 30.0
+
 -- root PC286-PC294：黑名单检测共享状态表；PC294将同一表挂到MainLeftBottom.a.blacklist。
--- nil字段按Lua表语义自然缺省；其余字段严格采用新版VM初始值。
+-- lastAttacker、lastHp、distance在VM中初始为nil，Lua表中不显式存储nil键。
 local blacklistState = {
     deathHandled = false,
     alertAt = 0.0,
@@ -2273,10 +2280,15 @@ end
 MakeUseItemByIndex = function(randomTeleportItemNames)
     return function()
         for _, itemName in ipairs(randomTeleportItemNames) do
-            local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)
-            local itemCount = tonumber(
-                SL:GetMetaValue("ITEM_COUNT", itemName)
-            ) or 0
+            local itemIndex = tonumber(
+                SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)
+            )
+            local itemCount = 0
+            if itemIndex then
+                itemCount = tonumber(
+                    SL:GetMetaValue("ITEM_COUNT", itemIndex)
+                ) or 0
+            end
 
             if itemIndex and itemCount > 0 then
                 SL:UseItemByIndex(itemIndex)
@@ -2937,6 +2949,21 @@ end
 
 -- root PC46：实例化捕获MainLeftBottom.a的本地通知闭包；VM没有把它导出为全局函数。
 ShowLocalNoticeByType = MakeShowLocalNoticeByType(MainLeftBottom.a)
+
+-- root PC352-PC388：按父级VM闭包创建顺序装配黑名单业务闭包链。
+-- T[2]=MainLeftBottom.z；T[4]=PrintLog；T[5]=ShowLocalNoticeByType；
+-- T[37]=随机传送物品名表；T[41]=blacklistState。
+-- MakeGetMapData2DPtr的唯一捕获在活动路径不可读，故该捕获值不影响业务行为。
+local blacklistRootBindings = MakeBlacklistRootBindings(
+    rootEnvironment,
+    moduleState,
+    featureState,
+    blacklistState,
+    randomTeleportItemNames,
+    PrintLog,
+    ShowLocalNoticeByType,
+    nil
+)
 
 -- 新版 root/34（64条指令）：AccountIDValidation。
 -- 根模块创建该闭包时捕获UP[0]=PrintLog、UP[1]=ShowLocalNoticeByType，
