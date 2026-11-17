@@ -3050,45 +3050,53 @@ local function MakeBuyGoldRootContext(mainLeftBottom)
 end
 
 
--- 生命周期清理入口（新版root PC270-PC275）：
--- root创建proto2闭包并赋值 MainLeftBottom.destroy = proto2。
--- proto2会检查buygoldTimer，若存在则SL:UnSchedule(scheduleID)，随后清空字段；
--- 它还负责其他定时器和界面清理。具体销毁时机由宿主调用destroy生命周期方法，
--- 当前只确认赋值关系，不推断宿主在何种场景/时刻调用该方法。
+-- root PC261-PC265：创建并导出MainLeftBottom.hide生命周期闭包。
+-- root/38捕获顺序：(MainLeftBottom.a, timerState, MainLeftBottom.b)。
+local function MakeMainLeftBottomHideLifecycleCallback(
+    moduleState,
+    timerState,
+    visibleItems
+)
+    return function()
+        moduleState.isHidden = false
 
+        if timerState.resTimer then
+            SL:UnSchedule(timerState.resTimer)
+            timerState.resTimer = nil
+        end
 
--- 对应root PC270-PC275注册的 MainLeftBottom.destroy 清理闭包（proto2）。
--- proto2无显式参数，按root创建闭包时的三个upvalue顺序捕获：
---   UP[0] = 定时器状态表；UP[1] = 需要隐藏的界面/控件集合；
---   UP[2] = MainLeftBottom模块表（其中包含hidebut）。
+        moduleState.resWin = nil
+        GUI:Win_CloseAll()
+
+        for _, uiItem in pairs(visibleItems) do
+            GUI:setVisible(uiItem, false)
+        end
+    end
+end
+
+-- root PC270-PC274：创建并导出MainLeftBottom.destroy生命周期闭包。
+-- root/41捕获顺序：(timerState, MainLeftBottom.b, MainLeftBottom)。
 local function MakeMainLeftBottomDestroyCallback(
     timerState,
     visibleItems,
     mainLeftBottom
 )
     return function()
-        -- proto2按原指令顺序逐一取消并清空四个定时器句柄。
-        local timerFields = {
-            "rewardTimer",
-            "cruiseTimer",
-            "newzoneTimer",
-            "buygoldTimer"
-        }
-
-        for _, fieldName in ipairs(timerFields) do
-            local scheduleID = timerState[fieldName]
-            if scheduleID then
-                SL:UnSchedule(scheduleID)
-                timerState[fieldName] = nil
-            end
+        -- root/41 PC1-PC22只取消rewardTimer和cruiseTimer，不能扩大清理范围。
+        if timerState.rewardTimer then
+            SL:UnSchedule(timerState.rewardTimer)
+            timerState.rewardTimer = nil
         end
 
-        -- 隐藏root捕获的界面/控件集合。
+        if timerState.cruiseTimer then
+            SL:UnSchedule(timerState.cruiseTimer)
+            timerState.cruiseTimer = nil
+        end
+
         for _, uiItem in pairs(visibleItems) do
             GUI:setVisible(uiItem, false)
         end
 
-        -- 单独隐藏并清空MainLeftBottom.hidebut。
         if mainLeftBottom.hidebut then
             GUI:setVisible(mainLeftBottom.hidebut, false)
             mainLeftBottom.hidebut = nil
@@ -3096,11 +3104,17 @@ local function MakeMainLeftBottomDestroyCallback(
     end
 end
 
--- root寄存器来源已核实：PC30创建V1表并在PC32赋给MainLeftBottom.b；
--- PC34-PC42创建V3状态表；PC2的V0为MainLeftBottom模块表。
--- 因此root PC274的挂接等价于：
--- MainLeftBottom.destroy = MakeMainLeftBottomDestroyCallback(V3, MainLeftBottom.b, MainLeftBottom)
--- 本工厂函数用于明文重建该闭包的捕获关系，宿主何时调用destroy不作推断。
+-- 按root原始导出顺序挂接：PC265先写hide，PC274再写destroy。
+MainLeftBottom.hide = MakeMainLeftBottomHideLifecycleCallback(
+    moduleState,
+    timerState,
+    visibleItems
+)
+MainLeftBottom.destroy = MakeMainLeftBottomDestroyCallback(
+    timerState,
+    visibleItems,
+    MainLeftBottom
+)
 
 
 -- 2026-11-13：购买金条第二十四轮——proto48 PC253-PC265闭包身份定点复核
