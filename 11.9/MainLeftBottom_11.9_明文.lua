@@ -300,7 +300,7 @@ rootEnvironment.MoveTo = MoveTo
 -- 通过SKILL_NAME匹配“彻地钉”，命中后调用SL:RequestLaunchSkill(MagicID)。
 -- 其余状态机保留IDLE/GATHERING/ATTACKING、归属等待、目标游标和复位流程。
 --
--- 本节只恢复业务函数，不创建按钮、不接UI、不修改旧版源码。
+-- 本节集中定义引怪业务主体；root级全局导出在各函数定义后按原PC顺序接入。
 -- 新版root PC42通过opcode 47明确创建寄存器3的空表，即MainLeftBottom共享定时器状态表。
 -- 引怪初始化/停止闭包捕获该寄存器并读写gatherTimer；root/41（root子原型索引40）
 -- 是MainLeftBottom.destroy生命周期闭包，也捕获同一寄存器，但只取消rewardTimer与cruiseTimer。
@@ -1565,16 +1565,16 @@ end
 -- root PC255-PC256：将StopGatherMonsters闭包导出到chunk全局环境。
 rootEnvironment.StopGatherMonsters = StopGatherMonsters
 
--- 当前静态恢复范围：引怪状态数据、候选筛选、目标/归属辅助、
--- MainLoop新增技能段、初始化和停止函数已写入。
--- MainLeftBottom.doInit中的按钮回调登记与完整root模块装配不属于本轮范围。
+-- 引怪状态数据、候选筛选、目标/归属辅助、MainLoop新增技能段、初始化和停止函数
+-- 已写入；rootEnvironment.MainLoop/InitGatherMonsters/StopGatherMonsters
+-- 已按root PC237-PC256导出，按钮回调由root/43 doInit统一登记。
 
 
 -- ============================================================
 --  6. 物品处理与仓库系统
 -- ============================================================
 
--- TODO：恢复 DiuItems、TakeItems、PickUpItems、StorageItems 等函数。
+-- DiuItems、TakeItems、PickUpItems及仓库相关函数在后续章节定义，并按root环境字段导出。
 
 -- ============================================================
 --  7. 黑名单、伤害消息与 Hook
