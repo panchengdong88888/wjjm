@@ -667,3 +667,28 @@ root.children[34].children[1]：0参数、24条指令，常量包含MainLeftBott
 - 因而root/37并非未使用的函数，child17也会在正常UI初始化时被调用。
 - child17 PC14提前return仍然阻断其PC15-PC50的标题/字体/颜色/toggle和addOnClickEvent逻辑；目前在该UI初始化链中没有发现其他newzone按钮事件绑定点。
 - 唯一明文Lua未修改；未编译、未打包APK、未游戏实测。
+
+
+## 2026-11-17续：全原型检索未发现第二条newzone事件绑定路径
+
+本轮对完整79,573字节载荷重新按已确认解析格式读取全部原型树（105个原型；载荷完整消费，无剩余），只做目标字符串/调用点定向检索，没有重做业务反编译。
+
+### 关键字符串分布
+
+- `newzone`（不含定时器名称）只出现在root.children[37]的按钮配置/回调映射逻辑中。
+- `newzoneTimer`出现在根子原型1、root.children[37]、root.children[38]、root.children[44]，均属于定时器/物品处理业务。
+- `addOnClickEvent`常量只出现在root.children[37]父函数、root.children[37].children[15]、root.children[37].children[17]。
+- `Button_Create`只出现在root.children[37]父函数和child17。
+- 没有任何原型常量包含`callbackMap`字样；callbackMap是运行时表变量，不是常量命名。
+
+### 唯一额外addOnClickEvent调用者的用途
+
+root.children[37].children[15]（原型ID65，320条指令）确实包含一处独立`GUI.addOnClickEvent`调用：PC65-PC69绑定的是资源信息窗口`resWin`的关闭布局/控件事件，回调由本原型自己的child2闭包提供。它不读取`newzone`键，不接收createButton按钮对象，也不读取新区callbackMap，因此不是新区按钮的补充接线。
+
+另一处`addOnClickEvent`位于child17 PC45-PC49，仍在PC14直接return之后不可达。父函数本身虽然含`addOnClickEvent`字符串常量，但未形成第三处独立调用路径。
+
+### 本轮结论
+
+在当前11.9模块完整原型树中，未发现除child17尾部之外的第二条新区按钮点击事件绑定路径。结合doInit_UI → MainLeftBottom.doInit → createButton的已确认入口，当前模块内可见路径为：按钮对象可创建，但新区点击回调没有被绑定。外部宿主/其他模块仍不在该文件的静态证据范围内，不能对模块外行为作绝对断言。
+
+唯一明文Lua未修改；未编译、未打包APK、未进行游戏实测。
