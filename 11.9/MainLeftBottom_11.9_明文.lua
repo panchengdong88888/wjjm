@@ -2764,6 +2764,72 @@ local function BuildMainLeftBottomButtonGroups()
     return firstGroup, secondGroup, thirdGroup
 end
 
+
+-- ============================================================
+--  11.9新版 root.children[37]：真实13项按钮配置与三组遍历
+-- ============================================================
+-- 对应新版原型48 PC204-PC252；与旧root/43的4/3/3配置完全隔离。
+local function BuildMainLeftBottomButtonGroups_11_9()
+    local firstGroup = {
+        { key = "moneybut", name = "V10001" },
+        { key = "settingbut", name = "内挂设置" },
+        { key = "shiqubut", name = "开拾取", toggle = "关拾取" },
+        { key = "diuqibut", name = "开丢弃", toggle = "关丢弃" },
+        { key = "clearblacklistbut", name = "清黑名单" },
+        { key = "stopallbut", name = "停止脚本" },
+    }
+
+    local secondGroup = {
+        { key = "buygoldbut", name = "购买金条" },
+        { key = "recyclebut", name = "回收装备" },
+        { key = "newzone", name = "开新区" },
+        { key = "rewardbut", name = "开奖励", toggle = "关奖励" },
+        { key = "yinguaibut", name = "开拉怪", toggle = "关拉怪" },
+        { key = "blacklistbut", name = "开黑名单", toggle = "关黑名单" },
+        { key = "xiaotuibut", name = "快速小退" },
+    }
+
+    -- 新版V14在PC251-PC252明确为空表，仍保留第三组位置。
+    local thirdGroup = {}
+    return firstGroup, secondGroup, thirdGroup
+end
+
+-- 对应新版root.children[37] PC346-PC384：
+-- 三组偏移依次40、0、80；行号按 #group-index+1 反向排列。
+-- 使用同一个buttonFactory闭包，确保visibleItems/callbackMap捕获一致。
+local function CreateMainLeftBottomButtons_11_9(
+    uiParent,
+    baseX,
+    baseY,
+    visibleItems,
+    callbackMap
+)
+    local firstGroup, secondGroup, thirdGroup =
+        BuildMainLeftBottomButtonGroups_11_9()
+
+    local buttonFactory = MakeMainLeftBottomButtonFactory(
+        uiParent,
+        baseX,
+        baseY,
+        visibleItems,
+        callbackMap
+    )
+
+    local function createGroup(group, groupOffset)
+        local groupLength = #group
+        for index, buttonConfig in ipairs(group) do
+            local rowIndex = groupLength - index + 1
+            buttonFactory(buttonConfig, rowIndex, groupOffset)
+        end
+    end
+
+    createGroup(firstGroup, 40)
+    createGroup(secondGroup, 0)
+    createGroup(thirdGroup, 80)
+
+    return firstGroup, secondGroup, thirdGroup
+end
+
 -- 规范反汇编 root/43 PC181-PC194、PC338-PC339：
 -- 取得UI顶层父容器，并以Panel_mini_chat的世界坐标和内容尺寸计算按钮布局基值。
 -- PC193先计算worldPosition.x + contentSize.width；PC338再减10；
