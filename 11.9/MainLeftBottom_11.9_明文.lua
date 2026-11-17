@@ -61,6 +61,16 @@ MainLeftBottom.z = featureState
 -- PC42：全模块共享的定时器状态表。后续所有定时器闭包必须捕获此同一张表。
 local timerState = {}
 
+-- root PC286-PC294：黑名单检测共享状态表；PC294将同一表挂到MainLeftBottom.a.blacklist。
+-- nil字段按Lua表语义自然缺省；其余字段严格采用新版VM初始值。
+local blacklistState = {
+    deathHandled = false,
+    alertAt = 0.0,
+    nextTryAt = 0.0,
+    noStoneWarned = false
+}
+moduleState.blacklist = blacklistState
+
 -- root PC46创建的通知闭包在稍后定义其工厂后赋值；先声明词法cell，
 -- 使Builtsetting_11_9等闭包捕获局部通知函数，而不是误读全局同名字段。
 local ShowLocalNoticeByType
@@ -127,10 +137,12 @@ local function GetDroppedItems()
     return global.dropItemManager:FindDropItemInCurrViewFieldAll()
 end
 
--- root.children[2]：本地路径包装器，供doInit_UI的配置文件读写闭包捕获。
--- VM调用cc.FileUtils:getInstance():getWritablePath()，不导出为全局函数。
-local function GetWritablePath()
-    return cc.FileUtils:getInstance():getWritablePath()
+-- root/3：本地路径包装器，供配置读写/删除闭包捕获。
+-- VM调用cc.FileUtils:getInstance():getWritablePath()，再与传入文件名拼接。
+-- 因此参数是文件名，返回值是“可写目录 + 文件名”的完整路径。
+local function GetWritablePath(fileName)
+    local writablePath = cc.FileUtils:getInstance():getWritablePath()
+    return writablePath .. fileName
 end
 
 -- root.children[3]：移动到指定地图坐标，并返回当前位置是否已进入range范围。
