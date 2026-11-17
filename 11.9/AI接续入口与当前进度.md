@@ -4335,3 +4335,7 @@ ButtonFactory本体使用：
 
 ### 下一步直接执行
 从root/37 PC272-PC337继续恢复callbackMap映射；优先逐条闭合child6、child9、child25以及它们的调用/捕获关系，再将newzone回调登记接入新版callbackMap。所有源码仍只写入11.9/MainLeftBottom_11.9_明文.lua；每轮同步更新本账本和本接续入口。
+
+
+### 本轮最后修正
+新增的CreateMainLeftBottomButtons_11_9已移动到MakeMainLeftBottomButtonFactory的local声明之后，避免Lua词法作用域下误引用全局同名函数。修正提交：f97f6d546e1f8c7b7dec99ef0ce44befe0f52e21；唯一明文文件最新content SHA：5ac510c4ceac032948a8d32f35f91bdab427ab7f。未进行Lua编译或运行验证。
