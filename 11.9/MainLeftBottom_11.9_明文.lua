@@ -4082,9 +4082,9 @@ local function MakeResourceStatisticsWindow(moduleState, printLog, timerState, i
     end
 end
 
--- 对应新版doInit PC329-PC334：先创建root/43/4闭包，再按捕获顺序
+-- 对应新版doInit PC329-PC335：先创建root/43/4闭包，再按捕获顺序
 -- 注入MainLeftBottom.a、PrintLog、timerState、MainLeftBottom.z，
--- 最后写入callbackMap.moneybut。当前保留为独立登记辅助函数，等待真实doInit主干接入。
+-- 最后写入callbackMap.moneybut；由BuildDoInitCallbackMap在真实入口中调用。
 local function RegisterResourceStatisticsButtonHandler(
     callbackMap, moduleState, printLog, timerState, initState
 )
@@ -4097,7 +4097,7 @@ end
 
 
 -- ============================================================
---  11.9 doInit_UI：业务callbackMap构建与登记（对应VM PC235-PC336）
+--  11.9 doInit：业务callbackMap构建与登记（对应VM PC235-PC337）
 -- ============================================================
 -- deps字段与root/43的20项upvalue及局部R[12]一一对应。
 -- 20项upvalue的root捕获源（root PC390创建闭包，PC391-PC410依序传入）：
@@ -4125,7 +4125,7 @@ end
 --
 -- 历史新区回调适配器：保留旧原型映射阶段的业务辅助代码。
 -- 当前11.9规范root/43的PC268-PC337没有newzone登记，且对应原型身份尚未闭合；
--- 因此本适配器暂不接入当前doInit_UI的callbackMap。
+-- 因此本适配器暂不接入当前doInit的callbackMap。
 local function MakeNewZoneCallbackAdapter(newZoneHandler)
     return function()
         newZoneHandler()
@@ -4133,7 +4133,7 @@ local function MakeNewZoneCallbackAdapter(newZoneHandler)
 end
 
 -- 本函数只负责当前规范root/43的业务callbackMap，不创建按钮、不设置布局、不绑定GUI点击事件。
--- 调用者必须把doInit_UI当时的同一批upvalue/局部值传入，不能另建状态表。
+-- 调用者必须把doInit当时的同一批upvalue/局部值传入，不能另建状态表。
 -- deps与root/43的20项upvalue及PC196-PC235构造的buttonGroups对应。
 local function BuildDoInitCallbackMap(deps)
     -- PC236-PC238：R[15]，捕获完整buttonGroups(R[12])和visibleItems(UP[4])。
