@@ -3050,6 +3050,18 @@ local function MakeBuyGoldRootContext(mainLeftBottom)
 end
 
 
+-- root PC266-PC269：创建并导出MainLeftBottom.show生命周期闭包。
+-- root/11捕获顺序：(MainLeftBottom.a, MainLeftBottom.b)。
+local function MakeMainLeftBottomShowCallback(moduleState, visibleItems)
+    return function()
+        moduleState.isHidden = true
+
+        for _, uiItem in pairs(visibleItems) do
+            GUI:setVisible(uiItem, true)
+        end
+    end
+end
+
 -- root PC261-PC265：创建并导出MainLeftBottom.hide生命周期闭包。
 -- root/38捕获顺序：(MainLeftBottom.a, timerState, MainLeftBottom.b)。
 local function MakeMainLeftBottomHideLifecycleCallback(
@@ -3108,6 +3120,10 @@ end
 MainLeftBottom.hide = MakeMainLeftBottomHideLifecycleCallback(
     moduleState,
     timerState,
+    visibleItems
+)
+MainLeftBottom.show = MakeMainLeftBottomShowCallback(
+    moduleState,
     visibleItems
 )
 MainLeftBottom.destroy = MakeMainLeftBottomDestroyCallback(
