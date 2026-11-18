@@ -1811,6 +1811,54 @@ local function MakeBlacklistButtonHandler(
     end
 end
 
+-- 新版root/37 child6：黑名单启动回调（5项捕获，0显式参数）。
+-- 捕获顺序：blacklistState、MainLeftBottom模块表、Schedule包装器、
+-- 0.1秒调度间隔、PrintLog。与旧版root/43的MakeBlacklistTimer分开保留。
+local function MakeBlacklistStartupCallback_11_9(
+    blacklistState,
+    mainLeftBottom,
+    schedule,
+    scheduleInterval,
+    printLog
+)
+    return function()
+        blacklistState.distance = 11
+
+        local currentEnvironment = getfenv(1)
+        local blacklistItems = currentEnvironment.BlacklistItems
+        blacklistItems()
+
+        local timerHandle = schedule(blacklistItems, scheduleInterval)
+        mainLeftBottom.blacklistTimer = timerHandle
+
+        printLog("开启黑名单功能，距离格子：%d", blacklistState.distance)
+        return true
+    end
+end
+
+-- 新版root/37 child18：blacklistbut按钮处理器（4项捕获）。
+-- 捕获顺序：MainLeftBottom模块表、PrintLog、featureState、child6启动回调。
+-- 关闭时取消MainLeftBottom.blacklistTimer并清空isBlacklisting；
+-- 开启时直接调用child6，不经过旧版的距离文件读取/输入弹窗流程。
+local function MakeBlacklistButtonHandler_11_9(
+    mainLeftBottom,
+    printLog,
+    featureState,
+    startBlacklist
+)
+    return function()
+        if mainLeftBottom.blacklistTimer then
+            printLog("关闭黑名单功能")
+            SL:UnSchedule(mainLeftBottom.blacklistTimer)
+            mainLeftBottom.blacklistTimer = nil
+            featureState.isBlacklisting = false
+            return true
+        end
+
+        return startBlacklist()
+    end
+end
+
 -- root/43/23：通用数字输入弹窗包装器。
 -- root/43/23/1的弹窗参数：btnType=2、showEdit=true、
 -- editParams.inputMode=2、maxLength=6；成功回调仅在status==1且输入为纯数字时触发。
