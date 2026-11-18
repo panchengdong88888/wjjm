@@ -3926,8 +3926,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 16,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "closure_root_52_21（合成定位名）",
+      "identity_status": "本轮已恢复",
       "constants": [
         "回收完毕",
         "LuaSendMsg",
