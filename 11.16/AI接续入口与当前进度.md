@@ -306,3 +306,10 @@
 - 新增明文：root/52/4，合成定位名closure_root_52_4，业务为`Builtsetting()`。
 - 父级root/52槽位559的Opcode121闭包创建指令确认captureCount=0；函数本身3条物理指令，无upvalue。
 - 当前可靠完成22/162（13.58%）。下一项检查root/56/0。
+
+
+### 2026-11-19续接增量（root/56/0完成）
+- 新增明文：root/56/0，合成定位名helper_root_56_0，业务为`return global.Facade:retrieveProxy(global.ProxyTable.FriendProxy)`。
+- 9条物理指令、无参数、无H槽；Opcode282/108融合链和Opcode202返回已闭合。父级未发现创建该childIndex=0闭包的指令，注册关系待确认。
+- 3.40.x文档未收录Facade/retrieveProxy，仅按原始调用点恢复，不认定为公开文档API。
+- 当前可靠完成23/162（14.20%）。下一项检查root/25/0/2的Opcode62。
