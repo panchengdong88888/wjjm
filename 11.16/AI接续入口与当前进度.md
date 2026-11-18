@@ -327,3 +327,10 @@
 - 父级root/52槽位603的Opcode121创建指令确认captureCount=0；16条物理指令融合边界全部闭合。
 - SL:ShowSystemTips(str)已在3.40.x的SL.md“文本提示”条目核实；LuaSendMsg未在文档收录，仅按原始调用点恢复。
 - 当前可靠完成25/162（15.43%）。下一轮继续扫描短小无upvalue原型。
+
+
+### 2026-11-19续接增量（root/70完成）
+- 新增明文：root/70，合成定位名helper_root_70；读取`SL:GetMetaValue("X")`与`SL:GetMetaValue("Y")`，false/nil时分别默认0，返回`{x=x,y=y}`。
+- root槽位189 Opcode121创建该闭包，captureCount=0；19条物理指令融合及分支路径闭合。
+- SL.md示例确认`SL:GetMetaValue(key)`调用形式；返回类型未由文档声明，未擅自补充。
+- 当前可靠完成26/162（16.05%）。下一轮继续筛选短小无upvalue原型。
