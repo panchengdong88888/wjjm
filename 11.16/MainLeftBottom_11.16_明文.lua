@@ -154,3 +154,13 @@ end
 local function closure_root_75_0(a, b)
     return a._distance >= b._distance
 end
+
+
+-- 11.16 root/43/1：FindMonsterCandidates中的距离排序比较闭包。
+-- Opcode 79连续读取两个参数的dist字段（第二条读取指令融合在同一VM分支中）。
+-- Opcode 226检测a.dist < b.dist；条件成立时走false分支，反之走true分支。
+-- Opcode 174写入false，Opcode 110写入true；Opcode 292返回寄存器2中的布尔结果。
+-- closure_root_43_1为原型路径合成定位名，不冒充原始函数名。
+local function closure_root_43_1(a, b)
+    return a.dist >= b.dist
+end
