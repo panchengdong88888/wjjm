@@ -1197,8 +1197,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 10,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "closure_root_13_0（合成定位名）",
+      "identity_status": "行为已恢复",
       "constants": [
         "",
         22502,
@@ -1209,8 +1209,8 @@
         0,
         1
       ],
-      "recovery_status": "候选已提取待Opcode闭合",
-      "recovery_note": "10条物理指令、无参数、无子原型；常量线索包含LuaSendMsg与9002/22502等值。Opcode95融合载荷及54/295/168常量装载和调用参数寄存器关系待确认；当前不计入明文完成数。"
+      "recovery_status": "已写入明文",
+      "recovery_note": "完整恢复为LuaSendMsg(9002, 22502, 1, 2, 3, \"\", 0)。Opcode95融合消费下一物理槽位；Opcode295装载22502/1/2；Opcode168融合消费后续两槽装载3/空字符串/0；Opcode128调用寄存器0并传入寄存器1..7；Opcode205无显式返回结束。原始局部符号名待父级注册点确认。"
     },
     {
       "preorder_id": 19,
