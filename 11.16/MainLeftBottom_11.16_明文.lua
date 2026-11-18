@@ -103,3 +103,25 @@ function FindMonsterInCurrViewField()
 
     return result
 end
+
+
+--[[
+    2026-11-18：优先恢复的简单UI回调闭包。
+    以下3个原型均只有4条物理指令；Opcode 9融合读取H[0]环境表中的全局函数，
+    随后无参数调用并结束。函数名为按原型路径生成的定位名，不冒充原始符号名。
+]]
+
+-- 原型 root/52/0：读取并调用全局 startForgeZodiac。
+local function closure_root_52_0()
+    startForgeZodiac()
+end
+
+-- 原型 root/52/25：读取并调用全局 startAppleMap。
+local function closure_root_52_25()
+    startAppleMap()
+end
+
+-- 原型 root/52/30：读取并调用全局 startPutoutAll。
+local function closure_root_52_30()
+    startPutoutAll()
+end
