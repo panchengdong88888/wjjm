@@ -1,1 +1,169 @@
-序号,原型路径,原型ID,函数名,父级,指令数,捕获数,业务模块,状态,证据位置,明文位置,未决问题,最后更新
+序号,原型路径,父原型,深度,候选函数名,身份状态,参数数,常量数,子原型数,指令数,恢复状态,证据/常量线索,明文位置,未决问题,最后更新
+0,root,,0,,待识别,0,202,81,654,未恢复,TakeItems | 在线时长10分钟 | distance | 自动拾取 | lastAttacker | 羊·[普通] | 累计登录 6 天 | SendHookList | _G | a,,,2026-11-18
+1,root/0,root,1,,待识别,1,8,0,37,未恢复,math | insert | table | lastMapName | ipairs | name | random,,,2026-11-18
+2,root/1,root,1,,待识别,0,24,0,76,未恢复,新区使用：%s | BAG_DATA | ShowSystemTips | pairs | MSG_CS_USE_BAG_ITEM | Gbtc | len | MsgType | LuaSendMsg | SL,,,2026-11-18
+3,root/2,root,1,,待识别,1,100,3,226,未恢复,雷霆战靴+8 | 龙傲 | 雷霆护腕+7 | SL | table | 鸿蒙 | 起源 | 终极雷霆戒指 | 终极雷霆战靴 | 血龙宝珠,,,2026-11-18
+4,root/2/0,root/2,2,,待识别,1,1,0,13,未恢复,ipairs,,,2026-11-18
+5,root/2/1,root/2,2,,待识别,1,4,0,20,未恢复,ipairs | find | string,,,2026-11-18
+6,root/2/2,root/2,2,,待识别,1,1,0,13,未恢复,ipairs,,,2026-11-18
+7,root/3,root,1,StopGatherMonsters,高置信候选,0,6,0,25,未恢复,gatherTimer | UnSchedule | SL | 引怪功能已停止 | IDLE,,,2026-11-18
+8,root/4,root,1,GetOwnerID,本轮已恢复,2,7,0,31,已写入明文,tostring | type |  | string | GetOwnerID,MainLeftBottom_11.16_明文.lua,,2026-11-18
+9,root/5,root,1,,待识别,1,5,0,17,未恢复,mCurrMapX | y | x | mCurrMapY,,,2026-11-18
+10,root/6,root,1,MainLoop,高置信候选,0,67,0,573,未恢复,"锁定怪物 %s 失败 | 攻击怪物 %d: %s (ID: %s) | ACTOR_HAS_ONE_BUFF | pairs | 所有怪物归属已获取，切换到攻击状态 | 怪物 %d (ID: %s) 已死亡或离开视野 | MagicID | ATTACK_WAIT_TIME | time | 锁定怪物 %d: %s (ID: %s, 归属: %s)",,,2026-11-18
+11,root/7,root,1,MoveItemToQuickUse,高置信候选,2,26,0,133,未恢复,GetQuickUseSize | DelItemData | ProxyTable | GetQuickUseData | next | 目标位置超出范围 | retrieveProxy | string | 快捷栏交换: %d ↔ %d | QuickUseProxy,,,2026-11-18
+12,root/8,root,1,GetDroppedItems,高置信候选,0,3,0,8,未恢复,dropItemManager | global | FindDropItemInCurrViewFieldAll,,,2026-11-18
+13,root/9,root,1,GetMapData2DPtr,名称线索，实际行为待确认,5,15,0,162,未恢复,GetMapData2DPtr | sceneManager | isObstacle | getMapDataCols | getMapDataRows | floor | global | max | math | abs,,,2026-11-18
+14,root/10,root,1,,待识别,0,13,0,29,未恢复,开始锻造生肖 | state | forgeZodiacRunning | checkGold | forgeZodiac | forgeZodiacTimer | ticks | 已停止锻造生肖 | index,,,2026-11-18
+15,root/11,root,1,,待识别,0,9,0,31,未恢复,zd | IsInWhitelistMap | cruiseRunTimer | SL | 关闭见人跑 | cruiseGatherPaused | UnSchedule,,,2026-11-18
+16,root/12,root,1,,待识别,3,20,0,51,未恢复,MMO | y | SL | InputMove | range | tonumber | mapID | sendNotification | x | PlayerPos,,,2026-11-18
+17,root/13,root,1,NewZoneFeature,高置信候选,0,18,1,37,未恢复,Gbtc | newzoneTimer |  | ScheduleOnce | LuaSendMsg | isNewzone | UnSchedule | SL | 开启新区功能,,,2026-11-18
+18,root/13/0,root/13,2,,待识别,0,8,0,10,未恢复, | LuaSendMsg,,,2026-11-18
+19,root/14,root,1,ForgeZodiacToggleHandler,高置信候选,1,21,0,51,未恢复,Button_setTitleColor | NoticeTable | ShowSystemTips | Button_setTitleText | 锻造生肖 | Layer_NPC_Talk_Close | forgezodiacbut | sendNotification | UnSchedule | #ffffff,,,2026-11-18
+20,root/15,root,1,,待识别,3,20,2,87,未恢复,单价不能低于 %d | ，单价： | RequestAuctionPutList | AUCTION_BIDPRICE_MIN | SL | ShowSystemTips | 未获取到拍卖行货币 | UnSchedule | tonumber | 金条,,,2026-11-18
+21,root/15/0,root/15,2,,待识别,1,5,0,19,未恢复,ShowSystemTips | SL | putinTimer | UnSchedule,,,2026-11-18
+22,root/15/1,root/15,2,,待识别,0,25,0,121,未恢复,OverLap | 上架结束：总价超出上限 | pairs | SL | MakeIndex | ITEM_IS_BIND | AUCTION_BIDPRICE_MAX | tonumber | GetMetaValue | RequestAuctionPutin,,,2026-11-18
+23,root/16,root,1,,待识别,0,6,0,25,未恢复,infoBg | pairs | setVisible | GUI | isHidden,,,2026-11-18
+24,root/17,root,1,,待识别,0,12,0,51,未恢复,NPC_STORAGE_MAX_PAGE | NPCStorageProxy | global | GetMaxPage | 仓库代理未初始化 | GUIDefine | STORAGE_PER_PAGE_MAX | GetOpenSize | MMO | GetStorageDataByPage,,,2026-11-18
+25,root/18,root,1,,待识别,0,8,0,34,未恢复,"FileUtilCtl | ([%w_]+)=([^
+]*) | string | global | gmatch | getWritablePath | isFileExist | getDataFromFileEx",,,2026-11-18
+26,root/19,root,1,,待识别,0,21,2,64,未恢复,GAME_ID | Schedule | 6324648 | GetMetaValue | 1957840929 | 1304755149 | 39770358 | UID | 3548598 | [验证成功] 账号ID验证通过,,,2026-11-18
+27,root/19/0,root/19,2,,待识别,0,8,0,24,未恢复,doInit | 等待主界面属性栏(MainProperty)初始化完成... | UnSchedule | _ui | SL | MainProperty | MainLeftBottom | Panel_mini_chat,,,2026-11-18
+28,root/19/1,root/19,2,,待识别,1,4,0,27,未恢复,tostring | ipairs | 账号不存在，功能已限制，账号ID： | [提示] 账号ID在允许列表中，功能已开启,,,2026-11-18
+29,root/20,root,1,FindMonsterInCurrViewField,高置信候选,0,4,0,27,未恢复,FindMonsterInCurrViewField | GetID | SL | ipairs,,,2026-11-18
+30,root/21,root,1,,待识别,2,36,0,149,未恢复,LimitCount | SL | type | Index | 限购剩余 0 | ITEM_INDEX_BY_NAME | CheckCondition |  | BuyCount | pageData,,,2026-11-18
+31,root/22,root,1,,待识别,0,14,0,61,未恢复,GUI | resWin | UnSchedule | pairs | setVisible | Win_CloseAll | appleMapBg | isHidden | infoBg | resTimer,,,2026-11-18
+32,root/23,root,1,InitGatherMonsters,高置信候选,0,11,1,36,未恢复,引怪功能已启动 (阈值: %d) | CHECK_INTERVAL | string | UnSchedule | format | SL | IDLE | gatherTimer | GATHER_THRESHOLD | Schedule,,,2026-11-18
+33,root/23/0,root/23,2,,待识别,0,1,0,3,未恢复,MainLoop,,,2026-11-18
+34,root/24,root,1,GetMapId,本轮已恢复,0,4,0,9,已写入明文,MAP_ID | SL | GetMetaValue,MainLeftBottom_11.16_明文.lua,,2026-11-18
+35,root/25,root,1,,待识别,0,7,1,33,未恢复,Schedule | SL | 开启见人跑 | UnSchedule | cruiseRunTimer,,,2026-11-18
+36,root/25/0,root/25,2,,待识别,0,104,3,598,未恢复,cruiseGatherPaused | 附近没有玩家，恢复战斗 | 见人跑: %s(%d格)，向%d方向移动%d步 | SetTargetID | MMO | ClearTarget |  | retrieveProxy | ipairs | p,,,2026-11-18
+37,root/25/0/0,root/25/0,3,,待识别,0,0,0,3,未恢复,,,,2026-11-18
+38,root/25/0/1,root/25/0,3,,待识别,0,22,0,38,未恢复,GetMainPlayer | type | GetMapY | GetMetaValue | NoticeTable | x | INPUT_MOVE_TYPE_JOYSTICK | sendNotification | global | SL,,,2026-11-18
+39,root/25/0/2,root/25/0,3,,待识别,0,0,0,3,未恢复,,,,2026-11-18
+40,root/26,root,1,,待识别,0,17,1,63,未恢复,取不到好友代理，清空失败 | pairs | lastAttacker | ScheduleOnce | 黑名单为空 | 清空黑名单失败 | ipairs | SL |  人 | 开始清空黑名单，共 %d 人,,,2026-11-18
+41,root/26/0,root/26,2,,待识别,0,4,0,13,未恢复,RequestOutBlacklist | _blacklistData | SL,,,2026-11-18
+42,root/27,root,1,,待识别,0,56,0,307,未恢复,"{""index"":%d,""UserID"":""%s""} |  | 已进入目标地图： | GetMapName | 苹果未激活：发送关闭巡航 | 攻城时间段结束，苹果图恢复下图 | state | 苹果已激活：开启巡航 | monitor | index",,,2026-11-18
+43,root/28,root,1,,待识别,0,8,0,32,未恢复,tonumber | SERVER_TIME | time | SL | TITLE_DATA_BY_ID | GetMetaValue,,,2026-11-18
+44,root/29,root,1,,待识别,0,3,0,20,未恢复, | 数据已重置,,,2026-11-18
+45,root/30,root,1,,待识别,1,8,0,31,未恢复,BAG_DATA | SL | find | Name | GetMetaValue | pairs | string,,,2026-11-18
+46,root/31,root,1,,待识别,1,5,0,35,未恢复,_blacklistData | GetMetaValue | ACTOR_MASTER_ID | SL | Name,,,2026-11-18
+47,root/32,root,1,,待识别,1,4,0,17,未恢复,cruiseGatherPaused | zd | 见人跑：,,,2026-11-18
+48,root/33,root,1,,待识别,0,19,2,56,未恢复,putinTimer | Facade | RequestAuctionPutList | global | SL | retrieveProxy | 开始下架拍卖行物品 | AuctionProxy | UnSchedule | putoutTimer,,,2026-11-18
+49,root/33/0,root/33,2,,待识别,1,6,0,21,未恢复,UnSchedule | ShowSystemTips | putoutSent | SL | putoutTimer,,,2026-11-18
+50,root/33/1,root/33,2,,待识别,0,23,0,77,未恢复,Facade | putoutTicks | putoutSent | ipairs | global | SL | RequestAuctionPutout | 下架完成：已无上架物品 | 下架结束 | RequestAuctionPutList,,,2026-11-18
+51,root/34,root,1,,待识别,0,43,0,274,未恢复,IsInWhitelistMap | gamePlayerController | GetMainPlayer | concat | deathHandled | GetMetaValue | table | os | time | noStoneWarned,,,2026-11-18
+52,root/35,root,1,,待识别,0,12,0,32,未恢复,NoticeTable | Facade | _normalMediators | LayerFacadeMediator | Layer_CommonTips_Close | retrieveMediator | sendNotification | global | CloseLayer,,,2026-11-18
+53,root/36,root,1,,待识别,0,16,0,77,未恢复,table | STORAGE_PER_PAGE_MAX | ipairs | insert | 仓库总可用格子:  | MMO | global | NPCStorageProxy | GetOpenSize | GetMaxPage,,,2026-11-18
+54,root/37,root,1,GetMapName,本轮已恢复,0,4,0,9,已写入明文,SL |  | MAP_NAME | GetMetaValue,MainLeftBottom_11.16_明文.lua,,2026-11-18
+55,root/38,root,1,,待识别,2,6,0,25,未恢复,abs | y | math | x | max,,,2026-11-18
+56,root/39,root,1,IsDie,本轮已恢复,1,1,0,7,已写入明文,IsDie,MainLeftBottom_11.16_明文.lua,,2026-11-18
+57,root/40,root,1,,待识别,2,19,1,72,未恢复,id | name | ACTOR_NAME | SL | ACTOR_MASTER_ID | GetMetaValue | lastAttacker | AttackUserID | string | type,,,2026-11-18
+58,root/40/0,root/40,2,,待识别,0,2,0,6,未恢复,SL | JsonDecode,,,2026-11-18
+59,root/41,root,1,,待识别,1,11,0,28,未恢复,global | GetMetaValue | AFKBegin | Facade | AFKEnd | SL | BATTLE_IS_AFK | sendNotification | NoticeTable,,,2026-11-18
+60,root/42,root,1,,待识别,0,9,0,22,未恢复,PlayerInputProxy | ProxyTable | Facade | retrieveProxy | MMO | global | SetTargetID | SELETE_TARGET_TYPE_FIND,,,2026-11-18
+61,root/43,root,1,,待识别,0,34,2,172,未恢复,MoveTo | mCurrMapX | y | ipairs | x | mCurrMapY | dist | 地面无可拾取物品 | sort | find,,,2026-11-18
+62,root/43/0,root/43,2,,待识别,2,2,0,19,未恢复,kIdx | dist,,,2026-11-18
+63,root/43/1,root/43,2,,待识别,2,1,0,8,未恢复,dist,,,2026-11-18
+64,root/44,root,1,,待识别,3,10,0,29,未恢复,"tostring | string | FileUtilCtl | 0 | writeStringToFile | 1 | global | getWritablePath | price=%s
+name=%s
+mode=%s
+ | format",,,2026-11-18
+65,root/45,root,1,,待识别,0,57,2,224,未恢复,NPC_STORAGE_MAX_PAGE | find | 玄铁 | BOSS头骨 | 神装碎片 | 圣皇 |  件物品 | GUIDefine | STORAGE_PER_PAGE_MAX | len,,,2026-11-18
+66,root/45/0,root/45,2,,待识别,2,15,0,52,未恢复, DuraMax= | 聚灵珠信息:  | 聚灵珠 | Dura | find | isOutputted | StdMode | DuraMax | string |  Dura=,,,2026-11-18
+67,root/45/1,root/45,2,,待识别,0,1,0,27,未恢复,,,,2026-11-18
+68,root/46,root,1,,待识别,0,12,0,42,未恢复,GetMetaValue | MAP_NAME | ipairs | 盟重省 | string | 土城 | 盟重 | IN_SAFE_AREA |  | find,,,2026-11-18
+69,root/47,root,1,,待识别,2,2,0,7,未恢复,ScheduleOnce | SL,,,2026-11-18
+70,root/48,root,1,,待识别,0,9,0,26,未恢复,MoneyProxy | GetMoneyCountById | ProxyTable | GetMoneyIdByName | global | 金币 | Facade | retrieveProxy,,,2026-11-18
+71,root/49,root,1,PlayerPos,本轮已恢复,0,4,0,10,已写入明文,Y | SL | X | GetMetaValue,MainLeftBottom_11.16_明文.lua,,2026-11-18
+72,root/50,root,1,,待识别,5,80,5,444,未恢复,screenW | numInputModeStack | screenH | GetWindow | TextInput_Create | numInputEdit | GUI | numInputModeLabel | #ff0000 | TextInput_setInputMode,,,2026-11-18
+73,root/50/0,root/50,2,,待识别,0,15,0,80,未恢复,Win_Close | string | gsub | %s | tonumber | ^%d+$ |  | match | Text_setString | 参数格式不对，请输入数字,,,2026-11-18
+74,root/50/1,root/50,2,,待识别,0,0,0,5,未恢复,,,,2026-11-18
+75,root/50/2,root/50,2,,待识别,0,0,0,5,未恢复,,,,2026-11-18
+76,root/50/3,root/50,2,,待识别,0,2,0,5,未恢复,GUI | Win_Close,,,2026-11-18
+77,root/50/4,root/50,2,,待识别,0,4,0,23,未恢复,Button_setTitleColor | GUI | #ffffff | #00ff00,,,2026-11-18
+78,root/51,root,1,,待识别,1,13,0,38,未恢复,select | type | # | pcall | Print | table | format | tostring | string | SL,,,2026-11-18
+79,root/52,root,1,doInit_UI / 主界面初始化,高置信候选,0,176,37,865,未恢复,"开拾取 | infoGoldTxt | 开苹果图中
+开苹果图中
+开苹果图中 | y | Layout_Create | cruiseTxt | 元宝 | -- | 开拉怪 | x",,,2026-11-18
+80,root/52/0,root/52,2,,待识别,0,1,0,4,未恢复,startForgeZodiac,,,2026-11-18
+81,root/52/1,root/52,2,,待识别,0,7,0,23,未恢复,SL | 关闭黑名单功能 | isBlacklisting | UnSchedule | blacklistTimer,,,2026-11-18
+82,root/52/2,root/52,2,,待识别,0,10,0,30,未恢复,显示所有按钮 | hidebut | hide | 隐藏所有按钮 | setOpacity | show | isHidden | GUI,,,2026-11-18
+83,root/52/3,root/52,2,,待识别,0,5,1,23,未恢复,SL | buygold110Timer | 开始检测金币(>110W买金条) | Schedule,,,2026-11-18
+84,root/52/3/0,root/52/3,3,,待识别,0,21,0,77,未恢复,ShowSystemTips | UnSchedule | 买金条失败：%s | 金条 | 买金条失败： | ProxyTable | retrieveProxy | GetMoneyIdByName | buygold110Timer | 金币,,,2026-11-18
+85,root/52/4,root/52,2,,待识别,0,1,0,3,未恢复,Builtsetting,,,2026-11-18
+86,root/52/5,root/52,2,,待识别,2,10,0,51,未恢复,name | GUI | #ffffff | #ff0000 | key | Button_setTitleText | ipairs | toggle | toggled | Button_setTitleColor,,,2026-11-18
+87,root/52/6,root/52,2,,待识别,0,72,5,320,未恢复,声望卷 | 绑定元宝 | setTouchEnabled | 血龙宝珠 | 关闭资源信息窗口 | 绑定灵符 | #00FF00 | Win_IsNotNull | ListView_Create | initTimeCell,,,2026-11-18
+88,root/52/6/0,root/52/6,3,,待识别,3,17,0,65,未恢复,_cell_ | #FFFFFF | Layout_Create | _ | ceil | Text_Create | :-- | _text_ | math | GUI,,,2026-11-18
+89,root/52/6/1,root/52/6,3,,待识别,0,31,0,168,未恢复,math | GetMoneyIdByName | 小时 | UnSchedule | 分钟 | : | floor | GUI | initSnapshot | ),,,2026-11-18
+90,root/52/6/2,root/52/6,3,,待识别,0,8,0,20,未恢复,"点击空白,关闭资源信息窗口 | resWin | Win_Close | GUI | resTimer | SL | UnSchedule",,,2026-11-18
+91,root/52/6/3,root/52/6,3,,待识别,1,12,0,35,未恢复,string | tostring | format | %.1f亿 | floor | math | 万,,,2026-11-18
+92,root/52/6/4,root/52/6,3,,待识别,1,12,0,46,未恢复,find | BAG_DATA | pairs | string | MakeIndex | OverLap | SL | Name | ITEM_IS_BIND | GetMetaValue,,,2026-11-18
+93,root/52/7,root/52,2,,待识别,0,7,0,26,未恢复,ipairs | slot | SL | names | ITEM_INDEX_BY_NAME | MoveItemToQuickUse | GetMetaValue,,,2026-11-18
+94,root/52/8,root/52,2,,待识别,0,11,1,49,未恢复,DiuItems | dropMode | SL | 关闭丢全部物品 | 开启丢全部物品(模式1) | isDiuing | UnSchedule | dropTimer,,,2026-11-18
+95,root/52/8/0,root/52/8,3,,待识别,0,2,0,5,未恢复,dropMode | DiuItems,,,2026-11-18
+96,root/52/9,root/52,2,,待识别,0,5,0,18,未恢复,blacklistTimer | distance | BlacklistItems | 开启黑名单功能，距离格子：%d,,,2026-11-18
+97,root/52/10,root/52,2,,待识别,0,2,0,6,未恢复,ClearBlacklistItems | 清空黑名单,,,2026-11-18
+98,root/52/11,root/52,2,,待识别,0,2,0,5,未恢复,_G | LuaSendMsg,,,2026-11-18
+99,root/52/12,root/52,2,,待识别,0,3,0,5,未恢复,global | gameWorldController | OnGameLeaveWorld,,,2026-11-18
+100,root/52/13,root/52,2,,待识别,0,1,0,13,未恢复,cruiseRunTimer,,,2026-11-18
+101,root/52/14,root/52,2,,待识别,6,38,0,174,未恢复,"tostring | sealPanelAt | ancientSwordData | swordPullPending | ""power"" | subData_2 | combatPower | find |  | ,",,,2026-11-18
+102,root/52/15,root/52,2,,待识别,0,11,0,36,未恢复,dropTimer | 开丢全部 | diuqibut | dropallbut | Button_setTitleText | GUI | #ff0000 | #ffffff | Button_setTitleColor | 关丢全部,,,2026-11-18
+103,root/52/16,root/52,2,,待识别,0,8,1,33,未恢复,SL | rewardTimer | Schedule | 开启奖励功能 | UnSchedule | 关闭奖励功能,,,2026-11-18
+104,root/52/16/0,root/52/16,3,,待识别,0,5,0,22,未恢复,LuaSendMsg,,,2026-11-18
+105,root/52/17,root/52,2,,待识别,0,8,0,25,未恢复,PickUpItems | UnSchedule | 开启拾取物品 | SL | 关闭拾取物品 | shiquTimer,,,2026-11-18
+106,root/52/18,root/52,2,,待识别,0,18,1,65,未恢复,dropTimer | isDiuing | 开丢全部 | 开启丢弃物品(模式2) | dropallbut | Button_setTitleColor | UnSchedule | GUI | Button_setTitleText | #ffffff,,,2026-11-18
+107,root/52/18/0,root/52/18,3,,待识别,0,2,0,5,未恢复,DiuItems | dropMode,,,2026-11-18
+108,root/52/19,root/52,2,,待识别,0,10,0,29,未恢复,关闭取物功能 | 开启取物功能 | SL | UnSchedule | TakeItems | isTaking | takeTimer,,,2026-11-18
+109,root/52/20,root/52,2,,待识别,0,0,0,5,未恢复,,,,2026-11-18
+110,root/52/21,root/52,2,,待识别,0,9,0,16,未恢复,"回收完毕 | LuaSendMsg | ShowSystemTips | [1,1] | SL",,,2026-11-18
+111,root/52/22,root/52,2,,待识别,0,6,0,34,未恢复,blacklistbut | gatherTimer | rewardTimer | yinguaibut | blacklistTimer | rewardbut,,,2026-11-18
+112,root/52/23,root/52,2,,待识别,0,147,0,897,未恢复,ITEM_INDEX_BY_NAME | -- | %s不足(%d/%d) | >=100，等级 | 品 | QUICKUSE_DATA | RELEVEL | autoPanelAt | GetMoneyCountById | 鸣鸿神刀,,,2026-11-18
+113,root/52/24,root/52,2,,待识别,0,18,0,76,未恢复,buygold110Timer | SL | 已停止丢物品、拾取和购买金条 | shiquTimer | UnSchedule | diuqibut | #ffffff | buygoldTimer | shiqubut | Button_setTitleText,,,2026-11-18
+114,root/52/25,root/52,2,,待识别,0,1,0,4,未恢复,startAppleMap,,,2026-11-18
+115,root/52/26,root/52,2,,待识别,0,5,1,23,未恢复,SL | Schedule | 开始检测金币(>500W买金条) | buygoldTimer,,,2026-11-18
+116,root/52/26/0,root/52/26,3,,待识别,0,21,0,77,未恢复,UnSchedule | 金币不足500W，买金条结束 | ShowSystemTips | global | 金币 | 金条 | ProxyTable | 买金条失败： | tostring | 买金条失败：%s,,,2026-11-18
+117,root/52/27,root/52,2,,待识别,1,12,0,46,未恢复,pairs | MakeIndex | OverLap | find | Name | BAG_DATA | SL | string | GetMetaValue | ITEM_IS_BIND,,,2026-11-18
+118,root/52/28,root/52,2,,待识别,0,3,0,7,未恢复,InitGatherMonsters | GATHER_THRESHOLD,,,2026-11-18
+119,root/52/29,root/52,2,,待识别,0,10,0,39,未恢复,toggle | #ff0000 | Button_setTitleText | Button_setTitleColor | #ffffff | applebut | toggled | name | GUI,,,2026-11-18
+120,root/52/30,root/52,2,,待识别,0,1,0,4,未恢复,startPutoutAll,,,2026-11-18
+121,root/52/31,root/52,2,,待识别,0,10,0,29,未恢复,isStoring | UnSchedule | StorageItems | storageTimer | 关闭存仓功能 | 开启存仓功能 | SL,,,2026-11-18
+122,root/52/32,root/52,2,,待识别,3,18,1,55,未恢复,Button_Create | Button_setTitleFontName | key | res/public/kaiti2.ttf | Button_setTitleColor | #ffffff | Cfg | res/public/fuzhu_btn.png | addOnClickEvent | toggle,,,2026-11-18
+123,root/52/32/0,root/52/32,3,,待识别,0,10,0,48,未恢复,toggle | GUI | name | #ff0000 | Button_setTitleColor | Button_setTitleText | toggled | #ffffff | key,,,2026-11-18
+124,root/52/33,root/52,2,,待识别,0,25,0,43,未恢复,%04d%02d%02d | 到达 22:00:05，发送开启巡航协议 | format | hour | sec | date | LuaSendMsg | month | year | ,,,2026-11-18
+125,root/52/34,root/52,2,,待识别,0,12,1,46,未恢复,金条 | price | putinPrice | mode | putinName |  | 上架物品 | 1 | tonumber | inputNumber,,,2026-11-18
+126,root/52/34/0,root/52/34,3,,待识别,3,4,0,18,未恢复,putinStacked | putinPrice | putinName | startPutinGold,,,2026-11-18
+127,root/52/35,root/52,2,,待识别,0,17,1,37,未恢复,"tostring | string | LuaSendMsg | global | format | len | USER_ID | {""UserID"":""%s"",""index"":15} | MsgType | MSG_CS_NPC_CLICK",,,2026-11-18
+128,root/52/35/0,root/52/35,3,,待识别,0,2,0,3,未恢复,powerRefreshing,,,2026-11-18
+129,root/52/36,root/52,2,,待识别,0,4,0,19,未恢复,gatherTimer | 关闭引怪功能 | StopGatherMonsters | 开启引怪功能，阈值：11,,,2026-11-18
+130,root/53,root,1,,待识别,1,4,0,15,未恢复,string | match | · | ^(.-)·,,,2026-11-18
+131,root/54,root,1,,待识别,0,18,0,56,未恢复,已停止苹果下图 | cruiseOff | appleMapRunning | 开始苹果下图 | appleMap | ticks | state | UnSchedule | appleMapTimer | backCity,,,2026-11-18
+132,root/55,root,1,,待识别,0,51,0,195,未恢复,开启6格范围内有多少怪 不走去拾取 | table | SETTING_CONFIG | HP保护1物品优先级: | GetMetaValue | PKMODE | split | SL | 开启怪物简装 | 随机传送石,,,2026-11-18
+133,root/56,root,1,,待识别,0,1,1,10,未恢复,pcall,,,2026-11-18
+134,root/56/0,root/56,2,,待识别,0,5,0,9,未恢复,ProxyTable | global | FriendProxy | Facade | retrieveProxy,,,2026-11-18
+135,root/57,root,1,,待识别,2,10,0,60,未恢复,abs | math,,,2026-11-18
+136,root/58,root,1,TakeItems,高置信候选,0,23,0,99,未恢复,"MSG_CS_STORAGE_PICK_OUT_REQUEST | len |  件 | trim | global | 仓库无可取物品 | 待定 | LuaSendMsg | 取出物品完成, 共取出  | string",,,2026-11-18
+137,root/59,root,1,,待识别,1,16,0,44,未恢复,appleMap | #ffffff | GUI | SL | appleMapRunning | UnSchedule | 开苹果图 | toggled | appleMapTimer | Button_setTitleText,,,2026-11-18
+138,root/60,root,1,,待识别,0,6,0,21,未恢复,PlayerInputProxy | ClearAttackTargetID | global | retrieveProxy | ProxyTable | Facade,,,2026-11-18
+139,root/61,root,1,,待识别,0,15,0,60,未恢复,QUICKUSE_DATA | GetMetaValue | 盟重回城石 | ITEM_COUNT | ITEM_INDEX_BY_NAME | pairs | tonumber | UseItemByIndex | string | find,,,2026-11-18
+140,root/62,root,1,,待识别,0,8,0,33,未恢复,ipairs | GetMetaValue | ITEM_INDEX_BY_NAME | UseItemByIndex | SL | ITEM_COUNT | tonumber,,,2026-11-18
+141,root/63,root,1,,待识别,0,34,0,92,未恢复,insert | param1 | string | networkCtl | ) | global | Blocklist | type | recog | SendHookList,,,2026-11-18
+142,root/64,root,1,,待识别,2,7,0,31,未恢复,tostring | type |  | GetOwnerID | string,,,2026-11-18
+143,root/65,root,1,,待识别,1,5,0,18,未恢复,find | string | 土城 | 盟重,,,2026-11-18
+144,root/66,root,1,,待识别,1,8,0,26,未恢复,SetTargetID | ProxyTable | PlayerInputProxy | SELETE_TARGET_TYPE_FIND | MMO | Facade | global | retrieveProxy,,,2026-11-18
+145,root/67,root,1,,待识别,0,22,0,154,未恢复,forgeZodiac | appleMap | appleMapTimer | pairs | SL | buygoldTimer | NetworkUtil | _origOnLuaMessage | putinTimer | cruiseRunTimer,,,2026-11-18
+146,root/68,root,1,,待识别,0,9,1,40,未恢复,table | gameMapController | mNetMsgHandle | MsgType | type | 已挂接伤害消息钩子（击杀拉黑用） | MSG_SC_DAMAGE_HP | __ylwHookedOrigin | global,,,2026-11-18
+147,root/68/0,root/68,2,,待识别,2,4,0,18,未恢复,onDamageMsg | function | pcall | type,,,2026-11-18
+148,root/69,root,1,,待识别,2,7,0,20,未恢复,其他玩家 | 无归属 |  | GetOwnerID | 自己,,,2026-11-18
+149,root/70,root,1,,待识别,0,7,0,19,未恢复,Y | SL | X | x | GetMetaValue | y,,,2026-11-18
+150,root/71,root,1,DeathAutoBlacklist,高置信候选,0,15,1,47,未恢复,凶手已在黑名单中：%s | 自动拉黑： | name | SL | id | lastAttacker |  | 被 %s 击杀，自动加入黑名单 | 本次死亡没记录到凶手，跳过自动拉黑 | ScheduleOnce,,,2026-11-18
+151,root/71/0,root/71,2,,待识别,0,3,0,6,未恢复,SL | name | RequestAddBlacklistByName,,,2026-11-18
+152,root/72,root,1,,待识别,1,8,0,32,未恢复,find | GetMetaValue | string | Name | pairs | SL | ALL_EQUIP_DATAS,,,2026-11-18
+153,root/73,root,1,,待识别,0,10,0,23,未恢复,os | hour | sec | min | *t | date,,,2026-11-18
+154,root/74,root,1,,待识别,1,3,0,10,未恢复,format | 状态切换: %s -> %s | string,,,2026-11-18
+155,root/75,root,1,FindMonsterCandidates,高置信候选,0,19,1,102,未恢复,SETTING_IDX_IGNORE_MONSTER | GET_SETTING | insert | MMO | SL | 未知怪物 | GetName | ipairs | sort | FindMonsterInCurrViewField,,,2026-11-18
+156,root/75/0,root/75,2,,待识别,2,1,0,8,未恢复,_distance,,,2026-11-18
+157,root/76,root,1,,待识别,0,8,0,25,未恢复,AUCTION_MONEY | 元宝 | SL | GetMetaValue | ipairs | name | id,,,2026-11-18
+158,root/77,root,1,GetMainPlayerID,本轮已恢复,0,3,0,6,已写入明文,gamePlayerController | GetMainPlayerID | global,MainLeftBottom_11.16_明文.lua,,2026-11-18
+159,root/78,root,1,,待识别,2,2,0,7,未恢复,SL | Schedule,,,2026-11-18
+160,root/79,root,1,,待识别,0,48,0,212,未恢复,SL |  第 | checkGold | forge | len | format | clickNpc | 生肖锻造未完成，已尝试200次 | Name | LuaSendMsg,,,2026-11-18
+161,root/80,root,1,ShowLocalNoticeByType,高置信候选,1,14,0,15,未恢复,screenH | ShowLocalNoticeByType | BColor | Type | SL | Y | Msg | FColor | X,,,2026-11-18
