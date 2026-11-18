@@ -4465,3 +4465,8 @@ child25 PC2 opcode132另有两记录融合行为：先设置`GATHER_THRESHOLD=11
 
 ### 下一步
 定点追踪root/37后续哪些闭包捕获R15（child9返回闭包），将新helper接入实际调用者；再恢复child6黑名单辅助闭包和child12 Builtsetting包装器。不要重复PC272-PC337映射或把旧root/43的装配流程当作新版。
+
+
+### child9实际调用点已定位
+root/37 PC278创建child0 stopall处理器；PC279-PC282依次捕获timerState、featureState、局部R15（child9同步闭包）、UP[0]；PC283登记callbackMap.stopallbut。child9因此明确服务于stopallbut，供停止拾取/丢弃时同步按钮状态。现有MakeStopAllScriptButtonHandler的四参数顺序与这组捕获相符；但新版callbackMap完整入口尚未接线。
+PC330创建child15时也捕获R15为第五项，child15父函数体没有直接读取该upvalue，嵌套闭包是否消费待确认。
