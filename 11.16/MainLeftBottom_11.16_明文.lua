@@ -278,3 +278,26 @@ local function helper_root_70()
     local y = SL:GetMetaValue("Y") or 0
     return { x = x, y = y }
 end
+
+
+-- 11.16 root/69：20条物理指令、2个参数、无upvalue捕获。
+-- root父原型槽位195通过Opcode121创建childIndex=69闭包，captureCount=0。
+-- arg1作为GetOwnerID方法receiver，arg2作为“自己”归属ID比较值。
+-- ownerId为nil、空字符串或-1时标签为“无归属”；等于arg2时为“自己”，否则为“其他玩家”。
+-- Opcode221融合复制ownerId与标签到返回寄存器；Opcode293返回两个值。
+-- GetOwnerID未在3.40.x开发文档中收录；仅按原始调用点恢复receiver与方法名，不认定为公开文档API。
+-- helper_root_69为原型路径合成定位名，arg1/arg2为描述性参数名，原始参数名未恢复。
+local function helper_root_69(arg1, arg2)
+    local ownerId = arg1:GetOwnerID()
+    local ownerLabel
+
+    if ownerId == nil or ownerId == "" or ownerId == -1 then
+        ownerLabel = "无归属"
+    elseif ownerId == arg2 then
+        ownerLabel = "自己"
+    else
+        ownerLabel = "其他玩家"
+    end
+
+    return ownerId, ownerLabel
+end
