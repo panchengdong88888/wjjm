@@ -4455,3 +4455,13 @@ child25 PC2 opcode132另有两记录融合行为：先设置`GATHER_THRESHOLD=11
 
 ### 当前任务
 定点检查框架API与宿主初始化资料中环境表数值键0、F[0][1][0][0]链的定义；没有证据则保留待确认。随后继续child9、child6、child12职责与新版callbackMap装配。不要重新解码载荷，不重审已闭合的PC272-PC337按钮键映射或13项配置。
+
+
+## 2026-11-18续：新版child9 toggle同步函数已写入明文Lua
+
+本轮已恢复child9完整业务主体。root/37 PC253-PC257的四项捕获为R12第一组、R13第二组、R14第三组、根R1（MainLeftBottom模块表）；child9接收(buttonKey,toggled)，双层遍历三组配置，匹配后更新config.toggled，并从MainLeftBottom.b取按钮，按状态更新标题与颜色。新增函数为MakeMainLeftBottomToggleStateSync_11_9(firstGroup, secondGroup, thirdGroup, mainLeftBottom)，旧root/43 helper保持不动。
+
+明文Lua提交：7cd044b40d23c42e4988427bea0cc14de623da34。尚未完成新版doInit中的实例化和引用接线；未编译、未打包APK、未游戏实测。
+
+### 下一步
+定点追踪root/37后续哪些闭包捕获R15（child9返回闭包），将新helper接入实际调用者；再恢复child6黑名单辅助闭包和child12 Builtsetting包装器。不要重复PC272-PC337映射或把旧root/43的装配流程当作新版。
