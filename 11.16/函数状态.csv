@@ -153,7 +153,7 @@ mode=%s
 145,root/67,root,1,,待识别,0,22,0,154,未恢复,forgeZodiac | appleMap | appleMapTimer | pairs | SL | buygoldTimer | NetworkUtil | _origOnLuaMessage | putinTimer | cruiseRunTimer,,,2026-11-18
 146,root/68,root,1,,待识别,0,9,1,40,未恢复,table | gameMapController | mNetMsgHandle | MsgType | type | 已挂接伤害消息钩子（击杀拉黑用） | MSG_SC_DAMAGE_HP | __ylwHookedOrigin | global,,,2026-11-18
 147,root/68/0,root/68,2,,待识别,2,4,0,18,未恢复,onDamageMsg | function | pcall | type,,,2026-11-18
-148,root/69,root,1,,待识别,2,7,0,20,未恢复,其他玩家 | 无归属 |  | GetOwnerID | 自己,,,2026-11-18
+148,root/69,root,1,helper_root_69（合成定位名）,行为已恢复,2,7,0,20,已写入明文,其他玩家 | 无归属 | GetOwnerID | 自己 | -1,MainLeftBottom_11.16_明文.lua,20条物理指令全部闭合；root槽位195 Opcode121创建且captureCount=0；Opcode143/294比较及分支、Opcode221融合复制、Opcode293双值返回已确认；GetOwnerID未在3.40.x文档收录,2026-11-19
 149,root/70,root,1,helper_root_70（合成定位名）,行为已恢复,0,7,0,19,已写入明文,Y | SL | X | GetMetaValue | x | y,MainLeftBottom_11.16_明文.lua,19条物理指令全部闭合；root槽位189 Opcode121创建且captureCount=0；Opcode361/309/355融合链、Opcode325真值分支、Opcode279表创建、Opcode292返回已确认；SL.md示例核实GetMetaValue调用形式,2026-11-19
 150,root/71,root,1,DeathAutoBlacklist,高置信候选,0,15,1,47,未恢复,凶手已在黑名单中：%s | 自动拉黑： | name | SL | id | lastAttacker |  | 被 %s 击杀，自动加入黑名单 | 本次死亡没记录到凶手，跳过自动拉黑 | ScheduleOnce,,,2026-11-18
 151,root/71/0,root/71,2,closure_root_71_0,匿名闭包（行为已恢复）,0,3,0,6,已写入明文,SL | name | RequestAddBlacklistByName,MainLeftBottom_11.16_明文.lua,6条指令：SL方法调用准备；Opcode 9/410读取全局name；调用RequestAddBlacklistByName(name),2026-11-18
