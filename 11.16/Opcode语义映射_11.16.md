@@ -135,3 +135,31 @@ end
 | 11 | 按寄存器区间A..B返回 | root/20尾部返回结果 |
 
 root/20仍未完整恢复：Opcode 371、250及循环寄存器/跳转目标之间的对应关系尚未闭合；不得据此提前写函数体。
+
+
+## root/20 FindMonsterInCurrViewField：闭合后的Opcode补充（2026-11-18）
+
+| Opcode | 11.16分派器语义 | root/20用途 |
+|---:|---|---|
+| 65 | 创建N[A]表，并融合消费后续3条物理记录：再创建一张表、从常量表加载值、复制寄存器 | 与后续318、105、241融合时完成空集合/迭代器初始化；不可把318/105/241再单独执行 |
+| 198 | N[A]=H[B]，融合消费下一条记录执行N[A]=N[B] | 读取H[0]闭包函数，并复制当前怪物寄存器作为调用参数 |
+| 250 | 调用N[A](N[A+1],N[A+2])；将返回值写入后续循环寄存器；若迭代变量为nil则跳过下一条回边指令，否则更新控制变量 | ipairs泛型for迭代推进/结束判断 |
+| 371 | N[A][N[B]]=N[C] | result[monsterID]=monster |
+
+root/20恢复后的结构化明文：
+
+    function FindMonsterInCurrViewField()
+        local monsters = SL:FindMonsterInCurrViewField(false, false) or {}
+        local result = {}
+        for _, monster in ipairs(monsters) do
+            if IsDie(monster) then
+                local monsterID = monster:GetID()
+                if monsterID then
+                    result[monsterID] = monster
+                end
+            end
+        end
+        return result
+    end
+
+闭包说明：Opcode 198读取H[0]并调用当前对象；其签名与已恢复的root/39 IsDie(actor)完全吻合，且返回值语义正好构成存活过滤。故明文按IsDie引用恢复，置信度高；目前的原型索引未直接保存H[0]符号名，仍保留该证据边界。
