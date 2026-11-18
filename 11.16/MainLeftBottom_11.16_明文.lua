@@ -208,3 +208,13 @@ local function helper_root_53(value)
 
     return value
 end
+
+
+-- 11.16 root/52/12：5条物理指令、无参数、无upvalue捕获。
+-- Opcode 248融合执行：加载global、读取gameWorldController成员、
+-- 准备OnGameLeaveWorld方法及self；Opcode 123无返回值调用，Opcode 205结束。
+-- 该名称未在3.40.x开发文档中检索到；这里只按原始调用点恢复，不将其认定为文档已定义的公开API。
+-- closure_root_52_12为原型路径合成定位名，原始函数符号名尚未确认。
+local function closure_root_52_12()
+    global.gameWorldController:OnGameLeaveWorld()
+end
