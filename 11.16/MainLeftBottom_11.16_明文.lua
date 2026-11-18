@@ -69,3 +69,18 @@ end
 function GetDroppedItems()
     return global.dropItemManager:FindDropItemInCurrViewFieldAll()
 end
+
+
+-- root/80：按11.16 VM融合指令恢复；H[0]为环境表，读取screenH计算Y坐标。
+function ShowLocalNoticeByType(Msg)
+    local notice = {
+        Type = 10,
+        Msg = Msg,
+        FColor = 249,
+        BColor = 0,
+        X = 5,
+        Y = screenH - 50,
+    }
+
+    SL:ShowLocalNoticeByType(notice)
+end
