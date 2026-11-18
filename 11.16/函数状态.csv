@@ -6,7 +6,7 @@
 4,root/2/0,root/2,2,,待识别,1,1,0,13,未恢复,ipairs,,,2026-11-18
 5,root/2/1,root/2,2,,待识别,1,4,0,20,未恢复,ipairs | find | string,,,2026-11-18
 6,root/2/2,root/2,2,,待识别,1,1,0,13,未恢复,ipairs,,,2026-11-18
-7,root/3,root,1,StopGatherMonsters,高置信候选,0,6,0,25,分析中（融合边界已闭合；跳转目标需恢复原始物理槽位V，JSON当前缺失槽位/空槽）,gatherTimer | UnSchedule | SL | 引怪功能已停止 | IDLE | Opcode43融合两条；Opcode388跳转按W物理槽位计数,,,2026-11-18
+7,root/3,root,1,StopGatherMonsters,高置信候选,0,6,0,25,控制流已闭合（#1–25；#5/#6分支在#14汇合）；父级closure的H[1]–H[6]符号映射待完成,gatherTimer | UnSchedule | SL | 引怪功能已停止 | IDLE | 原始载荷已重解析，25个物理槽位均有效,,,2026-11-18
 8,root/4,root,1,GetOwnerID,本轮已恢复,2,7,0,31,已写入明文,tostring | type |  | string | GetOwnerID,MainLeftBottom_11.16_明文.lua,,2026-11-18
 9,root/5,root,1,,待识别,1,5,0,17,未恢复,mCurrMapX | y | x | mCurrMapY,,,2026-11-18
 10,root/6,root,1,MainLoop,高置信候选,0,67,0,573,未恢复,"锁定怪物 %s 失败 | 攻击怪物 %d: %s (ID: %s) | ACTOR_HAS_ONE_BUFF | pairs | 所有怪物归属已获取，切换到攻击状态 | 怪物 %d (ID: %s) 已死亡或离开视野 | MagicID | ATTACK_WAIT_TIME | time | 锁定怪物 %d: %s (ID: %s, 归属: %s)",,,2026-11-18
