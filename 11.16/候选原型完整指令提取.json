@@ -1670,6 +1670,217 @@
         "upvalues": "无H槽读取或写入",
         "api_docs": "SL.md示例中出现SL:GetMetaValue('MAP_ID')，确认receiver和字符串key调用形式；文档未声明返回类型，本函数默认值逻辑以原始Opcode325分支为准"
       }
+    },
+    {
+      "path": "root/69",
+      "params": 2,
+      "constants": [
+        "其他玩家",
+        "无归属",
+        null,
+        "",
+        "GetOwnerID",
+        "自己",
+        -1
+      ],
+      "instruction_count": 20,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 393,
+          "A": 2,
+          "B": 0,
+          "C": "GetOwnerID",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 2,
+          "opcode": 209,
+          "A": 2,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 295,
+          "A": 3,
+          "B": "",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 4,
+          "opcode": 143,
+          "A": 1,
+          "B": 2,
+          "C": null,
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 5,
+          "opcode": 388,
+          "A": 0,
+          "B": 9,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 143,
+          "A": 1,
+          "B": 2,
+          "C": "",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 7,
+          "opcode": 388,
+          "A": 0,
+          "B": 9,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 143,
+          "A": 0,
+          "B": 2,
+          "C": -1,
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 9,
+          "opcode": 388,
+          "A": 0,
+          "B": 11,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 295,
+          "A": 3,
+          "B": "无归属",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 11,
+          "opcode": 388,
+          "A": 0,
+          "B": 16,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 294,
+          "A": 0,
+          "B": 2,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 388,
+          "A": 0,
+          "B": 15,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 14,
+          "opcode": 295,
+          "A": 3,
+          "B": "自己",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 15,
+          "opcode": 388,
+          "A": 0,
+          "B": 16,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 16,
+          "opcode": 259,
+          "A": 3,
+          "B": "其他玩家",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 17,
+          "opcode": 221,
+          "A": 4,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 18,
+          "opcode": 64,
+          "A": 5,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 19,
+          "opcode": 293,
+          "A": 4,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 20,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "local ownerId = arg1:GetOwnerID(); local ownerLabel = (ownerId == nil or ownerId == \"\" or ownerId == -1) and \"无归属\" or (ownerId == arg2 and \"自己\" or \"其他玩家\"); return ownerId, ownerLabel",
+      "recovery_evidence": {
+        "closure_creation": "root父原型槽位195 Opcode121创建childIndex=69，captureCount=0",
+        "opcode393": "准备arg1.GetOwnerID方法并保存arg1为receiver/self",
+        "opcode209": "调用GetOwnerID，receiver为arg1，结果写入N[2]",
+        "opcode143": "若(N[B]==D)与A所指定的布尔值不相等，则跳过下一物理槽位；用于nil、空字符串、-1比较",
+        "opcode294": "若(N[B]==N[C])与A所指定的布尔值不相等，则跳过下一物理槽位",
+        "opcode221": "N[A]=N[B]并融合消费下一物理槽位执行N[next.A]=N[next.B]",
+        "opcode64": "N[A]=N[B]寄存器复制",
+        "opcode293": "return Y(N,A,B)，返回寄存器A至B；本例返回ownerId和标签",
+        "opcode339": "位于return之后，不可达",
+        "upvalues": "无H槽读取或写入",
+        "api_docs": "GetOwnerID未在3.40.x开发文档检索到；仅按原始调用点恢复方法receiver和名称，不认定为公开文档API"
+      }
     }
   ],
   "constant_type_notes": {
