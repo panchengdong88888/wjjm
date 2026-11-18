@@ -218,3 +218,12 @@ end
 local function closure_root_52_12()
     global.gameWorldController:OnGameLeaveWorld()
 end
+
+
+-- 11.16 root/52/4：3条物理指令、无参数、无upvalue捕获。
+-- 父级root/52在槽位559以Opcode121创建该子闭包，捕获数为0。
+-- Opcode105加载全局Builtsetting；Opcode128无参数调用；Opcode339结束。
+-- closure_root_52_4为原型路径合成定位名，原始函数符号名尚未确认。
+local function closure_root_52_4()
+    Builtsetting()
+end
