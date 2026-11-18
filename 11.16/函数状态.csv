@@ -85,7 +85,7 @@ mode=%s
 79,root/52,root,1,doInit_UI / 主界面初始化,高置信候选,0,176,37,865,未恢复,"开拾取 | infoGoldTxt | 开苹果图中
 开苹果图中
 开苹果图中 | y | Layout_Create | cruiseTxt | 元宝 | -- | 开拉怪 | x",,,2026-11-18
-80,root/52/0,root/52,2,,待识别,0,1,0,4,未恢复,startForgeZodiac,,,2026-11-18
+80,root/52/0,root/52,2,closure_root_52_0,匿名闭包（行为已恢复）,0,1,0,4,已写入明文,startForgeZodiac,MainLeftBottom_11.16_明文.lua,4条指令：Opcode 9融合读取H[0].startForgeZodiac；无参数调用；定位名为合成名,2026-11-18
 81,root/52/1,root/52,2,,待识别,0,7,0,23,未恢复,SL | 关闭黑名单功能 | isBlacklisting | UnSchedule | blacklistTimer,,,2026-11-18
 82,root/52/2,root/52,2,,待识别,0,10,0,30,未恢复,显示所有按钮 | hidebut | hide | 隐藏所有按钮 | setOpacity | show | isHidden | GUI,,,2026-11-18
 83,root/52/3,root/52,2,,待识别,0,5,1,23,未恢复,SL | buygold110Timer | 开始检测金币(>110W买金条) | Schedule,,,2026-11-18
@@ -119,13 +119,13 @@ mode=%s
 111,root/52/22,root/52,2,,待识别,0,6,0,34,未恢复,blacklistbut | gatherTimer | rewardTimer | yinguaibut | blacklistTimer | rewardbut,,,2026-11-18
 112,root/52/23,root/52,2,,待识别,0,147,0,897,未恢复,ITEM_INDEX_BY_NAME | -- | %s不足(%d/%d) | >=100，等级 | 品 | QUICKUSE_DATA | RELEVEL | autoPanelAt | GetMoneyCountById | 鸣鸿神刀,,,2026-11-18
 113,root/52/24,root/52,2,,待识别,0,18,0,76,未恢复,buygold110Timer | SL | 已停止丢物品、拾取和购买金条 | shiquTimer | UnSchedule | diuqibut | #ffffff | buygoldTimer | shiqubut | Button_setTitleText,,,2026-11-18
-114,root/52/25,root/52,2,,待识别,0,1,0,4,未恢复,startAppleMap,,,2026-11-18
+114,root/52/25,root/52,2,closure_root_52_25,匿名闭包（行为已恢复）,0,1,0,4,已写入明文,startAppleMap,MainLeftBottom_11.16_明文.lua,4条指令：Opcode 9融合读取H[0].startAppleMap；无参数调用；定位名为合成名,2026-11-18
 115,root/52/26,root/52,2,,待识别,0,5,1,23,未恢复,SL | Schedule | 开始检测金币(>500W买金条) | buygoldTimer,,,2026-11-18
 116,root/52/26/0,root/52/26,3,,待识别,0,21,0,77,未恢复,UnSchedule | 金币不足500W，买金条结束 | ShowSystemTips | global | 金币 | 金条 | ProxyTable | 买金条失败： | tostring | 买金条失败：%s,,,2026-11-18
 117,root/52/27,root/52,2,,待识别,1,12,0,46,未恢复,pairs | MakeIndex | OverLap | find | Name | BAG_DATA | SL | string | GetMetaValue | ITEM_IS_BIND,,,2026-11-18
 118,root/52/28,root/52,2,,待识别,0,3,0,7,未恢复,InitGatherMonsters | GATHER_THRESHOLD,,,2026-11-18
 119,root/52/29,root/52,2,,待识别,0,10,0,39,未恢复,toggle | #ff0000 | Button_setTitleText | Button_setTitleColor | #ffffff | applebut | toggled | name | GUI,,,2026-11-18
-120,root/52/30,root/52,2,,待识别,0,1,0,4,未恢复,startPutoutAll,,,2026-11-18
+120,root/52/30,root/52,2,closure_root_52_30,匿名闭包（行为已恢复）,0,1,0,4,已写入明文,startPutoutAll,MainLeftBottom_11.16_明文.lua,4条指令：Opcode 9融合读取H[0].startPutoutAll；无参数调用；定位名为合成名,2026-11-18
 121,root/52/31,root/52,2,,待识别,0,10,0,29,未恢复,isStoring | UnSchedule | StorageItems | storageTimer | 关闭存仓功能 | 开启存仓功能 | SL,,,2026-11-18
 122,root/52/32,root/52,2,,待识别,3,18,1,55,未恢复,Button_Create | Button_setTitleFontName | key | res/public/kaiti2.ttf | Button_setTitleColor | #ffffff | Cfg | res/public/fuzhu_btn.png | addOnClickEvent | toggle,,,2026-11-18
 123,root/52/32/0,root/52/32,3,,待识别,0,10,0,48,未恢复,toggle | GUI | name | #ff0000 | Button_setTitleColor | Button_setTitleText | toggled | #ffffff | key,,,2026-11-18
