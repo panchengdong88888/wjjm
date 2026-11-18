@@ -163,23 +163,3 @@ root/20恢复后的结构化明文：
     end
 
 闭包说明：Opcode 198读取H[0]并调用当前对象；其签名与已恢复的root/39 IsDie(actor)完全吻合，且返回值语义正好构成存活过滤。故明文按IsDie引用恢复，置信度高；目前的原型索引未直接保存H[0]符号名，仍保留该证据边界。
-
-## 2026-11-18增量：root/52下3个短闭包的分派器确认
-
-| Opcode | 直接执行行为 | 相关原型用途 | 置信度 |
-|---:|---|---|---|
-| 45 | N[A]=Z[B]，随后融合消费下一条记录执行N[A]=H[B] | root/52/8/0、root/52/18/0：先加载DiuItems，再读取环境闭包槽 | 高 |
-| 9 | N[A]=H[B]，随后融合消费下一条记录执行N[A]=N[B][C] | 上述两个闭包：读取环境表后，下一条96/410读取dropMode字段 | 高 |
-| 96 | N[A]=N[B][C] | root/52/8/0读取环境表的dropMode字段 | 高 |
-| 410 | N[A]=N[B][C] | root/52/18/0读取环境表的dropMode字段 | 高 |
-| 248 | 从常量表加载receiver，并融合消费85、393完成成员访问及方法准备 | root/52/12：global.gameWorldController.OnGameLeaveWorld方法准备 | 高 |
-| 123 | N[A](Y(N,A+1,B))，按指定参数区间调用 | root/52/12：调用准备好的OnGameLeaveWorld方法 | 高 |
-| 205 | 函数返回控制 | root/52/12闭包尾部 | 高 |
-
-### 闭包恢复结果
-
-- root/52/8/0：DiuItems(dropMode)。
-- root/52/18/0：DiuItems(dropMode)。该原型与前者的调用表达式相同，但常量表顺序不同，两个原型均分别保留。
-- root/52/12：global.gameWorldController:OnGameLeaveWorld()。
-- 上述三个原型没有原始符号名；明文文件使用closure_root_52_x_x作为定位用合成名称，不将其误称为原始函数名。
-- 这轮只恢复闭包体；它们在父级root/52中的创建/注册位置仍待恢复，不能据此宣称父级UI初始化已完成。
