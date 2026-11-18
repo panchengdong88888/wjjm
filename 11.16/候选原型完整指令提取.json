@@ -1245,6 +1245,53 @@
         "parent_registration": "root/56父原型未发现创建childIndex=0的Opcode121闭包指令；原始注册/使用关系待确认",
         "api_docs": "已检索3.40.x的SL.md、元变量.md、游戏事件.md及仓库搜索，未收录Facade/retrieveProxy；不认定为文档已定义的公开API"
       }
+    },
+    {
+      "path": "root/23/0",
+      "params": 0,
+      "constants": [
+        "MainLoop"
+      ],
+      "instruction_count": 3,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 105,
+          "A": 0,
+          "B": "MainLoop",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "MainLoop()",
+      "recovery_evidence": {
+        "closure_creation": "root/23父原型槽位23 Opcode387创建childIndex=0，captureCount=0",
+        "opcode105": "N[A]=Z[C]，此处Z为全局环境表，读取全局MainLoop",
+        "opcode128": "调用N[A]，参数区间A+1至B；本例无参数",
+        "opcode205": "结束当前函数，无显式返回值",
+        "upvalues": "无H槽读取或写入",
+        "api_docs": "SL.md、元变量.md及仓库文档搜索均未收录MainLoop；按项目全局函数调用点恢复，不认定为框架公开API"
+      }
     }
   ],
   "constant_type_notes": {
