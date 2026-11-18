@@ -3661,8 +3661,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 5,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "closure_root_52_12（合成定位名）",
+      "identity_status": "本轮已恢复",
       "constants": [
         "global",
         "gameWorldController",
