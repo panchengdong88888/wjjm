@@ -227,3 +227,15 @@ end
 local function closure_root_52_4()
     Builtsetting()
 end
+
+
+-- 11.16 root/56/0：9条物理指令、无参数、无upvalue捕获。
+-- Opcode282融合加载global、读取Facade成员并准备retrieveProxy方法/self；
+-- Opcode108融合加载global并连续读取ProxyTable.FriendProxy；
+-- Opcode202直接返回方法调用结果。槽位8、9位于无条件return之后，不可达。
+-- 3.40.x文档未收录Facade/retrieveProxy；这里只按原始调用点恢复，不认定为公开文档API。
+-- 父级root/56中未发现创建childIndex=0的闭包指令，故原始注册/使用关系待确认。
+-- helper_root_56_0为原型路径合成定位名。
+local function helper_root_56_0()
+    return global.Facade:retrieveProxy(global.ProxyTable.FriendProxy)
+end
