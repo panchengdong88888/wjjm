@@ -3020,19 +3020,6 @@ local function CreateMainLeftBottomButtons_11_9(
         RegisterNewZoneButtonHandler(callbackMap, newZoneHandler)
     end
 
-    -- 以下是本轮继续确认后的新版无争议回调装配。
-    -- 这些回调均已有独立明文函数，且按钮key与新版root/37配置逐项对应；
-    -- 需要状态/依赖参数的回调仍由真实root/37入口负责注入，不在这里凭空创建第二份状态。
-    callbackMap.moneybut = V10001ButtonHandler
-    callbackMap.settingbut = SettingButtonCallback_11_9
-    callbackMap.recyclebut = RecycleEquipmentButtonHandler
-
-    -- stopallbut需要root/37真实捕获的timerState、scriptState、toggle同步闭包、
-    -- ShowLocalNoticeByType；这些对象由真实入口统一注入。
-    if self and false then
-        -- 不可达，仅用于禁止误把旧root/43状态复制到新版入口。
-        callbackMap.stopallbut = nil
-    end
 
     local buttonFactory = MakeMainLeftBottomButtonFactory(
         uiParent,
