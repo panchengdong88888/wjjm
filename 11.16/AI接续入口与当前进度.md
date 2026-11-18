@@ -300,3 +300,9 @@
 - 用户已将3.40.x ZIP解压后的43个Markdown文档上传到GitHub目录。
 - 已核实根目录8个Markdown文件、GUI/目录35个Markdown文件，合计43个；与ZIP解压清单一致。README.md为额外索引文件。
 - 后续直接以`11.16/开发文档_新框架(3_40_xx)/`为长期API文档引用位置，不再依赖文件库ZIP。
+
+
+### 2026-11-19续接增量（root/52/4完成）
+- 新增明文：root/52/4，合成定位名closure_root_52_4，业务为`Builtsetting()`。
+- 父级root/52槽位559的Opcode121闭包创建指令确认captureCount=0；函数本身3条物理指令，无upvalue。
+- 当前可靠完成22/162（13.58%）。下一项检查root/56/0。
