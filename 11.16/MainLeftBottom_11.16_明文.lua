@@ -182,3 +182,13 @@ end
 local function helper_root_78(arg1, arg2)
     return SL:Schedule(arg1, arg2)
 end
+
+
+-- 11.16 root/13/0：NewZoneFeature的无参数子闭包，10条物理指令。
+-- Opcode 95加载全局LuaSendMsg，并融合消费下一物理槽位，将9002写入参数寄存器1；
+-- Opcode 295依次装载22502、1、2；Opcode 168装载3并融合消费后续两槽装载空字符串、0；
+-- Opcode 128调用寄存器0中的函数，参数区间为寄存器1..7；Opcode 205结束函数且无显式返回值。
+-- closure_root_13_0为按原型路径生成的定位名，原始局部函数符号名尚未从父级注册点确认。
+local function closure_root_13_0()
+    LuaSendMsg(9002, 22502, 1, 2, 3, "", 0)
+end
