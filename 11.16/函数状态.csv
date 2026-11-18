@@ -133,7 +133,7 @@ mode=%s
 125,root/52/34,root/52,2,,待识别,0,12,1,46,未恢复,金条 | price | putinPrice | mode | putinName |  | 上架物品 | 1 | tonumber | inputNumber,,,2026-11-18
 126,root/52/34/0,root/52/34,3,,待识别,3,4,0,18,未恢复,putinStacked | putinPrice | putinName | startPutinGold,,,2026-11-18
 127,root/52/35,root/52,2,,待识别,0,17,1,37,未恢复,"tostring | string | LuaSendMsg | global | format | len | USER_ID | {""UserID"":""%s"",""index"":15} | MsgType | MSG_CS_NPC_CLICK",,,2026-11-18
-128,root/52/35/0,root/52/35,3,,待识别,0,2,0,3,未恢复,powerRefreshing,,,2026-11-18
+128,root/52/35/0,root/52/35,3,closure_root_52_35_0,匿名闭包（行为已恢复）,0,2,0,3,已写入明文,powerRefreshing,MainLeftBottom_11.16_明文.lua,3条指令：Opcode 88读取H[0]环境表，融合Opcode 114设置powerRefreshing=false；合成定位名,2026-11-18
 129,root/52/36,root/52,2,,待识别,0,4,0,19,未恢复,gatherTimer | 关闭引怪功能 | StopGatherMonsters | 开启引怪功能，阈值：11,,,2026-11-18
 130,root/53,root,1,,待识别,1,4,0,15,未恢复,string | match | · | ^(.-)·,,,2026-11-18
 131,root/54,root,1,,待识别,0,18,0,56,未恢复,已停止苹果下图 | cruiseOff | appleMapRunning | 开始苹果下图 | appleMap | ticks | state | UnSchedule | appleMapTimer | backCity,,,2026-11-18
