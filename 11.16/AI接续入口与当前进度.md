@@ -334,3 +334,10 @@
 - root槽位189 Opcode121创建该闭包，captureCount=0；19条物理指令融合及分支路径闭合。
 - SL.md示例确认`SL:GetMetaValue(key)`调用形式；返回类型未由文档声明，未擅自补充。
 - 当前可靠完成26/162（16.05%）。下一轮继续筛选短小无upvalue原型。
+
+
+### 2026-11-19续接增量（root/69完成）
+- 新增明文：root/69，合成定位名helper_root_69；通过arg1:GetOwnerID()取得ownerId，按nil/空字符串/-1、与arg2相等、其他情况分别返回“无归属”“自己”“其他玩家”，并返回ownerId与标签。
+- root槽位195 Opcode121创建该闭包，captureCount=0；20条物理指令分支及双值返回闭合。
+- GetOwnerID未在3.40.x开发文档收录，仅按原始调用点恢复，不认定为公开文档API。
+- 当前可靠完成27/162（16.67%）。下一轮继续筛选短小无upvalue原型。
