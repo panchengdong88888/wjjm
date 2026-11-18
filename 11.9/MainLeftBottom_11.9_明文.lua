@@ -2794,6 +2794,49 @@ local function BuildMainLeftBottomButtonGroups_11_9()
     return firstGroup, secondGroup, thirdGroup
 end
 
+-- 新版root.children[37].children[9]：跨三组按钮配置同步toggle状态。
+-- 捕获顺序严格对应root/37 PC253-PC257：
+--   UP[0]=第一组配置数组R12；
+--   UP[1]=第二组配置数组R13；
+--   UP[2]=第三组配置数组R14；
+--   UP[3]=根函数R1，即MainLeftBottom模块表。
+-- 两个显式参数为(buttonKey, toggled)。找到匹配配置后先写入config.toggled，
+-- 再从MainLeftBottom.b按buttonKey取按钮；按钮存在时更新标题与颜色。
+-- 这里不能把捕获的MainLeftBottom模块表误写成MainLeftBottom.a或按钮映射表；
+-- 真正的控件映射字段是MainLeftBottom.b。
+local function MakeMainLeftBottomToggleStateSync_11_9(
+    firstGroup,
+    secondGroup,
+    thirdGroup,
+    mainLeftBottom
+)
+    local buttonGroups = { firstGroup, secondGroup, thirdGroup }
+
+    return function(buttonKey, toggled)
+        for _, buttonGroup in ipairs(buttonGroups) do
+            for _, buttonConfig in ipairs(buttonGroup) do
+                if buttonConfig.key == buttonKey then
+                    buttonConfig.toggled = toggled
+
+                    local visibleItems = mainLeftBottom.b
+                    local button = visibleItems[buttonKey]
+                    if button then
+                        GUI:Button_setTitleText(
+                            button,
+                            toggled and buttonConfig.toggle or buttonConfig.name
+                        )
+                        GUI:Button_setTitleColor(
+                            button,
+                            toggled and "#ff0000" or "#ffffff"
+                        )
+                    end
+                    return
+                end
+            end
+        end
+    end
+end
+
 -- 规范反汇编 root/43 PC181-PC194、PC338-PC339：
 -- 取得UI顶层父容器，并以Panel_mini_chat的世界坐标和内容尺寸计算按钮布局基值。
 -- PC193先计算worldPosition.x + contentSize.width；PC338再减10；
