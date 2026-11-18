@@ -286,3 +286,11 @@
 - 每个首次使用的API记录文档文件名及条目标题；已确认的API（例如GetMainPlayerID）后续直接复用，不再重复分析。
 - 完整规则见 `11.16/项目说明与恢复规则.md` 的“官方框架开发文档”章节。
 
+
+
+### 2026-11-19续接增量（root/52/12完成）
+- 新增已写入明文：root/52/12，合成定位名closure_root_52_12，业务为`global.gameWorldController:OnGameLeaveWorld()`。
+- 原型5条物理指令、无upvalue；Opcode248融合加载global、读取gameWorldController及准备OnGameLeaveWorld方法；Opcode123调用；Opcode205结束。
+- 3.40.x文档未收录gameWorldController/OnGameLeaveWorld，仅依据11.16调用点恢复，不认定为公开文档API。
+- 当前可靠完成21/162（12.96%）。语法检查及游戏运行验证未执行。
+- root/52/10因父级H[0]词法身份未闭合而暂缓；下一轮继续找短小无upvalue原型。
