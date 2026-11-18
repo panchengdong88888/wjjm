@@ -1292,6 +1292,182 @@
         "upvalues": "无H槽读取或写入",
         "api_docs": "SL.md、元变量.md及仓库文档搜索均未收录MainLoop；按项目全局函数调用点恢复，不认定为框架公开API"
       }
+    },
+    {
+      "path": "root/52/21",
+      "params": 0,
+      "constants": [
+        "回收完毕",
+        "LuaSendMsg",
+        5,
+        "ShowSystemTips",
+        901238,
+        "[1,1]",
+        0,
+        "SL",
+        9002
+      ],
+      "instruction_count": 16,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 95,
+          "A": 0,
+          "B": "LuaSendMsg",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 54,
+          "A": 1,
+          "B": 9002,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 3,
+          "opcode": 235,
+          "A": 2,
+          "B": 901238,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 4,
+          "opcode": 247,
+          "A": 3,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 295,
+          "A": 4,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 6,
+          "opcode": 295,
+          "A": 5,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 7,
+          "opcode": 295,
+          "A": 6,
+          "B": "[1,1]",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 8,
+          "opcode": 295,
+          "A": 7,
+          "B": 5,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 9,
+          "opcode": 123,
+          "A": 0,
+          "B": 7,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 361,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 11,
+          "opcode": 102,
+          "A": 0,
+          "B": 0,
+          "C": "ShowSystemTips",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 12,
+          "opcode": 295,
+          "A": 2,
+          "B": "回收完毕",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 13,
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 14,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 15,
+          "opcode": 292,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 16,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "LuaSendMsg(9002, 901238, 0, 0, 0, \"[1,1]\", 5); SL:ShowSystemTips(\"回收完毕\"); return true",
+      "recovery_evidence": {
+        "closure_creation": "root/52父原型槽位603 Opcode121创建childIndex=21，captureCount=0",
+        "opcode95": "N[A]=Z[C]读取全局LuaSendMsg，并融合消费下一物理槽位写入首个参数",
+        "opcode235": "N[A]=K[3]，融合消费后续5条物理槽位，逐一装入其立即/常量值",
+        "opcode361": "读取全局SL，融合准备SL.ShowSystemTips及receiver/self，再融合装入提示字符串",
+        "opcode123": "调用LuaSendMsg，参数寄存器范围N[1]至N[7]",
+        "opcode128": "调用SL.ShowSystemTips，参数寄存器范围N[1]至N[2]",
+        "opcode110": "N[0]=true",
+        "opcode292": "return N[0]",
+        "opcode339": "位于无条件return之后，不可达",
+        "api_docs": "SL.md“文本提示”明确记载SL:ShowSystemTips(str)，str为string；LuaSendMsg未在3.40.x开发文档检索到，按原始调用点保留，不认定为公开文档API"
+      }
     }
   ],
   "constant_type_notes": {
