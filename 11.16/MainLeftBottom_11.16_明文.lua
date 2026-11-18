@@ -301,3 +301,21 @@ local function helper_root_69(arg1, arg2)
 
     return ownerId, ownerLabel
 end
+
+-- 11.16 root/5：1个参数、17条物理指令、无upvalue捕获。
+-- 父级root在物理槽位190创建childIndex=5闭包，captureCount=0。
+-- 参数为假值时，Opcode 193清空返回寄存器1，Opcode 293返回nil。
+-- 参数为真值时，分别读取mCurrMapX/mCurrMapY；Opcode 325实现false/nil默认值分支。
+-- Opcode 359在补x=0时融合读取mCurrMapY；Opcode 355在补y=0时融合创建表及字段写入；
+-- 非默认分支由Opcode 100创建表，Opcode 409融合写入x/y字段，Opcode 11返回表。
+-- helper_root_5为原型路径合成定位名，原始符号名及参数名未确认。
+local function helper_root_5(arg1)
+    if not arg1 then
+        return nil
+    end
+
+    local x = arg1.mCurrMapX or 0
+    local y = arg1.mCurrMapY or 0
+
+    return { x = x, y = y }
+end
