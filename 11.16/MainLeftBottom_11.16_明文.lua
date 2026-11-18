@@ -264,3 +264,17 @@ local function closure_root_52_21()
     SL:ShowSystemTips("回收完毕")
     return true
 end
+
+
+-- 11.16 root/70：19条物理指令、无参数、无upvalue捕获。
+-- root父原型槽位189通过Opcode121创建childIndex=70闭包，captureCount=0。
+-- 两次SL:GetMetaValue分别读取"X"和"Y"；Opcode325按真值分支，为false/nil结果补默认0。
+-- Opcode309与Opcode355包含融合载荷：前者融合准备Y读取，后者融合构造{x=..., y=...}表。
+-- Opcode292返回坐标表；尾部Opcode339不可达。
+-- SL.md示例出现SL:GetMetaValue("MAP_ID")，确认receiver及字符串key调用形式；文档未给出返回类型，本函数按原始真值分支恢复。
+-- helper_root_70为原型路径合成定位名。
+local function helper_root_70()
+    local x = SL:GetMetaValue("X") or 0
+    local y = SL:GetMetaValue("Y") or 0
+    return { x = x, y = y }
+end
