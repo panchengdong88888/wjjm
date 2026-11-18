@@ -164,3 +164,21 @@ end
 local function closure_root_43_1(a, b)
     return a.dist >= b.dist
 end
+
+
+-- 11.16 root/47：7条物理槽位，2个参数，无子原型、无upvalue捕获。
+-- Opcode 105加载SL；Opcode 369准备SL:ScheduleOnce方法，并融合消费后续两条寄存器移动
+-- （分别把参数1、参数2放入调用参数区）；Opcode 202直接返回该方法调用结果。
+-- 尾部槽位位于Opcode 202的无条件return之后，不属于可达业务路径。
+-- helper_root_47为便于定位使用的合成名称，原始符号名尚未从父级注册点确认。
+local function helper_root_47(arg1, arg2)
+    return SL:ScheduleOnce(arg1, arg2)
+end
+
+-- 11.16 root/78：7条物理槽位，2个参数，无子原型、无upvalue捕获。
+-- 与root/47相同的调用结构，目标方法为SL:Schedule；Opcode 369融合准备接收者及两个参数，
+-- Opcode 202直接返回方法调用结果。尾部槽位在return之后不可达。
+-- helper_root_78为便于定位使用的合成名称，原始符号名尚未确认。
+local function helper_root_78(arg1, arg2)
+    return SL:Schedule(arg1, arg2)
+end
