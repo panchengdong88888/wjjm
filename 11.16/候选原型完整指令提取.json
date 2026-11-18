@@ -1027,6 +1027,72 @@
           "flags": 0
         }
       ]
+    },
+    {
+      "path": "root/52/12",
+      "params": 0,
+      "constants": [
+        "global",
+        "gameWorldController",
+        "OnGameLeaveWorld"
+      ],
+      "instruction_count": 5,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 248,
+          "A": 0,
+          "B": "global",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 85,
+          "A": 0,
+          "B": 0,
+          "C": "gameWorldController",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 393,
+          "A": 0,
+          "B": 0,
+          "C": "OnGameLeaveWorld",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 4,
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "global.gameWorldController:OnGameLeaveWorld()",
+      "recovery_evidence": {
+        "opcode248": "从原始F()分派器确认：加载全局常量，并融合消费后续两条记录，依次读取对象成员、准备方法receiver/self",
+        "opcode123": "调用寄存器A中的函数，参数区间为A+1至B，不接收返回值",
+        "opcode205": "结束函数，无显式返回值",
+        "upvalues": "本原型没有H槽读取",
+        "api_docs": "已检索3.40.x的SL.md及仓库文档搜索，未收录gameWorldController/OnGameLeaveWorld；不认定为文档已定义的公开API"
+      }
     }
   ],
   "constant_type_notes": {
