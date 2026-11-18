@@ -143,3 +143,12 @@ end
 local function closure_root_71_0()
     SL:RequestAddBlacklistByName(name)
 end
+
+
+-- 11.16 root/75/0：8条物理指令，FindMonsterCandidates中的距离比较闭包。
+-- Opcode 79/96分别读取两个参数的_distance字段；Opcode 226执行小于比较条件。
+-- Opcode 388/174/110按分支将结果写为true或false；Opcode 11返回该布尔值。
+-- closure_root_75_0为原型路径合成定位名，不冒充原始函数名。
+local function closure_root_75_0(a, b)
+    return a._distance < b._distance
+end
