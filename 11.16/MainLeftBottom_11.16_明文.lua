@@ -84,3 +84,22 @@ function ShowLocalNoticeByType(Msg)
 
     SL:ShowLocalNoticeByType(notice)
 end
+
+
+-- root/20：27条物理指令。遍历当前视野怪物，只保留存活且具有ID的对象。
+-- H[0]调用与root/39的IsDie(actor)函数行为/签名相吻合，按该闭包引用恢复。
+function FindMonsterInCurrViewField()
+    local monsters = SL:FindMonsterInCurrViewField(false, false) or {}
+    local result = {}
+
+    for _, monster in ipairs(monsters) do
+        if IsDie(monster) then
+            local monsterID = monster:GetID()
+            if monsterID then
+                result[monsterID] = monster
+            end
+        end
+    end
+
+    return result
+end
