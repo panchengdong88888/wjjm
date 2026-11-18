@@ -161,7 +161,7 @@ mode=%s
 153,root/73,root,1,,待识别,0,10,0,23,未恢复,os | hour | sec | min | *t | date,,,2026-11-18
 154,root/74,root,1,,待识别,1,3,0,10,未恢复,format | 状态切换: %s -> %s | string,,,2026-11-18
 155,root/75,root,1,FindMonsterCandidates,高置信候选,0,19,1,102,未恢复,SETTING_IDX_IGNORE_MONSTER | GET_SETTING | insert | MMO | SL | 未知怪物 | GetName | ipairs | sort | FindMonsterInCurrViewField,,,2026-11-18
-156,root/75/0,root/75,2,closure_root_75_0,匿名闭包（行为已恢复）,2,1,0,8,已写入明文,_distance,MainLeftBottom_11.16_明文.lua,8条物理指令：读取两个参数的_distance字段；Opcode 226比较小于关系；按分支写入布尔值；返回比较结果,2026-11-18
+156,root/75/0,root/75,2,closure_root_75_0,匿名闭包（行为已恢复）,2,1,0,8,已写入明文,_distance,MainLeftBottom_11.16_明文.lua,8条物理指令：读取两个参数的_distance字段；Opcode 226按小于关系分支；Opcode 388跳过false赋值分支；最终返回a._distance >= b._distance,2026-11-18
 157,root/76,root,1,,待识别,0,8,0,25,未恢复,AUCTION_MONEY | 元宝 | SL | GetMetaValue | ipairs | name | id,,,2026-11-18
 158,root/77,root,1,GetMainPlayerID,本轮已恢复,0,3,0,6,已写入明文,gamePlayerController | GetMainPlayerID | global,MainLeftBottom_11.16_明文.lua,,2026-11-18
 159,root/78,root,1,,待识别,2,2,0,7,未恢复,SL | Schedule,,,2026-11-18
