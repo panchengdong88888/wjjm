@@ -4551,14 +4551,16 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 15,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "helper_root_53（合成定位名）",
+      "identity_status": "行为已恢复",
       "constants": [
         "string",
         "match",
         "·",
         "^(.-)·"
-      ]
+      ],
+      "recovery_status": "已写入明文",
+      "recovery_note": "完整恢复为：local prefix=string.match(value, \"^(.-)·\"); 若prefix真值则返回prefix..\"·\"，否则返回原value。Opcode257融合加载string.match与复制参数；Opcode209调用；Opcode358/366控制分支；Opcode388跳转；Opcode291融合字符串拼接；Opcode288复制原参数；Opcode293返回单值。无upvalue。"
     },
     {
       "preorder_id": 131,
