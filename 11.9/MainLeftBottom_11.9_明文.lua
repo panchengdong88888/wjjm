@@ -2923,19 +2923,21 @@ end
 
 
 -- 对应新版root.children[37].children[17]（50条指令）：通用ButtonFactory。
--- PC15-PC50是按钮创建成功后的真实路径：登记visibleItems、设置标题/字体/颜色，
--- 再通过addOnClickEvent按buttonConfig.key从callbackMap分发；newzone因此走callbackMap.newzone。
--- 三个显式参数：buttonConfig、rowIndex、groupOffset。
--- root/37 PC340-PC345五项捕获顺序：
---   UP[0]=uiParent；UP[1]=baseX；UP[2]=baseY；
---   UP[3]=visibleItems（MainLeftBottom.b可见控件表）；
---   UP[4]=callbackMap（按buttonConfig.key索引的按钮回调表）。
--- ButtonFactory按x=baseX-85*rowIndex、y=baseY+groupOffset计算按钮坐标。
--- PC12-PC14控制流：Button_Create返回nil时走PC14 return；
--- 返回有效按钮时PC13设置K=14，经解释器循环尾部公共K=K+1进入PC15，
--- 继续完成按钮登记、标题/字体/颜色设置及addOnClickEvent绑定。
+-- 三个显式参数：buttonConfig、rowIndex、groupOffset；五项捕获依序为
+-- uiParent、baseX、baseY、visibleItems、callbackMap。
+-- Button_Create坐标按x=baseX-85*rowIndex、y=baseY+groupOffset计算。
+--
+-- 重要：原始VM的PC12-PC14控制流已由11.9加载器分派器确认：
+-- PC12 opcode239条件跳过、PC13 opcode100将K设为14、PC14 opcode152无条件return；
+-- 两种条件结果都会到达PC14，因此PC15-PC50在原始VM正常调用路径中不可达。
+-- PC15-PC50仍保留完整的按钮登记、标题/字体/颜色、callbackMap分发和toggle事件指令，
+-- 下方Lua主体是对这段死尾部所表达业务意图的可读重建候选，不得标记为原始VM实际执行路径。
+-- 只有显式调用本文件的重建辅助入口时，才会执行该候选按钮初始化逻辑。
 -- 点击闭包对应child17.child0，捕获callbackMap、buttonConfig和button。
--- 此工厂实现可复用于当前root/37；旧root/43候选入口仍是未替换的历史占位，不代表新版入口已接通。
+-- 旧root/43 doInit仍是历史候选占位，不代表新版root/37真实初始化入口已替换。
+-- 前向声明：新版按钮重建入口在本文件较前位置使用该登记函数；实际定义位于新区适配器段。
+local RegisterNewZoneButtonHandler
+
 local function MakeMainLeftBottomButtonFactory(
     uiParent,
     baseX,
@@ -4475,7 +4477,7 @@ end
 -- 新版root.children[37] PC266-PC271：callbackMap创建后登记newzone。
 -- callbackMap由父函数PC266创建；本函数只完成PC269-PC271对应的包装与键写入，
 -- 不把newzone误加进旧版root/43候选callbackMap。
-local function RegisterNewZoneButtonHandler(callbackMap, newZoneHandler)
+RegisterNewZoneButtonHandler = function(callbackMap, newZoneHandler)
     local callback = MakeNewZoneCallbackAdapter(newZoneHandler)
     callbackMap.newzone = callback
     return callback
