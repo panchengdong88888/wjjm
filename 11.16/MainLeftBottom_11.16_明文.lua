@@ -192,3 +192,19 @@ end
 local function closure_root_13_0()
     LuaSendMsg(9002, 22502, 1, 2, 3, "", 0)
 end
+
+
+-- 11.16 root/53：1个参数、15条物理指令，无upvalue捕获。
+-- Opcode 257加载string.match并融合读取match成员、复制输入参数；
+-- Opcode 209调用string.match(value, "^(.-)·")。
+-- 匹配成功时，Opcode 291融合拼接"·"，随后Opcode 293返回拼接结果；
+-- 未匹配时Opcode 388跳过拼接分支，Opcode 288恢复原始参数并返回。
+-- helper_root_53为原型路径合成定位名，原始函数符号名未从外部注册点确认。
+local function helper_root_53(value)
+    local prefix = string.match(value, "^(.-)·")
+    if prefix then
+        return prefix .. "·"
+    end
+
+    return value
+end
