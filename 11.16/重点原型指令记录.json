@@ -1,0 +1,3004 @@
+{
+  "source": "11.16/MainLeftBottom 11.16原版.lua",
+  "source_blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+  "note": "保存原型结构解析出的物理指令记录；不是Lua反汇编，不应将操作数直接解释为源码。",
+  "prototypes": [
+    {
+      "path": "root/3",
+      "depth": 1,
+      "parameter_count": 0,
+      "constants": [
+        "gatherTimer",
+        "UnSchedule",
+        {
+          "unknown_type": 2
+        },
+        "SL",
+        "引怪功能已停止",
+        "IDLE"
+      ],
+      "instruction_count": 25,
+      "instructions": [
+        {
+          "opcode": 110,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 330,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 9,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 289,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 13,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 253,
+          "A": 0,
+          "B": 4,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 393,
+          "A": 0,
+          "B": 0,
+          "C": 2,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 9,
+          "A": 2,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 274,
+          "A": 2,
+          "B": 2,
+          "C": 1,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 88,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 114,
+          "A": 0,
+          "B": 1,
+          "C": 3,
+          "operand_flags": 6
+        },
+        {
+          "opcode": 127,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 43,
+          "A": 0,
+          "B": 3,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 9,
+          "A": 1,
+          "B": 4,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 410,
+          "A": 1,
+          "B": 1,
+          "C": 6,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 128,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 127,
+          "A": 0,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 403,
+          "A": 0,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 295,
+          "A": 1,
+          "B": 5,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/7",
+      "depth": 1,
+      "parameter_count": 2,
+      "constants": [
+        "GetQuickUseSize",
+        "DelItemData",
+        1,
+        "ProxyTable",
+        "GetQuickUseData",
+        "next",
+        "目标位置超出范围",
+        "retrieveProxy",
+        "string",
+        "快捷栏交换: %d ↔ %d",
+        "QuickUseProxy",
+        "pairs",
+        "快捷栏移动: %d → %d",
+        "物品不存在",
+        "Index",
+        "SetQuickUsePosData",
+        "format",
+        "物品已在目标位置",
+        "Facade",
+        "已从背包移动到快捷栏位置%d",
+        "GetItemDataByItemIndex",
+        "参数无效",
+        "GetQucikUseDataByPos",
+        "addItemData",
+        "Bag",
+        "global"
+      ],
+      "instruction_count": 133,
+      "instructions": [
+        {
+          "opcode": 282,
+          "A": 2,
+          "B": 26,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 411,
+          "A": 2,
+          "B": 2,
+          "C": 19,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 351,
+          "A": 2,
+          "B": 2,
+          "C": 8,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 146,
+          "A": 4,
+          "B": 26,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 79,
+          "A": 4,
+          "B": 4,
+          "C": 4,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 410,
+          "A": 4,
+          "B": 4,
+          "C": 11,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 209,
+          "A": 2,
+          "B": 4,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 218,
+          "A": 3,
+          "B": 26,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 411,
+          "A": 3,
+          "B": 3,
+          "C": 19,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 103,
+          "A": 3,
+          "B": 3,
+          "C": 8,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 108,
+          "A": 5,
+          "B": 26,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 79,
+          "A": 5,
+          "B": 5,
+          "C": 4,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 410,
+          "A": 5,
+          "B": 5,
+          "C": 25,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 209,
+          "A": 3,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 289,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 18,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 325,
+          "A": 1,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 21,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 4,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 295,
+          "A": 5,
+          "B": 22,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 11,
+          "A": 4,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 138,
+          "A": 4,
+          "B": 2,
+          "C": 1,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 209,
+          "A": 4,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 32,
+          "A": 1,
+          "B": 1,
+          "C": 3,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 27,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 226,
+          "A": 0,
+          "B": 4,
+          "C": 1,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 30,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 5,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 295,
+          "A": 6,
+          "B": 7,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 11,
+          "A": 5,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 393,
+          "A": 5,
+          "B": 2,
+          "C": 5,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 209,
+          "A": 5,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 188,
+          "A": 6,
+          "B": 12,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 241,
+          "A": 7,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 307,
+          "A": 6,
+          "B": 7,
+          "C": 8,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 88,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 60,
+          "A": 10,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 88,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 410,
+          "A": 11,
+          "B": 10,
+          "C": 15,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 294,
+          "A": 0,
+          "B": 11,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 88,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 294,
+          "A": 0,
+          "B": 9,
+          "C": 1,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 46,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 11,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 295,
+          "A": 12,
+          "B": 18,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 293,
+          "A": 11,
+          "B": 12,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 152,
+          "A": 11,
+          "B": 2,
+          "C": 23,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 64,
+          "A": 13,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 11,
+          "B": 13,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 204,
+          "A": 12,
+          "B": 2,
+          "C": 16,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 221,
+          "A": 14,
+          "B": 9,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 288,
+          "A": 15,
+          "B": 10,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 16,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 123,
+          "A": 12,
+          "B": 16,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 358,
+          "A": 11,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 75,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 138,
+          "A": 12,
+          "B": 2,
+          "C": 16,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 64,
+          "A": 14,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 64,
+          "A": 15,
+          "B": 10,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 16,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 123,
+          "A": 12,
+          "B": 16,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 152,
+          "A": 12,
+          "B": 2,
+          "C": 16,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 221,
+          "A": 14,
+          "B": 9,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 64,
+          "A": 15,
+          "B": 11,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 16,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 123,
+          "A": 12,
+          "B": 16,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 12,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 218,
+          "A": 13,
+          "B": 9,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 163,
+          "A": 13,
+          "B": 13,
+          "C": 17,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 259,
+          "A": 14,
+          "B": 10,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 221,
+          "A": 15,
+          "B": 9,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 241,
+          "A": 16,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 264,
+          "A": 13,
+          "B": 16,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 372,
+          "A": 12,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 88,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 204,
+          "A": 12,
+          "B": 2,
+          "C": 16,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 221,
+          "A": 14,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 64,
+          "A": 15,
+          "B": 10,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 16,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 123,
+          "A": 12,
+          "B": 16,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 12,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 218,
+          "A": 13,
+          "B": 9,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 410,
+          "A": 13,
+          "B": 13,
+          "C": 17,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 259,
+          "A": 14,
+          "B": 13,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 221,
+          "A": 15,
+          "B": 9,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 288,
+          "A": 16,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 184,
+          "A": 13,
+          "B": 16,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 372,
+          "A": 12,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 250,
+          "A": 6,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 36,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 138,
+          "A": 6,
+          "B": 3,
+          "C": 21,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 288,
+          "A": 8,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 6,
+          "B": 8,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 340,
+          "A": 6,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 100,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 188,
+          "A": 7,
+          "B": 6,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 288,
+          "A": 8,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 7,
+          "B": 8,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 366,
+          "A": 7,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 103,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 7,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 295,
+          "A": 8,
+          "B": 14,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 293,
+          "A": 7,
+          "B": 8,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 152,
+          "A": 7,
+          "B": 2,
+          "C": 23,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 288,
+          "A": 9,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 7,
+          "B": 9,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 60,
+          "A": 7,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 116,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 369,
+          "A": 8,
+          "B": 2,
+          "C": 16,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 221,
+          "A": 10,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 288,
+          "A": 11,
+          "B": 7,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 12,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 128,
+          "A": 8,
+          "B": 12,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 152,
+          "A": 8,
+          "B": 3,
+          "C": 24,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 241,
+          "A": 10,
+          "B": 7,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 128,
+          "A": 8,
+          "B": 10,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 274,
+          "A": 8,
+          "B": 6,
+          "C": 3,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 393,
+          "A": 9,
+          "B": 3,
+          "C": 2,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 241,
+          "A": 11,
+          "B": 8,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 123,
+          "A": 9,
+          "B": 11,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 138,
+          "A": 9,
+          "B": 2,
+          "C": 16,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 241,
+          "A": 11,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 241,
+          "A": 12,
+          "B": 8,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 13,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 128,
+          "A": 9,
+          "B": 13,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 9,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 218,
+          "A": 10,
+          "B": 9,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 163,
+          "A": 10,
+          "B": 10,
+          "C": 17,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 295,
+          "A": 11,
+          "B": 20,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 241,
+          "A": 12,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 264,
+          "A": 10,
+          "B": 12,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 372,
+          "A": 9,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/8",
+      "depth": 1,
+      "parameter_count": 0,
+      "constants": [
+        "dropItemManager",
+        "global",
+        "FindDropItemInCurrViewFieldAll"
+      ],
+      "instruction_count": 8,
+      "instructions": [
+        {
+          "opcode": 248,
+          "A": 0,
+          "B": 2,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 85,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 393,
+          "A": 1,
+          "B": 0,
+          "C": 3,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 314,
+          "A": 1,
+          "B": 2,
+          "C": 2,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 221,
+          "A": 3,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 241,
+          "A": 4,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 293,
+          "A": 3,
+          "B": 4,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/9",
+      "depth": 1,
+      "parameter_count": 5,
+      "constants": [
+        "GetMapData2DPtr",
+        0,
+        "sceneManager",
+        "isObstacle",
+        {
+          "unknown_type": 2
+        },
+        2,
+        "getMapDataCols",
+        10000,
+        "getMapDataRows",
+        "floor",
+        "global",
+        "max",
+        "math",
+        1,
+        "abs"
+      ],
+      "instruction_count": 162,
+      "instructions": [
+        {
+          "opcode": 60,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 10,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 340,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 10,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 358,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 10,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 340,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 10,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 366,
+          "A": 4,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 12,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 193,
+          "A": 5,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 293,
+          "A": 5,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 257,
+          "A": 5,
+          "B": 13,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 406,
+          "A": 5,
+          "B": 5,
+          "C": 10,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 288,
+          "A": 6,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 5,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 105,
+          "A": 6,
+          "B": 13,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 406,
+          "A": 6,
+          "B": 6,
+          "C": 10,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 64,
+          "A": 7,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 6,
+          "B": 7,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 221,
+          "A": 1,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 130,
+          "A": 0,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 257,
+          "A": 5,
+          "B": 13,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 406,
+          "A": 5,
+          "B": 5,
+          "C": 10,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 241,
+          "A": 6,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 5,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 105,
+          "A": 6,
+          "B": 13,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 274,
+          "A": 6,
+          "B": 6,
+          "C": 10,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 288,
+          "A": 7,
+          "B": 3,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 6,
+          "B": 7,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 221,
+          "A": 3,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 64,
+          "A": 2,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 257,
+          "A": 5,
+          "B": 13,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 406,
+          "A": 5,
+          "B": 5,
+          "C": 10,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 241,
+          "A": 6,
+          "B": 4,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 5,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 64,
+          "A": 4,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 294,
+          "A": 0,
+          "B": 0,
+          "C": 2,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 43,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 294,
+          "A": 0,
+          "B": 1,
+          "C": 3,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 43,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 295,
+          "A": 5,
+          "B": 2,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 292,
+          "A": 5,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 20,
+          "A": 0,
+          "B": 4,
+          "C": 2,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 47,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 193,
+          "A": 5,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 292,
+          "A": 5,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 218,
+          "A": 5,
+          "B": 13,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 75,
+          "A": 5,
+          "B": 5,
+          "C": 12,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 218,
+          "A": 6,
+          "B": 13,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 410,
+          "A": 6,
+          "B": 6,
+          "C": 15,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 404,
+          "A": 7,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 6,
+          "B": 7,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 218,
+          "A": 7,
+          "B": 13,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 290,
+          "A": 7,
+          "B": 7,
+          "C": 15,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 404,
+          "A": 8,
+          "B": 3,
+          "C": 1,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 184,
+          "A": 7,
+          "B": 8,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 10,
+          "A": 5,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 226,
+          "A": 0,
+          "B": 4,
+          "C": 5,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 62,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 193,
+          "A": 5,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 11,
+          "A": 5,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 218,
+          "A": 5,
+          "B": 11,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 274,
+          "A": 5,
+          "B": 5,
+          "C": 3,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 60,
+          "A": 5,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 70,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 248,
+          "A": 5,
+          "B": 11,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 274,
+          "A": 5,
+          "B": 5,
+          "C": 3,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 393,
+          "A": 5,
+          "B": 5,
+          "C": 1,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 209,
+          "A": 5,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 325,
+          "A": 5,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 74,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 193,
+          "A": 6,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 11,
+          "A": 6,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 204,
+          "A": 6,
+          "B": 5,
+          "C": 9,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 209,
+          "A": 6,
+          "B": 7,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 393,
+          "A": 7,
+          "B": 5,
+          "C": 7,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 209,
+          "A": 7,
+          "B": 8,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 55,
+          "A": 1,
+          "B": 2,
+          "C": 2,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 86,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 32,
+          "A": 1,
+          "B": 3,
+          "C": 2,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 86,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 338,
+          "A": 1,
+          "B": 7,
+          "C": 2,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 86,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 225,
+          "A": 0,
+          "B": 6,
+          "C": 3,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 88,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 213,
+          "A": 8,
+          "B": 8,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 11,
+          "A": 8,
+          "B": 8,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 199,
+          "A": 8,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 181,
+          "A": 9,
+          "B": 0,
+          "C": 6,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 273,
+          "A": 9,
+          "B": 9,
+          "C": 1,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 207,
+          "A": 8,
+          "B": 9,
+          "C": 2,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 279,
+          "A": 9,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 172,
+          "A": 10,
+          "B": 0,
+          "C": 6,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 273,
+          "A": 10,
+          "B": 10,
+          "C": 1,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 41,
+          "A": 9,
+          "B": 1,
+          "C": 1,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 295,
+          "A": 10,
+          "B": 14,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 265,
+          "A": 11,
+          "B": 9,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 338,
+          "A": 0,
+          "B": 10,
+          "C": 11,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 159,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 342,
+          "A": 0,
+          "B": 8,
+          "C": 10,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 104,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 193,
+          "A": 11,
+          "B": 11,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 292,
+          "A": 11,
+          "B": 11,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 398,
+          "A": 11,
+          "B": 9,
+          "C": 10,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 363,
+          "A": 10,
+          "B": 10,
+          "C": 14,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 398,
+          "A": 12,
+          "B": 8,
+          "C": 11,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 226,
+          "A": 0,
+          "B": 12,
+          "C": 4,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 97,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 218,
+          "A": 13,
+          "B": 13,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 410,
+          "A": 13,
+          "B": 13,
+          "C": 10,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 8,
+          "A": 14,
+          "B": 11,
+          "C": 6,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 13,
+          "B": 14,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 135,
+          "A": 14,
+          "B": 11,
+          "C": 6,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 399,
+          "A": 15,
+          "B": 14,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 161,
+          "A": 16,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 344,
+          "A": 16,
+          "B": 16,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 295,
+          "A": 17,
+          "B": 14,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 118,
+          "A": 15,
+          "B": 157,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 232,
+          "A": 19,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 189,
+          "A": 19,
+          "B": 19,
+          "C": 18,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 96,
+          "A": 19,
+          "B": 19,
+          "C": 14,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 273,
+          "A": 19,
+          "B": 13,
+          "C": 19,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 232,
+          "A": 20,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 398,
+          "A": 20,
+          "B": 20,
+          "C": 18,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 410,
+          "A": 20,
+          "B": 20,
+          "C": 6,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 273,
+          "A": 20,
+          "B": 14,
+          "C": 20,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 52,
+          "A": 0,
+          "B": 2,
+          "C": 19,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 157,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 52,
+          "A": 0,
+          "B": 2,
+          "C": 20,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 157,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 226,
+          "A": 0,
+          "B": 19,
+          "C": 7,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 157,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 226,
+          "A": 0,
+          "B": 20,
+          "C": 6,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 157,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 294,
+          "A": 0,
+          "B": 19,
+          "C": 2,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 141,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 294,
+          "A": 0,
+          "B": 20,
+          "C": 3,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 141,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 144,
+          "A": 21,
+          "B": 12,
+          "C": 14,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 293,
+          "A": 21,
+          "B": 21,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 369,
+          "A": 21,
+          "B": 5,
+          "C": 4,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 221,
+          "A": 23,
+          "B": 19,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 288,
+          "A": 24,
+          "B": 20,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 21,
+          "B": 24,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 143,
+          "A": 0,
+          "B": 21,
+          "C": 2,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 157,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 172,
+          "A": 21,
+          "B": 19,
+          "C": 6,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 273,
+          "A": 21,
+          "B": 21,
+          "C": 20,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 189,
+          "A": 22,
+          "B": 8,
+          "C": 21,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 143,
+          "A": 0,
+          "B": 22,
+          "C": 5,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 157,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 363,
+          "A": 22,
+          "B": 12,
+          "C": 14,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 197,
+          "A": 8,
+          "B": 21,
+          "C": 22,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 265,
+          "A": 22,
+          "B": 9,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 144,
+          "A": 22,
+          "B": 22,
+          "C": 14,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 371,
+          "A": 9,
+          "B": 22,
+          "C": 21,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 285,
+          "A": 15,
+          "B": 119,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 97,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 193,
+          "A": 11,
+          "B": 11,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 292,
+          "A": 11,
+          "B": 11,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/20",
+      "depth": 1,
+      "parameter_count": 0,
+      "constants": [
+        "FindMonsterInCurrViewField",
+        "GetID",
+        "SL",
+        "ipairs"
+      ],
+      "instruction_count": 27,
+      "instructions": [
+        {
+          "opcode": 253,
+          "A": 0,
+          "B": 3,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 110,
+          "A": 2,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 110,
+          "A": 3,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 0,
+          "B": 3,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 366,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 8,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 65,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 318,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 105,
+          "A": 2,
+          "B": 4,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 241,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 307,
+          "A": 2,
+          "B": 3,
+          "C": 4,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 23,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 198,
+          "A": 7,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 288,
+          "A": 8,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 209,
+          "A": 7,
+          "B": 8,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 340,
+          "A": 7,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 23,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 393,
+          "A": 7,
+          "B": 6,
+          "C": 2,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 209,
+          "A": 7,
+          "B": 8,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 340,
+          "A": 7,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 23,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 371,
+          "A": 1,
+          "B": 7,
+          "C": 6,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 250,
+          "A": 2,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 13,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 11,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/23",
+      "depth": 1,
+      "parameter_count": 0,
+      "constants": [
+        "引怪功能已启动 (阈值: %d)",
+        "CHECK_INTERVAL",
+        "string",
+        "UnSchedule",
+        "format",
+        "SL",
+        {
+          "unknown_type": 2
+        },
+        "IDLE",
+        "gatherTimer",
+        "GATHER_THRESHOLD",
+        "Schedule"
+      ],
+      "instruction_count": 36,
+      "instructions": [
+        {
+          "opcode": 9,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": 9,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 358,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 388,
+          "A": 0,
+          "B": 11,
+          "C": null,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 253,
+          "A": 0,
+          "B": 6,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 393,
+          "A": 0,
+          "B": 0,
+          "C": 4,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 9,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 96,
+          "A": 2,
+          "B": 2,
+          "C": 9,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 123,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 234,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 114,
+          "A": 0,
+          "B": 9,
+          "C": 7,
+          "operand_flags": 6
+        },
+        {
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 330,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 43,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 9,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 96,
+          "A": 1,
+          "B": 1,
+          "C": 8,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 128,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 127,
+          "A": 0,
+          "B": 4,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 234,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 253,
+          "A": 1,
+          "B": 6,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 204,
+          "A": 1,
+          "B": 1,
+          "C": 11,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 387,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 9,
+          "A": 4,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 274,
+          "A": 4,
+          "B": 4,
+          "C": 2,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 209,
+          "A": 1,
+          "B": 4,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 0,
+          "A": 0,
+          "B": 9,
+          "C": 1,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 234,
+          "A": 0,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 105,
+          "A": 1,
+          "B": 3,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 163,
+          "A": 1,
+          "B": 1,
+          "C": 5,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 399,
+          "A": 2,
+          "B": 1,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 9,
+          "A": 3,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 274,
+          "A": 3,
+          "B": 3,
+          "C": 10,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 264,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 200,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/80",
+      "depth": 1,
+      "parameter_count": 1,
+      "constants": [
+        "screenH",
+        "ShowLocalNoticeByType",
+        5,
+        "BColor",
+        10,
+        249,
+        "Type",
+        50,
+        "SL",
+        "Y",
+        "Msg",
+        0,
+        "FColor",
+        "X"
+      ],
+      "instruction_count": 15,
+      "instructions": [
+        {
+          "opcode": 201,
+          "A": 1,
+          "B": 0,
+          "C": 6,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 42,
+          "A": 1,
+          "B": 7,
+          "C": 5,
+          "operand_flags": 6
+        },
+        {
+          "opcode": 217,
+          "A": 1,
+          "B": 11,
+          "C": 0,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 368,
+          "A": 1,
+          "B": 13,
+          "C": 6,
+          "operand_flags": 6
+        },
+        {
+          "opcode": 277,
+          "A": 1,
+          "B": 4,
+          "C": 12,
+          "operand_flags": 6
+        },
+        {
+          "opcode": 185,
+          "A": 1,
+          "B": 14,
+          "C": 3,
+          "operand_flags": 6
+        },
+        {
+          "opcode": 234,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 270,
+          "A": 2,
+          "B": 2,
+          "C": 1,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 12,
+          "A": 2,
+          "B": 2,
+          "C": 8,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 306,
+          "A": 1,
+          "B": 10,
+          "C": 2,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 210,
+          "A": 2,
+          "B": 9,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "opcode": 152,
+          "A": 2,
+          "B": 2,
+          "C": 2,
+          "operand_flags": 4
+        },
+        {
+          "opcode": 241,
+          "A": 4,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 128,
+          "A": 2,
+          "B": 4,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        }
+      ]
+    }
+  ]
+}
