@@ -5082,8 +5082,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 19,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "helper_root_70（合成定位名）",
+      "identity_status": "本轮已恢复",
       "constants": [
         "Y",
         "SL",
