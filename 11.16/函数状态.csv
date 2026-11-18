@@ -11,7 +11,7 @@
 9,root/5,root,1,,待识别,1,5,0,17,未恢复,mCurrMapX | y | x | mCurrMapY,,,2026-11-18
 10,root/6,root,1,MainLoop,高置信候选,0,67,0,573,未恢复,"锁定怪物 %s 失败 | 攻击怪物 %d: %s (ID: %s) | ACTOR_HAS_ONE_BUFF | pairs | 所有怪物归属已获取，切换到攻击状态 | 怪物 %d (ID: %s) 已死亡或离开视野 | MagicID | ATTACK_WAIT_TIME | time | 锁定怪物 %d: %s (ID: %s, 归属: %s)",,,2026-11-18
 11,root/7,root,1,MoveItemToQuickUse,高置信候选,2,26,0,133,分析中,GetQuickUseSize | DelItemData | ProxyTable | GetQuickUseData | next | 目标位置超出范围 | retrieveProxy | string | 快捷栏交换: %d ↔ %d | QuickUseProxy,,,2026-11-18
-12,root/8,root,1,GetDroppedItems,高置信候选,0,3,0,8,分析中,dropItemManager | global | FindDropItemInCurrViewFieldAll,,,2026-11-18
+12,root/8,root,1,GetDroppedItems,高置信候选,0,3,0,8,已写入明文,GetDroppedItems,MainLeftBottom_11.16_明文.lua,11.16 VM寄存器流已闭合：global.dropItemManager:FindDropItemInCurrViewFieldAll()，保留两个返回值,2026-11-18
 13,root/9,root,1,GetMapData2DPtr,名称线索，实际行为待确认,5,15,0,162,分析中,GetMapData2DPtr | sceneManager | isObstacle | getMapDataCols | getMapDataRows | floor | global | max | math | abs,,,2026-11-18
 14,root/10,root,1,,待识别,0,13,0,29,未恢复,开始锻造生肖 | state | forgeZodiacRunning | checkGold | forgeZodiac | forgeZodiacTimer | ticks | 已停止锻造生肖 | index,,,2026-11-18
 15,root/11,root,1,,待识别,0,9,0,31,未恢复,zd | IsInWhitelistMap | cruiseRunTimer | SL | 关闭见人跑 | cruiseGatherPaused | UnSchedule,,,2026-11-18
