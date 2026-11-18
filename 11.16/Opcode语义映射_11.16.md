@@ -457,3 +457,12 @@ Opcode 123：调用`N[A](Y(N,A+1,B)))，不将调用结果写回寄存器。
 - Opcode 361：读取全局对象`N[A]=Z[C]`，融合消费下一物理槽位准备方法及receiver/self，再融合消费下一物理槽位装入立即数/常量。
 - Opcode 292：`return Y(N,A,C)`，直接返回寄存器A至C的值；本例A=C=0，等价于`return N[0]`。
 - root/52/21使用上述语义恢复了LuaSendMsg参数装载、SL.ShowSystemTips方法调用及true返回。
+
+
+## 2026-11-19：Opcode 309、355融合默认值/表构造及Opcode 325分支
+
+- Opcode 325：若`(not not N[A]) ~= (D~=0)`，则内部O递增；解释器循环尾再递增一次，跳过下一物理槽位。用于实现真值判断与默认值分支。
+- Opcode 309：`N[A]=K[3]`，融合消费后续三条物理槽位，依次装入全局对象、准备方法receiver/self、装入方法参数。
+- Opcode 355：`N[A]=K[3]`，融合消费后续三条物理槽位：创建空表，并连续写入两个表字段。
+- Opcode 279：创建空表`N[A]={}`。
+- root/70中，Opcode325分别检测X/Y读取结果；false/nil路径将对应值设为0，true路径跳过默认值指令。Opcode292返回包含x/y字段的表。
