@@ -4519,3 +4519,13 @@ root/37 PC266-PC337已经逐条闭合。唯一callbackMap按VM顺序登记15个k
 不要删除PC14、改跳转或把PC15-PC50强行接入明文。下一步直接追查PC1-PC12的Button_Create参数以及GUI宿主层是否在Button_Create时接收/保存callbackMap；若宿主层无此机制，再查root/37外部是否存在按钮点击绑定入口。
 
 新区业务处理器root/38和callbackMap["newzone"]登记均已确认，不再重复分析。
+
+
+## 2026-11-18续：新版「开新区」按钮工厂接线组件已推进
+
+- 唯一明文源码最新提交：04d4c6b11cffbc71374a0e395bcc63cbbf32cf1e1；Blob SHA：e470c1ba492c6cdf2ada07c55e1bb5483fd45c36。
+- 已在新版辅助函数 CreateMainLeftBottomButtons_11_9 增加 newZoneHandler 参数，并在按钮工厂创建前登记 callbackMap.newzone；这对应已确认的 root/37 PC269-PC271 新区包装闭包。
+- child17 成功创建路径的 addOnClickEvent 分发逻辑已存在并按 key 读取 callbackMap，因此 newzone 的业务回调现在已经具备完整的“处理器→callbackMap→按钮工厂”明文组件链。
+- 当前仍未把该新版辅助入口替换到文件末尾旧 root/43 doInit；原因是新版 root/37 还需要按PC272-PC337补齐其余回调装配，不能用旧root/43回调表冒充新版。
+- 下一步：继续补齐新版callbackMap其余子原型的可读装配，然后建立真正的root/37 createButton入口；newzone本身不再重复分析。
+- 未执行Lua 5.1编译、APK打包或游戏运行测试。
