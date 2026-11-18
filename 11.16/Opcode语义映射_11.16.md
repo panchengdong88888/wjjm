@@ -62,3 +62,29 @@
 5. root/8常量包含 `dropItemManager`、`global`、`FindDropItemInCurrViewFieldAll`。结合寄存器和常量索引的精确对应关系，调用表达式的receiver/参数仍需完成逐条寄存器模拟后才能写入明文。
 
 **结论：** 已确认本函数的“查找当前视野掉落物并返回结果”方向，但尚未闭合完整调用表达式和返回寄存器关系，暂不写入唯一明文源码。避免仅凭常量名猜写。
+
+
+## root/8 GetDroppedItems寄存器模拟闭合（2026-11-18）
+
+原型常量表（按1起始索引）：Z[1]=dropItemManager；Z[2]=global；Z[3]=FindDropItemInCurrViewFieldAll。
+
+| 物理记录 | Opcode | A/B/C | 实际执行/用途 |
+|---:|---:|---|---|
+| 1 | 248 | 0/2/— | N[0]=Z[2]，装载global |
+| 2 | 85 | 0/0/1 | 被248融合消费：N[0]=N[0][Z[1]]，取得dropItemManager |
+| 3 | 393 | 1/0/3 | 被248融合消费：receiver=N[0]；N[2]=receiver作为self；N[1]=receiver[Z[3]]取得方法 |
+| 4 | 314 | 1/2/2 | 调用N[1](N[2])；分派器把多返回值写入寄存器1..2 |
+| 5 | 221 | 3/1/0 | 融合下一条记录，将N[1]复制到N[3] |
+| 6 | 241 | 4/2/0 | 被221融合消费，将N[2]复制到N[4] |
+| 7 | 293 | 3/4/0 | 返回寄存器区间N[3]..N[4]，即两个调用返回值 |
+| 8 | 339 | 0/0/0 | 位于无条件返回之后，正常路径不可达 |
+
+恢复结果：
+
+```lua
+function GetDroppedItems()
+    return global.dropItemManager:FindDropItemInCurrViewFieldAll()
+end
+```
+
+注意：此处依赖Opcode 314分派器的真实多返回值写回行为，不能误读为单返回值调用。
