@@ -1028,3 +1028,46 @@ child9两个显式参数为buttonKey和toggled。其51条指令实现双层ipair
 因此child9不是闲置工具闭包；它明确作为stopallbut处理器的第三项捕获，供停止拾取/丢弃时同步两个按钮的toggle状态。child0现有明文主体MakeStopAllScriptButtonHandler的参数顺序(timerState, scriptState, syncButtonToggle, showLocalNotice)与这组捕获顺序吻合。新版callbackMap完整装配仍需接入，不将单个helper已存在误报为整个doInit已完成。
 
 另见root/37 PC330创建child15时也把R15作为第五项捕获；child15父函数本体未直接读取该第五项，后续是否由其嵌套闭包使用仍待定，不将其擅自标成已确认调用点。
+
+
+## 2026-11-18续：child6黑名单启动辅助闭包完成正确载荷解码
+
+本轮修正了上一轮定点提取时的XOR处理错误：LZW输出的79,573字节应保留原始字节，在K/F/A/S各读取函数内部按原加载器规则逐字节XOR 0x4A；不能先整体XOR再由S()二次XOR。按原加载器M()字段顺序重新解析后，完整消费79,573/79,573字节，root=455指令/54子原型，root/37=433指令/26子原型，完整性校验通过。
+
+### root/37 child6 原型及捕获
+
+- 原型：root/37/6；0个显式参数、18条物理指令、0个子原型。
+- 父级PC258创建child6；PC259-PC263按顺序捕获父闭包UP[5]、UP[3]、UP[6]、UP[7]、UP[0]，成为child6的UP[0..4]。
+- 常量（UTF-8正确解码）：`distance`、`11`、`blacklistTimer`、`BlacklistItems`、`开启黑名单功能，距离格子：%d`。
+- 完整指令记录（格式：[PC, opcode, operand1, operand2, operand3]；常量已替换）：
+
+~~~text
+[1, 264, 0, 0, 0]
+[2, 132, 0, "distance", 11]
+[3, 127, 0, "BlacklistItems", null]
+[4, 91, 0, 0, 0]
+[5, 46, 0, 1, 0]
+[6, 17, 1, 2, 0]
+[7, 236, 2, "BlacklistItems", null]
+[8, 17, 3, 3, 0]
+[9, 64, 1, 3, 0]
+[10, 156, 0, "blacklistTimer", 1]
+[11, 29, 0, 4, 0]
+[12, 390, 1, "开启黑名单功能，距离格子：%d", null]
+[13, 17, 2, 0, 0]
+[14, 388, 2, 2, "distance"]
+[15, 303, 0, 2, 0]
+[16, 412, 0, 1, 0]
+[17, 30, 0, 0, 0]
+[18, 168, 0, 0, 0]
+~~~
+
+### 与blacklistbut的调用关系
+
+root/37 PC301创建child18，PC302-PC305捕获UP[3]、UP[0]、UP[1]及父局部R16（child6）；PC306登记`callbackMap["blacklistbut"]`。child18本体23条指令，常量包括`blacklistTimer`、`SL.UnSchedule`、关闭提示、`isBlacklisting`，说明它负责已有定时器时的关闭分支，并把child6作为开启分支辅助回调。
+
+### 当前边界
+
+已获得child6准确18条指令、常量和捕获次序，但本轮尚未将所有opcode语义及五项捕获逐个绑定到可读Lua变量；特别是捕获值对应的运行时对象仍需用同一root/37创建闭包的完整捕获链确认。故暂不写一个看似合理但可能错误的启动函数，也不将旧版root/43的MakeBlacklistTimer直接冒充新版child6。
+
+未修改唯一明文Lua；未执行Lua编译、APK打包或游戏实测。
