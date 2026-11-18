@@ -201,3 +201,11 @@
 - root/52/20：调用H[0]()，然后返回true。
 - Opcode162确认是upvalue写入；Opcode339确认是无显式返回的函数结束；Opcode324为upvalue读取；Opcode330为upvalue写入并融合读取。
 - 三个闭包捕获槽名称尚未由父级创建点闭合，故未伪写Lua函数体，未计入明文完成数。当前仍16/162（9.88%）。后续优先换找无捕获的短原型。
+
+
+### 2026-11-18续接增量：root/47、root/78完成
+- 新增写入MainLeftBottom_11.16_明文.lua：helper_root_47(arg1,arg2)返回SL:ScheduleOnce(arg1,arg2)；helper_root_78(arg1,arg2)返回SL:Schedule(arg1,arg2)。
+- 两个原型均为2参数、7物理槽位、无子原型、无H upvalue读取。Opcode369融合方法准备及两个参数寄存器移动；Opcode202直接return调用结果。
+- 合成定位名不代表原始符号名；父级注册关系尚未确认。
+- 当前累计18/162（11.11%，按原型数统计）。未执行Lua语法检查、静态检查或游戏运行验证。
+- 下一轮直接按函数状态CSV选择其他短小候选，不重做已完成函数和项目级解包统计。
