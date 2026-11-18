@@ -239,3 +239,13 @@ end
 local function helper_root_56_0()
     return global.Facade:retrieveProxy(global.ProxyTable.FriendProxy)
 end
+
+
+-- 11.16 root/23/0：3条物理指令、无参数、无upvalue捕获。
+-- 父级root/23在槽位23通过Opcode387创建childIndex=0闭包，captureCount=0。
+-- Opcode105从全局环境读取MainLoop；Opcode128无参数调用；Opcode205结束。
+-- 3.40.x的SL.md、元变量.md及仓库搜索均未收录MainLoop；按11.16全局调用点恢复，不认定为框架公开API。
+-- closure_root_23_0为原型路径合成定位名，原始函数符号名尚未确认。
+local function closure_root_23_0()
+    MainLoop()
+end
