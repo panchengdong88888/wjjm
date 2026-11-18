@@ -146,9 +146,11 @@ end
 
 
 -- 11.16 root/75/0：8条物理指令，FindMonsterCandidates中的距离比较闭包。
--- Opcode 79/96分别读取两个参数的_distance字段；Opcode 226执行小于比较条件。
--- Opcode 388/174/110按分支将结果写为true或false；Opcode 11返回该布尔值。
+-- Opcode 79/96分别读取两个参数的_distance字段；Opcode 226检测a._distance < b._distance。
+-- 若小于条件成立，执行Opcode 174写入false并跳过Opcode 110；
+-- 若条件不成立，Opcode 388跳过Opcode 174，随后Opcode 110写入true。
+-- 因而最终返回的是“大于等于”，不是“小于”。Opcode 11返回该布尔值。
 -- closure_root_75_0为原型路径合成定位名，不冒充原始函数名。
 local function closure_root_75_0(a, b)
-    return a._distance < b._distance
+    return a._distance >= b._distance
 end
