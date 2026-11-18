@@ -63,7 +63,7 @@
 60,root/42,root,1,,待识别,0,9,0,22,未恢复,PlayerInputProxy | ProxyTable | Facade | retrieveProxy | MMO | global | SetTargetID | SELETE_TARGET_TYPE_FIND,,,2026-11-18
 61,root/43,root,1,,待识别,0,34,2,172,未恢复,MoveTo | mCurrMapX | y | ipairs | x | mCurrMapY | dist | 地面无可拾取物品 | sort | find,,,2026-11-18
 62,root/43/0,root/43,2,,待识别,2,2,0,19,未恢复,kIdx | dist,,,2026-11-18
-63,root/43/1,root/43,2,,待识别,2,1,0,8,未恢复,dist,,,2026-11-18
+63,root/43/1,root/43,2,closure_root_43_1,匿名闭包（行为已恢复）,2,1,0,8,已写入明文,dist,MainLeftBottom_11.16_明文.lua,比较两个对象的dist字段：当a.dist小于b.dist时返回false，否则返回true（a.dist >= b.dist）,2026-11-18
 64,root/44,root,1,,待识别,3,10,0,29,未恢复,"tostring | string | FileUtilCtl | 0 | writeStringToFile | 1 | global | getWritablePath | price=%s
 name=%s
 mode=%s
