@@ -364,7 +364,16 @@
           "mode": 0,
           "flags": 0
         }
-      ]
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "LuaSendMsg(9002, 22502, 1, 2, 3, \"\", 0)",
+      "recovery_evidence": {
+        "opcode95": "N[A]=Z[K[3]]，并融合消费下一物理槽位执行N[next.A]=next.K[3]；槽位2仅为融合载荷",
+        "opcode295": "N[A]=K[3]，分别装载22502、1、2",
+        "opcode168": "N[A]=K[3]并融合消费后续两物理槽位，各执行N[next.A]=next.K[3]，装载3、空字符串、0",
+        "opcode128": "调用N[A](Y(N,A+1,B))；本例A=0、B=7",
+        "opcode205": "结束函数，无显式返回值"
+      }
     },
     {
       "path": "root/26/0",
