@@ -910,7 +910,21 @@
           "mode": 0,
           "flags": 0
         }
-      ]
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "local prefix = string.match(value, \"^(.-)·\")\nif prefix then return prefix .. \"·\" end\nreturn value",
+      "recovery_evidence": {
+        "opcode257": "N[A]=Z[K[3]]；融合下一槽读取成员N[next.A]=N[next.B][next.C]；再融合一槽复制N[next.A]=N[next.B]",
+        "opcode209": "N[A]=N[A](Y(N,A+1,B))，本例调用string.match(value, pattern)",
+        "opcode358": "若真值(N[A])与(K[4]~=0)不相等，内部O递增；循环尾再递增一次",
+        "opcode388": "O=K[3]，循环尾统一递增；本例实现分支跳转",
+        "opcode291": "N[A]=N[B]；融合下一槽装立即数；再融合下一槽按寄存器区间拼接字符串",
+        "opcode93": "按K[3]..K[4]范围将寄存器字符串拼接写入A",
+        "opcode366": "与Opcode358相同的真值比较跳过行为",
+        "opcode288": "N[A]=N[B]",
+        "opcode293": "return Y(N,A,B)，本例返回寄存器2单值",
+        "opcode205": "函数结束，无显式返回值；本例位于return之后不可达"
+      }
     },
     {
       "path": "root/74",
