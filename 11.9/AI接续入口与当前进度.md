@@ -4482,3 +4482,13 @@ PC330创建child15时也捕获R15为第五项，child15父函数体没有直接�
 
 ### 当前工作位置
 下一步恢复root/37 child6黑名单辅助闭包（18条指令、5项捕获），定点确认其创建捕获来源及调用参数，再处理child18/blacklistbut的完整新版接线。child9和child12主体已写入唯一明文；child6尚未写入。
+
+
+## 2026-11-18续：child6原始指令已正确提取，等待捕获语义闭合
+
+- 已修正LZW后XOR处理，完整M()解析消费79,573/79,573字节。
+- root/37 child6：0参数、18条指令、常量distance/11/blacklistTimer/BlacklistItems/黑名单开启提示；父PC258创建，PC259-PC263捕获父UP[5]、UP[3]、UP[6]、UP[7]、UP[0]。
+- child6完整18条指令已追加至`root37_createButton_PC204-PC384_原始指令提取.md`；child18 PC301-PC306捕获child6并登记blacklistbut。
+- 尚未修改唯一明文Lua：opcode语义与5项捕获的运行时含义仍需确认，不将旧版MakeBlacklistTimer直接套用。
+- 下一步：结合root/37的15项upvalue来源及root主原型寄存器生命周期，逐一确认child6捕获值；再还原child6的直接Lua函数，并把child18/blacklistbut与新版callbackMap的实际创建路径接起来。
+- 未编译、未打包APK、未游戏实测。
