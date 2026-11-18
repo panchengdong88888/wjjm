@@ -2923,6 +2923,8 @@ end
 
 
 -- 对应新版root.children[37].children[17]（50条指令）：通用ButtonFactory。
+-- PC15-PC50是按钮创建成功后的真实路径：登记visibleItems、设置标题/字体/颜色，
+-- 再通过addOnClickEvent按buttonConfig.key从callbackMap分发；newzone因此走callbackMap.newzone。
 -- 三个显式参数：buttonConfig、rowIndex、groupOffset。
 -- root/37 PC340-PC345五项捕获顺序：
 --   UP[0]=uiParent；UP[1]=baseX；UP[2]=baseY；
@@ -3006,10 +3008,18 @@ local function CreateMainLeftBottomButtons_11_9(
     baseX,
     baseY,
     visibleItems,
-    callbackMap
+    callbackMap,
+    newZoneHandler
 )
     local firstGroup, secondGroup, thirdGroup =
         BuildMainLeftBottomButtonGroups_11_9()
+
+    -- 新版root/37 PC269-PC271：
+    -- callbackMap先登记newzone，再由后续按钮工厂按buttonConfig.key分发。
+    -- 这里只接入已完全恢复的新区处理器；其余按钮回调仍由root/37对应子原型逐项补齐。
+    if newZoneHandler then
+        RegisterNewZoneButtonHandler(callbackMap, newZoneHandler)
+    end
 
     local buttonFactory = MakeMainLeftBottomButtonFactory(
         uiParent,
