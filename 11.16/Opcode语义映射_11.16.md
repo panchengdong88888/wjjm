@@ -448,3 +448,12 @@ Opcode 123：调用`N[A](Y(N,A+1,B)))，不将调用结果写回寄存器。
 - Opcode 108：`N[A]=Z[C]`加载全局对象；融合消费后续两条物理槽位，依次执行两次成员读取`N[next.A]=N[next.B][next.C]`。
 - root/56/0中Opcode 282融合消费槽位2、3，准备`global.Facade:retrieveProxy`；Opcode108融合消费槽位5、6，得到`global.ProxyTable.FriendProxy`；Opcode202直接返回调用结果。
 - 可读表达式：`return global.Facade:retrieveProxy(global.ProxyTable.FriendProxy)`。Opcode 244及339位于Opcode202无条件return之后，不可达。
+
+
+## 2026-11-19：Opcode 95、235、361融合装载链及Opcode 292返回
+
+- Opcode 95：`N[A]=Z[C]`读取全局环境成员，融合消费下一物理槽位执行`N[next.A]=next.C`装入第一个参数。
+- Opcode 235：`N[A]=K[3]`，融合消费后续5条物理槽位，依次执行`N[next.A]=next.C`装入立即数/常量。
+- Opcode 361：读取全局对象`N[A]=Z[C]`，融合消费下一物理槽位准备方法及receiver/self，再融合消费下一物理槽位装入立即数/常量。
+- Opcode 292：`return Y(N,A,C)`，直接返回寄存器A至C的值；本例A=C=0，等价于`return N[0]`。
+- root/52/21使用上述语义恢复了LuaSendMsg参数装载、SL.ShowSystemTips方法调用及true返回。
