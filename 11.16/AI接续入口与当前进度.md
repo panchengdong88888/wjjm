@@ -174,3 +174,10 @@
 - 新增root/71/0：6条指令，行为为SL:RequestAddBlacklistByName(name)，已写入明文文件，CSV状态已更新。
 - 该原型位于root/71 DeathAutoBlacklist的子原型位置，使用合成定位名closure_root_71_0；调用参数name由H[0]环境表成员读取，不擅自改写为闭包参数。
 - 当前累计明文14/162（8.64%）。继续优先筛选短小、无子原型且操作码语义已确认的原型；复杂状态机仍延后。
+
+
+### 2026-11-18续：简单距离比较闭包完成
+- 新增root/75/0，父原型FindMonsterCandidates，8条物理指令、2参数、无子原型。
+- 业务明文：closure_root_75_0(a,b) 返回 a._distance < b._distance。Opcode 79/96取两个距离字段，Opcode 226比较，Opcode 388跳转分流，Opcode 174/110分别写false/true，Opcode 11返回结果。
+- 当前累计15/162（9.26%）。函数名是原型路径合成定位名。未做Lua语法或游戏运行验证。
+- 继续先处理短小简单函数；root/3、root/23、MainLoop等复杂项继续延后。
