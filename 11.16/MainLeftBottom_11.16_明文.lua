@@ -125,3 +125,11 @@ end
 local function closure_root_52_30()
     startPutoutAll()
 end
+
+
+-- 11.16 root/52/35/0：3条物理指令。
+-- Opcode 88读取H[0]环境表，融合Opcode 114将powerRefreshing字段写为false。
+-- 该闭包的作用是关闭/清除powerRefreshing全局状态；定位名为合成名。
+local function closure_root_52_35_0()
+    powerRefreshing = false
+end
