@@ -166,4 +166,4 @@ mode=%s
 158,root/77,root,1,GetMainPlayerID,本轮已恢复,0,3,0,6,已写入明文,gamePlayerController | GetMainPlayerID | global,MainLeftBottom_11.16_明文.lua,,2026-11-18
 159,root/78,root,1,,待识别,2,2,0,7,未恢复,SL | Schedule,,,2026-11-18
 160,root/79,root,1,,待识别,0,48,0,212,未恢复,SL |  第 | checkGold | forge | len | format | clickNpc | 生肖锻造未完成，已尝试200次 | Name | LuaSendMsg,,,2026-11-18
-161,root/80,root,1,ShowLocalNoticeByType,高置信候选,1,14,0,15,分析中,screenH | ShowLocalNoticeByType | BColor | Type | SL | Y | Msg | FColor | X,,,2026-11-18
+161,root/80,root,1,ShowLocalNoticeByType,高置信候选,1,14,0,15,已写入明文,screenH | ShowLocalNoticeByType | Type=10 | Msg=参数1 | FColor=249 | BColor=0 | X=5 | Y=screenH-50 | SL,MainLeftBottom_11.16_明文.lua,,2026-11-18
