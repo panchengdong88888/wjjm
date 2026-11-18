@@ -90,7 +90,7 @@ mode=%s
 82,root/52/2,root/52,2,,待识别,0,10,0,30,未恢复,显示所有按钮 | hidebut | hide | 隐藏所有按钮 | setOpacity | show | isHidden | GUI,,,2026-11-18
 83,root/52/3,root/52,2,,待识别,0,5,1,23,未恢复,SL | buygold110Timer | 开始检测金币(>110W买金条) | Schedule,,,2026-11-18
 84,root/52/3/0,root/52/3,3,,待识别,0,21,0,77,未恢复,ShowSystemTips | UnSchedule | 买金条失败：%s | 金条 | 买金条失败： | ProxyTable | retrieveProxy | GetMoneyIdByName | buygold110Timer | 金币,,,2026-11-18
-85,root/52/4,root/52,2,,待识别,0,1,0,3,未恢复,Builtsetting,,,2026-11-18
+85,root/52/4,root/52,2,closure_root_52_4（合成定位名）,行为已恢复,0,1,0,3,已写入明文,Builtsetting,MainLeftBottom_11.16_明文.lua,3条物理指令；父级槽位559通过Opcode121创建，捕获数0；Opcode105加载Builtsetting，Opcode128无参调用，Opcode339结束,2026-11-19
 86,root/52/5,root/52,2,,待识别,2,10,0,51,未恢复,name | GUI | #ffffff | #ff0000 | key | Button_setTitleText | ipairs | toggle | toggled | Button_setTitleColor,,,2026-11-18
 87,root/52/6,root/52,2,,待识别,0,72,5,320,未恢复,声望卷 | 绑定元宝 | setTouchEnabled | 血龙宝珠 | 关闭资源信息窗口 | 绑定灵符 | #00FF00 | Win_IsNotNull | ListView_Create | initTimeCell,,,2026-11-18
 88,root/52/6/0,root/52/6,3,,待识别,3,17,0,65,未恢复,_cell_ | #FFFFFF | Layout_Create | _ | ceil | Text_Create | :-- | _text_ | math | GUI,,,2026-11-18
