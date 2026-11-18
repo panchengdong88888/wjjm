@@ -103,3 +103,23 @@ function FindMonsterInCurrViewField()
 
     return result
 end
+
+-- =========================================================
+-- 11.16 匿名闭包恢复（父级root/52的UI回调）
+-- 下列名称仅为便于阅读而生成的定位名，不代表原始Lua符号名。
+-- =========================================================
+
+-- root/52/8/0：常量DiuItems + 环境变量dropMode，调用DiuItems(dropMode)。
+local function closure_root_52_8_0()
+    DiuItems(dropMode)
+end
+
+-- root/52/18/0：与root/52/8/0具有相同调用行为，常量顺序不同。
+local function closure_root_52_18_0()
+    DiuItems(dropMode)
+end
+
+-- root/52/12：调用global.gameWorldController:OnGameLeaveWorld()。
+local function closure_root_52_12()
+    global.gameWorldController:OnGameLeaveWorld()
+end
