@@ -249,3 +249,18 @@ end
 local function closure_root_23_0()
     MainLoop()
 end
+
+
+-- 11.16 root/52/21：16条物理指令、无参数、无upvalue捕获。
+-- 父级root/52在槽位603通过Opcode121创建childIndex=21闭包，captureCount=0。
+-- Opcode95加载全局LuaSendMsg并融合设置第1个参数；
+-- Opcode235融合装载后续6个参数；Opcode123发送消息。
+-- Opcode361融合准备SL.ShowSystemTips方法及字符串参数；Opcode128调用。
+-- Opcode110设置true，Opcode292返回该值；尾部Opcode339不可达。
+-- SL:ShowSystemTips(str)已在3.40.x的SL.md“文本提示”条目确认；LuaSendMsg未在开发文档收录，仅按原始调用点恢复。
+-- closure_root_52_21为原型路径合成定位名。
+local function closure_root_52_21()
+    LuaSendMsg(9002, 901238, 0, 0, 0, "[1,1]", 5)
+    SL:ShowSystemTips("回收完毕")
+    return true
+end
