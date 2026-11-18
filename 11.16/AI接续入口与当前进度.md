@@ -48,13 +48,13 @@
 
 - 原始文件已放入11.16目录，原文件只读。
 - 外层解包与162原型结构解析已经完成，不得重做。
-- 已恢复并写入6个基础函数：GetMapId、GetMapName、GetMainPlayerID、IsDie、PlayerPos、GetOwnerID。
+- 已恢复并写入8个函数：GetMapId、GetMapName、GetMainPlayerID、IsDie、PlayerPos、GetOwnerID、GetDroppedItems、ShowLocalNoticeByType。
 - 已提取7个优先原型的完整物理指令记录，见 `重点原型指令记录.json`。
 - 已建立本版Opcode映射工作记录，见 `Opcode语义映射_11.16.md`。
-- 已从11.16分派器确认Opcode 85、221、241、248、293、314、393的语义，详见 `Opcode语义映射_11.16.md`。
+- 已从11.16分派器确认多组基础Opcode及root/8、root/80融合指令序列，详见 `Opcode语义映射_11.16.md`。
 - 已识别VM融合指令机制；root/8（GetDroppedItems）已完成寄存器/常量索引模拟，确认调用表达式及双返回值，并写入唯一明文源码。
-- 当前已写入7/162个原型（4.32%，按原型数口径）。
-- 下一项：继续恢复短原型，优先检查root/20（FindMonsterInCurrViewField）与root/80（ShowLocalNoticeByType）；不要重复分析root/8。
+- 当前已写入8/162个原型（4.94%，按原型数口径）。
+- 下一项：继续分析root/20（FindMonsterInCurrViewField，27条指令），重点闭合条件跳转与循环；root/8、root/80不要重复分析。
 
 ## 六、每轮工作结束必须交付
 
