@@ -82,3 +82,11 @@
 - 已新增写入函数：root/80 ShowLocalNoticeByType；当前明文8/162（4.94%）。
 - root/20已开始逐条反汇编，已确认209、366、340、388、318、307、393、11等Opcode行为；该函数包含ipairs迭代和GetID调用，但371、250及循环寄存器尚未闭合，仍为分析中。
 - 下次直接从root/20的Opcode 371、250分派器叶子和迭代器寄存器映射继续；不要重做root/8或root/80。
+
+
+### 2026-11-18续接增量（root/20完成）
+- 已新增写入：root/20 FindMonsterInCurrViewField；当前明文9/162（5.56%，按原型数）。
+- 该函数调用SL:FindMonsterInCurrViewField(false,false)，空结果回退为{}，使用ipairs遍历；通过IsDie(monster)存活判断及monster:GetID()非空判断后，写入result[monsterID]=monster。
+- H[0]闭包映射到root/39的IsDie：依据参数签名、返回行为及调用位置作高置信匹配；原型索引未直接保存捕获槽符号名，后续若取得闭包描述可再做独立确认。
+- Opcode 65融合318/105/241；Opcode 198融合288；Opcode 250为泛型迭代器推进；Opcode 371为动态键值表赋值。详见Opcode语义映射文档。
+- 下一步从函数状态CSV中选择未恢复的短原型继续；root/20不再重复核对。语法与游戏运行验证仍未执行。
