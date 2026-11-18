@@ -1139,6 +1139,112 @@
         "opcode339": "结束当前函数，无显式返回值",
         "upvalues": "无H槽读取或写入"
       }
+    },
+    {
+      "path": "root/56/0",
+      "params": 0,
+      "constants": [
+        "ProxyTable",
+        "global",
+        "FriendProxy",
+        "Facade",
+        "retrieveProxy"
+      ],
+      "instruction_count": 9,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 282,
+          "A": 0,
+          "B": "global",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": "Facade",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 103,
+          "A": 0,
+          "B": 0,
+          "C": "retrieveProxy",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 4,
+          "opcode": 108,
+          "A": 2,
+          "B": "global",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 79,
+          "A": 2,
+          "B": 2,
+          "C": "ProxyTable",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 6,
+          "opcode": 96,
+          "A": 2,
+          "B": 2,
+          "C": "FriendProxy",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 7,
+          "opcode": 202,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 244,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "return global.Facade:retrieveProxy(global.ProxyTable.FriendProxy)",
+      "recovery_evidence": {
+        "opcode282": "加载global；融合读取Facade成员；再融合准备retrieveProxy方法receiver/self",
+        "opcode108": "加载global；融合读取ProxyTable；再融合读取FriendProxy",
+        "opcode202": "直接return函数调用结果，参数区间A+1至B",
+        "unreachable": "槽位8 Opcode244、槽位9 Opcode339位于槽位7无条件return之后，不属于可达路径",
+        "upvalues": "本原型无H槽读取或写入",
+        "parent_registration": "root/56父原型未发现创建childIndex=0的Opcode121闭包指令；原始注册/使用关系待确认",
+        "api_docs": "已检索3.40.x的SL.md、元变量.md、游戏事件.md及仓库搜索，未收录Facade/retrieveProxy；不认定为文档已定义的公开API"
+      }
     }
   ],
   "constant_type_notes": {
