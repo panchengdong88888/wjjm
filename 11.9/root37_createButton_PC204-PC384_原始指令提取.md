@@ -998,3 +998,18 @@ child25 PC2 opcode132先设置捕获配置表的GATHER_THRESHOLD=11，并融合�
 
 ### 下一步
 先在仓库已有的宿主环境/API资料中定点查找环境表数值键0及F[0][1][0][0]的对象定义/注入方式；若静态资料没有证据，则将其保留为明确待确认点，不伪造调用。随后继续恢复child9、child6与child12的真实业务职责及新版callbackMap装配。
+
+
+## 2026-11-18：新版child9 toggle状态同步闭包恢复
+
+重新定点解析root/37 PC253-PC257与child9完整51条指令。root/37 PC253创建child9（2个显式参数），后续四项捕获依次为：
+- UP[0] ← root/37局部R12：第一组按钮配置数组
+- UP[1] ← root/37局部R13：第二组按钮配置数组
+- UP[2] ← root/37局部R14：第三组按钮配置数组
+- UP[3] ← createButton的UP[4] ← 根函数R1：MainLeftBottom模块表
+
+child9两个显式参数为buttonKey和toggled。其51条指令实现双层ipairs遍历三组配置，按config.key匹配buttonKey，写入config.toggled=toggled；然后从MainLeftBottom.b[buttonKey]取控件。控件存在时调用GUI.Button_setTitleText与GUI.Button_setTitleColor：开启状态标题使用config.toggle、颜色#ff0000；关闭状态标题使用config.name、颜色#ffffff。命中后立即返回；未命中则遍历下一项/下一组。
+
+已在唯一明文Lua新增MakeMainLeftBottomToggleStateSync_11_9(firstGroup, secondGroup, thirdGroup, mainLeftBottom)，保留旧root/43的MakeMainLeftBottomToggleStateSync不动。新函数捕获对象按新版证据明确区分：MainLeftBottom是模块表，按钮映射为MainLeftBottom.b，不能误用MainLeftBottom.a。
+
+该辅助函数的明文主体已写入；完整新版doInit实例化及调用点接线仍待完成。未编译、未打包APK、未游戏实测。
