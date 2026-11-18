@@ -139,7 +139,7 @@ mode=%s
 131,root/54,root,1,,待识别,0,18,0,56,未恢复,已停止苹果下图 | cruiseOff | appleMapRunning | 开始苹果下图 | appleMap | ticks | state | UnSchedule | appleMapTimer | backCity,,,2026-11-18
 132,root/55,root,1,,待识别,0,51,0,195,未恢复,开启6格范围内有多少怪 不走去拾取 | table | SETTING_CONFIG | HP保护1物品优先级: | GetMetaValue | PKMODE | split | SL | 开启怪物简装 | 随机传送石,,,2026-11-18
 133,root/56,root,1,,待识别,0,1,1,10,未恢复,pcall,,,2026-11-18
-134,root/56/0,root/56,2,,待识别,0,5,0,9,未恢复,ProxyTable | global | FriendProxy | Facade | retrieveProxy,,,2026-11-18
+134,root/56/0,root/56,3,helper_root_56_0（合成定位名）,行为已恢复,0,5,0,9,已写入明文,Facade | retrieveProxy | ProxyTable | FriendProxy,MainLeftBottom_11.16_明文.lua,9条物理指令全部闭合；Opcode282融合全局/Facade读取及retrieveProxy方法准备，Opcode108融合读取global.ProxyTable.FriendProxy，Opcode202直接return；无H槽；父级未发现创建childIndex=0闭包的指令,2026-11-19
 135,root/57,root,1,,待识别,2,10,0,60,未恢复,abs | math,,,2026-11-18
 136,root/58,root,1,TakeItems,高置信候选,0,23,0,99,未恢复,"MSG_CS_STORAGE_PICK_OUT_REQUEST | len |  件 | trim | global | 仓库无可取物品 | 待定 | LuaSendMsg | 取出物品完成, 共取出  | string",,,2026-11-18
 137,root/59,root,1,,待识别,1,16,0,44,未恢复,appleMap | #ffffff | GUI | SL | appleMapRunning | UnSchedule | 开苹果图 | toggled | appleMapTimer | Button_setTitleText,,,2026-11-18
