@@ -4502,3 +4502,11 @@ PC330创建child15时也捕获R15为第五项，child15父函数体没有直接�
 - 本轮明文提交：df338bc690b1b858becd630d7188dc3fc966e790；账本提交：5a815d11ed6c9f60596b584abb62aacb63854e31。
 - 尚未把这两个工厂接入新版真实callbackMap实例化/登记路径；下一步继续child18在PC301-PC306的完整调用连接，并恢复新版callbackMap实际装配。
 - 未编译、未打包APK、未游戏实测。
+
+
+## 2026-11-18续：新版callbackMap登记链已完整确认
+
+root/37 PC266-PC337已经逐条闭合。唯一callbackMap按VM顺序登记15个key：settingbut、newzone、buygoldbut、stopallbut、recyclebut、yinguaibut、rewardbut、clearblacklistbut、blacklistbut、storagebut、takebut、shiqubut、diuqibut、moneybut、xiaotuibut。newzone明确是PC269-PC271，child2只捕获root/38新区启动处理器；blacklistbut明确是PC301-PC306并捕获child6。
+
+因此当前阶段不要再重复callbackMap key映射。下一步重点转到PC338-PC384的ButtonFactory参数与child17 PC1-PC14控制流，解决“按钮创建存在、callbackMap已登记，但点击绑定段PC14 return阻断”的问题。若确认PC14确实无可达入口，则继续追查是否存在宿主层替代绑定，而不是强行删除return或拼接死代码。
+
