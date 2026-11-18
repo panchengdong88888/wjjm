@@ -1,0 +1,18 @@
+{
+  "project": "MainLeftBottom 11.16",
+  "source_file": "11.16/MainLeftBottom 11.16原版.lua",
+  "plaintext_file": "11.16/MainLeftBottom_11.16_明文.lua",
+  "branch": "main",
+  "status": "待首次结构分析",
+  "source_blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+  "vm_type": null,
+  "vm_version": null,
+  "lua_target_version": null,
+  "prototype_total": null,
+  "root_prototype": null,
+  "prototypes": [],
+  "notes": [
+    "当前文件仅为索引骨架，不包含未经分析的原型数量或身份推断。",
+    "首次结构分析完成后，按真实证据填充prototypes数组。"
+  ]
+}
