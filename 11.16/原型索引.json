@@ -891,8 +891,8 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 17,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "helper_root_5（合成定位名）",
+      "identity_status": "行为已恢复；原始符号名待确认",
       "constants": [
         "mCurrMapX",
         0,
