@@ -88,3 +88,35 @@ end
 ```
 
 注意：此处依赖Opcode 314分派器的真实多返回值写回行为，不能误读为单返回值调用。
+
+
+## root/80 ShowLocalNoticeByType融合指令模拟（2026-11-18）
+
+原型常量（1起始索引）：1=screenH，2=ShowLocalNoticeByType，3=5，4=BColor，5=10，6=249，7=Type，8=50，9=SL，10=Y，11=Msg，12=0，13=FColor，14=X。
+
+| 执行起点 | 消费的物理记录 | 执行结果 |
+|---:|---|---|
+| 201 | 201、42、217 | 创建N[1]={}；写入Type=10；写入Msg=N[0]（唯一参数） |
+| 368 | 368、277、185、234、270、12 | 写入FColor=249、BColor=0、X=5；读取H[0][screenH]并减50，得到Y |
+| 306 | 306 | N[1][Y]=N[2]，将上一步结果放入notice表 |
+| 210 | 210、152、241 | 加载SL；取SL.ShowLocalNoticeByType；把SL作为self放入参数寄存器 |
+| 128 | 128 | 调用方法，参数为self和notice表 |
+| 339 | 339 | 函数结束控制 |
+
+恢复源码：
+
+```lua
+function ShowLocalNoticeByType(Msg)
+    local notice = {
+        Type = 10,
+        Msg = Msg,
+        FColor = 249,
+        BColor = 0,
+        X = 5,
+        Y = screenH - 50,
+    }
+    SL:ShowLocalNoticeByType(notice)
+end
+```
+
+说明：H[0]按本VM的环境捕获槽解释为全局环境；明文形式写作全局screenH。此点是从环境槽用途还原出的Lua表达形式。
