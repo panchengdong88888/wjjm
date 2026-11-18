@@ -33,7 +33,7 @@
 30,root/21,root,1,,待识别,2,36,0,149,未恢复,LimitCount | SL | type | Index | 限购剩余 0 | ITEM_INDEX_BY_NAME | CheckCondition |  | BuyCount | pageData,,,2026-11-18
 31,root/22,root,1,,待识别,0,14,0,61,未恢复,GUI | resWin | UnSchedule | pairs | setVisible | Win_CloseAll | appleMapBg | isHidden | infoBg | resTimer,,,2026-11-18
 32,root/23,root,1,InitGatherMonsters,高置信候选,0,11,1,36,分析中,引怪功能已启动 (阈值: %d) | CHECK_INTERVAL | string | UnSchedule | format | SL | IDLE | gatherTimer | GATHER_THRESHOLD | Schedule | Opcode 9/110/123/128/205/253/289/330/358/388/410已映射；回调捕获与定时器控制流待闭合,,,2026-11-18
-33,root/23/0,root/23,2,,待识别,0,1,0,3,未恢复,MainLoop；3条指令待提取语义,,,2026-11-18
+33,root/23/0,root/23,2,closure_root_23_0（合成定位名）,行为已恢复,0,1,0,3,已写入明文,MainLoop,MainLeftBottom_11.16_明文.lua,3条物理指令；父级root/23槽位23通过Opcode387创建，captureCount=0；Opcode105读取全局MainLoop，Opcode128无参调用，Opcode205结束,2026-11-19
 34,root/24,root,1,GetMapId,本轮已恢复,0,4,0,9,已写入明文,MAP_ID | SL | GetMetaValue,MainLeftBottom_11.16_明文.lua,,2026-11-18
 35,root/25,root,1,,待识别,0,7,1,33,未恢复,Schedule | SL | 开启见人跑 | UnSchedule | cruiseRunTimer,,,2026-11-18
 36,root/25/0,root/25,2,,待识别,0,104,3,598,未恢复,cruiseGatherPaused | 附近没有玩家，恢复战斗 | 见人跑: %s(%d格)，向%d方向移动%d步 | SetTargetID | MMO | ClearTarget |  | retrieveProxy | ipairs | p,,,2026-11-18
