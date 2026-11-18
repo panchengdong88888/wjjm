@@ -4510,3 +4510,12 @@ root/37 PC266-PC337已经逐条闭合。唯一callbackMap按VM顺序登记15个k
 
 因此当前阶段不要再重复callbackMap key映射。下一步重点转到PC338-PC384的ButtonFactory参数与child17 PC1-PC14控制流，解决“按钮创建存在、callbackMap已登记，但点击绑定段PC14 return阻断”的问题。若确认PC14确实无可达入口，则继续追查是否存在宿主层替代绑定，而不是强行删除return或拼接死代码。
 
+
+
+## 2026-11-18续：child17死代码问题已正式定性
+
+当前已确认不是“PC14 return导致解析错误”，而是原始新版VM真实控制流：PC12 opcode239 + PC13 opcode100 + PC14 opcode152，无论条件结果最终都到return。因此PC15-PC50不可达。
+
+不要删除PC14、改跳转或把PC15-PC50强行接入明文。下一步直接追查PC1-PC12的Button_Create参数以及GUI宿主层是否在Button_Create时接收/保存callbackMap；若宿主层无此机制，再查root/37外部是否存在按钮点击绑定入口。
+
+新区业务处理器root/38和callbackMap["newzone"]登记均已确认，不再重复分析。
