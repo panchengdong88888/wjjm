@@ -181,3 +181,9 @@
 - 业务明文：closure_root_75_0(a,b) 返回 a._distance < b._distance。Opcode 79/96取两个距离字段，Opcode 226比较，Opcode 388跳转分流，Opcode 174/110分别写false/true，Opcode 11返回结果。
 - 当前累计15/162（9.26%）。函数名是原型路径合成定位名。未做Lua语法或游戏运行验证。
 - 继续先处理短小简单函数；root/3、root/23、MainLoop等复杂项继续延后。
+
+
+### 2026-11-18续：修正root/75/0比较方向
+- 重新按解释器的内部O跳转和循环尾统一O=O+1逐槽模拟，发现此前写成小于比较是反向的。
+- 正确逻辑：a._distance < b._distance时返回false；否则返回true，即a._distance >= b._distance。
+- 明文和CSV已纠正。累计仍15/162（9.26%）。后续审查分支函数必须同时计入分支内O变化与循环尾递增。
