@@ -133,3 +133,13 @@ end
 local function closure_root_52_35_0()
     powerRefreshing = false
 end
+
+
+-- 11.16 root/71/0：6条物理指令、无参数、无子原型。
+-- Opcode 253加载SL并融合Opcode 393准备RequestAddBlacklistByName方法调用；
+-- Opcode 9读取H[0]环境表并融合Opcode 410读取全局name；
+-- 最终以name作为唯一参数调用SL:RequestAddBlacklistByName。
+-- closure_root_71_0为原型路径合成定位名，不冒充原始函数名。
+local function closure_root_71_0()
+    SL:RequestAddBlacklistByName(name)
+end
