@@ -440,3 +440,11 @@ root/3关键控制流：
 
 因此root/52/12的槽位2、3是Opcode248融合载荷，不独立执行。槽位4 Opcode123调用准备好的方法，槽位5 Opcode205结束函数。
 Opcode 123：调用`N[A](Y(N,A+1,B)))，不将调用结果写回寄存器。
+
+
+## 2026-11-19：Opcode 282、108 融合读取链确认（root/56/0）
+
+- Opcode 282：`N[A]=Z[C]`加载全局对象；融合消费下一物理槽位执行成员读取`N[next.A]=N[next.B][next.C]`；再融合消费一条执行方法receiver/self准备`N[A+1]=N[B]`、`N[A]=N[B][C]`。
+- Opcode 108：`N[A]=Z[C]`加载全局对象；融合消费后续两条物理槽位，依次执行两次成员读取`N[next.A]=N[next.B][next.C]`。
+- root/56/0中Opcode 282融合消费槽位2、3，准备`global.Facade:retrieveProxy`；Opcode108融合消费槽位5、6，得到`global.ProxyTable.FriendProxy`；Opcode202直接返回调用结果。
+- 可读表达式：`return global.Facade:retrieveProxy(global.ProxyTable.FriendProxy)`。Opcode 244及339位于Opcode202无条件return之后，不可达。
