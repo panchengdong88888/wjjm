@@ -3877,6 +3877,15 @@ end
 -- root PC258：Builtsetting闭包按VM导出到当前chunk全局环境；其通知函数由上方词法cell捕获。
 rootEnvironment.Builtsetting = Builtsetting_11_9
 
+-- 新版root/37/12：settingbut零捕获回调包装器。
+-- child12只有3条指令、0显式参数、0捕获，常量为Builtsetting；
+-- 它通过当前chunk全局环境取得已导出的Builtsetting并直接调用。
+-- 这里不把root/37/12误写成重新实现内挂设置业务；业务主体仍是Builtsetting_11_9。
+local function SettingButtonCallback_11_9()
+    return Builtsetting()
+end
+
+
 -- root PC259-PC260：无捕获快捷栏移动函数，导出为全局MoveItemToQuickUse。
 local function MoveItemToQuickUse(itemIndex, targetPos)
     -- PC1-PC14：分别取得QuickUseProxy与Bag代理。
