@@ -1468,6 +1468,208 @@
         "opcode339": "位于无条件return之后，不可达",
         "api_docs": "SL.md“文本提示”明确记载SL:ShowSystemTips(str)，str为string；LuaSendMsg未在3.40.x开发文档检索到，按原始调用点保留，不认定为公开文档API"
       }
+    },
+    {
+      "path": "root/70",
+      "params": 0,
+      "constants": [
+        "Y",
+        "SL",
+        0,
+        "X",
+        "x",
+        "GetMetaValue",
+        "y"
+      ],
+      "instruction_count": 19,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 361,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 102,
+          "A": 0,
+          "B": 0,
+          "C": "GetMetaValue",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 295,
+          "A": 2,
+          "B": "X",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 4,
+          "opcode": 209,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 325,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 388,
+          "A": 0,
+          "B": 7,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 309,
+          "A": 0,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 8,
+          "opcode": 146,
+          "A": 1,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 9,
+          "opcode": 204,
+          "A": 1,
+          "B": 1,
+          "C": "GetMetaValue",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 10,
+          "opcode": 295,
+          "A": 3,
+          "B": "Y",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 11,
+          "opcode": 209,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 325,
+          "A": 1,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 388,
+          "A": 0,
+          "B": 14,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 14,
+          "opcode": 355,
+          "A": 1,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 15,
+          "opcode": 279,
+          "A": 2,
+          "B": 0,
+          "C": 2,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 16,
+          "opcode": 125,
+          "A": 2,
+          "B": "x",
+          "C": 0,
+          "mode": 0,
+          "flags": 2
+        },
+        {
+          "slot": 17,
+          "opcode": 125,
+          "A": 2,
+          "B": "y",
+          "C": 1,
+          "mode": 0,
+          "flags": 2
+        },
+        {
+          "slot": 18,
+          "opcode": 292,
+          "A": 2,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 19,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "local x = SL:GetMetaValue(\"X\") or 0; local y = SL:GetMetaValue(\"Y\") or 0; return { x = x, y = y }",
+      "recovery_evidence": {
+        "closure_creation": "root父原型槽位189 Opcode121创建childIndex=70，captureCount=0",
+        "opcode361": "读取SL并融合准备GetMetaValue方法receiver/self及后续参数",
+        "opcode325": "若寄存器值真值与true不相等，则跳过下一物理槽位；用于nil/false时执行默认值路径",
+        "opcode309": "将X默认值写为0，并融合消费后续三条记录准备SL:GetMetaValue('Y')调用",
+        "opcode355": "将Y默认值写为0，并融合消费后续三条记录创建结果表及写入x/y字段",
+        "opcode279": "创建空表",
+        "opcode125": "按常量字段名写表成员",
+        "opcode292": "直接返回寄存器A至C；本例返回N[2]",
+        "opcode339": "位于return之后，不可达",
+        "upvalues": "无H槽读取或写入",
+        "api_docs": "SL.md示例中出现SL:GetMetaValue('MAP_ID')，确认receiver和字符串key调用形式；文档未声明返回类型，本函数默认值逻辑以原始Opcode325分支为准"
+      }
     }
   ],
   "constant_type_notes": {
