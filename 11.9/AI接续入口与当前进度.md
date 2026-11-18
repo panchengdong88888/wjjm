@@ -4492,3 +4492,13 @@ PC330创建child15时也捕获R15为第五项，child15父函数体没有直接�
 - 尚未修改唯一明文Lua：opcode语义与5项捕获的运行时含义仍需确认，不将旧版MakeBlacklistTimer直接套用。
 - 下一步：结合root/37的15项upvalue来源及root主原型寄存器生命周期，逐一确认child6捕获值；再还原child6的直接Lua函数，并把child18/blacklistbut与新版callbackMap的实际创建路径接起来。
 - 未编译、未打包APK、未游戏实测。
+
+
+## 2026-11-18续：新版黑名单启动/切换回调主体已恢复
+
+- child6（root/37/6）完整18条指令及捕获映射已确认；捕获依次为blacklistState、MainLeftBottom模块表、Schedule包装器、0.1间隔、PrintLog。
+- child18（root/37/18）捕获MainLeftBottom、PrintLog、featureState及child6回调；关闭分支取消MainLeftBottom.blacklistTimer、清空句柄并设isBlacklisting=false，开启分支调用child6。
+- 唯一明文Lua新增MakeBlacklistStartupCallback_11_9与MakeBlacklistButtonHandler_11_9，旧版root/43函数未覆盖。
+- 本轮明文提交：df338bc690b1b858becd630d7188dc3fc966e790；账本提交：5a815d11ed6c9f60596b584abb62aacb63854e31。
+- 尚未把这两个工厂接入新版真实callbackMap实例化/登记路径；下一步继续child18在PC301-PC306的完整调用连接，并恢复新版callbackMap实际装配。
+- 未编译、未打包APK、未游戏实测。
