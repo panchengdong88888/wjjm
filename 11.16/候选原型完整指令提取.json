@@ -1093,6 +1093,52 @@
         "upvalues": "本原型没有H槽读取",
         "api_docs": "已检索3.40.x的SL.md及仓库文档搜索，未收录gameWorldController/OnGameLeaveWorld；不认定为文档已定义的公开API"
       }
+    },
+    {
+      "path": "root/52/4",
+      "params": 0,
+      "constants": [
+        "Builtsetting"
+      ],
+      "instruction_count": 3,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 105,
+          "A": 0,
+          "B": "Builtsetting",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "Builtsetting()",
+      "recovery_evidence": {
+        "closure_creation": "root/52父原型槽位559 Opcode121创建childIndex=4，captureCount=0",
+        "opcode105": "N[A]=Z[C]，加载全局常量Builtsetting",
+        "opcode128": "调用N[A]，参数区间A+1至B；本例无参数",
+        "opcode339": "结束当前函数，无显式返回值",
+        "upvalues": "无H槽读取或写入"
+      }
     }
   ],
   "constant_type_notes": {
