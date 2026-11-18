@@ -100,11 +100,11 @@ mode=%s
 92,root/52/6/4,root/52/6,3,,待识别,1,12,0,46,未恢复,find | BAG_DATA | pairs | string | MakeIndex | OverLap | SL | Name | ITEM_IS_BIND | GetMetaValue,,,2026-11-18
 93,root/52/7,root/52,2,,待识别,0,7,0,26,未恢复,ipairs | slot | SL | names | ITEM_INDEX_BY_NAME | MoveItemToQuickUse | GetMetaValue,,,2026-11-18
 94,root/52/8,root/52,2,,待识别,0,11,1,49,未恢复,DiuItems | dropMode | SL | 关闭丢全部物品 | 开启丢全部物品(模式1) | isDiuing | UnSchedule | dropTimer,,,2026-11-18
-95,root/52/8/0,root/52/8,3,,待识别,0,2,0,5,未恢复,dropMode | DiuItems,,,2026-11-18
+95,root/52/8/0,root/52/8,3,DiuItems(dropMode)回调闭包,高置信行为恢复（合成定位名）,0,2,0,5,已写入明文,常量DiuItems；H[0][dropMode]；调用DiuItems(dropMode),MainLeftBottom_11.16_明文.lua,原始闭包符号名及父级注册位置待确认,2026-11-18
 96,root/52/9,root/52,2,,待识别,0,5,0,18,未恢复,blacklistTimer | distance | BlacklistItems | 开启黑名单功能，距离格子：%d,,,2026-11-18
 97,root/52/10,root/52,2,,待识别,0,2,0,6,未恢复,ClearBlacklistItems | 清空黑名单,,,2026-11-18
 98,root/52/11,root/52,2,,待识别,0,2,0,5,未恢复,_G | LuaSendMsg,,,2026-11-18
-99,root/52/12,root/52,2,,待识别,0,3,0,5,未恢复,global | gameWorldController | OnGameLeaveWorld,,,2026-11-18
+99,root/52/12,root/52,2,OnGameLeaveWorld回调闭包,高置信行为恢复（合成定位名）,0,3,0,5,已写入明文,global.gameWorldController:OnGameLeaveWorld()；方法调用与返回闭合,MainLeftBottom_11.16_明文.lua,原始闭包符号名及父级注册位置待确认,2026-11-18
 100,root/52/13,root/52,2,,待识别,0,1,0,13,未恢复,cruiseRunTimer,,,2026-11-18
 101,root/52/14,root/52,2,,待识别,6,38,0,174,未恢复,"tostring | sealPanelAt | ancientSwordData | swordPullPending | ""power"" | subData_2 | combatPower | find |  | ,",,,2026-11-18
 102,root/52/15,root/52,2,,待识别,0,11,0,36,未恢复,dropTimer | 开丢全部 | diuqibut | dropallbut | Button_setTitleText | GUI | #ff0000 | #ffffff | Button_setTitleColor | 关丢全部,,,2026-11-18
@@ -112,7 +112,7 @@ mode=%s
 104,root/52/16/0,root/52/16,3,,待识别,0,5,0,22,未恢复,LuaSendMsg,,,2026-11-18
 105,root/52/17,root/52,2,,待识别,0,8,0,25,未恢复,PickUpItems | UnSchedule | 开启拾取物品 | SL | 关闭拾取物品 | shiquTimer,,,2026-11-18
 106,root/52/18,root/52,2,,待识别,0,18,1,65,未恢复,dropTimer | isDiuing | 开丢全部 | 开启丢弃物品(模式2) | dropallbut | Button_setTitleColor | UnSchedule | GUI | Button_setTitleText | #ffffff,,,2026-11-18
-107,root/52/18/0,root/52/18,3,,待识别,0,2,0,5,未恢复,DiuItems | dropMode,,,2026-11-18
+107,root/52/18/0,root/52/18,3,DiuItems(dropMode)回调闭包,高置信行为恢复（合成定位名）,0,2,0,5,已写入明文,常量DiuItems；H[0][dropMode]；调用DiuItems(dropMode),MainLeftBottom_11.16_明文.lua,原始闭包符号名及父级注册位置待确认,2026-11-18
 108,root/52/19,root/52,2,,待识别,0,10,0,29,未恢复,关闭取物功能 | 开启取物功能 | SL | UnSchedule | TakeItems | isTaking | takeTimer,,,2026-11-18
 109,root/52/20,root/52,2,,待识别,0,0,0,5,未恢复,,,,2026-11-18
 110,root/52/21,root/52,2,,待识别,0,9,0,16,未恢复,"回收完毕 | LuaSendMsg | ShowSystemTips | [1,1] | SL",,,2026-11-18
