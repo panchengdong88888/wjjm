@@ -1,0 +1,1011 @@
+{
+  "source": "11.16/MainLeftBottom 11.16原版.lua",
+  "source_blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+  "decode": "Base36长度字段+LZW，随后每字节XOR 0x17；按原版S()结构解析",
+  "decoded_bytes": 142522,
+  "consumed_bytes": 142522,
+  "prototypes": [
+    {
+      "path": "root/2/0",
+      "params": 1,
+      "constants": [
+        "ipairs"
+      ],
+      "instruction_count": 13,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 146,
+          "A": 1,
+          "B": "ipairs",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 324,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 386,
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 8,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 294,
+          "A": 0,
+          "B": 0,
+          "C": 5,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 388,
+          "A": 0,
+          "B": 8,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 110,
+          "A": 6,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 11,
+          "A": 6,
+          "B": 6,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 250,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 388,
+          "A": 0,
+          "B": 4,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 11,
+          "opcode": 110,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 292,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/2/2",
+      "params": 1,
+      "constants": [
+        "ipairs"
+      ],
+      "instruction_count": 13,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 45,
+          "A": 1,
+          "B": "ipairs",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 234,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 386,
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 8,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 294,
+          "A": 0,
+          "B": 0,
+          "C": 5,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 388,
+          "A": 0,
+          "B": 8,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 110,
+          "A": 6,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 292,
+          "A": 6,
+          "B": 6,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 122,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 388,
+          "A": 0,
+          "B": 4,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 11,
+          "opcode": 110,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 293,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/13/0",
+      "params": 0,
+      "constants": [
+        "",
+        22502,
+        "LuaSendMsg",
+        3,
+        2,
+        9002,
+        0,
+        1
+      ],
+      "instruction_count": 10,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 95,
+          "A": 0,
+          "B": "LuaSendMsg",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 54,
+          "A": 1,
+          "B": 9002,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 3,
+          "opcode": 295,
+          "A": 2,
+          "B": 22502,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 4,
+          "opcode": 295,
+          "A": 3,
+          "B": 1,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 295,
+          "A": 4,
+          "B": 2,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 6,
+          "opcode": 168,
+          "A": 5,
+          "B": 3,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 7,
+          "opcode": 295,
+          "A": 6,
+          "B": "",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 8,
+          "opcode": 295,
+          "A": 7,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 9,
+          "opcode": 128,
+          "A": 0,
+          "B": 7,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/26/0",
+      "params": 0,
+      "constants": [
+        "RequestOutBlacklist",
+        "_blacklistData",
+        {
+          "unknown_type": 2
+        },
+        "SL"
+      ],
+      "instruction_count": 13,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 253,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": "RequestOutBlacklist",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 324,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 123,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 9,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "_blacklistData",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 7,
+          "opcode": 340,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 388,
+          "A": 0,
+          "B": 12,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 9,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": "_blacklistData",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 11,
+          "opcode": 127,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 207,
+          "A": 0,
+          "B": 1,
+          "C": {
+            "unknown_type": 2
+          },
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 13,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/40/0",
+      "params": 0,
+      "constants": [
+        "SL",
+        "JsonDecode"
+      ],
+      "instruction_count": 6,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 105,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": "JsonDecode",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 127,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 202,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 27,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/52/10",
+      "params": 0,
+      "constants": [
+        "ClearBlacklistItems",
+        "清空黑名单"
+      ],
+      "instruction_count": 6,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 403,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 2,
+          "opcode": 295,
+          "A": 1,
+          "B": "清空黑名单",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 3,
+          "opcode": 128,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 105,
+          "A": 0,
+          "B": "ClearBlacklistItems",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 123,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/52/13",
+      "params": 0,
+      "constants": [
+        "cruiseRunTimer"
+      ],
+      "instruction_count": 13,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 127,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 2,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "cruiseRunTimer",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 340,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 8,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 127,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 293,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 324,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 123,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 11,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 293,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/53",
+      "params": 1,
+      "constants": [
+        "string",
+        "match",
+        "·",
+        "^(.-)·"
+      ],
+      "instruction_count": 15,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 257,
+          "A": 1,
+          "B": "string",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 410,
+          "A": 1,
+          "B": 1,
+          "C": "match",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 288,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 295,
+          "A": 3,
+          "B": "^(.-)·",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 209,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 358,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 388,
+          "A": 0,
+          "B": 12,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 291,
+          "A": 2,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 295,
+          "A": 3,
+          "B": "·",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 10,
+          "opcode": 93,
+          "A": 2,
+          "B": 2,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 11,
+          "opcode": 366,
+          "A": 2,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 388,
+          "A": 0,
+          "B": 13,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 288,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 14,
+          "opcode": 293,
+          "A": 2,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 15,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/74",
+      "params": 1,
+      "constants": [
+        "format",
+        "状态切换: %s -> %s",
+        "string"
+      ],
+      "instruction_count": 10,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 234,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 2,
+          "opcode": 146,
+          "A": 2,
+          "B": "string",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 3,
+          "opcode": 304,
+          "A": 2,
+          "B": 2,
+          "C": "format",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 4,
+          "opcode": 25,
+          "A": 3,
+          "B": "状态切换: %s -> %s",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 324,
+          "A": 4,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 288,
+          "A": 5,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 264,
+          "A": 2,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 376,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 62,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ]
+    }
+  ]
+}
