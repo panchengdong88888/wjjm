@@ -4470,3 +4470,15 @@ child25 PC2 opcode132另有两记录融合行为：先设置`GATHER_THRESHOLD=11
 ### child9实际调用点已定位
 root/37 PC278创建child0 stopall处理器；PC279-PC282依次捕获timerState、featureState、局部R15（child9同步闭包）、UP[0]；PC283登记callbackMap.stopallbut。child9因此明确服务于stopallbut，供停止拾取/丢弃时同步按钮状态。现有MakeStopAllScriptButtonHandler的四参数顺序与这组捕获相符；但新版callbackMap完整入口尚未接线。
 PC330创建child15时也捕获R15为第五项，child15父函数体没有直接读取该upvalue，嵌套闭包是否消费待确认。
+
+
+## 2026-11-18续：新版settingbut零捕获包装器恢复
+
+- root/37 child12（3条指令、0显式参数、0捕获）常量为`Builtsetting`，父函数PC267创建后于PC268登记为`callbackMap["settingbut"]`。
+- 根级PC258已将`Builtsetting_11_9`导出到当前chunk环境的`Builtsetting`；因此child12是对全局`Builtsetting`的零参数调用包装，不是第二份内挂设置业务实现。
+- 唯一明文Lua新增`SettingButtonCallback_11_9()`，直接`return Builtsetting()`；底层业务仍由已恢复的`Builtsetting_11_9`执行。
+- 本轮明文提交：f7b3c23926378e4d29d9dcc5bd6e923b1675633c。该包装函数尚未接入新版完整callbackMap/doInit；不能将settingbut单项恢复等同于新版初始化链完成。
+- 未执行Lua编译、APK打包或游戏运行测试。
+
+### 当前工作位置
+下一步恢复root/37 child6黑名单辅助闭包（18条指令、5项捕获），定点确认其创建捕获来源及调用参数，再处理child18/blacklistbut的完整新版接线。child9和child12主体已写入唯一明文；child6尚未写入。
