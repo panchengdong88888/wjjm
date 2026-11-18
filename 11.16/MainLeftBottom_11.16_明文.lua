@@ -63,3 +63,9 @@ function GetOwnerID(actor, expectedOwnerID)
 
     return ownerID ~= expectedOwnerID
 end
+
+
+-- root/8：由11.16原始VM寄存器流恢复；调用返回两个结果，按原顺序透传。
+function GetDroppedItems()
+    return global.dropItemManager:FindDropItemInCurrViewFieldAll()
+end
