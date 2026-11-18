@@ -483,9 +483,7 @@
           "opcode": 207,
           "A": 0,
           "B": 1,
-          "C": {
-            "unknown_type": 2
-          },
+          "C": null,
           "mode": 0,
           "flags": 4
         },
@@ -1007,5 +1005,11 @@
         }
       ]
     }
-  ]
+  ],
+  "constant_type_notes": {
+    "0": "boolean (following byte is boolean value)",
+    "1": "string (length-prefixed decoded string)",
+    "2": "nil (S() leaves constant slot unset; K remains nil)",
+    "3": "number (decoded IEEE-754 double)"
+  }
 }
