@@ -1013,3 +1013,18 @@ child9两个显式参数为buttonKey和toggled。其51条指令实现双层ipair
 已在唯一明文Lua新增MakeMainLeftBottomToggleStateSync_11_9(firstGroup, secondGroup, thirdGroup, mainLeftBottom)，保留旧root/43的MakeMainLeftBottomToggleStateSync不动。新函数捕获对象按新版证据明确区分：MainLeftBottom是模块表，按钮映射为MainLeftBottom.b，不能误用MainLeftBottom.a。
 
 该辅助函数的明文主体已写入；完整新版doInit实例化及调用点接线仍待完成。未编译、未打包APK、未游戏实测。
+
+
+### child9的实际使用点：stopallbut
+
+继续检查root/37 PC278-PC283：
+- PC278创建child0（stopallbut处理器，4项捕获）。
+- PC279捕获root/37 UP[3]（timerState）。
+- PC280捕获root/37 UP[1]（featureState）。
+- PC281捕获局部R15，即PC253创建的child9状态同步闭包。
+- PC282捕获root/37 UP[0]。
+- PC283将该处理器登记到callbackMap["stopallbut"]。
+
+因此child9不是闲置工具闭包；它明确作为stopallbut处理器的第三项捕获，供停止拾取/丢弃时同步两个按钮的toggle状态。child0现有明文主体MakeStopAllScriptButtonHandler的参数顺序(timerState, scriptState, syncButtonToggle, showLocalNotice)与这组捕获顺序吻合。新版callbackMap完整装配仍需接入，不将单个helper已存在误报为整个doInit已完成。
+
+另见root/37 PC330创建child15时也把R15作为第五项捕获；child15父函数本体未直接读取该第五项，后续是否由其嵌套闭包使用仍待定，不将其擅自标成已确认调用点。
