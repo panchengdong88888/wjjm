@@ -29,7 +29,7 @@
 26,root/19,root,1,,待识别,0,21,2,64,未恢复,GAME_ID | Schedule | 6324648 | GetMetaValue | 1957840929 | 1304755149 | 39770358 | UID | 3548598 | [验证成功] 账号ID验证通过,,,2026-11-18
 27,root/19/0,root/19,2,,待识别,0,8,0,24,未恢复,doInit | 等待主界面属性栏(MainProperty)初始化完成... | UnSchedule | _ui | SL | MainProperty | MainLeftBottom | Panel_mini_chat,,,2026-11-18
 28,root/19/1,root/19,2,,待识别,1,4,0,27,未恢复,tostring | ipairs | 账号不存在，功能已限制，账号ID： | [提示] 账号ID在允许列表中，功能已开启,,,2026-11-18
-29,root/20,root,1,FindMonsterInCurrViewField,高置信候选,0,4,0,27,分析中,FindMonsterInCurrViewField | GetID | SL | ipairs,,,2026-11-18
+29,root/20,root,1,FindMonsterInCurrViewField,高置信候选,0,4,0,27,已写入明文,FindMonsterInCurrViewField | GetID | SL | ipairs,IsDie(H[0])过滤存活对象；按GetID结果作为result键,MainLeftBottom_11.16_明文.lua,2026-11-18
 30,root/21,root,1,,待识别,2,36,0,149,未恢复,LimitCount | SL | type | Index | 限购剩余 0 | ITEM_INDEX_BY_NAME | CheckCondition |  | BuyCount | pageData,,,2026-11-18
 31,root/22,root,1,,待识别,0,14,0,61,未恢复,GUI | resWin | UnSchedule | pairs | setVisible | Win_CloseAll | appleMapBg | isHidden | infoBg | resTimer,,,2026-11-18
 32,root/23,root,1,InitGatherMonsters,高置信候选,0,11,1,36,分析中,引怪功能已启动 (阈值: %d) | CHECK_INTERVAL | string | UnSchedule | format | SL | IDLE | gatherTimer | GATHER_THRESHOLD | Schedule,,,2026-11-18
