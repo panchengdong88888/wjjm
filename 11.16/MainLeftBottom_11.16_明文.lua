@@ -518,6 +518,35 @@ local function make_helper_root_52_28(capturedUpvalue0)
 end
 
 
+-- 11.16 root/52/9：18条物理指令，0个显式参数，5个upvalue。
+-- 父级root/52槽位550 Opcode178创建childIndex=9闭包，captureCount=5：
+-- 槽551–555依次将父级H[6]、H[3]、H[7]、H[8]、H[0]绑定到本闭包H[0..4]。
+-- root槽位633创建root/52时，root/52的H[6]/H[3]/H[7]/H[8]/H[0]
+-- 分别来自root N[67]/N[3]/N[7]/N[62]/N[4]；这些寄存器值的业务名称尚未全部确认。
+-- Opcode49融合消费槽位2和3：先读取H[0]并设置其distance=11，再装载全局BlacklistItems；
+-- 槽位4调用BlacklistItems()。
+-- 后续读取H[1]作为定时器状态对象，读取H[2]作为调度函数，
+-- 调度函数以BlacklistItems和H[3]为参数，返回值写入H[1].blacklistTimer。
+-- 最后调用H[4](提示格式字符串, H[0].distance)，并返回true。
+-- H[0..4]均保留捕获代理，不根据寄存器复用猜测业务变量名。
+-- make_helper_root_52_9为原型路径合成定位名，不是原始函数符号名。
+local function make_helper_root_52_9(capturedUpvalues)
+    capturedUpvalues[1].distance = 11
+
+    BlacklistItems()
+
+    capturedUpvalues[2].blacklistTimer =
+        capturedUpvalues[3](BlacklistItems, capturedUpvalues[4])
+
+    capturedUpvalues[5](
+        "开启黑名单功能，距离格子：%d",
+        capturedUpvalues[1].distance
+    )
+
+    return true
+end
+
+
 -- 11.16 root/52/36：19条物理指令，0个显式参数，3个upvalue。
 -- 父级root/52槽位605 Opcode387创建childIndex=36闭包，captureCount=3：
 -- 槽位606 Opcode132将父级H[3]绑定到本闭包H[0]；
