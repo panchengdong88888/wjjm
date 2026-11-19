@@ -5140,7 +5140,7 @@
       "parameter_count": 2,
       "instruction_count": 31,
       "candidate_name": "GetOwnerIDText",
-      "identity_status": "跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "跨版本业务恢复（11.2同名函数体与11.16参数/常量集合吻合；本版指令未逐槽模拟）",
       "constants": [
         "tostring",
         {
@@ -5151,7 +5151,10 @@
         -1,
         "GetOwnerID",
         "string"
-      ]
+      ],
+      "recovery_status": "已写入明文（跨版本业务复用）",
+      "business_summary": "GetOwnerIDText(actor, expectedOwnerID)：读取actor:GetOwnerID()；无效值返回false；字符串类型按旧版原表达式与tostring(ownerID)比较；其他类型与expectedOwnerID比较。",
+      "recovery_evidence": "11.16原型元数据：2参数、7常量、31条物理指令；常量包含GetOwnerID、type、tostring、空字符串、-1及string，与11.2同名函数体结构吻合。未逐槽模拟本版指令，按跨版本业务复用计数；字符串分支保留旧版原始表达式，不擅自修正。"
     },
     {
       "preorder_id": 143,
@@ -5184,7 +5187,7 @@
       "parameter_count": 1,
       "instruction_count": 26,
       "candidate_name": "SetTargetID",
-      "identity_status": "跨版本业务恢复（11.2同名函数体与11.16参数/常量集合吻合；本版指令未逐槽模拟）",
+      "identity_status": "跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）",
       "constants": [
         "SetTargetID",
         "ProxyTable",
@@ -5194,10 +5197,7 @@
         "Facade",
         "global",
         "retrieveProxy"
-      ],
-      "recovery_status": "已写入明文（跨版本业务复用）",
-      "business_summary": "SetTargetID(targetID)：检查global.Facade及PlayerInputProxy，调用代理SetTargetID(targetID, global.MMO.SELETE_TARGET_TYPE_FIND)，成功返回true，缺少Facade或代理时返回false。业务体复用11.2同名函数；11.16的1参数、8常量、26条指令及代理/目标类型常量吻合。",
-      "recovery_evidence": "11.16原型元数据：1参数、8常量、26条物理指令；常量集合完整覆盖Facade、ProxyTable、PlayerInputProxy、SetTargetID、MMO、SELETE_TARGET_TYPE_FIND、global、retrieveProxy。与11.2同名函数业务体对应。未逐槽模拟本版指令，按跨版本业务复用计数。"
+      ]
     },
     {
       "preorder_id": 145,

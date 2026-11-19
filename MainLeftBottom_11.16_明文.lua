@@ -302,6 +302,24 @@ local function GetOwnerDescription(arg1, arg2)
     return ownerId, ownerLabel
 end
 
+-- 11.16 root/64：2参数、7常量、31条指令；GetOwnerID、type、tostring、空值及-1常量
+-- 与11.2同名GetOwnerIDText业务体吻合。保留旧版字符串分支的原始比较表达式，不擅自修正其逻辑。
+-- 本版未逐槽模拟31条指令，归类为跨版本业务复用。
+local function GetOwnerIDText(actor, expectedOwnerID)
+    local ownerID = actor:GetOwnerID()
+
+    if ownerID == nil or ownerID == "" or ownerID == -1 then
+        return false
+    end
+
+    if type(ownerID) == "string" then
+        return ownerID == tostring(ownerID)
+    end
+
+    return ownerID == expectedOwnerID
+end
+
+
 -- 11.16 root/5：1个参数、17条物理指令、无upvalue捕获。
 -- 父级root在物理槽位190创建childIndex=5闭包，captureCount=0。
 -- 参数为假值时，Opcode 193清空返回寄存器1，Opcode 293返回nil。
@@ -654,29 +672,6 @@ end
 -- slot21 Opcode123按寄存器区间N[2]..N[4]调用方法，即receiver、0、目标类型；
 -- 等价于playerInputProxy:SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)。
 -- slot22 Opcode205结束。函数体无未知捕获，调用关系与两处提前结束分支均已闭合。
--- 11.16 root/66：1参数、26条指令；常量集合与11.2同名SetTargetID完全对应。
--- 按旧版同名业务函数恢复：检查Facade/代理对象，设置目标类型为SELETE_TARGET_TYPE_FIND；
--- 本版未逐槽模拟26条指令，归类为跨版本业务复用，保留旧版false/true返回约定。
-local function SetTargetID(targetID)
-    if not global.Facade then
-        return false
-    end
-
-    local playerInputProxy =
-        global.Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)
-
-    if not playerInputProxy then
-        return false
-    end
-
-    playerInputProxy:SetTargetID(
-        targetID,
-        global.MMO.SELETE_TARGET_TYPE_FIND
-    )
-    return true
-end
-
-
 -- ClearTargetID_2：旧版函数声明与本版闭合函数体匹配，已恢复真实名称。
 local function ClearTargetID_2()
     if not global.Facade then

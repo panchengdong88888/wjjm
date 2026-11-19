@@ -88,9 +88,9 @@
 | root/61 | 待识别 | 未确认 | `GetMetaValue`、`UseItemByIndex` | 60 |
 | root/62 | UseItemByIndex | 是 | `GetMetaValue`、`UseItemByIndex` | 33 |
 | root/63 | LuaSendMsg | 是 | — | 92 |
-| root/64 | GetOwnerIDText | 是 | — | 31 |
+| root/64 | GetOwnerIDText | 是 | GetOwnerID（宿主对象方法，未作为公开SL API计） | 31 |
 | root/65 | helper_root_65（合成定位名） | 未确认 | — | 18 |
-| root/66 | SetTargetID | 是 | Facade、PlayerInputProxy、SetTargetID、SELETE_TARGET_TYPE_FIND | 26 |
+| root/66 | SetTargetID | 是 | — | 26 |
 | root/67 | ShowHideAllButtons | 是 | `UnSchedule` | 154 |
 | root/68 | InstallDamageHook | 是 | — | 40 |
 | root/69 | GetOwnerDescription | 未确认 | — | 20 |
@@ -388,9 +388,8 @@
 - 不新增真实名称映射，不新增业务恢复数。
 
 
-## 2026-11-19续：root/66 SetTargetID业务恢复
+## 2026-11-19续：root/64 GetOwnerIDText业务恢复
 
-- root/66：1参数、8常量、26条指令；本版常量集合完整覆盖Facade、ProxyTable、PlayerInputProxy、SetTargetID、MMO、SELETE_TARGET_TYPE_FIND、global、retrieveProxy。
-- 与11.2同名SetTargetID业务体吻合：检查Facade及PlayerInputProxy，设置目标ID和查找目标类型，成功返回true，前置对象缺失返回false。
-- 已写入11.16唯一明文；本版26条指令未逐槽模拟，分类为跨版本业务复用，不计入指令级直接恢复数。
-- 后续仍需目标环境运行验证返回值及代理调用行为。
+- root/64：2参数、7常量、31条指令；本版常量GetOwnerID、type、tostring、空字符串、-1及string与11.2同名函数体吻合。
+- 已将11.2同名业务体写入11.16唯一明文；保留字符串分支ownerID == tostring(ownerID)原表达式，不擅自修正旧版行为。
+- 本版31条指令未逐槽模拟，分类为跨版本业务复用，不计入指令级直接恢复数。

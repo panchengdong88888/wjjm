@@ -1020,7 +1020,7 @@
 ### 2026-11-19续接增量：root/46新版地图白名单恢复
 - root/46 IsInWhitelistMap已写入唯一明文。本版名单包含“盟重省”“土城”“盟重”，并使用string.find；旧版仅“土城”精确相等判断，不可直接复制。
 - 本版0参数、12常量、42条指令；按本版常量重写业务体，未逐槽模拟42条指令，分类为跨版本业务复用。
-- - 指令级直接恢复仍33/162；跨版本业务复用9项（root/7、root/17、root/23、root/29、root/36、root/38、root/46、root/51、root/75）；业务功能恢复累计43/162（26.54%）；部分恢复19项。
+- - 指令级直接恢复仍33/162；跨版本业务复用9项（root/7、root/17、root/23、root/29、root/36、root/38、root/46、root/51、root/75）；业务功能恢复累计42/162（25.93%）；部分恢复19项。
 - 未执行Lua语法、全文件静态或游戏运行验证。下一步继续找证据明确的简单函数，不猜名称。
 
 
@@ -1080,9 +1080,8 @@
 - 未执行Lua语法、全文件静态或游戏运行验证。
 
 
-### 2026-11-19续接增量：root/66 SetTargetID跨版本业务恢复
-- 已将root/66 SetTargetID(targetID)写入唯一明文。依据：本版1参数、8常量、26条指令；常量集合与11.2同名函数的Facade/PlayerInputProxy/SetTargetID调用链完整吻合。
-- 函数行为：Facade或PlayerInputProxy不存在时返回false；否则调用代理SetTargetID(targetID, global.MMO.SELETE_TARGET_TYPE_FIND)并返回true。
-- 本版指令未逐槽模拟，归类为跨版本业务复用；指令级直接恢复仍33/162。
-- 当前跨版本业务复用10项，业务功能累计43/162（26.54%），部分恢复19项。原始Lua只读；未执行Lua语法、全文件静态或游戏运行验证。
-- 下一项：继续筛选有强版本对应证据的短函数。root/58 TakeItems需核对本版新增find/待定常量；root/71 DeathAutoBlacklist需考虑本版子闭包读取全局name；root/9 GetMapData2DPtr存在同名业务冲突，禁止直接复制11.2实现。
+### 2026-11-19续接增量：root/64 GetOwnerIDText跨版本业务恢复
+- 已将root/64 GetOwnerIDText(actor, expectedOwnerID)写入唯一明文。依据：本版2参数、7常量、31条指令；GetOwnerID、type、tostring、空字符串、-1及string常量与11.2同名函数体吻合。
+- 保留旧版字符串分支ownerID == tostring(ownerID)原表达式，不擅自修正；本版指令未逐槽模拟，归类为跨版本业务复用。
+- 当前跨版本业务复用11项，业务功能累计44/162（27.16%），部分恢复19项；指令级直接恢复仍33/162。原始Lua只读；未执行语法、静态或游戏运行验证。
+- 下一步继续筛选有强版本证据的短函数；root/58、root/71和root/9仍按前一条接续记录保留差异/冲突，不盲目复制。
