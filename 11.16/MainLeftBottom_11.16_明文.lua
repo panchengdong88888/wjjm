@@ -10,7 +10,7 @@
     4. 不将11.9或其他版本的源码直接复制为11.16实现。
     5. 所有AI对话只能增量更新本文件，不得创建平行明文候选稿。
 
-    当前状态：持续增量恢复中；指令级直接恢复33/162；跨版本业务复用恢复4项（root/7、root/23、root/38、root/75）；业务功能恢复累计37/162（22.84%）。两种口径分开统计，以函数状态CSV及源码恢复进度账本为准。
+    当前状态：持续增量恢复中；指令级直接恢复33/162；跨版本业务复用恢复8项（root/7、root/17、root/23、root/29、root/36、root/38、root/51、root/75）；业务功能恢复累计41/162（25.31%）。两种口径分开统计，以函数状态CSV及源码恢复进度账本为准。
 ]]
 
 --[[
@@ -1086,4 +1086,28 @@ function PrintLog(value, ...)
     if SL and SL.Print then
         -- 原函数仅检查SL.Print是否存在，没有对应的Print调用指令。
     end
+end
+
+
+-- 11.16 root/46：IsInWhitelistMap（0参数、12常量、42条指令、无子原型）。
+-- 本版常量明确包含IN_SAFE_AREA、MAP_NAME、ipairs、string.find，以及“盟重省”“土城”“盟重”三个地图名。
+-- 先判断是否处于安全区；否则读取地图名，对三个允许地图名逐一做字符串查找。
+-- 这是依据本版常量扩展11.2同名逻辑的业务重写；未逐槽模拟42条指令。
+function IsInWhitelistMap()
+    if SL:GetMetaValue("IN_SAFE_AREA") then
+        return true
+    end
+
+    local mapName = SL:GetMetaValue("MAP_NAME")
+    if not mapName then
+        return false
+    end
+
+    for _, allowedMapName in ipairs({ "盟重省", "土城", "盟重" }) do
+        if string.find(mapName, allowedMapName, 1) then
+            return true
+        end
+    end
+
+    return false
 end
