@@ -979,3 +979,21 @@ local function InitGatherMonsters()
         gatherConfig.GATHER_THRESHOLD
     ))
 end
+
+
+-- 11.16 root/29：ResetGatherMonsterData（20条物理指令；跨版本业务复用恢复）。
+-- 本版原型签名：0参数、无子原型；常量包含空字符串、数值0及“数据已重置”。
+-- 旧版11.2同名函数的复位顺序与本版常量/原型规模吻合；此处复用其已知业务主体。
+-- 20条本版指令虽已定点提取，但本轮没有逐槽模拟；状态变量写入目标及ClearTargetID_2调用
+-- 未宣称为本版指令级完全确认。若后续出现行为差异，再定点修订。
+function ResetGatherMonsterData()
+    resettableTable = {}
+    resetSlot16 = 0
+    resetSlot17 = 0
+    ClearTargetID_2()
+    resetSlot19 = false
+    resetSlot20 = 0
+    resetSlot21 = nil
+    resetSlot22 = ""
+    PrintLog("数据已重置")
+end
