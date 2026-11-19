@@ -2,7 +2,7 @@
 0,root,,0,,待识别,0,202,81,654,未恢复,TakeItems | 在线时长10分钟 | distance | 自动拾取 | lastAttacker | 羊·[普通] | 累计登录 6 天 | SendHookList | _G | a,,,2026-11-18
 1,root/0,root,1,,待识别,1,8,0,37,未恢复,math | insert | table | lastMapName | ipairs | name | random,,,2026-11-18
 2,root/1,root,1,,待识别,0,24,0,76,未恢复,新区使用：%s | BAG_DATA | ShowSystemTips | pairs | MSG_CS_USE_BAG_ITEM | Gbtc | len | MsgType | LuaSendMsg | SL,,,2026-11-18
-3,root/2,root,2,,背包物品筛选与候选列表构建函数（完整逻辑待恢复）,1,100,3,226,指令已提取；槽位1–170控制流恢复中,ipairs | pairs | BAG_DATA | ITEM_IS_BIND | Name | MakeIndex,,槽位170 Opcode357为返回；171–226暂未证明可达，MSG_CS_MAP_ITEM_DISCARD不能据常量认定为实际执行,2026-11-19
+3,root/2,root,2,,待恢复（槽位111–118融合载荷字段映射待复核）,1,100,3,226,指令已提取；父函数整体未闭合,ipairs | pairs | BAG_DATA | ITEM_IS_BIND | Name | MakeIndex,,槽位111 Opcode178融合消费112–118；当前字段代入出现寄存器效果矛盾，闭包映射及N[12]初始化未确认,2026-11-19
 4,root/2/0,root/2,2,make_helper_root_2_0,匿名闭包（行为已恢复；H[0]业务变量名待映射）,1,1,0,13,已写入明文,ipairs,MainLeftBottom_11.16_明文.lua,H[0]业务变量名待映射,2026-11-19
 5,root/2/1,root/2,2,make_helper_root_2_1,匿名闭包（行为已恢复；捕获物品名称模式列表）,1,4,0,20,已写入明文,ipairs | string.find | pattern参数为false（Lua模式匹配）,MainLeftBottom_11.16_明文.lua,H[0]=父级N[6]；父级原始局部变量名待映射,2026-11-19
 6,root/2/2,root/2,2,make_helper_root_2_2,匿名闭包（行为已恢复；H[0]业务变量名待映射）,1,1,0,13,已写入明文,ipairs,MainLeftBottom_11.16_明文.lua,H[0]业务变量名待映射,2026-11-19
