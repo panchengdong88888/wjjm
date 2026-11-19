@@ -2779,7 +2779,7 @@
       "parameter_count": 0,
       "instruction_count": 42,
       "candidate_name": "IsInWhitelistMap",
-      "identity_status": "跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "已确认：IsInWhitelistMap（本版常量与旧版同职责）",
       "constants": [
         "GetMetaValue",
         "MAP_NAME",
@@ -2793,7 +2793,9 @@
         "",
         "find",
         "SL"
-      ]
+      ],
+      "recovery_status": "已写入唯一明文；安全区判断后，按本版常量中的三个地图名执行string.find白名单判断。42条指令未逐槽模拟，属于跨版本业务复用/本版证据扩展重写。",
+      "business_summary": "处于安全区直接放行；否则读取地图名，查找是否包含盟重省、土城或盟重，命中任一即放行。"
     },
     {
       "preorder_id": 69,
