@@ -788,10 +788,10 @@
         1,
         "雷霆项链+8"
       ],
-      "recovery_status": "226条物理指令已提取；原始S()/F()复核确认三个子闭包注册及pairs(BAG_DATA)初始化，槽位120–170仍待恢复",
-      "instruction_capture_summary": "109/110 child1<-N6；111/112 child0<-N7；113/114 child2<-N8；115创建N12；116–118初始化pairs(N5)。",
+      "recovery_status": "slots109-170 reconstructed: child closures, pairs(BAG_DATA), item.Name/MakeIndex gates, ITEM_IS_BIND rejection, three filter calls and candidate record. slots1-108 remain unresolved; function not complete.",
+      "instruction_capture_summary": "N9=child1(root/2/1, capture N6, string.find Lua-pattern); N10=child0(root/2/0, capture N7, exact list); N11=child2(root/2/2, capture N8, exact list). Slots120-170 gate current item, reject bound items, apply mode1/mode2/default filters, and append candidate record.",
       "business_summary": "已确认函数涉及isDiuing状态、GetDroppedItems、BAG_DATA、物品名称/绑定筛选及候选物品处理等线索；因槽位111–118寄存器效果未闭合，完整业务代码和候选列表来源尚不能定稿。",
-      "warning": "撤回Opcode178融合载荷旧结论；Opcode178在F()的L==178分支创建child0闭包，并消费slot112作为capture descriptor。"
+      "warning": "Correct mapping: N9=child1(pattern N6), N10=child0(exact N7), N11=child2(exact N8). Mode1 calls N11 and inverts; mode2 calls N10 and inverts; default calls N9 and keeps match."
     },
     {
       "preorder_id": 4,
