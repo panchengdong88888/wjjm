@@ -3749,6 +3749,335 @@
       ]
     },
     {
+      "path": "root/29",
+      "depth": 1,
+      "parameter_count": 0,
+      "constants": [
+        "",
+        0,
+        "数据已重置"
+      ],
+      "physical_slots": 20,
+      "instruction_count": 20,
+      "start_offset": 45507,
+      "end_offset": 45734,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 89,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 28,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 295,
+          "A": 0,
+          "B": 0,
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 317,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 212,
+          "A": 0,
+          "B": 0,
+          "C": null,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 330,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 127,
+          "A": 0,
+          "B": 3,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 110,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 397,
+          "A": 0,
+          "B": 4,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 150,
+          "A": 0,
+          "B": 0,
+          "C": null,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 348,
+          "A": 0,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 193,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 26,
+          "A": 0,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 136,
+          "A": 0,
+          "B": "",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 162,
+          "A": 0,
+          "B": 7,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 403,
+          "A": 0,
+          "B": 8,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 295,
+          "A": 1,
+          "B": "数据已重置",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 128,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 128
+        }
+      ]
+    },
+    {
+      "path": "root/32",
+      "depth": 1,
+      "parameter_count": 1,
+      "constants": [
+        "cruiseGatherPaused",
+        "zd",
+        false,
+        "见人跑："
+      ],
+      "physical_slots": 17,
+      "instruction_count": 17,
+      "start_offset": 46511,
+      "end_offset": 46726,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 324,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 289,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 388,
+          "A": 0,
+          "B": 10,
+          "C": null,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 110,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 330,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 278,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 40,
+          "A": 2,
+          "B": "见人跑：",
+          "C": null,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 80,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 93,
+          "A": 2,
+          "B": 2,
+          "C": 3,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 128,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 88,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 114,
+          "A": 1,
+          "B": "cruiseGatherPaused",
+          "C": false,
+          "operand_flags": 240
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 127,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 274,
+          "A": 1,
+          "B": 1,
+          "C": "zd",
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 110,
+          "A": 2,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 123,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        }
+      ]
+    },
+    {
       "path": "root/40/0",
       "params": 0,
       "constants": [
@@ -3825,6 +4154,204 @@
         "instruction_mapping": "slot1/2准备SL:JsonDecode方法；slot3 Opcode127读取H[0]作为jsonStr；slot4 Opcode202返回调用结果；slot5/6位于return调用之后，不属于可达业务路径",
         "unresolved": "root/40父原型72条指令流未保存，无法映射H[0]在父级的源寄存器和原始变量名"
       }
+    },
+    {
+      "path": "root/42",
+      "depth": 1,
+      "parameter_count": 0,
+      "constants": [
+        0,
+        "PlayerInputProxy",
+        "ProxyTable",
+        "Facade",
+        "retrieveProxy",
+        "MMO",
+        "global",
+        "SetTargetID",
+        "SELETE_TARGET_TYPE_FIND"
+      ],
+      "physical_slots": 22,
+      "instruction_count": 22,
+      "start_offset": 55483,
+      "end_offset": 55831,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 218,
+          "A": 0,
+          "B": "global",
+          "C": null,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 274,
+          "A": 0,
+          "B": 0,
+          "C": "Facade",
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 366,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 5,
+          "C": null,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 105,
+          "A": 0,
+          "B": "global",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 411,
+          "A": 0,
+          "B": 0,
+          "C": "Facade",
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 103,
+          "A": 0,
+          "B": 0,
+          "C": "retrieveProxy",
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 108,
+          "A": 2,
+          "B": "global",
+          "C": null,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 79,
+          "A": 2,
+          "B": 2,
+          "C": "ProxyTable",
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 96,
+          "A": 2,
+          "B": 2,
+          "C": "PlayerInputProxy",
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 209,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 325,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 388,
+          "A": 0,
+          "B": 15,
+          "C": null,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 393,
+          "A": 1,
+          "B": 0,
+          "C": "SetTargetID",
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 158,
+          "A": 3,
+          "B": 0,
+          "C": null,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 108,
+          "A": 4,
+          "B": "global",
+          "C": null,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 79,
+          "A": 4,
+          "B": 4,
+          "C": "MMO",
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 96,
+          "A": 4,
+          "B": 4,
+          "C": "SELETE_TARGET_TYPE_FIND",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 123,
+          "A": 1,
+          "B": 4,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        }
+      ]
     },
     {
       "path": "root/50/3",
@@ -4825,6 +5352,355 @@
       }
     },
     {
+      "path": "root/60",
+      "depth": 1,
+      "parameter_count": 0,
+      "constants": [
+        "PlayerInputProxy",
+        "ClearAttackTargetID",
+        "global",
+        "retrieveProxy",
+        "ProxyTable",
+        "Facade"
+      ],
+      "physical_slots": 21,
+      "instruction_count": 21,
+      "start_offset": 123626,
+      "end_offset": 123928,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 324,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 325,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 388,
+          "A": 0,
+          "B": 4,
+          "C": null,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 213,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 397,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 218,
+          "A": 0,
+          "B": "global",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 411,
+          "A": 0,
+          "B": 0,
+          "C": "Facade",
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 103,
+          "A": 0,
+          "B": 0,
+          "C": "retrieveProxy",
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 108,
+          "A": 2,
+          "B": "global",
+          "C": null,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 79,
+          "A": 2,
+          "B": 2,
+          "C": "ProxyTable",
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 410,
+          "A": 2,
+          "B": 2,
+          "C": "PlayerInputProxy",
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 209,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 289,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 388,
+          "A": 0,
+          "B": 20,
+          "C": null,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 274,
+          "A": 1,
+          "B": 0,
+          "C": "ClearAttackTargetID",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 289,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 388,
+          "A": 0,
+          "B": 20,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 393,
+          "A": 1,
+          "B": 0,
+          "C": "ClearAttackTargetID",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 123,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 128
+        }
+      ]
+    },
+    {
+      "path": "root/65",
+      "depth": 1,
+      "parameter_count": 1,
+      "constants": [
+        "find",
+        "string",
+        "土城",
+        1,
+        "盟重"
+      ],
+      "physical_slots": 18,
+      "instruction_count": 18,
+      "start_offset": 126654,
+      "end_offset": 126880,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 257,
+          "A": 1,
+          "B": "string",
+          "C": null,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 274,
+          "A": 1,
+          "B": 1,
+          "C": "find",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 131,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 374,
+          "A": 3,
+          "B": "盟重",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 295,
+          "A": 4,
+          "B": 1,
+          "C": null,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 110,
+          "A": 5,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 209,
+          "A": 1,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 366,
+          "A": 1,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 388,
+          "A": 0,
+          "B": 16,
+          "C": null,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 257,
+          "A": 1,
+          "B": "string",
+          "C": null,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 406,
+          "A": 1,
+          "B": 1,
+          "C": "find",
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 64,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 295,
+          "A": 3,
+          "B": "土城",
+          "C": null,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 295,
+          "A": 4,
+          "B": 1,
+          "C": null,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 110,
+          "A": 5,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 209,
+          "A": 1,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 11,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        }
+      ]
+    },
+    {
       "path": "root/69",
       "params": 2,
       "constants": [
@@ -5236,6 +6112,213 @@
         "upvalues": "无H槽读取或写入",
         "api_docs": "SL.md示例中出现SL:GetMetaValue('MAP_ID')，确认receiver和字符串key调用形式；文档未声明返回类型，本函数默认值逻辑以原始Opcode325分支为准"
       }
+    },
+    {
+      "path": "root/73",
+      "depth": 1,
+      "parameter_count": 0,
+      "constants": [
+        79200,
+        "os",
+        3600,
+        "hour",
+        "sec",
+        "min",
+        "*t",
+        60,
+        72000,
+        "date"
+      ],
+      "physical_slots": 23,
+      "instruction_count": 23,
+      "start_offset": 131449,
+      "end_offset": 131753,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 218,
+          "A": 0,
+          "B": "os",
+          "C": null,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 163,
+          "A": 0,
+          "B": 0,
+          "C": "date",
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 295,
+          "A": 1,
+          "B": "*t",
+          "C": null,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 209,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 366,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 388,
+          "A": 0,
+          "B": 8,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 110,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 292,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 96,
+          "A": 1,
+          "B": 0,
+          "C": "hour",
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 343,
+          "A": 1,
+          "B": 1,
+          "C": 3600,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 410,
+          "A": 2,
+          "B": 0,
+          "C": "min",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 343,
+          "A": 2,
+          "B": 2,
+          "C": 60,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 273,
+          "A": 1,
+          "B": 1,
+          "C": 2,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 96,
+          "A": 2,
+          "B": 0,
+          "C": "sec",
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 273,
+          "A": 1,
+          "B": 1,
+          "C": 2,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 345,
+          "A": 0,
+          "B": 72000,
+          "C": 1,
+          "operand_flags": 144
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 388,
+          "A": 0,
+          "B": 19,
+          "C": null,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 55,
+          "A": 1,
+          "B": 1,
+          "C": 79200,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 388,
+          "A": 0,
+          "B": 20,
+          "C": null,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 59,
+          "A": 2,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 110,
+          "A": 2,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 293,
+          "A": 2,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        }
+      ]
     },
     {
       "path": "root/74",
