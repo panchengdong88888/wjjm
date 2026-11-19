@@ -877,8 +877,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 25,
-      "candidate_name": "StopGatherMonsters（高置信候选；合成实现名make_helper_root_3）",
-      "identity_status": "闭包体已恢复（父级捕获符号待映射）",
+      "candidate_name": "StopGatherMonsters（高置信候选）",
+      "identity_status": "高置信候选（本体25条指令及gatherTimer/IDLE/停止提示吻合；root/52/36明确调用全局StopGatherMonsters；父root导出点待确认）",
       "constants": [
         "gatherTimer",
         "UnSchedule",
