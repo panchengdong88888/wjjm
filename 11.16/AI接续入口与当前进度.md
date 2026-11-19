@@ -832,3 +832,11 @@
 - 新增部分恢复闭包make_helper_root_33_0：按putoutTimer真值决定是否UnSchedule并清空该字段；两路清空putoutSent；调用捕获回调(参数,timer)，再调用SL:ShowSystemTips(参数)。H[0]/H[1]父级捕获身份未确认，保留代理槽。
 - 当前完整明文33/162（20.37%），部分恢复18项。下一项从函数状态CSV中筛选仍未恢复的短原型；不重做root/33/0或已完成函数。
 - Lua语法、全文件静态及游戏运行验证未执行。
+
+
+### 2026-11-19续接增量：root/3 StopGatherMonsters闭包体恢复
+- 已将root/3的25槽控制流写入唯一明文，函数体恢复为make_helper_root_3(capturedUpvalues)：H[0]=false；若H[1].gatherTimer存在则调用SL:UnSchedule(timer)并清空字段；随后依次调用H[2]()、H[3](H[4].IDLE)、H[5]()、H[6]("引怪功能已停止")。
+- slot5/6分支于slot14汇合，timer不存在时跳过取消定时器段。官方SL:UnSchedule只按文档调用。
+- H[1]–H[6]父级root闭包创建点的真实词法身份仍未映射，因此按部分恢复统计。
+- 当前完整明文33/162（20.37%），部分恢复19项。未执行Lua语法、全文件静态或游戏运行验证。
+- 下一步继续寻找能定点提取或父级捕获映射可确认的候选；不重复root/3、root/33/0、root/42、root/60和root/73已做工作。
