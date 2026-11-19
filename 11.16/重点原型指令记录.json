@@ -194,7 +194,10 @@
           "C": 0,
           "operand_flags": 0
         }
-      ]
+      ],
+      "recovery_status": "部分恢复（闭包体已恢复，父级捕获符号待映射）",
+      "recovered_lua": "make_helper_root_3(capturedUpvalues)：置H[0]=false；若H[1].gatherTimer存在则SL:UnSchedule(timer)并清空字段；随后依次调用H[2]()、H[3](H[4].IDLE)、H[5]()、H[6](提示文本)。",
+      "recovery_evidence": "25槽全部有效；slot5/6分支于slot14汇合；slot2/3、slot7/8、slot9/10、slot12/13、slot16/17/18、slot22/23融合边界已闭合；公共尾段调用顺序已确认。H[1]–H[6]父级root创建点业务身份未映射，保留capturedUpvalues槽位，不计完整函数。"
     },
     {
       "path": "root/7",
