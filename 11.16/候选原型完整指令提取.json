@@ -4460,7 +4460,7 @@
       "control_flow_audit": {
         "jump_opcode": 388,
         "jump_semantics": "F()分派器中执行O=K[3]，即无条件跳转到指令索引K[3]",
-        "return_opcode_357": "F()分派器执行return unpack(N[K[2]],V)，立即结束当前函数并返回寄存器区间",
+        "return_opcode_357": "更正：Opcode357不是return，而是泛型迭代器推进；调用N[A](N[A+1],N[A+2])，接收C个返回值到N[A+3..A+2+C]；首返回值nil时额外跳过下一物理槽位，否则更新控制变量N[A+2]=N[A+3]。",
         "return_opcode_205_339": "F()分派器直接return，无显式返回值",
         "unconditional_jumps": [
           {
@@ -4571,24 +4571,10 @@
             "C": 0
           },
           {
-            "slot": 170,
-            "opcode": 357,
-            "A": 13,
-            "B": 2,
-            "C": 0
-          },
-          {
             "slot": 180,
             "opcode": 205,
             "A": 0,
             "B": 0,
-            "C": 0
-          },
-          {
-            "slot": 216,
-            "opcode": 357,
-            "A": 14,
-            "B": 2,
             "C": 0
           },
           {
@@ -4599,7 +4585,7 @@
             "C": 0
           }
         ],
-        "finding": "顺序执行路径在槽位170的Opcode357返回。槽位171–226没有任何Opcode388跳转目标进入其中；已列出的跳转目标也均不指向171–226。因此该尾段目前应标记为静态不可达/混淆残留候选，不能把其中MSG_CS_MAP_ITEM_DISCARD等常量直接认定为本函数实际执行逻辑。需继续验证是否存在被遗漏的非388控制流跳转或特殊融合指令。 已补齐槽位136–155：Opcode61/402均为逻辑not；Opcode213清空N[19]；Opcode241复制寄存器。按参数N[1]的1/2/其他三种分支，分别调用root/2/2、root/2/1、root/2/0三个子闭包，槽位154统一决定当前背包物品是否进入候选表。",
+        "finding": "更正此前结论：槽位170 Opcode357不是函数返回，而是pairs(BAG_DATA)泛型迭代器推进；槽位171回跳119，迭代结束时才跳过槽位171进入172。因此槽位172–226是可达的后续处理区，不能再标记为不可达混淆残留。槽位156–170已闭合候选记录构造：记录字段makeIndex、count、name；count=item.OverLap or 1；插入N[12]候选列表。",
         "conditional_opcode_semantics": {
           "143": "若(N[B] == K[4]) ~= (A ~= 0)，则跳过下一物理槽位",
           "213": "for X=K[2],K[3] do N[X]=nil end",
@@ -4621,6 +4607,51 @@
             "N[10]": "root/2/1，capture parent N[7]",
             "N[11]": "root/2/2，capture parent N[8]"
           }
+        },
+        "iterator_sites": [
+          {
+            "slot": 170,
+            "opcode": 357,
+            "iterator": "N[13]",
+            "state": "N[14]",
+            "control": "N[15]",
+            "result_count": 2,
+            "result_registers": [
+              "N[16]",
+              "N[17]"
+            ],
+            "exhaustion": "N[16]==nil时跳过槽位171，落入槽位172",
+            "continue": "否则N[15]=N[16]，随后槽位171跳回119"
+          },
+          {
+            "slot": 216,
+            "opcode": 357,
+            "iterator": "N[14]",
+            "state": "N[15]",
+            "control": "N[16]",
+            "result_count": 2,
+            "result_registers": [
+              "N[17]",
+              "N[18]"
+            ],
+            "exhaustion": "N[17]==nil时跳过槽位217，进入槽位218",
+            "continue": "否则N[16]=N[17]，随后槽位217跳回185"
+          }
+        ],
+        "slot_156_170": {
+          "slot_156_159": "Opcode216融合消费四个物理槽位：N[20]=table；N[20]=N[20].insert，即table.insert；N[21]=N[12]候选列表；N[22]={}新建当前候选记录",
+          "slot_160_161": "读取当前背包物品N[17].MakeIndex，写入候选记录N[22].makeIndex",
+          "slot_162_165": "读取N[17].OverLap；Opcode366与紧随的Opcode388构成真假分支：OverLap真值时执行跳转并跳过常量1；OverLap为nil/false时跳过跳转并装载常量1",
+          "slot_166_168": "Opcode365融合执行三步：N[22].count=N[23]；读取N[17].Name；写入N[22].name=N[23]",
+          "slot_169": "Opcode128调用N[20](N[21],N[22])，即table.insert(N[12],N[22])",
+          "slot_170": "Opcode357执行pairs迭代推进：调用迭代器N[13](N[14],N[15])，接收两个返回值到N[16],N[17]；首返回值nil时跳过槽位171并退出遍历，否则更新控制变量N[15]=N[16]，槽位171跳回119",
+          "record_fields": [
+            "makeIndex",
+            "count",
+            "name"
+          ],
+          "count_rule": "count = item.OverLap or 1（Lua真值语义；nil/false回退为1）",
+          "accumulator": "N[12]，槽位115创建空表；每个通过前置过滤和名称筛选的物品构造一条记录并table.insert到N[12]"
         }
       }
     }
