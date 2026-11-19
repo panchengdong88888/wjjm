@@ -685,7 +685,7 @@
       "parameter_count": 1,
       "instruction_count": 226,
       "candidate_name": null,
-      "identity_status": "待恢复（父原型槽位111–118原始字节/解析对齐待复核）",
+      "identity_status": "前置闭包注册与pairs迭代器初始化已确认；整体业务CFG待闭合",
       "constants": [
         "雷霆战靴+8",
         "龙傲",
@@ -788,10 +788,10 @@
         1,
         "雷霆项链+8"
       ],
-      "recovery_status": "226条物理指令已提取；Opcode178融合载荷语义与当前S()解析字段不相容，需对父原型原始字节独立复核",
-      "instruction_capture_summary": "槽位109/110确认创建root/2/1并捕获N[6]。槽位111 Opcode178融合消费112–118，具体效果已逐槽记录；槽位113的Opcode387不独立分派。",
+      "recovery_status": "226条物理指令已提取；原始S()/F()复核确认三个子闭包注册及pairs(BAG_DATA)初始化，槽位120–170仍待恢复",
+      "instruction_capture_summary": "109/110 child1<-N6；111/112 child0<-N7；113/114 child2<-N8；115创建N12；116–118初始化pairs(N5)。",
       "business_summary": "已确认函数涉及isDiuing状态、GetDroppedItems、BAG_DATA、物品名称/绑定筛选及候选物品处理等线索；因槽位111–118寄存器效果未闭合，完整业务代码和候选列表来源尚不能定稿。",
-      "warning": "F()第三实参Z为getfenv()/_ENV全局环境表，不是常量池；常量池为S()中的L，仅flags置位才替换。槽位112/115的Z[7]/Z[0]不能解释为常量索引。"
+      "warning": "撤回Opcode178融合载荷旧结论；Opcode178在F()的L==178分支创建child0闭包，并消费slot112作为capture descriptor。"
     },
     {
       "preorder_id": 4,
