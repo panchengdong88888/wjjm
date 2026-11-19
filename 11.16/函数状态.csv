@@ -41,7 +41,7 @@
 38,root/25/0/1,root/25/0,3,,待识别,0,22,0,38,未恢复,GetMainPlayer | type | GetMapY | GetMetaValue | NoticeTable | x | INPUT_MOVE_TYPE_JOYSTICK | sendNotification | global | SL,,,2026-11-18
 39,root/25/0/2,root/25/0,3,,待识别,0,0,0,3,未恢复,,,,2026-11-18
 40,root/26,root,1,,待识别,0,17,1,63,未恢复,取不到好友代理，清空失败 | pairs | lastAttacker | ScheduleOnce | 黑名单为空 | 清空黑名单失败 | ipairs | SL |  人 | 开始清空黑名单，共 %d 人,,,2026-11-18
-41,root/26/0,root/26,2,,闭包体已恢复（捕获来源待确认）,0,4,0,13,部分恢复（不计完整函数）,RequestOutBlacklist | _blacklistData | SL | 黑名单项移除,,,2026-11-18
+41,root/26/0,root/26,2,make_helper_root_26_0（合成定位名）,闭包体已恢复（捕获来源待确认）,0,4,0,13,部分恢复（不计完整函数）,RequestOutBlacklist | _blacklistData | SL | 黑名单项移除,,,2026-11-19
 42,root/27,root,1,,待识别,0,56,0,307,未恢复,"{""index"":%d,""UserID"":""%s""} |  | 已进入目标地图： | GetMapName | 苹果未激活：发送关闭巡航 | 攻城时间段结束，苹果图恢复下图 | state | 苹果已激活：开启巡航 | monitor | index",,,2026-11-18
 43,root/28,root,1,,待识别,0,8,0,32,未恢复,tonumber | SERVER_TIME | time | SL | TITLE_DATA_BY_ID | GetMetaValue,,,2026-11-18
 44,root/29,root,1,,待识别,0,3,0,20,未恢复, | 数据已重置,,,2026-11-18
