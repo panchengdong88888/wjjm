@@ -840,3 +840,11 @@
 - H[1]–H[6]父级root闭包创建点的真实词法身份仍未映射，因此按部分恢复统计。
 - 当前完整明文33/162（20.37%），部分恢复19项。未执行Lua语法、全文件静态或游戏运行验证。
 - 下一步继续寻找能定点提取或父级捕获映射可确认的候选；不重复root/3、root/33/0、root/42、root/60和root/73已做工作。
+
+
+### 2026-11-19新增：跨版本复用优先策略（第一批核验）
+- 新增 `11.16/跨版本源码复用核验表.md`，以11.9明文为只读参考，建立11.16函数复用矩阵。
+- 已确认root/4 GetOwnerID、root/8 GetDroppedItems、root/24 GetMapId、root/37 GetMapName、root/39 IsDie、root/49 PlayerPos、root/77 GetMainPlayerID共7个业务体与11.9一致；后续不再逐条重分析。
+- root/20 FindMonsterInCurrViewField主体相同，但11.16调用参数为false,false，11.9为true,true，必须保留新版参数。
+- root/75/0排序比较方向与11.9不同：11.16为a._distance >= b._distance，旧版为a._distance < b._distance，不得整段复制旧版FindMonsterCandidates。
+- 下一批优先以旧版明文为底稿差异核验root/7 MoveItemToQuickUse、root/23 InitGatherMonsters、root/75 FindMonsterCandidates；root/6 MainLoop因复杂度较高，先不阻塞整体进度。
