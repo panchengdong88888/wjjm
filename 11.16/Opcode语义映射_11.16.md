@@ -527,3 +527,10 @@ Opcode 123：调用`N[A](Y(N,A+1,B)))，不将调用结果写回寄存器。
 - root/2/2的Opcode45融合装载与Opcode250迭代推进均已获得分派器证据；但其Opcode122以及前置分支仍需闭合，暂不恢复为完整Lua函数。
 
 置信度：Opcode45、250的解释器操作序列为高；将root/2/0、root/2/2整体直接命名为某个业务函数仍未确认。
+
+
+## 2026-11-19增量：Opcode 122与250同为迭代器推进
+
+原始F()分派器中，Opcode122（L==122）与Opcode250（L<=250叶子）执行完全相同的代码：
+`local X,S=E(N[A](N[A+1],N[A+2])); for Y=1,C do N[A+2+Y]=X[Y] end; if N[A+3]==nil then O=O+1 else N[A+2]=N[A+3] end`。
+因此Opcode122与Opcode250语义一致：调用迭代器(state, control)，接收C个返回值，首返回值nil时跳过下一条回边指令，否则更新控制变量。
