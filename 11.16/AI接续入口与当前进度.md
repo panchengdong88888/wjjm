@@ -1058,3 +1058,9 @@
 - 两项只更新候选身份表，不写入唯一明文，不增加业务恢复数。root 654条指令流仍未保存在仓库；未重做LZW/XOR。GitHub代码搜索未找到可复用的解码/提取脚本。
 - 名称状态以函数状态CSV为当前账本：本批后非root原型候选名88/161，待识别73/161；root直接子原型63/81有候选、18待识别；嵌套原型25/80有候选、55待识别。root自身仍未命名。候选不等于确认。
 - 未修改唯一明文Lua；未执行Lua语法、静态或游戏运行验证。
+
+
+### 2026-11-19续接增量：root/10生肖锻造启动函数名称候选
+- root/10 → `startForgeZodiac`（高置信候选）：本体29条指令、0参数，常量包含forgeZodiacRunning、checkGold、forgeZodiac、forgeZodiacTimer、ticks及开始/停止锻造提示；root常量池含`startForgeZodiac`；唯一明文root/52/0无参回调直接调用全局`startForgeZodiac`。root/14负责生肖锻造按钮状态，root/79是forgeZodiac业务主体，调用链吻合。
+- 缺少root的654条物理指令流，仍未直接看到root/10闭包创建后写入_ENV.startForgeZodiac的槽位，因此仅记高置信候选，不标记为真实名称已确认，不写入唯一明文。
+- 本批后候选名89/161个非root原型，待识别72/161；root直接子原型64/81有候选，嵌套子原型25/80有候选。业务恢复计数不变。
