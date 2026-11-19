@@ -79,7 +79,7 @@ mode=%s
 73,root/50/0,root/50,2,,待识别,0,15,0,80,未恢复,Win_Close | string | gsub | %s | tonumber | ^%d+$ |  | match | Text_setString | 参数格式不对，请输入数字,,,2026-11-18
 74,root/50/1,root/50,2,make_helper_root_50_1（合成定位名）,闭包体已恢复；H[0]/H[1]父级来源待确认,0,0,0,5,部分恢复（不计完整函数）,H[0]=false；H[1]()；Opcode339结束,H[0]/H[1]父级源寄存器及业务变量名待确认,2026-11-19
 75,root/50/2,root/50,2,make_helper_root_50_2（合成定位名）,闭包体已恢复；H[0]/H[1]父级来源待确认,0,0,0,5,部分恢复（不计完整函数）,Opcode330写H[0]=false并读取H[1]；H[1]()；Opcode205结束,H[0]/H[1]父级源寄存器及业务变量名待确认,2026-11-19
-76,root/50/3,root/50,2,,待识别,0,2,0,5,父级捕获已确认，函数体待核,root/50槽441 Opcode387创建childIndex=3，槽442 Opcode243捕获父寄存器N[7]到H[0]；子体含GUI.Win_Close方法准备及一次无参调用,,H[0]在子体被读取但未见后续使用；调用参数范围1..0，需复核后再写源码,2026-11-19
+76,root/50/3,root/50,2,make_helper_root_50_3（合成定位名）,闭包体已恢复；父级捕获变量身份待确认,0,2,0,5,部分恢复（不计完整函数）,root/50槽441 Opcode387创建childIndex=3，槽442 Opcode243捕获父N[7]到H[0]；Opcode253/138准备GUI.Win_Close并保存receiver，Opcode324将H[0]放入参数寄存器N[2]，Opcode123调用参数区间N[1]..N[2]，等价于GUI:Win_Close(H[0]),MainLeftBottom_11.16_明文.lua,父级N[7]的原始词法变量名及业务身份待确认；函数体已闭合但捕获来源名称未确认，不计完整,2026-11-19
 77,root/50/4,root/50,2,,待识别,0,4,0,23,未恢复,Button_setTitleColor | GUI | #ffffff | #00ff00,,,2026-11-18
 78,root/51,root,1,,待识别,1,13,0,38,未恢复,select | type | # | pcall | Print | table | format | tostring | string | SL,,,2026-11-18
 79,root/52,root,1,doInit_UI / 主界面初始化,高置信候选,0,176,37,865,未恢复,"开拾取 | infoGoldTxt | 开苹果图中
