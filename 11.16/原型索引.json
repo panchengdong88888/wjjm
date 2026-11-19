@@ -1112,8 +1112,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 29,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "startForgeZodiac（高置信候选）",
+      "identity_status": "高置信候选（root/52/0无参回调直接调用该全局名；root/10生肖锻造定时控制常量吻合；父root导出点待确认）",
       "constants": [
         "开始锻造生肖",
         "state",
