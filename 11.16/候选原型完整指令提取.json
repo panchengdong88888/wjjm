@@ -140,6 +140,214 @@
       }
     },
     {
+      "path": "root/2/1",
+      "params": 1,
+      "constants": [
+        "ipairs",
+        1,
+        "find",
+        "string"
+      ],
+      "instruction_count": 20,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 105,
+          "A": 1,
+          "B": "ipairs",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 324,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 314,
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 15,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 227,
+          "A": 6,
+          "B": "string",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 6,
+          "opcode": 96,
+          "A": 6,
+          "B": 6,
+          "C": "find",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 7,
+          "opcode": 288,
+          "A": 7,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 390,
+          "A": 8,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 295,
+          "A": 9,
+          "B": 1,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 10,
+          "opcode": 110,
+          "A": 10,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 11,
+          "opcode": 209,
+          "A": 6,
+          "B": 10,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 358,
+          "A": 6,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 388,
+          "A": 0,
+          "B": 15,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 14,
+          "opcode": 110,
+          "A": 6,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 15,
+          "opcode": 11,
+          "A": 6,
+          "B": 6,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 16,
+          "opcode": 250,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 17,
+          "opcode": 388,
+          "A": 0,
+          "B": 4,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 18,
+          "opcode": 110,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 19,
+          "opcode": 293,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 20,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "closure_capture": {
+        "parent_path": "root/2",
+        "create_slot": 109,
+        "create_opcode": 387,
+        "child_index": 1,
+        "capture_count": 1,
+        "capture_records": [
+          {
+            "slot": 110,
+            "opcode": 243,
+            "source": "parent local register N[6]",
+            "child_upvalue": "H[0]"
+          }
+        ]
+      }
+    },
+    {
       "path": "root/2/2",
       "params": 1,
       "constants": [
