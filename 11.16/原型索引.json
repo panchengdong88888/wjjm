@@ -685,7 +685,7 @@
       "parameter_count": 1,
       "instruction_count": 226,
       "candidate_name": null,
-      "identity_status": "待识别",
+      "identity_status": "物品丢弃处理函数（行为方向已确认；完整流程待闭合）",
       "constants": [
         "雷霆战靴+8",
         "龙傲",
@@ -787,7 +787,9 @@
         "OverLap",
         1,
         "雷霆项链+8"
-      ]
+      ],
+      "recovery_status": "完整226条物理指令已提取；业务逻辑恢复中",
+      "instruction_capture_summary": "槽位109、111、113分别创建三个子闭包，captureCount=1；紧随的Opcode243分别捕获父级N[6]、N[7]、N[8]到各自H[0]"
     },
     {
       "preorder_id": 4,
