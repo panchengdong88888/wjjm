@@ -788,10 +788,10 @@
         1,
         "雷霆项链+8"
       ],
-      "recovery_status": "slots109-170 reconstructed: child closures, pairs(BAG_DATA), item.Name/MakeIndex gates, ITEM_IS_BIND rejection, three filter calls and candidate record. slots1-108 remain unresolved; function not complete.",
-      "instruction_capture_summary": "N9=child1(root/2/1, capture N6, string.find Lua-pattern); N10=child0(root/2/0, capture N7, exact list); N11=child2(root/2/2, capture N8, exact list). Slots120-170 gate current item, reject bound items, apply mode1/mode2/default filters, and append candidate record.",
+      "recovery_status": "slots1-36 reconstructed: parameter mode, isDiuing guard/set/reset, GetDroppedItems call, 35-ground-item ceiling, SL:GetMetaValue('BAG_DATA') and missing-data return. slots37-108 name-list construction still pending; not complete.",
+      "instruction_capture_summary": "Confirmed early flow slots1-36; name-list table construction slots37-108 remains unresolved. Later item loop/filter and tail are separately recorded; do not combine into a complete function until the three lists and closure mappings are reconciled.",
       "business_summary": "已确认函数涉及isDiuing状态、GetDroppedItems、BAG_DATA、物品名称/绑定筛选及候选物品处理等线索；因槽位111–118寄存器效果未闭合，完整业务代码和候选列表来源尚不能定稿。",
-      "warning": "Correct mapping: N9=child1(pattern N6), N10=child0(exact N7), N11=child2(exact N8). Mode1 calls N11 and inverts; mode2 calls N10 and inverts; default calls N9 and keeps match."
+      "warning": "Current early-flow audit is in candidate JSON reconstruction. Do not rely on older control_flow_audit statements where they conflict with the 2026-11-19 dispatch-tree re-audit."
     },
     {
       "preorder_id": 4,
