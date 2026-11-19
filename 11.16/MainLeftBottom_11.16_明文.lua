@@ -937,3 +937,29 @@ local function FindMonsterCandidates()
 
     return result
 end
+
+-- 11.16 root/23：InitGatherMonsters。
+-- 以11.2/11.9共同业务流程为底稿；保留新版已确认的Schedule回调包装闭包closure_root_23_0。
+-- root/3停止函数闭包已确认运行开关为独立布尔upvalue、计时器对象含gatherTimer字段；这里沿用旧版变量名映射。
+-- 业务恢复可信度高，但未逐槽核验root/23的36条指令；如运行测试发现状态变量命名/作用域差异，再定点修正。
+local function InitGatherMonsters()
+    if timerState.gatherTimer then
+        SL:UnSchedule(timerState.gatherTimer)
+        timerState.gatherTimer = nil
+    end
+
+    isGatherRunning = true
+    FormatStateChange(gatherStatusText.IDLE)
+    ResetGatherMonsterData()
+
+    -- 11.16 root/23/0是无参数、无捕获的包装闭包，内部读取全局MainLoop并调用。
+    timerState.gatherTimer = SL:Schedule(
+        closure_root_23_0,
+        gatherConfig.CHECK_INTERVAL
+    )
+
+    PrintLog(string.format(
+        "引怪功能已启动 (阈值: %d)",
+        gatherConfig.GATHER_THRESHOLD
+    ))
+end
