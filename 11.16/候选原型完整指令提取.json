@@ -4462,350 +4462,27 @@
       },
       "control_flow_audit": {
         "jump_opcode": 388,
-        "jump_semantics": "F()分派器中执行O=K[3]，即无条件跳转到指令索引K[3]",
-        "return_opcode_357": "更正：Opcode357不是return，而是泛型迭代器推进；调用N[A](N[A+1],N[A+2])，接收C个返回值到N[A+3..A+2+C]；首返回值nil时额外跳过下一物理槽位，否则更新控制变量N[A+2]=N[A+3]。",
-        "return_opcode_205_339": "F()分派器直接return，无显式返回值",
-        "unconditional_jumps": [
-          {
-            "slot": 6,
-            "target": 7
-          },
-          {
-            "slot": 13,
-            "target": 14
-          },
-          {
-            "slot": 16,
-            "target": 27
-          },
-          {
-            "slot": 33,
-            "target": 36
-          },
-          {
-            "slot": 119,
-            "target": 169
-          },
-          {
-            "slot": 121,
-            "target": 169
-          },
-          {
-            "slot": 124,
-            "target": 169
-          },
-          {
-            "slot": 127,
-            "target": 169
-          },
-          {
-            "slot": 134,
-            "target": 169
-          },
-          {
-            "slot": 137,
-            "target": 142
-          },
-          {
-            "slot": 142,
-            "target": 153
-          },
-          {
-            "slot": 144,
-            "target": 149
-          },
-          {
-            "slot": 149,
-            "target": 153
-          },
-          {
-            "slot": 155,
-            "target": 169
-          },
-          {
-            "slot": 164,
-            "target": 165
-          },
-          {
-            "slot": 171,
-            "target": 119
-          },
-          {
-            "slot": 174,
-            "target": 180
-          },
-          {
-            "slot": 185,
-            "target": 215
-          },
-          {
-            "slot": 187,
-            "target": 194
-          },
-          {
-            "slot": 194,
-            "target": 217
-          },
-          {
-            "slot": 217,
-            "target": 185
-          }
-        ],
-        "return_sites": [
-          {
-            "slot": 7,
-            "opcode": 205,
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          {
-            "slot": 27,
-            "opcode": 339,
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          {
-            "slot": 36,
-            "opcode": 205,
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          {
-            "slot": 180,
-            "opcode": 205,
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          {
-            "slot": 226,
-            "opcode": 205,
-            "A": 0,
-            "B": 0,
-            "C": 0
-          }
-        ],
-        "finding": "更正此前结论：槽位170 Opcode357不是函数返回，而是pairs(BAG_DATA)泛型迭代器推进；槽位171回跳119，迭代结束时才跳过槽位171进入172。因此槽位172–226是可达的后续处理区，不能再标记为不可达混淆残留。槽位156–170已闭合候选记录构造：记录字段makeIndex、count、name；count=item.OverLap or 1；插入N[12]候选列表。",
-        "conditional_opcode_semantics": {
-          "143": "若(N[B] == K[4]) ~= (A ~= 0)，则跳过下一物理槽位",
-          "213": "for X=K[2],K[3] do N[X]=nil end",
-          "241": "N[A] = N[B]",
-          "60_325_340_358_366": "若(not not N[A]) ~= (K[4] ~= 0)，则跳过下一物理槽位",
-          "61_402": "N[A] = not N[B]"
-        },
-        "slot_135_155": {
-          "slot_135": "Opcode213清空N[19]，避免沿用前一轮迭代的筛选结果",
-          "slot_136": "Opcode143检查参数N[1]是否等于1；相等时跳过槽位137的跳转，进入槽位138–141",
-          "slot_138_142": "N[11]（root/2/2，捕获N[8]）作为筛选闭包，调用N[11](item.Name)；Opcode402将结果取反写入N[19]，槽位142跳至153",
-          "slot_143_149": "若参数N[1]等于2，则跳过槽位144的跳转，进入槽位145–148；否则槽位144跳至149",
-          "slot_145_149": "N[10]（root/2/1，捕获N[7]）作为Lua string.find模式筛选闭包，调用N[10](item.Name)；Opcode61将结果取反写入N[19]，槽位149跳至153",
-          "slot_150_153": "其他参数值走默认分支，N[9]（root/2/0，捕获N[6]）执行精确相等列表筛选；Opcode241将调用结果复制到N[19]",
-          "slot_154_155": "Opcode340在N[19]为真时跳过槽位155，进入候选表构造；N[19]为假时执行槽位155跳至169，跳过当前物品",
-          "confirmed_filter_rule": "Only the register-level branch shape is retained: parameter value 1 calls N[11] then negates; value 2 calls N[10] then negates; other values call N[9] and preserve the result. The actual predicates represented by these registers are unresolved until the fusion and child mapping are corrected.",
-          "closure_registers": {
-            "N[9]": "not mapped to a child prototype; prior mapping withdrawn",
-            "N[10]": "not mapped to a child prototype; prior mapping withdrawn",
-            "N[11]": "not mapped to a child prototype; prior mapping withdrawn"
-          },
-          "status": "control-flow branch shape remains visible, but the identity of N[9], N[10], N[11] is unresolved after the slot111 Opcode178 fusion correction"
-        },
-        "iterator_sites": [
-          {
-            "slot": 170,
-            "opcode": 357,
-            "iterator": "N[13]",
-            "state": "N[14]",
-            "control": "N[15]",
-            "result_count": 2,
-            "result_registers": [
-              "N[16]",
-              "N[17]"
-            ],
-            "exhaustion": "N[16]==nil时跳过槽位171，落入槽位172",
-            "continue": "否则N[15]=N[16]，随后槽位171跳回119"
-          },
-          {
-            "slot": 216,
-            "opcode": 357,
-            "iterator": "N[14]",
-            "state": "N[15]",
-            "control": "N[16]",
-            "result_count": 2,
-            "result_registers": [
-              "N[17]",
-              "N[18]"
-            ],
-            "exhaustion": "N[17]==nil时跳过槽位217，进入槽位218",
-            "continue": "否则N[16]=N[17]，随后槽位217跳回185"
-          }
-        ],
-        "slot_156_170": {
-          "slot_156_159": "Opcode216融合消费四个物理槽位：N[20]=table；N[20]=N[20].insert，即table.insert；N[21]=N[12]候选列表；N[22]={}新建当前候选记录",
-          "slot_160_161": "读取当前背包物品N[17].MakeIndex，写入候选记录N[22].makeIndex",
-          "slot_162_165": "读取N[17].OverLap；Opcode366与紧随的Opcode388构成真假分支：OverLap真值时执行跳转并跳过常量1；OverLap为nil/false时跳过跳转并装载常量1",
-          "slot_166_168": "Opcode365融合执行三步：N[22].count=N[23]；读取N[17].Name；写入N[22].name=N[23]",
-          "slot_169": "Opcode128调用N[20](N[21],N[22])，即table.insert(N[12],N[22])",
-          "slot_170": "Opcode357执行pairs迭代推进：调用迭代器N[13](N[14],N[15])，接收两个返回值到N[16],N[17]；首返回值nil时跳过槽位171并退出遍历，否则更新控制变量N[15]=N[16]，槽位171跳回119",
-          "record_fields": [
-            "makeIndex",
-            "count",
-            "name"
-          ],
-          "count_rule": "count = item.OverLap or 1（Lua真值语义；nil/false回退为1）",
-          "accumulator": "N[12]在槽位169作为table.insert的目标表使用；但其创建点不能再认定为槽位115 Opcode279，必须从槽位111融合序列重新确定",
-          "status": "寄存器级构造片段待复核；因槽位111 Opcode178融合消费112–118，槽位115并非独立执行指令，N[12]候选列表初始化尚未闭合",
-          "withdrawn": "此前将槽位115 Opcode279单独解释为N[12]={}已撤回；槽位115位于Opcode178融合载荷内"
-        },
-        "slot_172_226": {
-          "status": "local tail control flow and message-argument assembly closed; upstream initialization and list identity remain provisional due the slot111 fusion conflict",
-          "slot_172_180": {
-            "slot_172": "Opcode265：N[13]=#N[12]，计算候选列表长度",
-            "slot_173": "Opcode143比较N[13]与常量0；相等时跳过槽位174，进入空列表分支；不相等时执行槽位174",
-            "slot_174": "Opcode388跳转目标180；解释器循环尾统一递增后从槽位181继续",
-            "empty_branch": "槽位175 Opcode127读取H[1]提示回调；176装载“背包无可丢弃物品”；177调用H[1](提示文本)；槽位178 Opcode88融合读取H[0]并消费179，将H[0].isDiuing写为false；180结束函数",
-            "nonempty_branch": "候选列表非空时由槽位174跳过空列表提示及return，进入槽位181"
-          },
-          "slot_181_185": {
-            "slot_181": "N[13]=0，初始化本次成功处理/丢弃计数",
-            "slot_182_184": "装载ipairs与候选列表N[12]，Opcode314调用ipairs(N[12])并建立迭代器三元组",
-            "slot_185": "Opcode388跳转到索引215；循环尾统一递增后首次执行槽位216"
-          },
-          "slot_186_194": {
-            "slot_186": "Opcode338由原版F()分派器确认比较N[2] <= N[4]；A=0表示比较为真时跳过下一槽位187",
-            "slot_187": "当比较为假（当前地面物品数未达35）时执行Opcode388跳至194；循环尾递增后从195进入单件处理",
-            "full_branch": "当35 <= N[4]时跳过187，槽位188–193构造并调用H[1](“地面物品已满35件，停止丢弃”)；槽位194跳至217，尾部递增后进入218汇总，结束逐件处理",
-            "slot_194": "Opcode388跳转目标217，循环尾递增后进入槽位218"
-          },
-          "slot_195_215": {
-            "slot_195_199": "Opcode87融合读取H[1]提示回调、装载“丢: ”、读取当前记录name并拼接，随后调用H[1](“丢: ”..item.name)",
-            "slot_200_203": "装载LuaSendMsg，并由Opcode377融合装载global.MsgType.MSG_CS_MAP_ITEM_DISCARD",
-            "slot_204_212": "Opcode341融合准备消息参数：item.makeIndex、item.count、0、0、item.name、string.len函数及item.name；Opcode184执行string.len(item.name)",
-            "slot_213": "Opcode376调用LuaSendMsg，参数来自N[20]至当前参数顶端N[27]",
-            "slot_214_215": "Opcode182融合执行两次加常量1：N[13]=N[13]+1（本次处理计数），N[4]=N[4]+1（地面物品计数）"
-          },
-          "slot_216_226": {
-            "slot_216": "Opcode357推进ipairs迭代器；首返回值N[17]为nil时跳过槽位217并进入218；否则更新控制变量N[16]=N[17]",
-            "slot_217": "有下一条候选记录时Opcode388回跳到185；循环尾递增后进入186继续逐件处理",
-            "slot_218_223": "Opcode14融合读取H[1]提示回调并拼接“共丢弃 ”..N[13]..“ 件物品”；槽位223调用H[1](汇总文本)",
-            "slot_224_225": "Opcode324读取H[0]；Opcode322将H[0].isDiuing设置为false",
-            "slot_226": "结束函数，无显式返回值"
-          },
-          "reconstructed_tail": "if #candidateList == 0 then H[1](\"背包无可丢弃物品\"); H[0].isDiuing=false; return end\nlocal droppedCount=0\nfor _, item in ipairs(candidateList) do\n    if 35 <= groundItemCount then\n        H[1](\"地面物品已满35件，停止丢弃\")\n        break\n    end\n    H[1](\"丢: \"..item.name)\n    LuaSendMsg(global.MsgType.MSG_CS_MAP_ITEM_DISCARD, item.makeIndex, item.count, 0, 0, item.name, string.len(item.name), item.name)\n    droppedCount=droppedCount+1\n    groundItemCount=groundItemCount+1\nend\nH[1](\"共丢弃 \"..droppedCount..\" 件物品\")\nH[0].isDiuing=false\nreturn",
-          "upvalue_roles": {
-            "H[0]": "状态持有对象；由空列表与正常结束两条路径写入isDiuing=false。具体父级词法变量名待从root闭包创建点确认",
-            "H[1]": "提示回调；用于无候选、逐件提示、地面物品上限提示及汇总提示。具体父级词法变量名待确认"
-          },
-          "confidence": "high for local tail opcodes and branch direction; end-to-end business interpretation is provisional until the slot111 fusion conflict and N[12] initialization are resolved",
-          "upstream_dependency": "N[12]在槽位172、183、158、169作为候选列表使用；其初始化来源此前误认作槽位115，现已撤回，必须先复核槽位111–118融合序列。该尾段只能作为局部寄存器/控制流片段保存，不能直接生成完整Lua。"
-        },
-        "slot_109_118_conflict": {
-          "status": "critical conflict; earlier interpretation retracted",
-          "slot_109": "Opcode387 creates childIndex 1 closure and consumes slot110 as its capture record",
-          "slot_111": "Opcode178 is a fused operation, not a closure create; consumes slots112–118",
-          "slot_113": "Opcode387 is fusion payload, not an executed closure create",
-          "withdrawn": "The previous closure_creation_records entries at 111 and 113, the N[9]/N[10]/N[11] child mapping, and the claim that slots116–118 independently initialize pairs iteration are withdrawn",
-          "required_next": "Reconstruct the exact 178 fusion operands from the raw decoded fields and re-evaluate N[9]..N[15], N[12] candidate-list initialization, and the filter calls at 136–153 before writing root/2."
-        }
+        "jump_semantics": "O=K[3]，解释器循环尾统一O=O+1，实际继续执行target+1",
+        "iterator_opcode_357": "调用N[A](N[A+1],N[A+2])并接收C+2返回值；首返回值nil时额外跳过下一物理槽位，否则更新控制变量",
+        "conditional_skip_semantics": "Opcode60/325/340/358/366按truthiness与K[4]比较；Opcode143按N[B]==K[4]与A比较。条件成立时跳过紧随物理槽位。",
+        "unified_cfg": "详见unified_cfg_reaudit_2026_11_19；取代早期对Opcode178融合、槽位115/116及N9-N11映射的错误审计。",
+        "status": "all 226 slots and reachable control paths closed; only parent lexical identities of H[0]/H[1] remain unresolved"
       },
       "closure_creation_records_audit": {
-        "status": "previous records for slots 111 and 113 are withdrawn pending correction",
-        "slot_109": "Opcode387 is a confirmed closure-creation opcode; its capture record at slot110 is consumed by the closure-creation branch",
-        "slot_111": "Opcode178 is not a closure-creation opcode in the original F() dispatcher. Its L<=180 branch executes a fused sequence and consumes the next seven physical slots, 112–118.",
-        "slot_113": "Opcode387 appears inside the seven-slot fusion payload consumed by slot111; it is not independently dispatched and must not be counted as a closure creation at this location.",
-        "consequence": "The prior assumption that slots109/111/113 create childIndex 1/0/2 closures is invalid. The parent-to-child mappings for root/2/0 and root/2/2 are unresolved. The execution roles of slots112–118, including prior claims that slot115 creates N[12] and slots116–118 initialize pairs, must be re-derived.",
-        "evidence": "11.16 original F() at approximately offset 190000: L<=182 -> L<=180 branch performs table-field write, constant load, field read, method preparation, constant load, field read, field read, with O advanced seven times; no call to F() occurs in this branch."
+        "status": "verified_from_original_F_dispatcher",
+        "slot_109": "Opcode387 creates childIndex=1 (root/2/1), capture slot110 copies parent N[6] to child H[0]",
+        "slot_111": "Opcode178 creates childIndex=0 (root/2/0), capture slot112 copies parent N[7] to child H[0]",
+        "slot_113": "Opcode387 creates childIndex=2 (root/2/2), capture slot114 copies parent N[8] to child H[0]",
+        "correction": "Opcode178 L==178 takes closure-creation leaf; it does not consume slots112-118 as fusion payload. The earlier fusion-conflict claim is withdrawn."
       },
       "reconstruction": {
+        "status": "unified_register_level_recovery_complete",
+        "next": "Map parent root lexical sources for H[0]/H[1]. If the parent instruction stream is unavailable, preserve explicit upvalue_0/upvalue_1 placeholders and do not invent names.",
         "slot_111_118_fusion_reaudit": {
-          "status": "withdrawn_incorrect_dispatch_branch_attribution",
-          "reason": "Opcode178在F()树中走L==178的闭包创建else叶；此前把后续L>178融合叶误归给Opcode178。"
+          "status": "withdrawn",
+          "reason": "Opcode178 is the childIndex=0 closure creation leaf; slot112 is its capture descriptor only."
         },
-        "status": "slots1-36 now reconstructed; slots37-108 (three name-list tables and population) remain unresolved; slots109-226 retain their separately audited local flow. root/2 is not yet a complete function.",
-        "next": "Analyze slots37-108 to recover exact construction and membership of N[6], N[7], N[8] name lists, then reconcile with closure captures at 109-114 and integrate the 120-170 item filter.",
-        "slot_111_118_exact_fusion_trace_2026_11_19": {
-          "status": "withdrawn_incorrect",
-          "reason": "Opcode178并不消费槽位112–118；该指令创建childIndex=0闭包，仅消费槽位112作为唯一捕获描述符。"
-        },
-        "closure_and_pairs_reaudit_2026_11_19": {
-          "status": "verified_from_original_S_and_F_dispatcher",
-          "source_offsets": {
-            "parent_prototype_start": 4393,
-            "parent_prototype_end": 8472,
-            "opcode178_closure_branch": 190131,
-            "opcode387_closure_branch": 219222,
-            "opcode105_global_load_branch": 179496
-          },
-          "raw_decode": "原版D()解码142522字节；S()递归解析162原型，完整消费142522字节。root/2位于解码字节4393..8472，226条记录。重新独立解析后，root/2候选JSON的已定义字段与原始解析结果逐字段一致；不存在槽位111–118字段错位。",
-          "sequence": [
-            "slot109 Opcode387创建childIndex=1(root/2/1)，slot110 Opcode243捕获父级N[6]到H[0]",
-            "slot111 Opcode178创建childIndex=0(root/2/0)，slot112 Opcode243捕获父级N[7]到H[0]",
-            "slot113 Opcode387创建childIndex=2(root/2/2)，slot114 Opcode243捕获父级N[8]到H[0]",
-            "slot115 Opcode279执行N[12]={}",
-            "slot116 Opcode105执行N[13]=Z['pairs']（从全局环境加载pairs函数）",
-            "slot117 Opcode288执行N[14]=N[5]",
-            "slot118 Opcode386调用N[13](N[14])，多返回值写入N[13]..N[15]，即pairs(N[5])迭代器三元组"
-          ],
-          "mappings": {
-            "N9": "root/2/1，捕获N[6]；子函数使用string.find进行Lua模式匹配",
-            "N10": "root/2/0，捕获N[7]；子函数遍历列表执行精确相等匹配",
-            "N11": "root/2/2，捕获N[8]；子函数遍历列表执行精确相等匹配",
-            "N12": "候选物品列表",
-            "N5": "由前段SL:GetMetaValue('BAG_DATA')读取的背包数据"
-          },
-          "control_flow": "slot119 Opcode388跳至169，解释器统一递增后从slot170开始首次推进pairs迭代器；slot120–169是每项处理体。该形状与泛型for循环初始化/回边吻合。",
-          "corrections": [
-            "撤回账本六十至六十二节中把Opcode178误判为L<=180融合分支的结论。实际F()分派树在L==178的else叶执行闭包创建；只有L>178才进入后续融合分支。",
-            "撤回把槽位112–118作为Opcode178融合载荷的所有解释；这些槽位包含捕获描述符、表创建、全局pairs加载、寄存器复制和多返回值调用。",
-            "撤回此前声称槽位111不是闭包创建、槽位113不独立分派、N[12]来源未确认的结论。",
-            "上一条助手消息曾误称候选JSON槽位116字段错位，该判断已复核撤回；候选JSON字段与S()输出一致。"
-          ],
-          "next": "使用已恢复的N[9]/N[10]/N[11]闭包映射，重新整合槽位120–170的pairs(BAG_DATA)遍历、绑定/名称筛选和候选列表构造，再将其与已闭合尾段172–226组合。"
-        },
-        "slot_120_170_name_filter_reaudit_2026_11_19": {
-          "status": "control_flow_and_child_prototype_mapping_reaudited",
-          "register_to_child": {
-            "N9": "root/2/1; capture parent N[6]; string.find(pattern) matching",
-            "N10": "root/2/0; capture parent N[7]; ipairs exact-equality matching",
-            "N11": "root/2/2; capture parent N[8]; ipairs exact-equality matching"
-          },
-          "branches": [
-            "slot120: N[17] current pairs value must be truthy; otherwise slot121 jumps to next iterator advance",
-            "slot122-126: read item.Name and item.MakeIndex; each must be truthy or its following jump skips current item",
-            "slot128-134: call SL:GetMetaValue with ITEM_IS_BIND/current item context; when result is true, branch to slot169 and reject bound item; false proceeds",
-            "slot135 clears N[19]",
-            "slot136-142: when N[1]==1, call N[11] (root/2/2 exact list over captured N[8]), invert result into N[19]",
-            "slot143-149: when N[1]==2, call N[10] (root/2/0 exact list over captured N[7]), invert result into N[19]",
-            "slot150-153: otherwise call N[9] (root/2/1 string.find Lua-pattern list over captured N[6]); copy result to N[19]",
-            "slot154-155: retain item only when N[19] is truthy; false jumps to 169"
-          ],
-          "filter_summary": "mode 1 excludes names found in exact list N[8]; mode 2 excludes names found in exact list N[7]; other modes retain names matching a Lua pattern in N[6]. This describes the three child closures and branch direction, not the external UI labels for the mode values.",
-          "candidate_record": "For retained items, slots156-170 build and append {makeIndex=item.MakeIndex, count=item.OverLap or 1, name=item.Name} to N[12], then advance pairs(BAG_DATA).",
-          "corrections": [
-            "Section63 mapping N9=child1/N10=child0/N11=child2 was correct, but its nested mappings object had child0/child1 reversed; corrected here.",
-            "Older section55 descriptions that assigned Lua-pattern matching to mode 2 and exact matching to the default branch are superseded; call sites show mode1=>N11 exact N8, mode2=>N10 exact N7, default=>N9 pattern N6."
-          ],
-          "next": "Close root/2 slots1-108: status gate, GetDroppedItems return handling and 35-item early exit, creation/population of N[6]/N[7]/N[8], and exact source of N[5]=BAG_DATA; then integrate 109-226."
-        },
-        "early_flow_reaudit_2026_11_19": {
-          "status": "slots1-36 decoded from original F() dispatch leaves and fused-slot behavior",
-          "slots": {
-            "11": "Opcode307 calls N[3] with no arguments and stores its first two return values in N[3] and N[4]. In business context these are the dropped-item snapshot and current ground-item count; exact return names remain external API semantics.",
-            "31": "Opcode209 invokes N[5](N[6],N[7]) and stores the result in N[5], equivalent to SL:GetMetaValue('BAG_DATA').",
-            "1-4": "Opcode73 consumes slots2-4: N[1]=N[0] (the sole function argument); N[2]=35; N[3]=H[0]; N[3]=N[3].isDiuing.",
-            "5-7": "Opcode340 tests truthiness of N[3] against false. If isDiuing is already true it skips slot6 and reaches slot7 return. If false it executes slot6 jump-to-7; interpreter's loop increment advances to slot8. Thus an already-running guard returns, otherwise execution continues.",
-            "8-10": "Opcode49 consumes slots9-10: N[3]=H[0]; N[3].isDiuing=true; N[3]=Z['GetDroppedItems'] (global function).",
-            "12-14": "Opcode366 checks whether N[4] is truthy; when false, slot14 sets N[4]=0. When true slot14 is skipped. This normalizes missing/falsy ground count to zero.",
-            "15-27": "Opcode226 tests N[2] <= N[4], i.e. 35 <= current ground-item count. If true it skips slot16's jump and builds the warning text from '地面物品(' + N[4] + ')超过上限(' + 35 + ')', calls H[1](message), sets H[0].isDiuing=false and returns. If false, slot16 jumps past the warning/return to slot28.",
-            "28-30": "Opcode361 consumes slots29-30: N[5]=Z['SL']; N[6]=N[5] (self); N[5]=N[5].GetMetaValue; N[7]='BAG_DATA'.",
-            "32-36": "Opcode325 tests truthiness of N[5]. If BAG_DATA exists, slot33 jumps over the missing-data return path and execution continues at slot37. If absent, slots34-35 set H[0].isDiuing=false and slot36 returns."
-          },
-          "confirmed_business": "Function parameter N[0] is copied to N[1] as the name-filter mode; the function sets isDiuing=true before querying GetDroppedItems; it enforces a 35-ground-item ceiling before querying BAG_DATA; missing BAG_DATA resets isDiuing and returns.",
-          "unresolved": "The exact public/API return naming of GetDroppedItems' two return values should remain tied to register roles until external API docs are consulted; slots37-108 construct the three name lists and remain under analysis.",
-          "evidence": "Original F() dispatch source: Opcode73 fused leaf around 1691xx; Opcode49 leaf in L<=50 branch around 1629xx; Opcode307 explicit call/multi-return leaf around 2074xx; Opcode226 comparison leaf around 1966xx; Opcode361 method-preparation leaf around 215xxx. All jumps include the interpreter's unconditional O=O+1 at loop tail."
-        }
+        "unified_cfg_reaudit": "See unified_cfg_reaudit_2026_11_19"
       },
       "decode_validation_reaudit_2026_11_19": "原始S()解析完整消费142522字节、162原型的结构结果仍是基准；本轮发现root/2槽位111–118融合载荷与当前候选字段解释无法组成一致寄存器链，需定点复核，未推翻已完成的其他原型。",
       "global_environment_reaudit_2026_11_19": {
@@ -4823,8 +4500,8 @@
         ]
       },
       "instruction_capture_summary": "槽位1-36、37-108、109-118、120-170及172-226均已有分段恢复记录；本轮闭合三组名称表及融合载荷边界。最终整合前仍需统一CFG并确认H[0]/H[1]父级捕获身份。",
-      "business_summary": "物品丢弃处理：isDiuing重入保护；GetDroppedItems与35件地面物品上限；读取BAG_DATA；按模式使用N6的28项Lua模式列表、N7的35项精确名称列表、N8的3项精确名称列表筛选非绑定物品；构造候选记录并发送丢弃消息。完整函数仍待统一CFG与父级捕获身份核对。",
-      "warning": "不要将槽位68/69、105-107当作独立Opcode执行：它们是Opcode30/38的融合载荷。N6/N7/N8分别为28/35/3项列表。完整函数写入前仍需统一复核全段控制流及H[0]/H[1]捕获身份。",
+      "business_summary": "按参数模式筛选背包物品并丢弃：重入保护、获取地面物品数并限制35件、读取BAG_DATA、建立三组物品名称规则、排除无效/绑定物品、按三种规则筛选，收集makeIndex/count/name候选，再逐项发送MSG_CS_MAP_ITEM_DISCARD并汇总提示。",
+      "warning": "本轮已统一闭合226槽位CFG。H[0]为维护isDiuing状态的对象，H[1]为提示回调；二者父级root捕获来源尚未确认，不得编造具体局部变量名。唯一明文Lua仍未写入root/2，直到用户接受/父级映射闭合或采用显式upvalue占位规则。",
       "name_table_construction_reaudit_2026_11_19": {
         "evidence": "11.16原版F()分派器对应Opcode199、30、38、41分支；候选JSON槽位37–108逐字段复核",
         "table_registers": {
@@ -4987,7 +4664,208 @@
         "closure_cross_check": "slot109 child1捕获N[6]；slot111 child0捕获N[7]；slot113 child2捕获N[8]。分别对应模式列表、精确列表、精确列表。",
         "conclusion": "槽位37–108三张表的创建、载荷消费、列表顺序和捕获用途已闭合；不再将融合载荷槽位68/69、105–107当作独立执行指令。"
       },
-      "recovery_status": "slots1-36状态门控/GetDroppedItems/35件上限/BAG_DATA读取已闭合；slots37-108三组名称表构造已闭合（N6=28项模式表、N7=35项精确表、N8=3项精确表）；slots109-118闭包注册与pairs初始化已确认；slots120-170背包遍历筛选及候选记录已闭合；slots172-226尾段已闭合。尚需将全函数控制流统一模拟、核对跳转汇合及H[0]/H[1]父级捕获身份，故root/2暂不计完整函数。"
+      "recovery_status": "226/226槽位寄存器级控制流与业务数据流已闭合；两个泛型for循环及全部早退/分支已串接。H[0]状态对象、H[1]提示回调的父级来源身份待确认；可用显式上值占位形成可读函数草稿，但暂不冒充已映射原始变量名。",
+      "unified_cfg_reaudit_2026_11_19": {
+        "status": "verified_register_level_cfg_1_226",
+        "scope": "全部226槽位按原版F()分派语义、Opcode388跳转目标及条件跳过下一物理槽规则串接；所有控制路径均到达已知return或循环回边，无孤立可达段",
+        "key_semantics": {
+          "opcode73": "融合消费槽位2-4：N[1]=N[0]；N[2]=35；N[3]=H[0]；N[3]=N[3].isDiuing",
+          "conditional_skip": "Opcode60/325/340/358/366：若(not not N[A]) ~= (K[4] ~= 0)，跳过下一物理槽位",
+          "opcode143": "若(N[B] == K[4]) ~= (A ~= 0)，跳过下一物理槽位",
+          "opcode388": "无条件跳转到K[3]；解释器循环尾统一执行O=O+1，因此落点为target+1",
+          "opcode357": "泛型迭代器推进；首返回值nil时跳过下一物理槽位，否则更新控制变量并执行紧随的回边跳转"
+        },
+        "blocks": [
+          {
+            "slots": "1-4",
+            "role": "参数模式、35件上限常量、H[0]状态对象及isDiuing读取；slot1 Opcode73融合消费2-4"
+          },
+          {
+            "slots": "5-7",
+            "role": "重入保护：isDiuing为真直接return；否则继续"
+          },
+          {
+            "slots": "8-11",
+            "role": "设置H[0].isDiuing=true；调用GetDroppedItems并接收双返回值"
+          },
+          {
+            "slots": "12-14",
+            "role": "地面物品数量缺省为0"
+          },
+          {
+            "slots": "15-27",
+            "role": "地面物品数达到35时提示、复位isDiuing并return；未达到则跳过此块"
+          },
+          {
+            "slots": "28-36",
+            "role": "SL:GetMetaValue('BAG_DATA')；数据缺失则复位状态并return"
+          },
+          {
+            "slots": "37-108",
+            "role": "建立N[6] 28项Lua模式名称表、N[7] 35项精确名称表、N[8] 3项精确名称表"
+          },
+          {
+            "slots": "109-114",
+            "role": "创建child1/child0/child2闭包，分别捕获N[6]/N[7]/N[8]到子函数H[0]"
+          },
+          {
+            "slots": "115-118",
+            "role": "N[12]={}候选列表；加载全局pairs；调用pairs(N[5])，返回迭代器三元组N[13..15]"
+          },
+          {
+            "slots": "119-171",
+            "role": "pairs(BAG_DATA)循环；slot119先跳到169再递增进入170首轮推进；slot170有值回跳119再进入120，无值跳过171进入172"
+          },
+          {
+            "slots": "120-134",
+            "role": "过滤无效物品、缺失Name/MakeIndex物品，以及ITEM_IS_BIND为真的绑定物品"
+          },
+          {
+            "slots": "135-155",
+            "role": "按模式调用三个子闭包筛选名称；N[19]为真保留，假值跳过当前物品"
+          },
+          {
+            "slots": "156-169",
+            "role": "构造{makeIndex=item.MakeIndex,count=item.OverLap or 1,name=item.Name}并table.insert进N[12]"
+          },
+          {
+            "slots": "172-180",
+            "role": "候选列表长度为0时提示、复位状态并return；非空则跳过空列表分支"
+          },
+          {
+            "slots": "181-185",
+            "role": "初始化丢弃计数和ipairs(N[12])迭代器；跳至216首轮推进"
+          },
+          {
+            "slots": "186-194",
+            "role": "若35<=地面物品数则提示已满并跳出逐件处理，进入汇总；否则继续单件处理"
+          },
+          {
+            "slots": "195-215",
+            "role": "提示当前物品；发送MSG_CS_MAP_ITEM_DISCARD；丢弃计数与地面物品计数各加1"
+          },
+          {
+            "slots": "216-217",
+            "role": "ipairs推进；有下一项回到185再进入186；迭代结束进入218"
+          },
+          {
+            "slots": "218-226",
+            "role": "汇总提示已丢弃数量；H[0].isDiuing=false；结束函数"
+          }
+        ],
+        "branches": [
+          {
+            "at": 5,
+            "test": "H[0].isDiuing",
+            "true": "7:return",
+            "false": "8"
+          },
+          {
+            "at": 12,
+            "test": "GetDroppedItems第二返回值为假",
+            "true": "14:数量归零",
+            "false": "15"
+          },
+          {
+            "at": 15,
+            "test": "35 <= groundItemCount",
+            "true": "17-27:提示并return",
+            "false": "28"
+          },
+          {
+            "at": 32,
+            "test": "BAG_DATA truthy",
+            "true": "37",
+            "false": "34-36:复位并return"
+          },
+          {
+            "at": 120,
+            "test": "当前pairs值N[17] truthy",
+            "true": "122",
+            "false": "170:推进下一项"
+          },
+          {
+            "at": 123,
+            "test": "item.Name truthy",
+            "true": "125",
+            "false": "170"
+          },
+          {
+            "at": 126,
+            "test": "item.MakeIndex truthy",
+            "true": "128",
+            "false": "170"
+          },
+          {
+            "at": 133,
+            "test": "ITEM_IS_BIND truthy",
+            "true": "170:跳过绑定物品",
+            "false": "135"
+          },
+          {
+            "at": 136,
+            "test": "mode==1",
+            "true": "138-142:调用child2(N[8])并取反",
+            "false": "143"
+          },
+          {
+            "at": 143,
+            "test": "mode==2",
+            "true": "145-149:调用child0(N[7])并取反",
+            "false": "150"
+          },
+          {
+            "at": 154,
+            "test": "筛选结果N[19] truthy",
+            "true": "156:追加候选",
+            "false": "170:跳过当前物品"
+          },
+          {
+            "at": 170,
+            "test": "pairs迭代首返回值N[16]为nil",
+            "true": "172:退出循环",
+            "false": "171->119->120:继续"
+          },
+          {
+            "at": 173,
+            "test": "#N[12]==0",
+            "true": "175-180:提示并return",
+            "false": "181"
+          },
+          {
+            "at": 186,
+            "test": "35 <= groundItemCount",
+            "true": "188-194:提示后进入汇总",
+            "false": "195-215:发送当前物品"
+          },
+          {
+            "at": 216,
+            "test": "ipairs首返回值N[17]为nil",
+            "true": "218:汇总",
+            "false": "217->185->186:继续"
+          }
+        ],
+        "closure_map": {
+          "N[9]": "root/2/1：捕获N[6]，Lua string.find(pattern)匹配",
+          "N[10]": "root/2/0：捕获N[7]，ipairs精确名称匹配",
+          "N[11]": "root/2/2：捕获N[8]，ipairs精确名称匹配"
+        },
+        "mode_rules": {
+          "mode==1": "调用N[11]检查N[8]精确表，结果取反；排除命中者",
+          "mode==2": "调用N[10]检查N[7]精确表，结果取反；排除命中者",
+          "other": "调用N[9]检查N[6]Lua模式表，保留命中者"
+        },
+        "upvalues": {
+          "H[0]": "状态对象；通过.isDiuing读写，业务身份未从父原型root的闭包创建指令中确认",
+          "H[1]": "提示回调；用于上限、空列表、逐件及汇总提示，业务身份未从父原型root的闭包创建指令中确认"
+        },
+        "iterator_registers": {
+          "pairs": "N[13](N[14],N[15]) -> N[16],N[17]；N[16]为key/control，N[17]为物品value",
+          "ipairs": "N[14](N[15],N[16]) -> N[17],N[18]；N[17]为index/control，N[18]为候选记录"
+        },
+        "message_call": "LuaSendMsg(global.MsgType.MSG_CS_MAP_ITEM_DISCARD, item.makeIndex, item.count, 0, 0, item.name, string.len(item.name), item.name)",
+        "conclusion": "root/2的局部寄存器数据流、三个子闭包、两个泛型for循环、所有条件分支、早退及汇总路径已闭合。只剩H[0]/H[1]在父原型root中的来源/业务身份映射；保留为显式上值占位，不猜变量名。"
+      }
     }
   ],
   "constant_type_notes": {
