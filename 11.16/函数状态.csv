@@ -55,7 +55,7 @@
 52,root/35,root,1,,待识别,0,12,0,32,未恢复,NoticeTable | Facade | _normalMediators | LayerFacadeMediator | Layer_CommonTips_Close | retrieveMediator | sendNotification | global | CloseLayer,,,2026-11-18
 53,root/36,root,1,,待识别,0,16,0,77,未恢复,table | STORAGE_PER_PAGE_MAX | ipairs | insert | 仓库总可用格子:  | MMO | global | NPCStorageProxy | GetOpenSize | GetMaxPage,,,2026-11-18
 54,root/37,root,1,GetMapName,本轮已恢复,0,4,0,9,已写入明文,SL |  | MAP_NAME | GetMetaValue,MainLeftBottom_11.16_明文.lua,,2026-11-18
-55,root/38,root,1,,待识别,2,6,0,25,未恢复,abs | y | math | x | max,,,2026-11-18
+55,root/38,root,1,DistanceCalculation,高置信候选（跨版本业务对应）,2,6,0,25,已写入明文（跨版本业务复用；未逐槽核验）,99999 | abs | y | math | x | max,MainLeftBottom_11.16_明文.lua：DistanceCalculation,11.2/11.9均有同职责实现；本版参数数、常量数和指令数吻合；未逐槽核验,2026-11-19
 56,root/39,root,1,IsDie,本轮已恢复,1,1,0,7,已写入明文,IsDie,MainLeftBottom_11.16_明文.lua,,2026-11-18
 57,root/40,root,1,,待识别,2,19,1,72,未恢复,id | name | ACTOR_NAME | SL | ACTOR_MASTER_ID | GetMetaValue | lastAttacker | AttackUserID | string | type,,,2026-11-18
 58,root/40/0,root/40,2,make_helper_root_40_0（合成定位名）,闭包体已恢复；H[0]来源待确认,0,2,0,6,部分恢复（不计完整函数）,SL | JsonDecode | SL.md「json字符串解密」签名确认,MainLeftBottom_11.16_明文.lua,H[0]捕获源及父级业务变量名待确认；root/40父级72条指令流未保存,2026-11-19
