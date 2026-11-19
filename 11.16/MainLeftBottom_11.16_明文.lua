@@ -272,8 +272,8 @@ end
 -- Opcode309与Opcode355包含融合载荷：前者融合准备Y读取，后者融合构造{x=..., y=...}表。
 -- Opcode292返回坐标表；尾部Opcode339不可达。
 -- SL.md示例出现SL:GetMetaValue("MAP_ID")，确认receiver及字符串key调用形式；文档未给出返回类型，本函数按原始真值分支恢复。
--- helper_root_70为原型路径合成定位名。
-local function helper_root_70()
+-- GetPlayerPosition：旧版函数声明与本版闭合函数体匹配。
+local function GetPlayerPosition()
     local x = SL:GetMetaValue("X") or 0
     local y = SL:GetMetaValue("Y") or 0
     return { x = x, y = y }
@@ -286,8 +286,8 @@ end
 -- ownerId为nil、空字符串或-1时标签为“无归属”；等于arg2时为“自己”，否则为“其他玩家”。
 -- Opcode221融合复制ownerId与标签到返回寄存器；Opcode293返回两个值。
 -- GetOwnerID未在3.40.x开发文档中收录；仅按原始调用点恢复receiver与方法名，不认定为公开文档API。
--- helper_root_69为原型路径合成定位名，arg1/arg2为描述性参数名，原始参数名未恢复。
-local function helper_root_69(arg1, arg2)
+-- GetOwnerDescription：旧版函数声明与本版闭合函数体匹配；arg1/arg2为描述性参数名，原始参数名未恢复。
+local function GetOwnerDescription(arg1, arg2)
     local ownerId = arg1:GetOwnerID()
     local ownerLabel
 
@@ -654,8 +654,8 @@ end
 -- slot21 Opcode123按寄存器区间N[2]..N[4]调用方法，即receiver、0、目标类型；
 -- 等价于playerInputProxy:SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)。
 -- slot22 Opcode205结束。函数体无未知捕获，调用关系与两处提前结束分支均已闭合。
--- helper_root_42为按原型路径生成的定位名，不代表原始Lua符号名。
-local function helper_root_42()
+-- ClearTargetID_2：旧版函数声明与本版闭合函数体匹配，已恢复真实名称。
+local function ClearTargetID_2()
     if not global.Facade then
         return
     end
