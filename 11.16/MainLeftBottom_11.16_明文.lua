@@ -516,3 +516,28 @@ local function make_helper_root_52_28(capturedUpvalue0)
     InitGatherMonsters()
     return InitGatherMonsters
 end
+
+
+-- 11.16 root/25/0/0：3条物理指令，0个显式参数，1个upvalue。
+-- 父级root/25槽位18创建root/25/0并将父级H[2]绑定到root/25/0的H[0]；
+-- root/25/0槽位513 Opcode178创建childIndex=0闭包，槽位514 Opcode132将父级H[0]
+-- 绑定到本闭包H[0]。因此本闭包写入的是root/25/0共享的同一upvalue单元。
+-- Opcode110置N[0]=false，Opcode162执行H[0]=N[0]，Opcode205结束。
+-- capturedUpvalues[0]为共享upvalue代理；其在root层的业务变量身份尚待确认。
+local function make_helper_root_25_0_0(capturedUpvalues)
+    return function()
+        capturedUpvalues[0] = false
+    end
+end
+
+
+-- 11.16 root/25/0/2：3条物理指令，0个显式参数，1个upvalue。
+-- 父级root/25/0槽位594 Opcode121创建childIndex=2闭包，captureCount=1；
+-- 槽位595 Opcode132将父级H[0]绑定到本闭包H[0]，与root/25/0/0共享同一upvalue单元。
+-- Opcode110置N[0]=false，Opcode62执行H[0]=N[0]，Opcode339结束。
+-- capturedUpvalues[0]为共享upvalue代理；其在root层的业务变量身份尚待确认。
+local function make_helper_root_25_0_2(capturedUpvalues)
+    return function()
+        capturedUpvalues[0] = false
+    end
+end
