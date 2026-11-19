@@ -866,3 +866,13 @@ root/65 18条物理槽位逐条闭合：先调用`string.find(value, "盟重", 1
 4. 再执行一次相同的寄存器对象字段读取。
 
 该Opcode不能把后续三条物理记录当成独立指令执行。root/42 slot17正是此融合体：slot17写入0，slot18装载global，slot19读取MMO，slot20读取SELETE_TARGET_TYPE_FIND，最终组成SetTargetID的第二个业务参数。
+
+## 2026-11-19：root/60所需Opcode融合及分支确认
+
+- **Opcode 397**：执行`H[K[3]]=N[K[2]]`，将寄存器值写回upvalue。root/60槽位6将已清空的N[0]写回H[0]。
+- **Opcode 411**：先执行`N[A]=N[B][C]`，再连续融合消费后续4条物理槽位：准备方法receiver/self、装载全局对象、读取表字段、再次读取表字段。root/60槽位8–12整体完成global.Facade读取、retrieveProxy方法准备及global.ProxyTable.PlayerInputProxy参数装载；槽位9–12不独立分派。
+- **Opcode 289**：若`(not not N[A]) ~= (K[4]~=0)`，内部O递增一次，解释器循环尾再递增一次，跳过下一物理槽位。root/60槽位14检查代理对象、槽位17检查ClearAttackTargetID成员；真值路径跳过紧随的远跳，假值路径执行远跳结束函数。
+- **Opcode 274**：执行`N[A]=N[B][C]`，root/60槽位16读取代理对象的ClearAttackTargetID成员。
+- **Opcode 393**：准备方法调用receiver/self，执行`N[A+1]=N[B]`及`N[A]=N[B][C]`；root/60槽位19准备ClearAttackTargetID方法。
+- Opcode 213沿用已确认的寄存器区间清空语义；root/60槽位5的区间为N[0]至N[0]。
+- root/60槽位20 Opcode123无参调用准备好的方法。官方框架API只按调用点使用，不分析其内部实现。
