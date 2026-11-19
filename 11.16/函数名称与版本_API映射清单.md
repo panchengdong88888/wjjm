@@ -175,3 +175,39 @@
 - 旧版同名只是一条身份线索。若本版常量集合指向明显不同的业务主题（例如root/9），必须降级为“名称待复核”，不得把旧版同名实现复制进去。
 - 对root/58、root/71这类常量高度吻合但缺少本版完整指令流/父级闭包创建点的函数，只记录高置信同职责候选；在捕获变量与本版实际调用关系闭合前，不计完整恢复。
 - 官方SL API（例如ScheduleOnce、UnSchedule、ShowSystemTips、GetMetaValue等）直接按3.40.x文档使用；不再分析其内部实现。
+
+
+## 9. 从11.2函数体与11.16常量补出的20个名称候选
+
+以下候选已同步写入 `原型索引.json` 和 `函数状态.csv`。除特别说明外，身份状态为“跨版本高置信候选”，含义是名称/职责与11.2函数体及11.16常量吻合，不代表11.16指令流、父级捕获和业务差异已经全部验证。
+
+| 11.16原型 | 候选函数名 | 11.2对应函数 | 关键匹配线索 |
+|---|---|---|---|
+| root/2 | DiuItems | DiuItems | GetDroppedItems、isDiuing、BAG_DATA、ITEM_IS_BIND、MSG_CS_MAP_ITEM_DISCARD及丢弃提示/物品白名单 |
+| root/12 | MoveTo | MoveTo | InputMove、mapID、range、PlayerPos、自动寻路类型 |
+| root/17 | GetAvailableStoragePage | GetAvailableStoragePage | NPCStorageProxy、GetMaxPage、GetStorageDataByPage、GetOpenSize、STORAGE_PER_PAGE_MAX |
+| root/22 | DestroyUI | DestroyUI | GUI、resWin、Win_CloseAll、setVisible、resTimer、isHidden |
+| root/26 | ClearBlacklistItems | ClearBlacklistItems | 好友代理、_blacklistData、ScheduleOnce、清空黑名单提示 |
+| root/31 | FindBlacklistPlayer | FindBlacklistPlayer | _blacklistData、ACTOR_MASTER_ID、Name |
+| root/34 | BlacklistPlayerDetection | BlacklistPlayerDetection | IsInWhitelistMap、deathHandled、FIND_IN_VIEW_PLAYER_LIST、ACTOR_NAME、距离与随机传送线索 |
+| root/36 | GetStorageItemData | GetStorageItemData | NPCStorageProxy分页、STORAGE_PER_PAGE_MAX、可用格子统计提示 |
+| root/40 | onDamageMsg | onDamageMsg | ACTOR_NAME、ACTOR_MASTER_ID、AttackUserID、lastAttacker、消息类型 |
+| root/43 | PickUpItems（新版扩展候选） | PickUpItems（11.2为空函数） | GetDroppedItems、PickMainPlayerPosItem、MoveTo、dist、地面拾取提示；不能复制11.2空函数 |
+| root/45 | StorageItems | StorageItems | 存仓物品白名单、MakeIndex、ITEM_IS_BIND、MSG_CS_STORAGE_STORE_REQUEST、GetAvailableStoragePage |
+| root/46 | IsInWhitelistMap | IsInWhitelistMap | MAP_NAME、IN_SAFE_AREA、盟重/土城/盟重省地图名判断 |
+| root/51 | PrintLog | PrintLog | select、pcall、string.format、tostring、SL.Print/dump |
+| root/55 | Builtsetting（扩展范围待确认） | Builtsetting | 人物简装、怪物简装、关闭背景音乐/游戏音乐等设置项；新版指令规模明显更大 |
+| root/62 | UseItemByIndex | UseItemByIndex | ITEM_INDEX_BY_NAME、ITEM_COUNT、tonumber、SL:UseItemByIndex |
+| root/63 | LuaSendMsg | LuaSendMsg | networkCtl、Blocklist、SendHookList、SendMsg、param1–param4、pcall |
+| root/64 | GetOwnerIDText | GetOwnerIDText | GetOwnerID、tostring、type及字符串/数值归属比较 |
+| root/66 | SetTargetID | SetTargetID | Facade、PlayerInputProxy、SetTargetID、SELETE_TARGET_TYPE_FIND |
+| root/68 | InstallDamageHook | InstallDamageHook | gameMapController、mNetMsgHandle、MSG_SC_DAMAGE_HP、__ylwHookedOrigin |
+| root/79 | forgeZodiac | forgeZodiac | forge/checkGold/clickNpc、生肖锻造提示、背包装备、UseItemByIndex、MoveTo |
+
+### 仍未强行命名的原型
+
+- root/16：常量同时符合SetButtonVisibilityState、SetPluginButtonsVisible等候选，当前不能唯一判定。
+- root/19：GAME_ID、UID、Schedule等线索不足以在AccountIDValidation与ShowHideAllButtons之间唯一判定。
+- root/21：LimitCount、CheckCondition、ITEM_INDEX_BY_NAME等尚需更完整调用关系。
+- root/27、root/33、root/35、root/41、root/44、root/48、root/50、root/54、root/57、root/59、root/61、root/67、root/72、root/73、root/76、root/78等仍待逐项确认。
+- root/9保留名称冲突警告，不把11.2的GetMapData2DPtr距离门控套到11.16地图数据/障碍查询原型。
