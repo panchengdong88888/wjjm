@@ -661,6 +661,26 @@ local function make_helper_root_52_36(capturedUpvalues)
 end
 
 
+-- 11.16 root/3：StopGatherMonsters（25条物理指令；跨版本高置信业务体）。
+-- 本版常量含gatherTimer、UnSchedule、SL、IDLE及“引怪功能已停止”；
+-- root/52/36本版闭包明确调用全局StopGatherMonsters()。11.9同职责函数的
+-- 清理顺序与上述常量及调用关系吻合：停止运行标志、取消并清空计时器、
+-- 清除目标、切回IDLE、重置引怪数据、输出停止提示。
+-- root父级闭包创建/全局导出槽位尚未保存；此处恢复业务体，不伪称导出关系已逐槽确认。
+local function StopGatherMonsters()
+    gatherState.isRunning = false
+
+    if timerState.gatherTimer then
+        SL:UnSchedule(timerState.gatherTimer)
+        timerState.gatherTimer = nil
+    end
+
+    ClearTargetID_2()
+    FormatStateChange(gatherStatusText.IDLE)
+    ResetGatherMonsterData()
+    PrintLog("引怪功能已停止")
+end
+
 -- 11.16 root/25/0/0：3条物理指令，0个显式参数，1个upvalue。
 -- 父级root/25槽位18创建root/25/0并将父级H[2]绑定到root/25/0的H[0]；
 -- root/25/0槽位513 Opcode178创建childIndex=0闭包，槽位514 Opcode132将父级H[0]
