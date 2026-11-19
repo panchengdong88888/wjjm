@@ -2798,8 +2798,8 @@
       "child_count": 0,
       "parameter_count": 2,
       "instruction_count": 7,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "ScheduleOnce",
+      "identity_status": "跨版本高置信候选（11.2包装函数与11.16 SL方法调用形状吻合；本体为官方API包装）",
       "constants": [
         "ScheduleOnce",
         "SL"
@@ -5512,8 +5512,8 @@
       "child_count": 0,
       "parameter_count": 2,
       "instruction_count": 7,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "Schedule",
+      "identity_status": "跨版本高置信候选（11.2包装函数与11.16 SL方法调用形状吻合；本体为官方API包装）",
       "constants": [
         "SL",
         "Schedule"
