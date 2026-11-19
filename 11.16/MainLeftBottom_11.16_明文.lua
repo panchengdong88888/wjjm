@@ -10,7 +10,7 @@
     4. 不将11.9或其他版本的源码直接复制为11.16实现。
     5. 所有AI对话只能增量更新本文件，不得创建平行明文候选稿。
 
-    当前状态：持续增量恢复中；指令级直接恢复33/162；跨版本业务复用恢复3项（root/7、root/23、root/75）；业务功能恢复累计36/162（22.22%）。两种口径分开统计，以函数状态CSV及源码恢复进度账本为准。
+    当前状态：持续增量恢复中；指令级直接恢复33/162；跨版本业务复用恢复4项（root/7、root/23、root/38、root/75）；业务功能恢复累计37/162（22.84%）。两种口径分开统计，以函数状态CSV及源码恢复进度账本为准。
 ]]
 
 --[[
@@ -884,6 +884,22 @@ local function MoveItemToQuickUse(itemIndex, targetPos)
         targetPos
     )
 end
+
+-- 11.16 root/38：DistanceCalculation业务辅助函数（2参数、6常量、25条指令、无子原型）。
+-- 11.2与11.9均存在同职责实现：缺少任一坐标表时返回99999；
+-- 否则计算两点X/Y差值绝对值的最大值（Chebyshev距离）。
+-- 11.2分别检查两个参数，11.9合并检查；业务结果一致。
+-- 11.16本版完整指令流未保存在仓库，故按跨版本业务复用恢复，不宣称逐槽还原。
+local function DistanceCalculation(pointA, pointB)
+    if not pointA or not pointB then
+        return 99999
+    end
+
+    local dx = math.abs(pointA.x - pointB.x)
+    local dy = math.abs(pointA.y - pointB.y)
+    return math.max(dx, dy)
+end
+
 
 -- 11.16 root/75：FindMonsterCandidates。
 -- 以11.2/11.9旧版共同业务主体为底稿；11.16 root/75常量确认保留忽略名单、怪物遍历、距离计算与阈值截取。
