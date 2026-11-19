@@ -953,3 +953,9 @@
 - 新增root/56 PCallHelper_2、root/73 Nested_04d_02d_02d两个候选，依据分别为pcall/FriendProxy子闭包结构、os.date时间常量，与11.2对应函数体吻合。
 - 当前81个root原型中56个已有候选名，25个仍待识别。没有新增明文函数，业务恢复统计仍37/162（22.84%），部分恢复19项。
 - 继续从剩余25项中做有证据的名称映射；不确定的保持待识别，不猜测。
+
+
+### 2026-11-19续：Schedule官方API包装映射
+- root/47候选名ScheduleOnce，root/78候选名Schedule，均为MainLeftBottom薄包装，内部调用官方SL:ScheduleOnce/SL:Schedule。
+- 官方签名已在3.40.x SL.md中确认，不再分析API内部。
+- 当前81个root原型中58个已有候选名，23个仍待识别；业务恢复仍37/162（22.84%），部分恢复19项。
