@@ -791,3 +791,13 @@
 - slot17 Opcode210融合消费slot18–19，准备SL.ShowSystemTips及receiver/参数；slot20 Opcode128完成`SL:ShowSystemTips(参数)`调用；slot21 Opcode339结束。
 - 仍未写猜测函数体。完整明文32/162（19.75%），部分恢复16项；唯一明文和原始Lua未改。未做语法、静态或游戏运行验证。
 - 下一项：有限闭合slot11融合体操作数及slot16调用参数边界；无法快速闭合则切换root/68/0。
+
+### 2026-11-19续接：root/42已完整恢复
+
+- 新增helper_root_42()并写入唯一明文文件。root/42为22槽、0参数、0捕获、无子原型。
+- 已从11.16 F()分派器闭合Opcode158融合体：融合消费后续3槽，形成0和global.MMO.SELETE_TARGET_TYPE_FIND两个调用参数。
+- Opcode393准备PlayerInputProxy的SetTargetID方法与receiver；Opcode123按N[2]..N[4]展开调用，完整调用为playerInputProxy:SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)。
+- 已确认Facade缺失及retrieveProxy返回空的提前结束分支。官方框架API只作为文档调用点使用，不分析内部实现。
+- 已更新唯一明文、函数状态CSV、原型索引、Opcode语义映射、进度账本。未修改原始Lua。
+- 完整明文33/162（20.37%）；部分恢复16项。Lua语法、全文件静态及游戏运行验证尚未执行。
+- 下一项：root/68/0缺少已保存的定点指令记录和偏移信息，先找回/恢复可复用的两阶段解析器；若暂不可用，转向root/60或root/73，不重做root/42。
