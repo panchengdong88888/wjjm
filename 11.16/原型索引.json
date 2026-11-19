@@ -1408,7 +1408,7 @@
       "parameter_count": 0,
       "instruction_count": 51,
       "candidate_name": "GetAvailableStoragePage",
-      "identity_status": "跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "已写入明文（跨版本业务复用；非指令级完整还原）",
       "constants": [
         "NPC_STORAGE_MAX_PAGE",
         "NPCStorageProxy",
@@ -1422,7 +1422,9 @@
         "GetOpenSize",
         "MMO",
         "GetStorageDataByPage"
-      ]
+      ],
+      "recovery_status": "已写入唯一明文；11.16 root/17：0参数、51条指令；NPCStorageProxy、GetMaxPage、GetStorageDataByPage、GetOpenSize、GUIDefine.STORAGE_PER_PAGE_MAX、NPC_STORAGE_MAX_PAGE等常量与11.2同名函数一致。跨版本复用，未逐槽模拟。",
+      "business_summary": "遍历仓库分页，结合已开放格数和每页容量，返回第一个仍有空位的页码。"
     },
     {
       "preorder_id": 25,
@@ -2376,7 +2378,7 @@
       "parameter_count": 0,
       "instruction_count": 77,
       "candidate_name": "GetStorageItemData",
-      "identity_status": "跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "已写入明文（跨版本业务复用；非指令级完整还原）",
       "constants": [
         "table",
         "STORAGE_PER_PAGE_MAX",
@@ -2394,7 +2396,9 @@
         "GetStorageDataByPage",
         "type",
         "NPC_STORAGE_MAX_PAGE"
-      ]
+      ],
+      "recovery_status": "已写入唯一明文；11.16 root/36：0参数、77条指令；NPCStorageProxy分页读取、STORAGE_PER_PAGE_MAX、GetOpenSize、GetMaxPage及“仓库总可用格子”提示与11.2同名函数吻合。跨版本复用，未逐槽模拟。",
+      "business_summary": "汇总各仓库分页物品，并计算剩余可用格数后输出提示，返回仓库物品列表。"
     },
     {
       "preorder_id": 54,
@@ -3077,7 +3081,7 @@
       "parameter_count": 1,
       "instruction_count": 38,
       "candidate_name": "PrintLog",
-      "identity_status": "跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "已写入明文（跨版本业务复用；非指令级完整还原）",
       "constants": [
         "select",
         "type",
@@ -3092,7 +3096,9 @@
         "dump",
         0,
         "【超本】"
-      ]
+      ],
+      "recovery_status": "已写入唯一明文；11.16 root/51：1个固定参数并带可变参数、38条指令；常量select、type、#、pcall、Print、table、format、tostring、string、SL等与11.2同名函数吻合。保留其没有实际调用SL.Print的旧版行为；跨版本复用，未逐槽模拟。",
+      "business_summary": "格式化日志参数；table参数走SL.dump，其余参数转字符串并尝试string.format；保留SL.Print存在性检查但不补造输出。"
     },
     {
       "preorder_id": 79,
