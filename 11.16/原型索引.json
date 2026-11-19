@@ -2114,12 +2114,14 @@
       "parameter_count": 0,
       "instruction_count": 20,
       "candidate_name": "ResetGatherMonsterData",
-      "identity_status": "跨版本高置信候选（数据已重置常量与11.2同职责函数吻合；本版调用/状态变量待核验）",
+      "identity_status": "已写入明文（跨版本业务复用；非指令级完整还原）",
       "constants": [
         "",
         0,
         "数据已重置"
-      ]
+      ],
+      "recovery_status": "已写入唯一明文；复用11.2同名函数业务主体。11.16签名0参数、无子原型、20条指令及常量（空字符串、0、数据已重置）吻合；未逐槽模拟20条指令。",
+      "business_summary": "重置引怪/目标相关状态字段，清除当前目标，并输出“数据已重置”提示；状态字段和ClearTargetID_2调用按11.2同名业务体复用，待本版运行差异验证。"
     },
     {
       "preorder_id": 45,
