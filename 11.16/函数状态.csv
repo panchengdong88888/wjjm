@@ -134,7 +134,7 @@ mode=%s
 126,root/52/34/0,root/52/34,3,,待识别,3,4,0,18,未恢复,putinStacked | putinPrice | putinName | startPutinGold,,,2026-11-18
 127,root/52/35,root/52,2,,待识别,0,17,1,37,未恢复,"tostring | string | LuaSendMsg | global | format | len | USER_ID | {""UserID"":""%s"",""index"":15} | MsgType | MSG_CS_NPC_CLICK",,,2026-11-18
 128,root/52/35/0,root/52/35,3,closure_root_52_35_0,匿名闭包（行为已恢复）,0,2,0,3,已写入明文,powerRefreshing,MainLeftBottom_11.16_明文.lua,3条指令：Opcode 88读取H[0]环境表，融合Opcode 114设置powerRefreshing=false；合成定位名,2026-11-18
-129,root/52/36,root/52,2,,待识别,0,4,0,19,未恢复,gatherTimer | 关闭引怪功能 | StopGatherMonsters | 开启引怪功能，阈值：11,,,2026-11-18
+129,root/52/36,root/52,2,make_helper_root_52_36（合成定位名）,闭包体已恢复；捕获身份待确认,0,4,0,19,部分恢复（不计完整函数）,gatherTimer | 关闭引怪功能 | StopGatherMonsters | 开启引怪功能，阈值：11,MainLeftBottom_11.16_明文.lua,"父级root/52槽位605 Opcode387创建childIndex=36闭包，captureCount=3；槽606/607从父H[3]/H[13]捕获，槽608从父N[24]捕获；root/52的H[3]/H[13]映射到root N[3]/N[5]；第三捕获业务身份待确认。闭包分支及返回值已逐槽闭合。",2026-11-19
 130,root/53,root,1,helper_root_53（合成定位名）,行为已恢复,1,4,0,15,已写入明文,string.match | match | · | ^(.-)·,MainLeftBottom_11.16_明文.lua,原始函数符号名未确认；全部15条物理指令及两条分支已闭合,2026-11-19
 131,root/54,root,1,,待识别,0,18,0,56,未恢复,已停止苹果下图 | cruiseOff | appleMapRunning | 开始苹果下图 | appleMap | ticks | state | UnSchedule | appleMapTimer | backCity,,,2026-11-18
 132,root/55,root,1,,待识别,0,51,0,195,未恢复,开启6格范围内有多少怪 不走去拾取 | table | SETTING_CONFIG | HP保护1物品优先级: | GetMetaValue | PKMODE | split | SL | 开启怪物简装 | 随机传送石,,,2026-11-18
