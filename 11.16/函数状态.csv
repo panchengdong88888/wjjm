@@ -114,7 +114,7 @@ mode=%s
 106,root/52/18,root/52,2,,待识别,0,18,1,65,未恢复,dropTimer | isDiuing | 开丢全部 | 开启丢弃物品(模式2) | dropallbut | Button_setTitleColor | UnSchedule | GUI | Button_setTitleText | #ffffff,,,2026-11-18
 107,root/52/18/0,root/52/18,3,,,待识别,0,2,0,5,未恢复,DiuItems | dropMode,,指令头需按16位字段重新解码；函数体待确认,,2026-11-18
 108,root/52/19,root/52,2,,待识别,0,10,0,29,未恢复,关闭取物功能 | 开启取物功能 | SL | UnSchedule | TakeItems | isTaking | takeTimer,,,2026-11-18
-109,root/52/20,root/52,2,,待识别,0,0,0,5,未恢复,,,,2026-11-18
+109,root/52/20,root/52,2,make_helper_root_52_20（合成定位名）,闭包体已恢复；H[0]捕获来源待确认,0,0,0,5,部分恢复（不计完整函数）,父级root/52创建点未映射,H[0]具体父级源寄存器/业务变量名待确认,2026-11-19
 110,root/52/21,root/52,2,closure_root_52_21（合成定位名）,行为已恢复,0,9,0,16,已写入明文,LuaSendMsg | 回收完毕 | ShowSystemTips | 901238 | [1\,1] | SL | 9002,MainLeftBottom_11.16_明文.lua,16条物理指令闭合；root/52槽位603 Opcode121创建且captureCount=0；Opcode95/235/361融合载荷已还原，Opcode123/128调用，Opcode110置true，Opcode292返回；SL.ShowSystemTips已查SL.md，LuaSendMsg文档未收录,2026-11-19
 111,root/52/22,root/52,2,,待识别,0,6,0,34,未恢复,blacklistbut | gatherTimer | rewardTimer | yinguaibut | blacklistTimer | rewardbut,,,2026-11-18
 112,root/52/23,root/52,2,,待识别,0,147,0,897,未恢复,ITEM_INDEX_BY_NAME | -- | %s不足(%d/%d) | >=100，等级 | 品 | QUICKUSE_DATA | RELEVEL | autoPanelAt | GetMoneyCountById | 鸣鸿神刀,,,2026-11-18
