@@ -2234,7 +2234,9 @@
         {
           "unknown_type": 2
         }
-      ]
+      ],
+      "analysis_status": "分析中（业务控制流待闭合）",
+      "evidence_note": "11.16 root/33/0：已从原始F()分派器直接确认Opcode234执行N[A]=H[C]（读取upvalue），Opcode322执行N[A][K[3]]=K[4]（表字段写入）。本原型21个物理槽位、1个显式参数、6个upvalue、无子原型；已确认slot1-4涉及H[0].putoutTimer读取及真值分支，slot5-9准备SL:UnSchedule并传入捕获的putoutTimer，slot10-21仍需逐槽闭合融合/返回语义。官方API SL:UnSchedule(scheduleID)、SL:ShowSystemTips(str)已按3.40.x SL.md确认签名；不分析API内部。当前尚不能可靠写完整函数体，未新增明文。"
     },
     {
       "preorder_id": 50,
