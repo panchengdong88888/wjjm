@@ -143,7 +143,7 @@ mode=%s
 135,root/57,root,1,,待识别,2,10,0,60,未恢复,abs | math,,,2026-11-18
 136,root/58,root,1,TakeItems,高置信候选,0,23,0,99,未恢复,"MSG_CS_STORAGE_PICK_OUT_REQUEST | len |  件 | trim | global | 仓库无可取物品 | 待定 | LuaSendMsg | 取出物品完成, 共取出  | string",,,2026-11-18
 137,root/59,root,1,,待识别,1,16,0,44,未恢复,appleMap | #ffffff | GUI | SL | appleMapRunning | UnSchedule | 开苹果图 | toggled | appleMapTimer | Button_setTitleText,,,2026-11-18
-138,root/60,root,1,,待识别,0,6,0,21,指令已提取，待语义闭合,11.16原始载荷定点解析；偏移123626-123928；21物理槽位，21条有效指令,,,2026-11-19
+138,root/60,root,1,helper_root_60（合成定位名）,行为已恢复（H[0]捕获来源待确认）,0,6,0,21,部分恢复（闭包体已恢复，捕获来源待确认）,21槽闭合：H[0]真值门控并清空共享upvalue；Facade.retrieveProxy(PlayerInputProxy)；代理及ClearAttackTargetID成员存在性检查；无参调用ClearAttackTargetID,MainLeftBottom_11.16_明文.lua：make_helper_root_60,root父级654槽指令/闭包创建点未保存在当前资料；H[0]真实业务变量身份待确认；其余5个捕获槽在本函数中未读取,2026-11-19
 139,root/61,root,1,,待识别,0,15,0,60,未恢复,QUICKUSE_DATA | GetMetaValue | 盟重回城石 | ITEM_COUNT | ITEM_INDEX_BY_NAME | pairs | tonumber | UseItemByIndex | string | find,,,2026-11-18
 140,root/62,root,1,,待识别,0,8,0,33,未恢复,ipairs | GetMetaValue | ITEM_INDEX_BY_NAME | UseItemByIndex | SL | ITEM_COUNT | tonumber,,,2026-11-18
 141,root/63,root,1,,待识别,0,34,0,92,未恢复,insert | param1 | string | networkCtl | ) | global | Blocklist | type | recog | SendHookList,,,2026-11-18
