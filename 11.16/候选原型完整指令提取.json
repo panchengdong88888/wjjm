@@ -4456,6 +4456,150 @@
           "root/2/0",
           "root/2/2"
         ]
+      },
+      "control_flow_audit": {
+        "jump_opcode": 388,
+        "jump_semantics": "F()分派器中执行O=K[3]，即无条件跳转到指令索引K[3]",
+        "return_opcode_357": "F()分派器执行return unpack(N[K[2]],V)，立即结束当前函数并返回寄存器区间",
+        "return_opcode_205_339": "F()分派器直接return，无显式返回值",
+        "unconditional_jumps": [
+          {
+            "slot": 6,
+            "target": 7
+          },
+          {
+            "slot": 13,
+            "target": 14
+          },
+          {
+            "slot": 16,
+            "target": 27
+          },
+          {
+            "slot": 33,
+            "target": 36
+          },
+          {
+            "slot": 119,
+            "target": 169
+          },
+          {
+            "slot": 121,
+            "target": 169
+          },
+          {
+            "slot": 124,
+            "target": 169
+          },
+          {
+            "slot": 127,
+            "target": 169
+          },
+          {
+            "slot": 134,
+            "target": 169
+          },
+          {
+            "slot": 137,
+            "target": 142
+          },
+          {
+            "slot": 142,
+            "target": 153
+          },
+          {
+            "slot": 144,
+            "target": 149
+          },
+          {
+            "slot": 149,
+            "target": 153
+          },
+          {
+            "slot": 155,
+            "target": 169
+          },
+          {
+            "slot": 164,
+            "target": 165
+          },
+          {
+            "slot": 171,
+            "target": 119
+          },
+          {
+            "slot": 174,
+            "target": 180
+          },
+          {
+            "slot": 185,
+            "target": 215
+          },
+          {
+            "slot": 187,
+            "target": 194
+          },
+          {
+            "slot": 194,
+            "target": 217
+          },
+          {
+            "slot": 217,
+            "target": 185
+          }
+        ],
+        "return_sites": [
+          {
+            "slot": 7,
+            "opcode": 205,
+            "A": 0,
+            "B": 0,
+            "C": 0
+          },
+          {
+            "slot": 27,
+            "opcode": 339,
+            "A": 0,
+            "B": 0,
+            "C": 0
+          },
+          {
+            "slot": 36,
+            "opcode": 205,
+            "A": 0,
+            "B": 0,
+            "C": 0
+          },
+          {
+            "slot": 170,
+            "opcode": 357,
+            "A": 13,
+            "B": 2,
+            "C": 0
+          },
+          {
+            "slot": 180,
+            "opcode": 205,
+            "A": 0,
+            "B": 0,
+            "C": 0
+          },
+          {
+            "slot": 216,
+            "opcode": 357,
+            "A": 14,
+            "B": 2,
+            "C": 0
+          },
+          {
+            "slot": 226,
+            "opcode": 205,
+            "A": 0,
+            "B": 0,
+            "C": 0
+          }
+        ],
+        "finding": "顺序执行路径在槽位170的Opcode357返回。槽位171–226没有任何Opcode388跳转目标进入其中；已列出的跳转目标也均不指向171–226。因此该尾段目前应标记为静态不可达/混淆残留候选，不能把其中MSG_CS_MAP_ITEM_DISCARD等常量直接认定为本函数实际执行逻辑。需继续验证是否存在被遗漏的非388控制流跳转或特殊融合指令。"
       }
     }
   ],
