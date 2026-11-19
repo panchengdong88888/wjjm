@@ -611,6 +611,12 @@
         "在线时长120分钟",
         "userID",
         "CHECK_INTERVAL"
+      ],
+      "instruction_stream_exported": false,
+      "instruction_stream_export_status": "解析报告确认解析时有654条指令，但当前11.16仓库未保存root的物理指令记录；索引只保留常量和统计元数据。",
+      "instruction_stream_required_for": [
+        "root/2 childIndex=2闭包创建位置",
+        "root/2两个upvalue捕获源寄存器"
       ]
     },
     {
@@ -791,8 +797,19 @@
       "recovery_status": "226/226槽位寄存器级CFG与业务数据流闭合；两层泛型for、早退、筛选及消息发送路径已串接。H[0]状态对象与H[1]提示回调的父级词法来源待确认；未写入唯一明文Lua",
       "instruction_capture_summary": "N[6]28项Lua模式表、N[7]35项精确表、N[8]3项精确表；N9=child1/N6，N10=child0/N7，N11=child2/N8。全部跳转闭合，slot119/170及185/216两个迭代循环已确认。",
       "business_summary": "DiuItems：重入保护、获取地面物品数量并限制35件、读取BAG_DATA、按模式筛选非绑定物品，构造候选列表，逐项发送MSG_CS_MAP_ITEM_DISCARD，最后汇总提示。",
-      "warning": "当前候选指令JSON仅含19个非root原型；重点原型记录仅含7个原型；原型索引中的root只有元数据/常量，无654条root指令。旧版110原型/5580指令资料禁止用于本版。H[0]/H[1]父级捕获寄存器未确认。",
-      "parent_capture_lookup_status": "blocked_missing_current_11_16_root_instruction_stream"
+      "warning": "当前11.16仓库的结构解析报告确认root有654条指令，但未保存root指令流；禁止用旧版资料推断闭包捕获。",
+      "parent_capture_lookup_status": "blocked_missing_current_11_16_root_instruction_stream",
+      "parent_capture_lookup_2026_11_19": {
+        "status": "blocked_missing_exported_root_instruction_stream",
+        "source_inventory": {
+          "structure_report": "11.16/结构解析报告.md：确认142522字节完整消费、root 654指令、81直接子原型",
+          "prototype_index": "11.16/原型索引.json：root仅有元数据/常量，无instructions字段",
+          "focused_records": "11.16/重点原型指令记录.json：7个原型，不含root",
+          "candidate_records": "11.16/候选原型完整指令提取.json：19个原型，不含root",
+          "directory_inventory": "GitHub main分支11.16目录递归树已核对，共58项（含开发文档子目录），无root全量指令dump、解码payload或解析器脚本"
+        },
+        "conclusion": "结构解析已完成不代表root指令流已持久化。需要补出root的654条物理指令记录；有现存解码后结构数据时只需定向导出root，不重做LZW/XOR。"
+      }
     },
     {
       "preorder_id": 4,
