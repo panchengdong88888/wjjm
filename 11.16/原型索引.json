@@ -685,7 +685,7 @@
       "parameter_count": 1,
       "instruction_count": 226,
       "candidate_name": null,
-      "identity_status": "物品丢弃处理函数（行为方向已确认；完整流程待闭合）",
+      "identity_status": "背包物品筛选与候选列表构建函数（已确认返回点；完整逻辑待恢复）",
       "constants": [
         "雷霆战靴+8",
         "龙傲",
@@ -788,8 +788,10 @@
         1,
         "雷霆项链+8"
       ],
-      "recovery_status": "完整226条物理指令已提取；业务逻辑恢复中",
-      "instruction_capture_summary": "槽位109、111、113分别创建三个子闭包，captureCount=1；紧随的Opcode243分别捕获父级N[6]、N[7]、N[8]到各自H[0]"
+      "recovery_status": "226条指令已提取；槽位1–170控制流恢复中；171–226暂列不可达残留候选",
+      "instruction_capture_summary": "槽位109、111、113分别创建三个子闭包，captureCount=1；紧随的Opcode243分别捕获父级N[6]、N[7]、N[8]到各自H[0]",
+      "business_summary": "读取BAG_DATA并遍历物品，按Name/MakeIndex/ITEM_IS_BIND及名称规则筛选，构建含makeIndex/overlap/count/name的候选记录；槽位170 Opcode357为显式返回。",
+      "warning": "槽位181–226虽含MSG_CS_MAP_ITEM_DISCARD等常量，但当前控制流图无入口可达该尾段，禁止将其作为已执行逻辑。"
     },
     {
       "preorder_id": 4,
