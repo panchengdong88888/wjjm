@@ -489,3 +489,30 @@ local function make_helper_root_74(capturedUpvalues)
         capturedUpvalues[1] = newState
     end
 end
+
+
+-- 11.16 root/52/11：5条物理指令，0个显式参数，1个upvalue。
+-- 父级root/52槽位147以Opcode178创建childIndex=11闭包，captureCount=1；
+-- 槽位148 Opcode132读取父级H[2]并绑定到本闭包H[0]。
+-- 子函数Opcode45装载全局_G并融合槽位2读取H[0]；Opcode400读取H[0].LuaSendMsg，
+-- 并融合下一槽将其写入_G.LuaSendMsg。该闭包没有额外调用，随后Opcode339结束。
+-- root/52自身H[2]在更外层root中的来源尚未映射，故保留capturedUpvalue0占位。
+-- make_helper_root_52_11为原型路径合成定位名，不是原始函数符号名。
+local function make_helper_root_52_11(capturedUpvalue0)
+    _G.LuaSendMsg = capturedUpvalue0.LuaSendMsg
+end
+
+
+-- 11.16 root/52/28：7条物理指令，0个显式参数，1个upvalue。
+-- 父级root/52槽位556以Opcode178创建childIndex=28闭包，captureCount=1；
+-- 槽位557 Opcode132读取父级H[9]并绑定到本闭包H[0]。
+-- Opcode324读取H[0]；Opcode7将H[0].GATHER_THRESHOLD设为11，并融合槽位3装载全局InitGatherMonsters；
+-- Opcode123无参调用该全局函数；Opcode110写入一个未再使用的false临时值；
+-- Opcode292返回当前N[0]（仍为InitGatherMonsters函数值），Opcode205位于return之后。
+-- 父级root/52的H[9]在更外层root中的来源尚未映射；保留capturedUpvalue0占位。
+-- make_helper_root_52_28为原型路径合成定位名，不是原始函数符号名。
+local function make_helper_root_52_28(capturedUpvalue0)
+    capturedUpvalue0.GATHER_THRESHOLD = 11
+    InitGatherMonsters()
+    return InitGatherMonsters
+end
