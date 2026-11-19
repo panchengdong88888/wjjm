@@ -53,7 +53,7 @@
 | root/26 | ClearBlacklistItems | 是 | `ScheduleOnce` | 63 |
 | root/27 | 待识别 | 未确认 | — | 307 |
 | root/28 | 待识别 | 未确认 | `GetMetaValue` | 32 |
-| root/29 | 待识别 | 未确认 | — | 20 |
+| root/29 | ResetGatherMonsterData | 是 | `PrintLog` | 20 |
 | root/30 | Nested_find | 是 | `GetMetaValue` | 31 |
 | root/31 | FindBlacklistPlayer | 是 | `GetMetaValue` | 35 |
 | root/32 | make_helper_root_32（合成定位名） | 未确认 | — | 17 |
