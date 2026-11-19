@@ -4723,8 +4723,8 @@
           "status": "withdrawn_incorrect_dispatch_branch_attribution",
           "reason": "Opcode178在F()树中走L==178的闭包创建else叶；此前把后续L>178融合叶误归给Opcode178。"
         },
-        "status": "root/2 slots109-170 closure registration, pairs iteration, item gates, three name-filter calls and candidate-record construction reconstructed; slots1-108 still block whole-function recovery",
-        "next": "Close slots1-108: isDiuing state gate, GetDroppedItems return handling and 35-item early exit, creation/population of N[6]/N[7]/N[8], and exact source of N[5]=BAG_DATA; then integrate slots109-226.",
+        "status": "slots1-36 now reconstructed; slots37-108 (three name-list tables and population) remain unresolved; slots109-226 retain their separately audited local flow. root/2 is not yet a complete function.",
+        "next": "Analyze slots37-108 to recover exact construction and membership of N[6], N[7], N[8] name lists, then reconcile with closure captures at 109-114 and integrate the 120-170 item filter.",
         "slot_111_118_exact_fusion_trace_2026_11_19": {
           "status": "withdrawn_incorrect",
           "reason": "Opcode178并不消费槽位112–118；该指令创建childIndex=0闭包，仅消费槽位112作为唯一捕获描述符。"
@@ -4788,6 +4788,23 @@
             "Older section55 descriptions that assigned Lua-pattern matching to mode 2 and exact matching to the default branch are superseded; call sites show mode1=>N11 exact N8, mode2=>N10 exact N7, default=>N9 pattern N6."
           ],
           "next": "Close root/2 slots1-108: status gate, GetDroppedItems return handling and 35-item early exit, creation/population of N[6]/N[7]/N[8], and exact source of N[5]=BAG_DATA; then integrate 109-226."
+        },
+        "early_flow_reaudit_2026_11_19": {
+          "status": "slots1-36 decoded from original F() dispatch leaves and fused-slot behavior",
+          "slots": {
+            "11": "Opcode307 calls N[3] with no arguments and stores its first two return values in N[3] and N[4]. In business context these are the dropped-item snapshot and current ground-item count; exact return names remain external API semantics.",
+            "31": "Opcode209 invokes N[5](N[6],N[7]) and stores the result in N[5], equivalent to SL:GetMetaValue('BAG_DATA').",
+            "1-4": "Opcode73 consumes slots2-4: N[1]=N[0] (the sole function argument); N[2]=35; N[3]=H[0]; N[3]=N[3].isDiuing.",
+            "5-7": "Opcode340 tests truthiness of N[3] against false. If isDiuing is already true it skips slot6 and reaches slot7 return. If false it executes slot6 jump-to-7; interpreter's loop increment advances to slot8. Thus an already-running guard returns, otherwise execution continues.",
+            "8-10": "Opcode49 consumes slots9-10: N[3]=H[0]; N[3].isDiuing=true; N[3]=Z['GetDroppedItems'] (global function).",
+            "12-14": "Opcode366 checks whether N[4] is truthy; when false, slot14 sets N[4]=0. When true slot14 is skipped. This normalizes missing/falsy ground count to zero.",
+            "15-27": "Opcode226 tests N[2] <= N[4], i.e. 35 <= current ground-item count. If true it skips slot16's jump and builds the warning text from '地面物品(' + N[4] + ')超过上限(' + 35 + ')', calls H[1](message), sets H[0].isDiuing=false and returns. If false, slot16 jumps past the warning/return to slot28.",
+            "28-30": "Opcode361 consumes slots29-30: N[5]=Z['SL']; N[6]=N[5] (self); N[5]=N[5].GetMetaValue; N[7]='BAG_DATA'.",
+            "32-36": "Opcode325 tests truthiness of N[5]. If BAG_DATA exists, slot33 jumps over the missing-data return path and execution continues at slot37. If absent, slots34-35 set H[0].isDiuing=false and slot36 returns."
+          },
+          "confirmed_business": "Function parameter N[0] is copied to N[1] as the name-filter mode; the function sets isDiuing=true before querying GetDroppedItems; it enforces a 35-ground-item ceiling before querying BAG_DATA; missing BAG_DATA resets isDiuing and returns.",
+          "unresolved": "The exact public/API return naming of GetDroppedItems' two return values should remain tied to register roles until external API docs are consulted; slots37-108 construct the three name lists and remain under analysis.",
+          "evidence": "Original F() dispatch source: Opcode73 fused leaf around 1691xx; Opcode49 leaf in L<=50 branch around 1629xx; Opcode307 explicit call/multi-return leaf around 2074xx; Opcode226 comparison leaf around 1966xx; Opcode361 method-preparation leaf around 215xxx. All jumps include the interpreter's unconditional O=O+1 at loop tail."
         }
       },
       "decode_validation_reaudit_2026_11_19": "原始S()解析完整消费142522字节、162原型的结构结果仍是基准；本轮发现root/2槽位111–118融合载荷与当前候选字段解释无法组成一致寄存器链，需定点复核，未推翻已完成的其他原型。",
@@ -4806,8 +4823,8 @@
         ]
       },
       "instruction_capture_summary": "槽位109/110创建child1并捕获N[6]；槽位111/112创建child0并捕获N[7]；槽位113/114创建child2并捕获N[8]。槽位115–118初始化候选列表N[12]与pairs(N[5])迭代器。",
-      "business_summary": "已确认isDiuing状态门控、GetDroppedItems与地面物品35上限、SL:GetMetaValue('BAG_DATA')、三类名称筛选闭包、pairs(BAG_DATA)迭代及候选列表N[12]。槽位120–170筛选细节仍需闭合；尾段172–226已独立闭合。",
-      "warning": "不要把Opcode178归入L<=180融合叶。F()中L==178走闭包创建分支，消费K[4]=1个捕获描述符；槽位112捕获N[7]。槽位113 Opcode387独立创建child2并由槽位114捕获N[8]。"
+      "business_summary": "Confirmed: one-argument name-filter mode; isDiuing re-entry guard; GetDroppedItems call and two return registers; 35-item ground-item ceiling and warning; SL:GetMetaValue('BAG_DATA') read with missing-data reset. Name-list table construction slots37-108 still unresolved.",
+      "warning": "Do not count root/2 complete. Earlier control_flow_audit fields may contain superseded fusion hypotheses; use early_flow_reaudit_2026_11_19 and closure_and_pairs_reaudit_2026_11_19 as the current source of truth."
     }
   ],
   "constant_type_notes": {
