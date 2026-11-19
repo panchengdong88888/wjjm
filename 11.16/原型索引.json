@@ -2235,8 +2235,8 @@
           "unknown_type": 2
         }
       ],
-      "analysis_status": "分析中（业务控制流待闭合）",
-      "evidence_note": "11.16 root/33/0：已从原始F()分派器直接确认Opcode234执行N[A]=H[C]（读取upvalue），Opcode322执行N[A][K[3]]=K[4]（表字段写入）。本原型21个物理槽位、1个显式参数、6个upvalue、无子原型；已确认slot1-4涉及H[0].putoutTimer读取及真值分支，slot5-9准备SL:UnSchedule并传入捕获的putoutTimer，slot10-21仍需逐槽闭合融合/返回语义。官方API SL:UnSchedule(scheduleID)、SL:ShowSystemTips(str)已按3.40.x SL.md确认签名；不分析API内部。当前尚不能可靠写完整函数体，未新增明文。"
+      "analysis_status": "分析中（融合链部分闭合）",
+      "evidence_note": "root/33/0槽位10–21有限闭合更新：slot10 Opcode234= N[A]=H[C]；slot11 Opcode114融合消费slot12–14，不能把127/322/324当独立指令执行。slot15 Opcode64=N[A]=N[C]，本例N[2]=N[0]；slot16 Opcode123执行N[A](Y(N,A+1,C))，调用目标N[1]，参数打包边界仍需按Y辅助函数确认。slot17 Opcode210融合消费slot18–19：先装载全局SL，再取SL.ShowSystemTips方法，并将N[0]放入N[3]；slot20 Opcode128执行无返回值调用N[1](Y(N,2,3))，结合receiver N[2]与参数N[3]，确认是SL:ShowSystemTips(参数)。slot21 Opcode339为return结束。slot11融合体各中间寄存器/操作数语义仍未完整闭合；slot1–9分支条件/调用参数也未完全闭合，因此不写函数体。"
     },
     {
       "preorder_id": 50,
