@@ -385,3 +385,15 @@ local function make_helper_root_40_0(capturedJson)
         return SL:JsonDecode(capturedJson)
     end
 end
+
+
+-- 11.16 root/52/20：5条物理指令，0个显式参数，1个upvalue。
+-- 已由11.16原始载荷定点重解析闭合：读取H[0]并无参调用；随后返回true；尾部Opcode339结束。
+-- 父级root/52中H[0]的创建来源/业务变量名尚未映射，因此用capturedCallback显式承载捕获值，不伪造原始名称。
+-- make_helper_root_52_20为原型路径合成定位名；闭包体已恢复，但捕获来源未确认，不计入完整函数数。
+local function make_helper_root_52_20(capturedCallback)
+    return function()
+        capturedCallback()
+        return true
+    end
+end
