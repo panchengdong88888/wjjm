@@ -3781,7 +3781,7 @@
       "parameter_count": 0,
       "instruction_count": 18,
       "candidate_name": "make_helper_root_52_9（合成定位名）",
-      "identity_status": "闭包体已恢复；捕获身份待确认",
+      "identity_status": "闭包体已恢复；父级捕获符号身份待确认",
       "constants": [
         "blacklistTimer",
         11,
@@ -3789,8 +3789,8 @@
         "BlacklistItems",
         "开启黑名单功能，距离格子：%d"
       ],
-      "recovery_status": "partial_body_recovered_capture_identity_unresolved",
-      "recovery_note": "root/52槽位550 Opcode178创建childIndex=9闭包，captureCount=5；槽551–555依次捕获父H[6]/H[3]/H[7]/H[8]/H[0]。root槽位633创建root/52时对应root N[67]/N[3]/N[7]/N[62]/N[4]。子体闭合：H[0].distance=11；调用BlacklistItems()；调用H[2](BlacklistItems,H[3])并将返回值写入H[1].blacklistTimer；调用H[4](提示格式字符串,H[0].distance)；返回true。五个捕获值的业务身份未确认，按部分恢复计数。"
+      "recovery_status": "闭包体已写入唯一明文；捕获身份待确认，按部分恢复统计",
+      "recovery_note": "root/52槽位550 Opcode178创建childIndex=9闭包，captureCount=5；槽551–555依次捕获父H[6]/H[3]/H[7]/H[8]/H[0]。root槽位633创建root/52时对应root N[67]/N[3]/N[7]/N[62]/N[4]。子体闭合：H[0].distance=11；调用BlacklistItems()；调用H[2](BlacklistItems,H[3])并将返回值写入H[1].blacklistTimer；调用H[4](提示格式字符串,H[0].distance)；返回true。五个捕获值的业务身份未确认，按部分恢复计数。；闭合闭包体已写入唯一明文，捕获槽保留VM编号。"
     },
     {
       "preorder_id": 97,
@@ -3877,11 +3877,12 @@
       "parameter_count": 0,
       "instruction_count": 13,
       "candidate_name": "make_helper_root_52_13（合成定位名）",
-      "identity_status": "闭包体已恢复；H[0..2]父级捕获来源待确认",
+      "identity_status": "闭包体已恢复；父级捕获符号身份待确认",
       "constants": [
         "cruiseRunTimer"
       ],
-      "recovery_status": "13/13槽位分支闭合：读取H[0].cruiseRunTimer；真值调用H[1]并返回true，假值调用H[2]并返回true。父级捕获来源未确认，部分恢复不计完整函数。"
+      "recovery_status": "闭包体已写入唯一明文；捕获身份待确认，按部分恢复统计",
+      "recovery_note": "；闭合闭包体已写入唯一明文，捕获槽保留VM编号。"
     },
     {
       "preorder_id": 101,
@@ -4760,15 +4761,15 @@
       "parameter_count": 0,
       "instruction_count": 19,
       "candidate_name": "make_helper_root_52_36（合成定位名）",
-      "identity_status": "闭包体已恢复；捕获身份待确认",
+      "identity_status": "闭包体已恢复；父级捕获符号身份待确认",
       "constants": [
         "gatherTimer",
         "关闭引怪功能",
         "StopGatherMonsters",
         "开启引怪功能，阈值：11"
       ],
-      "recovery_status": "partial_body_recovered_capture_identity_unresolved",
-      "recovery_note": "root/52槽位605 Opcode387创建childIndex=36闭包，captureCount=3；槽606 Opcode132捕获父H[3]到子H[0]，槽607 Opcode132捕获父H[13]到子H[1]，槽608 Opcode243捕获父N[24]到子H[2]。root槽位633创建root/52时，H[3]=root N[3]、H[13]=root N[5]。子体逐槽闭合：检查H[0].gatherTimer；真值路径调用H[1](关闭提示)、全局StopGatherMonsters()并返回true；假值路径调用H[1](开启提示)、H[2]()并返回true。H[2]业务身份待确认，故计部分恢复。"
+      "recovery_status": "闭包体已写入唯一明文；捕获身份待确认，按部分恢复统计",
+      "recovery_note": "root/52槽位605 Opcode387创建childIndex=36闭包，captureCount=3；槽606 Opcode132捕获父H[3]到子H[0]，槽607 Opcode132捕获父H[13]到子H[1]，槽608 Opcode243捕获父N[24]到子H[2]。root槽位633创建root/52时，H[3]=root N[3]、H[13]=root N[5]。子体逐槽闭合：检查H[0].gatherTimer；真值路径调用H[1](关闭提示)、全局StopGatherMonsters()并返回true；假值路径调用H[1](开启提示)、H[2]()并返回true。H[2]业务身份待确认，故计部分恢复。；闭合闭包体已写入唯一明文，捕获槽保留VM编号。"
     },
     {
       "preorder_id": 130,
