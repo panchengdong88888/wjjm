@@ -1831,7 +1831,11 @@
       "instruction_count": 3,
       "candidate_name": null,
       "identity_status": "待识别",
-      "constants": []
+      "constants": [],
+      "byte_offsets": {
+        "prototype_start": 34024,
+        "prototype_end": 34064
+      }
     },
     {
       "preorder_id": 38,
@@ -1880,7 +1884,11 @@
       "instruction_count": 3,
       "candidate_name": null,
       "identity_status": "待识别",
-      "constants": []
+      "constants": [],
+      "byte_offsets": {
+        "prototype_start": 34709,
+        "prototype_end": 34749
+      }
     },
     {
       "preorder_id": 40,
@@ -2934,7 +2942,11 @@
       "constants": [
         "GUI",
         "Win_Close"
-      ]
+      ],
+      "byte_offsets": {
+        "prototype_start": 65721,
+        "prototype_end": 65801
+      }
     },
     {
       "preorder_id": 77,
@@ -3685,7 +3697,11 @@
       "constants": [
         "_G",
         "LuaSendMsg"
-      ]
+      ],
+      "byte_offsets": {
+        "prototype_start": 85478,
+        "prototype_end": 85558
+      }
     },
     {
       "preorder_id": 99,
@@ -4306,7 +4322,11 @@
         11,
         "InitGatherMonsters",
         "GATHER_THRESHOLD"
-      ]
+      ],
+      "byte_offsets": {
+        "prototype_start": 104702,
+        "prototype_end": 104831
+      }
     },
     {
       "preorder_id": 119,
