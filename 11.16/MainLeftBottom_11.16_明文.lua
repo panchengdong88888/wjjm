@@ -319,3 +319,36 @@ local function helper_root_5(arg1)
 
     return { x = x, y = y }
 end
+
+
+-- 11.16 root/2/0：13条物理指令；参数1；upvalue H[0]。
+-- Opcode 146/324/386装载ipairs与捕获表并建立迭代器；
+-- Opcode 250推进ipairs循环；Opcode 294比较参数与当前元素；
+-- 命中返回true，迭代结束返回false。
+-- 父级root/2的H[0]具体业务变量名尚未从父级闭包创建点确认。
+local function make_helper_root_2_0(capturedList)
+    return function(value)
+        for _, item in ipairs(capturedList) do
+            if value == item then
+                return true
+            end
+        end
+        return false
+    end
+end
+
+-- 11.16 root/2/2：13条物理指令；参数1；upvalue H[0]。
+-- Opcode 45融合装载ipairs与Opcode 234读取H[0]；
+-- Opcode 122与Opcode 250使用相同的迭代器推进分派逻辑；
+-- Opcode 294比较参数与当前元素；命中返回true，迭代结束返回false。
+-- 与root/2/0共享同一父原型的H[0]槽位；其业务变量名仍待父级映射。
+local function make_helper_root_2_2(capturedList)
+    return function(value)
+        for _, item in ipairs(capturedList) do
+            if value == item then
+                return true
+            end
+        end
+        return false
+    end
+end
