@@ -102,7 +102,7 @@ mode=%s
 94,root/52/8,root/52,2,,待识别,0,11,1,49,未恢复,DiuItems | dropMode | SL | 关闭丢全部物品 | 开启丢全部物品(模式1) | isDiuing | UnSchedule | dropTimer,,,2026-11-18
 95,root/52/8/0,root/52/8,3,,,待识别,0,2,0,5,未恢复,dropMode | DiuItems,,指令头需按16位字段重新解码；函数体待确认,,2026-11-18
 96,root/52/9,root/52,2,,待识别,0,5,0,18,未恢复,blacklistTimer | distance | BlacklistItems | 开启黑名单功能，距离格子：%d,,,2026-11-18
-97,root/52/10,root/52,2,,待识别,0,2,0,6,未恢复,ClearBlacklistItems | 清空黑名单,,,2026-11-18
+97,root/52/10,root/52,2,make_helper_root_52_10（捕获提示回调待映射）,闭包体已恢复；H[0]捕获来源待确认,0,2,0,6,部分恢复（不计完整函数）,ClearBlacklistItems | 清空黑名单,MainLeftBottom_11.16_明文.lua,root/52槽位617创建闭包并捕获父级H[0]；H[0]具体业务身份仍待root/52外层映射,2026-11-19
 98,root/52/11,root/52,2,,待识别,0,2,0,5,未恢复,_G | LuaSendMsg,,,2026-11-18
 99,root/52/12,root/52,2,closure_root_52_12（合成定位名）,行为已恢复,0,3,0,5,已写入明文,global | gameWorldController | OnGameLeaveWorld,MainLeftBottom_11.16_明文.lua,5条物理指令全部闭合；Opcode248融合全局加载/成员读取/方法准备，Opcode123调用，Opcode205结束；API文档未收录，按原始调用点恢复,2026-11-19
 100,root/52/13,root/52,2,,待识别,0,1,0,13,未恢复,cruiseRunTimer,,,2026-11-18
