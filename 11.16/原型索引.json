@@ -4874,8 +4874,8 @@
       "child_count": 1,
       "parameter_count": 0,
       "instruction_count": 10,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "PCallHelper_2",
+      "identity_status": "跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）",
       "constants": [
         "pcall"
       ]
@@ -5382,8 +5382,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 23,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "Nested_04d_02d_02d",
+      "identity_status": "跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）",
       "constants": [
         79200,
         "os",
