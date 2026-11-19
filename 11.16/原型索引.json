@@ -2814,8 +2814,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 26,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "checkGold",
+      "identity_status": "高置信候选（root/10引用checkGold；本原型含MoneyProxy/GetMoneyIdByName/GetMoneyCountById并查金币数量）",
       "constants": [
         "MoneyProxy",
         "GetMoneyCountById",
@@ -5024,8 +5024,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 60,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "backCity",
+      "identity_status": "高置信候选（root/27与root/54均引用backCity；本原型含QUICKUSE_DATA、盟重回城石、物品索引/数量查询及UseItemByIndex）",
       "constants": [
         "QUICKUSE_DATA",
         "GetMetaValue",
