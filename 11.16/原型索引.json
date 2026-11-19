@@ -2009,7 +2009,7 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 13,
-      "candidate_name": "make_helper_root_26_0（合成定位名）",
+      "candidate_name": "make_helper_root_26_0（合成定位名；旧版对应MakeRequestOutBlacklistCallback）",
       "identity_status": "闭包体已恢复（捕获来源待确认）",
       "constants": [
         "RequestOutBlacklist",
@@ -2019,7 +2019,9 @@
         },
         "SL"
       ],
-      "recovery_status": "13/13槽位控制流闭合：调用SL:RequestOutBlacklist(H[0])；若H[1]._blacklistData为真值，则将其[H[0]]设为nil。父级捕获来源未确认，部分恢复不计完整函数。"
+      "recovery_status": "部分恢复（闭包体已恢复；捕获角色可跨版本对应，父级捕获创建点未闭合）",
+      "notes": "本版13槽闭包体：SL:RequestOutBlacklist(H[0])；读取H[1]._blacklistData，字段存在时将[H[0]]置nil。按11.9同职责MakeRequestOutBlacklistCallback的工厂结构，明文表示为make_helper_root_26_0(itemKey, friendProxy)返回无参回调；本版父级捕获创建槽未保存，itemKey/friendProxy仅为跨版本角色名，非已证实本版局部符号名。",
+      "recovery_note": "本版13槽闭包体：SL:RequestOutBlacklist(H[0])；读取H[1]._blacklistData，字段存在时将[H[0]]置nil。按11.9同职责MakeRequestOutBlacklistCallback的工厂结构，明文表示为make_helper_root_26_0(itemKey, friendProxy)返回无参回调；本版父级捕获创建槽未保存，itemKey/friendProxy仅为跨版本角色名，非已证实本版局部符号名。"
     },
     {
       "preorder_id": 42,
