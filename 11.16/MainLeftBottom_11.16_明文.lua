@@ -555,3 +555,16 @@ local function make_helper_root_50_3(capturedWindow)
         GUI:Win_Close(capturedWindow)
     end
 end
+
+
+-- 11.16 root/65：18条物理指令，1个参数，无子原型、无upvalue捕获。
+-- Opcode 257加载string并融合读取find成员；Opcode 131复制输入参数并融合装载“盟重”和起始位置1；
+-- Opcode 110装载plain=true；Opcode 209调用string.find(value, "盟重", 1, true)。
+-- Opcode 366/388形成短路分支：找到“盟重”时跳过第二次查找并返回第一次结果；未找到时执行
+-- 第二次string.find(value, "土城", 1, true)。Opcode 11返回寄存器1，Opcode 339结束。
+-- 因此函数返回地图名称中“盟重”的首次字面匹配位置；若无匹配则返回“土城”的首次字面匹配位置，否则nil。
+-- 原型没有upvalue捕获，函数体、参数及控制流均已闭合；原始函数符号名未从注册点确认，使用合成定位名。
+local function helper_root_65(value)
+    return string.find(value, "盟重", 1, true)
+        or string.find(value, "土城", 1, true)
+end
