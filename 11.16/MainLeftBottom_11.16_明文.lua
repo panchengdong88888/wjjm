@@ -734,3 +734,32 @@ local function make_helper_root_33_0(capturedUpvalues)
         SL:ShowSystemTips(message)
     end
 end
+
+
+-- 11.16 root/3：StopGatherMonsters（高置信候选），25条物理指令、0个显式参数。
+-- 全部25槽均有效；slot5/6条件路径在slot14汇合。
+-- slot1/2将H[0]置为false；slot3/4读取H[1].gatherTimer。
+-- timer存在时，slot7/8准备SL:UnSchedule，slot9/10读取timer，
+-- slot11调用SL:UnSchedule(timer)，slot12/13将H[1].gatherTimer清空为nil。
+-- timer不存在时，slot6跳转到slot14，跳过取消定时器部分。
+-- 公共尾段依次调用H[2]()、H[3](H[4].IDLE)、H[5](),
+-- H[6]("引怪功能已停止")，最后结束。
+-- 父级root闭包创建时H[1]–H[6]的业务变量身份尚未映射；
+-- 以下capturedUpvalues[n]仅表示VM捕获槽，不冒充原始局部变量名。
+-- SL:UnSchedule按已核实的3.40.x官方API直接调用，不分析其内部实现。
+local function make_helper_root_3(capturedUpvalues)
+    capturedUpvalues[0] = false
+
+    local gatherState = capturedUpvalues[1]
+    local gatherTimer = gatherState.gatherTimer
+
+    if gatherTimer then
+        SL:UnSchedule(gatherTimer)
+        gatherState.gatherTimer = nil
+    end
+
+    capturedUpvalues[2]()
+    capturedUpvalues[3](capturedUpvalues[4].IDLE)
+    capturedUpvalues[5]()
+    capturedUpvalues[6]("引怪功能已停止")
+end
