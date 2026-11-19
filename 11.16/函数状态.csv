@@ -37,7 +37,7 @@
 34,root/24,root,1,GetMapId,本轮已恢复,0,4,0,9,已写入明文,MAP_ID | SL | GetMetaValue,MainLeftBottom_11.16_明文.lua,,2026-11-18
 35,root/25,root,1,,待识别,0,7,1,33,未恢复,Schedule | SL | 开启见人跑 | UnSchedule | cruiseRunTimer,,,2026-11-18
 36,root/25/0,root/25,2,,待识别,0,104,3,598,未恢复,cruiseGatherPaused | 附近没有玩家，恢复战斗 | 见人跑: %s(%d格)，向%d方向移动%d步 | SetTargetID | MMO | ClearTarget |  | retrieveProxy | ipairs | p,,,2026-11-18
-37,root/25/0/0,root/25/0,3,,待识别,0,0,0,3,闭包体已静态恢复（待捕获映射）,；完整指令已由两阶段解析器提取；Opcode110置false，Opcode162写H[0]=false，Opcode205结束,,父级root/25/0中尚未找到childIndex=0创建点；H[0]源寄存器/真实变量名待确认，不计完整,2026-11-19
+37,root/25/0/0,root/25/0,3,,待识别,0,0,0,3,部分恢复（闭包体已恢复，捕获待确认）,完整指令已由两阶段解析器提取；Opcode110置false，Opcode162写H[0]=false，Opcode205结束,,父级root/25/0中尚未找到childIndex=0创建点；H[0]源寄存器/真实变量名待确认，不计完整,2026-11-19
 38,root/25/0/1,root/25/0,3,,待识别,0,22,0,38,未恢复,GetMainPlayer | type | GetMapY | GetMetaValue | NoticeTable | x | INPUT_MOVE_TYPE_JOYSTICK | sendNotification | global | SL,,,2026-11-18
 39,root/25/0/2,root/25/0,3,,待识别,0,0,0,3,指令已提取，语义待确认,；两阶段解析器已提取3条完整物理指令；Opcode110、62、339,,Opcode62语义未映射；父级创建点及捕获身份待确认,2026-11-19
 40,root/26,root,1,,待识别,0,17,1,63,未恢复,取不到好友代理，清空失败 | pairs | lastAttacker | ScheduleOnce | 黑名单为空 | 清空黑名单失败 | ipairs | SL |  人 | 开始清空黑名单，共 %d 人,,,2026-11-18
