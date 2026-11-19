@@ -672,3 +672,38 @@ local function helper_root_42()
         global.MMO.SELETE_TARGET_TYPE_FIND
     )
 end
+
+
+-- 11.16 root/60：21条物理指令，0个显式参数，6个upvalue捕获。
+-- slot1 Opcode324读取H[0]；slot2 Opcode325判断其真值。
+-- H[0]为假时slot3跳转被slot4 Opcode339结束路径截断；H[0]为真时跳过结束槽继续。
+-- slot5 Opcode213清空N[0]；slot6 Opcode397将N[0]写回H[0]，即消费该捕获状态并置为nil。
+-- slot7–12由Opcode411融合链完成global.Facade读取、retrieveProxy方法准备，
+-- 以及global.ProxyTable.PlayerInputProxy参数读取；slot13调用retrieveProxy。
+-- slot14 Opcode289检查代理对象；代理不存在时slot15跳至函数末尾。
+-- slot16 Opcode274读取ClearAttackTargetID成员；slot17 Opcode289检查该成员，
+-- 不存在时slot18跳至函数末尾；存在时slot19 Opcode393准备方法和receiver，
+-- slot20 Opcode123无参调用，等价于playerInputProxy:ClearAttackTargetID()。
+-- 六个upvalue中，本函数实际读写H[0]；其父级root捕获创建点/业务身份未保存在当前索引中，
+-- 因此用capturedUpvalues[0]显式表示共享槽位，不猜测它的业务名称，按部分恢复统计。
+-- helper_root_60为按原型路径生成的合成定位名，不代表原始Lua符号名。
+local function make_helper_root_60(capturedUpvalues)
+    return function()
+        if not capturedUpvalues[0] then
+            return
+        end
+
+        capturedUpvalues[0] = nil
+
+        local playerInputProxy =
+            global.Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)
+
+        if not playerInputProxy then
+            return
+        end
+
+        if playerInputProxy.ClearAttackTargetID then
+            playerInputProxy:ClearAttackTargetID()
+        end
+    end
+end
