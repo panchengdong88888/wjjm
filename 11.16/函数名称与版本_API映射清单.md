@@ -13,7 +13,7 @@
 ## 2. 数量和判定口径
 
 - root直接子原型：81个。
-- 原型索引中已有候选名称：54个（含本轮新增24个跨版本候选）；仍待识别：27个。
+- 原型索引中已有候选名称：56个（含本轮新增26个跨版本候选）；仍待识别：25个。
 - 与11.2函数声明同名的root候选：17个。
 - 当前11.16明文与11.2明文已有的精确函数声明名交集：13个。精确交集：`GetMapId`、`GetMapName`、`GetMainPlayerID`、`IsDie`、`PlayerPos`、`GetOwnerID`、`GetDroppedItems`、`ShowLocalNoticeByType`、`FindMonsterInCurrViewField`、`MoveItemToQuickUse`、`DistanceCalculation`、`FindMonsterCandidates`、`InitGatherMonsters`。
 - “11.2同名”只表示名称线索，不自动证明业务实现相同；必须再核对常量、参数、调用形状和本版差异。
@@ -80,7 +80,7 @@
 | root/53 | helper_root_53（合成定位名） | 未确认 | — | 15 |
 | root/54 | 待识别 | 未确认 | `UnSchedule` | 56 |
 | root/55 | Builtsetting（扩展范围待确认） | 是 | `GetMetaValue`、`SetMetaValue`、`RequestChangePKMode` | 195 |
-| root/56 | 待识别 | 未确认 | — | 10 |
+| root/56 | PCallHelper_2 | 是 | — | 10 |
 | root/57 | 待识别 | 未确认 | — | 60 |
 | root/58 | TakeItems | 是 | — | 99 |
 | root/59 | 待识别 | 未确认 | `UnSchedule`、`ShowSystemTips` | 44 |
@@ -97,7 +97,7 @@
 | root/70 | helper_root_70（合成定位名） | 未确认 | `GetMetaValue` | 19 |
 | root/71 | DeathAutoBlacklist | 是 | `ScheduleOnce` | 47 |
 | root/72 | 待识别 | 未确认 | `GetMetaValue` | 32 |
-| root/73 | 待识别 | 未确认 | — | 23 |
+| root/73 | Nested_04d_02d_02d | 是 | — | 23 |
 | root/74 | helper_root_74（合成定位名） | 未确认 | — | 10 |
 | root/75 | FindMonsterCandidates | 是 | `FindMonsterInCurrViewField` | 102 |
 | root/76 | 待识别 | 未确认 | `GetMetaValue` | 25 |
@@ -150,7 +150,7 @@
 ## 6. 当前结论与下一步
 
 1. 11.2明文已完整读取，不是只读取函数名；本轮建立了函数声明名称基线。
-2. 11.16当前原型索引已有54个root候选名（其中24个是本轮跨版本高置信候选），剩余27个root原型尚未有可靠函数名。不得用常量猜成确定名称。
+2. 11.16当前原型索引已有56个root候选名（其中26个是本轮跨版本高置信候选），剩余25个root原型尚未有可靠函数名。不得用常量猜成确定名称。
 3. 下一步先用11.2明文中对应函数的结构、常量与调用关系，为这51个待识别项建立候选映射；再用3.40.x文档剔除官方API调用，避免把框架API误当作项目自定义函数。
 4. 11.9继续作为独立版本只读对照，不能把11.9差异或实现直接标成11.2证据，也不能覆盖11.16原始证据。
 5. 本清单是名称/版本/API索引，不替代唯一明文源码，也不改变原型恢复计数。原始Lua保持只读。
@@ -223,3 +223,15 @@
 | root/67 | ShowHideAllButtons | hidebut、GUI、setVisible、UnSchedule、cruiseTimer、rewardTimer等，与旧版关闭/隐藏全部按钮并清理定时器一致 |
 
 这4项仍是跨版本候选名，不表示11.16函数体已恢复。至此81个root原型中，54个已有候选名称，27个仍待识别。root/9冲突项继续保留待复核标记。
+
+
+## 11. 第三批补充名称候选
+
+继续核对11.2函数体后，新增并同步到原型索引与函数状态表：
+
+| 原型 | 候选名称 | 匹配依据 |
+|---|---|---|
+| root/56 | PCallHelper_2 | 本版含pcall且有1个子闭包；子闭包读取Facade/ProxyTable/FriendProxy并返回代理对象，与11.2的安全获取好友代理辅助函数结构吻合 |
+| root/73 | Nested_04d_02d_02d | os/date/*t*/hour/min/sec及79200、72000等时间常量，与11.2的22:00:05定时触发回调闭包一致 |
+
+至此81个root原型中56个已有候选名称，25个仍待识别。以上仅确认名称/职责候选，不将它们计为明文恢复。
