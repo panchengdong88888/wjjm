@@ -5085,7 +5085,7 @@
       "parameter_count": 0,
       "instruction_count": 33,
       "candidate_name": "UseItemByIndex",
-      "identity_status": "跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "跨版本业务体已恢复；父级捕获/注册关系待确认",
       "constants": [
         0,
         "ipairs",
@@ -5095,7 +5095,10 @@
         "SL",
         "ITEM_COUNT",
         "tonumber"
-      ]
+      ],
+      "recovery_status": "部分恢复（闭包体已写入唯一明文，不计完整函数）",
+      "notes": "33条指令、0显式参数、8项常量；闭包主体按11.9同名实现恢复：遍历捕获的随机传送物品名称，查询ITEM_INDEX_BY_NAME和ITEM_COUNT，找到首件数量大于0的道具后SL:UseItemByIndex并返回名称。11.16父级创建/捕获点尚未取得，名称表来源未确认。",
+      "recovery_note": "33条指令、0显式参数、8项常量；闭包主体按11.9同名实现恢复：遍历捕获的随机传送物品名称，查询ITEM_INDEX_BY_NAME和ITEM_COUNT，找到首件数量大于0的道具后SL:UseItemByIndex并返回名称。11.16父级创建/捕获点尚未取得，名称表来源未确认。"
     },
     {
       "preorder_id": 141,
