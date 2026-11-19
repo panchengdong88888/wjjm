@@ -24,7 +24,7 @@
 22,root/15/1,root/15,2,,待识别,0,25,0,121,未恢复,OverLap | 上架结束：总价超出上限 | pairs | SL | MakeIndex | ITEM_IS_BIND | AUCTION_BIDPRICE_MAX | tonumber | GetMetaValue | RequestAuctionPutin,,,2026-11-18
 23,root/16,root,1,SetButtonVisibilityState,跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）,0,6,0,25,未恢复,infoBg | pairs | setVisible | GUI | isHidden,,,2026-11-18
 24,root/17,root,1,GetAvailableStoragePage,跨版本业务复用（11.2同名函数体与11.16常量/签名吻合；未逐槽模拟）,0,12,0,51,已写入明文（跨版本业务复用；非指令级完整还原）,11.16 root/17：0参数、51条指令；NPCStorageProxy、GetMaxPage、GetStorageDataByPage、GetOpenSize、GUIDefine.STORAGE_PER_PAGE_MAX、NPC_STORAGE_MAX_PAGE等常量与11.2同名函数一致。跨版本复用，未逐槽模拟。,MainLeftBottom_11.16_明文.lua：GetAvailableStoragePage,本版指令未逐槽核验；出现行为差异时定点复查,2026-11-19
-25,root/18,root,1,,待识别,0,8,0,34,未恢复,"FileUtilCtl | ([%w_]+)=([^
+25,root/18,root,1,,职责已缩小；函数名待识别,0,8,0,34,未恢复,读取可写目录中的配置文件，并按key=value格式解析文本；常量FileUtilCtl、getWritablePath、isFileExist、getDataFromFileEx、gmatch及匹配式([%w_]+)=([^\r\n]*)共同支持该职责。,,函数声明名未确认；不能仅因业务像读取配置就命名ReadConfig。
 ]*) | string | global | gmatch | getWritablePath | isFileExist | getDataFromFileEx",,,2026-11-18
 26,root/19,root,1,AccountIDValidation,跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）,0,21,2,64,未恢复,GAME_ID | Schedule | 6324648 | GetMetaValue | 1957840929 | 1304755149 | 39770358 | UID | 3548598 | [验证成功] 账号ID验证通过,,,2026-11-18
 27,root/19/0,root/19,2,,待识别,0,8,0,24,未恢复,doInit | 等待主界面属性栏(MainProperty)初始化完成... | UnSchedule | _ui | SL | MainProperty | MainLeftBottom | Panel_mini_chat,,,2026-11-18
@@ -64,7 +64,7 @@
 61,root/43,root,1,PickUpItems,候选身份（11.2同名PickUpItems为空函数；11.16拾取业务常量吻合，视为新版扩展候选）,0,34,2,172,未恢复,MoveTo | mCurrMapX | y | ipairs | x | mCurrMapY | dist | 地面无可拾取物品 | sort | find,,,2026-11-18
 62,root/43/0,root/43,2,,待识别,2,2,0,19,未恢复,kIdx | dist,,,2026-11-18
 63,root/43/1,root/43,2,closure_root_43_1,匿名闭包（行为已恢复）,2,1,0,8,已写入明文,dist,MainLeftBottom_11.16_明文.lua,比较两个对象的dist字段：当a.dist小于b.dist时返回false，否则返回true（a.dist >= b.dist）,2026-11-18
-64,root/44,root,1,,待识别,3,10,0,29,未恢复,"tostring | string | FileUtilCtl | 0 | writeStringToFile | 1 | global | getWritablePath | price=%s
+64,root/44,root,1,,职责已缩小；函数名待识别,3,10,0,29,未恢复,将三个参数组织成price/name/mode格式文本，并调用FileUtilCtl.writeStringToFile写入可写目录；格式串为price=%s、name=%s、mode=%s。,,函数声明名及三个参数的确切语义/文件名尚未确认；不按职责猜命名。
 name=%s
 mode=%s
  | format",,,2026-11-18
@@ -157,12 +157,12 @@ mode=%s
 149,root/70,root,1,helper_root_70（合成定位名）,行为已恢复,0,7,0,19,已写入明文,Y | SL | X | GetMetaValue | x | y,MainLeftBottom_11.16_明文.lua,19条物理指令全部闭合；root槽位189 Opcode121创建且captureCount=0；Opcode361/309/355融合链、Opcode325真值分支、Opcode279表创建、Opcode292返回已确认；SL.md示例核实GetMetaValue调用形式,2026-11-19
 150,root/71,root,1,DeathAutoBlacklist,高置信候选,0,15,1,47,未恢复,凶手已在黑名单中：%s | 自动拉黑： | name | SL | id | lastAttacker |  | 被 %s 击杀，自动加入黑名单 | 本次死亡没记录到凶手，跳过自动拉黑 | ScheduleOnce,,,2026-11-18
 151,root/71/0,root/71,2,closure_root_71_0,匿名闭包（行为已恢复）,0,3,0,6,已写入明文,SL | name | RequestAddBlacklistByName,MainLeftBottom_11.16_明文.lua,6条指令：SL方法调用准备；Opcode 9/410读取全局name；调用RequestAddBlacklistByName(name),2026-11-18
-152,root/72,root,1,,待识别,1,8,0,32,未恢复,find | GetMetaValue | string | Name | pairs | SL | ALL_EQUIP_DATAS,,,2026-11-18
+152,root/72,root,1,,职责已缩小；函数名待识别,1,8,0,32,未恢复,接收一个参数，遍历SL:GetMetaValue('ALL_EQUIP_DATAS')并对装备Name字段执行string.find，属于按名称片段检索装备数据的辅助函数。,,函数声明名与返回数据形态未确认；候选名保持空值。,2026-11-18
 153,root/73,root,1,Nested_04d_02d_02d,跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）,0,10,0,23,指令已提取，待语义闭合,11.16原始载荷定点解析；偏移131449-131753；23物理槽位，23条有效指令,,,2026-11-19
 154,root/74,root,1,helper_root_74（合成定位名）,行为已恢复；原始符号名及捕获身份待确认,1,3,0,10,部分恢复（不计完整函数）,format | 状态切换: %s -> %s | string | Opcode264固定参数调用并收集返回值 | Opcode376可变参数调用 | Opcode62写回H[1],MainLeftBottom_11.16_明文.lua,root层闭包创建点未保存；H[0]既作为format第一个参数又作为可调用目标；H[1]接收新状态；真实词法变量名待确认,2026-11-19
 155,root/75,root,1,FindMonsterCandidates,高置信候选,0,19,1,102,已写入明文（跨版本业务复用；排序方向按11.16闭包修正）,SETTING_IDX_IGNORE_MONSTER | GET_SETTING | insert | MMO | SL | 未知怪物 | GetName | ipairs | sort | FindMonsterInCurrViewField,MainLeftBottom_11.16_明文.lua：FindMonsterCandidates,11.2/11.9主体复用；11.16闭包a._distance >= b._distance；保留本原型true,true调用,2026-11-19
 156,root/75/0,root/75,2,closure_root_75_0,匿名闭包（行为已恢复）,2,1,0,8,已写入明文,_distance,MainLeftBottom_11.16_明文.lua,8条物理指令：读取两个参数的_distance字段；Opcode 226按小于关系分支；Opcode 388跳过false赋值分支；最终返回a._distance >= b._distance,2026-11-18
-157,root/76,root,1,,待识别,0,8,0,25,未恢复,AUCTION_MONEY | 元宝 | SL | GetMetaValue | ipairs | name | id,,,2026-11-18
+157,root/76,root,1,,职责已缩小；函数名待识别,0,8,0,25,未恢复,读取SL:GetMetaValue('AUCTION_MONEY')，遍历含name/id字段的配置项，并与“元宝”名称相关联；属于拍卖货币配置查询。,,函数声明名、是否返回id或配置项尚未由完整指令流确认。,2026-11-18
 158,root/77,root,1,GetMainPlayerID,本轮已恢复,0,3,0,6,已写入明文,gamePlayerController | GetMainPlayerID | global,MainLeftBottom_11.16_明文.lua,,2026-11-18
 159,root/78,root,1,Schedule,跨版本高置信候选（11.2包装函数与11.16 SL方法调用形状吻合；本体为官方API包装）,2,2,0,7,已写入明文,SL | Schedule | Opcode 369融合方法准备与两个参数寄存器移动；Opcode 202直接返回调用结果,MainLeftBottom_11.16_明文.lua,原始符号名未确认；return后的尾部槽位不可达,2026-11-18
 160,root/79,root,1,forgeZodiac,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,48,0,212,未恢复,SL |  第 | checkGold | forge | len | format | clickNpc | 生肖锻造未完成，已尝试200次 | Name | LuaSendMsg,,,2026-11-18
