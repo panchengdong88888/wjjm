@@ -4501,7 +4501,7 @@
       },
       "instruction_capture_summary": "槽位1-36、37-108、109-118、120-170及172-226均已有分段恢复记录；本轮闭合三组名称表及融合载荷边界。最终整合前仍需统一CFG并确认H[0]/H[1]父级捕获身份。",
       "business_summary": "按参数模式筛选背包物品并丢弃：重入保护、获取地面物品数并限制35件、读取BAG_DATA、建立三组物品名称规则、排除无效/绑定物品、按三种规则筛选，收集makeIndex/count/name候选，再逐项发送MSG_CS_MAP_ITEM_DISCARD并汇总提示。",
-      "warning": "本轮已统一闭合226槽位CFG。H[0]为维护isDiuing状态的对象，H[1]为提示回调；二者父级root捕获来源尚未确认，不得编造具体局部变量名。唯一明文Lua仍未写入root/2，直到用户接受/父级映射闭合或采用显式upvalue占位规则。",
+      "warning": "226槽位的局部分析不能替代父原型闭包创建证据。当前11.16候选提取仅含19个非root原型；重点原型记录仅含7个原型；原型索引只保存root元数据和常量，不含654条root指令。不得使用旧版110原型/5580指令资料推断11.16捕获映射。",
       "name_table_construction_reaudit_2026_11_19": {
         "evidence": "11.16原版F()分派器对应Opcode199、30、38、41分支；候选JSON槽位37–108逐字段复核",
         "table_registers": {
@@ -4865,6 +4865,78 @@
         },
         "message_call": "LuaSendMsg(global.MsgType.MSG_CS_MAP_ITEM_DISCARD, item.makeIndex, item.count, 0, 0, item.name, string.len(item.name), item.name)",
         "conclusion": "root/2的局部寄存器数据流、三个子闭包、两个泛型for循环、所有条件分支、早退及汇总路径已闭合。只剩H[0]/H[1]在父原型root中的来源/业务身份映射；保留为显式上值占位，不猜变量名。"
+      },
+      "parent_capture_lookup_2026_11_19": {
+        "status": "blocked_missing_current_version_parent_instruction_stream",
+        "confirmed_parent_metadata": {
+          "root_instruction_count": 654,
+          "root_direct_children": 81,
+          "root_constant_count": 202
+        },
+        "available_current_version_artifacts": {
+          "candidate_instruction_extract": {
+            "prototype_count": 19,
+            "paths": [
+              "root/2/0",
+              "root/2/1",
+              "root/2/2",
+              "root/13/0",
+              "root/26/0",
+              "root/40/0",
+              "root/52/10",
+              "root/52/13",
+              "root/53",
+              "root/74",
+              "root/52/12",
+              "root/52/4",
+              "root/56/0",
+              "root/23/0",
+              "root/52/21",
+              "root/70",
+              "root/69",
+              "root/5",
+              "root/2"
+            ],
+            "includes_root": false
+          },
+          "focused_instruction_record": {
+            "path": "11.16/重点原型指令记录.json",
+            "prototype_count": 7,
+            "paths": [
+              "root/3",
+              "root/7",
+              "root/8",
+              "root/9",
+              "root/20",
+              "root/23",
+              "root/80"
+            ],
+            "includes_root": false
+          },
+          "prototype_index": {
+            "path": "11.16/原型索引.json",
+            "includes_root_metadata": true,
+            "includes_root_instruction_stream": false
+          }
+        },
+        "rejected_cross_version_artifacts": {
+          "reason": "不得将11月8日旧版110原型/5580指令数据用于11.16。",
+          "examples": [
+            "MainLeftBottom_全量Lua源码草稿_第二遍.lua（110原型旧项目）",
+            "MainLeftBottom_vm_disassembly_corrected_phase3.txt（旧项目）",
+            "01_原始资料校验与总账.md（旧项目）"
+          ]
+        },
+        "current_root_constants_relevant": [
+          "DiuItems",
+          "isDiuing",
+          "SL",
+          "GetDroppedItems",
+          "MainLeftBottom"
+        ],
+        "interpretation": "这些常量只能支持业务线索，不能证明root/2的H[0]/H[1]具体捕获源寄存器。",
+        "next": "定位或恢复11.16当前版本root原型654条指令的原始结构记录/反汇编；优先查现存ChatGPT文件库和GitHub 11.16目录。若不存在，应先明确记录缺失，再由用户提供已有解析产物；不得套用旧版本或猜寄存器。",
+        "conclusion": "本轮未确认H[0]/H[1]的父级源寄存器。"
       }
     }
   ],
