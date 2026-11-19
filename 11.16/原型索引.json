@@ -4999,8 +4999,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 21,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "helper_root_60",
+      "identity_status": "闭包体行为已恢复；H[0]捕获来源待确认",
       "constants": [
         "PlayerInputProxy",
         "ClearAttackTargetID",
@@ -5008,7 +5008,10 @@
         "retrieveProxy",
         "ProxyTable",
         "Facade"
-      ]
+      ],
+      "upvalue_count": 6,
+      "recovery_status": "部分恢复（闭包体已恢复，捕获来源待确认）",
+      "recovery_notes": "21个物理槽位已闭合。H[0]为一次性状态门控：真值时清空并写回nil；随后获取PlayerInputProxy，代理及ClearAttackTargetID成员存在时无参调用。当前未保存root父级654槽指令流及该闭包创建点，故不猜测H[0]业务名称。其余5个捕获槽未在本函数指令中读取。"
     },
     {
       "preorder_id": 139,
