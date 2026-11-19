@@ -4729,14 +4729,16 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 19,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_52_36（合成定位名）",
+      "identity_status": "闭包体行为已恢复；H[0]/H[1]捕获链已映射到root N[3]/N[5]，H[2]来源为root/52 N[24]但业务身份待确认",
       "constants": [
         "gatherTimer",
         "关闭引怪功能",
         "StopGatherMonsters",
         "开启引怪功能，阈值：11"
-      ]
+      ],
+      "recovery_status": "partial_body_recovered_capture_identity_unresolved",
+      "recovery_note": "root/52槽位605 Opcode387创建childIndex=36闭包，captureCount=3；槽606 Opcode132捕获父H[3]到子H[0]，槽607 Opcode132捕获父H[13]到子H[1]，槽608 Opcode243捕获父N[24]到子H[2]。root槽位633创建root/52时，H[3]=root N[3]、H[13]=root N[5]。子体逐槽闭合：检查H[0].gatherTimer；真值路径调用H[1](关闭提示)、全局StopGatherMonsters()并返回true；假值路径调用H[1](开启提示)、H[2]()并返回true。H[2]业务身份待确认，故计部分恢复。"
     },
     {
       "preorder_id": 130,
