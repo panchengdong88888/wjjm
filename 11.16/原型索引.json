@@ -3712,11 +3712,12 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 13,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_52_13（合成定位名）",
+      "identity_status": "闭包体已恢复；H[0..2]父级捕获来源待确认",
       "constants": [
         "cruiseRunTimer"
-      ]
+      ],
+      "recovery_status": "13/13槽位分支闭合：读取H[0].cruiseRunTimer；真值调用H[1]并返回true，假值调用H[2]并返回true。父级捕获来源未确认，部分恢复不计完整函数。"
     },
     {
       "preorder_id": 101,
