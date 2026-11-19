@@ -997,3 +997,93 @@ function ResetGatherMonsterData()
     resetSlot22 = ""
     PrintLog("数据已重置")
 end
+
+-- 11.16 root/17：GetAvailableStoragePage（51条指令；跨版本业务复用）。
+-- 本版常量包含仓库代理、分页数据、开放格数及每页容量配置，与11.2同名实现吻合。
+function GetAvailableStoragePage()
+    local storageProxy = NPCStorageProxy
+    if not storageProxy then
+        PrintLog("仓库代理未初始化")
+        return
+    end
+
+    local maxPage = storageProxy:GetMaxPage()
+    for page = 1, maxPage do
+        local pageData = storageProxy:GetStorageDataByPage(page)
+        local currentCount = pageData and #pageData or 0
+        local pageCapacity = GUIDefine.STORAGE_PER_PAGE_MAX
+        if not pageCapacity then
+            pageCapacity = global.MMO.NPC_STORAGE_MAX_PAGE
+        end
+        local openSize = storageProxy:GetOpenSize()
+        local remainingOpenSize = openSize - (page - 1) * pageCapacity
+        local pageLimit = remainingOpenSize
+        if pageCapacity < remainingOpenSize then
+            pageLimit = pageCapacity
+        end
+        if pageLimit > 0 and pageLimit > currentCount then
+            return page
+        end
+    end
+    return
+end
+
+-- 11.16 root/36：GetStorageItemData（77条指令；跨版本业务复用）。
+-- 本版常量包含分页仓库代理、容量配置、可用格数提示，与11.2同名实现吻合。
+function GetStorageItemData()
+    local storageItems = {}
+    local storageProxy = NPCStorageProxy
+    if not storageProxy then
+        return storageItems
+    end
+
+    local maxPage = storageProxy:GetMaxPage()
+    local availableSlots = 0
+    for page = 1, maxPage do
+        local pageData = storageProxy:GetStorageDataByPage(page)
+        if type(pageData) == "table" then
+            for _, item in ipairs(pageData) do
+                table.insert(storageItems, item)
+            end
+        end
+
+        local pageItemCount = pageData and #pageData or 0
+        local perPageMax = GUIDefine.STORAGE_PER_PAGE_MAX
+        if not perPageMax then
+            perPageMax = global.MMO.NPC_STORAGE_MAX_PAGE
+        end
+        local openSize = storageProxy:GetOpenSize()
+        local pageLimit = openSize - (page - 1) * perPageMax
+        if pageLimit > perPageMax then
+            pageLimit = perPageMax
+        end
+        if pageLimit > 0 then
+            availableSlots = availableSlots + (pageLimit - pageItemCount)
+        end
+    end
+
+    PrintLog("仓库总可用格子: " .. tostring(availableSlots))
+    return storageItems
+end
+
+-- 11.16 root/51：PrintLog（38条指令；跨版本业务复用）。
+-- 本版常量包含select/type/#/pcall/format/tostring/string/SL/Print/dump，
+-- 与11.2同名函数结构吻合；保留原版对SL.Print的存在性检查，不擅自补造输出调用。
+function PrintLog(value, ...)
+    if type(value) == "table" then
+        SL.dump(value, "【超本】")
+        return
+    end
+
+    local message = tostring(value)
+    if select("#", ...) > 0 then
+        local ok, formatted = pcall(string.format, message, ...)
+        if ok and formatted then
+            message = formatted
+        end
+    end
+
+    if SL and SL.Print then
+        -- 原函数仅检查SL.Print是否存在，没有对应的Print调用指令。
+    end
+end
