@@ -541,3 +541,17 @@ local function make_helper_root_25_0_2(capturedUpvalues)
         capturedUpvalues[0] = false
     end
 end
+
+
+-- 11.16 root/50/3：5条物理指令，0个显式参数，1个upvalue。
+-- 父级root/50槽位441以Opcode387创建childIndex=3闭包，槽位442 Opcode243
+-- 将父级N[7]捕获到本闭包H[0]。Opcode253/138准备GUI.Win_Close方法调用：
+-- N[1]保存GUI receiver，N[0]保存GUI.Win_Close；Opcode324将H[0]放入N[2]；
+-- Opcode123按N[1]..N[2]作为参数区间调用，因此等价于GUI:Win_Close(H[0])。
+-- 先前“调用参数区间1..0、H[0]未使用”的判断已纠正；实际B=2，捕获值是调用参数。
+-- 父级N[7]的真实词法变量名/业务身份尚未确认，以下保留显式占位，不计入完整函数数。
+local function make_helper_root_50_3(capturedWindow)
+    return function()
+        GUI:Win_Close(capturedWindow)
+    end
+end
