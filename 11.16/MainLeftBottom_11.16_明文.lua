@@ -496,7 +496,7 @@ end
 -- 槽位148 Opcode132读取父级H[2]并绑定到本闭包H[0]。
 -- 子函数Opcode45装载全局_G并融合槽位2读取H[0]；Opcode400读取H[0].LuaSendMsg，
 -- 并融合下一槽将其写入_G.LuaSendMsg。该闭包没有额外调用，随后Opcode339结束。
--- root/52自身H[2]已追到root槽526创建childIndex=25的相邻另一闭包不相关；本闭包对应root槽633创建childIndex=52时的第3个捕获，来源为root N[0]。N[0]具备主模块状态表特征，但原始变量名未证实，故保留capturedUpvalue0占位。
+-- root/52自身H[2]的外层来源已追到root槽633创建childIndex=52时的第3个捕获，来源为root N[0]。N[0]具备主模块状态表特征，但原始变量名未证实，故保留capturedUpvalue0占位。
 -- make_helper_root_52_11为原型路径合成定位名，不是原始函数符号名。
 local function make_helper_root_52_11(capturedUpvalue0)
     _G.LuaSendMsg = capturedUpvalue0.LuaSendMsg
