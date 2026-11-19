@@ -1218,3 +1218,34 @@ function IsInWhitelistMap()
 
     return false
 end
+
+
+-- 11.16 root/12：51条物理指令，3参数；跨版本业务复用。
+-- 本版常量包含MMO、INPUT_MOVE_TYPE_AUTOMOVE、MAP_ID、InputMove、range、tonumber、PlayerPos、math.abs等，
+-- 与旧版MoveTo主体及参数完全吻合；常量“type”对应moveInfo.type字段。
+function MoveTo(x, y, range)
+    local moveInfo = {
+        mapID = SL:GetMetaValue("MAP_ID"),
+    }
+    moveInfo.x = tonumber(x)
+    moveInfo.y = tonumber(y)
+    moveInfo.type = global.MMO.INPUT_MOVE_TYPE_AUTOMOVE
+    if not range then
+        range = 0
+    end
+    moveInfo.range = range
+
+    global.Facade:sendNotification(global.NoticeTable.InputMove, moveInfo)
+
+    local playerX, playerY = PlayerPos()
+    local deltaX = math.abs(moveInfo.x - playerX)
+    if not (deltaX <= moveInfo.range) then
+        return false
+    end
+
+    local deltaY = math.abs(moveInfo.y - playerY)
+    if not (deltaY <= moveInfo.range) then
+        return false
+    end
+    return true
+end

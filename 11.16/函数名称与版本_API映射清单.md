@@ -411,3 +411,10 @@
 ## 2026-11-19续：root/30 Nested_find
 - 11.16本版常量明确包含BAG_DATA、GetMetaValue、pairs、Name、string.find和数值1；不含旧版MakeIndex、ITEM_IS_BIND、OverLap。
 - 明文按本版字段恢复为名称匹配条目计数，不沿用旧版绑定过滤及堆叠数量累加。业务复用已写入，31条指令未逐槽模拟。
+
+
+## root/12 MoveTo：跨版本业务恢复
+
+- 11.16：3参数、20常量、51条物理指令、无子原型；常量包含MMO、INPUT_MOVE_TYPE_AUTOMOVE、MAP_ID、InputMove、range、tonumber、PlayerPos、math.abs、Facade、sendNotification及字段type。
+- 与11.2 MoveTo(x, y, range)主体、参数和调用结构吻合；其中`type`对应`moveInfo.type`字段，并非新增Lua类型判断。
+- 已写入唯一明文。未逐槽模拟本版51条指令，归类为跨版本业务复用。

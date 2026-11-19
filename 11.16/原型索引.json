@@ -1165,7 +1165,7 @@
       "parameter_count": 3,
       "instruction_count": 51,
       "candidate_name": "MoveTo",
-      "identity_status": "跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "已写入明文（跨版本业务复用；本版参数/常量与旧版主体吻合）",
       "constants": [
         "MMO",
         "y",
@@ -1187,7 +1187,9 @@
         0,
         "Facade",
         "type"
-      ]
+      ],
+      "recovery_status": "已恢复",
+      "source_location": "MainLeftBottom_11.16_明文.lua：MoveTo"
     },
     {
       "preorder_id": 17,
