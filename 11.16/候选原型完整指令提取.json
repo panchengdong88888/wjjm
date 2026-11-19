@@ -7114,7 +7114,9 @@
           "mode": 0,
           "flags": 128
         }
-      ]
+      ],
+      "recovery_status": "部分恢复（闭包体已恢复，捕获来源待确认）",
+      "recovery_note": "21槽闭合：H[0].putoutTimer真值时SL:UnSchedule(timer)并清空putoutTimer；两路均清空H[0].putoutSent；调用H[1](唯一参数,timer)，最后SL:ShowSystemTips(唯一参数)。Opcode114直接执行N[A][K[3]]=K[4]，不融合消费后续槽位。H[0]/H[1]父级捕获来源未保存，保留capturedUpvalues代理。"
     }
   ],
   "constant_type_notes": {
