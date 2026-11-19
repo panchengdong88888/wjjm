@@ -27,7 +27,7 @@
 | root/0 | 待识别 | 未确认 | — | 37 |
 | root/1 | 待识别 | 未确认 | `ShowSystemTips`、`GetMetaValue`、`UnSchedule` | 76 |
 | root/2 | DiuItems | 是 | `GetMetaValue` | 226 |
-| root/3 | StopGatherMonsters（高置信候选；合成实现名make_helper_root_3） | 未确认 | `UnSchedule` | 25 |
+| root/3 | StopGatherMonsters（高置信候选；root/52/36直接调用，父root导出点待确认） | 未确认 | — | 25 |
 | root/4 | GetOwnerID | 是 | — | 31 |
 | root/5 | GetPlayerMapPosition | 是 | — | 17 |
 | root/6 | MainLoop | 是 | `RequestLaunchSkill`、`GetMetaValue` | 573 |
