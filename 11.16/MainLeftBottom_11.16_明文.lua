@@ -707,3 +707,30 @@ local function make_helper_root_60(capturedUpvalues)
         end
     end
 end
+
+
+-- 11.16 root/33/0：21条物理指令，1个显式参数，6个upvalue。
+-- 闭包体已恢复；H[0]与H[1]的父级词法来源尚未由root/33闭包创建点证实，
+-- 因此保留capturedUpvalues代理，不把捕获槽猜成具体业务变量名。
+-- slot1–3读取H[0].putoutTimer并判断真值；假值路径经slot4跳到slot12。
+-- 真值路径执行SL:UnSchedule(timer)，随后清空H[0].putoutTimer。
+-- 两条路径均清空H[0].putoutSent，然后以参数和timer（假值路径为nil）
+-- 调用H[1]；最后调用SL:ShowSystemTips(参数)。
+-- SL.UnSchedule与SL.ShowSystemTips按3.40.x官方开发文档直接使用，不分析其内部实现。
+-- Opcode114在本原型中是直接常量键表写入，不融合消费后续槽位；
+-- 此处纠正此前账本把slot11误判为融合指令的记录。
+local function make_helper_root_33_0(capturedUpvalues)
+    return function(message)
+        local state = capturedUpvalues[0]
+        local timer = state.putoutTimer
+
+        if timer then
+            SL:UnSchedule(timer)
+            state.putoutTimer = nil
+        end
+
+        state.putoutSent = nil
+        capturedUpvalues[1](message, timer)
+        SL:ShowSystemTips(message)
+    end
+end
