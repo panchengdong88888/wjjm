@@ -37,9 +37,9 @@
 34,root/24,root,1,GetMapId,本轮已恢复,0,4,0,9,已写入明文,MAP_ID | SL | GetMetaValue,MainLeftBottom_11.16_明文.lua,,2026-11-18
 35,root/25,root,1,,待识别,0,7,1,33,未恢复,Schedule | SL | 开启见人跑 | UnSchedule | cruiseRunTimer,,,2026-11-18
 36,root/25/0,root/25,2,,待识别,0,104,3,598,未恢复,cruiseGatherPaused | 附近没有玩家，恢复战斗 | 见人跑: %s(%d格)，向%d方向移动%d步 | SetTargetID | MMO | ClearTarget |  | retrieveProxy | ipairs | p,,,2026-11-18
-37,root/25/0/0,root/25/0,3,,待识别,0,0,0,3,部分恢复（闭包体已恢复，捕获待确认）,完整指令已由两阶段解析器提取；Opcode110置false，Opcode162写H[0]=false，Opcode205结束,,父级root/25/0中尚未找到childIndex=0创建点；H[0]源寄存器/真实变量名待确认，不计完整,2026-11-19
+37,root/25/0/0,root/25/0,3,,待识别,0,0,0,3,部分恢复（共享upvalue已定位，外层名称待确认）,Opcode110置false、Opcode162写H[0]=false、Opcode205结束；root/25/0槽513创建child0，槽514 Opcode132捕获父H[0]；root/25槽18创建root/25/0，槽19捕获root/25的H[2],,root/25的H[2]最终业务变量名待确认；不计完整,2026-11-19
 38,root/25/0/1,root/25/0,3,,待识别,0,22,0,38,未恢复,GetMainPlayer | type | GetMapY | GetMetaValue | NoticeTable | x | INPUT_MOVE_TYPE_JOYSTICK | sendNotification | global | SL,,,2026-11-18
-39,root/25/0/2,root/25/0,3,,待识别,0,0,0,3,指令已提取，语义待确认,；两阶段解析器已提取3条完整物理指令；Opcode110、62、339,,Opcode62语义未映射；父级创建点及捕获身份待确认,2026-11-19
+39,root/25/0/2,root/25/0,3,,待识别,0,0,0,3,部分恢复（共享upvalue已定位，外层名称待确认）,Opcode110置false、Opcode62写H[0]=false、Opcode339结束；root/25/0槽594创建child2，槽595 Opcode132捕获父H[0]；最终共享root/25的H[2],,root/25的H[2]最终业务变量名待确认；不计完整,2026-11-19
 40,root/26,root,1,,待识别,0,17,1,63,未恢复,取不到好友代理，清空失败 | pairs | lastAttacker | ScheduleOnce | 黑名单为空 | 清空黑名单失败 | ipairs | SL |  人 | 开始清空黑名单，共 %d 人,,,2026-11-18
 41,root/26/0,root/26,2,make_helper_root_26_0（合成定位名）,闭包体已恢复（捕获来源待确认）,0,4,0,13,部分恢复（不计完整函数）,RequestOutBlacklist | _blacklistData | SL | 黑名单项移除,,,2026-11-19
 42,root/27,root,1,,待识别,0,56,0,307,未恢复,"{""index"":%d,""UserID"":""%s""} |  | 已进入目标地图： | GetMapName | 苹果未激活：发送关闭巡航 | 攻城时间段结束，苹果图恢复下图 | state | 苹果已激活：开启巡航 | monitor | index",,,2026-11-18
@@ -79,7 +79,7 @@ mode=%s
 73,root/50/0,root/50,2,,待识别,0,15,0,80,未恢复,Win_Close | string | gsub | %s | tonumber | ^%d+$ |  | match | Text_setString | 参数格式不对，请输入数字,,,2026-11-18
 74,root/50/1,root/50,2,make_helper_root_50_1（合成定位名）,闭包体已恢复；H[0]/H[1]父级来源待确认,0,0,0,5,部分恢复（不计完整函数）,H[0]=false；H[1]()；Opcode339结束,H[0]/H[1]父级源寄存器及业务变量名待确认,2026-11-19
 75,root/50/2,root/50,2,make_helper_root_50_2（合成定位名）,闭包体已恢复；H[0]/H[1]父级来源待确认,0,0,0,5,部分恢复（不计完整函数）,Opcode330写H[0]=false并读取H[1]；H[1]()；Opcode205结束,H[0]/H[1]父级源寄存器及业务变量名待确认,2026-11-19
-76,root/50/3,root/50,2,,待识别,0,2,0,5,指令已提取，语义待确认,GUI | Win_Close；两阶段解析器已提取5条完整物理指令；常量GUI/Win_Close；Opcode253未映射,,Opcode253语义及H[0]捕获来源待确认；未写源码,2026-11-19
+76,root/50/3,root/50,2,,待识别,0,2,0,5,父级捕获已确认，函数体待核,root/50槽441 Opcode387创建childIndex=3，槽442 Opcode243捕获父寄存器N[7]到H[0]；子体含GUI.Win_Close方法准备及一次无参调用,,H[0]在子体被读取但未见后续使用；调用参数范围1..0，需复核后再写源码,2026-11-19
 77,root/50/4,root/50,2,,待识别,0,4,0,23,未恢复,Button_setTitleColor | GUI | #ffffff | #00ff00,,,2026-11-18
 78,root/51,root,1,,待识别,1,13,0,38,未恢复,select | type | # | pcall | Print | table | format | tostring | string | SL,,,2026-11-18
 79,root/52,root,1,doInit_UI / 主界面初始化,高置信候选,0,176,37,865,未恢复,"开拾取 | infoGoldTxt | 开苹果图中
@@ -103,7 +103,7 @@ mode=%s
 95,root/52/8/0,root/52/8,3,,,待识别,0,2,0,5,未恢复,dropMode | DiuItems,,指令头需按16位字段重新解码；函数体待确认,,2026-11-18
 96,root/52/9,root/52,2,,待识别,0,5,0,18,未恢复,blacklistTimer | distance | BlacklistItems | 开启黑名单功能，距离格子：%d,,,2026-11-18
 97,root/52/10,root/52,2,make_helper_root_52_10（捕获提示回调待映射）,闭包体已恢复；H[0]捕获来源待确认,0,2,0,6,部分恢复（不计完整函数）,ClearBlacklistItems | 清空黑名单,MainLeftBottom_11.16_明文.lua,root/52槽位617创建闭包并捕获父级H[0]；H[0]具体业务身份仍待root/52外层映射,2026-11-19
-98,root/52/11,root/52,2,,待识别,0,2,0,5,指令已提取，语义待确认,_G | LuaSendMsg；两阶段解析器已提取5条完整物理指令；常量_G/LuaSendMsg；Opcode400未映射,,Opcode400语义、融合调用链及捕获来源待确认；未写源码,2026-11-19
+98,root/52/11,root/52,2,,待识别,0,2,0,5,部分恢复（闭包体已恢复，外层捕获待确认）,root/52槽147 Opcode178创建childIndex=11；槽148 Opcode132捕获父H[2]；子体执行_G.LuaSendMsg=H[0].LuaSendMsg,,root/52的H[2]在更外层root中的来源待确认；不计完整,2026-11-19
 99,root/52/12,root/52,2,closure_root_52_12（合成定位名）,行为已恢复,0,3,0,5,已写入明文,global | gameWorldController | OnGameLeaveWorld,MainLeftBottom_11.16_明文.lua,5条物理指令全部闭合；Opcode248融合全局加载/成员读取/方法准备，Opcode123调用，Opcode205结束；API文档未收录，按原始调用点恢复,2026-11-19
 100,root/52/13,root/52,2,make_helper_root_52_13（合成定位名）,闭包体已恢复；H[0..2]父级捕获来源待确认,0,1,0,13,部分恢复（不计完整函数）,cruiseRunTimer,MainLeftBottom_11.16_明文.lua,Opcode127读取H[0]并检查cruiseRunTimer；真值调用H[1]，假值调用H[2]；两路均返回true；父级捕获映射未保存,2026-11-19
 101,root/52/14,root/52,2,,待识别,6,38,0,174,未恢复,"tostring | sealPanelAt | ancientSwordData | swordPullPending | ""power"" | subData_2 | combatPower | find |  | ,",,,2026-11-18
@@ -123,7 +123,7 @@ mode=%s
 115,root/52/26,root/52,2,,待识别,0,5,1,23,未恢复,SL | Schedule | 开始检测金币(>500W买金条) | buygoldTimer,,,2026-11-18
 116,root/52/26/0,root/52/26,3,,待识别,0,21,0,77,未恢复,UnSchedule | 金币不足500W，买金条结束 | ShowSystemTips | global | 金币 | 金条 | ProxyTable | 买金条失败： | tostring | 买金条失败：%s,,,2026-11-18
 117,root/52/27,root/52,2,,待识别,1,12,0,46,未恢复,pairs | MakeIndex | OverLap | find | Name | BAG_DATA | SL | string | GetMetaValue | ITEM_IS_BIND,,,2026-11-18
-118,root/52/28,root/52,2,,待识别,0,3,0,7,指令已提取，语义待确认,InitGatherMonsters | GATHER_THRESHOLD；两阶段解析器已提取7条完整物理指令；常量11/InitGatherMonsters/GATHER_THRESHOLD；Opcode7未映射,,Opcode7语义、H[0]身份及阈值写入行为待确认；未写源码,2026-11-19
+118,root/52/28,root/52,2,,待识别,0,3,0,7,部分恢复（闭包体已恢复，外层捕获待确认）,root/52槽556 Opcode178创建childIndex=28；槽557 Opcode132捕获父H[9]；子体写H[0].GATHER_THRESHOLD=11、调用InitGatherMonsters并返回其函数值,,root/52的H[9]在更外层root中的来源待确认；不计完整,2026-11-19
 119,root/52/29,root/52,2,,待识别,0,10,0,39,未恢复,toggle | #ff0000 | Button_setTitleText | Button_setTitleColor | #ffffff | applebut | toggled | name | GUI,,,2026-11-18
 120,root/52/30,root/52,2,closure_root_52_30,匿名闭包（行为已恢复）,0,1,0,4,已写入明文,startPutoutAll,MainLeftBottom_11.16_明文.lua,4条指令：Opcode 9融合读取H[0].startPutoutAll；无参数调用；定位名为合成名,2026-11-18
 121,root/52/31,root/52,2,,待识别,0,10,0,29,未恢复,isStoring | UnSchedule | StorageItems | storageTimer | 关闭存仓功能 | 开启存仓功能 | SL,,,2026-11-18
