@@ -3843,9 +3843,20 @@
         "prototype_end": 65801
       },
       "reconstruction": {
-        "status": "instructions_extracted_pending_semantics_or_capture",
-        "description": "Opcode253尚未映射；Opcode138方法准备、Opcode324读取H[0]、Opcode123调用的组合指向GUI:Win_Close(H[0])，但捕获来源未确认，暂不写源码。",
-        "confidence": "raw_structure_verified"
+        "status": "parent_capture_confirmed_body_pending",
+        "description": "父级root/50槽位441 Opcode387创建childIndex=3闭包，captureCount=1；槽位442 Opcode243捕获父级N[7]到H[0]。子体Opcode253融合准备GUI.Win_Close方法，Opcode324读取H[0]到N[2]，Opcode123调用N[0]但参数区间为1..0；N[2]后续未见使用，调用参数与捕获值用途需再核验。",
+        "confidence": "raw_dispatch_and_parent_capture_verified",
+        "parent_closure": {
+          "parent": "root/50",
+          "create_slot": 441,
+          "create_opcode": 387,
+          "child_index": 3,
+          "capture_count": 1,
+          "capture_slot": 442,
+          "capture_opcode": 243,
+          "parent_register": 7,
+          "child_upvalue": 0
+        }
       }
     },
     {
@@ -4020,9 +4031,20 @@
         "prototype_end": 85558
       },
       "reconstruction": {
-        "status": "instructions_extracted_pending_semantics_or_capture",
-        "description": "Opcode400尚未映射；融合/调用链未闭合，不据常量推断消息参数。",
-        "confidence": "raw_structure_verified"
+        "status": "body_recovered_capture_chain_pending",
+        "description": "父级root/52槽位147 Opcode178创建childIndex=11闭包，captureCount=1；槽位148 Opcode132读取父级H[2]绑定到子H[0]。子体Opcode45装载全局_G并融合读取H[0]；Opcode400读取H[0].LuaSendMsg并融合写入_G.LuaSendMsg；Opcode339结束。root/52的H[2]在更外层root中的来源待确认。",
+        "confidence": "raw_dispatch_and_parent_capture_verified",
+        "parent_closure": {
+          "parent": "root/52",
+          "create_slot": 147,
+          "create_opcode": 178,
+          "child_index": 11,
+          "capture_count": 1,
+          "capture_slot": 148,
+          "capture_opcode": 132,
+          "parent_upvalue": 2,
+          "child_upvalue": 0
+        }
       }
     },
     {
@@ -4474,9 +4496,20 @@
         "prototype_end": 104831
       },
       "reconstruction": {
-        "status": "instructions_extracted_pending_semantics_or_capture",
-        "description": "Opcode7尚未映射；H[0]及阈值写入的精确语义未闭合。",
-        "confidence": "raw_structure_verified"
+        "status": "body_recovered_capture_chain_pending",
+        "description": "父级root/52槽位556 Opcode178创建childIndex=28闭包，captureCount=1；槽位557 Opcode132读取父级H[9]绑定到子H[0]。子体Opcode324读取H[0]；Opcode7写H[0].GATHER_THRESHOLD=11并融合装载全局InitGatherMonsters；Opcode123无参调用；Opcode110写入未使用false；Opcode292返回当前N[0]（InitGatherMonsters函数值）；Opcode205位于return之后。root/52的H[9]在更外层root中的来源待确认。",
+        "confidence": "raw_dispatch_and_parent_capture_verified",
+        "parent_closure": {
+          "parent": "root/52",
+          "create_slot": 556,
+          "create_opcode": 178,
+          "child_index": 28,
+          "capture_count": 1,
+          "capture_slot": 557,
+          "capture_opcode": 132,
+          "parent_upvalue": 9,
+          "child_upvalue": 0
+        }
       }
     },
     {
