@@ -617,3 +617,11 @@
 - 唯一明文使用capturedCruiseState/capturedCallback1/capturedCallback2显式承载捕获值；父级root/52的三个捕获来源及业务变量名仍待确认。CSV状态为部分恢复，不计完整函数。
 - 完整明文31/162（19.14%）；部分恢复项6个。未执行Lua语法、全文件静态或游戏运行验证。
 - 下一项：继续寻找指令记录完整且业务体可闭合的短原型；未知捕获和Opcode问题不猜写。
+
+
+### 2026-11-19续接增量（root/26/0黑名单回调闭包体部分恢复）
+- 新增root/26/0（13条物理指令）闭包体：调用SL:RequestOutBlacklist(H[0])；若H[1]._blacklistData为真值，则执行H[1]._blacklistData[H[0]]=nil。
+- Opcode 207表键写入及常量类型2=nil均有11.16原版分派器/S()依据。H[0]/H[1]在父级root/26的捕获来源仍待确认。
+- 唯一明文使用capturedBlacklistKey/capturedBlacklistState显式承载捕获，不计入完整函数数。完整明文仍31/162（19.14%）；部分恢复项7个。
+- 未执行Lua语法、全文件静态或游戏运行验证。
+- 下一项：继续寻找证据完整的短原型；root/74的Opcode 264/376/62未闭合，暂不恢复。
