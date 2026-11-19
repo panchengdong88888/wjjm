@@ -884,3 +884,56 @@ local function MoveItemToQuickUse(itemIndex, targetPos)
         targetPos
     )
 end
+
+-- 11.16 root/75：FindMonsterCandidates。
+-- 以11.2/11.9旧版共同业务主体为底稿；11.16 root/75常量确认保留忽略名单、怪物遍历、距离计算与阈值截取。
+-- 11.16子原型root/75/0已恢复为a._distance >= b._distance，因此本函数按新版比较方向降序排序，不沿用旧版升序。
+-- root/20的FindMonsterInCurrViewField调用参数变化不直接套用到本函数；root/75自身常量池含true，且未发现false，故保留旧版此处true,true调用。
+local function FindMonsterCandidates()
+    local monsters = SL:FindMonsterInCurrViewField(true, true)
+    if not monsters or #monsters == 0 then
+        return {}
+    end
+
+    local ignoredNames = {}
+    local ignoreSetting = GET_SETTING(global.MMO.SETTING_IDX_IGNORE_MONSTER)
+
+    if ignoreSetting and type(ignoreSetting[1]) == "table" then
+        for name, enabled in pairs(ignoreSetting[1]) do
+            if enabled == true then
+                ignoredNames[name] = true
+            end
+        end
+    end
+
+    local playerPosition = GetPlayerPosition()
+    local candidates = {}
+
+    for _, actor in ipairs(monsters) do
+        if IsDie(actor) then
+            local name = actor:GetName() or "未知怪物"
+            if not ignoredNames[name] then
+                local actorPosition = GetPlayerMapPosition(actor)
+                actor._distance = DistanceCalculation(
+                    playerPosition,
+                    actorPosition
+                )
+                table.insert(candidates, actor)
+            end
+        end
+    end
+
+    table.sort(candidates, function(left, right)
+        return left._distance >= right._distance
+    end)
+
+    local result = {}
+    for index, actor in ipairs(candidates) do
+        if index > gatherConfig.GATHER_THRESHOLD then
+            break
+        end
+        table.insert(result, actor)
+    end
+
+    return result
+end
