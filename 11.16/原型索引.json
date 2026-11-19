@@ -798,11 +798,14 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 13,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_2_0",
+      "identity_status": "匿名闭包（行为已恢复；H[0]业务变量名待映射）",
       "constants": [
         "ipairs"
-      ]
+      ],
+      "recovery_status": "已写入明文",
+      "recovered_behavior": "遍历父级捕获表，查找参数值；命中返回true，遍历结束返回false",
+      "upvalue_mapping": "H[0]，父级root/2捕获变量的业务身份尚待映射"
     },
     {
       "preorder_id": 5,
@@ -831,11 +834,14 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 13,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_2_2",
+      "identity_status": "匿名闭包（行为已恢复；H[0]业务变量名待映射）",
       "constants": [
         "ipairs"
-      ]
+      ],
+      "recovery_status": "已写入明文",
+      "recovered_behavior": "遍历父级捕获表，查找参数值；命中返回true，遍历结束返回false",
+      "upvalue_mapping": "H[0]，父级root/2捕获变量的业务身份尚待映射"
     },
     {
       "preorder_id": 7,
