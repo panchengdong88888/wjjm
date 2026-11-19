@@ -72,7 +72,7 @@ mode=%s
 66,root/45/0,root/45,2,,待识别,2,15,0,52,未恢复, DuraMax= | 聚灵珠信息:  | 聚灵珠 | Dura | find | isOutputted | StdMode | DuraMax | string |  Dura=,,,2026-11-18
 67,root/45/1,root/45,2,,待识别,0,1,0,27,未恢复,,,,2026-11-18
 68,root/46,root,1,IsInWhitelistMap,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,12,0,42,未恢复,GetMetaValue | MAP_NAME | ipairs | 盟重省 | string | 土城 | 盟重 | IN_SAFE_AREA |  | find,,,2026-11-18
-69,root/47,root,1,helper_root_47（合成定位名）,匿名包装函数（行为已恢复）,2,2,0,7,已写入明文,SL | ScheduleOnce | Opcode 369融合方法准备与两个参数寄存器移动；Opcode 202直接返回调用结果,MainLeftBottom_11.16_明文.lua,原始符号名未确认；return后的尾部槽位不可达,2026-11-18
+69,root/47,root,1,ScheduleOnce,跨版本高置信候选（11.2包装函数与11.16 SL方法调用形状吻合；本体为官方API包装）,2,2,0,7,已写入明文,SL | ScheduleOnce | Opcode 369融合方法准备与两个参数寄存器移动；Opcode 202直接返回调用结果,MainLeftBottom_11.16_明文.lua,原始符号名未确认；return后的尾部槽位不可达,2026-11-18
 70,root/48,root,1,,待识别,0,9,0,26,未恢复,MoneyProxy | GetMoneyCountById | ProxyTable | GetMoneyIdByName | global | 金币 | Facade | retrieveProxy,,,2026-11-18
 71,root/49,root,1,PlayerPos,本轮已恢复,0,4,0,10,已写入明文,Y | SL | X | GetMetaValue,MainLeftBottom_11.16_明文.lua,,2026-11-18
 72,root/50,root,1,,待识别,5,80,5,444,未恢复,screenW | numInputModeStack | screenH | GetWindow | TextInput_Create | numInputEdit | GUI | numInputModeLabel | #ff0000 | TextInput_setInputMode,,,2026-11-18
@@ -164,6 +164,6 @@ mode=%s
 156,root/75/0,root/75,2,closure_root_75_0,匿名闭包（行为已恢复）,2,1,0,8,已写入明文,_distance,MainLeftBottom_11.16_明文.lua,8条物理指令：读取两个参数的_distance字段；Opcode 226按小于关系分支；Opcode 388跳过false赋值分支；最终返回a._distance >= b._distance,2026-11-18
 157,root/76,root,1,,待识别,0,8,0,25,未恢复,AUCTION_MONEY | 元宝 | SL | GetMetaValue | ipairs | name | id,,,2026-11-18
 158,root/77,root,1,GetMainPlayerID,本轮已恢复,0,3,0,6,已写入明文,gamePlayerController | GetMainPlayerID | global,MainLeftBottom_11.16_明文.lua,,2026-11-18
-159,root/78,root,1,helper_root_78（合成定位名）,匿名包装函数（行为已恢复）,2,2,0,7,已写入明文,SL | Schedule | Opcode 369融合方法准备与两个参数寄存器移动；Opcode 202直接返回调用结果,MainLeftBottom_11.16_明文.lua,原始符号名未确认；return后的尾部槽位不可达,2026-11-18
+159,root/78,root,1,Schedule,跨版本高置信候选（11.2包装函数与11.16 SL方法调用形状吻合；本体为官方API包装）,2,2,0,7,已写入明文,SL | Schedule | Opcode 369融合方法准备与两个参数寄存器移动；Opcode 202直接返回调用结果,MainLeftBottom_11.16_明文.lua,原始符号名未确认；return后的尾部槽位不可达,2026-11-18
 160,root/79,root,1,forgeZodiac,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,48,0,212,未恢复,SL |  第 | checkGold | forge | len | format | clickNpc | 生肖锻造未完成，已尝试200次 | Name | LuaSendMsg,,,2026-11-18
 161,root/80,root,1,ShowLocalNoticeByType,高置信候选,1,14,0,15,已写入明文,screenH | ShowLocalNoticeByType | Type=10 | Msg=参数1 | FColor=249 | BColor=0 | X=5 | Y=screenH-50 | SL,MainLeftBottom_11.16_明文.lua,,2026-11-18
