@@ -329,3 +329,24 @@
 - 读取SL:GetMetaValue('AUCTION_MONEY')，遍历含name/id字段的配置项，并与“元宝”名称相关联；属于拍卖货币配置查询。
 - 函数声明名、是否返回id或配置项尚未由完整指令流确认。
 - 本轮未取得完整指令流/父级注册名，保持候选函数名为空，不写入唯一明文，不增加恢复计数。
+
+
+## root/42 ClearTargetID_2：真实名称确认与本版指令恢复
+
+- 无参数；检查Facade和PlayerInputProxy，调用proxy:SetTargetID(0, SELETE_TARGET_TYPE_FIND)。与11.2 root.children[56] ClearTargetID_2业务体完全吻合，22条本版指令闭合、无捕获。
+- 本版原型的物理指令已闭合，且旧版对应函数声明和业务体一致；合成定位名已替换为真实名称。
+- 该项此前函数体已恢复，本轮只修正真实名称和状态，不重复增加业务恢复数量。
+
+
+## root/69 GetOwnerDescription：真实名称确认与本版指令恢复
+
+- 两个参数；调用actor:GetOwnerID，返回ownerId及“无归属/自己/其他玩家”标签。与11.2 root.children[43] GetOwnerDescription声明及业务体完全吻合，20条本版指令闭合、无捕获。
+- 本版原型的物理指令已闭合，且旧版对应函数声明和业务体一致；合成定位名已替换为真实名称。
+- 该项此前函数体已恢复，本轮只修正真实名称和状态，不重复增加业务恢复数量。
+
+
+## root/70 GetPlayerPosition：真实名称确认与本版指令恢复
+
+- 无参数；读取SL:GetMetaValue('X'/'Y')，各自假值回退0，返回{x,y}。与11.2 root.children[18] GetPlayerPosition业务体完全吻合，19条本版指令闭合、无捕获。
+- 本版原型的物理指令已闭合，且旧版对应函数声明和业务体一致；合成定位名已替换为真实名称。
+- 该项此前函数体已恢复，本轮只修正真实名称和状态，不重复增加业务恢复数量。
