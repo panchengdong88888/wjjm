@@ -878,7 +878,7 @@
       "parameter_count": 0,
       "instruction_count": 25,
       "candidate_name": "StopGatherMonsters（高置信候选；合成实现名make_helper_root_3）",
-      "identity_status": "高置信候选；闭包体已恢复，父级捕获符号待映射",
+      "identity_status": "闭包体已恢复（父级捕获符号待映射）",
       "constants": [
         "gatherTimer",
         "UnSchedule",
@@ -1291,8 +1291,8 @@
       "child_count": 2,
       "parameter_count": 3,
       "instruction_count": 87,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "startPutinGold（高置信候选）",
+      "identity_status": "高置信业务候选；父root直接导出/注册点待确认",
       "constants": [
         "单价不能低于 %d",
         "，单价：",
@@ -1408,7 +1408,7 @@
       "parameter_count": 0,
       "instruction_count": 51,
       "candidate_name": "GetAvailableStoragePage",
-      "identity_status": "已写入明文（跨版本业务复用；非指令级完整还原）",
+      "identity_status": "跨版本业务复用（11.2同名函数体与11.16常量/签名吻合；未逐槽模拟）",
       "constants": [
         "NPC_STORAGE_MAX_PAGE",
         "NPCStorageProxy",
@@ -1660,7 +1660,7 @@
       "parameter_count": 0,
       "instruction_count": 3,
       "candidate_name": "closure_root_23_0（合成定位名）",
-      "identity_status": "本轮已恢复",
+      "identity_status": "行为已恢复",
       "constants": [
         "MainLoop"
       ]
@@ -2005,7 +2005,7 @@
       "parameter_count": 0,
       "instruction_count": 13,
       "candidate_name": "make_helper_root_26_0（合成定位名）",
-      "identity_status": "闭包体已恢复；H[0]/H[1]父级捕获来源待确认",
+      "identity_status": "闭包体已恢复（捕获来源待确认）",
       "constants": [
         "RequestOutBlacklist",
         "_blacklistData",
@@ -2118,7 +2118,7 @@
       "parameter_count": 0,
       "instruction_count": 20,
       "candidate_name": "ResetGatherMonsterData",
-      "identity_status": "已写入明文（跨版本业务复用；非指令级完整还原）",
+      "identity_status": "跨版本高置信候选（11.2同名函数体复用；11.16签名/常量吻合，20槽已提取未逐槽模拟）",
       "constants": [
         "",
         0,
@@ -2178,7 +2178,7 @@
       "parameter_count": 1,
       "instruction_count": 17,
       "candidate_name": "make_helper_root_32（合成定位名）",
-      "identity_status": "部分恢复（闭包体已恢复；捕获来源待确认）",
+      "identity_status": "匿名闭包（闭包体已恢复；3个upvalue来源待确认）",
       "constants": [
         "cruiseGatherPaused",
         "zd",
@@ -2196,8 +2196,8 @@
       "child_count": 2,
       "parameter_count": 0,
       "instruction_count": 56,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "startPutoutAll（高置信候选）",
+      "identity_status": "高置信候选（root/52/30无参回调直接调用该全局名；父root导出点待确认）",
       "constants": [
         "putinTimer",
         "Facade",
@@ -2231,8 +2231,8 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 21,
-      "candidate_name": "make_helper_root_33_0（合成定位名）",
-      "identity_status": "闭包体行为已恢复（H[0]/H[1]父级捕获来源待确认）",
+      "candidate_name": null,
+      "identity_status": "匿名闭包（闭包体已恢复；H[0]/H[1]捕获来源待确认）",
       "constants": [
         "UnSchedule",
         "ShowSystemTips",
@@ -2380,7 +2380,7 @@
       "parameter_count": 0,
       "instruction_count": 77,
       "candidate_name": "GetStorageItemData",
-      "identity_status": "已写入明文（跨版本业务复用；非指令级完整还原）",
+      "identity_status": "跨版本业务复用（11.2同名函数体与11.16常量/签名吻合；未逐槽模拟）",
       "constants": [
         "table",
         "STORAGE_PER_PAGE_MAX",
@@ -2430,7 +2430,7 @@
       "parameter_count": 2,
       "instruction_count": 25,
       "candidate_name": "DistanceCalculation",
-      "identity_status": "跨版本业务高置信（原始符号名待确认）",
+      "identity_status": "高置信候选（跨版本业务对应）",
       "constants": [
         99999,
         "abs",
@@ -2498,7 +2498,7 @@
       "parameter_count": 0,
       "instruction_count": 6,
       "candidate_name": "make_helper_root_40_0（合成定位名）",
-      "identity_status": "闭包体已恢复；H[0]捕获源待确认，不计完整函数",
+      "identity_status": "闭包体已恢复；H[0]来源待确认",
       "constants": [
         "SL",
         "JsonDecode"
@@ -2628,8 +2628,8 @@
       "child_count": 0,
       "parameter_count": 2,
       "instruction_count": 8,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "closure_root_43_1",
+      "identity_status": "匿名闭包（行为已恢复）",
       "constants": [
         "dist"
       ]
@@ -2785,7 +2785,7 @@
       "parameter_count": 0,
       "instruction_count": 42,
       "candidate_name": "IsInWhitelistMap",
-      "identity_status": "已确认：IsInWhitelistMap（本版常量与旧版同职责）",
+      "identity_status": "已写入明文（本版地图名单扩展；跨版本业务复用；未逐槽模拟）",
       "constants": [
         "GetMetaValue",
         "MAP_NAME",
@@ -2829,7 +2829,7 @@
       "parameter_count": 0,
       "instruction_count": 26,
       "candidate_name": "checkGold",
-      "identity_status": "高置信候选（root/10引用checkGold；本原型含MoneyProxy/GetMoneyIdByName/GetMoneyCountById并查金币数量）",
+      "identity_status": "高置信候选（root/10引用checkGold；本原型查询金币数量）",
       "constants": [
         "MoneyProxy",
         "GetMoneyCountById",
@@ -2995,7 +2995,7 @@
       "parameter_count": 0,
       "instruction_count": 5,
       "candidate_name": "make_helper_root_50_1（合成定位名）",
-      "identity_status": "闭包体已恢复；H[0]/H[1]捕获来源待确认，不计完整函数",
+      "identity_status": "闭包体已恢复；H[0]/H[1]父级来源待确认",
       "constants": [],
       "recovery_note": "5条指令；H[0]=false后调用H[1]；父级两个捕获来源待确认，明文用显式工厂参数占位。"
     },
@@ -3009,7 +3009,7 @@
       "parameter_count": 0,
       "instruction_count": 5,
       "candidate_name": "make_helper_root_50_2（合成定位名）",
-      "identity_status": "闭包体已恢复；H[0]/H[1]捕获来源待确认，不计完整函数",
+      "identity_status": "闭包体已恢复；H[0]/H[1]父级来源待确认",
       "constants": [],
       "recovery_note": "5条指令；Opcode330写H[0]=false并读取H[1]，随后调用H[1]；父级两个捕获来源待确认，明文用显式工厂参数占位。"
     },
@@ -3089,7 +3089,7 @@
       "parameter_count": 1,
       "instruction_count": 38,
       "candidate_name": "PrintLog",
-      "identity_status": "已写入明文（跨版本业务复用；非指令级完整还原）",
+      "identity_status": "跨版本业务复用（11.2同名函数体与11.16常量/签名吻合；未逐槽模拟）",
       "constants": [
         "select",
         "type",
@@ -3309,8 +3309,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 4,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "closure_root_52_0",
+      "identity_status": "匿名闭包（行为已恢复）",
       "constants": [
         "startForgeZodiac"
       ]
@@ -3428,7 +3428,7 @@
       "parameter_count": 0,
       "instruction_count": 3,
       "candidate_name": "closure_root_52_4（合成定位名）",
-      "identity_status": "本轮已恢复",
+      "identity_status": "行为已恢复",
       "constants": [
         "Builtsetting"
       ]
@@ -3773,7 +3773,7 @@
       "parameter_count": 0,
       "instruction_count": 18,
       "candidate_name": "make_helper_root_52_9（合成定位名）",
-      "identity_status": "闭包体行为已恢复；5个捕获链已映射到root寄存器，业务变量名待确认",
+      "identity_status": "闭包体已恢复；捕获身份待确认",
       "constants": [
         "blacklistTimer",
         11,
@@ -3793,7 +3793,7 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 6,
-      "candidate_name": "make_helper_root_52_10（合成定位名）",
+      "candidate_name": "make_helper_root_52_10（捕获提示回调待映射）",
       "identity_status": "闭包体已恢复；H[0]捕获来源待确认",
       "constants": [
         "ClearBlacklistItems",
@@ -3852,7 +3852,7 @@
       "parameter_count": 0,
       "instruction_count": 5,
       "candidate_name": "closure_root_52_12（合成定位名）",
-      "identity_status": "本轮已恢复",
+      "identity_status": "行为已恢复",
       "constants": [
         "global",
         "gameWorldController",
@@ -4105,7 +4105,7 @@
       "parameter_count": 0,
       "instruction_count": 5,
       "candidate_name": "make_helper_root_52_20（合成定位名）",
-      "identity_status": "闭包体已恢复；H[0]捕获来源待确认，不计完整函数",
+      "identity_status": "闭包体已恢复；H[0]捕获来源待确认",
       "constants": [],
       "recovery_note": "已由11.16原始载荷定点重解析闭合：读取H[0]并无参调用，随后返回true；父级root/52闭包创建点未映射，明文用capturedCallback显式承载H[0]。"
     },
@@ -4119,7 +4119,7 @@
       "parameter_count": 0,
       "instruction_count": 16,
       "candidate_name": "closure_root_52_21（合成定位名）",
-      "identity_status": "本轮已恢复",
+      "identity_status": "行为已恢复",
       "constants": [
         "回收完毕",
         "LuaSendMsg",
@@ -4358,8 +4358,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 4,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "closure_root_52_25",
+      "identity_status": "匿名闭包（行为已恢复）",
       "constants": [
         "startAppleMap"
       ]
@@ -4522,8 +4522,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 4,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "closure_root_52_30",
+      "identity_status": "匿名闭包（行为已恢复）",
       "constants": [
         "startPutoutAll"
       ]
@@ -4735,8 +4735,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 3,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "closure_root_52_35_0",
+      "identity_status": "匿名闭包（行为已恢复）",
       "constants": [
         "powerRefreshing",
         false
@@ -4752,7 +4752,7 @@
       "parameter_count": 0,
       "instruction_count": 19,
       "candidate_name": "make_helper_root_52_36（合成定位名）",
-      "identity_status": "闭包体行为已恢复；H[0]/H[1]捕获链已映射到root N[3]/N[5]，H[2]来源为root/52 N[24]但业务身份待确认",
+      "identity_status": "闭包体已恢复；捕获身份待确认",
       "constants": [
         "gatherTimer",
         "关闭引怪功能",
@@ -4906,7 +4906,7 @@
       "parameter_count": 0,
       "instruction_count": 9,
       "candidate_name": "helper_root_56_0（合成定位名）",
-      "identity_status": "本轮已恢复",
+      "identity_status": "行为已恢复",
       "constants": [
         "ProxyTable",
         "global",
@@ -5017,8 +5017,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 21,
-      "candidate_name": "helper_root_60",
-      "identity_status": "闭包体行为已恢复；H[0]捕获来源待确认",
+      "candidate_name": "helper_root_60（合成定位名）",
+      "identity_status": "行为已恢复（H[0]捕获来源待确认）",
       "constants": [
         "PlayerInputProxy",
         "ClearAttackTargetID",
@@ -5041,7 +5041,7 @@
       "parameter_count": 0,
       "instruction_count": 60,
       "candidate_name": "backCity",
-      "identity_status": "高置信候选（root/27与root/54均引用backCity；本原型含QUICKUSE_DATA、盟重回城石、物品索引/数量查询及UseItemByIndex）",
+      "identity_status": "高置信候选（root/27与root/54引用backCity；本原型查找并使用盟重回城石）",
       "constants": [
         "QUICKUSE_DATA",
         "GetMetaValue",
@@ -5363,8 +5363,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 6,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "closure_root_71_0",
+      "identity_status": "匿名闭包（行为已恢复）",
       "constants": [
         "SL",
         "name",
@@ -5481,8 +5481,8 @@
       "child_count": 0,
       "parameter_count": 2,
       "instruction_count": 8,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "closure_root_75_0",
+      "identity_status": "匿名闭包（行为已恢复）",
       "constants": [
         "_distance"
       ]
