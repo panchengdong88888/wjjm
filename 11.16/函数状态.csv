@@ -71,7 +71,7 @@ mode=%s
 65,root/45,root,1,StorageItems,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,57,2,224,未恢复,NPC_STORAGE_MAX_PAGE | find | 玄铁 | BOSS头骨 | 神装碎片 | 圣皇 |  件物品 | GUIDefine | STORAGE_PER_PAGE_MAX | len,,,2026-11-18
 66,root/45/0,root/45,2,,待识别,2,15,0,52,未恢复, DuraMax= | 聚灵珠信息:  | 聚灵珠 | Dura | find | isOutputted | StdMode | DuraMax | string |  Dura=,,,2026-11-18
 67,root/45/1,root/45,2,,待识别,0,1,0,27,未恢复,,,,2026-11-18
-68,root/46,root,1,IsInWhitelistMap,已写入明文（本版地图名单扩展；跨版本业务复用；未逐槽模拟）,0,12,0,42,已恢复（本版常量支持的业务重写）,GetMetaValue | MAP_NAME | ipairs | 盟重省 | string | 土城 | 盟重 | IN_SAFE_AREA | find | SL,MainLeftBottom_11.16_明文.lua：IsInWhitelistMap,字符串查找的起始位置按常量1使用；未逐槽确认额外参数/模式位,2026-11-19
+68,root/46,root,1,IsInWhitelistMap,已写入明文（本版地图名单扩展；跨版本业务复用；未逐槽模拟）,0,12,0,42,已恢复（跨版本业务复用；本版常量扩展重写）,GetMetaValue | MAP_NAME | ipairs | 盟重省 | string | 土城 | 盟重 | IN_SAFE_AREA | find | SL,MainLeftBottom_11.16_明文.lua：IsInWhitelistMap,字符串查找的起始位置按常量1使用；未逐槽确认额外参数/模式位,2026-11-19
 69,root/47,root,1,ScheduleOnce,跨版本高置信候选（11.2包装函数与11.16 SL方法调用形状吻合；本体为官方API包装）,2,2,0,7,已写入明文,SL | ScheduleOnce | Opcode 369融合方法准备与两个参数寄存器移动；Opcode 202直接返回调用结果,MainLeftBottom_11.16_明文.lua,原始符号名未确认；return后的尾部槽位不可达,2026-11-18
 70,root/48,root,1,checkGold,高置信候选（root/10引用checkGold；本原型查询金币数量）,0,9,0,26,候选待核验,MoneyProxy | GetMoneyCountById | ProxyTable | GetMoneyIdByName | global | 金币 | Facade | retrieveProxy,,未保存完整指令流；调用绑定待本版指令核验,2026-11-19
 71,root/49,root,1,PlayerPos,本轮已恢复,0,4,0,10,已写入明文,Y | SL | X | GetMetaValue,MainLeftBottom_11.16_明文.lua,,2026-11-18
