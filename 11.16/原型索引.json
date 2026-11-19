@@ -1857,6 +1857,17 @@
         "capture_opcode": 132,
         "parent_upvalue": 2,
         "child_upvalue": 0
+      },
+      "root_parent_closure": {
+        "parent": "root",
+        "create_slot": 526,
+        "opcode": 178,
+        "child_index": 25,
+        "capture_count": 13,
+        "capture_descriptor_slot": 529,
+        "capture_descriptor_opcode": 243,
+        "parent_register": 74,
+        "child_upvalue_index": 2
       }
     },
     {
@@ -1932,6 +1943,17 @@
         "capture_opcode": 132,
         "parent_upvalue": 2,
         "child_upvalue": 0
+      },
+      "root_parent_closure": {
+        "parent": "root",
+        "create_slot": 526,
+        "opcode": 178,
+        "child_index": 25,
+        "capture_count": 13,
+        "capture_descriptor_slot": 529,
+        "capture_descriptor_opcode": 243,
+        "parent_register": 74,
+        "child_upvalue_index": 2
       }
     },
     {
@@ -3767,6 +3789,17 @@
         "capture_opcode": 132,
         "parent_upvalue": 2,
         "child_upvalue": 0
+      },
+      "root_parent_closure": {
+        "parent": "root",
+        "create_slot": 633,
+        "opcode": 178,
+        "child_index": 52,
+        "capture_count": 19,
+        "capture_descriptor_slot": 636,
+        "capture_descriptor_opcode": 243,
+        "parent_register": 0,
+        "child_upvalue_index": 2
       }
     },
     {
@@ -4403,6 +4436,17 @@
         "capture_opcode": 132,
         "parent_upvalue": 9,
         "child_upvalue": 0
+      },
+      "root_parent_closure": {
+        "parent": "root",
+        "create_slot": 633,
+        "opcode": 178,
+        "child_index": 52,
+        "capture_count": 19,
+        "capture_descriptor_slot": 643,
+        "capture_descriptor_opcode": 243,
+        "parent_register": 8,
+        "child_upvalue_index": 9
       }
     },
     {
