@@ -925,14 +925,16 @@
       "parameter_count": 1,
       "instruction_count": 17,
       "candidate_name": "GetPlayerMapPosition",
-      "identity_status": "跨版本高置信候选（11.16参数数与mCurrMapX/mCurrMapY常量吻合；11.2同名函数业务体一致）",
+      "identity_status": "本版指令级行为已确认（复用旧版同名符号）",
       "constants": [
         "mCurrMapX",
         0,
         "y",
         "x",
         "mCurrMapY"
-      ]
+      ],
+      "recovery_status": "已写入唯一明文",
+      "recovery_note": "17条指令、1参数、captureCount=0；假值actor直接返回；mCurrMapX/mCurrMapY各自假值回退0；返回{x=x,y=y}。本版指令独立闭合，与旧版同名函数业务体一致。"
     },
     {
       "preorder_id": 10,
