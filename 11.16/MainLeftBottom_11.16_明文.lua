@@ -465,3 +465,27 @@ local function make_helper_root_26_0(capturedBlacklistKey, capturedBlacklistStat
         blacklistData[capturedBlacklistKey] = nil
     end
 end
+
+
+-- 11.16 root/74：10条物理指令；1个显式参数；使用H[0]与H[1]两个捕获槽位。
+-- 逐条语义：H[0]读取到寄存器；取得string.format；加载“状态切换: %s -> %s”；
+-- 将格式串、H[0]及新状态参数交给string.format；把格式化结果作为唯一参数调用H[0]；
+-- 最后执行H[1] = 新状态。Opcode 264负责固定参数调用并收集返回值，
+-- Opcode 376负责将格式化结果作为可变参数调用目标函数，Opcode 62写回H[1]。
+-- H[0]在原始指令中既作为string.format的第一个格式参数，又作为后续可调用值；
+-- 此处忠实保留寄存器行为，不擅自把它解释成“旧状态”或“日志函数”之一。
+-- capturedUpvalues是VM闭包上值代理的显式占位；root层创建闭包时H[0]/H[1]的真实词法来源
+-- 以及原始函数符号名尚未确认。本项为函数体恢复完成、父级捕获身份待确认的部分恢复项。
+local function make_helper_root_74(capturedUpvalues)
+    return function(newState)
+        local capturedValue0 = capturedUpvalues[0]
+        local formattedMessage = string.format(
+            "状态切换: %s -> %s",
+            capturedValue0,
+            newState
+        )
+
+        capturedValue0(formattedMessage)
+        capturedUpvalues[1] = newState
+    end
+end
