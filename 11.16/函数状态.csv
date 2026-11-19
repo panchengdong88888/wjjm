@@ -60,7 +60,7 @@
 57,root/40,root,1,,待识别,2,19,1,72,未恢复,id | name | ACTOR_NAME | SL | ACTOR_MASTER_ID | GetMetaValue | lastAttacker | AttackUserID | string | type,,,2026-11-18
 58,root/40/0,root/40,2,make_helper_root_40_0（合成定位名）,闭包体已恢复；H[0]来源待确认,0,2,0,6,部分恢复（不计完整函数）,SL | JsonDecode | SL.md「json字符串解密」签名确认,MainLeftBottom_11.16_明文.lua,H[0]捕获源及父级业务变量名待确认；root/40父级72条指令流未保存,2026-11-19
 59,root/41,root,1,,待识别,1,11,0,28,未恢复,global | GetMetaValue | AFKBegin | Facade | AFKEnd | SL | BATTLE_IS_AFK | sendNotification | NoticeTable,,,2026-11-18
-60,root/42,root,1,,待识别,0,9,0,22,指令已提取，待语义闭合,11.16原始载荷定点解析；偏移55483-55831；22物理槽位，22条有效指令,,,2026-11-19
+60,root/42,root,1,helper_root_42,行为已恢复（原始符号名未确认）,0,9,0,22,已写入明文,22槽闭合：Facade缺失提前结束；retrieveProxy(PlayerInputProxy)；代理缺失提前结束；SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND),MainLeftBottom_11.16_明文.lua：helper_root_42,原始函数符号名未确认（不影响函数体完整性）,2026-11-19
 61,root/43,root,1,,待识别,0,34,2,172,未恢复,MoveTo | mCurrMapX | y | ipairs | x | mCurrMapY | dist | 地面无可拾取物品 | sort | find,,,2026-11-18
 62,root/43/0,root/43,2,,待识别,2,2,0,19,未恢复,kIdx | dist,,,2026-11-18
 63,root/43/1,root/43,2,closure_root_43_1,匿名闭包（行为已恢复）,2,1,0,8,已写入明文,dist,MainLeftBottom_11.16_明文.lua,比较两个对象的dist字段：当a.dist小于b.dist时返回false，否则返回true（a.dist >= b.dist）,2026-11-18
