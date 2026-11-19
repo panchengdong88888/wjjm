@@ -4415,37 +4415,8 @@
             "C": 0,
             "mode": 0,
             "flags": 0
-          }
-        },
-        {
-          "create_slot": 111,
-          "opcode": 178,
-          "child_index": 0,
-          "capture_count": 1,
-          "capture_record": {
-            "slot": 112,
-            "opcode": 243,
-            "A": 0,
-            "B": 7,
-            "C": 0,
-            "mode": 0,
-            "flags": 0
-          }
-        },
-        {
-          "create_slot": 113,
-          "opcode": 387,
-          "child_index": 2,
-          "capture_count": 1,
-          "capture_record": {
-            "slot": 114,
-            "opcode": 243,
-            "A": 0,
-            "B": 8,
-            "C": 0,
-            "mode": 0,
-            "flags": 0
-          }
+          },
+          "audit_status": "verified from F() closure-creation branch; creates root/2/1 and captures parent N[6] to H[0]"
         }
       ],
       "decode_validation": {
@@ -4601,12 +4572,13 @@
           "slot_145_149": "N[10]（root/2/1，捕获N[7]）作为Lua string.find模式筛选闭包，调用N[10](item.Name)；Opcode61将结果取反写入N[19]，槽位149跳至153",
           "slot_150_153": "其他参数值走默认分支，N[9]（root/2/0，捕获N[6]）执行精确相等列表筛选；Opcode241将调用结果复制到N[19]",
           "slot_154_155": "Opcode340在N[19]为真时跳过槽位155，进入候选表构造；N[19]为假时执行槽位155跳至169，跳过当前物品",
-          "confirmed_filter_rule": "参数为1：名称不在N[8]精确匹配列表时保留；参数为2：名称未命中N[7]的Lua模式列表时保留；其他参数：名称命中N[6]精确匹配列表时保留。此规则仅覆盖名称筛选阶段，ITEM_IS_BIND等前置过滤仍单独生效。",
+          "confirmed_filter_rule": "Only the register-level branch shape is retained: parameter value 1 calls N[11] then negates; value 2 calls N[10] then negates; other values call N[9] and preserve the result. The actual predicates represented by these registers are unresolved until the fusion and child mapping are corrected.",
           "closure_registers": {
-            "N[9]": "root/2/0，capture parent N[6]",
-            "N[10]": "root/2/1，capture parent N[7]",
-            "N[11]": "root/2/2，capture parent N[8]"
-          }
+            "N[9]": "not mapped to a child prototype; prior mapping withdrawn",
+            "N[10]": "not mapped to a child prototype; prior mapping withdrawn",
+            "N[11]": "not mapped to a child prototype; prior mapping withdrawn"
+          },
+          "status": "control-flow branch shape remains visible, but the identity of N[9], N[10], N[11] is unresolved after the slot111 Opcode178 fusion correction"
         },
         "iterator_sites": [
           {
@@ -4654,7 +4626,7 @@
           "accumulator": "N[12]，槽位115创建空表；每个通过前置过滤和名称筛选的物品构造一条记录并table.insert到N[12]"
         },
         "slot_172_226": {
-          "status": "尾段业务与控制流已闭合；root/2前段仍待整体闭合，暂不计入明文完成",
+          "status": "local tail control flow and message-argument assembly closed; upstream initialization and list identity remain provisional due the slot111 fusion conflict",
           "slot_172_180": {
             "slot_172": "Opcode265：N[13]=#N[12]，计算候选列表长度",
             "slot_173": "Opcode143比较N[13]与常量0；相等时跳过槽位174，进入空列表分支；不相等时执行槽位174",
@@ -4692,8 +4664,25 @@
             "H[0]": "状态持有对象；由空列表与正常结束两条路径写入isDiuing=false。具体父级词法变量名待从root闭包创建点确认",
             "H[1]": "提示回调；用于无候选、逐件提示、地面物品上限提示及汇总提示。具体父级词法变量名待确认"
           },
-          "confidence": "high for opcodes, fusion boundaries, branch direction, and register arguments; upvalue lexical names remain unresolved"
+          "confidence": "high for local tail opcodes and branch direction; end-to-end business interpretation is provisional until the slot111 fusion conflict and N[12] initialization are resolved",
+          "upstream_dependency": "N[12] is used as the candidate list in this segment, but its initialization at slot115 was previously assumed independent; slot115 is consumed by the slot111 Opcode178 fusion according to F(), so candidate-list origin must be re-established before integrating this segment into full Lua."
+        },
+        "slot_109_118_conflict": {
+          "status": "critical conflict; earlier interpretation retracted",
+          "slot_109": "Opcode387 creates childIndex 1 closure and consumes slot110 as its capture record",
+          "slot_111": "Opcode178 is a fused operation, not a closure create; consumes slots112–118",
+          "slot_113": "Opcode387 is fusion payload, not an executed closure create",
+          "withdrawn": "The previous closure_creation_records entries at 111 and 113, the N[9]/N[10]/N[11] child mapping, and the claim that slots116–118 independently initialize pairs iteration are withdrawn",
+          "required_next": "Reconstruct the exact 178 fusion operands from the raw decoded fields and re-evaluate N[9]..N[15], N[12] candidate-list initialization, and the filter calls at 136–153 before writing root/2."
         }
+      },
+      "closure_creation_records_audit": {
+        "status": "previous records for slots 111 and 113 are withdrawn pending correction",
+        "slot_109": "Opcode387 is a confirmed closure-creation opcode; its capture record at slot110 is consumed by the closure-creation branch",
+        "slot_111": "Opcode178 is not a closure-creation opcode in the original F() dispatcher. Its L<=180 branch executes a fused sequence and consumes the next seven physical slots, 112–118.",
+        "slot_113": "Opcode387 appears inside the seven-slot fusion payload consumed by slot111; it is not independently dispatched and must not be counted as a closure creation at this location.",
+        "consequence": "The prior assumption that slots109/111/113 create childIndex 1/0/2 closures is invalid. The parent-to-child mappings for root/2/0 and root/2/2 are unresolved. The execution roles of slots112–118, including prior claims that slot115 creates N[12] and slots116–118 initialize pairs, must be re-derived.",
+        "evidence": "11.16 original F() at approximately offset 190000: L<=182 -> L<=180 branch performs table-field write, constant load, field read, method preparation, constant load, field read, field read, with O advanced seven times; no call to F() occurs in this branch."
       }
     }
   ],
