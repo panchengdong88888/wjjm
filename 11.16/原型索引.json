@@ -3945,9 +3945,10 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 5,
-      "candidate_name": null,
-      "identity_status": "待识别",
-      "constants": []
+      "candidate_name": "make_helper_root_52_20（合成定位名）",
+      "identity_status": "闭包体已恢复；H[0]捕获来源待确认，不计完整函数",
+      "constants": [],
+      "recovery_note": "已由11.16原始载荷定点重解析闭合：读取H[0]并无参调用，随后返回true；父级root/52闭包创建点未映射，明文用capturedCallback显式承载H[0]。"
     },
     {
       "preorder_id": 110,
