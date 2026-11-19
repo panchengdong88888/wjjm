@@ -496,7 +496,7 @@ end
 -- 槽位148 Opcode132读取父级H[2]并绑定到本闭包H[0]。
 -- 子函数Opcode45装载全局_G并融合槽位2读取H[0]；Opcode400读取H[0].LuaSendMsg，
 -- 并融合下一槽将其写入_G.LuaSendMsg。该闭包没有额外调用，随后Opcode339结束。
--- root/52自身H[2]在更外层root中的来源尚未映射，故保留capturedUpvalue0占位。
+-- root/52自身H[2]已追到root槽526创建childIndex=25的相邻另一闭包不相关；本闭包对应root槽633创建childIndex=52时的第3个捕获，来源为root N[0]。N[0]具备主模块状态表特征，但原始变量名未证实，故保留capturedUpvalue0占位。
 -- make_helper_root_52_11为原型路径合成定位名，不是原始函数符号名。
 local function make_helper_root_52_11(capturedUpvalue0)
     _G.LuaSendMsg = capturedUpvalue0.LuaSendMsg
@@ -509,7 +509,7 @@ end
 -- Opcode324读取H[0]；Opcode7将H[0].GATHER_THRESHOLD设为11，并融合槽位3装载全局InitGatherMonsters；
 -- Opcode123无参调用该全局函数；Opcode110写入一个未再使用的false临时值；
 -- Opcode292返回当前N[0]（仍为InitGatherMonsters函数值），Opcode205位于return之后。
--- 父级root/52的H[9]在更外层root中的来源尚未映射；保留capturedUpvalue0占位。
+-- 父级root/52的H[9]已追到root槽633创建childIndex=52时的第10个捕获，来源为root N[8]；N[8]持有GetMapId、GetMapName、PlayerPos、GetDroppedItems、MoveTo、DiuItems等接口方法，原始变量名未证实，保留capturedUpvalue0占位。
 -- make_helper_root_52_28为原型路径合成定位名，不是原始函数符号名。
 local function make_helper_root_52_28(capturedUpvalue0)
     capturedUpvalue0.GATHER_THRESHOLD = 11
@@ -523,7 +523,7 @@ end
 -- root/25/0槽位513 Opcode178创建childIndex=0闭包，槽位514 Opcode132将父级H[0]
 -- 绑定到本闭包H[0]。因此本闭包写入的是root/25/0共享的同一upvalue单元。
 -- Opcode110置N[0]=false，Opcode162执行H[0]=N[0]，Opcode205结束。
--- capturedUpvalues[0]为共享upvalue代理；其在root层的业务变量身份尚待确认。
+-- capturedUpvalues[0]为共享upvalue代理；捕获链最终指向root N[74]，但该寄存器在root主函数中有分支/复用，业务变量身份尚待确认。
 local function make_helper_root_25_0_0(capturedUpvalues)
     return function()
         capturedUpvalues[0] = false
