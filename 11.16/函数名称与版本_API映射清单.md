@@ -13,7 +13,7 @@
 ## 2. 数量和判定口径
 
 - root直接子原型：81个。
-- 原型索引中已有候选名称：56个（含本轮新增26个跨版本候选）；仍待识别：25个。
+- 原型索引中已有候选名称：58个（含本轮新增28个跨版本候选）；仍待识别：23个。
 - 与11.2函数声明同名的root候选：17个。
 - 当前11.16明文与11.2明文已有的精确函数声明名交集：13个。精确交集：`GetMapId`、`GetMapName`、`GetMainPlayerID`、`IsDie`、`PlayerPos`、`GetOwnerID`、`GetDroppedItems`、`ShowLocalNoticeByType`、`FindMonsterInCurrViewField`、`MoveItemToQuickUse`、`DistanceCalculation`、`FindMonsterCandidates`、`InitGatherMonsters`。
 - “11.2同名”只表示名称线索，不自动证明业务实现相同；必须再核对常量、参数、调用形状和本版差异。
@@ -71,7 +71,7 @@
 | root/44 | 待识别 | 未确认 | — | 29 |
 | root/45 | StorageItems | 是 | `GetMetaValue`、`UseItemByIndex` | 224 |
 | root/46 | IsInWhitelistMap | 是 | `GetMetaValue` | 42 |
-| root/47 | 待识别 | 未确认 | `ScheduleOnce` | 7 |
+| root/47 | ScheduleOnce（SL官方API包装） | 是 | `ScheduleOnce` | 7 |
 | root/48 | 待识别 | 未确认 | — | 26 |
 | root/49 | PlayerPos | 是 | `GetMetaValue` | 10 |
 | root/50 | 待识别 | 未确认 | — | 444 |
@@ -102,7 +102,7 @@
 | root/75 | FindMonsterCandidates | 是 | `FindMonsterInCurrViewField` | 102 |
 | root/76 | 待识别 | 未确认 | `GetMetaValue` | 25 |
 | root/77 | GetMainPlayerID | 是 | — | 6 |
-| root/78 | 待识别 | 未确认 | `Schedule` | 7 |
+| root/78 | Schedule（SL官方API包装） | 是 | `Schedule` | 7 |
 | root/79 | forgeZodiac | 是 | `UseItemByIndex` | 212 |
 | root/80 | ShowLocalNoticeByType | 是 | `ShowLocalNoticeByType` | 15 |
 
@@ -150,7 +150,7 @@
 ## 6. 当前结论与下一步
 
 1. 11.2明文已完整读取，不是只读取函数名；本轮建立了函数声明名称基线。
-2. 11.16当前原型索引已有56个root候选名（其中26个是本轮跨版本高置信候选），剩余25个root原型尚未有可靠函数名。不得用常量猜成确定名称。
+2. 11.16当前原型索引已有58个root候选名（其中28个是本轮跨版本高置信候选），剩余23个root原型尚未有可靠函数名。不得用常量猜成确定名称。
 3. 下一步先用11.2明文中对应函数的结构、常量与调用关系，为这51个待识别项建立候选映射；再用3.40.x文档剔除官方API调用，避免把框架API误当作项目自定义函数。
 4. 11.9继续作为独立版本只读对照，不能把11.9差异或实现直接标成11.2证据，也不能覆盖11.16原始证据。
 5. 本清单是名称/版本/API索引，不替代唯一明文源码，也不改变原型恢复计数。原始Lua保持只读。
@@ -235,3 +235,11 @@
 | root/73 | Nested_04d_02d_02d | os/date/*t*/hour/min/sec及79200、72000等时间常量，与11.2的22:00:05定时触发回调闭包一致 |
 
 至此81个root原型中56个已有候选名称，25个仍待识别。以上仅确认名称/职责候选，不将它们计为明文恢复。
+
+
+## 12. 官方调度API包装函数识别
+
+- root/47：2参数、7条指令，常量为SL与ScheduleOnce；与11.2的ScheduleOnce包装函数调用形状吻合，候选名标记为ScheduleOnce。
+- root/78：2参数、7条指令，常量为SL与Schedule；与11.2的Schedule包装函数调用形状吻合，候选名标记为Schedule。
+- 这两个root原型是MainLeftBottom层的薄包装，不是框架API本身。真正的框架调用分别为SL:ScheduleOnce和SL:Schedule，已由3.40.x SL.md明确列出；后续直接使用文档签名，不分析API内部。
+- 当前81个root原型中58个已有候选名，23个仍待识别。
