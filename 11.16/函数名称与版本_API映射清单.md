@@ -258,3 +258,15 @@
 | root/61 | backCity | root/27与root/54均引用 `backCity`；root/61常量包含 `QUICKUSE_DATA`、`盟重回城石`、`ITEM_INDEX_BY_NAME`、`ITEM_COUNT`、`UseItemByIndex`，与查找并使用回城石的职责吻合 | 高置信候选；未保存完整指令流，调用绑定仍待本版指令核验 |
 
 这两项只补充函数身份候选，不代表完整明文恢复，不增加业务恢复计数。官方代理与物品元变量API按3.40.x文档使用，不分析其内部逻辑。
+
+
+## 15. root/10、root/11、root/25、root/41职责线索（不构成名称确认）
+
+| 原型 | 参数/指令 | 本版常量与线索 | 可确认的业务范围 | 名称状态 |
+|---|---:|---|---|---|
+| root/10 | 0 / 29 | forgeZodiacRunning、checkGold、forgeZodiac、forgeZodiacTimer、ticks、锻造提示 | 生肖锻造定时回调或循环控制；root/79已是forgeZodiac候选、root/48已是checkGold候选 | 待识别；无父级注册名 |
+| root/11 | 0 / 31 | IsInWhitelistMap、cruiseRunTimer、cruiseGatherPaused、UnSchedule、关闭见人跑 | 见人跑巡航暂停/取消调度 | 待识别；常量不能证明声明名 |
+| root/25 | 0 / 33，1个子原型 | Schedule、UnSchedule、cruiseRunTimer、开启见人跑 | 见人跑巡航启动/定时调度，含一个回调闭包 | 待识别；缺父级完整指令流 |
+| root/41 | 1 / 28 | AFKBegin、AFKEnd、BATTLE_IS_AFK、GetMetaValue、sendNotification、NoticeTable | 挂机AFK状态切换及状态通知 | 待识别；参数语义未证实 |
+
+上述仅缩小业务职责范围，不代表确认函数名或恢复函数体。当前候选指令提取文件未含这四项完整指令流，原始root 654条指令流也未保存在仓库；不重复全量解包，不据此虚增名称或恢复计数。
