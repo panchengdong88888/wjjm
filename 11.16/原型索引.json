@@ -2169,14 +2169,15 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 17,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_32（合成定位名）",
+      "identity_status": "部分恢复（闭包体已恢复；捕获来源待确认）",
       "constants": [
         "cruiseGatherPaused",
         "zd",
         false,
         "见人跑："
-      ]
+      ],
+      "recovery_notes": "17条物理指令逐槽闭合。显式参数1；H[0]为条件状态并可写false，H[1]接收“见人跑：”..参数，H[2].cruiseGatherPaused=false后调用H[2].zd(true)。root父级指令流未保存，H[0..2]真实词法来源未知；不计完整函数。"
     },
     {
       "preorder_id": 48,
