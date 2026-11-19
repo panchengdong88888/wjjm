@@ -4685,7 +4685,100 @@
         "slot_113": "Opcode387 appears inside the seven-slot fusion payload consumed by slot111; it is not independently dispatched and must not be counted as a closure creation at this location.",
         "consequence": "The prior assumption that slots109/111/113 create childIndex 1/0/2 closures is invalid. The parent-to-child mappings for root/2/0 and root/2/2 are unresolved. The execution roles of slots112–118, including prior claims that slot115 creates N[12] and slots116–118 initialize pairs, must be re-derived.",
         "evidence": "11.16 original F() at approximately offset 190000: L<=182 -> L<=180 branch performs table-field write, constant load, field read, method preparation, constant load, field read, field read, with O advanced seven times; no call to F() occurs in this branch."
-      }
+      },
+      "reconstruction": {
+        "slot_111_118_fusion_reaudit": {
+          "status": "unresolved_operand_mapping_conflict; do_not_reconstruct_root2_from_this_fusion_yet",
+          "source_evidence": "11.16原版内嵌F()分派器约偏移190221，Opcode 178命中L<=180分支。该分支从当前槽位开始执行一次表字段写入，并连续读取后续7个物理槽位，依次执行：N[A][B]=N[C]；N[A]=Z[B]；N[A]=N[B][C]；N[A+1]=N[B]且N[A]=N[A][C]；N[A]=Z[B]；N[A]=N[B][C]；N[A]=N[B][C]；N[A]=N[B][C]。这些载荷槽位不再独立分派。",
+          "physical_records_111_118": [
+            {
+              "slot": 111,
+              "opcode": 178,
+              "A": 10,
+              "B": 0,
+              "C": 1,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 112,
+              "opcode": 243,
+              "A": 0,
+              "B": 7,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 113,
+              "opcode": 387,
+              "A": 11,
+              "B": 2,
+              "C": 1,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 114,
+              "opcode": 243,
+              "A": 0,
+              "B": 8,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 115,
+              "opcode": 279,
+              "A": 12,
+              "B": 0,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 116,
+              "opcode": 105,
+              "A": 13,
+              "B": "pairs",
+              "C": null,
+              "mode": 1,
+              "flags": 2
+            },
+            {
+              "slot": 117,
+              "opcode": 288,
+              "A": 14,
+              "B": 5,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 118,
+              "opcode": 386,
+              "A": 13,
+              "B": 14,
+              "C": 15,
+              "mode": 0,
+              "flags": 0
+            }
+          ],
+          "conflict": "按当前候选JSON字段逐项代入时，槽位116为A=13、B常量pairs、C=null；若将它直接代入融合载荷的N[A]=N[B][C]，会得到N[13]=N[pairs][nil]，与后续pairs迭代器准备用途不相容。槽位112/113/114/115/117/118的寄存器效果也尚未形成一致、可执行的寄存器状态链。",
+          "interpretation": "这不证明原版指令有错；它证明当前候选JSON的字段/常量替换解释、融合载荷与物理槽位的对齐，至少有一项尚未核实。禁止把槽位112–118当作独立Opcode执行，也禁止继续使用此前槽位115初始化N[12]、槽位116–118初始化pairs的旧结论。",
+          "verified_facts": [
+            "槽位109 Opcode387创建root/2/1闭包；槽位110 Opcode243是其捕获记录，父级N[6]捕获到H[0]。",
+            "槽位111 Opcode178为融合入口，不是闭包创建。",
+            "Opcode178分派器分支连续消费后续7个物理槽位112–118。",
+            "槽位113的Opcode字段387位于融合载荷中，不会独立创建root/2/2闭包。",
+            "root/2/0与root/2/2的父级闭包创建点仍未确认。"
+          ],
+          "next": "重新逐字节核对root/2槽位111–118的S()解码原始字段、常量索引基准和模式位；将S()的每个K[2]/K[3]/K[4]与候选JSON逐字段比对。只有字段映射闭合后再模拟融合链，并重审N[9]..N[15]及槽位136–153。"
+        },
+        "status": "root/2整体未闭合；槽位111–118融合载荷字段映射存在待解决矛盾",
+        "next": "先解决slot_111_118_fusion_reaudit，再恢复root/2剩余逻辑；不写入唯一明文源码。"
+      },
+      "decode_validation_reaudit_2026_11_19": "原始S()解析完整消费142522字节、162原型的结构结果仍是基准；本轮发现root/2槽位111–118融合载荷与当前候选字段解释无法组成一致寄存器链，需定点复核，未推翻已完成的其他原型。"
     }
   ],
   "constant_type_notes": {
