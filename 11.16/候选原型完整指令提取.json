@@ -4623,7 +4623,9 @@
             "name"
           ],
           "count_rule": "count = item.OverLap or 1（Lua真值语义；nil/false回退为1）",
-          "accumulator": "N[12]，槽位115创建空表；每个通过前置过滤和名称筛选的物品构造一条记录并table.insert到N[12]"
+          "accumulator": "N[12]在槽位169作为table.insert的目标表使用；但其创建点不能再认定为槽位115 Opcode279，必须从槽位111融合序列重新确定",
+          "status": "寄存器级构造片段待复核；因槽位111 Opcode178融合消费112–118，槽位115并非独立执行指令，N[12]候选列表初始化尚未闭合",
+          "withdrawn": "此前将槽位115 Opcode279单独解释为N[12]={}已撤回；槽位115位于Opcode178融合载荷内"
         },
         "slot_172_226": {
           "status": "local tail control flow and message-argument assembly closed; upstream initialization and list identity remain provisional due the slot111 fusion conflict",
@@ -4665,7 +4667,7 @@
             "H[1]": "提示回调；用于无候选、逐件提示、地面物品上限提示及汇总提示。具体父级词法变量名待确认"
           },
           "confidence": "high for local tail opcodes and branch direction; end-to-end business interpretation is provisional until the slot111 fusion conflict and N[12] initialization are resolved",
-          "upstream_dependency": "N[12] is used as the candidate list in this segment, but its initialization at slot115 was previously assumed independent; slot115 is consumed by the slot111 Opcode178 fusion according to F(), so candidate-list origin must be re-established before integrating this segment into full Lua."
+          "upstream_dependency": "N[12]在槽位172、183、158、169作为候选列表使用；其初始化来源此前误认作槽位115，现已撤回，必须先复核槽位111–118融合序列。该尾段只能作为局部寄存器/控制流片段保存，不能直接生成完整Lua。"
         },
         "slot_109_118_conflict": {
           "status": "critical conflict; earlier interpretation retracted",
