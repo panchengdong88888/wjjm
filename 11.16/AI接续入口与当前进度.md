@@ -977,3 +977,7 @@
 ### 2026-11-19续：root/5坐标读取函数候选
 - root/5（1参数、17条指令，mCurrMapX/mCurrMapY常量）与11.2 GetPlayerMapPosition 同职责，已同步映射和总索引。
 - 全量非root原型候选名称：79/161；root层：59/81。不计入明文恢复。
+
+
+### 2026-11-19续：root/5明文名称修正
+- 唯一明文文件中root/5定义已从合成名helper_root_5改为GetPlayerMapPosition，与其调用点统一；只修名称/注释，未改函数逻辑，不增加恢复计数。
