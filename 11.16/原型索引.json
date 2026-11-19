@@ -788,10 +788,10 @@
         1,
         "雷霆项链+8"
       ],
-      "recovery_status": "226条物理指令已提取；槽位1–110及局部尾段有分析记录；槽位111–118融合载荷字段映射存在矛盾，父函数整体未闭合",
-      "instruction_capture_summary": "仅确认槽位109 Opcode387创建childIndex=1（root/2/1）闭包，槽位110 Opcode243捕获N[6]到H[0]。槽位111 Opcode178融合消费112–118；此前槽位111/113创建闭包及其N[7]/N[8]捕获映射均撤回。",
+      "recovery_status": "226条物理指令已提取；Opcode178槽位111–118融合语义已逐槽展开；当前候选操作数字段出现Z[0]及N['pairs'][nil]异常，父函数未闭合",
+      "instruction_capture_summary": "槽位109/110确认创建root/2/1并捕获N[6]。槽位111 Opcode178融合消费112–118，具体效果已逐槽记录；槽位113的Opcode387不独立分派。",
       "business_summary": "已确认函数涉及isDiuing状态、GetDroppedItems、BAG_DATA、物品名称/绑定筛选及候选物品处理等线索；因槽位111–118寄存器效果未闭合，完整业务代码和候选列表来源尚不能定稿。",
-      "warning": "禁止把槽位112–118当作独立指令；当前候选JSON字段代入Opcode178融合载荷出现N[pairs][nil]等不一致结果，须复核S()字段解码/常量索引/融合槽位对齐。不得写入root/2完整函数体。"
+      "warning": "Opcode178精确融合效果见候选指令JSON的slot_111_118_exact_fusion_trace_2026_11_19。当前操作数映射不可直接转写为Lua；先核对原始S()字节/常量索引基准/字段替换。"
     },
     {
       "preorder_id": 4,
