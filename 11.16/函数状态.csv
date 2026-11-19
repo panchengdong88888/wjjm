@@ -23,7 +23,7 @@
 21,root/15/0,root/15,2,,待识别,1,5,0,19,未恢复,ShowSystemTips | SL | putinTimer | UnSchedule,,,2026-11-18
 22,root/15/1,root/15,2,,待识别,0,25,0,121,未恢复,OverLap | 上架结束：总价超出上限 | pairs | SL | MakeIndex | ITEM_IS_BIND | AUCTION_BIDPRICE_MAX | tonumber | GetMetaValue | RequestAuctionPutin,,,2026-11-18
 23,root/16,root,1,SetButtonVisibilityState,跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）,0,6,0,25,未恢复,infoBg | pairs | setVisible | GUI | isHidden,,,2026-11-18
-24,root/17,root,1,GetAvailableStoragePage,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,12,0,51,未恢复,NPC_STORAGE_MAX_PAGE | NPCStorageProxy | global | GetMaxPage | 仓库代理未初始化 | GUIDefine | STORAGE_PER_PAGE_MAX | GetOpenSize | MMO | GetStorageDataByPage,,,2026-11-18
+24,root/17,root,1,GetAvailableStoragePage,跨版本业务复用（11.2同名函数体与11.16常量/签名吻合；未逐槽模拟）,0,12,0,51,已写入明文（跨版本业务复用；非指令级完整还原）,11.16 root/17：0参数、51条指令；NPCStorageProxy、GetMaxPage、GetStorageDataByPage、GetOpenSize、GUIDefine.STORAGE_PER_PAGE_MAX、NPC_STORAGE_MAX_PAGE等常量与11.2同名函数一致。跨版本复用，未逐槽模拟。,MainLeftBottom_11.16_明文.lua：GetAvailableStoragePage,本版指令未逐槽核验；出现行为差异时定点复查,2026-11-19
 25,root/18,root,1,,待识别,0,8,0,34,未恢复,"FileUtilCtl | ([%w_]+)=([^
 ]*) | string | global | gmatch | getWritablePath | isFileExist | getDataFromFileEx",,,2026-11-18
 26,root/19,root,1,AccountIDValidation,跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）,0,21,2,64,未恢复,GAME_ID | Schedule | 6324648 | GetMetaValue | 1957840929 | 1304755149 | 39770358 | UID | 3548598 | [验证成功] 账号ID验证通过,,,2026-11-18
@@ -53,7 +53,7 @@
 50,root/33/1,root/33,2,,待识别,0,23,0,77,未恢复,Facade | putoutTicks | putoutSent | ipairs | global | SL | RequestAuctionPutout | 下架完成：已无上架物品 | 下架结束 | RequestAuctionPutList,,,2026-11-18
 51,root/34,root,1,BlacklistPlayerDetection,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,43,0,274,未恢复,IsInWhitelistMap | gamePlayerController | GetMainPlayer | concat | deathHandled | GetMetaValue | table | os | time | noStoneWarned,,,2026-11-18
 52,root/35,root,1,,待识别,0,12,0,32,未恢复,NoticeTable | Facade | _normalMediators | LayerFacadeMediator | Layer_CommonTips_Close | retrieveMediator | sendNotification | global | CloseLayer,,,2026-11-18
-53,root/36,root,1,GetStorageItemData,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,16,0,77,未恢复,table | STORAGE_PER_PAGE_MAX | ipairs | insert | 仓库总可用格子:  | MMO | global | NPCStorageProxy | GetOpenSize | GetMaxPage,,,2026-11-18
+53,root/36,root,1,GetStorageItemData,跨版本业务复用（11.2同名函数体与11.16常量/签名吻合；未逐槽模拟）,0,16,0,77,已写入明文（跨版本业务复用；非指令级完整还原）,11.16 root/36：0参数、77条指令；NPCStorageProxy分页读取、STORAGE_PER_PAGE_MAX、GetOpenSize、GetMaxPage及“仓库总可用格子”提示与11.2同名函数吻合。跨版本复用，未逐槽模拟。,MainLeftBottom_11.16_明文.lua：GetStorageItemData,本版指令未逐槽核验；出现行为差异时定点复查,2026-11-19
 54,root/37,root,1,GetMapName,本轮已恢复,0,4,0,9,已写入明文,SL |  | MAP_NAME | GetMetaValue,MainLeftBottom_11.16_明文.lua,,2026-11-18
 55,root/38,root,1,DistanceCalculation,高置信候选（跨版本业务对应）,2,6,0,25,已写入明文（跨版本业务复用；未逐槽核验）,99999 | abs | y | math | x | max,MainLeftBottom_11.16_明文.lua：DistanceCalculation,11.2/11.9均有同职责实现；本版参数数、常量数和指令数吻合；未逐槽核验,2026-11-19
 56,root/39,root,1,IsDie,本轮已恢复,1,1,0,7,已写入明文,IsDie,MainLeftBottom_11.16_明文.lua,,2026-11-18
@@ -81,7 +81,7 @@ mode=%s
 75,root/50/2,root/50,2,make_helper_root_50_2（合成定位名）,闭包体已恢复；H[0]/H[1]父级来源待确认,0,0,0,5,部分恢复（不计完整函数）,Opcode330写H[0]=false并读取H[1]；H[1]()；Opcode205结束,H[0]/H[1]父级源寄存器及业务变量名待确认,2026-11-19
 76,root/50/3,root/50,2,make_helper_root_50_3（合成定位名）,闭包体已恢复；父级捕获变量身份待确认,0,2,0,5,部分恢复（不计完整函数）,root/50槽441 Opcode387创建childIndex=3，槽442 Opcode243捕获父N[7]到H[0]；Opcode253/138准备GUI.Win_Close并保存receiver，Opcode324将H[0]放入参数寄存器N[2]，Opcode123调用参数区间N[1]..N[2]，等价于GUI:Win_Close(H[0]),MainLeftBottom_11.16_明文.lua,父级N[7]的原始词法变量名及业务身份待确认；函数体已闭合但捕获来源名称未确认，不计完整,2026-11-19
 77,root/50/4,root/50,2,,待识别,0,4,0,23,未恢复,Button_setTitleColor | GUI | #ffffff | #00ff00,,,2026-11-18
-78,root/51,root,1,PrintLog,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,1,13,0,38,未恢复,select | type | # | pcall | Print | table | format | tostring | string | SL,,,2026-11-18
+78,root/51,root,1,PrintLog,跨版本业务复用（11.2同名函数体与11.16常量/签名吻合；未逐槽模拟）,1,13,0,38,已写入明文（跨版本业务复用；非指令级完整还原）,11.16 root/51：1个固定参数并带可变参数、38条指令；常量select、type、#、pcall、Print、table、format、tostring、string、SL等与11.2同名函数吻合。保留其没有实际调用SL.Print的旧版行为；跨版本复用，未逐槽模拟。,MainLeftBottom_11.16_明文.lua：PrintLog,本版指令未逐槽核验；出现行为差异时定点复查,2026-11-19
 79,root/52,root,1,doInit_UI / 主界面初始化,高置信候选,0,176,37,865,未恢复,"开拾取 | infoGoldTxt | 开苹果图中
 开苹果图中
 开苹果图中 | y | Layout_Create | cruiseTxt | 元宝 | -- | 开拉怪 | x",,,2026-11-18
