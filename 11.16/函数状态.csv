@@ -105,7 +105,7 @@ mode=%s
 97,root/52/10,root/52,2,make_helper_root_52_10（捕获提示回调待映射）,闭包体已恢复；H[0]捕获来源待确认,0,2,0,6,部分恢复（不计完整函数）,ClearBlacklistItems | 清空黑名单,MainLeftBottom_11.16_明文.lua,root/52槽位617创建闭包并捕获父级H[0]；H[0]具体业务身份仍待root/52外层映射,2026-11-19
 98,root/52/11,root/52,2,,待识别,0,2,0,5,未恢复,_G | LuaSendMsg,,,2026-11-18
 99,root/52/12,root/52,2,closure_root_52_12（合成定位名）,行为已恢复,0,3,0,5,已写入明文,global | gameWorldController | OnGameLeaveWorld,MainLeftBottom_11.16_明文.lua,5条物理指令全部闭合；Opcode248融合全局加载/成员读取/方法准备，Opcode123调用，Opcode205结束；API文档未收录，按原始调用点恢复,2026-11-19
-100,root/52/13,root/52,2,,待识别,0,1,0,13,未恢复,cruiseRunTimer,,,2026-11-18
+100,root/52/13,root/52,2,make_helper_root_52_13（合成定位名）,闭包体已恢复；H[0..2]父级捕获来源待确认,0,1,0,13,部分恢复（不计完整函数）,cruiseRunTimer,MainLeftBottom_11.16_明文.lua,Opcode127读取H[0]并检查cruiseRunTimer；真值调用H[1]，假值调用H[2]；两路均返回true；父级捕获映射未保存,2026-11-19
 101,root/52/14,root/52,2,,待识别,6,38,0,174,未恢复,"tostring | sealPanelAt | ancientSwordData | swordPullPending | ""power"" | subData_2 | combatPower | find |  | ,",,,2026-11-18
 102,root/52/15,root/52,2,,待识别,0,11,0,36,未恢复,dropTimer | 开丢全部 | diuqibut | dropallbut | Button_setTitleText | GUI | #ff0000 | #ffffff | Button_setTitleColor | 关丢全部,,,2026-11-18
 103,root/52/16,root/52,2,,待识别,0,8,1,33,未恢复,SL | rewardTimer | Schedule | 开启奖励功能 | UnSchedule | 关闭奖励功能,,,2026-11-18
