@@ -924,8 +924,8 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 17,
-      "candidate_name": "helper_root_5（合成定位名）",
-      "identity_status": "行为已恢复；原始符号名待确认",
+      "candidate_name": "GetPlayerMapPosition",
+      "identity_status": "跨版本高置信候选（11.16参数数与mCurrMapX/mCurrMapY常量吻合；11.2同名函数业务体一致）",
       "constants": [
         "mCurrMapX",
         0,
