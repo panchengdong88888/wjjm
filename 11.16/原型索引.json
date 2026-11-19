@@ -2421,8 +2421,8 @@
       "child_count": 0,
       "parameter_count": 2,
       "instruction_count": 25,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "DistanceCalculation",
+      "identity_status": "跨版本业务高置信（原始符号名待确认）",
       "constants": [
         99999,
         "abs",
