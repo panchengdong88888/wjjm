@@ -5410,8 +5410,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 23,
-      "candidate_name": "Nested_04d_02d_02d",
-      "identity_status": "跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）",
+      "candidate_name": "Nested_04d_02d_02d（同职责候选）",
+      "identity_status": "仅同职责候选；11.2同名回调结构与本版常量/时间窗口不同，禁止直接复用",
       "constants": [
         79200,
         "os",
@@ -5423,7 +5423,10 @@
         60,
         72000,
         "date"
-      ]
+      ],
+      "recovery_status": "未恢复（本版指令流待提取）",
+      "business_summary": "23条物理指令、0参数；常量os、date、*t、hour、min、sec、79200（22:00）、72000（20:00）、3600、60表明与时间窗口/日期计算有关。不能直接套用11.2的Nested_04d_02d_02d：旧版包含lastSentDate/notify捕获及22:00:05附近窗口，本版常量与时间阈值不同。",
+      "recovery_evidence": "11.16原型索引记录23条物理指令及10项常量；当前仓库没有root/73逐槽指令记录。旧版MainLeftBottom_唯一交付文件.lua中同名候选为带lastSentDate、unusedCapturedState、notify捕获的22:00:05回调，结构/常量与本版不一致。不得跨版本复制；需先补齐本版23条指令和捕获证据。"
     },
     {
       "preorder_id": 154,
