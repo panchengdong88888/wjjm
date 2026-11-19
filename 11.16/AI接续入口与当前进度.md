@@ -680,3 +680,10 @@
 - root/52/28在槽556创建，槽557捕获父H[9]；闭包体设置GATHER_THRESHOLD=11、调用InitGatherMonsters并返回该函数值，已写入唯一明文。
 - 当前完整明文仍31/162（19.14%）；部分恢复12项。捕获链最终业务名称尚未确认的闭包不计完整函数。原始文件未修改。
 - 下一项：追踪root/25的H[2]、root/52的H[2]/H[9]在root级创建闭包时的来源；再核对root/50/3的调用异常。Lua语法/静态/运行验证尚未执行。
+
+
+### root级捕获链追踪增量
+- root槽526 Opcode178创建childIndex=25闭包，槽529 Opcode243捕获root N[74]到root/25的H[2]；因此root/25/0/0与root/25/0/2的共享upvalue最终对应root N[74]，原始变量名待确认。
+- root槽633 Opcode178创建childIndex=52闭包：root/52 H[2]来自root N[0]（root N[0]初始化并持有version、screenW、screenH、Blocklist、SendHookList、RecvHookList等字段）；root/52 H[9]来自root N[8]（前段接收GetMapId、GetMapName、PlayerPos、GetDroppedItems、MoveTo、DiuItems等方法）。这些是寄存器证据，不等于确认了变量原名。
+- 原型索引已记录root级捕获寄存器。完整明文仍31/162（19.14%），部分恢复12项。
+- 下一项：分析root N[74]的控制流/生命周期，确认其在root/25闭包创建时的值语义；不要直接按线性寄存器写入给它命名。
