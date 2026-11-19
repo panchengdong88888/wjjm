@@ -13,7 +13,7 @@
 ## 2. 数量和判定口径
 
 - root直接子原型：81个。
-- 原型索引中已有候选名称：65个；仍待识别：16个。
+- 原型索引中已有候选名称：63个；仍待识别：18个。
 - 与11.2函数声明同名的root候选：17个。
 - 当前11.16明文与11.2明文已有的精确函数声明名交集：13个。精确交集：`GetMapId`、`GetMapName`、`GetMainPlayerID`、`IsDie`、`PlayerPos`、`GetOwnerID`、`GetDroppedItems`、`ShowLocalNoticeByType`、`FindMonsterInCurrViewField`、`MoveItemToQuickUse`、`DistanceCalculation`、`FindMonsterCandidates`、`InitGatherMonsters`。
 - “11.2同名”只表示名称线索，不自动证明业务实现相同；必须再核对常量、参数、调用形状和本版差异。
