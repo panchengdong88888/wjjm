@@ -352,3 +352,23 @@ local function make_helper_root_2_2(capturedList)
         return false
     end
 end
+
+
+-- 11.16 root/2/1：20条物理指令；1个参数；通过父级闭包捕获H[0]。
+-- root/2槽位109的Opcode387创建childIndex=1闭包，captureCount=1；紧随槽位110的Opcode243
+-- 指明捕获父级局部寄存器N[6]。该寄存器在root/2槽位37创建列表，槽位66将28个物品名称/名称片段
+-- 写入列表，因此这里将H[0]描述为物品名称匹配列表；父级原始局部变量名仍未确认。
+-- 子函数先用ipairs遍历捕获列表，再调用string.find(value, pattern, 1, false)进行Lua模式匹配；
+-- 命中时返回true，遍历结束返回false。Opcode227融合装载string.find及参数准备；Opcode314建立ipairs迭代器；
+-- Opcode358控制命中分支，Opcode250推进迭代，Opcode293返回布尔结果。
+-- make_helper_root_2_1为原型路径合成定位名，非原始函数符号名。
+local function make_helper_root_2_1(capturedNamePatterns)
+    return function(value)
+        for _, pattern in ipairs(capturedNamePatterns) do
+            if string.find(value, pattern, 1, false) then
+                return true
+            end
+        end
+        return false
+    end
+end
