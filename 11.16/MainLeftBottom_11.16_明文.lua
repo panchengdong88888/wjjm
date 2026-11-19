@@ -568,3 +568,22 @@ local function helper_root_65(value)
     return string.find(value, "盟重", 1, true)
         or string.find(value, "土城", 1, true)
 end
+
+-- 11.16 root/32：17条物理指令，1个显式参数，3个upvalue捕获。
+-- Opcode 324读取H[0]；Opcode 289在H[0]为真时跳过后续跳转槽。
+-- H[0]为真时将其置false，并调用H[1]("见人跑：" .. zd)；
+-- Opcode 88读取H[2]并融合写入H[2].cruiseGatherPaused=false；
+-- 随后读取H[2].zd并调用zd(true)。
+-- root父级654条指令流未保存，H[0..2]在父级的真实词法来源尚不能确认；
+-- 因此用capturedUpvalues显式保留捕获槽，不伪造业务变量名，按部分恢复统计。
+local function make_helper_root_32(capturedUpvalues)
+    return function(zd)
+        if capturedUpvalues[1] then
+            capturedUpvalues[1] = false
+            capturedUpvalues[2]("见人跑：" .. zd)
+        end
+
+        capturedUpvalues[3].cruiseGatherPaused = false
+        capturedUpvalues[3].zd(true)
+    end
+end
