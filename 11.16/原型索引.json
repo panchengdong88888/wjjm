@@ -3663,8 +3663,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 6,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_52_10（合成定位名）",
+      "identity_status": "闭包体已恢复；H[0]捕获来源待确认",
       "constants": [
         "ClearBlacklistItems",
         "清空黑名单"
