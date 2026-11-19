@@ -2552,8 +2552,8 @@
         "SetTargetID",
         "SELETE_TARGET_TYPE_FIND"
       ],
-      "recovery_status": "已写入唯一明文；本版完整函数体与旧版同名声明/业务一致。",
-      "business_summary": "无参数；检查Facade和PlayerInputProxy，调用proxy:SetTargetID(0, SELETE_TARGET_TYPE_FIND)。与11.2 root.children[56] ClearTargetID_2业务体完全吻合，22条本版指令闭合、无捕获。"
+      "recovery_status": "已写入唯一明文；本版指令级行为与旧版同名函数体一致。",
+      "business_summary": "22条指令闭合、无捕获；Facade.retrieveProxy(PlayerInputProxy)后调用SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)，与11.2同名函数完全吻合。"
     },
     {
       "preorder_id": 61,
@@ -5297,8 +5297,8 @@
         "自己",
         -1
       ],
-      "recovery_status": "已写入唯一明文；本版完整函数体与旧版同名声明/业务一致。",
-      "business_summary": "两个参数；调用actor:GetOwnerID，返回ownerId及“无归属/自己/其他玩家”标签。与11.2 root.children[43] GetOwnerDescription声明及业务体完全吻合，20条本版指令闭合、无捕获。"
+      "recovery_status": "已写入唯一明文；本版指令级行为与旧版同名函数体一致。",
+      "business_summary": "20条指令闭合、无捕获；两个参数、GetOwnerID调用、双返回值及“无归属/自己/其他玩家”标签，与11.2同名函数完全吻合。"
     },
     {
       "preorder_id": 149,
@@ -5320,8 +5320,8 @@
         "GetMetaValue",
         "y"
       ],
-      "recovery_status": "已写入唯一明文；本版完整函数体与旧版同名声明/业务一致。",
-      "business_summary": "无参数；读取SL:GetMetaValue('X'/'Y')，各自假值回退0，返回{x,y}。与11.2 root.children[18] GetPlayerPosition业务体完全吻合，19条本版指令闭合、无捕获。"
+      "recovery_status": "已写入唯一明文；本版指令级行为与旧版同名函数体一致。",
+      "business_summary": "19条指令闭合、无捕获；读取SL元变量X/Y、各自假值回退0并返回坐标表，与11.2同名函数完全吻合。"
     },
     {
       "preorder_id": 150,
@@ -5428,15 +5428,16 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 10,
-      "candidate_name": "helper_root_74（合成定位名）",
-      "identity_status": "函数体行为已恢复；原始符号名及root层捕获来源待确认",
+      "candidate_name": "FormatStateChange（高置信候选）",
+      "identity_status": "高置信同职责候选；父级捕获来源待确认",
       "constants": [
         "format",
         "状态切换: %s -> %s",
         "string"
       ],
-      "recovery_status": "partial_body_recovered_capture_identity_unresolved",
-      "note": "10条物理指令已逐条闭合：Opcode264固定参数调用并收集返回值；Opcode376可变参数调用；Opcode62将新状态写回H[1]。H[0]既作为string.format第一个格式参数又作为被调用目标，忠实保留此寄存器行为。root层闭包创建点未保存，H[0]/H[1]真实词法来源待确认；明文以VM上值代理占位表达，不计入完整函数。"
+      "recovery_status": "函数体部分恢复；捕获身份未闭合，不计完整函数。",
+      "note": "10条物理指令已逐条闭合：Opcode264固定参数调用并收集返回值；Opcode376可变参数调用；Opcode62将新状态写回H[1]。H[0]既作为string.format第一个格式参数又作为被调用目标，忠实保留此寄存器行为。root层闭包创建点未保存，H[0]/H[1]真实词法来源待确认；明文以VM上值代理占位表达，不计入完整函数。",
+      "business_summary": "状态切换提示格式化及共享状态写回；唯一格式串“状态切换: %s -> %s”与旧版FormatStateChange一致，但root层H[0]/H[1]捕获来源尚未确认。"
     },
     {
       "preorder_id": 155,
