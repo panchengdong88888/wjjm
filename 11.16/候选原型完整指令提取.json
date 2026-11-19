@@ -6421,6 +6421,671 @@
           "flags": 0
         }
       ]
+    },
+    {
+      "path": "root/52/9",
+      "depth": 2,
+      "parameter_count": 0,
+      "constants": [
+        "blacklistTimer",
+        11,
+        "distance",
+        "BlacklistItems",
+        "开启黑名单功能，距离格子：%d"
+      ],
+      "physical_slots": 18,
+      "instruction_count": 18,
+      "start_offset": 85086,
+      "end_offset": 85367,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 49,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 192
+        },
+        {
+          "slot": 2,
+          "opcode": 322,
+          "A": 0,
+          "B": "distance",
+          "C": 11,
+          "mode": 0,
+          "flags": 112
+        },
+        {
+          "slot": 3,
+          "opcode": 105,
+          "A": 0,
+          "B": "BlacklistItems",
+          "C": null,
+          "mode": 1,
+          "flags": 82
+        },
+        {
+          "slot": 4,
+          "opcode": 123,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 192
+        },
+        {
+          "slot": 5,
+          "opcode": 127,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 234,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 45,
+          "A": 2,
+          "B": "BlacklistItems",
+          "C": null,
+          "mode": 1,
+          "flags": 146
+        },
+        {
+          "slot": 8,
+          "opcode": 234,
+          "A": 3,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 64
+        },
+        {
+          "slot": 9,
+          "opcode": 209,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 306,
+          "A": 0,
+          "B": "blacklistTimer",
+          "C": 1,
+          "mode": 0,
+          "flags": 80
+        },
+        {
+          "slot": 11,
+          "opcode": 127,
+          "A": 0,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "flags": 192
+        },
+        {
+          "slot": 12,
+          "opcode": 399,
+          "A": 1,
+          "B": "开启黑名单功能，距离格子：%d",
+          "C": null,
+          "mode": 1,
+          "flags": 210
+        },
+        {
+          "slot": 13,
+          "opcode": 324,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 192
+        },
+        {
+          "slot": 14,
+          "opcode": 96,
+          "A": 2,
+          "B": 2,
+          "C": "distance",
+          "mode": 0,
+          "flags": 160
+        },
+        {
+          "slot": 15,
+          "opcode": 123,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 128
+        },
+        {
+          "slot": 16,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 17,
+          "opcode": 293,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 18,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 64
+        }
+      ],
+      "parent_capture_audit": {
+        "parent": "root/52",
+        "create_slot": 550,
+        "create_opcode": 178,
+        "child_index": 9,
+        "capture_count": 5,
+        "captures": [
+          {
+            "slot": 551,
+            "opcode": 132,
+            "child_upvalue": 0,
+            "parent_upvalue": 6
+          },
+          {
+            "slot": 552,
+            "opcode": 132,
+            "child_upvalue": 1,
+            "parent_upvalue": 3
+          },
+          {
+            "slot": 553,
+            "opcode": 132,
+            "child_upvalue": 2,
+            "parent_upvalue": 7
+          },
+          {
+            "slot": 554,
+            "opcode": 132,
+            "child_upvalue": 3,
+            "parent_upvalue": 8
+          },
+          {
+            "slot": 555,
+            "opcode": 132,
+            "child_upvalue": 4,
+            "parent_upvalue": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "root/52/36",
+      "depth": 2,
+      "parameter_count": 0,
+      "constants": [
+        "gatherTimer",
+        "关闭引怪功能",
+        "StopGatherMonsters",
+        "开启引怪功能，阈值：11"
+      ],
+      "physical_slots": 19,
+      "instruction_count": 19,
+      "start_offset": 109253,
+      "end_offset": 109536,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 9,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 64
+        },
+        {
+          "slot": 2,
+          "opcode": 274,
+          "A": 0,
+          "B": 0,
+          "C": "gatherTimer",
+          "mode": 0,
+          "flags": 96
+        },
+        {
+          "slot": 3,
+          "opcode": 60,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 192
+        },
+        {
+          "slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 11,
+          "C": null,
+          "mode": 1,
+          "flags": 130
+        },
+        {
+          "slot": 5,
+          "opcode": 324,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 64
+        },
+        {
+          "slot": 6,
+          "opcode": 295,
+          "A": 1,
+          "B": "关闭引怪功能",
+          "C": null,
+          "mode": 1,
+          "flags": 146
+        },
+        {
+          "slot": 7,
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 146,
+          "A": 0,
+          "B": "StopGatherMonsters",
+          "C": null,
+          "mode": 1,
+          "flags": 82
+        },
+        {
+          "slot": 9,
+          "opcode": 123,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 192
+        },
+        {
+          "slot": 11,
+          "opcode": 292,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 192
+        },
+        {
+          "slot": 12,
+          "opcode": 127,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 192
+        },
+        {
+          "slot": 13,
+          "opcode": 295,
+          "A": 1,
+          "B": "开启引怪功能，阈值：11",
+          "C": null,
+          "mode": 1,
+          "flags": 82
+        },
+        {
+          "slot": 14,
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 128
+        },
+        {
+          "slot": 15,
+          "opcode": 234,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 192
+        },
+        {
+          "slot": 16,
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 192
+        },
+        {
+          "slot": 17,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 18,
+          "opcode": 292,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 19,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "parent_capture_audit": {
+        "parent": "root/52",
+        "create_slot": 605,
+        "create_opcode": 387,
+        "child_index": 36,
+        "capture_count": 3,
+        "captures": [
+          {
+            "slot": 606,
+            "opcode": 132,
+            "child_upvalue": 0,
+            "parent_upvalue": 3
+          },
+          {
+            "slot": 607,
+            "opcode": 132,
+            "child_upvalue": 1,
+            "parent_upvalue": 13
+          },
+          {
+            "slot": 608,
+            "opcode": 243,
+            "child_upvalue": 2,
+            "parent_register": 24
+          }
+        ],
+        "ancestor_capture_audit": {
+          "parent": "root",
+          "create_slot": 633,
+          "create_opcode": 178,
+          "child_index": 52,
+          "capture_count": 19,
+          "root52_upvalues": [
+            {
+              "child_upvalue": 3,
+              "parent_register": 3
+            },
+            {
+              "child_upvalue": 13,
+              "parent_register": 5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "root/33/0",
+      "depth": 2,
+      "parameter_count": 1,
+      "constants": [
+        "UnSchedule",
+        "ShowSystemTips",
+        "putoutSent",
+        "SL",
+        "putoutTimer",
+        {
+          "unknown_type": 2
+        }
+      ],
+      "physical_slots": 21,
+      "instruction_count": 21,
+      "start_offset": 47018,
+      "end_offset": 47293,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 9,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 2,
+          "opcode": 410,
+          "A": 1,
+          "B": 1,
+          "C": "putoutTimer",
+          "mode": 0,
+          "flags": 160
+        },
+        {
+          "slot": 3,
+          "opcode": 289,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 11,
+          "C": null,
+          "mode": 1,
+          "flags": 66
+        },
+        {
+          "slot": 5,
+          "opcode": 253,
+          "A": 1,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 210
+        },
+        {
+          "slot": 6,
+          "opcode": 204,
+          "A": 1,
+          "B": 1,
+          "C": "UnSchedule",
+          "mode": 0,
+          "flags": 160
+        },
+        {
+          "slot": 7,
+          "opcode": 324,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 192
+        },
+        {
+          "slot": 8,
+          "opcode": 410,
+          "A": 3,
+          "B": 3,
+          "C": "putoutTimer",
+          "mode": 0,
+          "flags": 224
+        },
+        {
+          "slot": 9,
+          "opcode": 123,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 192
+        },
+        {
+          "slot": 10,
+          "opcode": 234,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 64
+        },
+        {
+          "slot": 11,
+          "opcode": 114,
+          "A": 1,
+          "B": "putoutTimer",
+          "C": {
+            "unknown_type": 2
+          },
+          "mode": 0,
+          "flags": 48
+        },
+        {
+          "slot": 12,
+          "opcode": 127,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 322,
+          "A": 1,
+          "B": "putoutSent",
+          "C": {
+            "unknown_type": 2
+          },
+          "mode": 0,
+          "flags": 48
+        },
+        {
+          "slot": 14,
+          "opcode": 324,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 15,
+          "opcode": 64,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 128
+        },
+        {
+          "slot": 16,
+          "opcode": 123,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 64
+        },
+        {
+          "slot": 17,
+          "opcode": 210,
+          "A": 1,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 18
+        },
+        {
+          "slot": 18,
+          "opcode": 204,
+          "A": 1,
+          "B": 1,
+          "C": "ShowSystemTips",
+          "mode": 0,
+          "flags": 160
+        },
+        {
+          "slot": 19,
+          "opcode": 288,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 64
+        },
+        {
+          "slot": 20,
+          "opcode": 128,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 21,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 128
+        }
+      ]
     }
   ],
   "constant_type_notes": {
