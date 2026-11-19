@@ -2113,8 +2113,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 20,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "ResetGatherMonsterData",
+      "identity_status": "跨版本高置信候选（数据已重置常量与11.2同职责函数吻合；本版调用/状态变量待核验）",
       "constants": [
         "",
         0,
