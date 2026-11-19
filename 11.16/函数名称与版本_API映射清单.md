@@ -33,7 +33,7 @@
 | root/6 | MainLoop | 是 | `RequestLaunchSkill`、`GetMetaValue` | 573 |
 | root/7 | MoveItemToQuickUse | 是 | — | 133 |
 | root/8 | GetDroppedItems | 是 | — | 8 |
-| root/9 | GetMapData2DPtr | 是 | — | 162 |
+| root/9 | GetMapData2DPtr（身份待复核） | 同名但业务冲突 | — | 162 |
 | root/10 | 待识别 | 未确认 | — | 29 |
 | root/11 | 待识别 | 未确认 | `UnSchedule` | 31 |
 | root/12 | MoveTo | 是 | `GetMetaValue` | 51 |
@@ -243,3 +243,8 @@
 - root/78：2参数、7条指令，常量为SL与Schedule；与11.2的Schedule包装函数调用形状吻合，候选名标记为Schedule。
 - 这两个root原型是MainLeftBottom层的薄包装，不是框架API本身。真正的框架调用分别为SL:ScheduleOnce和SL:Schedule，已由3.40.x SL.md明确列出；后续直接使用文档签名，不分析API内部。
 - 当前81个root原型中58个已有候选名，23个仍待识别。
+
+
+## 13. 全部嵌套原型名称索引
+
+为避免“81个root直接子原型”与“162个全部原型”混淆，已另建 `11.16/全部原型函数名称索引.md`，列出全部161个非root原型（含80个嵌套子原型）的路径、深度、候选名、参数数、指令数和身份状态。当前78个非root原型已有候选名称，83个仍待识别。root级旧版/API映射仍以本文件为准。
