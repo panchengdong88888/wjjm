@@ -1317,9 +1317,10 @@ local function make_DiuItems(capturedUpvalues)
             return false
         end
 
-        local function containsPattern(list, value)
-            for _, pattern in ipairs(list) do
-                if string.find(value, pattern) then
+        -- 对应11.16原型root/2/1：闭包捕获patternNames，参数仅为待检查的物品名。
+        local function containsPattern(value)
+            for _, pattern in ipairs(patternNames) do
+                if string.find(value, pattern, 1, false) then
                     return true
                 end
             end
@@ -1336,7 +1337,7 @@ local function make_DiuItems(capturedUpvalues)
                 elseif mode == 2 then
                     keep = not containsExact(exactNames, item.Name)
                 else
-                    keep = containsPattern(patternNames, item.Name)
+                    keep = containsPattern(item.Name)
                 end
 
                 if keep then
