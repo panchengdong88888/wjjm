@@ -4723,8 +4723,8 @@
           "status": "withdrawn_incorrect_dispatch_branch_attribution",
           "reason": "Opcode178在F()树中走L==178的闭包创建else叶；此前把后续L>178融合叶误归给Opcode178。"
         },
-        "status": "前置闭包注册、N[12]候选表创建及pairs(BAG_DATA)迭代器初始化已由原版S()/F()闭合；root/2整体业务CFG仍待完成",
-        "next": "按恢复后的N[9]=child0/N[10]=child1/N[11]=child2映射，闭合槽位120–170的物品遍历与筛选，随后整合172–226尾段",
+        "status": "root/2 slots109-170 closure registration, pairs iteration, item gates, three name-filter calls and candidate-record construction reconstructed; slots1-108 still block whole-function recovery",
+        "next": "Close slots1-108: isDiuing state gate, GetDroppedItems return handling and 35-item early exit, creation/population of N[6]/N[7]/N[8], and exact source of N[5]=BAG_DATA; then integrate slots109-226.",
         "slot_111_118_exact_fusion_trace_2026_11_19": {
           "status": "withdrawn_incorrect",
           "reason": "Opcode178并不消费槽位112–118；该指令创建childIndex=0闭包，仅消费槽位112作为唯一捕获描述符。"
@@ -4749,11 +4749,11 @@
             "slot118 Opcode386调用N[13](N[14])，多返回值写入N[13]..N[15]，即pairs(N[5])迭代器三元组"
           ],
           "mappings": {
-            "N9": "root/2/0，捕获N[7]（精确名称表）",
-            "N10": "root/2/1，捕获N[6]（Lua模式名称表）",
-            "N11": "root/2/2，捕获N[8]（第二类名称表）",
+            "N9": "root/2/1，捕获N[6]；子函数使用string.find进行Lua模式匹配",
+            "N10": "root/2/0，捕获N[7]；子函数遍历列表执行精确相等匹配",
+            "N11": "root/2/2，捕获N[8]；子函数遍历列表执行精确相等匹配",
             "N12": "候选物品列表",
-            "N5": "此前由SL:GetMetaValue('BAG_DATA')取得的背包数据"
+            "N5": "由前段SL:GetMetaValue('BAG_DATA')读取的背包数据"
           },
           "control_flow": "slot119 Opcode388跳至169，解释器统一递增后从slot170开始首次推进pairs迭代器；slot120–169是每项处理体。该形状与泛型for循环初始化/回边吻合。",
           "corrections": [
@@ -4763,6 +4763,31 @@
             "上一条助手消息曾误称候选JSON槽位116字段错位，该判断已复核撤回；候选JSON字段与S()输出一致。"
           ],
           "next": "使用已恢复的N[9]/N[10]/N[11]闭包映射，重新整合槽位120–170的pairs(BAG_DATA)遍历、绑定/名称筛选和候选列表构造，再将其与已闭合尾段172–226组合。"
+        },
+        "slot_120_170_name_filter_reaudit_2026_11_19": {
+          "status": "control_flow_and_child_prototype_mapping_reaudited",
+          "register_to_child": {
+            "N9": "root/2/1; capture parent N[6]; string.find(pattern) matching",
+            "N10": "root/2/0; capture parent N[7]; ipairs exact-equality matching",
+            "N11": "root/2/2; capture parent N[8]; ipairs exact-equality matching"
+          },
+          "branches": [
+            "slot120: N[17] current pairs value must be truthy; otherwise slot121 jumps to next iterator advance",
+            "slot122-126: read item.Name and item.MakeIndex; each must be truthy or its following jump skips current item",
+            "slot128-134: call SL:GetMetaValue with ITEM_IS_BIND/current item context; when result is true, branch to slot169 and reject bound item; false proceeds",
+            "slot135 clears N[19]",
+            "slot136-142: when N[1]==1, call N[11] (root/2/2 exact list over captured N[8]), invert result into N[19]",
+            "slot143-149: when N[1]==2, call N[10] (root/2/0 exact list over captured N[7]), invert result into N[19]",
+            "slot150-153: otherwise call N[9] (root/2/1 string.find Lua-pattern list over captured N[6]); copy result to N[19]",
+            "slot154-155: retain item only when N[19] is truthy; false jumps to 169"
+          ],
+          "filter_summary": "mode 1 excludes names found in exact list N[8]; mode 2 excludes names found in exact list N[7]; other modes retain names matching a Lua pattern in N[6]. This describes the three child closures and branch direction, not the external UI labels for the mode values.",
+          "candidate_record": "For retained items, slots156-170 build and append {makeIndex=item.MakeIndex, count=item.OverLap or 1, name=item.Name} to N[12], then advance pairs(BAG_DATA).",
+          "corrections": [
+            "Section63 mapping N9=child1/N10=child0/N11=child2 was correct, but its nested mappings object had child0/child1 reversed; corrected here.",
+            "Older section55 descriptions that assigned Lua-pattern matching to mode 2 and exact matching to the default branch are superseded; call sites show mode1=>N11 exact N8, mode2=>N10 exact N7, default=>N9 pattern N6."
+          ],
+          "next": "Close root/2 slots1-108: status gate, GetDroppedItems return handling and 35-item early exit, creation/population of N[6]/N[7]/N[8], and exact source of N[5]=BAG_DATA; then integrate 109-226."
         }
       },
       "decode_validation_reaudit_2026_11_19": "原始S()解析完整消费142522字节、162原型的结构结果仍是基准；本轮发现root/2槽位111–118融合载荷与当前候选字段解释无法组成一致寄存器链，需定点复核，未推翻已完成的其他原型。",
