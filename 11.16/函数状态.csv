@@ -101,7 +101,7 @@ mode=%s
 93,root/52/7,root/52,2,,待识别,0,7,0,26,未恢复,ipairs | slot | SL | names | ITEM_INDEX_BY_NAME | MoveItemToQuickUse | GetMetaValue,,,2026-11-18
 94,root/52/8,root/52,2,,待识别,0,11,1,49,未恢复,DiuItems | dropMode | SL | 关闭丢全部物品 | 开启丢全部物品(模式1) | isDiuing | UnSchedule | dropTimer,,,2026-11-18
 95,root/52/8/0,root/52/8,3,,,待识别,0,2,0,5,未恢复,dropMode | DiuItems,,指令头需按16位字段重新解码；函数体待确认,,2026-11-18
-96,root/52/9,root/52,2,,待识别,0,5,0,18,未恢复,blacklistTimer | distance | BlacklistItems | 开启黑名单功能，距离格子：%d,,,2026-11-18
+96,root/52/9,root/52,2,make_helper_root_52_9（合成定位名）,闭包体已恢复；捕获身份待确认,0,5,0,18,部分恢复（不计完整函数）,blacklistTimer | distance | BlacklistItems | 开启黑名单功能，距离格子：%d,MainLeftBottom_11.16_明文.lua,"父级root/52槽位550 Opcode178创建childIndex=9闭包，captureCount=5；槽551–555依次捕获父H[6]/H[3]/H[7]/H[8]/H[0]；root/52外层捕获链已映射到root N[67]/N[3]/N[7]/N[62]/N[4]，实际业务变量名待确认。Opcode49融合设置H[0].distance=11并加载BlacklistItems；调用BlacklistItems()；调用H[2](BlacklistItems,H[3])并将返回值存入H[1].blacklistTimer；最后调用H[4](提示格式字符串,H[0].distance)，返回true。",2026-11-19
 97,root/52/10,root/52,2,make_helper_root_52_10（捕获提示回调待映射）,闭包体已恢复；H[0]捕获来源待确认,0,2,0,6,部分恢复（不计完整函数）,ClearBlacklistItems | 清空黑名单,MainLeftBottom_11.16_明文.lua,root/52槽位617创建闭包并捕获父级H[0]；H[0]具体业务身份仍待root/52外层映射,2026-11-19
 98,root/52/11,root/52,2,,待识别,0,2,0,5,部分恢复（闭包体已恢复，外层捕获待确认）,root/52槽147 Opcode178创建childIndex=11；槽148 Opcode132捕获父H[2]；子体执行_G.LuaSendMsg=H[0].LuaSendMsg；root/52的H[2]最终来自root N[0]（状态表特征）,,root N[0]原始变量名待确认；不计完整,2026-11-19
 99,root/52/12,root/52,2,closure_root_52_12（合成定位名）,行为已恢复,0,3,0,5,已写入明文,global | gameWorldController | OnGameLeaveWorld,MainLeftBottom_11.16_明文.lua,5条物理指令全部闭合；Opcode248融合全局加载/成员读取/方法准备，Opcode123调用，Opcode205结束；API文档未收录，按原始调用点恢复,2026-11-19
