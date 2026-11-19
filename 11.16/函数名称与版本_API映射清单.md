@@ -13,7 +13,7 @@
 ## 2. 数量和判定口径
 
 - root直接子原型：81个。
-- 原型索引中已有候选名称：58个（含本轮新增28个跨版本候选）；仍待识别：23个。
+- 原型索引中已有候选名称：65个；仍待识别：16个。
 - 与11.2函数声明同名的root候选：17个。
 - 当前11.16明文与11.2明文已有的精确函数声明名交集：13个。精确交集：`GetMapId`、`GetMapName`、`GetMainPlayerID`、`IsDie`、`PlayerPos`、`GetOwnerID`、`GetDroppedItems`、`ShowLocalNoticeByType`、`FindMonsterInCurrViewField`、`MoveItemToQuickUse`、`DistanceCalculation`、`FindMonsterCandidates`、`InitGatherMonsters`。
 - “11.2同名”只表示名称线索，不自动证明业务实现相同；必须再核对常量、参数、调用形状和本版差异。
@@ -39,7 +39,7 @@
 | root/12 | MoveTo | 是 | `GetMetaValue` | 51 |
 | root/13 | NewZoneFeature | 未确认 | `ScheduleOnce`、`UnSchedule` | 37 |
 | root/14 | ForgeZodiacToggleHandler | 未确认 | `ShowSystemTips`、`UnSchedule` | 51 |
-| root/15 | 待识别 | 未确认 | `RequestAuctionPutList`、`ShowSystemTips`、`UnSchedule`、`GetMetaValue` | 87 |
+| root/15 | startPutinGold（高置信候选；父root导出点待确认） | 未确认 | `RequestAuctionPutList`、`ShowSystemTips`、`UnSchedule`、`GetMetaValue` | 87 |
 | root/16 | SetButtonVisibilityState | 是 | — | 25 |
 | root/17 | GetAvailableStoragePage | 是 | — | 51 |
 | root/18 | 待识别 | 未确认 | — | 34 |
@@ -57,7 +57,7 @@
 | root/30 | Nested_find | 是 | `GetMetaValue` | 31 |
 | root/31 | FindBlacklistPlayer | 是 | `GetMetaValue` | 35 |
 | root/32 | make_helper_root_32（合成定位名） | 未确认 | — | 17 |
-| root/33 | 待识别 | 未确认 | `RequestAuctionPutList`、`UnSchedule`、`ShowSystemTips` | 56 |
+| root/33 | startPutoutAll（高置信候选；root/52/30回调直接引用，父root导出点待确认） | 未确认 | `RequestAuctionPutList`、`UnSchedule`、`ShowSystemTips` | 56 |
 | root/34 | BlacklistPlayerDetection | 是 | `GetMetaValue` | 274 |
 | root/35 | 待识别 | 未确认 | — | 32 |
 | root/36 | GetStorageItemData | 是 | — | 77 |
@@ -66,7 +66,7 @@
 | root/39 | IsDie | 是 | — | 7 |
 | root/40 | onDamageMsg | 是 | `GetMetaValue` | 72 |
 | root/41 | 待识别 | 未确认 | `GetMetaValue` | 28 |
-| root/42 | helper_root_42 | 未确认 | — | 22 |
+| root/42 | ClearTargetID_2 | 未确认 | — | 22 |
 | root/43 | PickUpItems（新版扩展候选） | 是 | — | 172 |
 | root/44 | 待识别 | 未确认 | — | 29 |
 | root/45 | StorageItems | 是 | `GetMetaValue`、`UseItemByIndex` | 224 |
@@ -93,8 +93,8 @@
 | root/66 | SetTargetID | 是 | — | 26 |
 | root/67 | ShowHideAllButtons | 是 | `UnSchedule` | 154 |
 | root/68 | InstallDamageHook | 是 | — | 40 |
-| root/69 | helper_root_69（合成定位名） | 未确认 | — | 20 |
-| root/70 | helper_root_70（合成定位名） | 未确认 | `GetMetaValue` | 19 |
+| root/69 | GetOwnerDescription | 未确认 | — | 20 |
+| root/70 | GetPlayerPosition | 未确认 | `GetMetaValue` | 19 |
 | root/71 | DeathAutoBlacklist | 是 | `ScheduleOnce` | 47 |
 | root/72 | 待识别 | 未确认 | `GetMetaValue` | 32 |
 | root/73 | Nested_04d_02d_02d | 是 | — | 23 |
