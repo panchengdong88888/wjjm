@@ -2223,8 +2223,8 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 21,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_33_0（合成定位名）",
+      "identity_status": "闭包体行为已恢复（H[0]/H[1]父级捕获来源待确认）",
       "constants": [
         "UnSchedule",
         "ShowSystemTips",
@@ -2235,8 +2235,8 @@
           "unknown_type": 2
         }
       ],
-      "analysis_status": "分析中（融合链部分闭合）",
-      "evidence_note": "root/33/0槽位10–21有限闭合更新：slot10 Opcode234= N[A]=H[C]；slot11 Opcode114融合消费slot12–14，不能把127/322/324当独立指令执行。slot15 Opcode64=N[A]=N[C]，本例N[2]=N[0]；slot16 Opcode123执行N[A](Y(N,A+1,C))，调用目标N[1]，参数打包边界仍需按Y辅助函数确认。slot17 Opcode210融合消费slot18–19：先装载全局SL，再取SL.ShowSystemTips方法，并将N[0]放入N[3]；slot20 Opcode128执行无返回值调用N[1](Y(N,2,3))，结合receiver N[2]与参数N[3]，确认是SL:ShowSystemTips(参数)。slot21 Opcode339为return结束。slot11融合体各中间寄存器/操作数语义仍未完整闭合；slot1–9分支条件/调用参数也未完全闭合，因此不写函数体。"
+      "analysis_status": "部分恢复（闭包体已恢复，捕获来源待确认）",
+      "evidence_note": "21条物理槽位控制流闭合。slot1/2读取H[0].putoutTimer；slot3真值时跳过slot4，执行slot5–11：SL:UnSchedule(timer)，并清空H[0].putoutTimer；假值时slot4跳至slot12。slot12/13两路均清空H[0].putoutSent；slot14读取H[1]，slot15传入唯一参数，slot16调用H[1](参数,timer)，其中假值路径timer为nil；slot17–20调用SL:ShowSystemTips(参数)。Opcode114为直接常量键表字段写入，不融合后续槽位。H[0]/H[1]父级创建点未保存，保留捕获代理；其余4个upvalue未读取。"
     },
     {
       "preorder_id": 50,
