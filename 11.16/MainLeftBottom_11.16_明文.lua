@@ -10,7 +10,7 @@
     4. 不将11.9或其他版本的源码直接复制为11.16实现。
     5. 所有AI对话只能增量更新本文件，不得创建平行明文候选稿。
 
-    当前状态：持续增量恢复中；指令级直接恢复33/162；跨版本业务复用恢复11项（root/7、root/17、root/23、root/29、root/36、root/38、root/46、root/51、root/64、root/66、root/75）；业务功能恢复累计44/162（27.16%）。两种口径分开统计，以函数状态CSV及源码恢复进度账本为准。
+    当前状态：持续增量恢复中；指令级直接恢复33/162；跨版本业务复用恢复13项（root/7、root/17、root/23、root/29、root/31、root/36、root/38、root/46、root/51、root/56、root/64、root/66、root/75）；业务功能恢复累计46/162（28.40%）。两种口径分开统计，以函数状态CSV及源码恢复进度账本为准。
 ]]
 
 --[[
@@ -238,6 +238,50 @@ end
 -- helper_root_56_0为原型路径合成定位名。
 local function helper_root_56_0()
     return global.Facade:retrieveProxy(global.ProxyTable.FriendProxy)
+end
+
+
+
+-- 11.16 root/56：10条物理指令、0参数、1个子原型。
+-- 子原型root/56/0已按本版9条指令恢复为helper_root_56_0；
+-- 本函数使用pcall保护该代理获取闭包，失败返回nil，成功但结果为假值也归一为nil。
+-- 与11.2同名PCallHelper_2的业务结构吻合；子闭包调用采用本版已恢复的调用形式。
+local function PCallHelper_2()
+    local ok, result = pcall(helper_root_56_0)
+    if not ok then
+        return nil
+    end
+    return result or nil
+end
+
+-- 11.16 root/31：1参数、35条物理指令、无子原型。
+-- 本版常量包含_blacklistData、GetMetaValue、ACTOR_MASTER_ID、SL、Name，
+-- 与11.2同名FindBlacklistPlayer业务体吻合；调用root/56的PCallHelper_2。
+local function FindBlacklistPlayer(targetID)
+    local friendProxy = PCallHelper_2()
+    if not friendProxy then
+        return false
+    end
+
+    local blacklistData = friendProxy._blacklistData
+    if not blacklistData or not targetID then
+        return false
+    end
+
+    local entry = blacklistData[targetID]
+    if entry then
+        return true, entry.Name
+    end
+
+    local masterActorID = SL:GetMetaValue("ACTOR_MASTER_ID", targetID)
+    if masterActorID and masterActorID ~= targetID then
+        local masterEntry = blacklistData[masterActorID]
+        if masterEntry then
+            return true, masterEntry.Name
+        end
+    end
+
+    return false
 end
 
 
