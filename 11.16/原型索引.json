@@ -685,7 +685,7 @@
       "parameter_count": 1,
       "instruction_count": 226,
       "candidate_name": null,
-      "identity_status": "背包物品筛选与候选列表构建函数（已确认返回点；完整逻辑待恢复）",
+      "identity_status": "待恢复（槽位111–118融合载荷字段映射待复核）",
       "constants": [
         "雷霆战靴+8",
         "龙傲",
@@ -788,10 +788,10 @@
         1,
         "雷霆项链+8"
       ],
-      "recovery_status": "226条指令已提取；槽位1–170控制流恢复中；171–226暂列不可达残留候选",
-      "instruction_capture_summary": "槽位109、111、113分别创建三个子闭包，captureCount=1；紧随的Opcode243分别捕获父级N[6]、N[7]、N[8]到各自H[0]",
-      "business_summary": "读取BAG_DATA并遍历物品，按Name/MakeIndex/ITEM_IS_BIND及名称规则筛选，构建含makeIndex/overlap/count/name的候选记录；槽位170 Opcode357为显式返回。",
-      "warning": "槽位181–226虽含MSG_CS_MAP_ITEM_DISCARD等常量，但当前控制流图无入口可达该尾段，禁止将其作为已执行逻辑。"
+      "recovery_status": "226条物理指令已提取；槽位1–110及局部尾段有分析记录；槽位111–118融合载荷字段映射存在矛盾，父函数整体未闭合",
+      "instruction_capture_summary": "仅确认槽位109 Opcode387创建childIndex=1（root/2/1）闭包，槽位110 Opcode243捕获N[6]到H[0]。槽位111 Opcode178融合消费112–118；此前槽位111/113创建闭包及其N[7]/N[8]捕获映射均撤回。",
+      "business_summary": "已确认函数涉及isDiuing状态、GetDroppedItems、BAG_DATA、物品名称/绑定筛选及候选物品处理等线索；因槽位111–118寄存器效果未闭合，完整业务代码和候选列表来源尚不能定稿。",
+      "warning": "禁止把槽位112–118当作独立指令；当前候选JSON字段代入Opcode178融合载荷出现N[pairs][nil]等不一致结果，须复核S()字段解码/常量索引/融合槽位对齐。不得写入root/2完整函数体。"
     },
     {
       "preorder_id": 4,
