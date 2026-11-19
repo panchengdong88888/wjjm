@@ -13,7 +13,7 @@
 ## 2. 数量和判定口径
 
 - root直接子原型：81个。
-- 原型索引中已有候选名称：64个；仍待识别：17个。
+- 原型索引中已有候选名称：65个；仍待识别：16个。
 - 与11.2函数声明同名的root候选：17个。
 - 当前11.16明文与11.2明文已有的精确函数声明名交集：13个。精确交集：`GetMapId`、`GetMapName`、`GetMainPlayerID`、`IsDie`、`PlayerPos`、`GetOwnerID`、`GetDroppedItems`、`ShowLocalNoticeByType`、`FindMonsterInCurrViewField`、`MoveItemToQuickUse`、`DistanceCalculation`、`FindMonsterCandidates`、`InitGatherMonsters`。
 - “11.2同名”只表示名称线索，不自动证明业务实现相同；必须再核对常量、参数、调用形状和本版差异。
@@ -78,7 +78,7 @@
 | root/51 | PrintLog | 是 | `Print`、`dump` | 38 |
 | root/52 | doInit_UI / 主界面初始化 | 未确认 | `UnSchedule`、`Schedule`、`ScheduleOnce` | 865 |
 | root/53 | helper_root_53（合成定位名） | 未确认 | — | 15 |
-| root/54 | 待识别 | 未确认 | `UnSchedule` | 56 |
+| root/54 | startAppleMap（高置信候选；root/52/25直接引用，父root导出点待确认） | 未确认 | — | 56 |
 | root/55 | Builtsetting（扩展范围待确认） | 是 | `GetMetaValue`、`SetMetaValue`、`RequestChangePKMode` | 195 |
 | root/56 | PCallHelper_2 | 是 | — | 10 |
 | root/57 | 待识别 | 未确认 | — | 60 |
