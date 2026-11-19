@@ -10,7 +10,7 @@
 8,root/4,root,1,GetOwnerID,本轮已恢复,2,7,0,31,已写入明文,tostring | type |  | string | GetOwnerID,MainLeftBottom_11.16_明文.lua,,2026-11-18
 9,root/5,root,1,helper_root_5（合成定位名）,行为已恢复,1,5,0,17,已写入明文,mCurrMapX | mCurrMapY | x | y | Opcode 325真值分支与Opcode 359/355融合默认值,MainLeftBottom_11.16_明文.lua,原始函数符号名及参数名未确认；父级槽位190创建闭包且captureCount=0；17条物理指令及所有分支/融合载荷已闭合,2026-11-19
 10,root/6,root,1,MainLoop,高置信候选,0,67,0,573,未恢复,"锁定怪物 %s 失败 | 攻击怪物 %d: %s (ID: %s) | ACTOR_HAS_ONE_BUFF | pairs | 所有怪物归属已获取，切换到攻击状态 | 怪物 %d (ID: %s) 已死亡或离开视野 | MagicID | ATTACK_WAIT_TIME | time | 锁定怪物 %d: %s (ID: %s, 归属: %s)",,,2026-11-18
-11,root/7,root,1,MoveItemToQuickUse,高置信候选,2,26,0,133,分析中,GetQuickUseSize | DelItemData | ProxyTable | GetQuickUseData | next | 目标位置超出范围 | retrieveProxy | string | 快捷栏交换: %d ↔ %d | QuickUseProxy,,,2026-11-18
+11,root/7,root,1,MoveItemToQuickUse,高置信候选,2,26,0,133,已写入明文（跨版本业务复用；未逐槽核验）,GetQuickUseSize | DelItemData | ProxyTable | GetQuickUseData | next | 目标位置超出范围 | retrieveProxy | string | 快捷栏交换: %d ↔ %d | QuickUseProxy,,MainLeftBottom_11.16_明文.lua：MoveItemToQuickUse,跨版本复用依据：11.2与11.9主体一致；11.16常量集合吻合；未逐槽核验,2026-11-19
 12,root/8,root,1,GetDroppedItems,高置信候选,0,3,0,8,已写入明文,global | dropItemManager | FindDropItemInCurrViewFieldAll,MainLeftBottom_11.16_明文.lua,,2026-11-18
 13,root/9,root,1,GetMapData2DPtr,名称线索，实际行为待确认,5,15,0,162,分析中,GetMapData2DPtr | sceneManager | isObstacle | getMapDataCols | getMapDataRows | floor | global | max | math | abs,,,2026-11-18
 14,root/10,root,1,,待识别,0,13,0,29,未恢复,开始锻造生肖 | state | forgeZodiacRunning | checkGold | forgeZodiac | forgeZodiacTimer | ticks | 已停止锻造生肖 | index,,,2026-11-18
