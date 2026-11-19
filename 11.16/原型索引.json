@@ -685,7 +685,7 @@
       "parameter_count": 1,
       "instruction_count": 226,
       "candidate_name": null,
-      "identity_status": "前置闭包注册与pairs迭代器初始化已确认；整体业务CFG待闭合",
+      "identity_status": "分段业务逻辑1–226已恢复；三组名称表及闭包捕获用途已确认；统一CFG与父级H[0]/H[1]身份待最终整合",
       "constants": [
         "雷霆战靴+8",
         "龙傲",
@@ -788,8 +788,8 @@
         1,
         "雷霆项链+8"
       ],
-      "recovery_status": "slots1-36 reconstructed: parameter mode, isDiuing guard/set/reset, GetDroppedItems call, 35-ground-item ceiling, SL:GetMetaValue('BAG_DATA') and missing-data return. slots37-108 name-list construction still pending; not complete.",
-      "instruction_capture_summary": "Confirmed early flow slots1-36; name-list table construction slots37-108 remains unresolved. Later item loop/filter and tail are separately recorded; do not combine into a complete function until the three lists and closure mappings are reconciled.",
+      "recovery_status": "slots1-36、37-108、109-118、120-170、172-226分段闭合；root/2尚未计完整函数，等待全段CFG与捕获身份最终核对",
+      "instruction_capture_summary": "N6=28项Lua模式列表、N7=35项精确列表、N8=3项精确列表；child1/child0/child2分别捕获N6/N7/N8。融合边界：slot67 Opcode30消费68-69；slot104 Opcode38消费105-107；slot66/103/108 Opcode41完成三表顺序填充。",
       "business_summary": "已确认函数涉及isDiuing状态、GetDroppedItems、BAG_DATA、物品名称/绑定筛选及候选物品处理等线索；因槽位111–118寄存器效果未闭合，完整业务代码和候选列表来源尚不能定稿。",
       "warning": "Current early-flow audit is in candidate JSON reconstruction. Do not rely on older control_flow_audit statements where they conflict with the 2026-11-19 dispatch-tree re-audit."
     },
