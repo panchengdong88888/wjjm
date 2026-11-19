@@ -4791,8 +4791,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 56,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "startAppleMap（高置信候选）",
+      "identity_status": "高置信候选（root/52/25无参回调直接调用该全局名；本体苹果下图启动/停止及定时状态吻合；父root导出点待确认）",
       "constants": [
         "已停止苹果下图",
         "cruiseOff",
