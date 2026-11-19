@@ -6,2253 +6,6 @@
   "consumed_bytes": 142522,
   "prototypes": [
     {
-      "path": "root/2/0",
-      "params": 1,
-      "constants": [
-        "ipairs"
-      ],
-      "instruction_count": 13,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 146,
-          "A": 1,
-          "B": "ipairs",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 2,
-          "opcode": 324,
-          "A": 2,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 3,
-          "opcode": 386,
-          "A": 1,
-          "B": 2,
-          "C": 3,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 4,
-          "opcode": 388,
-          "A": 0,
-          "B": 8,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 5,
-          "opcode": 294,
-          "A": 0,
-          "B": 0,
-          "C": 5,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 6,
-          "opcode": 388,
-          "A": 0,
-          "B": 8,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 7,
-          "opcode": 110,
-          "A": 6,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 8,
-          "opcode": 11,
-          "A": 6,
-          "B": 6,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 9,
-          "opcode": 250,
-          "A": 1,
-          "B": 2,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 10,
-          "opcode": 388,
-          "A": 0,
-          "B": 4,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 11,
-          "opcode": 110,
-          "A": 1,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 12,
-          "opcode": 292,
-          "A": 1,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 13,
-          "opcode": 205,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ],
-      "reconstruction": {
-        "status": "behavior_recovered",
-        "description": "ipairs(H[0])遍历父级闭包捕获表；逐项与唯一参数比较；相等返回true，迭代器结束返回false。",
-        "upvalue": "H[0]（父级变量身份待映射）",
-        "control_flow": "槽位4跳到迭代推进；Opcode250/122迭代；Opcode294相等时跳过回边并执行true返回；迭代器首返回值nil时跳过回边并执行false返回。",
-        "confidence": "high"
-      }
-    },
-    {
-      "path": "root/2/1",
-      "params": 1,
-      "constants": [
-        "ipairs",
-        1,
-        "find",
-        "string"
-      ],
-      "instruction_count": 20,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 105,
-          "A": 1,
-          "B": "ipairs",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 2,
-          "opcode": 324,
-          "A": 2,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 3,
-          "opcode": 314,
-          "A": 1,
-          "B": 2,
-          "C": 3,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 4,
-          "opcode": 388,
-          "A": 0,
-          "B": 15,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 5,
-          "opcode": 227,
-          "A": 6,
-          "B": "string",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 6,
-          "opcode": 96,
-          "A": 6,
-          "B": 6,
-          "C": "find",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 7,
-          "opcode": 288,
-          "A": 7,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 8,
-          "opcode": 390,
-          "A": 8,
-          "B": 5,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 9,
-          "opcode": 295,
-          "A": 9,
-          "B": 1,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 10,
-          "opcode": 110,
-          "A": 10,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 11,
-          "opcode": 209,
-          "A": 6,
-          "B": 10,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 12,
-          "opcode": 358,
-          "A": 6,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 13,
-          "opcode": 388,
-          "A": 0,
-          "B": 15,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 14,
-          "opcode": 110,
-          "A": 6,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 15,
-          "opcode": 11,
-          "A": 6,
-          "B": 6,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 16,
-          "opcode": 250,
-          "A": 1,
-          "B": 2,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 17,
-          "opcode": 388,
-          "A": 0,
-          "B": 4,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 18,
-          "opcode": 110,
-          "A": 1,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 19,
-          "opcode": 293,
-          "A": 1,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 20,
-          "opcode": 339,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ],
-      "closure_capture": {
-        "parent_path": "root/2",
-        "create_slot": 109,
-        "create_opcode": 387,
-        "child_index": 1,
-        "capture_count": 1,
-        "capture_records": [
-          {
-            "slot": 110,
-            "opcode": 243,
-            "source": "parent local register N[6]",
-            "child_upvalue": "H[0]"
-          }
-        ]
-      }
-    },
-    {
-      "path": "root/2/2",
-      "params": 1,
-      "constants": [
-        "ipairs"
-      ],
-      "instruction_count": 13,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 45,
-          "A": 1,
-          "B": "ipairs",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 2,
-          "opcode": 234,
-          "A": 2,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 3,
-          "opcode": 386,
-          "A": 1,
-          "B": 2,
-          "C": 3,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 4,
-          "opcode": 388,
-          "A": 0,
-          "B": 8,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 5,
-          "opcode": 294,
-          "A": 0,
-          "B": 0,
-          "C": 5,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 6,
-          "opcode": 388,
-          "A": 0,
-          "B": 8,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 7,
-          "opcode": 110,
-          "A": 6,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 8,
-          "opcode": 292,
-          "A": 6,
-          "B": 6,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 9,
-          "opcode": 122,
-          "A": 1,
-          "B": 2,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 10,
-          "opcode": 388,
-          "A": 0,
-          "B": 4,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 11,
-          "opcode": 110,
-          "A": 1,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 12,
-          "opcode": 293,
-          "A": 1,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 13,
-          "opcode": 205,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ],
-      "reconstruction": {
-        "status": "behavior_recovered",
-        "description": "ipairs(H[0])遍历父级闭包捕获表；逐项与唯一参数比较；相等返回true，迭代器结束返回false。",
-        "upvalue": "H[0]（父级变量身份待映射）",
-        "control_flow": "槽位4跳到迭代推进；Opcode250/122迭代；Opcode294相等时跳过回边并执行true返回；迭代器首返回值nil时跳过回边并执行false返回。",
-        "confidence": "high"
-      }
-    },
-    {
-      "path": "root/13/0",
-      "params": 0,
-      "constants": [
-        "",
-        22502,
-        "LuaSendMsg",
-        3,
-        2,
-        9002,
-        0,
-        1
-      ],
-      "instruction_count": 10,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 95,
-          "A": 0,
-          "B": "LuaSendMsg",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 2,
-          "opcode": 54,
-          "A": 1,
-          "B": 9002,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 3,
-          "opcode": 295,
-          "A": 2,
-          "B": 22502,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 4,
-          "opcode": 295,
-          "A": 3,
-          "B": 1,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 5,
-          "opcode": 295,
-          "A": 4,
-          "B": 2,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 6,
-          "opcode": 168,
-          "A": 5,
-          "B": 3,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 7,
-          "opcode": 295,
-          "A": 6,
-          "B": "",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 8,
-          "opcode": 295,
-          "A": 7,
-          "B": 0,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 9,
-          "opcode": 128,
-          "A": 0,
-          "B": 7,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 10,
-          "opcode": 205,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ],
-      "recovery_status": "已恢复并写入唯一明文",
-      "recovered_lua": "LuaSendMsg(9002, 22502, 1, 2, 3, \"\", 0)",
-      "recovery_evidence": {
-        "opcode95": "N[A]=Z[K[3]]，并融合消费下一物理槽位执行N[next.A]=next.K[3]；槽位2仅为融合载荷",
-        "opcode295": "N[A]=K[3]，分别装载22502、1、2",
-        "opcode168": "N[A]=K[3]并融合消费后续两物理槽位，各执行N[next.A]=next.K[3]，装载3、空字符串、0",
-        "opcode128": "调用N[A](Y(N,A+1,B))；本例A=0、B=7",
-        "opcode205": "结束函数，无显式返回值"
-      }
-    },
-    {
-      "path": "root/26/0",
-      "params": 0,
-      "constants": [
-        "RequestOutBlacklist",
-        "_blacklistData",
-        {
-          "unknown_type": 2
-        },
-        "SL"
-      ],
-      "instruction_count": 13,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 253,
-          "A": 0,
-          "B": "SL",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 2,
-          "opcode": 138,
-          "A": 0,
-          "B": 0,
-          "C": "RequestOutBlacklist",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 3,
-          "opcode": 324,
-          "A": 2,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 4,
-          "opcode": 123,
-          "A": 0,
-          "B": 2,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 5,
-          "opcode": 9,
-          "A": 0,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 6,
-          "opcode": 96,
-          "A": 0,
-          "B": 0,
-          "C": "_blacklistData",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 7,
-          "opcode": 340,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 8,
-          "opcode": 388,
-          "A": 0,
-          "B": 12,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 9,
-          "opcode": 9,
-          "A": 0,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 10,
-          "opcode": 410,
-          "A": 0,
-          "B": 0,
-          "C": "_blacklistData",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 11,
-          "opcode": 127,
-          "A": 1,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 12,
-          "opcode": 207,
-          "A": 0,
-          "B": 1,
-          "C": null,
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 13,
-          "opcode": 205,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ]
-    },
-    {
-      "path": "root/40/0",
-      "params": 0,
-      "constants": [
-        "SL",
-        "JsonDecode"
-      ],
-      "instruction_count": 6,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 105,
-          "A": 0,
-          "B": "SL",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 2,
-          "opcode": 138,
-          "A": 0,
-          "B": 0,
-          "C": "JsonDecode",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 3,
-          "opcode": 127,
-          "A": 2,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 4,
-          "opcode": 202,
-          "A": 0,
-          "B": 2,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 5,
-          "opcode": 27,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 6,
-          "opcode": 205,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ],
-      "recovery_status": "function_body_recovered_with_explicit_capture_parameter; parent_capture_identity_unresolved; not_counted_complete",
-      "api_documentation_reaudit_2026_11_19": {
-        "document": "开发文档_新框架(3_40_xx)/SL.md",
-        "section": "json字符串解密",
-        "documented_signature": "SL:JsonDecode(jsonStr, isfilter)",
-        "parameters": {
-          "jsonStr": "string",
-          "isfilter": "boolean；默认为true"
-        },
-        "return": "json table",
-        "instruction_mapping": "slot1/2准备SL:JsonDecode方法；slot3 Opcode127读取H[0]作为jsonStr；slot4 Opcode202返回调用结果；slot5/6位于return调用之后，不属于可达业务路径",
-        "unresolved": "root/40父原型72条指令流未保存，无法映射H[0]在父级的源寄存器和原始变量名"
-      }
-    },
-    {
-      "path": "root/52/10",
-      "params": 0,
-      "constants": [
-        "ClearBlacklistItems",
-        "清空黑名单"
-      ],
-      "instruction_count": 6,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 403,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 2,
-          "opcode": 295,
-          "A": 1,
-          "B": "清空黑名单",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 3,
-          "opcode": 128,
-          "A": 0,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 4,
-          "opcode": 105,
-          "A": 0,
-          "B": "ClearBlacklistItems",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 5,
-          "opcode": 123,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 6,
-          "opcode": 205,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ]
-    },
-    {
-      "path": "root/52/13",
-      "params": 0,
-      "constants": [
-        "cruiseRunTimer"
-      ],
-      "instruction_count": 13,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 127,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 2,
-          "opcode": 96,
-          "A": 0,
-          "B": 0,
-          "C": "cruiseRunTimer",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 3,
-          "opcode": 340,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 4,
-          "opcode": 388,
-          "A": 0,
-          "B": 8,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 5,
-          "opcode": 127,
-          "A": 0,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 6,
-          "opcode": 128,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 7,
-          "opcode": 110,
-          "A": 0,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 8,
-          "opcode": 293,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 9,
-          "opcode": 324,
-          "A": 0,
-          "B": 2,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 10,
-          "opcode": 123,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 11,
-          "opcode": 110,
-          "A": 0,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 12,
-          "opcode": 293,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 13,
-          "opcode": 339,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ]
-    },
-    {
-      "path": "root/53",
-      "params": 1,
-      "constants": [
-        "string",
-        "match",
-        "·",
-        "^(.-)·"
-      ],
-      "instruction_count": 15,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 257,
-          "A": 1,
-          "B": "string",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 2,
-          "opcode": 410,
-          "A": 1,
-          "B": 1,
-          "C": "match",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 3,
-          "opcode": 288,
-          "A": 2,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 4,
-          "opcode": 295,
-          "A": 3,
-          "B": "^(.-)·",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 5,
-          "opcode": 209,
-          "A": 1,
-          "B": 3,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 6,
-          "opcode": 358,
-          "A": 1,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 7,
-          "opcode": 388,
-          "A": 0,
-          "B": 12,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 8,
-          "opcode": 291,
-          "A": 2,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 9,
-          "opcode": 295,
-          "A": 3,
-          "B": "·",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 10,
-          "opcode": 93,
-          "A": 2,
-          "B": 2,
-          "C": 3,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 11,
-          "opcode": 366,
-          "A": 2,
-          "B": 0,
-          "C": 1,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 12,
-          "opcode": 388,
-          "A": 0,
-          "B": 13,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 13,
-          "opcode": 288,
-          "A": 2,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 14,
-          "opcode": 293,
-          "A": 2,
-          "B": 2,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 15,
-          "opcode": 205,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ],
-      "recovery_status": "已恢复并写入唯一明文",
-      "recovered_lua": "local prefix = string.match(value, \"^(.-)·\")\nif prefix then return prefix .. \"·\" end\nreturn value",
-      "recovery_evidence": {
-        "opcode257": "N[A]=Z[K[3]]；融合下一槽读取成员N[next.A]=N[next.B][next.C]；再融合一槽复制N[next.A]=N[next.B]",
-        "opcode209": "N[A]=N[A](Y(N,A+1,B))，本例调用string.match(value, pattern)",
-        "opcode358": "若真值(N[A])与(K[4]~=0)不相等，内部O递增；循环尾再递增一次",
-        "opcode388": "O=K[3]，循环尾统一递增；本例实现分支跳转",
-        "opcode291": "N[A]=N[B]；融合下一槽装立即数；再融合下一槽按寄存器区间拼接字符串",
-        "opcode93": "按K[3]..K[4]范围将寄存器字符串拼接写入A",
-        "opcode366": "与Opcode358相同的真值比较跳过行为",
-        "opcode288": "N[A]=N[B]",
-        "opcode293": "return Y(N,A,B)，本例返回寄存器2单值",
-        "opcode205": "函数结束，无显式返回值；本例位于return之后不可达"
-      }
-    },
-    {
-      "path": "root/74",
-      "params": 1,
-      "constants": [
-        "format",
-        "状态切换: %s -> %s",
-        "string"
-      ],
-      "instruction_count": 10,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 234,
-          "A": 1,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 2,
-          "opcode": 146,
-          "A": 2,
-          "B": "string",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 3,
-          "opcode": 304,
-          "A": 2,
-          "B": 2,
-          "C": "format",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 4,
-          "opcode": 25,
-          "A": 3,
-          "B": "状态切换: %s -> %s",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 5,
-          "opcode": 324,
-          "A": 4,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 6,
-          "opcode": 288,
-          "A": 5,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 7,
-          "opcode": 264,
-          "A": 2,
-          "B": 5,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 8,
-          "opcode": 376,
-          "A": 1,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 9,
-          "opcode": 62,
-          "A": 0,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 10,
-          "opcode": 339,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ]
-    },
-    {
-      "path": "root/52/12",
-      "params": 0,
-      "constants": [
-        "global",
-        "gameWorldController",
-        "OnGameLeaveWorld"
-      ],
-      "instruction_count": 5,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 248,
-          "A": 0,
-          "B": "global",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 2,
-          "opcode": 85,
-          "A": 0,
-          "B": 0,
-          "C": "gameWorldController",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 3,
-          "opcode": 393,
-          "A": 0,
-          "B": 0,
-          "C": "OnGameLeaveWorld",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 4,
-          "opcode": 123,
-          "A": 0,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 5,
-          "opcode": 205,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ],
-      "recovery_status": "已恢复并写入唯一明文",
-      "recovered_lua": "global.gameWorldController:OnGameLeaveWorld()",
-      "recovery_evidence": {
-        "opcode248": "从原始F()分派器确认：加载全局常量，并融合消费后续两条记录，依次读取对象成员、准备方法receiver/self",
-        "opcode123": "调用寄存器A中的函数，参数区间为A+1至B，不接收返回值",
-        "opcode205": "结束函数，无显式返回值",
-        "upvalues": "本原型没有H槽读取",
-        "api_docs": "已检索3.40.x的SL.md及仓库文档搜索，未收录gameWorldController/OnGameLeaveWorld；不认定为文档已定义的公开API"
-      }
-    },
-    {
-      "path": "root/52/4",
-      "params": 0,
-      "constants": [
-        "Builtsetting"
-      ],
-      "instruction_count": 3,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 105,
-          "A": 0,
-          "B": "Builtsetting",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 2,
-          "opcode": 128,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 3,
-          "opcode": 339,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ],
-      "recovery_status": "已恢复并写入唯一明文",
-      "recovered_lua": "Builtsetting()",
-      "recovery_evidence": {
-        "closure_creation": "root/52父原型槽位559 Opcode121创建childIndex=4，captureCount=0",
-        "opcode105": "N[A]=Z[C]，加载全局常量Builtsetting",
-        "opcode128": "调用N[A]，参数区间A+1至B；本例无参数",
-        "opcode339": "结束当前函数，无显式返回值",
-        "upvalues": "无H槽读取或写入"
-      }
-    },
-    {
-      "path": "root/56/0",
-      "params": 0,
-      "constants": [
-        "ProxyTable",
-        "global",
-        "FriendProxy",
-        "Facade",
-        "retrieveProxy"
-      ],
-      "instruction_count": 9,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 282,
-          "A": 0,
-          "B": "global",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 2,
-          "opcode": 410,
-          "A": 0,
-          "B": 0,
-          "C": "Facade",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 3,
-          "opcode": 103,
-          "A": 0,
-          "B": 0,
-          "C": "retrieveProxy",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 4,
-          "opcode": 108,
-          "A": 2,
-          "B": "global",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 5,
-          "opcode": 79,
-          "A": 2,
-          "B": 2,
-          "C": "ProxyTable",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 6,
-          "opcode": 96,
-          "A": 2,
-          "B": 2,
-          "C": "FriendProxy",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 7,
-          "opcode": 202,
-          "A": 0,
-          "B": 2,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 8,
-          "opcode": 244,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 9,
-          "opcode": 339,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ],
-      "recovery_status": "已恢复并写入唯一明文",
-      "recovered_lua": "return global.Facade:retrieveProxy(global.ProxyTable.FriendProxy)",
-      "recovery_evidence": {
-        "opcode282": "加载global；融合读取Facade成员；再融合准备retrieveProxy方法receiver/self",
-        "opcode108": "加载global；融合读取ProxyTable；再融合读取FriendProxy",
-        "opcode202": "直接return函数调用结果，参数区间A+1至B",
-        "unreachable": "槽位8 Opcode244、槽位9 Opcode339位于槽位7无条件return之后，不属于可达路径",
-        "upvalues": "本原型无H槽读取或写入",
-        "parent_registration": "root/56父原型未发现创建childIndex=0的Opcode121闭包指令；原始注册/使用关系待确认",
-        "api_docs": "已检索3.40.x的SL.md、元变量.md、游戏事件.md及仓库搜索，未收录Facade/retrieveProxy；不认定为文档已定义的公开API"
-      }
-    },
-    {
-      "path": "root/23/0",
-      "params": 0,
-      "constants": [
-        "MainLoop"
-      ],
-      "instruction_count": 3,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 105,
-          "A": 0,
-          "B": "MainLoop",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 2,
-          "opcode": 128,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 3,
-          "opcode": 205,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ],
-      "recovery_status": "已恢复并写入唯一明文",
-      "recovered_lua": "MainLoop()",
-      "recovery_evidence": {
-        "closure_creation": "root/23父原型槽位23 Opcode387创建childIndex=0，captureCount=0",
-        "opcode105": "N[A]=Z[C]，此处Z为全局环境表，读取全局MainLoop",
-        "opcode128": "调用N[A]，参数区间A+1至B；本例无参数",
-        "opcode205": "结束当前函数，无显式返回值",
-        "upvalues": "无H槽读取或写入",
-        "api_docs": "SL.md、元变量.md及仓库文档搜索均未收录MainLoop；按项目全局函数调用点恢复，不认定为框架公开API"
-      }
-    },
-    {
-      "path": "root/52/21",
-      "params": 0,
-      "constants": [
-        "回收完毕",
-        "LuaSendMsg",
-        5,
-        "ShowSystemTips",
-        901238,
-        "[1,1]",
-        0,
-        "SL",
-        9002
-      ],
-      "instruction_count": 16,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 95,
-          "A": 0,
-          "B": "LuaSendMsg",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 2,
-          "opcode": 54,
-          "A": 1,
-          "B": 9002,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 3,
-          "opcode": 235,
-          "A": 2,
-          "B": 901238,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 4,
-          "opcode": 247,
-          "A": 3,
-          "B": 0,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 5,
-          "opcode": 295,
-          "A": 4,
-          "B": 0,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 6,
-          "opcode": 295,
-          "A": 5,
-          "B": 0,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 7,
-          "opcode": 295,
-          "A": 6,
-          "B": "[1,1]",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 8,
-          "opcode": 295,
-          "A": 7,
-          "B": 5,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 9,
-          "opcode": 123,
-          "A": 0,
-          "B": 7,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 10,
-          "opcode": 361,
-          "A": 0,
-          "B": "SL",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 11,
-          "opcode": 102,
-          "A": 0,
-          "B": 0,
-          "C": "ShowSystemTips",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 12,
-          "opcode": 295,
-          "A": 2,
-          "B": "回收完毕",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 13,
-          "opcode": 128,
-          "A": 0,
-          "B": 2,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 14,
-          "opcode": 110,
-          "A": 0,
-          "B": 1,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 15,
-          "opcode": 292,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 16,
-          "opcode": 339,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ],
-      "recovery_status": "已恢复并写入唯一明文",
-      "recovered_lua": "LuaSendMsg(9002, 901238, 0, 0, 0, \"[1,1]\", 5); SL:ShowSystemTips(\"回收完毕\"); return true",
-      "recovery_evidence": {
-        "closure_creation": "root/52父原型槽位603 Opcode121创建childIndex=21，captureCount=0",
-        "opcode95": "N[A]=Z[C]读取全局LuaSendMsg，并融合消费下一物理槽位写入首个参数",
-        "opcode235": "N[A]=K[3]，融合消费后续5条物理槽位，逐一装入其立即/常量值",
-        "opcode361": "读取全局SL，融合准备SL.ShowSystemTips及receiver/self，再融合装入提示字符串",
-        "opcode123": "调用LuaSendMsg，参数寄存器范围N[1]至N[7]",
-        "opcode128": "调用SL.ShowSystemTips，参数寄存器范围N[1]至N[2]",
-        "opcode110": "N[0]=true",
-        "opcode292": "return N[0]",
-        "opcode339": "位于无条件return之后，不可达",
-        "api_docs": "SL.md“文本提示”明确记载SL:ShowSystemTips(str)，str为string；LuaSendMsg未在3.40.x开发文档检索到，按原始调用点保留，不认定为公开文档API"
-      }
-    },
-    {
-      "path": "root/70",
-      "params": 0,
-      "constants": [
-        "Y",
-        "SL",
-        0,
-        "X",
-        "x",
-        "GetMetaValue",
-        "y"
-      ],
-      "instruction_count": 19,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 361,
-          "A": 0,
-          "B": "SL",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 2,
-          "opcode": 102,
-          "A": 0,
-          "B": 0,
-          "C": "GetMetaValue",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 3,
-          "opcode": 295,
-          "A": 2,
-          "B": "X",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 4,
-          "opcode": 209,
-          "A": 0,
-          "B": 2,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 5,
-          "opcode": 325,
-          "A": 0,
-          "B": 0,
-          "C": 1,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 6,
-          "opcode": 388,
-          "A": 0,
-          "B": 7,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 7,
-          "opcode": 309,
-          "A": 0,
-          "B": 0,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 8,
-          "opcode": 146,
-          "A": 1,
-          "B": "SL",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 9,
-          "opcode": 204,
-          "A": 1,
-          "B": 1,
-          "C": "GetMetaValue",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 10,
-          "opcode": 295,
-          "A": 3,
-          "B": "Y",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 11,
-          "opcode": 209,
-          "A": 1,
-          "B": 3,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 12,
-          "opcode": 325,
-          "A": 1,
-          "B": 0,
-          "C": 1,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 13,
-          "opcode": 388,
-          "A": 0,
-          "B": 14,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 14,
-          "opcode": 355,
-          "A": 1,
-          "B": 0,
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 15,
-          "opcode": 279,
-          "A": 2,
-          "B": 0,
-          "C": 2,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 16,
-          "opcode": 125,
-          "A": 2,
-          "B": "x",
-          "C": 0,
-          "mode": 0,
-          "flags": 2
-        },
-        {
-          "slot": 17,
-          "opcode": 125,
-          "A": 2,
-          "B": "y",
-          "C": 1,
-          "mode": 0,
-          "flags": 2
-        },
-        {
-          "slot": 18,
-          "opcode": 292,
-          "A": 2,
-          "B": 2,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 19,
-          "opcode": 339,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ],
-      "recovery_status": "已恢复并写入唯一明文",
-      "recovered_lua": "local x = SL:GetMetaValue(\"X\") or 0; local y = SL:GetMetaValue(\"Y\") or 0; return { x = x, y = y }",
-      "recovery_evidence": {
-        "closure_creation": "root父原型槽位189 Opcode121创建childIndex=70，captureCount=0",
-        "opcode361": "读取SL并融合准备GetMetaValue方法receiver/self及后续参数",
-        "opcode325": "若寄存器值真值与true不相等，则跳过下一物理槽位；用于nil/false时执行默认值路径",
-        "opcode309": "将X默认值写为0，并融合消费后续三条记录准备SL:GetMetaValue('Y')调用",
-        "opcode355": "将Y默认值写为0，并融合消费后续三条记录创建结果表及写入x/y字段",
-        "opcode279": "创建空表",
-        "opcode125": "按常量字段名写表成员",
-        "opcode292": "直接返回寄存器A至C；本例返回N[2]",
-        "opcode339": "位于return之后，不可达",
-        "upvalues": "无H槽读取或写入",
-        "api_docs": "SL.md示例中出现SL:GetMetaValue('MAP_ID')，确认receiver和字符串key调用形式；文档未声明返回类型，本函数默认值逻辑以原始Opcode325分支为准"
-      }
-    },
-    {
-      "path": "root/69",
-      "params": 2,
-      "constants": [
-        "其他玩家",
-        "无归属",
-        null,
-        "",
-        "GetOwnerID",
-        "自己",
-        -1
-      ],
-      "instruction_count": 20,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 393,
-          "A": 2,
-          "B": 0,
-          "C": "GetOwnerID",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 2,
-          "opcode": 209,
-          "A": 2,
-          "B": 3,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 3,
-          "opcode": 295,
-          "A": 3,
-          "B": "",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 4,
-          "opcode": 143,
-          "A": 1,
-          "B": 2,
-          "C": null,
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 5,
-          "opcode": 388,
-          "A": 0,
-          "B": 9,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 6,
-          "opcode": 143,
-          "A": 1,
-          "B": 2,
-          "C": "",
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 7,
-          "opcode": 388,
-          "A": 0,
-          "B": 9,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 8,
-          "opcode": 143,
-          "A": 0,
-          "B": 2,
-          "C": -1,
-          "mode": 0,
-          "flags": 4
-        },
-        {
-          "slot": 9,
-          "opcode": 388,
-          "A": 0,
-          "B": 11,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 10,
-          "opcode": 295,
-          "A": 3,
-          "B": "无归属",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 11,
-          "opcode": 388,
-          "A": 0,
-          "B": 16,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 12,
-          "opcode": 294,
-          "A": 0,
-          "B": 2,
-          "C": 1,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 13,
-          "opcode": 388,
-          "A": 0,
-          "B": 15,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 14,
-          "opcode": 295,
-          "A": 3,
-          "B": "自己",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 15,
-          "opcode": 388,
-          "A": 0,
-          "B": 16,
-          "C": null,
-          "mode": 1,
-          "flags": 0
-        },
-        {
-          "slot": 16,
-          "opcode": 259,
-          "A": 3,
-          "B": "其他玩家",
-          "C": null,
-          "mode": 1,
-          "flags": 2
-        },
-        {
-          "slot": 17,
-          "opcode": 221,
-          "A": 4,
-          "B": 2,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 18,
-          "opcode": 64,
-          "A": 5,
-          "B": 3,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 19,
-          "opcode": 293,
-          "A": 4,
-          "B": 5,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        },
-        {
-          "slot": 20,
-          "opcode": 339,
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "mode": 0,
-          "flags": 0
-        }
-      ],
-      "recovery_status": "已恢复并写入唯一明文",
-      "recovered_lua": "local ownerId = arg1:GetOwnerID(); local ownerLabel = (ownerId == nil or ownerId == \"\" or ownerId == -1) and \"无归属\" or (ownerId == arg2 and \"自己\" or \"其他玩家\"); return ownerId, ownerLabel",
-      "recovery_evidence": {
-        "closure_creation": "root父原型槽位195 Opcode121创建childIndex=69，captureCount=0",
-        "opcode393": "准备arg1.GetOwnerID方法并保存arg1为receiver/self",
-        "opcode209": "调用GetOwnerID，receiver为arg1，结果写入N[2]",
-        "opcode143": "若(N[B]==D)与A所指定的布尔值不相等，则跳过下一物理槽位；用于nil、空字符串、-1比较",
-        "opcode294": "若(N[B]==N[C])与A所指定的布尔值不相等，则跳过下一物理槽位",
-        "opcode221": "N[A]=N[B]并融合消费下一物理槽位执行N[next.A]=N[next.B]",
-        "opcode64": "N[A]=N[B]寄存器复制",
-        "opcode293": "return Y(N,A,B)，返回寄存器A至B；本例返回ownerId和标签",
-        "opcode339": "位于return之后，不可达",
-        "upvalues": "无H槽读取或写入",
-        "api_docs": "GetOwnerID未在3.40.x开发文档检索到；仅按原始调用点恢复方法receiver和名称，不认定为公开文档API"
-      }
-    },
-    {
-      "path": "root/5",
-      "params": 1,
-      "constants": [
-        "mCurrMapX",
-        0,
-        "y",
-        "x",
-        "mCurrMapY"
-      ],
-      "instruction_count": 17,
-      "instructions": [
-        {
-          "slot": 1,
-          "opcode": 325,
-          "A": 0,
-          "B": 0,
-          "C": 1
-        },
-        {
-          "slot": 2,
-          "opcode": 388,
-          "A": 0,
-          "B": 4,
-          "C": null
-        },
-        {
-          "slot": 3,
-          "opcode": 193,
-          "A": 1,
-          "B": 1,
-          "C": 0
-        },
-        {
-          "slot": 4,
-          "opcode": 293,
-          "A": 1,
-          "B": 1,
-          "C": 0
-        },
-        {
-          "slot": 5,
-          "opcode": 410,
-          "A": 1,
-          "B": 0,
-          "C": "mCurrMapX"
-        },
-        {
-          "slot": 6,
-          "opcode": 325,
-          "A": 1,
-          "B": 0,
-          "C": 1
-        },
-        {
-          "slot": 7,
-          "opcode": 388,
-          "A": 0,
-          "B": 8,
-          "C": null
-        },
-        {
-          "slot": 8,
-          "opcode": 359,
-          "A": 1,
-          "B": 0,
-          "C": 0
-        },
-        {
-          "slot": 9,
-          "opcode": 96,
-          "A": 2,
-          "B": 0,
-          "C": "mCurrMapY"
-        },
-        {
-          "slot": 10,
-          "opcode": 325,
-          "A": 2,
-          "B": 0,
-          "C": 1
-        },
-        {
-          "slot": 11,
-          "opcode": 388,
-          "A": 0,
-          "B": 12,
-          "C": null
-        },
-        {
-          "slot": 12,
-          "opcode": 355,
-          "A": 2,
-          "B": 0,
-          "C": 0
-        },
-        {
-          "slot": 13,
-          "opcode": 100,
-          "A": 3,
-          "B": 0,
-          "C": 2
-        },
-        {
-          "slot": 14,
-          "opcode": 409,
-          "A": 3,
-          "B": "x",
-          "C": 1
-        },
-        {
-          "slot": 15,
-          "opcode": 125,
-          "A": 3,
-          "B": "y",
-          "C": 2
-        },
-        {
-          "slot": 16,
-          "opcode": 11,
-          "A": 3,
-          "B": 3,
-          "C": 0
-        },
-        {
-          "slot": 17,
-          "opcode": 205,
-          "A": 0,
-          "B": 0,
-          "C": 0
-        }
-      ],
-      "recovery_status": "已恢复",
-      "note": "依据11.16原版F()分派器逐条模拟；root父级物理槽位190创建childIndex=5，captureCount=0。原始符号名及参数名未确认。"
-    },
-    {
       "path": "root/2",
       "params": 1,
       "constants": [
@@ -4954,6 +2707,2560 @@
         "current_directory_audit": "GitHub main分支11.16目录递归树核对共58项，未发现root指令dump、解码payload或解析器脚本。",
         "next_action": "获取当时的解析器/解码后结构数据并只导出root的654条指令；若这些中间产物已不存在，则补交root物理指令记录或解码后结构文件。不得重做LZW/XOR，不得借用旧版110原型资料。"
       }
+    },
+    {
+      "path": "root/2/0",
+      "params": 1,
+      "constants": [
+        "ipairs"
+      ],
+      "instruction_count": 13,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 146,
+          "A": 1,
+          "B": "ipairs",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 324,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 386,
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 8,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 294,
+          "A": 0,
+          "B": 0,
+          "C": 5,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 388,
+          "A": 0,
+          "B": 8,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 110,
+          "A": 6,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 11,
+          "A": 6,
+          "B": 6,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 250,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 388,
+          "A": 0,
+          "B": 4,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 11,
+          "opcode": 110,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 292,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "reconstruction": {
+        "status": "behavior_recovered",
+        "description": "ipairs(H[0])遍历父级闭包捕获表；逐项与唯一参数比较；相等返回true，迭代器结束返回false。",
+        "upvalue": "H[0]（父级变量身份待映射）",
+        "control_flow": "槽位4跳到迭代推进；Opcode250/122迭代；Opcode294相等时跳过回边并执行true返回；迭代器首返回值nil时跳过回边并执行false返回。",
+        "confidence": "high"
+      }
+    },
+    {
+      "path": "root/2/1",
+      "params": 1,
+      "constants": [
+        "ipairs",
+        1,
+        "find",
+        "string"
+      ],
+      "instruction_count": 20,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 105,
+          "A": 1,
+          "B": "ipairs",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 324,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 314,
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 15,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 227,
+          "A": 6,
+          "B": "string",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 6,
+          "opcode": 96,
+          "A": 6,
+          "B": 6,
+          "C": "find",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 7,
+          "opcode": 288,
+          "A": 7,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 390,
+          "A": 8,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 295,
+          "A": 9,
+          "B": 1,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 10,
+          "opcode": 110,
+          "A": 10,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 11,
+          "opcode": 209,
+          "A": 6,
+          "B": 10,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 358,
+          "A": 6,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 388,
+          "A": 0,
+          "B": 15,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 14,
+          "opcode": 110,
+          "A": 6,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 15,
+          "opcode": 11,
+          "A": 6,
+          "B": 6,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 16,
+          "opcode": 250,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 17,
+          "opcode": 388,
+          "A": 0,
+          "B": 4,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 18,
+          "opcode": 110,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 19,
+          "opcode": 293,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 20,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "closure_capture": {
+        "parent_path": "root/2",
+        "create_slot": 109,
+        "create_opcode": 387,
+        "child_index": 1,
+        "capture_count": 1,
+        "capture_records": [
+          {
+            "slot": 110,
+            "opcode": 243,
+            "source": "parent local register N[6]",
+            "child_upvalue": "H[0]"
+          }
+        ]
+      }
+    },
+    {
+      "path": "root/2/2",
+      "params": 1,
+      "constants": [
+        "ipairs"
+      ],
+      "instruction_count": 13,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 45,
+          "A": 1,
+          "B": "ipairs",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 234,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 386,
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 8,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 294,
+          "A": 0,
+          "B": 0,
+          "C": 5,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 388,
+          "A": 0,
+          "B": 8,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 110,
+          "A": 6,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 292,
+          "A": 6,
+          "B": 6,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 122,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 388,
+          "A": 0,
+          "B": 4,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 11,
+          "opcode": 110,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 293,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "reconstruction": {
+        "status": "behavior_recovered",
+        "description": "ipairs(H[0])遍历父级闭包捕获表；逐项与唯一参数比较；相等返回true，迭代器结束返回false。",
+        "upvalue": "H[0]（父级变量身份待映射）",
+        "control_flow": "槽位4跳到迭代推进；Opcode250/122迭代；Opcode294相等时跳过回边并执行true返回；迭代器首返回值nil时跳过回边并执行false返回。",
+        "confidence": "high"
+      }
+    },
+    {
+      "path": "root/5",
+      "params": 1,
+      "constants": [
+        "mCurrMapX",
+        0,
+        "y",
+        "x",
+        "mCurrMapY"
+      ],
+      "instruction_count": 17,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 325,
+          "A": 0,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 4,
+          "C": null
+        },
+        {
+          "slot": 3,
+          "opcode": 193,
+          "A": 1,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 293,
+          "A": 1,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 410,
+          "A": 1,
+          "B": 0,
+          "C": "mCurrMapX"
+        },
+        {
+          "slot": 6,
+          "opcode": 325,
+          "A": 1,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 7,
+          "opcode": 388,
+          "A": 0,
+          "B": 8,
+          "C": null
+        },
+        {
+          "slot": 8,
+          "opcode": 359,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 96,
+          "A": 2,
+          "B": 0,
+          "C": "mCurrMapY"
+        },
+        {
+          "slot": 10,
+          "opcode": 325,
+          "A": 2,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 11,
+          "opcode": 388,
+          "A": 0,
+          "B": 12,
+          "C": null
+        },
+        {
+          "slot": 12,
+          "opcode": 355,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 100,
+          "A": 3,
+          "B": 0,
+          "C": 2
+        },
+        {
+          "slot": 14,
+          "opcode": 409,
+          "A": 3,
+          "B": "x",
+          "C": 1
+        },
+        {
+          "slot": 15,
+          "opcode": 125,
+          "A": 3,
+          "B": "y",
+          "C": 2
+        },
+        {
+          "slot": 16,
+          "opcode": 11,
+          "A": 3,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 17,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        }
+      ],
+      "recovery_status": "已恢复",
+      "note": "依据11.16原版F()分派器逐条模拟；root父级物理槽位190创建childIndex=5，captureCount=0。原始符号名及参数名未确认。"
+    },
+    {
+      "path": "root/13/0",
+      "params": 0,
+      "constants": [
+        "",
+        22502,
+        "LuaSendMsg",
+        3,
+        2,
+        9002,
+        0,
+        1
+      ],
+      "instruction_count": 10,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 95,
+          "A": 0,
+          "B": "LuaSendMsg",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 54,
+          "A": 1,
+          "B": 9002,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 3,
+          "opcode": 295,
+          "A": 2,
+          "B": 22502,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 4,
+          "opcode": 295,
+          "A": 3,
+          "B": 1,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 295,
+          "A": 4,
+          "B": 2,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 6,
+          "opcode": 168,
+          "A": 5,
+          "B": 3,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 7,
+          "opcode": 295,
+          "A": 6,
+          "B": "",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 8,
+          "opcode": 295,
+          "A": 7,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 9,
+          "opcode": 128,
+          "A": 0,
+          "B": 7,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "LuaSendMsg(9002, 22502, 1, 2, 3, \"\", 0)",
+      "recovery_evidence": {
+        "opcode95": "N[A]=Z[K[3]]，并融合消费下一物理槽位执行N[next.A]=next.K[3]；槽位2仅为融合载荷",
+        "opcode295": "N[A]=K[3]，分别装载22502、1、2",
+        "opcode168": "N[A]=K[3]并融合消费后续两物理槽位，各执行N[next.A]=next.K[3]，装载3、空字符串、0",
+        "opcode128": "调用N[A](Y(N,A+1,B))；本例A=0、B=7",
+        "opcode205": "结束函数，无显式返回值"
+      }
+    },
+    {
+      "path": "root/23/0",
+      "params": 0,
+      "constants": [
+        "MainLoop"
+      ],
+      "instruction_count": 3,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 105,
+          "A": 0,
+          "B": "MainLoop",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "MainLoop()",
+      "recovery_evidence": {
+        "closure_creation": "root/23父原型槽位23 Opcode387创建childIndex=0，captureCount=0",
+        "opcode105": "N[A]=Z[C]，此处Z为全局环境表，读取全局MainLoop",
+        "opcode128": "调用N[A]，参数区间A+1至B；本例无参数",
+        "opcode205": "结束当前函数，无显式返回值",
+        "upvalues": "无H槽读取或写入",
+        "api_docs": "SL.md、元变量.md及仓库文档搜索均未收录MainLoop；按项目全局函数调用点恢复，不认定为框架公开API"
+      }
+    },
+    {
+      "path": "root/25/0/0",
+      "depth": 3,
+      "params": 0,
+      "constants": [],
+      "instruction_count": 3,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 110,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 2,
+          "opcode": 162,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "byte_offsets": {
+        "prototype_start": 34024,
+        "prototype_end": 34064
+      },
+      "reconstruction": {
+        "status": "instructions_extracted_pending_semantics_or_capture",
+        "description": "Opcode110置寄存器0为false；Opcode162执行H[0]=N[0]；Opcode205结束。闭包体行为可读，但父级创建点/捕获身份未确认。",
+        "confidence": "raw_structure_verified"
+      }
+    },
+    {
+      "path": "root/25/0/2",
+      "depth": 3,
+      "params": 0,
+      "constants": [],
+      "instruction_count": 3,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 110,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 2,
+          "opcode": 62,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "byte_offsets": {
+        "prototype_start": 34709,
+        "prototype_end": 34749
+      },
+      "reconstruction": {
+        "status": "instructions_extracted_pending_semantics_or_capture",
+        "description": "Opcode62语义尚未映射；父级创建点/捕获身份未确认。",
+        "confidence": "raw_structure_verified"
+      }
+    },
+    {
+      "path": "root/26/0",
+      "params": 0,
+      "constants": [
+        "RequestOutBlacklist",
+        "_blacklistData",
+        {
+          "unknown_type": 2
+        },
+        "SL"
+      ],
+      "instruction_count": 13,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 253,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": "RequestOutBlacklist",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 324,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 123,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 9,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "_blacklistData",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 7,
+          "opcode": 340,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 388,
+          "A": 0,
+          "B": 12,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 9,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": "_blacklistData",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 11,
+          "opcode": 127,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 207,
+          "A": 0,
+          "B": 1,
+          "C": null,
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 13,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/40/0",
+      "params": 0,
+      "constants": [
+        "SL",
+        "JsonDecode"
+      ],
+      "instruction_count": 6,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 105,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": "JsonDecode",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 127,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 202,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 27,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "function_body_recovered_with_explicit_capture_parameter; parent_capture_identity_unresolved; not_counted_complete",
+      "api_documentation_reaudit_2026_11_19": {
+        "document": "开发文档_新框架(3_40_xx)/SL.md",
+        "section": "json字符串解密",
+        "documented_signature": "SL:JsonDecode(jsonStr, isfilter)",
+        "parameters": {
+          "jsonStr": "string",
+          "isfilter": "boolean；默认为true"
+        },
+        "return": "json table",
+        "instruction_mapping": "slot1/2准备SL:JsonDecode方法；slot3 Opcode127读取H[0]作为jsonStr；slot4 Opcode202返回调用结果；slot5/6位于return调用之后，不属于可达业务路径",
+        "unresolved": "root/40父原型72条指令流未保存，无法映射H[0]在父级的源寄存器和原始变量名"
+      }
+    },
+    {
+      "path": "root/50/3",
+      "depth": 2,
+      "params": 0,
+      "constants": [
+        "GUI",
+        "Win_Close"
+      ],
+      "instruction_count": 5,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 253,
+          "A": 0,
+          "B": "GUI",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": "Win_Close",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 324,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 123,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "byte_offsets": {
+        "prototype_start": 65721,
+        "prototype_end": 65801
+      },
+      "reconstruction": {
+        "status": "instructions_extracted_pending_semantics_or_capture",
+        "description": "Opcode253尚未映射；Opcode138方法准备、Opcode324读取H[0]、Opcode123调用的组合指向GUI:Win_Close(H[0])，但捕获来源未确认，暂不写源码。",
+        "confidence": "raw_structure_verified"
+      }
+    },
+    {
+      "path": "root/52/4",
+      "params": 0,
+      "constants": [
+        "Builtsetting"
+      ],
+      "instruction_count": 3,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 105,
+          "A": 0,
+          "B": "Builtsetting",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "Builtsetting()",
+      "recovery_evidence": {
+        "closure_creation": "root/52父原型槽位559 Opcode121创建childIndex=4，captureCount=0",
+        "opcode105": "N[A]=Z[C]，加载全局常量Builtsetting",
+        "opcode128": "调用N[A]，参数区间A+1至B；本例无参数",
+        "opcode339": "结束当前函数，无显式返回值",
+        "upvalues": "无H槽读取或写入"
+      }
+    },
+    {
+      "path": "root/52/10",
+      "params": 0,
+      "constants": [
+        "ClearBlacklistItems",
+        "清空黑名单"
+      ],
+      "instruction_count": 6,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 403,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 2,
+          "opcode": 295,
+          "A": 1,
+          "B": "清空黑名单",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 3,
+          "opcode": 128,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 105,
+          "A": 0,
+          "B": "ClearBlacklistItems",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 123,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/52/11",
+      "depth": 2,
+      "params": 0,
+      "constants": [
+        "_G",
+        "LuaSendMsg"
+      ],
+      "instruction_count": 5,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 45,
+          "A": 0,
+          "B": "_G",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 9,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 400,
+          "A": 1,
+          "B": 1,
+          "C": "LuaSendMsg",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 4,
+          "opcode": 125,
+          "A": 0,
+          "B": "LuaSendMsg",
+          "C": 1,
+          "mode": 0,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "byte_offsets": {
+        "prototype_start": 85478,
+        "prototype_end": 85558
+      },
+      "reconstruction": {
+        "status": "instructions_extracted_pending_semantics_or_capture",
+        "description": "Opcode400尚未映射；融合/调用链未闭合，不据常量推断消息参数。",
+        "confidence": "raw_structure_verified"
+      }
+    },
+    {
+      "path": "root/52/12",
+      "params": 0,
+      "constants": [
+        "global",
+        "gameWorldController",
+        "OnGameLeaveWorld"
+      ],
+      "instruction_count": 5,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 248,
+          "A": 0,
+          "B": "global",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 85,
+          "A": 0,
+          "B": 0,
+          "C": "gameWorldController",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 393,
+          "A": 0,
+          "B": 0,
+          "C": "OnGameLeaveWorld",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 4,
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "global.gameWorldController:OnGameLeaveWorld()",
+      "recovery_evidence": {
+        "opcode248": "从原始F()分派器确认：加载全局常量，并融合消费后续两条记录，依次读取对象成员、准备方法receiver/self",
+        "opcode123": "调用寄存器A中的函数，参数区间为A+1至B，不接收返回值",
+        "opcode205": "结束函数，无显式返回值",
+        "upvalues": "本原型没有H槽读取",
+        "api_docs": "已检索3.40.x的SL.md及仓库文档搜索，未收录gameWorldController/OnGameLeaveWorld；不认定为文档已定义的公开API"
+      }
+    },
+    {
+      "path": "root/52/13",
+      "params": 0,
+      "constants": [
+        "cruiseRunTimer"
+      ],
+      "instruction_count": 13,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 127,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 2,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "cruiseRunTimer",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 340,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 8,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 127,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 293,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 324,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 123,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 11,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 293,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ]
+    },
+    {
+      "path": "root/52/21",
+      "params": 0,
+      "constants": [
+        "回收完毕",
+        "LuaSendMsg",
+        5,
+        "ShowSystemTips",
+        901238,
+        "[1,1]",
+        0,
+        "SL",
+        9002
+      ],
+      "instruction_count": 16,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 95,
+          "A": 0,
+          "B": "LuaSendMsg",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 54,
+          "A": 1,
+          "B": 9002,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 3,
+          "opcode": 235,
+          "A": 2,
+          "B": 901238,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 4,
+          "opcode": 247,
+          "A": 3,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 295,
+          "A": 4,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 6,
+          "opcode": 295,
+          "A": 5,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 7,
+          "opcode": 295,
+          "A": 6,
+          "B": "[1,1]",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 8,
+          "opcode": 295,
+          "A": 7,
+          "B": 5,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 9,
+          "opcode": 123,
+          "A": 0,
+          "B": 7,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 361,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 11,
+          "opcode": 102,
+          "A": 0,
+          "B": 0,
+          "C": "ShowSystemTips",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 12,
+          "opcode": 295,
+          "A": 2,
+          "B": "回收完毕",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 13,
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 14,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 15,
+          "opcode": 292,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 16,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "LuaSendMsg(9002, 901238, 0, 0, 0, \"[1,1]\", 5); SL:ShowSystemTips(\"回收完毕\"); return true",
+      "recovery_evidence": {
+        "closure_creation": "root/52父原型槽位603 Opcode121创建childIndex=21，captureCount=0",
+        "opcode95": "N[A]=Z[C]读取全局LuaSendMsg，并融合消费下一物理槽位写入首个参数",
+        "opcode235": "N[A]=K[3]，融合消费后续5条物理槽位，逐一装入其立即/常量值",
+        "opcode361": "读取全局SL，融合准备SL.ShowSystemTips及receiver/self，再融合装入提示字符串",
+        "opcode123": "调用LuaSendMsg，参数寄存器范围N[1]至N[7]",
+        "opcode128": "调用SL.ShowSystemTips，参数寄存器范围N[1]至N[2]",
+        "opcode110": "N[0]=true",
+        "opcode292": "return N[0]",
+        "opcode339": "位于无条件return之后，不可达",
+        "api_docs": "SL.md“文本提示”明确记载SL:ShowSystemTips(str)，str为string；LuaSendMsg未在3.40.x开发文档检索到，按原始调用点保留，不认定为公开文档API"
+      }
+    },
+    {
+      "path": "root/52/28",
+      "depth": 2,
+      "params": 0,
+      "constants": [
+        11,
+        "InitGatherMonsters",
+        "GATHER_THRESHOLD"
+      ],
+      "instruction_count": 7,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 324,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 2,
+          "opcode": 7,
+          "A": 0,
+          "B": "GATHER_THRESHOLD",
+          "C": 11,
+          "mode": 0,
+          "flags": 6
+        },
+        {
+          "slot": 3,
+          "opcode": 105,
+          "A": 0,
+          "B": "InitGatherMonsters",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 4,
+          "opcode": 123,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 292,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "byte_offsets": {
+        "prototype_start": 104702,
+        "prototype_end": 104831
+      },
+      "reconstruction": {
+        "status": "instructions_extracted_pending_semantics_or_capture",
+        "description": "Opcode7尚未映射；H[0]及阈值写入的精确语义未闭合。",
+        "confidence": "raw_structure_verified"
+      }
+    },
+    {
+      "path": "root/53",
+      "params": 1,
+      "constants": [
+        "string",
+        "match",
+        "·",
+        "^(.-)·"
+      ],
+      "instruction_count": 15,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 257,
+          "A": 1,
+          "B": "string",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 410,
+          "A": 1,
+          "B": 1,
+          "C": "match",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 288,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 295,
+          "A": 3,
+          "B": "^(.-)·",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 209,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 358,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 388,
+          "A": 0,
+          "B": 12,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 291,
+          "A": 2,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 295,
+          "A": 3,
+          "B": "·",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 10,
+          "opcode": 93,
+          "A": 2,
+          "B": 2,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 11,
+          "opcode": 366,
+          "A": 2,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 388,
+          "A": 0,
+          "B": 13,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 288,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 14,
+          "opcode": 293,
+          "A": 2,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 15,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "local prefix = string.match(value, \"^(.-)·\")\nif prefix then return prefix .. \"·\" end\nreturn value",
+      "recovery_evidence": {
+        "opcode257": "N[A]=Z[K[3]]；融合下一槽读取成员N[next.A]=N[next.B][next.C]；再融合一槽复制N[next.A]=N[next.B]",
+        "opcode209": "N[A]=N[A](Y(N,A+1,B))，本例调用string.match(value, pattern)",
+        "opcode358": "若真值(N[A])与(K[4]~=0)不相等，内部O递增；循环尾再递增一次",
+        "opcode388": "O=K[3]，循环尾统一递增；本例实现分支跳转",
+        "opcode291": "N[A]=N[B]；融合下一槽装立即数；再融合下一槽按寄存器区间拼接字符串",
+        "opcode93": "按K[3]..K[4]范围将寄存器字符串拼接写入A",
+        "opcode366": "与Opcode358相同的真值比较跳过行为",
+        "opcode288": "N[A]=N[B]",
+        "opcode293": "return Y(N,A,B)，本例返回寄存器2单值",
+        "opcode205": "函数结束，无显式返回值；本例位于return之后不可达"
+      }
+    },
+    {
+      "path": "root/56/0",
+      "params": 0,
+      "constants": [
+        "ProxyTable",
+        "global",
+        "FriendProxy",
+        "Facade",
+        "retrieveProxy"
+      ],
+      "instruction_count": 9,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 282,
+          "A": 0,
+          "B": "global",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": "Facade",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 103,
+          "A": 0,
+          "B": 0,
+          "C": "retrieveProxy",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 4,
+          "opcode": 108,
+          "A": 2,
+          "B": "global",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 79,
+          "A": 2,
+          "B": 2,
+          "C": "ProxyTable",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 6,
+          "opcode": 96,
+          "A": 2,
+          "B": 2,
+          "C": "FriendProxy",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 7,
+          "opcode": 202,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 244,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "return global.Facade:retrieveProxy(global.ProxyTable.FriendProxy)",
+      "recovery_evidence": {
+        "opcode282": "加载global；融合读取Facade成员；再融合准备retrieveProxy方法receiver/self",
+        "opcode108": "加载global；融合读取ProxyTable；再融合读取FriendProxy",
+        "opcode202": "直接return函数调用结果，参数区间A+1至B",
+        "unreachable": "槽位8 Opcode244、槽位9 Opcode339位于槽位7无条件return之后，不属于可达路径",
+        "upvalues": "本原型无H槽读取或写入",
+        "parent_registration": "root/56父原型未发现创建childIndex=0的Opcode121闭包指令；原始注册/使用关系待确认",
+        "api_docs": "已检索3.40.x的SL.md、元变量.md、游戏事件.md及仓库搜索，未收录Facade/retrieveProxy；不认定为文档已定义的公开API"
+      }
+    },
+    {
+      "path": "root/69",
+      "params": 2,
+      "constants": [
+        "其他玩家",
+        "无归属",
+        null,
+        "",
+        "GetOwnerID",
+        "自己",
+        -1
+      ],
+      "instruction_count": 20,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 393,
+          "A": 2,
+          "B": 0,
+          "C": "GetOwnerID",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 2,
+          "opcode": 209,
+          "A": 2,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 295,
+          "A": 3,
+          "B": "",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 4,
+          "opcode": 143,
+          "A": 1,
+          "B": 2,
+          "C": null,
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 5,
+          "opcode": 388,
+          "A": 0,
+          "B": 9,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 143,
+          "A": 1,
+          "B": 2,
+          "C": "",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 7,
+          "opcode": 388,
+          "A": 0,
+          "B": 9,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 143,
+          "A": 0,
+          "B": 2,
+          "C": -1,
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 9,
+          "opcode": 388,
+          "A": 0,
+          "B": 11,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 295,
+          "A": 3,
+          "B": "无归属",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 11,
+          "opcode": 388,
+          "A": 0,
+          "B": 16,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 294,
+          "A": 0,
+          "B": 2,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 388,
+          "A": 0,
+          "B": 15,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 14,
+          "opcode": 295,
+          "A": 3,
+          "B": "自己",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 15,
+          "opcode": 388,
+          "A": 0,
+          "B": 16,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 16,
+          "opcode": 259,
+          "A": 3,
+          "B": "其他玩家",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 17,
+          "opcode": 221,
+          "A": 4,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 18,
+          "opcode": 64,
+          "A": 5,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 19,
+          "opcode": 293,
+          "A": 4,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 20,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "local ownerId = arg1:GetOwnerID(); local ownerLabel = (ownerId == nil or ownerId == \"\" or ownerId == -1) and \"无归属\" or (ownerId == arg2 and \"自己\" or \"其他玩家\"); return ownerId, ownerLabel",
+      "recovery_evidence": {
+        "closure_creation": "root父原型槽位195 Opcode121创建childIndex=69，captureCount=0",
+        "opcode393": "准备arg1.GetOwnerID方法并保存arg1为receiver/self",
+        "opcode209": "调用GetOwnerID，receiver为arg1，结果写入N[2]",
+        "opcode143": "若(N[B]==D)与A所指定的布尔值不相等，则跳过下一物理槽位；用于nil、空字符串、-1比较",
+        "opcode294": "若(N[B]==N[C])与A所指定的布尔值不相等，则跳过下一物理槽位",
+        "opcode221": "N[A]=N[B]并融合消费下一物理槽位执行N[next.A]=N[next.B]",
+        "opcode64": "N[A]=N[B]寄存器复制",
+        "opcode293": "return Y(N,A,B)，返回寄存器A至B；本例返回ownerId和标签",
+        "opcode339": "位于return之后，不可达",
+        "upvalues": "无H槽读取或写入",
+        "api_docs": "GetOwnerID未在3.40.x开发文档检索到；仅按原始调用点恢复方法receiver和名称，不认定为公开文档API"
+      }
+    },
+    {
+      "path": "root/70",
+      "params": 0,
+      "constants": [
+        "Y",
+        "SL",
+        0,
+        "X",
+        "x",
+        "GetMetaValue",
+        "y"
+      ],
+      "instruction_count": 19,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 361,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 102,
+          "A": 0,
+          "B": 0,
+          "C": "GetMetaValue",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 295,
+          "A": 2,
+          "B": "X",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 4,
+          "opcode": 209,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 325,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 388,
+          "A": 0,
+          "B": 7,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 309,
+          "A": 0,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 8,
+          "opcode": 146,
+          "A": 1,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 9,
+          "opcode": 204,
+          "A": 1,
+          "B": 1,
+          "C": "GetMetaValue",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 10,
+          "opcode": 295,
+          "A": 3,
+          "B": "Y",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 11,
+          "opcode": 209,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 325,
+          "A": 1,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 388,
+          "A": 0,
+          "B": 14,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 14,
+          "opcode": 355,
+          "A": 1,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 15,
+          "opcode": 279,
+          "A": 2,
+          "B": 0,
+          "C": 2,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 16,
+          "opcode": 125,
+          "A": 2,
+          "B": "x",
+          "C": 0,
+          "mode": 0,
+          "flags": 2
+        },
+        {
+          "slot": 17,
+          "opcode": 125,
+          "A": 2,
+          "B": "y",
+          "C": 1,
+          "mode": 0,
+          "flags": 2
+        },
+        {
+          "slot": 18,
+          "opcode": 292,
+          "A": 2,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 19,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "recovery_status": "已恢复并写入唯一明文",
+      "recovered_lua": "local x = SL:GetMetaValue(\"X\") or 0; local y = SL:GetMetaValue(\"Y\") or 0; return { x = x, y = y }",
+      "recovery_evidence": {
+        "closure_creation": "root父原型槽位189 Opcode121创建childIndex=70，captureCount=0",
+        "opcode361": "读取SL并融合准备GetMetaValue方法receiver/self及后续参数",
+        "opcode325": "若寄存器值真值与true不相等，则跳过下一物理槽位；用于nil/false时执行默认值路径",
+        "opcode309": "将X默认值写为0，并融合消费后续三条记录准备SL:GetMetaValue('Y')调用",
+        "opcode355": "将Y默认值写为0，并融合消费后续三条记录创建结果表及写入x/y字段",
+        "opcode279": "创建空表",
+        "opcode125": "按常量字段名写表成员",
+        "opcode292": "直接返回寄存器A至C；本例返回N[2]",
+        "opcode339": "位于return之后，不可达",
+        "upvalues": "无H槽读取或写入",
+        "api_docs": "SL.md示例中出现SL:GetMetaValue('MAP_ID')，确认receiver和字符串key调用形式；文档未声明返回类型，本函数默认值逻辑以原始Opcode325分支为准"
+      }
+    },
+    {
+      "path": "root/74",
+      "params": 1,
+      "constants": [
+        "format",
+        "状态切换: %s -> %s",
+        "string"
+      ],
+      "instruction_count": 10,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 234,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 2,
+          "opcode": 146,
+          "A": 2,
+          "B": "string",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 3,
+          "opcode": 304,
+          "A": 2,
+          "B": 2,
+          "C": "format",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 4,
+          "opcode": 25,
+          "A": 3,
+          "B": "状态切换: %s -> %s",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 324,
+          "A": 4,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 288,
+          "A": 5,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 264,
+          "A": 2,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 376,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 62,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ]
     }
   ],
   "constant_type_notes": {
