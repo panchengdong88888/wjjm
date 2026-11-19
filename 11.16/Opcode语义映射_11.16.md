@@ -876,3 +876,23 @@ root/65 18条物理槽位逐条闭合：先调用`string.find(value, "盟重", 1
 - **Opcode 393**：准备方法调用receiver/self，执行`N[A+1]=N[B]`及`N[A]=N[B][C]`；root/60槽位19准备ClearAttackTargetID方法。
 - Opcode 213沿用已确认的寄存器区间清空语义；root/60槽位5的区间为N[0]至N[0]。
 - root/60槽位20 Opcode123无参调用准备好的方法。官方框架API只按调用点使用，不分析其内部实现。
+
+
+## 2026-11-19续：Opcode114分派叶子纠错及root/33/0闭包体
+
+直接查看11.16原始F()分派树（字符偏移约179321）确认：
+- Opcode112：执行动态键表写入`N[A][N[B]]=N[C]`。
+- Opcode113：执行一段多槽融合操作。
+- **Opcode114：执行`N[A][K[3]]=K[4]`，直接使用指令常量/立即字段写入表成员，不消费后续物理槽位。**
+- 因此此前将root/33/0的slot11 Opcode114描述为融合消费slot12–14是错误的；slot12 Opcode127、slot13 Opcode322、slot14 Opcode324均为独立执行指令。历史root/3部分旧注释中的Opcode114融合描述也不得当作通用语义引用。
+
+### root/33/0闭包体恢复（捕获来源待确认）
+
+- slot1/2由Opcode9融合读取H[0]及其putoutTimer字段；slot3 Opcode289检测该字段真值。
+- timer为真：跳过slot4，执行slot5–11，准备并调用SL:UnSchedule(timer)，随后清空H[0].putoutTimer。
+- timer为假：slot4 Opcode388跳到slot12，跳过取消定时器路径。
+- slot12/13两路均重新读取H[0]并清空putoutSent；slot14读取H[1]，slot15复制唯一显式参数，slot16调用H[1](参数,timer)。假值路径中timer寄存器保持nil。
+- slot17–19由Opcode210融合准备SL.ShowSystemTips及receiver/参数，slot20调用；slot21 Opcode339结束。
+- 唯一明文新增`make_helper_root_33_0(capturedUpvalues)`，使用H[0]/H[1]代理槽，不猜测父级词法变量名。其余4个upvalue未被本函数读取。
+- 函数状态CSV、原型索引、候选指令记录已同步标记部分恢复；完整明文仍33/162（20.37%），部分恢复由17增至18。
+- 原始Lua只读。未执行Lua语法、全文件静态或游戏运行验证。
