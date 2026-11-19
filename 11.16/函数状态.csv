@@ -61,7 +61,7 @@
 58,root/40/0,root/40,2,make_helper_root_40_0（合成定位名）,闭包体已恢复；H[0]来源待确认,0,2,0,6,部分恢复（不计完整函数）,SL | JsonDecode | SL.md「json字符串解密」签名确认,MainLeftBottom_11.16_明文.lua,H[0]捕获源及父级业务变量名待确认；root/40父级72条指令流未保存,2026-11-19
 59,root/41,root,1,,待识别,1,11,0,28,未恢复,global | GetMetaValue | AFKBegin | Facade | AFKEnd | SL | BATTLE_IS_AFK | sendNotification | NoticeTable,,,2026-11-18
 60,root/42,root,1,helper_root_42,行为已恢复（原始符号名未确认）,0,9,0,22,已写入明文,22槽闭合：Facade缺失提前结束；retrieveProxy(PlayerInputProxy)；代理缺失提前结束；SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND),MainLeftBottom_11.16_明文.lua：helper_root_42,原始函数符号名未确认（不影响函数体完整性）,2026-11-19
-61,root/43,root,1,PickUpItems,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,34,2,172,未恢复,MoveTo | mCurrMapX | y | ipairs | x | mCurrMapY | dist | 地面无可拾取物品 | sort | find,,,2026-11-18
+61,root/43,root,1,PickUpItems,候选身份（11.2同名PickUpItems为空函数；11.16拾取业务常量吻合，视为新版扩展候选）,0,34,2,172,未恢复,MoveTo | mCurrMapX | y | ipairs | x | mCurrMapY | dist | 地面无可拾取物品 | sort | find,,,2026-11-18
 62,root/43/0,root/43,2,,待识别,2,2,0,19,未恢复,kIdx | dist,,,2026-11-18
 63,root/43/1,root/43,2,closure_root_43_1,匿名闭包（行为已恢复）,2,1,0,8,已写入明文,dist,MainLeftBottom_11.16_明文.lua,比较两个对象的dist字段：当a.dist小于b.dist时返回false，否则返回true（a.dist >= b.dist）,2026-11-18
 64,root/44,root,1,,待识别,3,10,0,29,未恢复,"tostring | string | FileUtilCtl | 0 | writeStringToFile | 1 | global | getWritablePath | price=%s
@@ -137,7 +137,7 @@ mode=%s
 129,root/52/36,root/52,2,make_helper_root_52_36（合成定位名）,闭包体已恢复；捕获身份待确认,0,4,0,19,部分恢复（不计完整函数）,gatherTimer | 关闭引怪功能 | StopGatherMonsters | 开启引怪功能，阈值：11,MainLeftBottom_11.16_明文.lua,父级root/52槽位605 Opcode387创建childIndex=36闭包，captureCount=3；槽606/607从父H[3]/H[13]捕获，槽608从父N[24]捕获；root/52的H[3]/H[13]映射到root N[3]/N[5]；第三捕获业务身份待确认。闭包分支及返回值已逐槽闭合。,2026-11-19
 130,root/53,root,1,helper_root_53（合成定位名）,行为已恢复,1,4,0,15,已写入明文,string.match | match | · | ^(.-)·,MainLeftBottom_11.16_明文.lua,原始函数符号名未确认；全部15条物理指令及两条分支已闭合,2026-11-19
 131,root/54,root,1,,待识别,0,18,0,56,未恢复,已停止苹果下图 | cruiseOff | appleMapRunning | 开始苹果下图 | appleMap | ticks | state | UnSchedule | appleMapTimer | backCity,,,2026-11-18
-132,root/55,root,1,Builtsetting,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,51,0,195,未恢复,开启6格范围内有多少怪 不走去拾取 | table | SETTING_CONFIG | HP保护1物品优先级: | GetMetaValue | PKMODE | split | SL | 开启怪物简装 | 随机传送石,,,2026-11-18
+132,root/55,root,1,Builtsetting,候选身份（设置项常量吻合；11.16指令规模显著大于11.2 Builtsetting，待确认扩展范围）,0,51,0,195,未恢复,开启6格范围内有多少怪 不走去拾取 | table | SETTING_CONFIG | HP保护1物品优先级: | GetMetaValue | PKMODE | split | SL | 开启怪物简装 | 随机传送石,,,2026-11-18
 133,root/56,root,1,,待识别,0,1,1,10,未恢复,pcall,,,2026-11-18
 134,root/56/0,root/56,3,helper_root_56_0（合成定位名）,行为已恢复,0,5,0,9,已写入明文,Facade | retrieveProxy | ProxyTable | FriendProxy,MainLeftBottom_11.16_明文.lua,9条物理指令全部闭合；Opcode282融合全局/Facade读取及retrieveProxy方法准备，Opcode108融合读取global.ProxyTable.FriendProxy，Opcode202直接return；无H槽；父级未发现创建childIndex=0闭包的指令,2026-11-19
 135,root/57,root,1,,待识别,2,10,0,60,未恢复,abs | math,,,2026-11-18
