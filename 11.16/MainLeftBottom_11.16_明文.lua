@@ -449,3 +449,19 @@ local function make_helper_root_52_13(capturedCruiseState, capturedCallback1, ca
         return true
     end
 end
+
+
+-- 11.16 root/26/0：13条物理指令、无显式参数。
+-- Opcode 253/138准备SL:RequestOutBlacklist调用，参数来自H[0]。
+-- 随后读取H[1]._blacklistData；仅当该字段为真值时，执行
+-- H[1]._blacklistData[H[0]]=nil。nil来自原版S()常量类型2的解码规则。
+-- H[0]、H[1]的父级root/26创建点捕获来源尚未取得，以下使用显式占位，
+-- 不将capturedBlacklistKey/capturedBlacklistState视为原始局部变量名。
+local function make_helper_root_26_0(capturedBlacklistKey, capturedBlacklistState)
+    SL:RequestOutBlacklist(capturedBlacklistKey)
+
+    local blacklistData = capturedBlacklistState._blacklistData
+    if blacklistData then
+        blacklistData[capturedBlacklistKey] = nil
+    end
+end
