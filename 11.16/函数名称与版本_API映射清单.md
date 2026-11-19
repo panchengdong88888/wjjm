@@ -13,7 +13,7 @@
 ## 2. 数量和判定口径
 
 - root直接子原型：81个。
-- 原型索引中已有候选名称：63个；仍待识别：18个。
+- 原型索引中已有候选名称：64个；仍待识别：17个。
 - 与11.2函数声明同名的root候选：17个。
 - 当前11.16明文与11.2明文已有的精确函数声明名交集：13个。精确交集：`GetMapId`、`GetMapName`、`GetMainPlayerID`、`IsDie`、`PlayerPos`、`GetOwnerID`、`GetDroppedItems`、`ShowLocalNoticeByType`、`FindMonsterInCurrViewField`、`MoveItemToQuickUse`、`DistanceCalculation`、`FindMonsterCandidates`、`InitGatherMonsters`。
 - “11.2同名”只表示名称线索，不自动证明业务实现相同；必须再核对常量、参数、调用形状和本版差异。
@@ -34,7 +34,7 @@
 | root/7 | MoveItemToQuickUse | 是 | — | 133 |
 | root/8 | GetDroppedItems | 是 | — | 8 |
 | root/9 | GetMapData2DPtr（身份待复核） | 同名但业务冲突 | — | 162 |
-| root/10 | 待识别 | 未确认 | — | 29 |
+| root/10 | startForgeZodiac（高置信候选；root/52/0直接引用，父root导出点待确认） | 未确认 | — | 29 |
 | root/11 | 待识别 | 未确认 | `UnSchedule` | 31 |
 | root/12 | MoveTo | 是 | `GetMetaValue` | 51 |
 | root/13 | NewZoneFeature | 未确认 | `ScheduleOnce`、`UnSchedule` | 37 |
@@ -264,7 +264,7 @@
 
 | 原型 | 参数/指令 | 本版常量与线索 | 可确认的业务范围 | 名称状态 |
 |---|---:|---|---|---|
-| root/10 | 0 / 29 | forgeZodiacRunning、checkGold、forgeZodiac、forgeZodiacTimer、ticks、锻造提示 | 生肖锻造定时回调或循环控制；root/79已是forgeZodiac候选、root/48已是checkGold候选 | 待识别；无父级注册名 |
+| root/10 | startForgeZodiac（高置信候选；root/52/0直接引用，父root导出点待确认） | 未确认 | — | 29 |
 | root/11 | 0 / 31 | IsInWhitelistMap、cruiseRunTimer、cruiseGatherPaused、UnSchedule、关闭见人跑 | 见人跑巡航暂停/取消调度 | 待识别；常量不能证明声明名 |
 | root/25 | 0 / 33，1个子原型 | Schedule、UnSchedule、cruiseRunTimer、开启见人跑 | 见人跑巡航启动/定时调度，含一个回调闭包 | 待识别；缺父级完整指令流 |
 | root/41 | 1 / 28 | AFKBegin、AFKEnd、BATTLE_IS_AFK、GetMetaValue、sendNotification、NoticeTable | 挂机AFK状态切换及状态通知 | 待识别；参数语义未证实 |
