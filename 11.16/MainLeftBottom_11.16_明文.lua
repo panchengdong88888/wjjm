@@ -397,3 +397,24 @@ local function make_helper_root_52_20(capturedCallback)
         return true
     end
 end
+
+
+-- 11.16 root/50/1：5条物理指令，0个显式参数，2个upvalue。
+-- 已确认寄存器行为：先将H[0]写为false，再无参数调用H[1]，随后结束。
+-- capturedState与capturedCallback是工厂层的显式捕获占位，不是已确认的父级局部变量原名。
+local function make_helper_root_50_1(capturedState, capturedCallback)
+    return function()
+        capturedState = false
+        capturedCallback()
+    end
+end
+
+-- 11.16 root/50/2：5条物理指令，0个显式参数，2个upvalue。
+-- Opcode330融合写入H[0]=false并读取H[1]，随后无参数调用H[1]并结束。
+-- 与root/50/1的最终闭包效果一致；保留独立原型定位名，不合并原型身份。
+local function make_helper_root_50_2(capturedState, capturedCallback)
+    return function()
+        capturedState = false
+        capturedCallback()
+    end
+end
