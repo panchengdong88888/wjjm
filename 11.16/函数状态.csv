@@ -2,7 +2,7 @@
 0,root,,0,,待识别,0,202,81,654,未恢复,TakeItems | 在线时长10分钟 | distance | 自动拾取 | lastAttacker | 羊·[普通] | 累计登录 6 天 | SendHookList | _G | a,,,2026-11-18
 1,root/0,root,1,,待识别,1,8,0,37,未恢复,math | insert | table | lastMapName | ipairs | name | random,,,2026-11-18
 2,root/1,root,1,,待识别,0,24,0,76,未恢复,新区使用：%s | BAG_DATA | ShowSystemTips | pairs | MSG_CS_USE_BAG_ITEM | Gbtc | len | MsgType | LuaSendMsg | SL,,,2026-11-18
-3,root/2,root,2,,226/226槽位控制流闭合；H[0]/H[1]父级来源待映射,1,100,3,226,DiuItems：重入保护、35件上限、BAG_DATA遍历、三组名称筛选、排除绑定物品、候选记录及逐项丢弃消息；上值身份待确认,GetDroppedItems | isDiuing | BAG_DATA | ITEM_IS_BIND | LuaSendMsg | MSG_CS_MAP_ITEM_DISCARD | table.insert | pairs | ipairs,,N6=28项模式表；N7=35项精确表；N8=3项精确表；N9/10/11分别绑定child1/child0/child2；H[0]状态对象、H[1]提示回调，父级变量名未确认,2026-11-19
+3,root/2,root,2,,226/226局部CFG已记录；父root 654条指令流未存入当前提取文件，H[0]/H[1]源寄存器待取得11.16 root指令记录,1,100,3,226,DiuItems局部业务及两个循环已分段恢复；父级闭包捕获来源未证实，暂不计完整函数,GetDroppedItems | isDiuing | BAG_DATA | ITEM_IS_BIND | LuaSendMsg | MSG_CS_MAP_ITEM_DISCARD,,N6/N7/N8列表与子闭包用途已分段确认；H[0]/H[1]父级源寄存器未确认；不可使用旧版110原型数据,2026-11-19
 4,root/2/0,root/2,2,make_helper_root_2_0,匿名闭包（行为已恢复；H[0]业务变量名待映射）,1,1,0,13,已写入明文,ipairs,MainLeftBottom_11.16_明文.lua,H[0]业务变量名待映射,2026-11-19
 5,root/2/1,root/2,2,make_helper_root_2_1,匿名闭包（行为已恢复；捕获物品名称模式列表）,1,4,0,20,已写入明文,ipairs | string.find | pattern参数为false（Lua模式匹配）,MainLeftBottom_11.16_明文.lua,H[0]=父级N[6]；父级原始局部变量名待映射,2026-11-19
 6,root/2/2,root/2,2,make_helper_root_2_2,匿名闭包（行为已恢复；H[0]业务变量名待映射）,1,1,0,13,已写入明文,ipairs,MainLeftBottom_11.16_明文.lua,H[0]业务变量名待映射,2026-11-19
