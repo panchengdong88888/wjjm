@@ -13,7 +13,7 @@
 ## 2. 数量和判定口径
 
 - root直接子原型：81个。
-- 原型索引中已有候选名称：50个（含本轮新增20个跨版本候选）；仍待识别：31个。
+- 原型索引中已有候选名称：54个（含本轮新增24个跨版本候选）；仍待识别：27个。
 - 与11.2函数声明同名的root候选：17个。
 - 当前11.16明文与11.2明文已有的精确函数声明名交集：13个。精确交集：`GetMapId`、`GetMapName`、`GetMainPlayerID`、`IsDie`、`PlayerPos`、`GetOwnerID`、`GetDroppedItems`、`ShowLocalNoticeByType`、`FindMonsterInCurrViewField`、`MoveItemToQuickUse`、`DistanceCalculation`、`FindMonsterCandidates`、`InitGatherMonsters`。
 - “11.2同名”只表示名称线索，不自动证明业务实现相同；必须再核对常量、参数、调用形状和本版差异。
@@ -26,7 +26,7 @@
 |---|---|---:|---|---:|
 | root/0 | 待识别 | 未确认 | — | 37 |
 | root/1 | 待识别 | 未确认 | `ShowSystemTips`、`GetMetaValue`、`UnSchedule` | 76 |
-| root/2 | 待识别 | 未确认 | `GetMetaValue` | 226 |
+| root/2 | DiuItems | 候选 | `GetMetaValue` | 226 |
 | root/3 | StopGatherMonsters（高置信候选；合成实现名make_helper_root_3） | 未确认 | `UnSchedule` | 25 |
 | root/4 | GetOwnerID | 是 | — | 31 |
 | root/5 | helper_root_5（合成定位名） | 未确认 | — | 17 |
@@ -36,63 +36,63 @@
 | root/9 | GetMapData2DPtr | 是 | — | 162 |
 | root/10 | 待识别 | 未确认 | — | 29 |
 | root/11 | 待识别 | 未确认 | `UnSchedule` | 31 |
-| root/12 | 待识别 | 未确认 | `GetMetaValue` | 51 |
+| root/12 | MoveTo | 候选 | `GetMetaValue` | 51 |
 | root/13 | NewZoneFeature | 未确认 | `ScheduleOnce`、`UnSchedule` | 37 |
 | root/14 | ForgeZodiacToggleHandler | 未确认 | `ShowSystemTips`、`UnSchedule` | 51 |
 | root/15 | 待识别 | 未确认 | `RequestAuctionPutList`、`ShowSystemTips`、`UnSchedule`、`GetMetaValue` | 87 |
-| root/16 | 待识别 | 未确认 | — | 25 |
-| root/17 | 待识别 | 未确认 | — | 51 |
+| root/16 | SetButtonVisibilityState | 候选 | — | 25 |
+| root/17 | GetAvailableStoragePage | 候选 | — | 51 |
 | root/18 | 待识别 | 未确认 | — | 34 |
-| root/19 | 待识别 | 未确认 | `Schedule`、`GetMetaValue` | 64 |
+| root/19 | AccountIDValidation | 候选 | `Schedule`、`GetMetaValue` | 64 |
 | root/20 | FindMonsterInCurrViewField | 是 | `FindMonsterInCurrViewField` | 27 |
 | root/21 | 待识别 | 未确认 | `CheckCondition`、`GetMetaValue` | 149 |
-| root/22 | 待识别 | 未确认 | `UnSchedule` | 61 |
+| root/22 | DestroyUI | 候选 | `UnSchedule` | 61 |
 | root/23 | InitGatherMonsters | 是 | `UnSchedule`、`Schedule` | 36 |
 | root/24 | GetMapId | 是 | `GetMetaValue` | 9 |
 | root/25 | 待识别 | 未确认 | `Schedule`、`UnSchedule` | 33 |
-| root/26 | 待识别 | 未确认 | `ScheduleOnce` | 63 |
+| root/26 | ClearBlacklistItems | 候选 | `ScheduleOnce` | 63 |
 | root/27 | 待识别 | 未确认 | — | 307 |
 | root/28 | 待识别 | 未确认 | `GetMetaValue` | 32 |
 | root/29 | 待识别 | 未确认 | — | 20 |
-| root/30 | 待识别 | 未确认 | `GetMetaValue` | 31 |
-| root/31 | 待识别 | 未确认 | `GetMetaValue` | 35 |
+| root/30 | Nested_find | 候选 | `GetMetaValue` | 31 |
+| root/31 | FindBlacklistPlayer | 候选 | `GetMetaValue` | 35 |
 | root/32 | make_helper_root_32（合成定位名） | 未确认 | — | 17 |
 | root/33 | 待识别 | 未确认 | `RequestAuctionPutList`、`UnSchedule`、`ShowSystemTips` | 56 |
-| root/34 | 待识别 | 未确认 | `GetMetaValue` | 274 |
+| root/34 | BlacklistPlayerDetection | 候选 | `GetMetaValue` | 274 |
 | root/35 | 待识别 | 未确认 | — | 32 |
-| root/36 | 待识别 | 未确认 | — | 77 |
+| root/36 | GetStorageItemData | 候选 | — | 77 |
 | root/37 | GetMapName | 是 | `GetMetaValue` | 9 |
 | root/38 | DistanceCalculation | 是 | — | 25 |
 | root/39 | IsDie | 是 | — | 7 |
-| root/40 | 待识别 | 未确认 | `GetMetaValue` | 72 |
+| root/40 | onDamageMsg | 候选 | `GetMetaValue` | 72 |
 | root/41 | 待识别 | 未确认 | `GetMetaValue` | 28 |
 | root/42 | helper_root_42 | 未确认 | — | 22 |
-| root/43 | 待识别 | 未确认 | — | 172 |
+| root/43 | PickUpItems（新版扩展候选） | 候选 | — | 172 |
 | root/44 | 待识别 | 未确认 | — | 29 |
-| root/45 | 待识别 | 未确认 | `GetMetaValue`、`UseItemByIndex` | 224 |
-| root/46 | 待识别 | 未确认 | `GetMetaValue` | 42 |
+| root/45 | StorageItems | 候选 | `GetMetaValue`、`UseItemByIndex` | 224 |
+| root/46 | IsInWhitelistMap | 候选 | `GetMetaValue` | 42 |
 | root/47 | 待识别 | 未确认 | `ScheduleOnce` | 7 |
 | root/48 | 待识别 | 未确认 | — | 26 |
 | root/49 | PlayerPos | 是 | `GetMetaValue` | 10 |
 | root/50 | 待识别 | 未确认 | — | 444 |
-| root/51 | 待识别 | 未确认 | `Print`、`dump` | 38 |
+| root/51 | PrintLog | 候选 | `Print`、`dump` | 38 |
 | root/52 | doInit_UI / 主界面初始化 | 未确认 | `UnSchedule`、`Schedule`、`ScheduleOnce` | 865 |
 | root/53 | helper_root_53（合成定位名） | 未确认 | — | 15 |
 | root/54 | 待识别 | 未确认 | `UnSchedule` | 56 |
-| root/55 | 待识别 | 未确认 | `GetMetaValue`、`SetMetaValue`、`RequestChangePKMode` | 195 |
+| root/55 | Builtsetting（扩展范围待确认） | 候选 | `GetMetaValue`、`SetMetaValue`、`RequestChangePKMode` | 195 |
 | root/56 | 待识别 | 未确认 | — | 10 |
 | root/57 | 待识别 | 未确认 | — | 60 |
 | root/58 | TakeItems | 是 | — | 99 |
 | root/59 | 待识别 | 未确认 | `UnSchedule`、`ShowSystemTips` | 44 |
 | root/60 | helper_root_60 | 未确认 | — | 21 |
 | root/61 | 待识别 | 未确认 | `GetMetaValue`、`UseItemByIndex` | 60 |
-| root/62 | 待识别 | 未确认 | `GetMetaValue`、`UseItemByIndex` | 33 |
-| root/63 | 待识别 | 未确认 | — | 92 |
-| root/64 | 待识别 | 未确认 | — | 31 |
+| root/62 | UseItemByIndex | 候选 | `GetMetaValue`、`UseItemByIndex` | 33 |
+| root/63 | LuaSendMsg | 候选 | — | 92 |
+| root/64 | GetOwnerIDText | 候选 | — | 31 |
 | root/65 | helper_root_65（合成定位名） | 未确认 | — | 18 |
-| root/66 | 待识别 | 未确认 | — | 26 |
-| root/67 | 待识别 | 未确认 | `UnSchedule` | 154 |
-| root/68 | 待识别 | 未确认 | — | 40 |
+| root/66 | SetTargetID | 候选 | — | 26 |
+| root/67 | ShowHideAllButtons | 候选 | `UnSchedule` | 154 |
+| root/68 | InstallDamageHook | 候选 | — | 40 |
 | root/69 | helper_root_69（合成定位名） | 未确认 | — | 20 |
 | root/70 | helper_root_70（合成定位名） | 未确认 | `GetMetaValue` | 19 |
 | root/71 | DeathAutoBlacklist | 是 | `ScheduleOnce` | 47 |
@@ -103,7 +103,7 @@
 | root/76 | 待识别 | 未确认 | `GetMetaValue` | 25 |
 | root/77 | GetMainPlayerID | 是 | — | 6 |
 | root/78 | 待识别 | 未确认 | `Schedule` | 7 |
-| root/79 | 待识别 | 未确认 | `UseItemByIndex` | 212 |
+| root/79 | forgeZodiac | 候选 | `UseItemByIndex` | 212 |
 | root/80 | ShowLocalNoticeByType | 是 | `ShowLocalNoticeByType` | 15 |
 
 ## 4. 已确认的旧版同名候选
@@ -150,7 +150,7 @@
 ## 6. 当前结论与下一步
 
 1. 11.2明文已完整读取，不是只读取函数名；本轮建立了函数声明名称基线。
-2. 11.16当前原型索引已有50个root候选名（其中20个是本轮跨版本高置信候选），剩余31个root原型尚未有可靠函数名。不得用常量猜成确定名称。
+2. 11.16当前原型索引已有54个root候选名（其中24个是本轮跨版本高置信候选），剩余27个root原型尚未有可靠函数名。不得用常量猜成确定名称。
 3. 下一步先用11.2明文中对应函数的结构、常量与调用关系，为这51个待识别项建立候选映射；再用3.40.x文档剔除官方API调用，避免把框架API误当作项目自定义函数。
 4. 11.9继续作为独立版本只读对照，不能把11.9差异或实现直接标成11.2证据，也不能覆盖11.16原始证据。
 5. 本清单是名称/版本/API索引，不替代唯一明文源码，也不改变原型恢复计数。原始Lua保持只读。
@@ -179,7 +179,7 @@
 
 ## 9. 从11.2函数体与11.16常量补出的20个名称候选
 
-以下候选已同步写入 `原型索引.json` 和 `函数状态.csv`。除特别说明外，身份状态为“跨版本高置信候选”，含义是名称/职责与11.2函数体及11.16常量吻合，不代表11.16指令流、父级捕获和业务差异已经全部验证。
+以下20个候选已同步写入 `原型索引.json` 和 `函数状态.csv`。除特别说明外，身份状态为“跨版本高置信候选”，含义是名称/职责与11.2函数体及11.16常量吻合，不代表11.16指令流、父级捕获和业务差异已经全部验证。
 
 | 11.16原型 | 候选函数名 | 11.2对应函数 | 关键匹配线索 |
 |---|---|---|---|
@@ -206,8 +206,20 @@
 
 ### 仍未强行命名的原型
 
-- root/16：常量同时符合SetButtonVisibilityState、SetPluginButtonsVisible等候选，当前不能唯一判定。
-- root/19：GAME_ID、UID、Schedule等线索不足以在AccountIDValidation与ShowHideAllButtons之间唯一判定。
 - root/21：LimitCount、CheckCondition、ITEM_INDEX_BY_NAME等尚需更完整调用关系。
 - root/27、root/33、root/35、root/41、root/44、root/48、root/50、root/54、root/57、root/59、root/61、root/67、root/72、root/73、root/76、root/78等仍待逐项确认。
 - root/9保留名称冲突警告，不把11.2的GetMapData2DPtr距离门控套到11.16地图数据/障碍查询原型。
+
+
+## 10. 再补充的4个函数名候选
+
+本轮继续核对11.2对应函数体，新增并同步到原型索引和函数状态表：
+
+| 原型 | 候选名称 | 匹配依据 |
+|---|---|---|
+| root/16 | SetButtonVisibilityState | infoBg、GUI、pairs、setVisible、isHidden，与旧版设置按钮可见状态函数一致 |
+| root/19 | AccountIDValidation | GAME_ID、UID及延迟Schedule线索，与旧版账号门控/延迟初始化入口一致；旧版当前测试版实现有调整，不能盲目复制 |
+| root/30 | Nested_find | BAG_DATA、string.find、Name、ITEM_IS_BIND等常量，与旧版背包物品名称计数辅助函数一致 |
+| root/67 | ShowHideAllButtons | hidebut、GUI、setVisible、UnSchedule、cruiseTimer、rewardTimer等，与旧版关闭/隐藏全部按钮并清理定时器一致 |
+
+这4项仍是跨版本候选名，不表示11.16函数体已恢复。至此81个root原型中，54个已有候选名称，27个仍待识别。root/9冲突项继续保留待复核标记。
