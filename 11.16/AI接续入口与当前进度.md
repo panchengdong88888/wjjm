@@ -947,3 +947,9 @@
 - 新增root/16 SetButtonVisibilityState、root/19 AccountIDValidation、root/30 Nested_find、root/67 ShowHideAllButtons四个11.2对照候选，已同步原型索引和函数状态CSV。
 - 当前81个root原型中54个已有候选名称，27个仍待识别。root/9身份冲突待复核；root/43 PickUpItems、root/55 Builtsetting是新版扩展候选，不能直接复制旧版。
 - 详见 `11.16/函数名称与版本_API映射清单.md`。本轮无新增明文，业务恢复统计保持37/162（22.84%），部分恢复19项。
+
+
+### 2026-11-19续：第三批函数名称候选
+- 新增root/56 PCallHelper_2、root/73 Nested_04d_02d_02d两个候选，依据分别为pcall/FriendProxy子闭包结构、os.date时间常量，与11.2对应函数体吻合。
+- 当前81个root原型中56个已有候选名，25个仍待识别。没有新增明文函数，业务恢复统计仍37/162（22.84%），部分恢复19项。
+- 继续从剩余25项中做有证据的名称映射；不确定的保持待识别，不猜测。
