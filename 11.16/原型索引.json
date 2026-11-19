@@ -5177,7 +5177,7 @@
       "parameter_count": 1,
       "instruction_count": 18,
       "candidate_name": "helper_root_65（合成定位名）",
-      "identity_status": "匿名函数（本版18条指令完整恢复；原始符号名未确认）",
+      "identity_status": "行为已恢复（原始符号名未确认）",
       "constants": [
         "find",
         "string",
@@ -5187,7 +5187,7 @@
       ],
       "recovery_status": "已写入唯一明文",
       "notes": "18条物理指令、1参数、无子原型/无upvalue；先string.find(value,'盟重',1,true)，未命中再查'土城'；返回首次匹配位置或nil。原始符号名未确认。",
-      "recovery_note": "无参数? 纠正：1参数、18条物理指令、无子原型、无upvalue捕获。先string.find(mapName,'盟重',1)，命中返回位置；否则string.find(mapName,'土城',1)并返回其结果。"
+      "recovery_note": "18条物理指令、1参数、无子原型/无upvalue；先string.find(value,'盟重',1,true)，未命中再查'土城'；返回首次匹配位置或nil。原始符号名未确认。"
     },
     {
       "preorder_id": 144,
