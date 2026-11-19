@@ -847,3 +847,12 @@ root/65 18条物理槽位逐条闭合：先调用`string.find(value, "盟重", 1
 - 真值分支slot5–11：读取H[1]，调用H[1](“关闭引怪功能”)；加载全局StopGatherMonsters并无参调用；设置true并返回。
 - 假值分支slot12–18：读取H[1]，调用H[1](“开启引怪功能，阈值：11”)；读取H[2]并无参调用；设置true并返回。slot19 Opcode339在两条return之后不可达。
 - 捕获链：root/52槽605 Opcode387创建child36，槽606/607分别捕获父H[3]/H[13]，槽608捕获父N[24]；root槽633创建root/52时，H[3]/H[13]分别来自root N[3]/N[5]。H[2]业务身份未确认，故函数只计部分恢复。
+
+
+## 2026-11-19：root/52/9黑名单开关闭包
+
+- root/52/9为18槽、0参数、5个upvalue。父级root/52槽550 Opcode178创建childIndex=9闭包，captureCount=5；槽551–555依次捕获父H[6]/H[3]/H[7]/H[8]/H[0]。
+- Opcode49融合消费槽2、3：执行N[0]=H[0]，将N[0].distance设为11，再加载全局BlacklistItems。槽4无参调用BlacklistItems()。
+- 槽5/6读取H[1]/H[2]；槽7 Opcode45加载全局BlacklistItems并融合槽8读取H[3]；槽9 Opcode209调用H[2](BlacklistItems,H[3])，返回值写回N[1]。
+- 槽10 Opcode306执行N[0].blacklistTimer=N[1]。槽11–14准备H[4]、提示格式字符串及H[0].distance；槽15调用H[4](提示格式字符串,distance)；槽16设置true，槽17返回true，槽18结束。
+- root槽633创建root/52时，H[0]/H[3]/H[6]/H[7]/H[8]分别捕获root N[4]/N[3]/N[67]/N[7]/N[62]。五个捕获值的业务名称未确认，明文使用capturedUpvalues代理，故仅计部分恢复。
