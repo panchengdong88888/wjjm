@@ -848,3 +848,10 @@
 - root/20 FindMonsterInCurrViewField主体相同，但11.16调用参数为false,false，11.9为true,true，必须保留新版参数。
 - root/75/0排序比较方向与11.9不同：11.16为a._distance >= b._distance，旧版为a._distance < b._distance，不得整段复制旧版FindMonsterCandidates。
 - 下一批优先以旧版明文为底稿差异核验root/7 MoveItemToQuickUse、root/23 InitGatherMonsters、root/75 FindMonsterCandidates；root/6 MainLoop因复杂度较高，先不阻塞整体进度。
+
+
+### 2026-11-19续接增量：root/23所需Opcode语义补齐
+- 直接从11.16原始F()分派树确认并补入Opcode语义映射：Opcode96为单槽表成员读取N[A]=N[B][C]；Opcode234为单槽upvalue读取N[A]=H[B]，两者均不融合消费下一物理槽。
+- root/23 InitGatherMonsters仍在按11.9完整明文作底稿进行差异恢复；36槽中存在多处融合边界与timer分支，尚未达到安全写入完整源码的程度。本轮不复制旧版函数、不猜捕获变量。
+- 已确认root/23/0子原型无参数、无捕获，父级root/23槽23创建后读取全局MainLoop并调用；这可作为新版定时器回调路径的直接证据。
+- 下一步先继续root/23差异核验；若关键调用链不能有限闭合，切换root/7 MoveItemToQuickUse，使用旧版133条指令对应的完整函数作差异核验，不在一个原型上无限耗时。
