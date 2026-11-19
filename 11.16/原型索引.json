@@ -1436,7 +1436,7 @@
       "parameter_count": 0,
       "instruction_count": 34,
       "candidate_name": null,
-      "identity_status": "待识别",
+      "identity_status": "职责已缩小；函数名待识别",
       "constants": [
         "FileUtilCtl",
         "([%w_]+)=([^\r\n]*)",
@@ -1446,7 +1446,9 @@
         "getWritablePath",
         "isFileExist",
         "getDataFromFileEx"
-      ]
+      ],
+      "business_summary": "读取可写目录中的配置文件，并按key=value格式解析文本；常量FileUtilCtl、getWritablePath、isFileExist、getDataFromFileEx、gmatch及匹配式([%w_]+)=([^\\r\\n]*)共同支持该职责。",
+      "recovery_status": "未恢复；缺少足以确认声明名/返回结构的完整指令流"
     },
     {
       "preorder_id": 26,
@@ -2640,7 +2642,7 @@
       "parameter_count": 3,
       "instruction_count": 29,
       "candidate_name": null,
-      "identity_status": "待识别",
+      "identity_status": "职责已缩小；函数名待识别",
       "constants": [
         "tostring",
         "string",
@@ -2652,7 +2654,9 @@
         "getWritablePath",
         "price=%s\nname=%s\nmode=%s\n",
         "format"
-      ]
+      ],
+      "business_summary": "将三个参数组织成price/name/mode格式文本，并调用FileUtilCtl.writeStringToFile写入可写目录；格式串为price=%s、name=%s、mode=%s。",
+      "recovery_status": "未恢复；缺少足以确认声明名/返回结构的完整指令流"
     },
     {
       "preorder_id": 65,
@@ -5371,7 +5375,7 @@
       "parameter_count": 1,
       "instruction_count": 32,
       "candidate_name": null,
-      "identity_status": "待识别",
+      "identity_status": "职责已缩小；函数名待识别",
       "constants": [
         "find",
         "GetMetaValue",
@@ -5381,7 +5385,9 @@
         "pairs",
         "SL",
         "ALL_EQUIP_DATAS"
-      ]
+      ],
+      "business_summary": "接收一个参数，遍历SL:GetMetaValue('ALL_EQUIP_DATAS')并对装备Name字段执行string.find，属于按名称片段检索装备数据的辅助函数。",
+      "recovery_status": "未恢复；缺少足以确认声明名/返回结构的完整指令流"
     },
     {
       "preorder_id": 153,
@@ -5484,7 +5490,7 @@
       "parameter_count": 0,
       "instruction_count": 25,
       "candidate_name": null,
-      "identity_status": "待识别",
+      "identity_status": "职责已缩小；函数名待识别",
       "constants": [
         1,
         "AUCTION_MONEY",
@@ -5494,7 +5500,9 @@
         "ipairs",
         "name",
         "id"
-      ]
+      ],
+      "business_summary": "读取SL:GetMetaValue('AUCTION_MONEY')，遍历含name/id字段的配置项，并与“元宝”名称相关联；属于拍卖货币配置查询。",
+      "recovery_status": "未恢复；缺少足以确认声明名/返回结构的完整指令流"
     },
     {
       "preorder_id": 158,
