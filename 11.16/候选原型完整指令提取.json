@@ -792,7 +792,20 @@
           "mode": 0,
           "flags": 0
         }
-      ]
+      ],
+      "recovery_status": "function_body_recovered_with_explicit_capture_parameter; parent_capture_identity_unresolved; not_counted_complete",
+      "api_documentation_reaudit_2026_11_19": {
+        "document": "开发文档_新框架(3_40_xx)/SL.md",
+        "section": "json字符串解密",
+        "documented_signature": "SL:JsonDecode(jsonStr, isfilter)",
+        "parameters": {
+          "jsonStr": "string",
+          "isfilter": "boolean；默认为true"
+        },
+        "return": "json table",
+        "instruction_mapping": "slot1/2准备SL:JsonDecode方法；slot3 Opcode127读取H[0]作为jsonStr；slot4 Opcode202返回调用结果；slot5/6位于return调用之后，不属于可达业务路径",
+        "unresolved": "root/40父原型72条指令流未保存，无法映射H[0]在父级的源寄存器和原始变量名"
+      }
     },
     {
       "path": "root/52/10",
