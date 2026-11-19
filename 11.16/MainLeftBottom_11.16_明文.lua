@@ -372,3 +372,16 @@ local function make_helper_root_2_1(capturedNamePatterns)
         return false
     end
 end
+
+
+-- 11.16 root/40/0：6条物理指令，0个显式参数，1个upvalue。
+-- Opcode 105/138准备SL:JsonDecode方法调用；Opcode 127读取H[0]作为jsonStr；Opcode 202返回调用结果。
+-- 3.40.x开发文档 SL.md「json字符串解密」条目确认签名：SL:JsonDecode(jsonStr, isfilter)，jsonStr为string，isfilter默认为true，返回json table。
+-- 因此闭包体可确定为return SL:JsonDecode(capturedJson)。这里用工厂参数显式承载H[0]，保持生成闭包自身为零参数。
+-- root/40父原型的72条指令流未保存，capturedJson在父级的来源/业务变量名仍待确认；本项是捕获参数显式化的可读恢复，不计入31个完整原型函数。
+-- make_helper_root_40_0为原型路径合成定位名。
+local function make_helper_root_40_0(capturedJson)
+    return function()
+        return SL:JsonDecode(capturedJson)
+    end
+end
