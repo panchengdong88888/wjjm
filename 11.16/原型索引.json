@@ -2555,7 +2555,7 @@
       "parameter_count": 0,
       "instruction_count": 172,
       "candidate_name": "PickUpItems",
-      "identity_status": "跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "候选身份（11.2同名PickUpItems为空函数；11.16拾取业务常量吻合，视为新版扩展候选）",
       "constants": [
         "MoveTo",
         "mCurrMapX",
@@ -4810,7 +4810,7 @@
       "parameter_count": 0,
       "instruction_count": 195,
       "candidate_name": "Builtsetting",
-      "identity_status": "跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "候选身份（设置项常量吻合；11.16指令规模显著大于11.2 Builtsetting，待确认扩展范围）",
       "constants": [
         "开启6格范围内有多少怪 不走去拾取",
         6,
