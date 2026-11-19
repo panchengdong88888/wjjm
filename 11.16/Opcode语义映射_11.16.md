@@ -856,3 +856,13 @@ root/65 18条物理槽位逐条闭合：先调用`string.find(value, "盟重", 1
 - 槽5/6读取H[1]/H[2]；槽7 Opcode45加载全局BlacklistItems并融合槽8读取H[3]；槽9 Opcode209调用H[2](BlacklistItems,H[3])，返回值写回N[1]。
 - 槽10 Opcode306执行N[0].blacklistTimer=N[1]。槽11–14准备H[4]、提示格式字符串及H[0].distance；槽15调用H[4](提示格式字符串,distance)；槽16设置true，槽17返回true，槽18结束。
 - root槽633创建root/52时，H[0]/H[3]/H[6]/H[7]/H[8]分别捕获root N[4]/N[3]/N[67]/N[7]/N[62]。五个捕获值的业务名称未确认，明文使用capturedUpvalues代理，故仅计部分恢复。
+
+## Opcode 158：连续装载调用参数的融合序列（11.16）
+
+分派器的 L==158 叶子连续消费后续三条物理记录：
+1. N[K[2]]=K[3]：将立即数写入目标寄存器；
+2. N[K[2]]=Z[K[3]]：从常量表装载值；
+3. N[K[2]]=N[K[3]][K[4]]：从寄存器对象读取字段；
+4. 再执行一次相同的寄存器对象字段读取。
+
+该Opcode不能把后续三条物理记录当成独立指令执行。root/42 slot17正是此融合体：slot17写入0，slot18装载global，slot19读取MMO，slot20读取SELETE_TARGET_TYPE_FIND，最终组成SetTargetID的第二个业务参数。
