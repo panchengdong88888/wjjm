@@ -1387,8 +1387,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 25,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "SetButtonVisibilityState",
+      "identity_status": "跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）",
       "constants": [
         "infoBg",
         true,
@@ -1455,8 +1455,8 @@
       "child_count": 2,
       "parameter_count": 0,
       "instruction_count": 64,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "AccountIDValidation",
+      "identity_status": "跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）",
       "constants": [
         0.5,
         "GAME_ID",
@@ -2130,8 +2130,8 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 31,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "Nested_find",
+      "identity_status": "跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）",
       "constants": [
         "BAG_DATA",
         1,
@@ -5189,8 +5189,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 154,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "ShowHideAllButtons",
+      "identity_status": "跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）",
       "constants": [
         "forgeZodiac",
         "appleMap",
