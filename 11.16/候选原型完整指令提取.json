@@ -2238,6 +2238,2225 @@
       ],
       "recovery_status": "已恢复",
       "note": "依据11.16原版F()分派器逐条模拟；root父级物理槽位190创建childIndex=5，captureCount=0。原始符号名及参数名未确认。"
+    },
+    {
+      "path": "root/2",
+      "params": 1,
+      "constants": [
+        "雷霆战靴+8",
+        "龙傲",
+        "雷霆护腕+7",
+        true,
+        "SL",
+        "table",
+        "鸿蒙",
+        "起源",
+        "终极雷霆戒指",
+        "终极雷霆战靴",
+        "血龙宝珠",
+        "insert",
+        "雷霆腰带+9",
+        "复活",
+        "雷霆戒指+9",
+        "点点",
+        "上古",
+        "敖顺",
+        "副印",
+        "Name",
+        "ipairs",
+        "MsgType",
+        "残",
+        "LuaSendMsg",
+        "丢: ",
+        "开天+7",
+        "神凤",
+        "声望卷",
+        "地面物品(",
+        "时装羽毛",
+        "雷霆战靴+9",
+        "雷霆护腕+9",
+        "洗髓丹",
+        "终极雷霆项链",
+        "件，停止丢弃",
+        " 件物品",
+        "雷霆战盔+8",
+        "麻痹",
+        "雷霆项链+9",
+        "雷霆戒指+7",
+        "pairs",
+        "冰雪",
+        "name",
+        "转生水晶",
+        "技能残页",
+        "晶石",
+        "护身",
+        "len",
+        "开天+9",
+        "称号证明",
+        ")",
+        "终极雷霆战盔",
+        "MakeIndex",
+        "BAG_DATA",
+        "雷霆腰带+8",
+        "悟道茶",
+        "主印",
+        "恶魔令牌",
+        "终极雷霆护腕",
+        "雷霆战盔+9",
+        "GetDroppedItems",
+        "熬光",
+        "敖闰",
+        "雷霆战甲(男)+7",
+        "之力",
+        2,
+        "背包无可丢弃物品",
+        "MSG_CS_MAP_ITEM_DISCARD",
+        "雷霆战甲(男)+9",
+        "经验卷",
+        0,
+        "雷霆项链+7",
+        "终极开天",
+        ")超过上限(",
+        "地面物品已满",
+        "雷霆护腕+8",
+        "雷霆战盔+7",
+        35,
+        false,
+        "雷霆战甲(男)+8",
+        "GetMetaValue",
+        "雷霆战靴+7",
+        "时装晶魄",
+        "雷霆腰带+7",
+        "count",
+        "终极雷霆战甲(男)",
+        "ITEM_IS_BIND",
+        "string",
+        "开天+8",
+        "雷霆戒指+8",
+        "global",
+        "makeIndex",
+        "终极雷霆腰带",
+        "isDiuing",
+        "生肖魔石",
+        "共丢弃 ",
+        "称号卷",
+        "OverLap",
+        1,
+        "雷霆项链+8"
+      ],
+      "instruction_count": 226,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 73,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 2,
+          "opcode": 399,
+          "A": 2,
+          "B": 35,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 3,
+          "opcode": 9,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 96,
+          "A": 3,
+          "B": 3,
+          "C": "isDiuing",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 5,
+          "opcode": 340,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 388,
+          "A": 0,
+          "B": 7,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 49,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 7,
+          "A": 3,
+          "B": "isDiuing",
+          "C": true,
+          "mode": 0,
+          "flags": 6
+        },
+        {
+          "slot": 10,
+          "opcode": 105,
+          "A": 3,
+          "B": "GetDroppedItems",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 11,
+          "opcode": 307,
+          "A": 3,
+          "B": 3,
+          "C": 4,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 366,
+          "A": 4,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 388,
+          "A": 0,
+          "B": 14,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 14,
+          "opcode": 295,
+          "A": 4,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 15,
+          "opcode": 226,
+          "A": 0,
+          "B": 2,
+          "C": 4,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 16,
+          "opcode": 388,
+          "A": 0,
+          "B": 27,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 17,
+          "opcode": 127,
+          "A": 5,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 18,
+          "opcode": 364,
+          "A": 6,
+          "B": "地面物品(",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 19,
+          "opcode": 3,
+          "A": 7,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 20,
+          "opcode": 334,
+          "A": 8,
+          "B": ")超过上限(",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 21,
+          "opcode": 64,
+          "A": 9,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 22,
+          "opcode": 215,
+          "A": 10,
+          "B": ")",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 23,
+          "opcode": 93,
+          "A": 6,
+          "B": 6,
+          "C": 10,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 24,
+          "opcode": 128,
+          "A": 5,
+          "B": 6,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 25,
+          "opcode": 88,
+          "A": 5,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 26,
+          "opcode": 114,
+          "A": 5,
+          "B": "isDiuing",
+          "C": false,
+          "mode": 0,
+          "flags": 6
+        },
+        {
+          "slot": 27,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 28,
+          "opcode": 361,
+          "A": 5,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 29,
+          "opcode": 102,
+          "A": 5,
+          "B": 5,
+          "C": "GetMetaValue",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 30,
+          "opcode": 295,
+          "A": 7,
+          "B": "BAG_DATA",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 31,
+          "opcode": 209,
+          "A": 5,
+          "B": 7,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 32,
+          "opcode": 325,
+          "A": 5,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 33,
+          "opcode": 388,
+          "A": 0,
+          "B": 36,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 34,
+          "opcode": 88,
+          "A": 6,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 35,
+          "opcode": 114,
+          "A": 6,
+          "B": "isDiuing",
+          "C": false,
+          "mode": 0,
+          "flags": 6
+        },
+        {
+          "slot": 36,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 37,
+          "opcode": 199,
+          "A": 6,
+          "B": 22,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 38,
+          "opcode": 295,
+          "A": 7,
+          "B": "声望卷",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 39,
+          "opcode": 295,
+          "A": 8,
+          "B": "称号卷",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 40,
+          "opcode": 168,
+          "A": 9,
+          "B": "悟道茶",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 41,
+          "opcode": 149,
+          "A": 10,
+          "B": "转生水晶",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 42,
+          "opcode": 295,
+          "A": 11,
+          "B": "时装晶魄",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 43,
+          "opcode": 235,
+          "A": 12,
+          "B": "血龙宝珠",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 44,
+          "opcode": 133,
+          "A": 13,
+          "B": "洗髓丹",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 45,
+          "opcode": 295,
+          "A": 14,
+          "B": "恶魔令牌",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 46,
+          "opcode": 295,
+          "A": 15,
+          "B": "晶石",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 47,
+          "opcode": 302,
+          "A": 16,
+          "B": "经验卷",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 48,
+          "opcode": 374,
+          "A": 17,
+          "B": "技能残页",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 49,
+          "opcode": 54,
+          "A": 18,
+          "B": "熬光",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 50,
+          "opcode": 156,
+          "A": 19,
+          "B": "敖顺",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 51,
+          "opcode": 295,
+          "A": 20,
+          "B": "敖闰",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 52,
+          "opcode": 54,
+          "A": 21,
+          "B": "点点",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 53,
+          "opcode": 235,
+          "A": 22,
+          "B": "之力",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 54,
+          "opcode": 133,
+          "A": 23,
+          "B": "复活",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 55,
+          "opcode": 235,
+          "A": 24,
+          "B": "麻痹",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 56,
+          "opcode": 6,
+          "A": 25,
+          "B": "护身",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 57,
+          "opcode": 295,
+          "A": 26,
+          "B": "主印",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 58,
+          "opcode": 295,
+          "A": 27,
+          "B": "副印",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 59,
+          "opcode": 374,
+          "A": 28,
+          "B": "神凤",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 60,
+          "opcode": 235,
+          "A": 29,
+          "B": "龙傲",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 61,
+          "opcode": 247,
+          "A": 30,
+          "B": "冰雪",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 62,
+          "opcode": 295,
+          "A": 31,
+          "B": "上古",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 63,
+          "opcode": 295,
+          "A": 32,
+          "B": "起源",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 64,
+          "opcode": 374,
+          "A": 33,
+          "B": "残",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 65,
+          "opcode": 295,
+          "A": 34,
+          "B": "鸿蒙",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 66,
+          "opcode": 41,
+          "A": 6,
+          "B": 28,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 67,
+          "opcode": 30,
+          "A": 7,
+          "B": 25,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 68,
+          "opcode": 374,
+          "A": 8,
+          "B": "开天+7",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 69,
+          "opcode": 247,
+          "A": 9,
+          "B": "雷霆战甲(男)+7",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 70,
+          "opcode": 327,
+          "A": 10,
+          "B": "雷霆战盔+7",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 71,
+          "opcode": 168,
+          "A": 11,
+          "B": "雷霆项链+7",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 72,
+          "opcode": 168,
+          "A": 12,
+          "B": "雷霆护腕+7",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 73,
+          "opcode": 168,
+          "A": 13,
+          "B": "雷霆戒指+7",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 74,
+          "opcode": 222,
+          "A": 14,
+          "B": "雷霆腰带+7",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 75,
+          "opcode": 295,
+          "A": 15,
+          "B": "雷霆战靴+7",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 76,
+          "opcode": 214,
+          "A": 16,
+          "B": "开天+8",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 77,
+          "opcode": 295,
+          "A": 17,
+          "B": "雷霆战甲(男)+8",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 78,
+          "opcode": 168,
+          "A": 18,
+          "B": "雷霆战盔+8",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 79,
+          "opcode": 235,
+          "A": 19,
+          "B": "雷霆项链+8",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 80,
+          "opcode": 295,
+          "A": 20,
+          "B": "雷霆护腕+8",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 81,
+          "opcode": 295,
+          "A": 21,
+          "B": "雷霆戒指+8",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 82,
+          "opcode": 54,
+          "A": 22,
+          "B": "雷霆腰带+8",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 83,
+          "opcode": 54,
+          "A": 23,
+          "B": "雷霆战靴+8",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 84,
+          "opcode": 302,
+          "A": 24,
+          "B": "开天+9",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 85,
+          "opcode": 295,
+          "A": 25,
+          "B": "雷霆战甲(男)+9",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 86,
+          "opcode": 374,
+          "A": 26,
+          "B": "雷霆战盔+9",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 87,
+          "opcode": 310,
+          "A": 27,
+          "B": "雷霆项链+9",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 88,
+          "opcode": 295,
+          "A": 28,
+          "B": "雷霆护腕+9",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 89,
+          "opcode": 235,
+          "A": 29,
+          "B": "雷霆戒指+9",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 90,
+          "opcode": 134,
+          "A": 30,
+          "B": "雷霆腰带+9",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 91,
+          "opcode": 133,
+          "A": 31,
+          "B": "雷霆战靴+9",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 92,
+          "opcode": 22,
+          "A": 32,
+          "B": "终极开天",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 93,
+          "opcode": 6,
+          "A": 33,
+          "B": "终极雷霆战甲(男)",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 94,
+          "opcode": 54,
+          "A": 34,
+          "B": "终极雷霆战盔",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 95,
+          "opcode": 224,
+          "A": 35,
+          "B": "终极雷霆项链",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 96,
+          "opcode": 54,
+          "A": 36,
+          "B": "终极雷霆护腕",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 97,
+          "opcode": 235,
+          "A": 37,
+          "B": "终极雷霆戒指",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 98,
+          "opcode": 295,
+          "A": 38,
+          "B": "终极雷霆腰带",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 99,
+          "opcode": 168,
+          "A": 39,
+          "B": "终极雷霆战靴",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 100,
+          "opcode": 168,
+          "A": 40,
+          "B": "时装羽毛",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 101,
+          "opcode": 374,
+          "A": 41,
+          "B": "称号证明",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 102,
+          "opcode": 295,
+          "A": 42,
+          "B": "生肖魔石",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 103,
+          "opcode": 41,
+          "A": 7,
+          "B": 35,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 104,
+          "opcode": 38,
+          "A": 8,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 105,
+          "opcode": 295,
+          "A": 9,
+          "B": "时装羽毛",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 106,
+          "opcode": 374,
+          "A": 10,
+          "B": "称号证明",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 107,
+          "opcode": 295,
+          "A": 11,
+          "B": "生肖魔石",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 108,
+          "opcode": 41,
+          "A": 8,
+          "B": 3,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 109,
+          "opcode": 387,
+          "A": 9,
+          "B": 1,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 110,
+          "opcode": 243,
+          "A": 0,
+          "B": 6,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 111,
+          "opcode": 178,
+          "A": 10,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 112,
+          "opcode": 243,
+          "A": 0,
+          "B": 7,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 113,
+          "opcode": 387,
+          "A": 11,
+          "B": 2,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 114,
+          "opcode": 243,
+          "A": 0,
+          "B": 8,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 115,
+          "opcode": 279,
+          "A": 12,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 116,
+          "opcode": 105,
+          "A": 13,
+          "B": "pairs",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 117,
+          "opcode": 288,
+          "A": 14,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 118,
+          "opcode": 386,
+          "A": 13,
+          "B": 14,
+          "C": 15,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 119,
+          "opcode": 388,
+          "A": 0,
+          "B": 169,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 120,
+          "opcode": 60,
+          "A": 17,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 121,
+          "opcode": 388,
+          "A": 0,
+          "B": 169,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 122,
+          "opcode": 274,
+          "A": 18,
+          "B": 17,
+          "C": "Name",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 123,
+          "opcode": 340,
+          "A": 18,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 124,
+          "opcode": 388,
+          "A": 0,
+          "B": 169,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 125,
+          "opcode": 410,
+          "A": 18,
+          "B": 17,
+          "C": "MakeIndex",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 126,
+          "opcode": 358,
+          "A": 18,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 127,
+          "opcode": 388,
+          "A": 0,
+          "B": 169,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 128,
+          "opcode": 173,
+          "A": 18,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 129,
+          "opcode": 159,
+          "A": 18,
+          "B": 18,
+          "C": "GetMetaValue",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 130,
+          "opcode": 295,
+          "A": 20,
+          "B": "ITEM_IS_BIND",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 131,
+          "opcode": 241,
+          "A": 21,
+          "B": 17,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 132,
+          "opcode": 209,
+          "A": 18,
+          "B": 21,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 133,
+          "opcode": 325,
+          "A": 18,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 134,
+          "opcode": 388,
+          "A": 0,
+          "B": 169,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 135,
+          "opcode": 213,
+          "A": 19,
+          "B": 19,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 136,
+          "opcode": 143,
+          "A": 0,
+          "B": 1,
+          "C": 1,
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 137,
+          "opcode": 388,
+          "A": 0,
+          "B": 142,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 138,
+          "opcode": 64,
+          "A": 20,
+          "B": 11,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 139,
+          "opcode": 274,
+          "A": 21,
+          "B": 17,
+          "C": "Name",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 140,
+          "opcode": 209,
+          "A": 20,
+          "B": 21,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 141,
+          "opcode": 402,
+          "A": 19,
+          "B": 20,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 142,
+          "opcode": 388,
+          "A": 0,
+          "B": 153,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 143,
+          "opcode": 143,
+          "A": 0,
+          "B": 1,
+          "C": 2,
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 144,
+          "opcode": 388,
+          "A": 0,
+          "B": 149,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 145,
+          "opcode": 241,
+          "A": 20,
+          "B": 10,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 146,
+          "opcode": 410,
+          "A": 21,
+          "B": 17,
+          "C": "Name",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 147,
+          "opcode": 209,
+          "A": 20,
+          "B": 21,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 148,
+          "opcode": 61,
+          "A": 19,
+          "B": 20,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 149,
+          "opcode": 388,
+          "A": 0,
+          "B": 153,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 150,
+          "opcode": 119,
+          "A": 20,
+          "B": 9,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 151,
+          "opcode": 274,
+          "A": 21,
+          "B": 17,
+          "C": "Name",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 152,
+          "opcode": 209,
+          "A": 20,
+          "B": 21,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 153,
+          "opcode": 241,
+          "A": 19,
+          "B": 20,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 154,
+          "opcode": 340,
+          "A": 19,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 155,
+          "opcode": 388,
+          "A": 0,
+          "B": 169,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 156,
+          "opcode": 216,
+          "A": 20,
+          "B": "table",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 157,
+          "opcode": 165,
+          "A": 20,
+          "B": 20,
+          "C": "insert",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 158,
+          "opcode": 74,
+          "A": 21,
+          "B": 12,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 159,
+          "opcode": 286,
+          "A": 22,
+          "B": 0,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 160,
+          "opcode": 83,
+          "A": 23,
+          "B": 17,
+          "C": "MakeIndex",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 161,
+          "opcode": 306,
+          "A": 22,
+          "B": "makeIndex",
+          "C": 23,
+          "mode": 0,
+          "flags": 2
+        },
+        {
+          "slot": 162,
+          "opcode": 274,
+          "A": 23,
+          "B": 17,
+          "C": "OverLap",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 163,
+          "opcode": 366,
+          "A": 23,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 164,
+          "opcode": 388,
+          "A": 0,
+          "B": 165,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 165,
+          "opcode": 295,
+          "A": 23,
+          "B": 1,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 166,
+          "opcode": 365,
+          "A": 22,
+          "B": "count",
+          "C": 23,
+          "mode": 0,
+          "flags": 2
+        },
+        {
+          "slot": 167,
+          "opcode": 400,
+          "A": 23,
+          "B": 17,
+          "C": "Name",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 168,
+          "opcode": 0,
+          "A": 22,
+          "B": "name",
+          "C": 23,
+          "mode": 0,
+          "flags": 2
+        },
+        {
+          "slot": 169,
+          "opcode": 128,
+          "A": 20,
+          "B": 22,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 170,
+          "opcode": 357,
+          "A": 13,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 171,
+          "opcode": 388,
+          "A": 0,
+          "B": 119,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 172,
+          "opcode": 265,
+          "A": 13,
+          "B": 12,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 173,
+          "opcode": 143,
+          "A": 0,
+          "B": 13,
+          "C": 0,
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 174,
+          "opcode": 388,
+          "A": 0,
+          "B": 180,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 175,
+          "opcode": 127,
+          "A": 13,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 176,
+          "opcode": 295,
+          "A": 14,
+          "B": "背包无可丢弃物品",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 177,
+          "opcode": 123,
+          "A": 13,
+          "B": 14,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 178,
+          "opcode": 88,
+          "A": 13,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 179,
+          "opcode": 322,
+          "A": 13,
+          "B": "isDiuing",
+          "C": false,
+          "mode": 0,
+          "flags": 6
+        },
+        {
+          "slot": 180,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 181,
+          "opcode": 295,
+          "A": 13,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 182,
+          "opcode": 188,
+          "A": 14,
+          "B": "ipairs",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 183,
+          "opcode": 288,
+          "A": 15,
+          "B": 12,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 184,
+          "opcode": 314,
+          "A": 14,
+          "B": 15,
+          "C": 16,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 185,
+          "opcode": 388,
+          "A": 0,
+          "B": 215,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 186,
+          "opcode": 338,
+          "A": 0,
+          "B": 2,
+          "C": 4,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 187,
+          "opcode": 388,
+          "A": 0,
+          "B": 194,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 188,
+          "opcode": 14,
+          "A": 19,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 189,
+          "opcode": 295,
+          "A": 20,
+          "B": "地面物品已满",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 190,
+          "opcode": 291,
+          "A": 21,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 191,
+          "opcode": 295,
+          "A": 22,
+          "B": "件，停止丢弃",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 192,
+          "opcode": 93,
+          "A": 20,
+          "B": 20,
+          "C": 22,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 193,
+          "opcode": 128,
+          "A": 19,
+          "B": 20,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 217,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 195,
+          "opcode": 87,
+          "A": 19,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 196,
+          "opcode": 223,
+          "A": 20,
+          "B": "丢: ",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 197,
+          "opcode": 96,
+          "A": 21,
+          "B": 18,
+          "C": "name",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 198,
+          "opcode": 93,
+          "A": 20,
+          "B": 20,
+          "C": 21,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 199,
+          "opcode": 128,
+          "A": 19,
+          "B": 20,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 200,
+          "opcode": 105,
+          "A": 19,
+          "B": "LuaSendMsg",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 201,
+          "opcode": 377,
+          "A": 20,
+          "B": "global",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 202,
+          "opcode": 246,
+          "A": 20,
+          "B": 20,
+          "C": "MsgType",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 203,
+          "opcode": 410,
+          "A": 20,
+          "B": 20,
+          "C": "MSG_CS_MAP_ITEM_DISCARD",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 204,
+          "opcode": 341,
+          "A": 21,
+          "B": 18,
+          "C": "makeIndex",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 205,
+          "opcode": 268,
+          "A": 22,
+          "B": 18,
+          "C": "count",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 206,
+          "opcode": 157,
+          "A": 23,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 207,
+          "opcode": 359,
+          "A": 24,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 208,
+          "opcode": 196,
+          "A": 25,
+          "B": 18,
+          "C": "name",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 209,
+          "opcode": 108,
+          "A": 26,
+          "B": "string",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 210,
+          "opcode": 79,
+          "A": 26,
+          "B": 26,
+          "C": "len",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 211,
+          "opcode": 96,
+          "A": 27,
+          "B": 18,
+          "C": "name",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 212,
+          "opcode": 184,
+          "A": 26,
+          "B": 27,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 213,
+          "opcode": 376,
+          "A": 19,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 214,
+          "opcode": 182,
+          "A": 13,
+          "B": 13,
+          "C": 1,
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 215,
+          "opcode": 144,
+          "A": 4,
+          "B": 4,
+          "C": 1,
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 216,
+          "opcode": 357,
+          "A": 14,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 217,
+          "opcode": 388,
+          "A": 0,
+          "B": 185,
+          "C": null,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 218,
+          "opcode": 14,
+          "A": 14,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 219,
+          "opcode": 295,
+          "A": 15,
+          "B": "共丢弃 ",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 220,
+          "opcode": 241,
+          "A": 16,
+          "B": 13,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 221,
+          "opcode": 215,
+          "A": 17,
+          "B": " 件物品",
+          "C": null,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 222,
+          "opcode": 93,
+          "A": 15,
+          "B": 15,
+          "C": 17,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 223,
+          "opcode": 123,
+          "A": 14,
+          "B": 15,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 224,
+          "opcode": 324,
+          "A": 14,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 225,
+          "opcode": 322,
+          "A": 14,
+          "B": "isDiuing",
+          "C": false,
+          "mode": 0,
+          "flags": 6
+        },
+        {
+          "slot": 226,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "children": [
+        {
+          "path": "root/2/0",
+          "params": 1,
+          "constant_count": 1,
+          "instruction_count": 13
+        },
+        {
+          "path": "root/2/1",
+          "params": 1,
+          "constant_count": 4,
+          "instruction_count": 20
+        },
+        {
+          "path": "root/2/2",
+          "params": 1,
+          "constant_count": 1,
+          "instruction_count": 13
+        }
+      ],
+      "closure_creation_records": [
+        {
+          "create_slot": 109,
+          "opcode": 387,
+          "child_index": 1,
+          "capture_count": 1,
+          "capture_record": {
+            "slot": 110,
+            "opcode": 243,
+            "A": 0,
+            "B": 6,
+            "C": 0,
+            "mode": 0,
+            "flags": 0
+          }
+        },
+        {
+          "create_slot": 111,
+          "opcode": 178,
+          "child_index": 0,
+          "capture_count": 1,
+          "capture_record": {
+            "slot": 112,
+            "opcode": 243,
+            "A": 0,
+            "B": 7,
+            "C": 0,
+            "mode": 0,
+            "flags": 0
+          }
+        },
+        {
+          "create_slot": 113,
+          "opcode": 387,
+          "child_index": 2,
+          "capture_count": 1,
+          "capture_record": {
+            "slot": 114,
+            "opcode": 243,
+            "A": 0,
+            "B": 8,
+            "C": 0,
+            "mode": 0,
+            "flags": 0
+          }
+        }
+      ],
+      "decode_validation": {
+        "decoded_bytes": 142522,
+        "consumed_bytes": 142522,
+        "prototype_count": 162,
+        "verified_against": [
+          "root/2/0",
+          "root/2/2"
+        ]
+      }
     }
   ],
   "constant_type_notes": {
