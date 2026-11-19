@@ -941,3 +941,9 @@
 - root/71 DeathAutoBlacklist：lastAttacker、ScheduleOnce、RequestAddBlacklistByName及提示文本吻合，高置信候选；父级注册/调用差异待确认。
 - root/9 GetMapData2DPtr存在同名异义风险：11.2同名函数是距离门控，11.16常量却指向地图数据/障碍查询，禁止直接复用，名称待复核。
 - 详细对照见 `11.16/函数名称与版本_API映射清单.md`。无新增明文，恢复统计不变。
+
+
+### 2026-11-19续：第二批函数名称候选
+- 新增root/16 SetButtonVisibilityState、root/19 AccountIDValidation、root/30 Nested_find、root/67 ShowHideAllButtons四个11.2对照候选，已同步原型索引和函数状态CSV。
+- 当前81个root原型中54个已有候选名称，27个仍待识别。root/9身份冲突待复核；root/43 PickUpItems、root/55 Builtsetting是新版扩展候选，不能直接复制旧版。
+- 详见 `11.16/函数名称与版本_API映射清单.md`。本轮无新增明文，业务恢复统计保持37/162（22.84%），部分恢复19项。
