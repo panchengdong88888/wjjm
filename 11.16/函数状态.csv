@@ -6,7 +6,7 @@
 4,root/2/0,root/2,2,make_helper_root_2_0,匿名闭包（行为已恢复；H[0]业务变量名待映射）,1,1,0,13,已写入明文,ipairs,MainLeftBottom_11.16_明文.lua,H[0]业务变量名待映射,2026-11-19
 5,root/2/1,root/2,2,make_helper_root_2_1,匿名闭包（行为已恢复；捕获物品名称模式列表）,1,4,0,20,已写入明文,ipairs | string.find | pattern参数为false（Lua模式匹配）,MainLeftBottom_11.16_明文.lua,H[0]=父级N[6]；父级原始局部变量名待映射,2026-11-19
 6,root/2/2,root/2,2,make_helper_root_2_2,匿名闭包（行为已恢复；H[0]业务变量名待映射）,1,1,0,13,已写入明文,ipairs,MainLeftBottom_11.16_明文.lua,H[0]业务变量名待映射,2026-11-19
-7,root/3,root,1,StopGatherMonsters,高置信候选,0,6,0,25,控制流已闭合（#1–25；#5/#6分支在#14汇合）；父级closure的H[1]–H[6]符号映射待完成,gatherTimer | UnSchedule | SL | 引怪功能已停止 | IDLE | 原始载荷已重解析，25个物理槽位均有效,,,2026-11-18
+7,root/3,root,1,StopGatherMonsters（高置信候选；合成实现名make_helper_root_3）,闭包体已恢复（父级捕获符号待映射）,0,6,0,25,部分恢复（不计完整函数）,25槽全部有效；slot5/6分支于slot14汇合；无timer时跳过取消段；有timer时SL:UnSchedule(timer)并清空H[1].gatherTimer；公共尾段依次调用H[2]()、H[3](H[4].IDLE)、H[5]()、H[6](提示文本)。,MainLeftBottom_11.16_明文.lua：make_helper_root_3,H[1]–H[6]父级root闭包创建时的真实词法变量身份尚未映射；H[0]按指令写入false保留,2026-11-19
 8,root/4,root,1,GetOwnerID,本轮已恢复,2,7,0,31,已写入明文,tostring | type |  | string | GetOwnerID,MainLeftBottom_11.16_明文.lua,,2026-11-18
 9,root/5,root,1,helper_root_5（合成定位名）,行为已恢复,1,5,0,17,已写入明文,mCurrMapX | mCurrMapY | x | y | Opcode 325真值分支与Opcode 359/355融合默认值,MainLeftBottom_11.16_明文.lua,原始函数符号名及参数名未确认；父级槽位190创建闭包且captureCount=0；17条物理指令及所有分支/融合载荷已闭合,2026-11-19
 10,root/6,root,1,MainLoop,高置信候选,0,67,0,573,未恢复,"锁定怪物 %s 失败 | 攻击怪物 %d: %s (ID: %s) | ACTOR_HAS_ONE_BUFF | pairs | 所有怪物归属已获取，切换到攻击状态 | 怪物 %d (ID: %s) 已死亡或离开视野 | MagicID | ATTACK_WAIT_TIME | time | 锁定怪物 %d: %s (ID: %s, 归属: %s)",,,2026-11-18
