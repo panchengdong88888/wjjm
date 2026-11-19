@@ -130,7 +130,14 @@
           "mode": 0,
           "flags": 0
         }
-      ]
+      ],
+      "reconstruction": {
+        "status": "behavior_recovered",
+        "description": "ipairs(H[0])遍历父级闭包捕获表；逐项与唯一参数比较；相等返回true，迭代器结束返回false。",
+        "upvalue": "H[0]（父级变量身份待映射）",
+        "control_flow": "槽位4跳到迭代推进；Opcode250/122迭代；Opcode294相等时跳过回边并执行true返回；迭代器首返回值nil时跳过回边并执行false返回。",
+        "confidence": "high"
+      }
     },
     {
       "path": "root/2/2",
@@ -257,7 +264,14 @@
           "mode": 0,
           "flags": 0
         }
-      ]
+      ],
+      "reconstruction": {
+        "status": "behavior_recovered",
+        "description": "ipairs(H[0])遍历父级闭包捕获表；逐项与唯一参数比较；相等返回true，迭代器结束返回false。",
+        "upvalue": "H[0]（父级变量身份待映射）",
+        "control_flow": "槽位4跳到迭代推进；Opcode250/122迭代；Opcode294相等时跳过回边并执行true返回；迭代器首返回值nil时跳过回边并执行false返回。",
+        "confidence": "high"
+      }
     },
     {
       "path": "root/13/0",
