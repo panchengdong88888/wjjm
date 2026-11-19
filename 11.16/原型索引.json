@@ -3003,8 +3003,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 5,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_50_3（合成定位名）",
+      "identity_status": "闭包体已恢复；父级捕获变量身份待确认",
       "constants": [
         "GUI",
         "Win_Close"
@@ -3023,6 +3023,23 @@
         "capture_opcode": 243,
         "parent_register": 7,
         "child_upvalue": 0
+      },
+      "reconstruction": {
+        "status": "body_recovered_capture_identity_pending",
+        "description": "root/50槽位441 Opcode387创建childIndex=3闭包，槽位442 Opcode243捕获父N[7]到H[0]。子体Opcode253/138准备GUI.Win_Close，N[1]保存GUI receiver、N[0]保存方法；Opcode324将H[0]写入N[2]；Opcode123按N[1]..N[2]调用，等价于GUI:Win_Close(H[0])。此前参数范围判断1..0已纠正，实际B=2，捕获值是调用参数。",
+        "confidence": "raw_dispatch_and_parent_capture_verified",
+        "parent_capture": {
+          "parent": "root/50",
+          "create_slot": 441,
+          "create_opcode": 387,
+          "child_index": 3,
+          "capture_count": 1,
+          "capture_slot": 442,
+          "capture_opcode": 243,
+          "parent_register": 7,
+          "child_upvalue": 0
+        },
+        "unresolved": "父级N[7]的原始词法变量名及业务身份待确认；不计完整函数"
       }
     },
     {
