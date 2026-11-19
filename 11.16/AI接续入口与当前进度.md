@@ -906,3 +906,9 @@
 - root/75 FindMonsterCandidates已写入唯一明文：复用11.2/11.9共同业务主体，按11.16子原型root/75/0修正排序为a._distance >= b._distance（降序）；本原型常量池含true、未见false，因此保留此处true,true查询参数。root/20的false,false不外推到root/75。
 - 统计：指令级直接恢复33/162；跨版本业务复用恢复2项（root/7、root/75）；业务功能恢复累计35/162；部分恢复19项。语法、静态及游戏运行验证未执行。
 - 下一项继续root/23 InitGatherMonsters，利用已恢复的无捕获MainLoop包装闭包作为Schedule回调；不分析官方API内部实现。
+
+
+### 2026-11-19业务优先恢复增量：root/23
+- InitGatherMonsters已写入唯一明文。以11.2/11.9共同初始化流程为底稿，11.16 Schedule回调使用已恢复的无捕获包装闭包closure_root_23_0（其内部调用全局MainLoop），不直接传MainLoop。
+- 运行标志/计时器映射参考root/3 StopGatherMonsters闭包及两版旧代码；其余主体沿用旧版共同流程。尚未逐槽核验36条指令，语法及游戏运行验证未执行。
+- 统计：指令级直接恢复33/162；跨版本业务复用恢复3项；业务功能恢复累计36/162；部分恢复19项。
