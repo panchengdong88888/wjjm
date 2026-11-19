@@ -154,3 +154,24 @@
 3. 下一步先用11.2明文中对应函数的结构、常量与调用关系，为这51个待识别项建立候选映射；再用3.40.x文档剔除官方API调用，避免把框架API误当作项目自定义函数。
 4. 11.9继续作为独立版本只读对照，不能把11.9差异或实现直接标成11.2证据，也不能覆盖11.16原始证据。
 5. 本清单是名称/版本/API索引，不替代唯一明文源码，也不改变原型恢复计数。原始Lua保持只读。
+
+
+## 7. 对17个旧版同名候选的业务线索复核（第一轮）
+
+| 原型 | 候选名 | 本版常量/调用线索 | 当前判断 |
+|---|---|---|---|
+| root/6 | MainLoop | 引怪状态、怪物归属、锁定失败、攻击状态等常量；与11.2 MainLoop业务主题一致 | 高置信同职责；复杂函数暂后处理 |
+| root/7 | MoveItemToQuickUse | QuickUseProxy、Bag、GetQuickUseSize/GetQuickUseData、SetQuickUsePosData、DelItemData等 | 已按11.2/11.9共同主体完成跨版本业务恢复 |
+| root/9 | GetMapData2DPtr | 同时出现sceneManager、isObstacle、getMapDataCols等地图碰撞/地图数据线索；11.2同名函数实际是五参数距离门控 | **名称/身份存在冲突，不能按同名复用**；需回看本版函数身份来源 |
+| root/23 | InitGatherMonsters | CHECK_INTERVAL、UnSchedule、引怪启动提示；子闭包调用全局MainLoop | 已按旧版共同业务流程恢复，并保留11.16包装闭包差异 |
+| root/38 | DistanceCalculation | 99999、abs、math、max、x、y | 已按11.2/11.9共同业务体恢复 |
+| root/58 | TakeItems | MSG_CS_STORAGE_PICK_OUT_REQUEST、GetStorageItemData、MakeIndex、isTaking、取出完成/仓库无可取物品提示 | 高置信同职责候选；11.16父级捕获/完整调用流尚未核实，不直接整段复制 |
+| root/71 | DeathAutoBlacklist | lastAttacker、name、id、ScheduleOnce、自动拉黑/凶手提示、RequestAddBlacklistByName | 高置信同职责候选；子闭包已识别，仍需确认11.16父级注册及调用差异 |
+
+其余已命名同名项（GetOwnerID、GetDroppedItems、FindMonsterInCurrViewField、GetMapId、GetMapName、IsDie、PlayerPos、GetMainPlayerID、ShowLocalNoticeByType、FindMonsterCandidates）已在11.16唯一明文中，或已在前序记录中完成本版调用/差异核对；不重复恢复。
+
+## 8. 本轮防误判规则
+
+- 旧版同名只是一条身份线索。若本版常量集合指向明显不同的业务主题（例如root/9），必须降级为“名称待复核”，不得把旧版同名实现复制进去。
+- 对root/58、root/71这类常量高度吻合但缺少本版完整指令流/父级闭包创建点的函数，只记录高置信同职责候选；在捕获变量与本版实际调用关系闭合前，不计完整恢复。
+- 官方SL API（例如ScheduleOnce、UnSchedule、ShowSystemTips、GetMetaValue等）直接按3.40.x文档使用；不再分析其内部实现。
