@@ -541,12 +541,14 @@ end
 -- H[1]._blacklistData[H[0]]=nil。nil来自原版S()常量类型2的解码规则。
 -- H[0]、H[1]的父级root/26创建点捕获来源尚未取得，以下使用显式占位，
 -- 不将capturedBlacklistKey/capturedBlacklistState视为原始局部变量名。
-local function make_helper_root_26_0(capturedBlacklistKey, capturedBlacklistState)
-    SL:RequestOutBlacklist(capturedBlacklistKey)
+local function make_helper_root_26_0(itemKey, friendProxy)
+    return function()
+        SL:RequestOutBlacklist(itemKey)
 
-    local blacklistData = capturedBlacklistState._blacklistData
-    if blacklistData then
-        blacklistData[capturedBlacklistKey] = nil
+        local blacklistData = friendProxy._blacklistData
+        if blacklistData then
+            blacklistData[itemKey] = nil
+        end
     end
 end
 
