@@ -10,7 +10,7 @@
     4. 不将11.9或其他版本的源码直接复制为11.16实现。
     5. 所有AI对话只能增量更新本文件，不得创建平行明文候选稿。
 
-    当前状态：持续增量恢复中；指令级直接恢复33/162；跨版本业务复用恢复13项（root/7、root/17、root/23、root/29、root/31、root/36、root/38、root/46、root/51、root/56、root/64、root/66、root/75）；业务功能恢复累计46/162（28.40%）。两种口径分开统计，以函数状态CSV及源码恢复进度账本为准。
+    当前状态：持续增量恢复中；指令级直接恢复33/162；跨版本业务复用恢复14项（root/7、root/17、root/23、root/29、root/30、root/31、root/36、root/38、root/46、root/51、root/56、root/64、root/66、root/75）；业务功能恢复累计47/162（29.01%）。两种口径分开统计，以函数状态CSV及源码恢复进度账本为准。
 ]]
 
 --[[
@@ -282,6 +282,28 @@ local function FindBlacklistPlayer(targetID)
     end
 
     return false
+end
+
+
+-- 11.16 root/30：Nested_find（1参数、31条物理指令、无子原型）。
+-- 本版常量池为BAG_DATA、SL、GetMetaValue、pairs、Name、string、find及数值1。
+-- 与11.2同职责函数对照后，明确不保留旧版MakeIndex、ITEM_IS_BIND、OverLap过滤/堆叠累加；
+-- 按本版字段证据仅统计名称匹配的背包物品条目数。
+local function Nested_find(searchText)
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then
+        return 0
+    end
+
+    local totalCount = 0
+    for _, item in pairs(bagData) do
+        if item and item.Name
+            and string.find(item.Name, searchText, 1, true) then
+            totalCount = totalCount + 1
+        end
+    end
+
+    return totalCount
 end
 
 

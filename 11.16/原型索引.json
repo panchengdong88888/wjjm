@@ -2137,7 +2137,7 @@
       "parameter_count": 1,
       "instruction_count": 31,
       "candidate_name": "Nested_find",
-      "identity_status": "跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "跨版本业务恢复（11.2同职责函数与11.16参数/常量集合交叉匹配；按本版缺失字段调整）",
       "constants": [
         "BAG_DATA",
         1,
@@ -2147,7 +2147,10 @@
         "GetMetaValue",
         "pairs",
         "string"
-      ]
+      ],
+      "recovery_status": "已写入明文（跨版本业务复用，按本版字段缩减）",
+      "business_summary": "读取SL:GetMetaValue('BAG_DATA')，使用pairs遍历；对含Name的物品执行string.find(item.Name, searchText, 1, true)，统计名称匹配的物品条目数。",
+      "recovery_evidence": "11.16 root/30：1参数、8常量、31条指令、无子原型。常量包含BAG_DATA、SL、GetMetaValue、pairs、Name、string、find和数值1；不含旧版MakeIndex、ITEM_IS_BIND、OverLap字段，因此没有复制旧版的物品索引/绑定过滤/堆叠数量累加。按本版常量适配恢复；未逐槽模拟。"
     },
     {
       "preorder_id": 46,

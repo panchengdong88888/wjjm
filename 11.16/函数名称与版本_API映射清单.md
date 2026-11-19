@@ -406,3 +406,8 @@
 - root/56 PCallHelper_2：11.16本版有1个子原型root/56/0；子原型已直接恢复为global.Facade:retrieveProxy(global.ProxyTable.FriendProxy)。父函数通过pcall保护调用，失败或假值返回nil。
 - root/31 FindBlacklistPlayer：11.16参数数、常量集合和35条指令规模与11.2同名业务体吻合；先查询targetID，再查询ACTOR_MASTER_ID主角色ID，命中返回true及Name。
 - 已写入唯一明文；两项按跨版本业务复用统计。
+
+
+## 2026-11-19续：root/30 Nested_find
+- 11.16本版常量明确包含BAG_DATA、GetMetaValue、pairs、Name、string.find和数值1；不含旧版MakeIndex、ITEM_IS_BIND、OverLap。
+- 明文按本版字段恢复为名称匹配条目计数，不沿用旧版绑定过滤及堆叠数量累加。业务复用已写入，31条指令未逐槽模拟。
