@@ -3522,9 +3522,31 @@
         "prototype_end": 34064
       },
       "reconstruction": {
-        "status": "instructions_extracted_pending_semantics_or_capture",
-        "description": "Opcode110置寄存器0为false；Opcode162执行H[0]=N[0]；Opcode205结束。闭包体行为可读，但父级创建点/捕获身份未确认。",
-        "confidence": "raw_structure_verified"
+        "status": "body_recovered_shared_upvalue_identity_partial",
+        "description": "root/25/0槽位513 Opcode178创建childIndex=0闭包，captureCount=1；槽位514 Opcode132将父级H[0]绑定到子H[0]。root/25槽位18创建root/25/0，槽位19 Opcode132将root/25的H[2]绑定到root/25/0的H[0]。因此该闭包最终写入root/25的H[2]共享单元。Opcode110置false、Opcode162写H[0]=false、Opcode205结束。",
+        "confidence": "raw_dispatch_parent_capture_chain_verified",
+        "parent_closure": {
+          "parent": "root/25/0",
+          "create_slot": 513,
+          "create_opcode": 178,
+          "child_index": 0,
+          "capture_count": 1,
+          "capture_slot": 514,
+          "capture_opcode": 132,
+          "parent_upvalue": 0,
+          "child_upvalue": 0
+        },
+        "capture_chain": {
+          "parent": "root/25",
+          "create_slot": 18,
+          "create_opcode": 178,
+          "child_index": 0,
+          "capture_count": 11,
+          "capture_slot": 19,
+          "capture_opcode": 132,
+          "parent_upvalue": 2,
+          "child_upvalue": 0
+        }
       }
     },
     {
@@ -3567,9 +3589,31 @@
         "prototype_end": 34749
       },
       "reconstruction": {
-        "status": "instructions_extracted_pending_semantics_or_capture",
-        "description": "Opcode62语义尚未映射；父级创建点/捕获身份未确认。",
-        "confidence": "raw_structure_verified"
+        "status": "body_recovered_shared_upvalue_identity_partial",
+        "description": "root/25/0槽位594 Opcode121创建childIndex=2闭包，captureCount=1；槽位595 Opcode132将父级H[0]绑定到子H[0]。root/25槽位18创建root/25/0，槽位19 Opcode132将root/25的H[2]绑定到root/25/0的H[0]。因此该闭包最终写入root/25的H[2]共享单元。Opcode110置false、Opcode62写H[0]=false、Opcode339结束。",
+        "confidence": "raw_dispatch_parent_capture_chain_verified",
+        "parent_closure": {
+          "parent": "root/25/0",
+          "create_slot": 594,
+          "create_opcode": 121,
+          "child_index": 2,
+          "capture_count": 1,
+          "capture_slot": 595,
+          "capture_opcode": 132,
+          "parent_upvalue": 0,
+          "child_upvalue": 0
+        },
+        "capture_chain": {
+          "parent": "root/25",
+          "create_slot": 18,
+          "create_opcode": 178,
+          "child_index": 0,
+          "capture_count": 11,
+          "capture_slot": 19,
+          "capture_opcode": 132,
+          "parent_upvalue": 2,
+          "child_upvalue": 0
+        }
       }
     },
     {
