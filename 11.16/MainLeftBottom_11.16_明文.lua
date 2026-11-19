@@ -1249,3 +1249,137 @@ function MoveTo(x, y, range)
     end
     return true
 end
+
+
+
+-- 11.16 root/2：DiuItems（226条物理指令，寄存器级控制流已闭合）。
+-- 参数mode决定名称筛选策略：
+--   mode==1：排除命中3项精确名称表的物品；
+--   mode==2：排除命中35项精确名称表的物品；
+--   其他值：仅保留命中28项Lua模式名称表的物品。
+-- H[0]为持有isDiuing字段的状态对象，H[1]为提示回调；
+-- 父级root原始654槽未导出，故两者保留为显式捕获槽，不猜测词法变量名。
+local function make_DiuItems(capturedUpvalues)
+    local state = capturedUpvalues[0]
+    local notify = capturedUpvalues[1]
+
+    local function DiuItems(mode)
+        local MAX_GROUND_ITEMS = 35
+        if state.isDiuing then
+            return
+        end
+
+        state.isDiuing = true
+
+        local _, groundItemCount = GetDroppedItems()
+        if not groundItemCount then
+            groundItemCount = 0
+        end
+
+        if MAX_GROUND_ITEMS <= groundItemCount then
+            notify("地面物品(" .. groundItemCount .. ")超过上限(" .. MAX_GROUND_ITEMS .. ")")
+            state.isDiuing = false
+            return
+        end
+
+        local bagData = SL:GetMetaValue("BAG_DATA")
+        if not bagData then
+            state.isDiuing = false
+            return
+        end
+
+        local patternNames = {
+            "声望卷", "称号卷", "悟道茶", "转生水晶", "时装晶魄",
+            "血龙宝珠", "洗髓丹", "恶魔令牌", "晶石", "经验卷",
+            "技能残页", "熬光", "敖顺", "敖闰", "点点", "之力",
+            "复活", "麻痹", "护身", "主印", "副印", "神凤",
+            "龙傲", "冰雪", "上古", "起源", "残", "鸿蒙",
+        }
+        local exactNames = {
+            "开天+7", "雷霆战甲(男)+7", "雷霆战盔+7", "雷霆项链+7",
+            "雷霆护腕+7", "雷霆戒指+7", "雷霆腰带+7", "雷霆战靴+7",
+            "开天+8", "雷霆战甲(男)+8", "雷霆战盔+8", "雷霆项链+8",
+            "雷霆护腕+8", "雷霆戒指+8", "雷霆腰带+8", "雷霆战靴+8",
+            "开天+9", "雷霆战甲(男)+9", "雷霆战盔+9", "雷霆项链+9",
+            "雷霆护腕+9", "雷霆戒指+9", "雷霆腰带+9", "雷霆战靴+9",
+            "终极开天", "终极雷霆战甲(男)", "终极雷霆战盔", "终极雷霆项链",
+            "终极雷霆护腕", "终极雷霆戒指", "终极雷霆腰带", "终极雷霆战靴",
+            "时装羽毛", "称号证明", "生肖魔石",
+        }
+        local specialNames = { "时装羽毛", "称号证明", "生肖魔石" }
+
+        local function containsExact(list, value)
+            for _, name in ipairs(list) do
+                if name == value then
+                    return true
+                end
+            end
+            return false
+        end
+
+        local function containsPattern(list, value)
+            for _, pattern in ipairs(list) do
+                if string.find(value, pattern) then
+                    return true
+                end
+            end
+            return false
+        end
+
+        local candidates = {}
+        for _, item in pairs(bagData) do
+            if item and item.Name and item.MakeIndex
+                and not SL:GetMetaValue("ITEM_IS_BIND", item) then
+                local keep
+                if mode == 1 then
+                    keep = not containsExact(specialNames, item.Name)
+                elseif mode == 2 then
+                    keep = not containsExact(exactNames, item.Name)
+                else
+                    keep = containsPattern(patternNames, item.Name)
+                end
+
+                if keep then
+                    candidates[#candidates + 1] = {
+                        makeIndex = item.MakeIndex,
+                        count = item.OverLap or 1,
+                        name = item.Name,
+                    }
+                end
+            end
+        end
+
+        if #candidates == 0 then
+            notify("背包无可丢弃物品")
+            state.isDiuing = false
+            return
+        end
+
+        local sentCount = 0
+        for _, candidate in ipairs(candidates) do
+            if MAX_GROUND_ITEMS <= groundItemCount then
+                notify("地面物品已满" .. MAX_GROUND_ITEMS .. "件，停止丢弃")
+                break
+            end
+
+            notify("丢: " .. candidate.name)
+            LuaSendMsg(
+                global.MsgType.MSG_CS_MAP_ITEM_DISCARD,
+                candidate.makeIndex,
+                candidate.count,
+                0,
+                0,
+                candidate.name,
+                string.len(candidate.name),
+                candidate.name
+            )
+            sentCount = sentCount + 1
+            groundItemCount = groundItemCount + 1
+        end
+
+        notify("共丢弃 " .. sentCount .. " 件物品")
+        state.isDiuing = false
+    end
+
+    return DiuItems
+end

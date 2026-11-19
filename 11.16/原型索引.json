@@ -691,7 +691,7 @@
       "parameter_count": 1,
       "instruction_count": 226,
       "candidate_name": "DiuItems",
-      "identity_status": "跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "函数身份DiuItems已确认；两个捕获槽的父级来源未确认",
       "constants": [
         "雷霆战靴+8",
         "龙傲",
@@ -794,7 +794,7 @@
         1,
         "雷霆项链+8"
       ],
-      "recovery_status": "226/226槽位寄存器级CFG与业务数据流闭合；两层泛型for、早退、筛选及消息发送路径已串接。H[0]状态对象与H[1]提示回调的父级词法来源待确认；未写入唯一明文Lua",
+      "recovery_status": "业务函数体已写入唯一明文；H[0]/H[1]父级捕获身份待确认，按部分恢复统计",
       "instruction_capture_summary": "N[6]28项Lua模式表、N[7]35项精确表、N[8]3项精确表；N9=child1/N6，N10=child0/N7，N11=child2/N8。全部跳转闭合，slot119/170及185/216两个迭代循环已确认。",
       "business_summary": "DiuItems：重入保护、获取地面物品数量并限制35件、读取BAG_DATA、按模式筛选非绑定物品，构造候选列表，逐项发送MSG_CS_MAP_ITEM_DISCARD，最后汇总提示。",
       "warning": "当前11.16仓库的结构解析报告确认root有654条指令，但未保存root指令流；禁止用旧版资料推断闭包捕获。",
@@ -809,7 +809,8 @@
           "directory_inventory": "GitHub main分支11.16目录递归树已核对，共58项（含开发文档子目录），无root全量指令dump、解码payload或解析器脚本"
         },
         "conclusion": "结构解析已完成不代表root指令流已持久化。需要补出root的654条物理指令记录；有现存解码后结构数据时只需定向导出root，不重做LZW/XOR。"
-      }
+      },
+      "recovery_note": "按11.16版226条物理指令CFG和数据流重写。mode==1排除3项精确名称，mode==2排除35项精确名称，其他模式按28项Lua模式表保留命中；检查35件地面上限、BAG_DATA、绑定物品，构造候选并发送丢弃消息。H[0]状态对象、H[1]提示回调保留capturedUpvalues占位。消息参数按本版槽位204-212保留name重复参数。"
     },
     {
       "preorder_id": 4,
