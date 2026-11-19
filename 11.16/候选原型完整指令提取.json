@@ -3887,8 +3887,8 @@
         "prototype_end": 65801
       },
       "reconstruction": {
-        "status": "parent_capture_confirmed_body_pending",
-        "description": "父级root/50槽位441 Opcode387创建childIndex=3闭包，captureCount=1；槽位442 Opcode243捕获父级N[7]到H[0]。子体Opcode253融合准备GUI.Win_Close方法，Opcode324读取H[0]到N[2]，Opcode123调用N[0]但参数区间为1..0；N[2]后续未见使用，调用参数与捕获值用途需再核验。",
+        "status": "body_recovered_capture_identity_pending",
+        "description": "root/50槽位441 Opcode387创建childIndex=3闭包，槽位442 Opcode243捕获父N[7]到H[0]。Opcode253/138准备GUI.Win_Close方法调用，Opcode324将H[0]放入N[2]，Opcode123按N[1]..N[2]作为参数区间调用，故闭包体等价于GUI:Win_Close(H[0])。此前参数范围1..0、捕获值未使用的判断已纠正；父级N[7]原始词法变量名仍待确认。",
         "confidence": "raw_dispatch_and_parent_capture_verified",
         "parent_closure": {
           "parent": "root/50",
