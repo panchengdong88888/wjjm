@@ -791,7 +791,8 @@
       "recovery_status": "226/226槽位寄存器级CFG与业务数据流闭合；两层泛型for、早退、筛选及消息发送路径已串接。H[0]状态对象与H[1]提示回调的父级词法来源待确认；未写入唯一明文Lua",
       "instruction_capture_summary": "N[6]28项Lua模式表、N[7]35项精确表、N[8]3项精确表；N9=child1/N6，N10=child0/N7，N11=child2/N8。全部跳转闭合，slot119/170及185/216两个迭代循环已确认。",
       "business_summary": "DiuItems：重入保护、获取地面物品数量并限制35件、读取BAG_DATA、按模式筛选非绑定物品，构造候选列表，逐项发送MSG_CS_MAP_ITEM_DISCARD，最后汇总提示。",
-      "warning": "H[0]为状态对象、H[1]为提示回调；父级root的原始局部来源尚未确认。不可猜变量名。"
+      "warning": "当前候选指令JSON仅含19个非root原型；重点原型记录仅含7个原型；原型索引中的root只有元数据/常量，无654条root指令。旧版110原型/5580指令资料禁止用于本版。H[0]/H[1]父级捕获寄存器未确认。",
+      "parent_capture_lookup_status": "blocked_missing_current_11_16_root_instruction_stream"
     },
     {
       "preorder_id": 4,
