@@ -1064,3 +1064,10 @@
 - root/10 → `startForgeZodiac`（高置信候选）：本体29条指令、0参数，常量包含forgeZodiacRunning、checkGold、forgeZodiac、forgeZodiacTimer、ticks及开始/停止锻造提示；root常量池含`startForgeZodiac`；唯一明文root/52/0无参回调直接调用全局`startForgeZodiac`。root/14负责生肖锻造按钮状态，root/79是forgeZodiac业务主体，调用链吻合。
 - 缺少root的654条物理指令流，仍未直接看到root/10闭包创建后写入_ENV.startForgeZodiac的槽位，因此仅记高置信候选，不标记为真实名称已确认，不写入唯一明文。
 - 本批后候选名89/161个非root原型，待识别72/161；root直接子原型64/81有候选，嵌套子原型25/80有候选。业务恢复计数不变。
+
+
+### 2026-11-19续接增量：root/54 startAppleMap高置信候选
+- root/54 → `startAppleMap`（高置信候选）：唯一明文中的root/52/25回调明确无参调用全局`startAppleMap()`；root/54本体0参数、56条指令，常量含appleMapRunning、appleMap、appleMapTimer、cruiseOn/cruiseOff、backCity、ticks及开始/停止苹果下图提示，业务职责与调用目标吻合。
+- root父级654条物理指令流未保存，尚未直接看到root/54闭包创建后写入_ENV.startAppleMap的槽位；因此仅列高置信候选，不写入唯一明文、不计业务恢复数。
+- 本批后候选名称90/161；待识别71/161；root直接子原型65/81有候选，嵌套子原型25/80有候选。业务恢复仍42/162（25.93%）。
+- 未执行Lua语法、全文件静态或游戏运行验证。
