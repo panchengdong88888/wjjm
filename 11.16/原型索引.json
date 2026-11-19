@@ -1924,8 +1924,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 13,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_26_0（合成定位名）",
+      "identity_status": "闭包体已恢复；H[0]/H[1]父级捕获来源待确认",
       "constants": [
         "RequestOutBlacklist",
         "_blacklistData",
@@ -1933,7 +1933,8 @@
           "unknown_type": 2
         },
         "SL"
-      ]
+      ],
+      "recovery_status": "13/13槽位控制流闭合：调用SL:RequestOutBlacklist(H[0])；若H[1]._blacklistData为真值，则将其[H[0]]设为nil。父级捕获来源未确认，部分恢复不计完整函数。"
     },
     {
       "preorder_id": 42,
