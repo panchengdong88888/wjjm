@@ -5427,7 +5427,7 @@
       "parameter_count": 0,
       "instruction_count": 23,
       "candidate_name": "Nested_04d_02d_02d（同职责候选）",
-      "identity_status": "仅同职责候选；11.2同名回调结构与本版常量/时间窗口不同，禁止直接复用",
+      "identity_status": "仅同职责候选；本版业务行为已独立恢复，真实导出名称待确认",
       "constants": [
         79200,
         "os",
@@ -5440,9 +5440,9 @@
         72000,
         "date"
       ],
-      "recovery_status": "未恢复（本版指令流待提取）",
-      "business_summary": "23条物理指令、0参数；常量os、date、*t、hour、min、sec、79200（22:00）、72000（20:00）、3600、60表明与时间窗口/日期计算有关。不能直接套用11.2的Nested_04d_02d_02d：旧版包含lastSentDate/notify捕获及22:00:05附近窗口，本版常量与时间阈值不同。",
-      "recovery_evidence": "11.16原型索引记录23条物理指令及10项常量；当前仓库没有root/73逐槽指令记录。旧版MainLeftBottom_唯一交付文件.lua中同名候选为带lastSentDate、unusedCapturedState、notify捕获的22:00:05回调，结构/常量与本版不一致。不得跨版本复制；需先补齐本版23条指令和捕获证据。"
+      "recovery_status": "已写入明文（本版指令级完整恢复）",
+      "business_summary": "23条物理指令、0参数、0捕获。调用os.date('*t')取得日期表；日期表无效返回false；计算hour*3600+min*60+sec，仅在20:00（含）至22:00（不含）返回true。真实导出名未确认，不复用11.2函数体。",
+      "recovery_evidence": "候选原型完整指令提取.json中root/73的23条物理槽位均有记录。按11.16原版F()分派器直接语义模拟：slot5/6处理日期表有效性；slot9-15计算当天秒数；slot16 Opcode345实现秒数>=72000分支；slot18 Opcode55实现秒数<79200分支；slot19 Opcode388与slot20/21布尔装载路径闭合；slot22返回布尔值。无子原型、0参数、0捕获。明文使用helper_root_73合成定位名，缺少root父级654条指令流，不能确认真实全局导出名。"
     },
     {
       "preorder_id": 154,

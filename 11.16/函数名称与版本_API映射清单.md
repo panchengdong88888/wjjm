@@ -418,3 +418,7 @@
 - 11.16：3参数、20常量、51条物理指令、无子原型；常量包含MMO、INPUT_MOVE_TYPE_AUTOMOVE、MAP_ID、InputMove、range、tonumber、PlayerPos、math.abs、Facade、sendNotification及字段type。
 - 与11.2 MoveTo(x, y, range)主体、参数和调用结构吻合；其中`type`对应`moveInfo.type`字段，并非新增Lua类型判断。
 - 已写入唯一明文。未逐槽模拟本版51条指令，归类为跨版本业务复用。
+
+
+## 2026-11-19 root/73本版实现恢复
+- root/73：本版行为已独立恢复为20:00（含）至22:00（不含）的时间窗口判断；唯一明文使用合成定位名helper_root_73。11.2 Nested_04d_02d_02d仅作为同职责参考，不复制其带捕获的旧版函数体。真实导出名因root父级654条指令流缺失而待确认。

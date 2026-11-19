@@ -10,7 +10,7 @@
     4. 不将11.9或其他版本的源码直接复制为11.16实现。
     5. 所有AI对话只能增量更新本文件，不得创建平行明文候选稿。
 
-    当前状态：持续增量恢复中；指令级直接恢复33/162；跨版本业务复用恢复14项（root/7、root/17、root/23、root/29、root/30、root/31、root/36、root/38、root/46、root/51、root/56、root/64、root/66、root/75）；业务功能恢复累计47/162（29.01%）。两种口径分开统计，以函数状态CSV及源码恢复进度账本为准。
+    当前状态：持续增量恢复中；指令级直接恢复35/162；跨版本业务复用恢复15项（root/7、root/12、root/17、root/23、root/29、root/30、root/31、root/36、root/38、root/46、root/51、root/56、root/64、root/66、root/75）；业务功能恢复累计50/162（30.86%）。两种口径分开统计，以函数状态CSV及源码恢复进度账本为准。
 ]]
 
 --[[
@@ -1382,4 +1382,22 @@ local function make_DiuItems(capturedUpvalues)
     end
 
     return DiuItems
+end
+
+
+-- 11.16 root/73：本版23条物理指令、0参数、0捕获；按本版指令流独立恢复。
+-- 先取当前日期表，再计算当天秒数；有效时间窗口为20:00（含）至22:00（不含）。
+-- 原型真实导出名称尚未从缺失的root父级654条指令流中确认，故保留合成定位名。
+local function helper_root_73()
+    local dateTable = os.date("*t")
+    if not dateTable then
+        return false
+    end
+
+    local secondsOfDay =
+        dateTable.hour * 3600
+        + dateTable.min * 60
+        + dateTable.sec
+
+    return secondsOfDay >= 72000 and secondsOfDay < 79200
 end
