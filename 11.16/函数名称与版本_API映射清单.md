@@ -29,7 +29,7 @@
 | root/2 | DiuItems | 是 | `GetMetaValue` | 226 |
 | root/3 | StopGatherMonsters（高置信候选；合成实现名make_helper_root_3） | 未确认 | `UnSchedule` | 25 |
 | root/4 | GetOwnerID | 是 | — | 31 |
-| root/5 | helper_root_5（合成定位名） | 未确认 | — | 17 |
+| root/5 | GetPlayerMapPosition | 是 | — | 17 |
 | root/6 | MainLoop | 是 | `RequestLaunchSkill`、`GetMetaValue` | 573 |
 | root/7 | MoveItemToQuickUse | 是 | — | 133 |
 | root/8 | GetDroppedItems | 是 | — | 8 |
