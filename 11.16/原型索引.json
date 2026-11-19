@@ -2409,12 +2409,13 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 6,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_40_0（合成定位名）",
+      "identity_status": "闭包体已恢复；H[0]捕获源待确认，不计完整函数",
       "constants": [
         "SL",
         "JsonDecode"
-      ]
+      ],
+      "recovery_note": "6条指令闭合为return SL:JsonDecode(H[0])；SL.md「json字符串解密」确认SL:JsonDecode(jsonStr,isfilter)，isfilter默认true。明文以capturedJson显式承载H[0]；父级root/40指令流缺失，捕获源变量身份未确认。"
     },
     {
       "preorder_id": 59,
