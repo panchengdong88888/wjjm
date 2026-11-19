@@ -55,7 +55,7 @@
 | root/28 | 待识别 | 未确认 | `GetMetaValue` | 32 |
 | root/29 | ResetGatherMonsterData | 是 | `PrintLog` | 20 |
 | root/30 | Nested_find | 是 | `GetMetaValue` | 31 |
-| root/31 | FindBlacklistPlayer | 是 | `GetMetaValue` | 35 |
+| root/31 | FindBlacklistPlayer | 是 | GetMetaValue、PCallHelper_2 | 35 |
 | root/32 | make_helper_root_32（合成定位名） | 未确认 | — | 17 |
 | root/33 | startPutoutAll（高置信候选；root/52/30回调直接引用，父root导出点待确认） | 未确认 | `RequestAuctionPutList`、`UnSchedule`、`ShowSystemTips` | 56 |
 | root/34 | BlacklistPlayerDetection | 是 | `GetMetaValue` | 274 |
@@ -80,7 +80,7 @@
 | root/53 | helper_root_53（合成定位名） | 未确认 | — | 15 |
 | root/54 | startAppleMap（高置信候选；root/52/25直接引用，父root导出点待确认） | 未确认 | — | 56 |
 | root/55 | Builtsetting（扩展范围待确认） | 是 | `GetMetaValue`、`SetMetaValue`、`RequestChangePKMode` | 195 |
-| root/56 | PCallHelper_2 | 是 | — | 10 |
+| root/56 | PCallHelper_2 | 是 | pcall、root/56/0 FriendProxy获取闭包 | 10 |
 | root/57 | 待识别 | 未确认 | — | 60 |
 | root/58 | TakeItems | 是 | — | 99 |
 | root/59 | 待识别 | 未确认 | `UnSchedule`、`ShowSystemTips` | 44 |
@@ -399,3 +399,10 @@
 - root/64：2参数、7常量、31条指令；本版常量与11.2同名函数体吻合。
 - 已写入11.16唯一明文；保留旧版字符串分支ownerID == tostring(ownerID)原表达式，不擅自修正旧版行为。
 - 本版31条指令未逐槽模拟，分类为跨版本业务复用。
+
+
+## 2026-11-19续：root/56、root/31跨版本业务恢复
+
+- root/56 PCallHelper_2：11.16本版有1个子原型root/56/0；子原型已直接恢复为global.Facade:retrieveProxy(global.ProxyTable.FriendProxy)。父函数通过pcall保护调用，失败或假值返回nil。
+- root/31 FindBlacklistPlayer：11.16参数数、常量集合和35条指令规模与11.2同名业务体吻合；先查询targetID，再查询ACTOR_MASTER_ID主角色ID，命中返回true及Name。
+- 已写入唯一明文；两项按跨版本业务复用统计。

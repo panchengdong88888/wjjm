@@ -2159,14 +2159,17 @@
       "parameter_count": 1,
       "instruction_count": 35,
       "candidate_name": "FindBlacklistPlayer",
-      "identity_status": "跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "跨版本业务恢复（11.2同名函数体与11.16本版原型证据吻合）",
       "constants": [
         "_blacklistData",
         "GetMetaValue",
         "ACTOR_MASTER_ID",
         "SL",
         "Name"
-      ]
+      ],
+      "recovery_status": "已写入明文（跨版本业务复用）",
+      "business_summary": "通过PCallHelper_2获取FriendProxy，读取_blacklistData；先按targetID查询，再按SL:GetMetaValue('ACTOR_MASTER_ID', targetID)查询主角色；命中返回true和Name，否则返回false。",
+      "recovery_evidence": "11.16 root/31：1参数、5常量、35条指令；常量_blacklistData、GetMetaValue、ACTOR_MASTER_ID、SL、Name与11.2同名函数体对应。依赖root/56 PCallHelper_2；已交叉核对本版参数及常量。"
     },
     {
       "preorder_id": 47,
@@ -4891,10 +4894,13 @@
       "parameter_count": 0,
       "instruction_count": 10,
       "candidate_name": "PCallHelper_2",
-      "identity_status": "跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "跨版本业务恢复（11.2同名函数体与11.16本版原型证据吻合）",
       "constants": [
         "pcall"
-      ]
+      ],
+      "recovery_status": "已写入明文（跨版本业务复用）",
+      "business_summary": "调用本版子原型root/56/0（helper_root_56_0）获取FriendProxy；pcall失败返回nil，成功结果为假值时也返回nil。",
+      "recovery_evidence": "11.16 root/56：0参数、1个子原型、10条指令、常量pcall；子原型root/56/0为9条指令，已恢复为通过global.Facade:retrieveProxy(global.ProxyTable.FriendProxy)获取代理。11.2同名PCallHelper_2的pcall保护及nil归一化行为吻合。"
     },
     {
       "preorder_id": 134,
