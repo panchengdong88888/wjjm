@@ -724,3 +724,10 @@
 - root/42的Facade前置判断已闭合：Facade缺失时执行slot5的205结束；Facade存在时由388跳过结束槽进入后续代理调用。代理获取及SetTargetID调用尾段仍待闭合。
 - root/60确认H捕获读取、真值判断、跳转；捕获身份与调用路径未闭合。
 - root/73已确认日期表分支与算术Opcode叶子，仍需完成寄存器流模拟。当前完整明文32/162（19.75%），本轮没有新增完整函数。
+
+
+### 2026-11-19续接：root/42分支闭合与候选切换
+- root/42前置Facade分支已逐槽闭合：Facade缺失走slot5结束；Facade存在跳过结束槽，进入retrieveProxy(PlayerInputProxy)调用。
+- root/42后段SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)的调用准备仍受Opcode393/158语义缺口阻塞；未写入猜测源码。
+- 当前完整明文32/162（19.75%），部分恢复13项；唯一明文、CSV及原始文件均未修改。
+- 下一轮优先root/73（0参数、无捕获、23槽），定点闭合Opcode55/59；若短时间不能闭合，切换root/29或root/32。
