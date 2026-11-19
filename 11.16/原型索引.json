@@ -877,8 +877,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 25,
-      "candidate_name": "StopGatherMonsters",
-      "identity_status": "高置信候选",
+      "candidate_name": "StopGatherMonsters（高置信候选；合成实现名make_helper_root_3）",
+      "identity_status": "高置信候选；闭包体已恢复，父级捕获符号待映射",
       "constants": [
         "gatherTimer",
         "UnSchedule",
@@ -888,7 +888,9 @@
         "SL",
         "引怪功能已停止",
         "IDLE"
-      ]
+      ],
+      "analysis_status": "部分恢复（不计完整函数）",
+      "evidence_note": "25槽全部有效，slot5/6分支于slot14汇合。slot1/2将H[0]置false；slot3/4读取H[1].gatherTimer；timer真值时slot7–13执行SL:UnSchedule(timer)并清空H[1].gatherTimer，假值时slot6跳转至slot14；公共尾段调用H[2]()、H[3](H[4].IDLE)、H[5]()、H[6](“引怪功能已停止”)。H[1]–H[6]父级root闭包创建点业务身份未映射，明文以capturedUpvalues保留VM槽位。"
     },
     {
       "preorder_id": 8,
