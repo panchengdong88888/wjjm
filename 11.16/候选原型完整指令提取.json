@@ -4652,6 +4652,47 @@
           ],
           "count_rule": "count = item.OverLap or 1（Lua真值语义；nil/false回退为1）",
           "accumulator": "N[12]，槽位115创建空表；每个通过前置过滤和名称筛选的物品构造一条记录并table.insert到N[12]"
+        },
+        "slot_172_226": {
+          "status": "尾段业务与控制流已闭合；root/2前段仍待整体闭合，暂不计入明文完成",
+          "slot_172_180": {
+            "slot_172": "Opcode265：N[13]=#N[12]，计算候选列表长度",
+            "slot_173": "Opcode143比较N[13]与常量0；相等时跳过槽位174，进入空列表分支；不相等时执行槽位174",
+            "slot_174": "Opcode388跳转目标180；解释器循环尾统一递增后从槽位181继续",
+            "empty_branch": "槽位175 Opcode127读取H[1]提示回调；176装载“背包无可丢弃物品”；177调用H[1](提示文本)；槽位178 Opcode88融合读取H[0]并消费179，将H[0].isDiuing写为false；180结束函数",
+            "nonempty_branch": "候选列表非空时由槽位174跳过空列表提示及return，进入槽位181"
+          },
+          "slot_181_185": {
+            "slot_181": "N[13]=0，初始化本次成功处理/丢弃计数",
+            "slot_182_184": "装载ipairs与候选列表N[12]，Opcode314调用ipairs(N[12])并建立迭代器三元组",
+            "slot_185": "Opcode388跳转到索引215；循环尾统一递增后首次执行槽位216"
+          },
+          "slot_186_194": {
+            "slot_186": "Opcode338由原版F()分派器确认比较N[2] <= N[4]；A=0表示比较为真时跳过下一槽位187",
+            "slot_187": "当比较为假（当前地面物品数未达35）时执行Opcode388跳至194；循环尾递增后从195进入单件处理",
+            "full_branch": "当35 <= N[4]时跳过187，槽位188–193构造并调用H[1](“地面物品已满35件，停止丢弃”)；槽位194跳至217，尾部递增后进入218汇总，结束逐件处理",
+            "slot_194": "Opcode388跳转目标217，循环尾递增后进入槽位218"
+          },
+          "slot_195_215": {
+            "slot_195_199": "Opcode87融合读取H[1]提示回调、装载“丢: ”、读取当前记录name并拼接，随后调用H[1](“丢: ”..item.name)",
+            "slot_200_203": "装载LuaSendMsg，并由Opcode377融合装载global.MsgType.MSG_CS_MAP_ITEM_DISCARD",
+            "slot_204_212": "Opcode341融合准备消息参数：item.makeIndex、item.count、0、0、item.name、string.len函数及item.name；Opcode184执行string.len(item.name)",
+            "slot_213": "Opcode376调用LuaSendMsg，参数来自N[20]至当前参数顶端N[27]",
+            "slot_214_215": "Opcode182融合执行两次加常量1：N[13]=N[13]+1（本次处理计数），N[4]=N[4]+1（地面物品计数）"
+          },
+          "slot_216_226": {
+            "slot_216": "Opcode357推进ipairs迭代器；首返回值N[17]为nil时跳过槽位217并进入218；否则更新控制变量N[16]=N[17]",
+            "slot_217": "有下一条候选记录时Opcode388回跳到185；循环尾递增后进入186继续逐件处理",
+            "slot_218_223": "Opcode14融合读取H[1]提示回调并拼接“共丢弃 ”..N[13]..“ 件物品”；槽位223调用H[1](汇总文本)",
+            "slot_224_225": "Opcode324读取H[0]；Opcode322将H[0].isDiuing设置为false",
+            "slot_226": "结束函数，无显式返回值"
+          },
+          "reconstructed_tail": "if #candidateList == 0 then H[1](\"背包无可丢弃物品\"); H[0].isDiuing=false; return end\nlocal droppedCount=0\nfor _, item in ipairs(candidateList) do\n    if 35 <= groundItemCount then\n        H[1](\"地面物品已满35件，停止丢弃\")\n        break\n    end\n    H[1](\"丢: \"..item.name)\n    LuaSendMsg(global.MsgType.MSG_CS_MAP_ITEM_DISCARD, item.makeIndex, item.count, 0, 0, item.name, string.len(item.name), item.name)\n    droppedCount=droppedCount+1\n    groundItemCount=groundItemCount+1\nend\nH[1](\"共丢弃 \"..droppedCount..\" 件物品\")\nH[0].isDiuing=false\nreturn",
+          "upvalue_roles": {
+            "H[0]": "状态持有对象；由空列表与正常结束两条路径写入isDiuing=false。具体父级词法变量名待从root闭包创建点确认",
+            "H[1]": "提示回调；用于无候选、逐件提示、地面物品上限提示及汇总提示。具体父级词法变量名待确认"
+          },
+          "confidence": "high for opcodes, fusion boundaries, branch direction, and register arguments; upvalue lexical names remain unresolved"
         }
       }
     }
