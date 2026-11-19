@@ -60,7 +60,7 @@
 57,root/40,root,1,onDamageMsg,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,2,19,1,72,未恢复,id | name | ACTOR_NAME | SL | ACTOR_MASTER_ID | GetMetaValue | lastAttacker | AttackUserID | string | type,,,2026-11-18
 58,root/40/0,root/40,2,make_helper_root_40_0（合成定位名）,闭包体已恢复；H[0]来源待确认,0,2,0,6,部分恢复（不计完整函数）,SL | JsonDecode | SL.md「json字符串解密」签名确认,MainLeftBottom_11.16_明文.lua,H[0]捕获源及父级业务变量名待确认；root/40父级72条指令流未保存,2026-11-19
 59,root/41,root,1,,待识别,1,11,0,28,未恢复,global | GetMetaValue | AFKBegin | Facade | AFKEnd | SL | BATTLE_IS_AFK | sendNotification | NoticeTable,,,2026-11-18
-60,root/42,root,1,helper_root_42,行为已恢复（原始符号名未确认）,0,9,0,22,已写入明文,22槽闭合：Facade缺失提前结束；retrieveProxy(PlayerInputProxy)；代理缺失提前结束；SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND),MainLeftBottom_11.16_明文.lua：helper_root_42,原始函数符号名未确认（不影响函数体完整性）,2026-11-19
+60,root/42,root,1,ClearTargetID_2,已确认真实函数名（本版指令级恢复）,0,9,0,22,已写入明文,无参数；检查Facade和PlayerInputProxy，调用proxy:SetTargetID(0, SELETE_TARGET_TYPE_FIND)。与11.2 root.children[56] ClearTargetID_2业务体完全吻合，22条本版指令闭合、无捕获。,MainLeftBottom_11.16_明文.lua：ClearTargetID_2,本版全部物理指令已闭合；旧版声明名与业务体一致；无upvalue捕获,原始函数符号名未确认（不影响函数体完整性）,2026-11-19
 61,root/43,root,1,PickUpItems,候选身份（11.2同名PickUpItems为空函数；11.16拾取业务常量吻合，视为新版扩展候选）,0,34,2,172,未恢复,MoveTo | mCurrMapX | y | ipairs | x | mCurrMapY | dist | 地面无可拾取物品 | sort | find,,,2026-11-18
 62,root/43/0,root/43,2,,待识别,2,2,0,19,未恢复,kIdx | dist,,,2026-11-18
 63,root/43/1,root/43,2,closure_root_43_1,匿名闭包（行为已恢复）,2,1,0,8,已写入明文,dist,MainLeftBottom_11.16_明文.lua,比较两个对象的dist字段：当a.dist小于b.dist时返回false，否则返回true（a.dist >= b.dist）,2026-11-18
@@ -153,8 +153,8 @@ mode=%s
 145,root/67,root,1,ShowHideAllButtons,跨版本高置信候选（11.2函数体与11.16常量交叉匹配；待本版调用/差异核验）,0,22,0,154,未恢复,forgeZodiac | appleMap | appleMapTimer | pairs | SL | buygoldTimer | NetworkUtil | _origOnLuaMessage | putinTimer | cruiseRunTimer,,,2026-11-18
 146,root/68,root,1,InstallDamageHook,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,9,1,40,未恢复,table | gameMapController | mNetMsgHandle | MsgType | type | 已挂接伤害消息钩子（击杀拉黑用） | MSG_SC_DAMAGE_HP | __ylwHookedOrigin | global,,,2026-11-18
 147,root/68/0,root/68,2,,待识别,2,4,0,18,未恢复,onDamageMsg | function | pcall | type,,,2026-11-18
-148,root/69,root,1,helper_root_69（合成定位名）,行为已恢复,2,7,0,20,已写入明文,其他玩家 | 无归属 | GetOwnerID | 自己 | -1,MainLeftBottom_11.16_明文.lua,20条物理指令全部闭合；root槽位195 Opcode121创建且captureCount=0；Opcode143/294比较及分支、Opcode221融合复制、Opcode293双值返回已确认；GetOwnerID未在3.40.x文档收录,2026-11-19
-149,root/70,root,1,helper_root_70（合成定位名）,行为已恢复,0,7,0,19,已写入明文,Y | SL | X | GetMetaValue | x | y,MainLeftBottom_11.16_明文.lua,19条物理指令全部闭合；root槽位189 Opcode121创建且captureCount=0；Opcode361/309/355融合链、Opcode325真值分支、Opcode279表创建、Opcode292返回已确认；SL.md示例核实GetMetaValue调用形式,2026-11-19
+148,root/69,root,1,GetOwnerDescription,已确认真实函数名（本版指令级恢复）,2,7,0,20,已写入明文,两个参数；调用actor:GetOwnerID，返回ownerId及“无归属/自己/其他玩家”标签。与11.2 root.children[43] GetOwnerDescription声明及业务体完全吻合，20条本版指令闭合、无捕获。,MainLeftBottom_11.16_明文.lua：GetOwnerDescription,本版全部物理指令已闭合；旧版声明名与业务体一致；无upvalue捕获,2026-11-19
+149,root/70,root,1,GetPlayerPosition,已确认真实函数名（本版指令级恢复）,0,7,0,19,已写入明文,无参数；读取SL:GetMetaValue('X'/'Y')，各自假值回退0，返回{x,y}。与11.2 root.children[18] GetPlayerPosition业务体完全吻合，19条本版指令闭合、无捕获。,MainLeftBottom_11.16_明文.lua：GetPlayerPosition,本版全部物理指令已闭合；旧版声明名与业务体一致；无upvalue捕获,2026-11-19
 150,root/71,root,1,DeathAutoBlacklist,高置信候选,0,15,1,47,未恢复,凶手已在黑名单中：%s | 自动拉黑： | name | SL | id | lastAttacker |  | 被 %s 击杀，自动加入黑名单 | 本次死亡没记录到凶手，跳过自动拉黑 | ScheduleOnce,,,2026-11-18
 151,root/71/0,root/71,2,closure_root_71_0,匿名闭包（行为已恢复）,0,3,0,6,已写入明文,SL | name | RequestAddBlacklistByName,MainLeftBottom_11.16_明文.lua,6条指令：SL方法调用准备；Opcode 9/410读取全局name；调用RequestAddBlacklistByName(name),2026-11-18
 152,root/72,root,1,,职责已缩小；函数名待识别,1,8,0,32,未恢复,接收一个参数，遍历SL:GetMetaValue('ALL_EQUIP_DATAS')并对装备Name字段执行string.find，属于按名称片段检索装备数据的辅助函数。,,函数声明名与返回数据形态未确认；候选名保持空值。,2026-11-18
