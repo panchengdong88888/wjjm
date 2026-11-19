@@ -1050,3 +1050,11 @@
 - root/32捕获来源缺失；root/73与旧版同职责候选在参数/捕获及时间常量上存在差异，暂不确认真实名称。
 - 没有新增函数名或恢复数。唯一明文文件头统计修正为33/162指令级、9项跨版本复用、42/162累计（25.93%）。
 - 下一步继续查找有完整指令流、且能通过旧版声明/调用点/父级注册关系确认名称的原型；不围绕资料缺失的root闭包反复分析。
+
+
+### 2026-11-19续接增量：拍卖行两个根函数名称高置信候选
+- root/33 → `startPutoutAll`（高置信候选）：root/52/30在11.16唯一明文中明确无参调用全局`startPutoutAll`；root/33本体含AuctionProxy、RequestAuctionPutList、putoutTimer及“开始下架拍卖行物品”，子原型root/33/0清理putoutTimer/putoutSent；root常量池也含`startPutoutAll`。父root直接创建/导出槽位尚缺，故不标记真实名称已确认。
+- root/15 → `startPutinGold`（高置信候选）：87条指令、3参数，含RequestAuctionPutList、AUCTION_BIDPRICE_MIN、“金条”、“开始上架”、putinTimer；子原型root/15/1含RequestAuctionPutin和上架物品流程常量；root常量池含`startPutinGold`。结合root/33已对应startPutoutAll，root/15业务对应startPutinGold的证据较强，但仍缺root父级直接导出槽位，不写成已确认真实名称。
+- 两项只更新候选身份表，不写入唯一明文，不增加业务恢复数。root 654条指令流仍未保存在仓库；未重做LZW/XOR。GitHub代码搜索未找到可复用的解码/提取脚本。
+- 名称状态以函数状态CSV为当前账本：本批后非root原型候选名88/161，待识别73/161；root直接子原型63/81有候选、18待识别；嵌套原型25/80有候选、55待识别。root自身仍未命名。候选不等于确认。
+- 未修改唯一明文Lua；未执行Lua语法、静态或游戏运行验证。
