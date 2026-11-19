@@ -4,7 +4,7 @@
 2,root/1,root,1,,待识别,0,24,0,76,未恢复,新区使用：%s | BAG_DATA | ShowSystemTips | pairs | MSG_CS_USE_BAG_ITEM | Gbtc | len | MsgType | LuaSendMsg | SL,,,2026-11-18
 3,root/2,root,1,,待识别,1,100,3,226,未恢复,雷霆战靴+8 | 龙傲 | 雷霆护腕+7 | SL | table | 鸿蒙 | 起源 | 终极雷霆戒指 | 终极雷霆战靴 | 血龙宝珠,,,2026-11-18
 4,root/2/0,root/2,2,make_helper_root_2_0,匿名闭包（行为已恢复；H[0]业务变量名待映射）,1,1,0,13,已写入明文,ipairs,MainLeftBottom_11.16_明文.lua,H[0]业务变量名待映射,2026-11-19
-5,root/2/1,root/2,2,,待识别,1,4,0,20,未恢复,ipairs | find | string,,,2026-11-18
+5,root/2/1,root/2,2,make_helper_root_2_1,匿名闭包（行为已恢复；捕获物品名称模式列表）,1,4,0,20,已写入明文,ipairs | string.find | pattern参数为false（Lua模式匹配）,MainLeftBottom_11.16_明文.lua,H[0]=父级N[6]；父级原始局部变量名待映射,2026-11-19
 6,root/2/2,root/2,2,make_helper_root_2_2,匿名闭包（行为已恢复；H[0]业务变量名待映射）,1,1,0,13,已写入明文,ipairs,MainLeftBottom_11.16_明文.lua,H[0]业务变量名待映射,2026-11-19
 7,root/3,root,1,StopGatherMonsters,高置信候选,0,6,0,25,控制流已闭合（#1–25；#5/#6分支在#14汇合）；父级closure的H[1]–H[6]符号映射待完成,gatherTimer | UnSchedule | SL | 引怪功能已停止 | IDLE | 原始载荷已重解析，25个物理槽位均有效,,,2026-11-18
 8,root/4,root,1,GetOwnerID,本轮已恢复,2,7,0,31,已写入明文,tostring | type |  | string | GetOwnerID,MainLeftBottom_11.16_明文.lua,,2026-11-18
