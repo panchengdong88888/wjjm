@@ -5134,15 +5134,17 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 18,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "helper_root_65（合成定位名）",
+      "identity_status": "行为已恢复（原始符号名未确认）",
       "constants": [
         "find",
         "string",
         "土城",
         1,
         "盟重"
-      ]
+      ],
+      "recovery_status": "已写入明文",
+      "notes": "18条物理指令、1参数、无子原型/无upvalue；先string.find(value,'盟重',1,true)，未命中再查'土城'；返回首次匹配位置或nil。原始符号名未确认。"
     },
     {
       "preorder_id": 144,
