@@ -698,6 +698,34 @@ local function make_helper_root_50_3(capturedWindow)
 end
 
 
+-- root/62 UseItemByIndex：33条指令、0个显式参数、8项常量。
+-- 11.16常量包含ipairs、SL:GetMetaValue、ITEM_INDEX_BY_NAME、ITEM_COUNT、
+-- tonumber及SL:UseItemByIndex；与11.9同名闭包的业务体和API调用序列一致。
+-- 旧版父级将randomTeleportItemNames作为捕获值注入无参闭包；11.16 root/62的
+-- 本版父级创建/捕获指令未保存在当前提取集中，因此这里只恢复闭包主体，并用工厂参数
+-- 显式承载名称表，不声称randomTeleportItemNames已由11.16父级逐槽证实。
+-- 本项属于跨版本业务复用的部分恢复；待root父级捕获点/调用注册关系补齐后再计入完整函数。
+local function makeUseItemByIndex(randomTeleportItemNames)
+    return function()
+        for _, itemName in ipairs(randomTeleportItemNames) do
+            local itemIndex = tonumber(
+                SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)
+            )
+            local itemCount = 0
+            if itemIndex then
+                itemCount = tonumber(
+                    SL:GetMetaValue("ITEM_COUNT", itemIndex)
+                ) or 0
+            end
+
+            if itemIndex and itemCount > 0 then
+                SL:UseItemByIndex(itemIndex)
+                return itemName
+            end
+        end
+    end
+end
+
 -- 11.16 root/65：18条物理指令，1个参数，无子原型、无upvalue捕获。
 -- Opcode 257加载string并融合读取find成员；Opcode 131复制输入参数并融合装载“盟重”和起始位置1；
 -- Opcode 110装载plain=true；Opcode 209调用string.find(value, "盟重", 1, true)。
