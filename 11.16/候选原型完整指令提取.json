@@ -4822,9 +4822,172 @@
           "在字节级闭合前，不写root/2，不沿用槽位115创建N[12]或槽位116初始化pairs的旧解释。"
         ]
       },
-      "instruction_capture_summary": "槽位109/110创建child1并捕获N[6]；槽位111/112创建child0并捕获N[7]；槽位113/114创建child2并捕获N[8]。槽位115–118初始化候选列表N[12]与pairs(N[5])迭代器。",
-      "business_summary": "Confirmed: one-argument name-filter mode; isDiuing re-entry guard; GetDroppedItems call and two return registers; 35-item ground-item ceiling and warning; SL:GetMetaValue('BAG_DATA') read with missing-data reset. Name-list table construction slots37-108 still unresolved.",
-      "warning": "Do not count root/2 complete. Earlier control_flow_audit fields may contain superseded fusion hypotheses; use early_flow_reaudit_2026_11_19 and closure_and_pairs_reaudit_2026_11_19 as the current source of truth."
+      "instruction_capture_summary": "槽位1-36、37-108、109-118、120-170及172-226均已有分段恢复记录；本轮闭合三组名称表及融合载荷边界。最终整合前仍需统一CFG并确认H[0]/H[1]父级捕获身份。",
+      "business_summary": "物品丢弃处理：isDiuing重入保护；GetDroppedItems与35件地面物品上限；读取BAG_DATA；按模式使用N6的28项Lua模式列表、N7的35项精确名称列表、N8的3项精确名称列表筛选非绑定物品；构造候选记录并发送丢弃消息。完整函数仍待统一CFG与父级捕获身份核对。",
+      "warning": "不要将槽位68/69、105-107当作独立Opcode执行：它们是Opcode30/38的融合载荷。N6/N7/N8分别为28/35/3项列表。完整函数写入前仍需统一复核全段控制流及H[0]/H[1]捕获身份。",
+      "name_table_construction_reaudit_2026_11_19": {
+        "evidence": "11.16原版F()分派器对应Opcode199、30、38、41分支；候选JSON槽位37–108逐字段复核",
+        "table_registers": {
+          "N[6]": {
+            "create_slot": 37,
+            "create_opcode": 199,
+            "fill_slot": 66,
+            "fill_opcode": 41,
+            "count": 28,
+            "source_registers": "N[7]..N[34]",
+            "usage": "root/2/1捕获为H[0]；string.find(value, pattern, 1, false) Lua模式匹配",
+            "items": [
+              "声望卷",
+              "称号卷",
+              "悟道茶",
+              "转生水晶",
+              "时装晶魄",
+              "血龙宝珠",
+              "洗髓丹",
+              "恶魔令牌",
+              "晶石",
+              "经验卷",
+              "技能残页",
+              "熬光",
+              "敖顺",
+              "敖闰",
+              "点点",
+              "之力",
+              "复活",
+              "麻痹",
+              "护身",
+              "主印",
+              "副印",
+              "神凤",
+              "龙傲",
+              "冰雪",
+              "上古",
+              "起源",
+              "残",
+              "鸿蒙"
+            ]
+          },
+          "N[7]": {
+            "create_slot": 67,
+            "create_opcode": 30,
+            "consumed_slots": [
+              68,
+              69
+            ],
+            "fill_slot": 103,
+            "fill_opcode": 41,
+            "count": 35,
+            "source_registers": "N[8]..N[42]",
+            "usage": "root/2/0捕获为H[0]；ipairs逐项精确相等匹配",
+            "items": [
+              "开天+7",
+              "雷霆战甲(男)+7",
+              "雷霆战盔+7",
+              "雷霆项链+7",
+              "雷霆护腕+7",
+              "雷霆戒指+7",
+              "雷霆腰带+7",
+              "雷霆战靴+7",
+              "开天+8",
+              "雷霆战甲(男)+8",
+              "雷霆战盔+8",
+              "雷霆项链+8",
+              "雷霆护腕+8",
+              "雷霆戒指+8",
+              "雷霆腰带+8",
+              "雷霆战靴+8",
+              "开天+9",
+              "雷霆战甲(男)+9",
+              "雷霆战盔+9",
+              "雷霆项链+9",
+              "雷霆护腕+9",
+              "雷霆戒指+9",
+              "雷霆腰带+9",
+              "雷霆战靴+9",
+              "终极开天",
+              "终极雷霆战甲(男)",
+              "终极雷霆战盔",
+              "终极雷霆项链",
+              "终极雷霆护腕",
+              "终极雷霆戒指",
+              "终极雷霆腰带",
+              "终极雷霆战靴",
+              "时装羽毛",
+              "称号证明",
+              "生肖魔石"
+            ]
+          },
+          "N[8]": {
+            "create_slot": 104,
+            "create_opcode": 38,
+            "consumed_slots": [
+              105,
+              106,
+              107
+            ],
+            "fill_slot": 108,
+            "fill_opcode": 41,
+            "count": 3,
+            "source_registers": "N[9]..N[11]",
+            "usage": "root/2/2捕获为H[0]；ipairs逐项精确相等匹配",
+            "items": [
+              "时装羽毛",
+              "称号证明",
+              "生肖魔石"
+            ]
+          }
+        },
+        "fusion_boundaries": [
+          {
+            "slot": 37,
+            "opcode": 199,
+            "effect": "N[6]={}",
+            "consumes": []
+          },
+          {
+            "slot": 66,
+            "opcode": 41,
+            "effect": "把N[7]..N[34]按顺序写入N[6][1..28]",
+            "consumes": []
+          },
+          {
+            "slot": 67,
+            "opcode": 30,
+            "effect": "N[7]={}",
+            "consumes": [
+              68,
+              69
+            ],
+            "payload_effect": "槽位68/69分别装载N[8]/N[9]"
+          },
+          {
+            "slot": 103,
+            "opcode": 41,
+            "effect": "把N[8]..N[42]按顺序写入N[7][1..35]",
+            "consumes": []
+          },
+          {
+            "slot": 104,
+            "opcode": 38,
+            "effect": "N[8]={}",
+            "consumes": [
+              105,
+              106,
+              107
+            ],
+            "payload_effect": "槽位105–107分别装载N[9]..N[11]"
+          },
+          {
+            "slot": 108,
+            "opcode": 41,
+            "effect": "把N[9]..N[11]按顺序写入N[8][1..3]",
+            "consumes": []
+          }
+        ],
+        "closure_cross_check": "slot109 child1捕获N[6]；slot111 child0捕获N[7]；slot113 child2捕获N[8]。分别对应模式列表、精确列表、精确列表。",
+        "conclusion": "槽位37–108三张表的创建、载荷消费、列表顺序和捕获用途已闭合；不再将融合载荷槽位68/69、105–107当作独立执行指令。"
+      },
+      "recovery_status": "slots1-36状态门控/GetDroppedItems/35件上限/BAG_DATA读取已闭合；slots37-108三组名称表构造已闭合（N6=28项模式表、N7=35项精确表、N8=3项精确表）；slots109-118闭包注册与pairs初始化已确认；slots120-170背包遍历筛选及候选记录已闭合；slots172-226尾段已闭合。尚需将全函数控制流统一模拟、核对跳转汇合及H[0]/H[1]父级捕获身份，故root/2暂不计完整函数。"
     }
   ],
   "constant_type_notes": {
