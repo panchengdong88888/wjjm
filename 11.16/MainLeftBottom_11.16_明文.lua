@@ -518,6 +518,34 @@ local function make_helper_root_52_28(capturedUpvalue0)
 end
 
 
+-- 11.16 root/52/36：19条物理指令，0个显式参数，3个upvalue。
+-- 父级root/52槽位605 Opcode387创建childIndex=36闭包，captureCount=3：
+-- 槽位606 Opcode132将父级H[3]绑定到本闭包H[0]；
+-- 槽位607 Opcode132将父级H[13]绑定到本闭包H[1]；
+-- 槽位608 Opcode243将父级N[24]绑定到本闭包H[2]。
+-- root/52自身由root槽位633 Opcode178创建，captureCount=19；其H[3]来自root N[3]，
+-- H[13]来自root N[5]。因此本闭包H[0]/H[1]的捕获链已映射到root N[3]/N[5]；
+-- H[2]对应root/52创建点的N[24]，其业务身份尚未确认。
+-- Opcode9融合消费槽位2：先读取H[0]，再读取其gatherTimer字段。
+-- gatherTimer存在时调用H[1](“关闭引怪功能”)，再调用全局业务函数StopGatherMonsters()并返回true；
+-- 不存在时调用H[1](“开启引怪功能，阈值：11”)，再调用H[2]()并返回true。
+-- H[2]保留为捕获回调占位，不根据寄存器复用猜测其真实名称。
+-- make_helper_root_52_36为原型路径合成定位名，不是原始函数符号名。
+local function make_helper_root_52_36(capturedUpvalues)
+    return function()
+        if capturedUpvalues[1].gatherTimer then
+            capturedUpvalues[2]("关闭引怪功能")
+            StopGatherMonsters()
+            return true
+        end
+
+        capturedUpvalues[2]("开启引怪功能，阈值：11")
+        capturedUpvalues[3]()
+        return true
+    end
+end
+
+
 -- 11.16 root/25/0/0：3条物理指令，0个显式参数，1个upvalue。
 -- 父级root/25槽位18创建root/25/0并将父级H[2]绑定到root/25/0的H[0]；
 -- root/25/0槽位513 Opcode178创建childIndex=0闭包，槽位514 Opcode132将父级H[0]
