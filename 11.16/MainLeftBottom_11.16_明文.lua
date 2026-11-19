@@ -432,3 +432,20 @@ local function make_helper_root_52_10(capturedNotice)
         ClearBlacklistItems()
     end
 end
+
+
+-- 11.16 root/52/13：13条物理指令，0个显式参数。
+-- H[0].cruiseRunTimer为分支条件；真值分支调用H[1]，假值分支调用H[2]；
+-- 两条分支均将返回寄存器置为true后返回。
+-- 三个捕获值的父级来源/业务变量名尚未由root/52创建点确认，以下均为显式占位。
+local function make_helper_root_52_13(capturedCruiseState, capturedCallback1, capturedCallback2)
+    return function()
+        if capturedCruiseState.cruiseRunTimer then
+            capturedCallback1()
+            return true
+        end
+
+        capturedCallback2()
+        return true
+    end
+end
