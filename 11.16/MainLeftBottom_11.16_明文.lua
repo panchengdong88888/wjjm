@@ -644,3 +644,31 @@ local function make_helper_root_32(capturedUpvalues)
         capturedUpvalues[3].zd(true)
     end
 end
+
+-- 11.16 root/42：22条物理指令，0个显式参数、0个upvalue、无子原型。
+-- slot1–5检查global.Facade；Facade不存在时Opcode205直接结束函数。
+-- slot6–12取得global.Facade.retrieveProxy并以global.ProxyTable.PlayerInputProxy调用；
+-- slot13 Opcode325检查返回代理对象，代理不存在时跳到slot15结束。
+-- slot16 Opcode393准备PlayerInputProxy:SetTargetID方法及receiver；
+-- slot17 Opcode158融合消费slot18–20，依次准备参数0和global.MMO.SELETE_TARGET_TYPE_FIND。
+-- slot21 Opcode123按寄存器区间N[2]..N[4]调用方法，即receiver、0、目标类型；
+-- 等价于playerInputProxy:SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)。
+-- slot22 Opcode205结束。函数体无未知捕获，调用关系与两处提前结束分支均已闭合。
+-- helper_root_42为按原型路径生成的定位名，不代表原始Lua符号名。
+local function helper_root_42()
+    if not global.Facade then
+        return
+    end
+
+    local playerInputProxy =
+        global.Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)
+
+    if not playerInputProxy then
+        return
+    end
+
+    playerInputProxy:SetTargetID(
+        0,
+        global.MMO.SELETE_TARGET_TYPE_FIND
+    )
+end
