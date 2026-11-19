@@ -4416,7 +4416,39 @@
             "mode": 0,
             "flags": 0
           },
-          "audit_status": "verified from F() closure-creation branch; creates root/2/1 and captures parent N[6] to H[0]"
+          "audit_status": "verified: opcode387 closure builder; captures parent N[6] into child H[0]"
+        },
+        {
+          "create_slot": 111,
+          "opcode": 178,
+          "child_index": 0,
+          "capture_count": 1,
+          "capture_record": {
+            "slot": 112,
+            "opcode": 243,
+            "A": 0,
+            "B": 7,
+            "C": 0,
+            "mode": 0,
+            "flags": 0
+          },
+          "audit_status": "verified: opcode178 closure builder; captures parent N[7] into child H[0]"
+        },
+        {
+          "create_slot": 113,
+          "opcode": 387,
+          "child_index": 2,
+          "capture_count": 1,
+          "capture_record": {
+            "slot": 114,
+            "opcode": 243,
+            "A": 0,
+            "B": 8,
+            "C": 0,
+            "mode": 0,
+            "flags": 0
+          },
+          "audit_status": "verified: opcode387 closure builder; captures parent N[8] into child H[0]"
         }
       ],
       "decode_validation": {
@@ -4688,184 +4720,49 @@
       },
       "reconstruction": {
         "slot_111_118_fusion_reaudit": {
-          "status": "unresolved_operand_mapping_conflict; do_not_reconstruct_root2_from_this_fusion_yet",
-          "source_evidence": "11.16原版内嵌F()分派器约偏移190221，Opcode 178命中L<=180分支。该分支从当前槽位开始执行一次表字段写入，并连续读取后续7个物理槽位，依次执行：N[A][B]=N[C]；N[A]=Z[B]；N[A]=N[B][C]；N[A+1]=N[B]且N[A]=N[A][C]；N[A]=Z[B]；N[A]=N[B][C]；N[A]=N[B][C]；N[A]=N[B][C]。这些载荷槽位不再独立分派。",
-          "physical_records_111_118": [
-            {
-              "slot": 111,
-              "opcode": 178,
-              "A": 10,
-              "B": 0,
-              "C": 1,
-              "mode": 0,
-              "flags": 0
-            },
-            {
-              "slot": 112,
-              "opcode": 243,
-              "A": 0,
-              "B": 7,
-              "C": 0,
-              "mode": 0,
-              "flags": 0
-            },
-            {
-              "slot": 113,
-              "opcode": 387,
-              "A": 11,
-              "B": 2,
-              "C": 1,
-              "mode": 0,
-              "flags": 0
-            },
-            {
-              "slot": 114,
-              "opcode": 243,
-              "A": 0,
-              "B": 8,
-              "C": 0,
-              "mode": 0,
-              "flags": 0
-            },
-            {
-              "slot": 115,
-              "opcode": 279,
-              "A": 12,
-              "B": 0,
-              "C": 0,
-              "mode": 0,
-              "flags": 0
-            },
-            {
-              "slot": 116,
-              "opcode": 105,
-              "A": 13,
-              "B": "pairs",
-              "C": null,
-              "mode": 1,
-              "flags": 2
-            },
-            {
-              "slot": 117,
-              "opcode": 288,
-              "A": 14,
-              "B": 5,
-              "C": 0,
-              "mode": 0,
-              "flags": 0
-            },
-            {
-              "slot": 118,
-              "opcode": 386,
-              "A": 13,
-              "B": 14,
-              "C": 15,
-              "mode": 0,
-              "flags": 0
-            }
-          ],
-          "conflict": "按当前候选JSON字段逐项代入时，槽位116为A=13、B常量pairs、C=null；若将它直接代入融合载荷的N[A]=N[B][C]，会得到N[13]=N[pairs][nil]，与后续pairs迭代器准备用途不相容。槽位112/113/114/115/117/118的寄存器效果也尚未形成一致、可执行的寄存器状态链。",
-          "interpretation": "这不证明原版指令有错；它证明当前候选JSON的字段/常量替换解释、融合载荷与物理槽位的对齐，至少有一项尚未核实。禁止把槽位112–118当作独立Opcode执行，也禁止继续使用此前槽位115初始化N[12]、槽位116–118初始化pairs的旧结论。",
-          "verified_facts": [
-            "槽位109 Opcode387创建root/2/1闭包；槽位110 Opcode243是其捕获记录，父级N[6]捕获到H[0]。",
-            "槽位111 Opcode178为融合入口，不是闭包创建。",
-            "Opcode178分派器分支连续消费后续7个物理槽位112–118。",
-            "槽位113的Opcode字段387位于融合载荷中，不会独立创建root/2/2闭包。",
-            "root/2/0与root/2/2的父级闭包创建点仍未确认。"
-          ],
-          "next": "重新逐字节核对root/2槽位111–118的S()解码原始字段、常量索引基准和模式位；将S()的每个K[2]/K[3]/K[4]与候选JSON逐字段比对。只有字段映射闭合后再模拟融合链，并重审N[9]..N[15]及槽位136–153。"
+          "status": "withdrawn_incorrect_dispatch_branch_attribution",
+          "reason": "Opcode178在F()树中走L==178的闭包创建else叶；此前把后续L>178融合叶误归给Opcode178。"
         },
-        "status": "Opcode178融合指令的执行语义已逐槽展开；候选操作数字段映射仍不一致，root/2未闭合",
-        "next": "核验S()原始解码字节/常量索引与候选JSON字段替换，重点查slot115 Z[0]、slot116 N['pairs'][nil]；禁止猜测并写入源码。",
+        "status": "前置闭包注册、N[12]候选表创建及pairs(BAG_DATA)迭代器初始化已由原版S()/F()闭合；root/2整体业务CFG仍待完成",
+        "next": "按恢复后的N[9]=child0/N[10]=child1/N[11]=child2映射，闭合槽位120–170的物品遍历与筛选，随后整合172–226尾段",
         "slot_111_118_exact_fusion_trace_2026_11_19": {
-          "status": "still_unresolved; exact dispatcher operations mapped, operand stream inconsistent",
-          "source": "原始文件内嵌S()与F()；F()约偏移190221的L<=180分支",
-          "physical_instructions": [
-            {
-              "slot": 111,
-              "opcode": 178,
-              "A": 10,
-              "B": 0,
-              "C": 1,
-              "mode": 0,
-              "flags": 0
-            },
-            {
-              "slot": 112,
-              "opcode": 243,
-              "A": 0,
-              "B": 7,
-              "C": 0,
-              "mode": 0,
-              "flags": 0
-            },
-            {
-              "slot": 113,
-              "opcode": 387,
-              "A": 11,
-              "B": 2,
-              "C": 1,
-              "mode": 0,
-              "flags": 0
-            },
-            {
-              "slot": 114,
-              "opcode": 243,
-              "A": 0,
-              "B": 8,
-              "C": 0,
-              "mode": 0,
-              "flags": 0
-            },
-            {
-              "slot": 115,
-              "opcode": 279,
-              "A": 12,
-              "B": 0,
-              "C": 0,
-              "mode": 0,
-              "flags": 0
-            },
-            {
-              "slot": 116,
-              "opcode": 105,
-              "A": 13,
-              "B": "pairs",
-              "C": null,
-              "mode": 1,
-              "flags": 2
-            },
-            {
-              "slot": 117,
-              "opcode": 288,
-              "A": 14,
-              "B": 5,
-              "C": 0,
-              "mode": 0,
-              "flags": 0
-            },
-            {
-              "slot": 118,
-              "opcode": 386,
-              "A": 13,
-              "B": 14,
-              "C": 15,
-              "mode": 0,
-              "flags": 0
-            }
+          "status": "withdrawn_incorrect",
+          "reason": "Opcode178并不消费槽位112–118；该指令创建childIndex=0闭包，仅消费槽位112作为唯一捕获描述符。"
+        },
+        "closure_and_pairs_reaudit_2026_11_19": {
+          "status": "verified_from_original_S_and_F_dispatcher",
+          "source_offsets": {
+            "parent_prototype_start": 4393,
+            "parent_prototype_end": 8472,
+            "opcode178_closure_branch": 190131,
+            "opcode387_closure_branch": 219222,
+            "opcode105_global_load_branch": 179496
+          },
+          "raw_decode": "原版D()解码142522字节；S()递归解析162原型，完整消费142522字节。root/2位于解码字节4393..8472，226条记录。重新独立解析后，root/2候选JSON的已定义字段与原始解析结果逐字段一致；不存在槽位111–118字段错位。",
+          "sequence": [
+            "slot109 Opcode387创建childIndex=1(root/2/1)，slot110 Opcode243捕获父级N[6]到H[0]",
+            "slot111 Opcode178创建childIndex=0(root/2/0)，slot112 Opcode243捕获父级N[7]到H[0]",
+            "slot113 Opcode387创建childIndex=2(root/2/2)，slot114 Opcode243捕获父级N[8]到H[0]",
+            "slot115 Opcode279执行N[12]={}",
+            "slot116 Opcode105执行N[13]=Z['pairs']（从全局环境加载pairs函数）",
+            "slot117 Opcode288执行N[14]=N[5]",
+            "slot118 Opcode386调用N[13](N[14])，多返回值写入N[13]..N[15]，即pairs(N[5])迭代器三元组"
           ],
-          "exact_effects": [
-            "111 Opcode178入口：N[10][0] = N[1]。",
-            "112 融合载荷：N[0] = Z[7]（常量表第7项；候选表显示“鸿蒙”）。",
-            "113 融合载荷：N[11] = N[2][1]。",
-            "114 SELF式方法准备：N[1] = N[8]；N[0] = N[8][0]。",
-            "115 融合载荷：N[12] = Z[0]；按Lua 1起始常量数组，Z[0]为nil/越界，需确认常量访问实现是否特殊。",
-            "116 融合载荷：N[13] = N[\"pairs\"][nil]（mode=1、flags=2使B替换为常量pairs，C缺省nil）。这在标准Lua表访问下会因nil索引报错，或说明候选操作数字段/替换映射不正确。",
-            "117 融合载荷：N[14] = N[5][0]。",
-            "118 融合载荷：N[13] = N[14][N[15]]。"
+          "mappings": {
+            "N9": "root/2/0，捕获N[7]（精确名称表）",
+            "N10": "root/2/1，捕获N[6]（Lua模式名称表）",
+            "N11": "root/2/2，捕获N[8]（第二类名称表）",
+            "N12": "候选物品列表",
+            "N5": "此前由SL:GetMetaValue('BAG_DATA')取得的背包数据"
+          },
+          "control_flow": "slot119 Opcode388跳至169，解释器统一递增后从slot170开始首次推进pairs迭代器；slot120–169是每项处理体。该形状与泛型for循环初始化/回边吻合。",
+          "corrections": [
+            "撤回账本六十至六十二节中把Opcode178误判为L<=180融合分支的结论。实际F()分派树在L==178的else叶执行闭包创建；只有L>178才进入后续融合分支。",
+            "撤回把槽位112–118作为Opcode178融合载荷的所有解释；这些槽位包含捕获描述符、表创建、全局pairs加载、寄存器复制和多返回值调用。",
+            "撤回此前声称槽位111不是闭包创建、槽位113不独立分派、N[12]来源未确认的结论。",
+            "上一条助手消息曾误称候选JSON槽位116字段错位，该判断已复核撤回；候选JSON字段与S()输出一致。"
           ],
-          "key_finding": "Opcode178消费槽位112–118的真实顺序已按F()代码逐条展开；冲突点不是泛泛的pairs猜测，而是槽位115的Z[0]和槽位116的N['pairs'][nil]在当前候选字段映射下均无法形成可执行的标准Lua表达式。",
-          "next": "不能继续猜测寄存器用途。必须回到已解密的142522字节流或独立S()解析输出，核对root/2的原始操作数编码、常量表索引是否0基准，以及候选JSON是否在字段替换时误把K[3]/K[4]映射错位；再用同一F()融合分支模拟。"
+          "next": "使用已恢复的N[9]/N[10]/N[11]闭包映射，重新整合槽位120–170的pairs(BAG_DATA)遍历、绑定/名称筛选和候选列表构造，再将其与已闭合尾段172–226组合。"
         }
       },
       "decode_validation_reaudit_2026_11_19": "原始S()解析完整消费142522字节、162原型的结构结果仍是基准；本轮发现root/2槽位111–118融合载荷与当前候选字段解释无法组成一致寄存器链，需定点复核，未推翻已完成的其他原型。",
@@ -4882,7 +4779,10 @@
           "将父原型226槽位的原始解析记录与子原型root/2/0、root/2/1、root/2/2做同一解析器的逐字段校验；不能只以子原型校验代替父原型。",
           "在字节级闭合前，不写root/2，不沿用槽位115创建N[12]或槽位116初始化pairs的旧解释。"
         ]
-      }
+      },
+      "instruction_capture_summary": "槽位109/110创建child1并捕获N[6]；槽位111/112创建child0并捕获N[7]；槽位113/114创建child2并捕获N[8]。槽位115–118初始化候选列表N[12]与pairs(N[5])迭代器。",
+      "business_summary": "已确认isDiuing状态门控、GetDroppedItems与地面物品35上限、SL:GetMetaValue('BAG_DATA')、三类名称筛选闭包、pairs(BAG_DATA)迭代及候选列表N[12]。槽位120–170筛选细节仍需闭合；尾段172–226已独立闭合。",
+      "warning": "不要把Opcode178归入L<=180融合叶。F()中L==178走闭包创建分支，消费K[4]=1个捕获描述符；槽位112捕获N[7]。槽位113 Opcode387独立创建child2并由槽位114捕获N[8]。"
     }
   ],
   "constant_type_notes": {
