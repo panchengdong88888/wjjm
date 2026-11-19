@@ -687,3 +687,11 @@
 - root槽633 Opcode178创建childIndex=52闭包：root/52 H[2]来自root N[0]（root N[0]初始化并持有version、screenW、screenH、Blocklist、SendHookList、RecvHookList等字段）；root/52 H[9]来自root N[8]（前段接收GetMapId、GetMapName、PlayerPos、GetDroppedItems、MoveTo、DiuItems等方法）。这些是寄存器证据，不等于确认了变量原名。
 - 原型索引已记录root级捕获寄存器。完整明文仍31/162（19.14%），部分恢复12项。
 - 下一项：分析root N[74]的控制流/生命周期，确认其在root/25闭包创建时的值语义；不要直接按线性寄存器写入给它命名。
+
+
+### 2026-11-19续接：root/50/3闭包体恢复
+- 新增写入唯一明文：make_helper_root_50_3(capturedWindow)，闭包体等价于GUI:Win_Close(capturedWindow)。
+- 关键纠错：Opcode123参数区间为A+1..B；本例A=0、B=2，实际参数寄存器为N[1]和N[2]。N[1]是GUI receiver，N[2]来自H[0]，故捕获值确实传入Win_Close。
+- 父级root/50槽441创建childIndex=3，槽442将父N[7]捕获到H[0]。N[7]真实词法变量名/业务身份仍待确认，故标记部分恢复，不计完整函数。
+- 当前完整明文31/162（19.14%）；部分恢复13项。未执行Lua语法检查、全文件静态检查或游戏运行验证。
+- 下一项：继续追踪root/25闭包捕获最终指向root N[74]的控制流与初始化时序；缺少root 654条指令流时不得猜测其身份。
