@@ -308,8 +308,8 @@ end
 -- 参数为真值时，分别读取mCurrMapX/mCurrMapY；Opcode 325实现false/nil默认值分支。
 -- Opcode 359在补x=0时融合读取mCurrMapY；Opcode 355在补y=0时融合创建表及字段写入；
 -- 非默认分支由Opcode 100创建表，Opcode 409融合写入x/y字段，Opcode 11返回表。
--- helper_root_5为原型路径合成定位名，原始符号名及参数名未确认。
-local function helper_root_5(arg1)
+-- 11.2同职责函数名为GetPlayerMapPosition；11.16的1参数、mCurrMapX/mCurrMapY常量及17条指令与之吻合。
+local function GetPlayerMapPosition(arg1)
     if not arg1 then
         return nil
     end
