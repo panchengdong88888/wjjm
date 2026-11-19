@@ -1835,6 +1835,28 @@
       "byte_offsets": {
         "prototype_start": 34024,
         "prototype_end": 34064
+      },
+      "parent_closure": {
+        "parent": "root/25/0",
+        "create_slot": 513,
+        "opcode": 178,
+        "child_index": 0,
+        "capture_count": 1,
+        "capture_slot": 514,
+        "capture_opcode": 132,
+        "parent_upvalue": 0,
+        "child_upvalue": 0
+      },
+      "capture_chain": {
+        "parent": "root/25",
+        "create_slot": 18,
+        "opcode": 178,
+        "child_index": 0,
+        "capture_count": 11,
+        "capture_slot": 19,
+        "capture_opcode": 132,
+        "parent_upvalue": 2,
+        "child_upvalue": 0
       }
     },
     {
@@ -1888,6 +1910,28 @@
       "byte_offsets": {
         "prototype_start": 34709,
         "prototype_end": 34749
+      },
+      "parent_closure": {
+        "parent": "root/25/0",
+        "create_slot": 594,
+        "opcode": 121,
+        "child_index": 2,
+        "capture_count": 1,
+        "capture_slot": 595,
+        "capture_opcode": 132,
+        "parent_upvalue": 0,
+        "child_upvalue": 0
+      },
+      "capture_chain": {
+        "parent": "root/25",
+        "create_slot": 18,
+        "opcode": 178,
+        "child_index": 0,
+        "capture_count": 11,
+        "capture_slot": 19,
+        "capture_opcode": 132,
+        "parent_upvalue": 2,
+        "child_upvalue": 0
       }
     },
     {
@@ -2946,6 +2990,17 @@
       "byte_offsets": {
         "prototype_start": 65721,
         "prototype_end": 65801
+      },
+      "parent_closure": {
+        "parent": "root/50",
+        "create_slot": 441,
+        "opcode": 387,
+        "child_index": 3,
+        "capture_count": 1,
+        "capture_slot": 442,
+        "capture_opcode": 243,
+        "parent_register": 7,
+        "child_upvalue": 0
       }
     },
     {
@@ -3701,6 +3756,17 @@
       "byte_offsets": {
         "prototype_start": 85478,
         "prototype_end": 85558
+      },
+      "parent_closure": {
+        "parent": "root/52",
+        "create_slot": 147,
+        "opcode": 178,
+        "child_index": 11,
+        "capture_count": 1,
+        "capture_slot": 148,
+        "capture_opcode": 132,
+        "parent_upvalue": 2,
+        "child_upvalue": 0
       }
     },
     {
@@ -4326,6 +4392,17 @@
       "byte_offsets": {
         "prototype_start": 104702,
         "prototype_end": 104831
+      },
+      "parent_closure": {
+        "parent": "root/52",
+        "create_slot": 556,
+        "opcode": 178,
+        "child_index": 28,
+        "capture_count": 1,
+        "capture_slot": 557,
+        "capture_opcode": 132,
+        "parent_upvalue": 9,
+        "child_upvalue": 0
       }
     },
     {
