@@ -6638,7 +6638,36 @@
             "child_upvalue": 4,
             "parent_upvalue": 0
           }
-        ]
+        ],
+        "ancestor_capture_audit": {
+          "parent": "root",
+          "create_slot": 633,
+          "create_opcode": 178,
+          "child_index": 52,
+          "capture_count": 19,
+          "root52_upvalues": [
+            {
+              "child_upvalue": 0,
+              "parent_register": 4
+            },
+            {
+              "child_upvalue": 3,
+              "parent_register": 3
+            },
+            {
+              "child_upvalue": 6,
+              "parent_register": 67
+            },
+            {
+              "child_upvalue": 7,
+              "parent_register": 7
+            },
+            {
+              "child_upvalue": 8,
+              "parent_register": 62
+            }
+          ]
+        }
       }
     },
     {
