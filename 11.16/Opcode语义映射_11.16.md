@@ -837,3 +837,13 @@ root/65 18条物理槽位逐条闭合：先调用`string.find(value, "盟重", 1
 - root/32槽位11 Opcode88读取H[2]并融合槽位12写入`H[2].cruiseGatherPaused=false`。之后槽位13–16读取H[2].zd并调用`H[2].zd(true)`。
 - root/32槽位1–5及条件路径：H[0]为真时跳过slot3，执行H[0]=false及H[1](...)；H[0]为假时slot3跳转至slot11，跳过通知分支。两路最终汇合执行H[2]状态复位和zd调用。
 - H[0..2]父级root捕获来源尚未确认，闭包体恢复但不计完整函数。
+
+
+## 2026-11-19：root/52/36闭包业务控制流
+
+- root/52/36（19物理槽、0参数、3捕获）已按原始载荷边界109253–109536提取。
+- slot1 Opcode9融合消费slot2：N[0]=H[0]，随后N[0]=N[0].gatherTimer。
+- slot3 Opcode60以gatherTimer真值分支：真值跳过slot4；假值执行slot4 Opcode388跳转到slot12。
+- 真值分支slot5–11：读取H[1]，调用H[1](“关闭引怪功能”)；加载全局StopGatherMonsters并无参调用；设置true并返回。
+- 假值分支slot12–18：读取H[1]，调用H[1](“开启引怪功能，阈值：11”)；读取H[2]并无参调用；设置true并返回。slot19 Opcode339在两条return之后不可达。
+- 捕获链：root/52槽605 Opcode387创建child36，槽606/607分别捕获父H[3]/H[13]，槽608捕获父N[24]；root槽633创建root/52时，H[3]/H[13]分别来自root N[3]/N[5]。H[2]业务身份未确认，故函数只计部分恢复。
