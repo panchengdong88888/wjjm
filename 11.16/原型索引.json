@@ -2539,8 +2539,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 22,
-      "candidate_name": "helper_root_42",
-      "identity_status": "行为已恢复（原始符号名未确认）",
+      "candidate_name": "ClearTargetID_2",
+      "identity_status": "已确认真实函数名（本版指令级恢复）",
       "constants": [
         0,
         "PlayerInputProxy",
@@ -2551,7 +2551,9 @@
         "global",
         "SetTargetID",
         "SELETE_TARGET_TYPE_FIND"
-      ]
+      ],
+      "recovery_status": "已写入唯一明文；本版完整函数体与旧版同名声明/业务一致。",
+      "business_summary": "无参数；检查Facade和PlayerInputProxy，调用proxy:SetTargetID(0, SELETE_TARGET_TYPE_FIND)。与11.2 root.children[56] ClearTargetID_2业务体完全吻合，22条本版指令闭合、无捕获。"
     },
     {
       "preorder_id": 61,
@@ -5282,8 +5284,8 @@
       "child_count": 0,
       "parameter_count": 2,
       "instruction_count": 20,
-      "candidate_name": "helper_root_69（合成定位名）",
-      "identity_status": "本轮已恢复",
+      "candidate_name": "GetOwnerDescription",
+      "identity_status": "已确认真实函数名（本版指令级恢复）",
       "constants": [
         "其他玩家",
         "无归属",
@@ -5294,7 +5296,9 @@
         "GetOwnerID",
         "自己",
         -1
-      ]
+      ],
+      "recovery_status": "已写入唯一明文；本版完整函数体与旧版同名声明/业务一致。",
+      "business_summary": "两个参数；调用actor:GetOwnerID，返回ownerId及“无归属/自己/其他玩家”标签。与11.2 root.children[43] GetOwnerDescription声明及业务体完全吻合，20条本版指令闭合、无捕获。"
     },
     {
       "preorder_id": 149,
@@ -5305,8 +5309,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 19,
-      "candidate_name": "helper_root_70（合成定位名）",
-      "identity_status": "本轮已恢复",
+      "candidate_name": "GetPlayerPosition",
+      "identity_status": "已确认真实函数名（本版指令级恢复）",
       "constants": [
         "Y",
         "SL",
@@ -5315,7 +5319,9 @@
         "x",
         "GetMetaValue",
         "y"
-      ]
+      ],
+      "recovery_status": "已写入唯一明文；本版完整函数体与旧版同名声明/业务一致。",
+      "business_summary": "无参数；读取SL:GetMetaValue('X'/'Y')，各自假值回退0，返回{x,y}。与11.2 root.children[18] GetPlayerPosition业务体完全吻合，19条本版指令闭合、无捕获。"
     },
     {
       "preorder_id": 150,
