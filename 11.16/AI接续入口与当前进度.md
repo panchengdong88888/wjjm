@@ -717,3 +717,10 @@
 - root/42后半段确认通过global.Facade.retrieveProxy取得global.ProxyTable.PlayerInputProxy，再调用代理SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)；前段Facade存在性分支的Opcode 366及388跳转语义尚未闭合，暂不写入完整函数。
 - root/60常量指向PlayerInputProxy.ClearAttackTargetID，但H[0]捕获值和开头分支尚未闭合，暂不按常量猜写。
 - 复核函数状态CSV，“已写入明文”共32/162（19.75%）；账本旧顶部31/162已修正。root/42、root/60仍待语义闭合。未做语法或运行验证。
+
+
+### 2026-11-19续接增量（补充分派器证据）
+- 已从11.16原始F()分派器确认并补录Opcode 218、163、366、325、388、324、110、345、273、343、410的具体叶子语义，见Opcode语义映射文件新增章节。
+- root/42的Facade前置判断已闭合：Facade缺失时执行slot5的205结束；Facade存在时由388跳过结束槽进入后续代理调用。代理获取及SetTargetID调用尾段仍待闭合。
+- root/60确认H捕获读取、真值判断、跳转；捕获身份与调用路径未闭合。
+- root/73已确认日期表分支与算术Opcode叶子，仍需完成寄存器流模拟。当前完整明文32/162（19.75%），本轮没有新增完整函数。
