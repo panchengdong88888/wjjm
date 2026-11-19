@@ -816,14 +816,17 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 20,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_2_1",
+      "identity_status": "匿名闭包（行为已恢复；捕获物品名称模式列表）",
       "constants": [
         "ipairs",
         1,
         "find",
         "string"
-      ]
+      ],
+      "recovery_status": "已写入明文",
+      "recovered_behavior": "遍历父级捕获的物品名称模式列表，调用string.find(value, pattern, 1, false)；命中返回true，否则遍历结束返回false",
+      "upvalue_mapping": "H[0]来自root/2槽位109创建childIndex=1闭包时捕获的父级局部寄存器N[6]；父级局部变量原名待映射"
     },
     {
       "preorder_id": 6,
