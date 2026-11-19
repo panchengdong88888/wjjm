@@ -783,3 +783,11 @@
 - 官方API `SL:UnSchedule(scheduleID)`、`SL:ShowSystemTips(str)`已查3.40.x `SL.md`，直接按文档调用，不分析API内部。
 - 槽位10–21尚未闭合，本轮没有写入猜测源码；函数状态表标记为“分析中”，完整明文保持32/162（19.75%），部分恢复16项。
 - 下一项继续root/33/0槽位10–21，有限定位Opcode114、127、210、288及融合边界；无法闭合则切换root/68/0。未执行语法、静态或运行验证。
+
+
+### 2026-11-19续接增量：root/33/0后半段融合链
+- slot11 Opcode114融合消费slot12–14；slot12/13/14不可独立执行。融合体业务意义仍待确认。
+- slot15 Opcode64=N[A]=N[C]，本例N[2]=N[0]；slot16 Opcode123调用N[1]，参数打包边界待确认。
+- slot17 Opcode210融合消费slot18–19，准备SL.ShowSystemTips及receiver/参数；slot20 Opcode128完成`SL:ShowSystemTips(参数)`调用；slot21 Opcode339结束。
+- 仍未写猜测函数体。完整明文32/162（19.75%），部分恢复16项；唯一明文和原始Lua未改。未做语法、静态或游戏运行验证。
+- 下一项：有限闭合slot11融合体操作数及slot16调用参数边界；无法快速闭合则切换root/68/0。
