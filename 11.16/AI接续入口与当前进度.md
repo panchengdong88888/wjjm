@@ -1778,3 +1778,8 @@ root/15 slot63 Opcode178创建child proto T[1]=root/15/1，D=6表示后续6个�
 - child H[5] = parent N[3] = parent H[0]回调（父slot7 A127读取）。子函数将其传入上架请求路径。
 
 这已解决5/6个捕获的业务身份；唯一未定的是父H[3]。root/15/1的121槽主体无需再重拆，下一步整理为完整可读Lua；对H[4]保留capturedUpvalues[3]。当前完整静态恢复76/162、业务累计93/162不变，唯一明文尚未写入。
+
+
+## 2026-11-20续：root/15/1 slot73–77提示调用的原始形态
+
+原版F()中Opcode403的叶明确为`N[K[2]]=H[K[3]]`并融合下一槽`N[next.K2]=next.K3`。因此child slot73 A403 B5 C0融合slot74，构造N5=H0、N6=“上架结束：背包已无”；slot75取H1货币名称；slot76拼接；slot77调用N5(N6)。虽然H0的父级来源映射为SL对象，这里VM仍明确把H0当可调用值使用。源码恢复必须忠实保留`H[0](message .. H[1])`，不可擅改成SL:ShowSystemTips，也不可错用H[5]回调。H5是父H0回调，传入RequestAuctionPutin路径。唯一明文仍未修改，下一步整合时保留此VM调用形态。
