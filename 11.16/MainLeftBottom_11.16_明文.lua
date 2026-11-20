@@ -4474,3 +4474,16 @@ local function MakeDropMode1ButtonHandler_11_16(
 end
 
 
+
+
+-- ============================================================================
+-- 11.16 root/52/27：第二处背包未绑定物品数量统计（46条指令，1个参数）
+-- ============================================================================
+-- 与root/52/6/4具有相同的参数数、指令数及12项常量语义集合：
+-- pairs/MakeIndex/OverLap/find/Name/BAG_DATA/SL/string/GetMetaValue/ITEM_IS_BIND
+-- （另含数值1、0）。常量池排列不同，尚无本子原型逐条指令流可作字节级确认。
+-- 因此复用已恢复的同职责实现，不复制一份未经证实的内部细节；状态记为部分恢复。
+local function GetResourceItemCount_11_16_Duplicate(requestedName)
+    return GetResourceItemCount_11_16(requestedName)
+end
+
