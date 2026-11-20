@@ -1731,3 +1731,12 @@
 ## 2026-11-20续接：root/15/1 slot36–70循环体已闭合
 
 重要字段规则：root/15特殊导出记录真实VM Opcode在A字段，B/C/D是操作数；JSON的`opcode`字段不是F()分派码。上一轮把0–14当Opcode的错误结论已撤销。slot36–70现在已按F()闭合：slot36初次跳到slot69；slot69 Opcode250推进pairs(BAG_DATA)，slot70回跳slot37；slot37检查item存在；slot39/40筛MakeIndex；slot42/43筛Name；slot45–47准备string.find；slot48–52执行名称包含筛选；slot54–58调用SL.GetMetaValue("ITEM_IS_BIND", item)；slot59按D=1检查结果，绑定为真时执行slot60跳到下一轮，绑定为假时跳过该跳转并继续数量处理，因此排除绑定物品；slot61–68读取OverLap，tonumber失败时数量回退1。slot33–35为pairs迭代器初始化。详细Opcode与融合边界见进度账本和Opcode语义映射文档。本轮只闭合循环，不增加完整恢复数；接下来继续slot1–35和slot71–121。
+
+
+## 2026-11-20接续重点：root/15/1 slot54–68融合边界纠错
+
+此前声称root/15/1 slot36–70循环体已闭合，现撤销。原版F()确认Opcode159是14条立即值装载融合（当前槽加后续13个物理槽），slot55会融合消费slot56–68；这些槽不能独立解释为GetMetaValue/ITEM_IS_BIND/OverLap调用。此前slot54–68关于绑定判断、OverLap读取、tonumber转换和默认数量1的结论全部撤销。slot36–53、69–70只保留阶段性结构线索。
+
+本轮新闭合slot1–35及slot71–121，详细逐段控制流、调用参数和upvalue编号见源码恢复进度账本。slot1–35包含默认货架上限读取（缺省6）、当前上架数量读取（缺省0）、货架满提示、BAG_DATA读取和pairs初始化。slot71–121包含无匹配物品提示、数量选择、单位价×数量、AUCTION_BIDPRICE_MAX（缺省2,000,000,000）、总价超限提示、日志格式化及SL.RequestAuctionPutin调用。H[0]至H[5]保持按upvalue编号标记，不猜名字。
+
+下一步只处理slot54–68 Opcode159的融合块和相关寄存器状态；不重做已闭合slot1–35、71–121，不写入唯一明文，整体恢复数仍76/162。
