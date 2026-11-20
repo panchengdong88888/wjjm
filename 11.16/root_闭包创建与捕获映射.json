@@ -2015,6 +2015,36 @@
         }
       ],
       "evidence": "root_654条物理指令流.json槽519 Opcode121 A=79 B=60 C=1；紧随槽520 Opcode243捕获父级N[76]。索引记录的upvalue_count=6与创建点captureCount=1不一致，暂保留差异，不推断其余捕获。"
+    },
+    {
+      "createSlot": 522,
+      "createOpcode": 178,
+      "childIndex": 32,
+      "childPath": "root/32",
+      "parameterCount": 1,
+      "instructionCount": 17,
+      "captureCount": 3,
+      "captures": [
+        {
+          "slot": 523,
+          "opcode": 243,
+          "sourceRegister": 75,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 524,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 525,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "evidence": "root_654条物理指令流.json槽522 Opcode178创建childIndex=32、captureCount=3；槽523–525依次捕获父N[75]/N[5]/N[0]。父N[75]在槽517置false；父N[5]由槽46创建为root/80（ShowLocalNoticeByType）；父N[0]由槽2装入MainLeftBottom模块表。"
     }
   ],
   "notes": [
