@@ -1078,3 +1078,30 @@ root/15/1 slot54–68存在以Opcode146条件为入口的分支，Opcode159融�
 - slot1–35：读取默认货架上限（缺省6）、当前上架数量（缺省0），货架满时提示；读取BAG_DATA（缺失则创建空表）并初始化pairs迭代器。
 - slot71–121：检查是否找到候选物品；无匹配时拼接提示文本并调用提示函数；计算上架数量（缺省1）与总价；读取AUCTION_BIDPRICE_MAX（缺省2,000,000,000）并检查总价；超限时提示；否则格式化日志并调用SL.RequestAuctionPutin。
 - 捕获值只以H[0]–H[5]编号记录，未猜测词法名称。整个root/15/1仍不算完整恢复，唯一明文未写入。
+
+
+## 2026-11-20最终更正：Opcode159 = 3物理槽方法准备（不是4槽或14槽）
+
+原版F()的Opcode159精确叶：
+```lua
+local X=N[K[3]]
+N[K[2]+1]=X
+N[K[2]]=X[K[4]]
+O=O+1; K=W[O]; N[K[2]]=K[3]
+O=O+1; K=W[O]; N[K[2]]=N[K[3]]
+```
+因此Opcode159总计当前槽+后续2槽=3物理槽。root/15/1 slot55融合slot56–57，slot58是独立Opcode209调用。此前本文件中“Opcode159融合4物理槽”及其他冲突描述均以本条为准撤销。
+
+### root/15/1 slot54–68最终语义
+- 54 Opcode146：N[10]=Z["SL"]。
+- 55 Opcode159融合56–57：准备SL.GetMetaValue方法、self、ITEM_IS_BIND常量及当前item参数。
+- 58 Opcode209：调用GetMetaValue("ITEM_IS_BIND", item)。
+- 59 Opcode325（D=1）：绑定标志为真时执行60跳至69；未绑定时跳过60继续。
+- 61 Opcode241：保存item。
+- 62 Opcode218融合63：装入tonumber并读取item.OverLap。
+- 64 Opcode209：调用tonumber。
+- 65 Opcode315（D=1）：转换结果有效时复制为数量；无效时跳过66。
+- 67：默认数量设为1。
+- 68：跳至迭代推进。
+
+root/15/1 slot36–70循环体完整闭合；整个121槽主体slot1–35、36–70、71–121均已逐段闭合。仍需单独整理函数入口参数/upvalue映射，未写唯一明文，不增加项目完成计数。
