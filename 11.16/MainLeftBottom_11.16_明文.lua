@@ -4017,3 +4017,45 @@ end
 
 
 end
+
+
+-- ============================================================
+--  11.16 root/52/6/2：资源统计窗口空白点击关闭回调（20条指令，3项捕获）
+-- ============================================================
+-- 父函数root/52/6槽68创建闭包，捕获顺序为寄存器1、2、0；
+-- 对应PrintLog、共享timerState、MainLeftBottom模块状态表。
+local function MakeResourceStatisticsClose_11_16(
+    printLog,
+    timerState,
+    moduleState
+)
+    return function()
+        printLog("点击空白,关闭资源信息窗口")
+
+        if timerState.resTimer then
+            SL:UnSchedule(timerState.resTimer)
+            timerState.resTimer = nil
+        end
+
+        GUI:Win_Close(moduleState.resWin)
+    end
+end
+
+
+-- ============================================================
+--  11.16 root/52/6/3：资源数量格式化（35条指令，1个显式参数）
+-- ============================================================
+-- 与11.9同职责FormatResourceCount主体一致；保留本版阈值与取整顺序。
+local function FormatResourceCount_11_16(value)
+    if value < 100000 then
+        return tostring(value)
+    end
+
+    if value < 100000000 then
+        local tenThousands = math.floor(value / 10000)
+        return tostring(tenThousands) .. "万"
+    end
+
+    local hundredMillions = math.floor((value / 100000000) * 10) / 10
+    return string.format("%.1f亿", hundredMillions)
+end
