@@ -1307,11 +1307,11 @@ end
 --   mode==1：排除命中3项精确名称表的物品；
 --   mode==2：排除命中35项精确名称表的物品；
 --   其他值：仅保留命中28项Lua模式名称表的物品。
--- H[0]由root N[2]捕获，即MainLeftBottom状态/模块表；
+-- H[0]由root N[2]捕获，即MainLeftBottom.z共享状态表；
 -- H[1]由root N[5]捕获，即ShowLocalNoticeByType闭包（root/80），用于本地提示。
--- root/2闭包捕获已由root槽66–68闭合：H[0]=MainLeftBottom，H[1]=ShowLocalNoticeByType。
+-- root/2闭包捕获已由root槽66–68闭合：H[0]=MainLeftBottom.z，H[1]=ShowLocalNoticeByType。
 local function DiuItems(mode)
-    local state = MainLeftBottom
+    local state = MainLeftBottom.z
     local notify = ShowLocalNoticeByType
     local MAX_GROUND_ITEMS = 35
     if state.isDiuing then
@@ -1430,6 +1430,67 @@ local function DiuItems(mode)
     notify("共丢弃 " .. sentCount .. " 件物品")
     state.isDiuing = false
 end
+
+
+-- 11.16 root/58：TakeItems（99条物理指令、0显式参数、2个upvalue）。
+-- root槽81创建本闭包；槽82捕获root N[2]=MainLeftBottom.z，
+-- 槽83捕获root N[5]=ShowLocalNoticeByType。两项与root/2的捕获来源一致。
+local function TakeItems()
+    local featureState = MainLeftBottom.z
+    local showLocalNotice = ShowLocalNoticeByType
+
+    if featureState.isTaking then
+        return
+    end
+    featureState.isTaking = true
+
+    local storageItems = GetStorageItemData()
+    if not storageItems or #storageItems == 0 then
+        showLocalNotice("仓库无可取物品")
+        featureState.isTaking = false
+        return
+    end
+
+    local takenCount = 0
+    local filterNames = { "待定" }
+
+    for _, item in ipairs(storageItems) do
+        if item and item.Name and item.MakeIndex then
+            local itemName = string.trim(item.Name)
+            local shouldTake = true
+
+            for _, filterName in ipairs(filterNames) do
+                if string.find(itemName, filterName, 1, true) then
+                    shouldTake = false
+                    break
+                end
+            end
+
+            if shouldTake then
+                showLocalNotice("取: " .. itemName)
+                LuaSendMsg(
+                    global.MsgType.MSG_CS_STORAGE_PICK_OUT_REQUEST,
+                    999999999,
+                    item.MakeIndex,
+                    0,
+                    0,
+                    itemName,
+                    string.len(itemName)
+                )
+                takenCount = takenCount + 1
+            end
+        end
+    end
+
+    featureState.isTaking = false
+
+    if takenCount > 0 then
+        showLocalNotice(
+            "取出物品完成, 共取出 " .. tostring(takenCount) .. " 件"
+        )
+    end
+end
+
 
 
 -- 11.16 root/73：本版23条物理指令、0参数、0捕获；按本版指令流独立恢复。
