@@ -2120,7 +2120,7 @@
       "parameter_count": 0,
       "instruction_count": 32,
       "candidate_name": "helper_root_28（合成定位名）",
-      "identity_status": "待识别",
+      "identity_status": "业务逻辑已恢复（原始符号名/父级挂载字段未确认）",
       "constants": [
         51295,
         "tonumber",
@@ -2131,8 +2131,8 @@
         "TITLE_DATA_BY_ID",
         "GetMetaValue"
       ],
-      "recovery_status": "本版32条物理指令已定点提取；业务返回语义待恢复",
-      "business_summary": "常量包含TITLE_DATA_BY_ID、固定ID 51295、time、SERVER_TIME与tonumber；标题时间与服务器时间的比较/返回逻辑待恢复。"
+      "recovery_status": "已写入唯一明文（32条物理指令控制流完整恢复）",
+      "business_summary": "读取SL:GetMetaValue('TITLE_DATA_BY_ID',51295)；标题数据或time缺失返回false；将time与SL:GetMetaValue('SERVER_TIME')转数字，服务器时间转换失败回退0；返回titleTime > serverTime。"
     },
     {
       "preorder_id": 44,
