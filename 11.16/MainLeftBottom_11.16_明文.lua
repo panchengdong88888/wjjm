@@ -1653,3 +1653,29 @@ local function MakeInstallDamageHook(mainLeftBottomState, printLog)
         printLog("已挂接伤害消息钩子（击杀拉黑用）")
     end
 end
+
+
+-- 11.16 root/18：配置文件读取与key=value解析（34条物理指令、0参数、1个upvalue）。
+-- root槽278装载字符串"dpp"，槽279创建闭包，槽280将该字符串捕获为H[0]。
+-- 34槽控制流闭合：创建结果表；拼接可写目录与"dpp"作为文件路径；
+-- 文件不存在或读取结果为空时返回空表；存在内容时按key=value逐行解析并返回表。
+-- 原始导出名称尚未确认，因此使用helper_root_18作为合成定位名。
+local function helper_root_18()
+    local result = {}
+    local filePath = global.FileUtilCtl:getWritablePath() .. "dpp"
+
+    if not global.FileUtilCtl:isFileExist(filePath) then
+        return result
+    end
+
+    local data = global.FileUtilCtl:getDataFromFileEx(filePath)
+    if not data then
+        return result
+    end
+
+    for key, value in string.gmatch(data, "([%w_]+)=([^\\r\\n]*)") do
+        result[key] = value
+    end
+
+    return result
+end
