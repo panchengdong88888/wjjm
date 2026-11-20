@@ -97,7 +97,7 @@ mode=%s
 89,root/52/6/2,root/52/6,3,MakeResourceStatisticsClose_11_16,本版完整恢复；与旧版同职责函数20条指令结构吻合,0,8,0,20,已写入唯一明文（本版指令级完整恢复）,父函数root/52/6槽68以Opcode387创建，捕获寄存器1/2/0，按旧版同职责映射为PrintLog/timerState/moduleState；取消resTimer并关闭resWin。,MainLeftBottom_11.16_明文.lua：MakeResourceStatisticsClose_11_16,无关键未决项；未执行APK验证,2026-11-21
 90,root/52/6/3,root/52/6,3,FormatResourceCount_11_16,本版完整恢复；35条指令与旧版同职责格式化函数一致,1,12,0,35,已写入唯一明文（本版指令级完整恢复）,按100000/100000000两级阈值格式化；低于10万转字符串，低于1亿向下取整为万，1亿以上保留1位小数并附亿。,MainLeftBottom_11.16_明文.lua：FormatResourceCount_11_16,无关键未决项；未执行APK验证,2026-11-21
 92,root/52/6/4,root/52/6,3,,待识别,1,12,0,46,未恢复,find | BAG_DATA | pairs | string | MakeIndex | OverLap | SL | Name | ITEM_IS_BIND | GetMetaValue,,,2026-11-18
-93,root/52/7,root/52,2,,待识别,0,7,0,26,未恢复,ipairs | slot | SL | names | ITEM_INDEX_BY_NAME | MoveItemToQuickUse | GetMetaValue,,,2026-11-18
+99,root/52/7,root/52,2,MoveConfiguredQuickUseItems_11_16,本版完整恢复；遍历names配置并按名称索引调用MoveItemToQuickUse,0,7,0,26,已写入唯一明文（本版指令级完整恢复）,父级root/52槽147以Opcode178创建childIndex=7闭包，单项捕获为names配置数组；读取SL:GetMetaValue("ITEM_INDEX_BY_NAME")，遍历配置项name/slot，命中索引后调用MoveItemToQuickUse。,MainLeftBottom_11.16_明文.lua：MoveConfiguredQuickUseItems_11_16,无关键未决项；未执行APK验证,2026-11-21
 94,root/52/8,root/52,2,,待识别,0,11,1,49,未恢复,DiuItems | dropMode | SL | 关闭丢全部物品 | 开启丢全部物品(模式1) | isDiuing | UnSchedule | dropTimer,,,2026-11-18
 95,root/52/8/0,root/52/8,3,,,待识别,0,2,0,5,未恢复,dropMode | DiuItems,,指令头需按16位字段重新解码；函数体待确认,,2026-11-18
 96,root/52/9,root,2,make_helper_root_52_9（合成定位名）,闭包执行体及5项捕获链全部闭合；父级局部变量符号名未全部恢复,0,5,0,18,已写入明文（本版指令级完整恢复；捕获代理保留精确值）,18槽闭合；root/52槽550创建，H[0..4]依次来自父H[6]/H[3]/H[7]/H[8]/H[0]，再追溯至root N[67]/N[3]/N[7]/N[62]/N[4]；明文保留捕获代理，未猜测父级变量名。,MainLeftBottom_11.16_明文.lua,函数体与全部捕获来源均已闭合；原始局部变量符号名未完全恢复，不影响静态恢复。,2026-11-20
