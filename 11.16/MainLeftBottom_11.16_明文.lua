@@ -3899,37 +3899,6 @@ end
 
 
 -- ============================================================
---  11.16 root/52/16：奖励功能按钮处理器（33条物理指令，0显式参数，5项捕获）
--- ============================================================
--- 父级root/52槽610创建闭包，5项捕获依次来自寄存器3、0、16、17、18：
--- timerState、PrintLog、奖励循环取模基数、奖励记录表、Schedule周期。
--- 本版函数体与11.9同职责MakeRewardButtonHandler结构一致；本版直接使用SL:Schedule。
-local function MakeRewardButtonHandler_11_16(
-    timerState,
-    printLog,
-    modulus,
-    rewardEntries,
-    scheduleInterval
-)
-    if timerState.rewardTimer then
-        printLog("关闭奖励功能")
-        SL:UnSchedule(timerState.rewardTimer)
-        timerState.rewardTimer = nil
-        return true
-    end
-
-    printLog("开启奖励功能")
-    local callback = MakeRewardTimerCallback_11_16(
-        0,
-        modulus,
-        rewardEntries
-    )
-    timerState.rewardTimer = SL:Schedule(callback, scheduleInterval)
-    return true
-end
-
-
--- ============================================================
 --  11.16 root/52/16/0：奖励协议循环回调（22条物理指令，0显式参数，3项捕获）
 -- ============================================================
 -- 父函数在root/52/16槽24创建该闭包；捕获初始计数0、modulus、rewardEntries。
@@ -3960,6 +3929,50 @@ local function MakeRewardTimerCallback_11_16(
     end
 end
 
+
+
+
+-- ============================================================
+--  11.16 root/52/16：奖励功能按钮处理器（33条物理指令，0显式参数，5项捕获）
+-- ============================================================
+-- 父级root/52槽610创建闭包，5项捕获依次来自寄存器3、0、16、17、18：
+-- timerState、PrintLog、奖励循环取模基数、奖励记录表、Schedule周期。
+-- 本版函数体与11.9同职责MakeRewardButtonHandler结构一致；本版直接使用SL:Schedule。
+local function MakeRewardButtonHandler_11_16(
+    timerState,
+    printLog,
+    modulus,
+    rewardEntries,
+    scheduleInterval
+)
+    if timerState.rewardTimer then
+        printLog("关闭奖励功能")
+        SL:UnSchedule(timerState.rewardTimer)
+        timerState.rewardTimer = nil
+        return true
+    end
+
+    printLog("开启奖励功能")
+    local callback = MakeRewardTimerCallback_11_16(
+        0,
+        modulus,
+        rewardEntries
+    )
+    timerState.rewardTimer = SL:Schedule(callback, scheduleInterval)
+    return true
+end
+
+
+
+
+-- ============================================================
+--  11.16 root/52/18/0：模式2丢弃周期回调（5条物理指令，0显式参数，1项捕获）
+-- ============================================================
+-- 捕获root/52/18中的timerState；每次触发读取当前dropMode并调用DiuItems。
+local function MakeDropMode2TimerCallback_11_16(timerState)
+    return function()
+        DiuItems(timerState.dropMode)
+    end
 
 -- ============================================================
 --  11.16 root/52/18：模式2自动丢弃按钮处理器（65条物理指令，0显式参数，5项捕获）
@@ -4002,12 +4015,5 @@ local function MakeDropMode2ButtonHandler_11_16(
 end
 
 
--- ============================================================
---  11.16 root/52/18/0：模式2丢弃周期回调（5条物理指令，0显式参数，1项捕获）
--- ============================================================
--- 捕获root/52/18中的timerState；每次触发读取当前dropMode并调用DiuItems。
-local function MakeDropMode2TimerCallback_11_16(timerState)
-    return function()
-        DiuItems(timerState.dropMode)
-    end
+
 end
