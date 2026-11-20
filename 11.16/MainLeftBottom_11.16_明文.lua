@@ -578,14 +578,12 @@ end
 
 
 -- 11.16 root/52/11：5条物理指令，0个显式参数，1个upvalue。
--- 父级root/52槽位147以Opcode178创建childIndex=11闭包，captureCount=1；
--- 槽位148 Opcode132读取父级H[2]并绑定到本闭包H[0]。
--- 子函数Opcode45装载全局_G并融合槽位2读取H[0]；Opcode400读取H[0].LuaSendMsg，
--- 并融合下一槽将其写入_G.LuaSendMsg。该闭包没有额外调用，随后Opcode339结束。
--- root/52自身H[2]的外层来源已追到root槽633创建childIndex=52时的第3个捕获，来源为root N[0]。N[0]具备主模块状态表特征，但原始变量名未证实，故保留capturedUpvalue0占位。
+-- root槽633创建root/52时，第3个捕获（root/52 H[2]）来自root N[0]。
+-- root N[0]由初始化段与root/16捕获映射确认是MainLeftBottom.a。
+-- 子闭包完整行为：把MainLeftBottom.a.LuaSendMsg赋给_G.LuaSendMsg。
 -- make_helper_root_52_11为原型路径合成定位名，不是原始函数符号名。
-local function make_helper_root_52_11(capturedUpvalue0)
-    _G.LuaSendMsg = capturedUpvalue0.LuaSendMsg
+local function make_helper_root_52_11()
+    _G.LuaSendMsg = MainLeftBottom.a.LuaSendMsg
 end
 
 
