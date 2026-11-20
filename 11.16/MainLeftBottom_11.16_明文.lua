@@ -1599,3 +1599,57 @@ local function AccountIDValidation()
 
     SL:Schedule(waitForMainProperty, 0.5)
 end
+
+
+
+-- 11.16 root/68：InstallDamageHook（40条指令）及其子闭包root/68/0（18条指令）。
+-- 本版父原型常量包含gameMapController、mNetMsgHandle、MsgType、
+-- MSG_SC_DAMAGE_HP、__ylwHookedOrigin及挂钩提示；子原型常量包含
+-- onDamageMsg、function、pcall、type。两层结构与11.9同职责实现的参数数、
+-- 指令数、常量和子原型数量吻合。
+local function MakeInstallDamageHook(mainLeftBottomState, printLog)
+    return function()
+        local gameMapController = global.gameMapController
+        if not gameMapController then
+            return
+        end
+
+        local messageHandlers = gameMapController.mNetMsgHandle
+        if type(messageHandlers) ~= "table" then
+            return
+        end
+
+        local messageTypes = global.MsgType
+        if not messageTypes then
+            return
+        end
+
+        local damageMessageType = messageTypes.MSG_SC_DAMAGE_HP
+        if not damageMessageType then
+            return
+        end
+
+        local originalHandler = messageHandlers[damageMessageType]
+        if not originalHandler then
+            return
+        end
+
+        if gameMapController.__ylwHookedOrigin == originalHandler then
+            return
+        end
+
+        -- 对应root/68/0：两个参数、18条指令；先安全调用自定义伤害回调，
+        -- 再把原始参数原样传给旧处理器并返回其结果。
+        local wrappedHandler = function(arg1, arg2)
+            local optionalCallback = mainLeftBottomState.onDamageMsg
+            if type(optionalCallback) == "function" then
+                pcall(optionalCallback, arg1, arg2)
+            end
+            return originalHandler(arg1, arg2)
+        end
+
+        messageHandlers[damageMessageType] = wrappedHandler
+        gameMapController.__ylwHookedOrigin = messageHandlers[damageMessageType]
+        printLog("已挂接伤害消息钩子（击杀拉黑用）")
+    end
+end
