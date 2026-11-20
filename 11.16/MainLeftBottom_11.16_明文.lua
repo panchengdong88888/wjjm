@@ -1311,8 +1311,8 @@ end
 -- H[1]由root N[5]捕获，即ShowLocalNoticeByType闭包（root/80），用于本地提示。
 -- root/2闭包捕获已由root槽66–68闭合：H[0]=MainLeftBottom，H[1]=ShowLocalNoticeByType。
 local function DiuItems(mode)
-local state = MainLeftBottom
-local notify = ShowLocalNoticeByType
+    local state = MainLeftBottom
+    local notify = ShowLocalNoticeByType
     local MAX_GROUND_ITEMS = 35
     if state.isDiuing then
         return
