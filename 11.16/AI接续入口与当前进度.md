@@ -1412,3 +1412,17 @@
 初筛结果：原型索引162项（含root）；函数状态表有94条候选名称记录；两个旧版明文中有46条同名匹配（含已恢复项）；目前SL.md精确命中5条API名称（仅SL.md初筛，其他框架文档仍需补扫）。这些是名称匹配数量，不是恢复数量。root/22、root/34、root/55、root/67等有本版扩展线索，不能不核差异整段照搬；root/9名称/职责冲突、root/43旧版同名为空实现，暂不复用。
 
 下一批优先从root/26 ClearBlacklistItems、root/40 onDamageMsg、root/45 StorageItems、root/63 LuaSendMsg、root/71 DeathAutoBlacklist中批量迁移；只有捕获对象与本版状态表接线能够确认时才写入。完成后同步唯一明文、CSV、账本和接续入口。
+
+### 2026-11-20 用户明确调整交付策略：先完成明文，不做验证
+
+用户明确要求：当前阶段只管把明文代码尽可能完整地恢复出来，不需要做语法验证、API兼容核实或游戏运行验证；用户会在明文整理完成后自行打包APK进游戏测试，届时只针对实测异常功能追加修改。
+
+后续工作规则：
+- 不再把语法检查、全文件静态检查、API兼容验证、运行验证安排为每轮任务。
+- 继续按“提取函数名 → 旧版同名明文复用 → 官方开发文档API直接调用 → 剩余业务函数才解析VM”的顺序。
+- 已有充分同名/常量/职责证据的旧版业务函数，先迁移成11.16明文，不因非关键细节不确定而无限停留；明显的新版本差异优先按新版常量和调用关系重建。
+- 只有确实无法构造业务主体时才留待处理，后续由用户APK测试反馈决定具体修正点。
+
+本轮批量新增四个函数到唯一交付文件：root/26 ClearBlacklistItems、root/40 onDamageMsg、root/63 LuaSendMsg、root/71 DeathAutoBlacklist。它们均已在11.16函数状态CSV标记为已写入明文（跨版本业务复用）。完整静态恢复按上一账本49/162增加4项，更新为53/162（32.72%）；业务功能累计71/162（43.83%）。本轮不进行验证。
+
+下一批继续批量迁移旧版同名函数，优先root/45 StorageItems、root/34 BlacklistPlayerDetection、root/6 MainLoop；随后处理新版扩展的root/22 DestroyUI、root/55 Builtsetting、root/67 ShowHideAllButtons。
