@@ -4551,3 +4551,32 @@ local function MakeJoystickUserInputMove_11_16(moveState)
     end
 end
 
+
+
+-- ============================================================================
+-- 11.16 root/25：见人跑定时器启停按钮（33条指令，0显式参数，1个子闭包）
+-- ============================================================================
+-- 本版33条指令流确认：检查共享状态中的cruiseRunTimer；
+-- 已运行则调用SL:UnSchedule并清空句柄；未运行则输出“开启见人跑”，
+-- 创建root/25/0周期回调并以0.1秒调用SL:Schedule，保存返回句柄。
+-- root/25/0主体598条指令尚未取得逐条指令流，故由callbackFactory语义接口承接，
+-- 不伪造见人跑的实际追踪/移动逻辑。
+local function MakeCruiseRunButtonHandler_11_16(
+    timerState,
+    sl,
+    printLog,
+    callbackFactory
+)
+    return function()
+        if timerState.cruiseRunTimer then
+            sl:UnSchedule(timerState.cruiseRunTimer)
+            timerState.cruiseRunTimer = nil
+            return
+        end
+
+        printLog("开启见人跑")
+        local callback = callbackFactory()
+        timerState.cruiseRunTimer = sl:Schedule(callback, 0.1)
+    end
+end
+
