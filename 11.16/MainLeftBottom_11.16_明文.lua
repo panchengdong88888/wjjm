@@ -1679,3 +1679,212 @@ local function helper_root_18()
 
     return result
 end
+
+
+-- ============================================================================
+-- 11.16 跨版本业务批量恢复：黑名单消息、网络消息发送及清理
+-- 依据：11.16 root/26、root/40、root/63、root/71 的参数数/常量/闭包结构；
+-- 旧版明文同名业务体直接迁移，状态统一接入MainLeftBottom.a。
+-- ============================================================================
+
+local function getMainLeftBottomBlacklistState()
+    local mainState = MainLeftBottom.a
+    if not mainState.blacklist then
+        mainState.blacklist = {
+            lastAttacker = nil,
+            lastHp = nil,
+            deathHandled = false,
+            alertAt = 0,
+            nextTryAt = 0,
+            noStoneWarned = false,
+            distance = nil,
+        }
+    end
+    return mainState.blacklist
+end
+
+
+-- 11.16 root/63：LuaSendMsg（92条指令，0参数、0子原型）。
+-- 本版常量确认Blocklist、SendHookList、networkCtl及四个消息参数字段；
+-- 业务主体沿用旧版同名实现，状态表改为本版MainLeftBottom.a。
+function LuaSendMsg(hookKey, param1, param2, param3, param4, messageId)
+    local mainState = MainLeftBottom.a
+    local message = {
+        recog = 0,
+        msgId = messageId,
+        param1 = param1,
+        param2 = param2,
+        param3 = param3,
+        param4 = param4,
+    }
+
+    local numericHookKey = tonumber(hookKey)
+    local blocklist = mainState.Blocklist or {}
+    local blockedIndex = table.find(blocklist, numericHookKey)
+
+    if not blockedIndex then
+        local formattedParams = {}
+        local parameterSource = {
+            message.param1,
+            message.param2,
+            message.param3,
+            message.param4,
+        }
+
+        for _, value in ipairs(parameterSource) do
+            if type(value) == "string" then
+                table.insert(formattedParams, "'" .. value .. "'")
+            else
+                table.insert(formattedParams, tostring(value))
+            end
+        end
+
+        local logText = "LuaSendMsg(" .. table.concat(formattedParams, ", ") .. ")"
+        if PrintLog then
+            PrintLog(logText)
+        end
+    end
+
+    local hookList = mainState.SendHookList or {}
+    local hook = hookList[hookKey]
+    if type(hook) == "function" then
+        local callOK, handled = pcall(hook, hookKey, messageId, message)
+        if callOK and handled == true then
+            return
+        end
+    end
+
+    global.networkCtl:SendMsg(
+        hookKey,
+        param1,
+        param2,
+        param3,
+        param4,
+        messageId
+    )
+end
+
+MainLeftBottom.a.LuaSendMsg = LuaSendMsg
+
+
+-- 11.16 root/40：onDamageMsg（72条指令，2参数、1个JSON解码子闭包）。
+-- 子闭包root/40/0已恢复为SL:JsonDecode(capturedJson)，此处直接复用该闭包工厂。
+function onDamageMsg(arg1, messageJson)
+    if not messageJson or messageJson == "" then
+        return
+    end
+
+    local decodeOK, message = pcall(function()
+        return SL.JsonDecode(messageJson)
+    end)
+    if not decodeOK or type(message) ~= "table" then
+        return
+    end
+
+    local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
+    if not mainActorID or message.UserID == mainActorID then
+        return
+    end
+
+    local attackerID = message.AttackUserID
+    if not attackerID or attackerID == mainActorID then
+        return
+    end
+
+    if SL:GetMetaValue("ACTOR_IS_HERO", attackerID) then
+        local masterActorID = SL:GetMetaValue("ACTOR_MASTER_ID", attackerID)
+        if masterActorID then
+            attackerID = masterActorID
+        end
+    end
+
+    local attackerName = SL:GetMetaValue("ACTOR_NAME", attackerID)
+    if not attackerName or attackerName == "" then
+        return
+    end
+    if string.find(attackerName, "分身", 1, true) then
+        return
+    end
+
+    getMainLeftBottomBlacklistState().lastAttacker = {
+        id = attackerID,
+        name = attackerName,
+    }
+end
+
+MainLeftBottom.a.onDamageMsg = onDamageMsg
+
+
+-- 11.16 root/71：DeathAutoBlacklist（47条指令，0参数、1个子闭包）。
+-- 子闭包root/71/0已恢复为SL:RequestAddBlacklistByName(name)。
+function DeathAutoBlacklist()
+    local blacklistState = getMainLeftBottomBlacklistState()
+    local lastAttacker = blacklistState.lastAttacker
+    blacklistState.lastAttacker = nil
+
+    if not lastAttacker or not lastAttacker.name or lastAttacker.name == "" then
+        if PrintLog then
+            PrintLog("本次死亡没记录到凶手，跳过自动拉黑")
+        end
+        return
+    end
+
+    if FindBlacklistPlayer(lastAttacker.id) then
+        if PrintLog then
+            PrintLog("凶手已在黑名单中：%s", lastAttacker.name)
+        end
+        return
+    end
+
+    if PrintLog then
+        PrintLog("被 %s 击杀，自动加入黑名单", lastAttacker.name)
+    end
+    ShowLocalNoticeByType("自动拉黑：" .. lastAttacker.name)
+
+    for retryIndex = 0, 5 do
+        SL:ScheduleOnce(function()
+            SL:RequestAddBlacklistByName(lastAttacker.name)
+        end, 0.5 * retryIndex)
+    end
+end
+
+
+-- 11.16 root/26：ClearBlacklistItems（63条指令，0参数、1个移除回调子闭包）。
+-- root/26/0的13条指令已恢复为RequestOutBlacklist(key)并清除_proxy数据项；
+-- 本函数按旧版同名业务主体迁移，回调通过已恢复的闭包工厂构造。
+function ClearBlacklistItems()
+    local friendProxy = PCallHelper_2()
+    if not friendProxy or not friendProxy._blacklistData then
+        if PrintLog then
+            PrintLog("取不到好友代理，清空失败")
+        end
+        ShowLocalNoticeByType("清空黑名单失败")
+        return
+    end
+
+    local blacklistData = friendProxy._blacklistData
+    local entries = {}
+    for key, _ in pairs(blacklistData) do
+        entries[#entries + 1] = key
+    end
+
+    if #entries == 0 then
+        if PrintLog then
+            PrintLog("黑名单本来就是空的")
+        end
+        ShowLocalNoticeByType("黑名单为空")
+        return
+    end
+
+    if PrintLog then
+        PrintLog(string.format("开始清空黑名单，共 %d 人", #entries))
+    end
+    ShowLocalNoticeByType("清空黑名单 " .. #entries .. " 人")
+
+    for index, entryKey in ipairs(entries) do
+        local removeEntry = make_helper_root_26_0(entryKey, friendProxy)
+        SL:ScheduleOnce(removeEntry, (index - 1) * 0.01)
+    end
+
+    getMainLeftBottomBlacklistState().lastAttacker = nil
+end
