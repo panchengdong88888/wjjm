@@ -123,7 +123,7 @@
 "115","root/52/26","root/52","2","","待识别","0","5","1","23","未恢复","SL | Schedule | 开始检测金币(>500W买金条) | buygoldTimer","","","2026-11-18"
 "116","root/52/26/0","root/52/26","3","","待识别","0","21","0","77","未恢复","UnSchedule | 金币不足500W，买金条结束 | ShowSystemTips | global | 金币 | 金条 | ProxyTable | 买金条失败： | tostring | 买金条失败：%s","","","2026-11-18"
 "117","root/52/27","root/52","2","","待识别","1","12","0","46","未恢复","pairs | MakeIndex | OverLap | find | Name | BAG_DATA | SL | string | GetMetaValue | ITEM_IS_BIND","","","2026-11-18"
-"118","root/52/28","root/52","2","","待识别","0","3","0","7","部分恢复（闭包体已恢复，外层捕获待确认）","root/52槽556 Opcode178创建childIndex=28；槽557 Opcode132捕获父H[9]；子体写H[0].GATHER_THRESHOLD=11、调用InitGatherMonsters并返回其函数值；root/52的H[9]最终来自root N[8]（接口方法表）","","root N[8]原始变量名待确认；不计完整","2026-11-19"
+"118","root/52/28","root/52","2","","待识别","0","3","0","7","部分恢复（闭包体已恢复；捕获表身份已缩小为引怪配置表，仍待函数调用语义闭合）","root/52槽556 Opcode178创建childIndex=28；槽557 Opcode132捕获父H[9]；子体写H[0].GATHER_THRESHOLD=11、调用InitGatherMonsters并返回其函数值；root/52的H[9]最终来自root N[8]：root槽88创建的引怪配置表，含GATHER_THRESHOLD=11、CHECK_INTERVAL=0.5、ATTACK_WAIT_TIME=1（接口方法表）","","root N[8]原始变量名待确认；不计完整","2026-11-19"
 "119","root/52/29","root/52","2","","待识别","0","10","0","39","未恢复","toggle | #ff0000 | Button_setTitleText | Button_setTitleColor | #ffffff | applebut | toggled | name | GUI","","","2026-11-18"
 "120","root/52/30","root/52","2","closure_root_52_30","匿名闭包（行为已恢复）","0","1","0","4","已写入明文","startPutoutAll","MainLeftBottom_11.16_明文.lua","4条指令：Opcode 9融合读取H[0].startPutoutAll；无参数调用；定位名为合成名","2026-11-18"
 "121","root/52/31","root/52","2","","待识别","0","10","0","29","未恢复","isStoring | UnSchedule | StorageItems | storageTimer | 关闭存仓功能 | 开启存仓功能 | SL","","","2026-11-18"
