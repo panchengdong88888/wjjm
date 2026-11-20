@@ -295,3 +295,10 @@ slot191–212已按11.16原始F()分派器融合边界闭合：
 - 本段提示文本为`"锻造生肖：" .. zodiacName .. " 第" .. state.tryCount .. "次"`。
 
 至此root/79的可见业务路径已按段闭合：入口金币/地图/移动/NPC交互、clickNpc等待、每5 tick生肖扫描、装备数据与背包对象筛选、每生肖前缀30 tick节拍、tryCount>200停止、网络进度消息及PrintLog提示。尚未整体落入唯一明文的主要原因是root/72的32槽辅助函数未保存完整指令流；root/79自身所有捕获来源现已可识别，其中H[10]直接作为可调用捕获值使用，不必猜写其返回对象结构。
+
+
+### 2026-11-20续：root/72辅助检索函数已恢复并写入明文
+
+root/72为1参数、32条物理指令、8个常量、无子原型。常量池完整限定为find、GetMetaValue、string、Name、1、pairs、SL、ALL_EQUIP_DATAS。按指令结构恢复为遍历`SL:GetMetaValue("ALL_EQUIP_DATAS")`，对每项`item.Name`执行`string.find(item.Name, searchText, 1)`，命中返回装备数据对象，未命中返回nil。root/79 H[10]调用后只参与真值分支，符合该返回形式。
+
+已将函数以合成定位名`helper_root_72`写入`MainLeftBottom_11.16_明文.lua`，并同步原型索引与函数状态CSV。没有伪造原始导出函数名，也没有增加开发文档API分析。
