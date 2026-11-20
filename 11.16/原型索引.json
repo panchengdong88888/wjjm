@@ -5661,9 +5661,9 @@
         "walkNpc",
         "MoveTo"
       ],
-      "recovery_status": "未恢复（主体控制流已大部分闭合；待整合完整Lua并处理root/72辅助函数）",
-      "business_summary": "forgeZodiac状态回调：金币检查、前往神龍之都、移动并点击NPC（index=41，UserID='10030'），等待后每5 tick扫描十二生肖；查询ALL_EQUIP_DATAS找出未装备生肖，再查BAG_DATA取得物品对象并使用其Index；按生肖前缀每30 tick节流，累计尝试次数并发送进度消息。",
-      "recovery_evidence": " 父root槽362将立即数41写入N[51]，root/79 H[6]因此为NPC交互JSON的index=41；H[7]='10030'。"
+      "recovery_status": "已写入明文（主体业务流程整合完成；保留闭包捕获与状态字段说明）",
+      "business_summary": "定时生肖锻造状态机：检查金币，前往神龍之都，移动并交互NPC；等待后每5 tick扫描十二生肖装备，检查已装备数据并使用背包中对应物品；按生肖前缀30 tick节流，累计最多200次并发送锻造请求与进度日志。",
+      "recovery_evidence": " 父root槽362将立即数41写入N[51]，root/79 H[6]因此为NPC交互JSON的index=41；H[7]='10030'。 已将212槽主体整合为forgeZodiac()写入唯一明文。12个捕获值按root闭包创建点映射；root/72由helper_root_72承接，root/53与root/30分别由helper_root_53/Nested_find承接。"
     },
     {
       "preorder_id": 161,
