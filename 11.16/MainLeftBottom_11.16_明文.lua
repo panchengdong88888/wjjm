@@ -4409,3 +4409,17 @@ local function MakeResourceStatisticsRefresh_11_16(
     end
 end
 
+
+
+-- ============================================================================
+-- 11.16 root/52/20：捕获回调执行后返回成功（5条指令，0显式参数）
+-- ============================================================================
+-- 原型只读取H[0]并无参调用，随后返回true；H[0]由父级闭包捕获。
+-- 父级创建点/业务变量身份未闭合，故以capturedCallback显式承载，不猜来源。
+local function MakeCapturedCallbackAndReturnTrue_11_16(capturedCallback)
+    return function()
+        capturedCallback()
+        return true
+    end
+end
+
