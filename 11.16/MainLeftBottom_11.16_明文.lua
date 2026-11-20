@@ -307,6 +307,24 @@ local function Nested_find(searchText)
 end
 
 
+-- 11.16 root/72：按名称片段检索当前已装备数据（32条物理指令；1个参数；无子原型）。
+-- 常量池：find、GetMetaValue、string、Name、1、pairs、SL、ALL_EQUIP_DATAS。
+-- 遍历SL:GetMetaValue("ALL_EQUIP_DATAS")，对每项Name从第1个字符起执行string.find；
+-- 命中时返回对应装备数据对象，未命中返回nil。root/79将返回值用于真值分支，
+-- 以此判断某生肖装备是否已存在于当前装备数据中。
+-- helper_root_72为原型路径合成定位名，原始函数符号名未从外部注册点确认。
+local function helper_root_72(searchText)
+    local allEquipData = SL:GetMetaValue("ALL_EQUIP_DATAS")
+    for _, item in pairs(allEquipData) do
+        if string.find(item.Name, searchText, 1) then
+            return item
+        end
+    end
+
+    return nil
+end
+
+
 -- 11.16 root/23/0：3条物理指令、无参数、无upvalue捕获。
 -- 父级root/23在槽位23通过Opcode387创建childIndex=0闭包，captureCount=0。
 -- Opcode105从全局环境读取MainLoop；Opcode128无参数调用；Opcode205结束。
