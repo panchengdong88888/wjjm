@@ -4254,3 +4254,33 @@ local function MakeButtonToggleStateSync_11_16(buttonGroups, mainLeftBottom)
     end
 end
 
+
+
+-- ============================================================================
+-- 11.16 root/52/6/4：背包未绑定物品数量统计（46条指令，1个参数）
+-- ============================================================================
+-- 与11.9资源统计子函数同职责：按物品名称片段匹配，只累计未绑定物品；
+-- 数量优先使用OverLap，缺失时按1件计。11.16常量表与参数数支持该主体。
+local function GetResourceItemCount_11_16(requestedName)
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then
+        return 0
+    end
+
+    local totalCount = 0
+    for _, item in pairs(bagData) do
+        if item and item.Name and item.MakeIndex then
+            local matched = string.find(item.Name, requestedName, 1, true)
+            if matched and not SL:GetMetaValue("ITEM_IS_BIND", item) then
+                local overlap = item.OverLap
+                if not overlap then
+                    overlap = 1
+                end
+                totalCount = totalCount + overlap
+            end
+        end
+    end
+
+    return totalCount
+end
+
