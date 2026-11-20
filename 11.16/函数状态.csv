@@ -79,7 +79,7 @@ mode=%s
 74,root/50/1,root/50,2,make_helper_root_50_1（合成定位名）,闭包体已恢复；H[0]/H[1]父级来源待确认,0,0,0,5,部分恢复（不计完整函数）,H[0]=false；H[1]()；Opcode339结束,H[0]/H[1]父级源寄存器及业务变量名待确认,2026-11-19
 75,root/50/2,root/50,2,make_helper_root_50_2（合成定位名）,闭包体已恢复；H[0]/H[1]父级来源待确认,0,0,0,5,部分恢复（不计完整函数）,Opcode330写H[0]=false并读取H[1]；H[1]()；Opcode205结束,H[0]/H[1]父级源寄存器及业务变量名待确认,2026-11-19
 76,root/50/3,root/50,2,make_helper_root_50_3（合成定位名）,闭包体及捕获语义已恢复（父级词法变量原名/注册点待确认）,0,2,0,5,已写入明文（本版指令级闭包体完整；父级绑定待接续）,5/5槽位闭合；root/50槽441创建子闭包，槽442将父N[7]捕获到H[0]。子体准备GUI.Win_Close方法并以H[0]为唯一显式参数调用，等价GUI:Win_Close(capturedWindow)。明文工厂参数显式承载H[0]。,MainLeftBottom_11.16_明文.lua,父root/50的N[7]原始词法变量名和窗口对象来源待确认；子闭包的执行体及捕获值用途已确认。,2026-11-20
-77,root/50/4,root/50,2,helper_root_50_4（输入窗口颜色回调，暂定）,父函数root/50为数字输入窗口构建器；子原型23条指令使用GUI.Button_setTitleColor及#ffffff/#00ff00，推定为输入模式按钮颜色状态回调；具体按钮与捕获对象待闭合,0,4,0,23,未恢复,父函数root/50为数字输入窗口构建器；子原型23条指令使用GUI.Button_setTitleColor及#ffffff/#00ff00，推定为输入模式按钮颜色状态回调；具体按钮与捕获对象待闭合,,,2026-11-18
+77,root/50/4,root/50,2,MakeInputModeColorSync_11_16,指令主体已恢复（父级捕获映射待闭合）,0,4,0,23,已写入两组输入模式按钮颜色同步：选中#00ff00、未选中#ffffff,Button_setTitleColor | GUI | #ffffff | #00ff00,MainLeftBottom_11.16_明文.lua：MakeInputModeColorSync_11_16,本版23条定点指令确认两次Button_setTitleColor及绿白颜色分支；父级4项捕获对象的寄存器/业务身份未闭合，采用语义参数承接，计入部分恢复,2026-11-21
 78,root/51,root,1,PrintLog,跨版本业务复用（11.2同名函数体与11.16常量/签名吻合；未逐槽模拟）,1,13,0,38,已写入明文（跨版本业务复用；非指令级完整还原）,11.16 root/51：1个固定参数并带可变参数、38条指令；常量select、type、#、pcall、Print、table、format、tostring、string、SL等与11.2同名函数吻合。保留其没有实际调用SL.Print的旧版行为；跨版本复用，未逐槽模拟。,MainLeftBottom_11.16_明文.lua：PrintLog,本版指令未逐槽核验；出现行为差异时定点复查,2026-11-19
 79,root/52,root,1,doInit_UI / 主界面初始化,高置信候选,0,176,37,865,未恢复,开拾取 | infoGoldTxt | 开苹果图中
 开苹果图中
