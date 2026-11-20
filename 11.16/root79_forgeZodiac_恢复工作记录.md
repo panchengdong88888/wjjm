@@ -302,3 +302,12 @@ slot191–212已按11.16原始F()分派器融合边界闭合：
 root/72为1参数、32条物理指令、8个常量、无子原型。常量池完整限定为find、GetMetaValue、string、Name、1、pairs、SL、ALL_EQUIP_DATAS。按指令结构恢复为遍历`SL:GetMetaValue("ALL_EQUIP_DATAS")`，对每项`item.Name`执行`string.find(item.Name, searchText, 1)`，命中返回装备数据对象，未命中返回nil。root/79 H[10]调用后只参与真值分支，符合该返回形式。
 
 已将函数以合成定位名`helper_root_72`写入`MainLeftBottom_11.16_明文.lua`，并同步原型索引与函数状态CSV。没有伪造原始导出函数名，也没有增加开发文档API分析。
+
+
+### 2026-11-20续：root/79 forgeZodiac主体已整合写入唯一明文
+
+已将root/79的212条物理指令按已闭合的状态机路径整合为可读`forgeZodiac()`，写入`MainLeftBottom_11.16_明文.lua`。覆盖金币门槛、神龍之都地图请求与超时重发、移动至NPC(151,144,8)、NPC JSON(index=41/UserID=10030)、clickNpc等待5 tick、每5 tick扫描十二生肖、ALL_EQUIP_DATAS装备检索、BAG_DATA物品对象查找与UseItemByIndex、按生肖前缀30 tick节拍、tryCount超过200停止、LuaSendMsg与PrintLog进度输出。
+
+捕获关系使用已确认的12项映射：H[0]状态表、H[1]checkGold、H[2]ForgeZodiacToggleHandler、H[3]PrintLog、H[4]/H[5]坐标151/144、H[6]/H[7]NPC字段41/10030、H[8]生肖表、H[9]helper_root_53、H[10]helper_root_72、H[11]Nested_find。root/72与root/79现均有明文实现。
+
+本次属于按已闭合槽位的业务代码整合；未声称完成APK运行验证。明文恢复计数按主体写入更新，后续若实测发现行为差异再针对具体功能修正。
