@@ -168,3 +168,5 @@ mode=%s
 160,root/79,root,1,forgeZodiac,生肖锻造周期回调身份已确认；本版212槽控制流及12项捕获映射已闭合,0,48,0,212,已写入明文（本版指令级主体完整恢复）,H[0]=MainLeftBottom.z；H[1]=checkGold；H[2]=root/14回调；H[3]=PrintLog；H[4]/H[5]=151/144；H[6]/H[7]=41/'10030'；H[8]=十二生肖列表；H[9]=helper_root_53；H[10]=helper_root_72；H[11]=Nested_find,MainLeftBottom_11.16_明文.lua：forgeZodiac,212槽主体已整合；MoveTo成功后发送1010 NPC点击消息；10004用于生肖锻造进度消息。未执行Lua语法检查及APK运行验证；root/14回调本体另列待恢复。,2026-11-20
 161,root/80,root,1,ShowLocalNoticeByType,高置信候选,1,14,0,15,已写入明文,screenH | ShowLocalNoticeByType | Type=10 | Msg=参数1 | FColor=249 | BColor=0 | X=5 | Y=screenH-50 | SL,MainLeftBottom_11.16_明文.lua,,2026-11-18
 "
+
+162,root/15/1,root/15,2,,拍卖行上架物品处理回调（职责线索）,0,12,0,121,未恢复,Opcode字段纠错：真实分派码为0/1/2/4/5/6/8/9/10/12/13/14；此前基于A字段的逐槽Opcode解释全部撤回，需按F()分派叶重建融合边界。常量池指向BAG_DATA、绑定检查、价格上限、RequestAuctionPutin等, ,旧slot解释不能复用；待真实Opcode叶与寄存器/调用参数闭合后再写明文,2026-11-20
