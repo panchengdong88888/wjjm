@@ -505,16 +505,14 @@ end
 
 
 -- 11.16 root/52/10：6条物理指令，0个显式参数，1个upvalue。
--- Opcode 403读取H[0]，并融合下一槽将常量“清空黑名单”装入参数寄存器；
--- Opcode 128调用该捕获函数并传入提示文本；随后加载全局ClearBlacklistItems并无参调用。
--- 父级root/52在槽位617创建此闭包，捕获root/52自身的H[0]；
--- 但root/52的H[0]在更外层的来源尚未映射，因此以capturedNotice显式承载，不伪造业务变量名。
--- 此为闭包体部分恢复，不计入31个完整原型函数。
-local function make_helper_root_52_10(capturedNotice)
-    return function()
-        capturedNotice("清空黑名单")
-        ClearBlacklistItems()
-    end
+-- 父级root/52槽617创建此闭包，捕获root/52 H[0]；root槽633创建root/52时，
+-- H[0]来自root N[4]。root N[4]在root槽43被root/51闭包覆盖；
+-- root/51为PrintLog（与11.2同名函数及本版参数/常量信息吻合）。
+-- 因此该闭包先调用PrintLog("清空黑名单")，再调用全局ClearBlacklistItems()。
+-- make_helper_root_52_10为原型路径合成定位名，不是原始函数符号名。
+local function make_helper_root_52_10()
+    PrintLog("清空黑名单")
+    ClearBlacklistItems()
 end
 
 
