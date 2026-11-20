@@ -1793,3 +1793,8 @@ slot73字段为A403、B5、C0。Opcode403执行N[A]=H[B]，故这里读H[5]，�
 ## 2026-11-20再次纠正slot73操作数方向
 
 root/15特殊导出格式A=真实Opcode，B/C/D为操作数。Opcode403语义是`N[K[2]]=H[K[3]]`，所以child slot73 A403、B5、C0对应`N[5]=H[0]`，不是H[5]。H0捕获parent N5=SL；H5才是parent H0回调。slot73–77实际调用H0，形成SL对象被当函数调用的疑点；不要擅自换成H5。上一条把B当作upvalue索引的更正撤销。原型parameter_count=0仍然有效。
+
+
+## 2026-11-20续：slot79–86融合指令确认
+
+slot79读取H2到N5；slot80以N5条件跳过slot81；假值路径slot81跳到84。真值路径执行slot82 Opcode120：`X=N4; N6=X; N5=X[1]`，并融合slot83把N0设为84。slot84 Opcode399设置N5=1，并融合slot85把H3写入N6。slot86 Opcode172执行N6=N6*N5。slot82/83和slot84/85均为融合序列，不能逐槽拆开。此处还不能据此推断最终上架数量，继续追踪N4/N5/N6后续用途。唯一明文未写入，统计不变。
