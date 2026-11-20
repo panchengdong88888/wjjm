@@ -1146,3 +1146,8 @@ Opcode403执行N[A]=H[B]并融合下一物理槽装入立即值。child slot73�
 ## 2026-11-20再次纠正Opcode403操作数映射
 
 对于root/15特殊导出格式，A是Opcode，B/C是操作数。Opcode403分派器执行`N[K[2]]=H[K[3]]`并融合下一槽装入立即值，因此child slot73 A403、B5、C0 => `N[5]=H[0]`。H0捕获parent N5=SL，H5捕获parent H0回调。不得把B=5误认为upvalue索引。slot73–77调用H0，疑点保留，禁止臆改成H5。
+
+
+## 2026-11-20续：Opcode120/399融合动作（root/15/1）
+
+Opcode120真实叶：`X=N[K3]; N[K2+1]=X; N[K2]=X[K4];`随后消费下一槽执行`N[next.K2]=next.K3`。slot82 B5/C4/D1 => N6=N4、N5=N4[1]；融合slot83 B0/C84 => N0=84。Opcode399真实叶：`N[K2]=K3`随后消费下一槽执行`N[next.K2]=H[next.K3]`。slot84 B5/C1，融合slot85 B6/C3 => N5=1、N6=H3。Opcode172叶为`N[K2]=N[K3]*N[K4]`，slot86 B6/C6/D5 => N6=N6*N5。上述融合边界和寄存器写入已闭合。
