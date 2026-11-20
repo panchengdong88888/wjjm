@@ -8,7 +8,7 @@
     121,
     387
   ],
-  "closureCreateCount": 54,
+  "closureCreateCount": 57,
   "events": [
     {
       "createSlot": 43,
@@ -1544,31 +1544,6 @@
       "captures": []
     },
     {
-      "createSlot": 519,
-      "createOpcode": 121,
-      "childIndex": 60,
-      "childPath": "root/60",
-      "parameterCount": 0,
-      "instructionCount": 21,
-      "constantPreview": [
-        "PlayerInputProxy",
-        "ClearAttackTargetID",
-        "global",
-        "retrieveProxy",
-        "ProxyTable",
-        "Facade"
-      ],
-      "captureCount": 1,
-      "captures": [
-        {
-          "slot": 520,
-          "opcode": 243,
-          "sourceRegister": 76,
-          "sourceKind": "parent-local-register"
-        }
-      ]
-    },
-    {
       "createSlot": 540,
       "createOpcode": 121,
       "childIndex": 11,
@@ -2022,6 +1997,24 @@
         "MainLeftBottom",
         "doInit"
       ]
+    },
+    {
+      "createSlot": 519,
+      "createOpcode": 121,
+      "childIndex": 60,
+      "childPath": "root/60",
+      "parameterCount": 0,
+      "instructionCount": 21,
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 520,
+          "opcode": 243,
+          "sourceRegister": 76,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "evidence": "root_654条物理指令流.json槽519 Opcode121 A=79 B=60 C=1；紧随槽520 Opcode243捕获父级N[76]。索引记录的upvalue_count=6与创建点captureCount=1不一致，暂保留差异，不推断其余捕获。"
     }
   ],
   "notes": [
