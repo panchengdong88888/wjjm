@@ -2468,3 +2468,29 @@ function ShowHideAllButtons()
         NetworkUtil.OnLuaMessage = NetworkUtil._origOnLuaMessage
         NetworkUtil._origOnLuaMessage = nil
     end
+
+-- ============================================================================
+-- 11.16 root/55：Builtsetting（195条指令，0参数，51个常量）
+-- 部分恢复：迁移旧版中可直接确认的六项基础设置。
+-- 本版新增SETTING_CONFIG、SETTING_RANK_DATA、HP保护1物品优先级及PKMODE
+-- 扩展分支尚未从本版195条指令中闭合；此处不伪造配置表结构/枚举，不标记为完整恢复。
+-- ============================================================================
+function Builtsetting()
+    CHANGE_SETTING(27, {0})
+    ShowLocalNoticeByType("关闭背景音乐")
+
+    CHANGE_SETTING(52, {0})
+    ShowLocalNoticeByType("关闭游戏音乐")
+
+    CHANGE_SETTING(1002, {0})
+    ShowLocalNoticeByType("关闭高帧率")
+
+    CHANGE_SETTING(57, {1})
+    ShowLocalNoticeByType("开启人物简装")
+
+    CHANGE_SETTING(58, {1})
+    ShowLocalNoticeByType("开启怪物简装")
+
+    CHANGE_SETTING(2005, {0})
+    ShowLocalNoticeByType("关闭屏蔽怪物")
+end
