@@ -1107,6 +1107,262 @@ local function FindMonsterCandidates()
     return result
 end
 
+-- 11.16 root/6：MainLoop（573条物理指令，0参数、无子原型）。
+-- 旧版同名引怪状态机主体与本版InitGatherMonsters/ResetGatherMonsterData所用
+-- 的isGatherRunning、currentState、resettableTable及resetSlot状态变量一致，直接迁移。
+function MainLoop()
+    if not isGatherRunning then
+        return
+    end
+
+    -- 白名单地图：仅在状态非IDLE时记录切换并复位。
+    if IsInWhitelistMap() then
+        if currentState ~= gatherStatusText.IDLE then
+            PrintLog("在白名单地图, 停止引怪")
+            FormatStateChange(gatherStatusText.IDLE)
+            ResetGatherMonsterData()
+        end
+        return
+    end
+
+    --------------------------------------------------------------------------
+    -- IDLE：收集候选怪物ID。
+    --------------------------------------------------------------------------
+    if currentState == gatherStatusText.IDLE then
+        PrintLog("扫描怪物中")
+
+        local candidates = FindMonsterCandidates()
+        if #candidates == 0 then
+            PrintLog("视野内没有可攻击怪物")
+            return
+        end
+
+        resettableTable = {}
+        local mainPlayerID = GetMainPlayerID()
+
+        for _, actor in ipairs(candidates) do
+            if not GetOwnerID(actor, mainPlayerID) then
+                table.insert(resettableTable, actor:GetID())
+            end
+        end
+
+        if #resettableTable == 0 then
+            PrintLog("没有可攻击的怪物")
+            return
+        end
+
+        resetSlot17 = 1
+        resetSlot16 = 0
+        PrintLog(string.format("开始引怪，目标数量: %d", #resettableTable))
+        FormatStateChange(gatherStatusText.GATHERING)
+        return
+    end
+
+    --------------------------------------------------------------------------
+    -- GATHERING：先处理等待归属变更的目标，再扫描目标列表。
+    --------------------------------------------------------------------------
+    if currentState == gatherStatusText.GATHERING then
+        PrintLog("引怪中")
+
+        if resetSlot19 then
+            local now = os.time()
+            if now < resetSlot20 then
+                PrintLog(string.format(
+                    "等待归属变更中: %s (还剩 %d 秒)",
+                    resetSlot22,
+                    resetSlot20 - now
+                ))
+                return
+            end
+
+            -- 等待到期后的确认查询按原型调用点不传参数；PC159-PC160常规扫描调用才传入额外实参。
+            local actorMap = FindMonsterInCurrViewField()
+            local actor = actorMap[resetSlot21]
+            local mainPlayerID = GetMainPlayerID()
+
+            if actor and GetOwnerIDText(actor, mainPlayerID) then
+                PrintLog(string.format(
+                    "怪物 %s 归属已变更为自己",
+                    resetSlot22
+                ))
+                -- VM PC137-PC139：确认归属成功后递增共享归属计数。
+                resetSlot16 = resetSlot16 + 1
+            else
+                PrintLog(string.format(
+                    "怪物 %s 归属未变更或已离开视野",
+                    resetSlot22
+                ))
+            end
+
+            resetSlot19 = false
+            resetSlot20 = 0
+            resetSlot21 = 0
+            resetSlot22 = ""
+            resetSlot17 = resetSlot17 + 1
+        end
+
+        -- 原型PC159-PC160向零形参辅助函数传入等待标记；Lua 5.1会忽略多余实参，保留调用形态。
+        local actorMap = FindMonsterInCurrViewField(resetSlot19)
+        local mainPlayerID = GetMainPlayerID()
+        local allOwnersResolved = true
+
+        -- 注意：数值for的起止值在进入循环时确定；循环内更新resetSlot17
+        -- 只影响下一次MainLoop回调的起点，不会改变本轮index的递增。
+        for index = resetSlot17, #resettableTable do
+            local targetID = resettableTable[index]
+            local actor = actorMap[targetID]
+
+            if not actor then
+                PrintLog(string.format(
+                    "怪物 %d (ID: %s) 不在视野内，跳过",
+                    index,
+                    tostring(targetID)
+                ))
+                resetSlot17 = index + 1
+
+            elseif not IsDie(actor) then
+                PrintLog(string.format(
+                    "怪物 %d (ID: %s) 已死亡，跳过",
+                    index,
+                    tostring(targetID)
+                ))
+                resetSlot17 = index + 1
+
+            else
+                local monsterName = actor:GetName()
+                if not monsterName then
+                    monsterName = "未知怪物"
+                end
+
+                local ownerID, ownerDescription =
+                    GetOwnerDescription(actor, mainPlayerID)
+
+                if GetOwnerID(actor, mainPlayerID) then
+                    PrintLog(string.format(
+                        "怪物 %d (%s, ID: %s) 归属属于其他玩家(归属ID: %s, %s)，跳过",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerID),
+                        tostring(ownerDescription)
+                    ))
+                    resetSlot17 = index + 1
+
+                elseif GetOwnerIDText(actor, mainPlayerID) then
+                    PrintLog(string.format(
+                        "怪物 %d (%s, ID: %s) 归属已属于自己(归属ID: %s, %s)，跳过",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerID),
+                        tostring(ownerDescription)
+                    ))
+                    resetSlot16 = resetSlot16 + 1
+                    resetSlot17 = index + 1
+
+                else
+                    allOwnersResolved = false
+                    resetSlot17 = index
+
+                    PrintLog(string.format(
+                        "锁定怪物 %d: %s (ID: %s, 归属: %s)",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerDescription)
+                    ))
+
+                    local accepted = SetTargetID(targetID)
+                    if accepted then
+                        resetSlot19 = true
+                        resetSlot20 = os.time() + gatherConfig.ATTACK_WAIT_TIME
+                        resetSlot21 = targetID
+                        resetSlot22 = monsterName
+
+                        PrintLog(string.format(
+                            "开始等待 %s 归属变更 (等待 %d 秒)",
+                            monsterName,
+                            gatherConfig.ATTACK_WAIT_TIME
+                        ))
+
+                        -- VM PC280-PC302：锁定成功后设置等待状态并立即返回。
+                        -- 游标必须保持在当前index；等待归属确认后再由VM的确认分支推进。
+                        return
+                    end
+
+                    -- VM PC303-PC311：锁定失败时记录日志、游标推进到下一只，然后返回。
+                    PrintLog(string.format("锁定怪物 %s 失败", monsterName))
+                    resetSlot17 = index + 1
+                    return
+                end
+            end
+        end
+
+        -- VM PC314-PC330：只有归属确认计数达到目标列表总数，才允许进入攻击状态。
+        -- 若扫描结束但计数不足（包括归属被其他玩家抢走），按VM回到IDLE并重置本批。
+        if allOwnersResolved and resetSlot16 >= #resettableTable then
+            PrintLog("所有怪物归属已获取，切换到攻击状态")
+            resetSlot17 = 1
+            FormatStateChange(gatherStatusText.ATTACKING)
+            return
+        end
+
+        PrintLog("怪物列表处理完毕但未全部获取归属，重新扫描")
+        FormatStateChange(gatherStatusText.IDLE)
+        ResetGatherMonsterData()
+        return
+    end
+
+    --------------------------------------------------------------------------
+    -- ATTACKING：按目标ID查找下一个仍存活的对象。
+    --------------------------------------------------------------------------
+    if currentState == gatherStatusText.ATTACKING then
+        PrintLog("攻击中")
+
+        local actorMap = FindMonsterInCurrViewField()
+        for index = resetSlot17, #resettableTable do
+            local targetID = resettableTable[index]
+            local actor = actorMap[targetID]
+
+            if actor and IsDie(actor) then
+                local monsterName = actor:GetName()
+                if not monsterName then
+                    monsterName = "未知怪物"
+                end
+
+                PrintLog(string.format(
+                    "攻击怪物 %d: %s (ID: %s)",
+                    index,
+                    monsterName,
+                    tostring(targetID)
+                ))
+
+                -- ATTACKING每0.5秒都会进入一次；目标没变化时不重复SetTargetID，
+                -- 避免引擎反复刷新同一目标造成地图怪物选中效果闪烁。
+                if resetSlot21 ~= targetID then
+                    if SetTargetID(targetID) then
+                        resetSlot21 = targetID
+                    end
+                end
+                return
+            end
+
+            PrintLog(string.format(
+                "怪物 %d (ID: %s) 已死亡或离开视野",
+                index,
+                tostring(targetID)
+            ))
+            resetSlot17 = index + 1
+        end
+
+        PrintLog("所有目标怪物已死亡或离开视野，切换到空闲状态")
+        FormatStateChange(gatherStatusText.IDLE)
+        ResetGatherMonsterData()
+        return
+    end
+end
+
+
 -- 11.16 root/23：InitGatherMonsters。
 -- 以11.2/11.9共同业务流程为底稿；保留新版已确认的Schedule回调包装闭包closure_root_23_0。
 -- root/3停止函数闭包已确认运行开关为独立布尔upvalue、计时器对象含gatherTimer字段；这里沿用旧版变量名映射。
@@ -1704,6 +1960,148 @@ local function getMainLeftBottomBlacklistState()
 end
 
 
+-- 11.16 root/34：BlacklistPlayerDetection（274条指令，0参数、无子原型）。
+-- 复用旧版黑名单检测业务主体；按本版常量改用gamePlayerController:GetMainPlayer，
+-- 玩家对象的GetID/GetName/GetMapX/GetMapY读取方式接入，并使用MainLeftBottom.a.blacklist共享状态。
+function BlacklistPlayerDetection()
+    MainLeftBottom.z.isBlacklisting = true
+    local blacklistState = getMainLeftBottomBlacklistState()
+
+    -- 11.16改为由gamePlayerController取得主玩家对象。
+    local mainPlayer = global.gamePlayerController:GetMainPlayer()
+    if not mainPlayer then return end
+    local mainActorID = mainPlayer:GetID()
+    if not mainActorID then return end
+
+    local hp = tonumber(SL:GetMetaValue("HP")) or 0.0
+    local previousHP = blacklistState.lastHp
+
+    if previousHP == nil then
+        blacklistState.lastHp = hp
+        blacklistState.deathHandled = (hp <= 0)
+    elseif hp > 0 then
+        blacklistState.lastHp = hp
+        blacklistState.deathHandled = false
+    elseif previousHP > 0 and not blacklistState.deathHandled then
+        blacklistState.deathHandled = true
+        blacklistState.lastHp = 0.0
+        DeathAutoBlacklist()
+    end
+
+    if hp <= 0 then
+        return
+    end
+
+    if IsInWhitelistMap() then
+        return
+    end
+
+    -- 宿主返回玩家列表和显式数量两个值；不能用#players替代第二返回值。
+    local players, playerCount = SL:GetMetaValue("FIND_IN_VIEW_PLAYER_LIST")
+    if not players or not playerCount or playerCount <= 0 then
+        return
+    end
+
+    for index = 1, playerCount do
+        local actorID = players[index]
+
+        if actorID and actorID ~= mainActorID then
+            local isBlacklisted, blacklistDisplayName =
+                FindBlacklistPlayer(actorID)
+
+            if isBlacklisted then
+                local actorName = blacklistDisplayName
+                if not actorName and type(actor) == "table" and actor.GetName then
+                    actorName = actor:GetName()
+                end
+                if not actorName then
+                    actorName = "黑名单玩家"
+                end
+
+                -- 未配置距离时不读取坐标，按原控制流直接允许后续告警/传送。
+                local distance
+                local distanceAccepted = true
+                local configuredDistance = blacklistState.distance
+
+                if configuredDistance then
+                    local mainX = mainPlayer:GetMapX()
+                    local mainY = mainPlayer:GetMapY()
+                    local actorX, actorY
+                    if type(actor) == "table" and actor.GetMapX and actor.GetMapY then
+                        actorX = actor:GetMapX()
+                        actorY = actor:GetMapY()
+                    end
+
+                    if mainX ~= nil and mainY ~= nil
+                        and actorX ~= nil and actorY ~= nil then
+                        distance = math.max(
+                            math.abs(mainX - actorX),
+                            math.abs(mainY - actorY)
+                        )
+                        distanceAccepted = distance <= configuredDistance
+                    else
+                        distanceAccepted = false
+                    end
+                end
+
+                if distanceAccepted then
+                    local now = os.time()
+                    local lastAlertAt = blacklistState.alertAt or 0
+                    local elapsed = now - lastAlertAt
+
+                    if blacklistAlertThreshold <= elapsed then
+                        blacklistState.alertAt = now
+                        PrintLog(
+                            "野外观测到黑名单玩家：%s（%d格）",
+                            actorName,
+                            distance or 0.0
+                        )
+                    end
+
+                    -- 等待重试截止时间时退出整个检测回调，不继续扫描其他玩家。
+                    if (blacklistState.nextTryAt or 0) > now then
+                        return
+                    end
+
+                    local usedTeleportItemName = UseItemByIndex()
+                    if usedTeleportItemName then
+                        blacklistState.nextTryAt = now + blacklistShortRetryDelay
+                        blacklistState.noStoneWarned = false
+
+                        ShowLocalNoticeByType(string.format(
+                            "黑名单玩家：%s（%d格），飞随机",
+                            actorName,
+                            distance or 0.0
+                        ))
+
+                        PrintLog(
+                            "黑名单玩家 %s，距离 %d 格，使用 %s 随机传送",
+                            actorName,
+                            distance or 0.0,
+                            usedTeleportItemName
+                        )
+                    else
+                        blacklistState.nextTryAt = now + blacklistNoItemRetryDelay
+
+                        if not blacklistState.noStoneWarned then
+                            blacklistState.noStoneWarned = true
+                            ShowLocalNoticeByType("没有随机传送石，黑名单玩家传送暂停")
+                            PrintLog(
+                                "没有可用的随机传送道具（%s）",
+                                table.concat(randomTeleportItemNames, "/")
+                            )
+                        end
+                    end
+
+                    -- 成功与失败路径均在处理当前首个命中玩家后退出。
+                    return
+                end
+            end
+        end
+    end
+end
+
+
 -- 11.16 root/63：LuaSendMsg（92条指令，0参数、0子原型）。
 -- 本版常量确认Blocklist、SendHookList、networkCtl及四个消息参数字段；
 -- 业务主体沿用旧版同名实现，状态表改为本版MainLeftBottom.a。
@@ -2031,3 +2429,42 @@ function DestroyUI()
         GUI:setVisible(mainState.goldWarnBg, false)
     end
 end
+
+
+-- 11.16 root/67：ShowHideAllButtons（154条物理指令，0参数、无子原型）。
+-- 复用旧版奖励/巡航定时器与按钮隐藏主体，补入本版新增的生肖锻造、苹果下图、
+-- 买金、存取仓、巡航及新区定时器清理，并恢复NetworkUtil原始OnLuaMessage回调。
+function ShowHideAllButtons()
+    local state = MainLeftBottom.a
+    local buttons = MainLeftBottom.b or {}
+
+    -- 先清理旧版已有的奖励/巡航定时器，再清理11.16新增模块定时器。
+    local timerFields = {
+        "rewardTimer", "cruiseTimer", "appleMapTimer", "buygoldTimer",
+        "putinTimer", "putoutTimer", "cruiseRunTimer",
+        "forgeZodiacTimer", "newzoneTimer",
+    }
+    for _, field in ipairs(timerFields) do
+        local timer = state[field] or _G[field]
+        if timer then
+            SL:UnSchedule(timer)
+            state[field] = nil
+            _G[field] = nil
+        end
+    end
+
+    state.forgeZodiac = false
+    state.appleMap = false
+    state.putinStart = false
+    -- root.children[40]的VM布尔常量为false：销毁/收起时隐藏全部功能按钮。
+    for key in pairs(buttons) do GUI:setVisible(buttons[key], false) end
+    if state.hidebut then
+        GUI:setVisible(state.hidebut, false)
+        state.hidebut = nil
+    end
+
+    -- 还原被脚本替换的网络消息回调。
+    if NetworkUtil and NetworkUtil._origOnLuaMessage then
+        NetworkUtil.OnLuaMessage = NetworkUtil._origOnLuaMessage
+        NetworkUtil._origOnLuaMessage = nil
+    end
