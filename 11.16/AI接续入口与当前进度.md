@@ -1577,3 +1577,10 @@
 - 本轮已闭合slot159–177：`forgeNextTick`是按生肖名称前缀索引的节拍表，每个前缀首次记录`state.ticks+30`，未到期则本轮return，到期后续推30 tick。
 - 证据和详细寄存器/跳转说明见`root79_forgeZodiac_恢复工作记录.md`末尾与`Opcode语义映射_11.16.md`末尾。
 - root/79尚未完整写入`MainLeftBottom_11.16_明文.lua`，恢复统计仍为完整静态66/162（40.74%）、业务功能累计83/162（51.23%）。下一步继续闭合slot112–158生肖筛选及UseItemByIndex的物品对象寄存器链，或slot66–96 NPC交互字段；不要重做已完成的forgeNextTick分析。
+
+
+## 2026-11-20最新接续点（续）
+
+- root/79 slot112–158已闭合：每5 tick扫描十二生肖；H[9]提取前缀，H[10]检查ALL_EQUIP_DATAS，记录最后一个未命中的生肖；H[11]查找BAG_DATA中对应物品对象，读取Index/Name并调用SL.UseItemByIndex、PrintLog。
+- 本轮纠正root/30 Nested_find：旧明文返回数量与root/79直接读取返回值.Index/.Name冲突；现按调用方证据修正为返回首个名称匹配物品对象或nil。唯一明文、原型索引、函数状态CSV已同步。
+- root/79尚未整体写入。下一步处理slot66–96 NPC交互字段H[6]的来源，随后整合已闭合各段；不得重复重做slot112–177。
