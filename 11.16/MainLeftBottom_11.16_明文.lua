@@ -3745,7 +3745,9 @@ local function make_helper_root_52_34_0(capturedUpvalues, putinPrice, putinName,
     state.putinName = putinName
     state.putinStacked = putinStacked
 
-    local callbackContext = capturedUpvalues[3]
+    -- VM寄存器顺序：N[4]取H[0]；N[5]/N[6]分别取第二、第三参数。
+    -- 先调用H[1](H[0], putinName, putinStacked)，再调用H[2].startPutinGold(H[0], ...)。
+    local callbackContext = capturedUpvalues[1]
     capturedUpvalues[2](callbackContext, putinName, putinStacked)
-    state.startPutinGold(callbackContext, putinName, putinStacked)
+    capturedUpvalues[3].startPutinGold(callbackContext, putinName, putinStacked)
 end
