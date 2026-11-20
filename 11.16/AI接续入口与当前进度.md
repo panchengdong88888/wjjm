@@ -1979,3 +1979,9 @@ root/15父函数87槽、3参数，已按A字段真实Opcode推进：slot1–3货
 - root/52/5 MakeButtonToggleStateSync_11_16已写入唯一明文；按钮组遍历、配置toggled更新、mainLeftBottom.b按钮标题/颜色同步主体已恢复。
 - 10项原始捕获映射未闭合，当前通过buttonGroups/mainLeftBottom显式依赖承接；本项计入部分恢复。
 - 当前完整静态恢复106/162，部分恢复120/162。下一项处理root/52/6/4，不重复root/52/5。
+
+
+### 2026-11-21续接：root/52/6/4已完成
+
+- root/52/6/4 GetResourceItemCount_11_16已写入唯一明文：名称片段匹配、排除绑定物、按OverLap统计数量。
+- 当前完整静态恢复107/162，部分恢复120/162。下一项继续root/52/6剩余子函数，优先root/52/6/1或root/52/6/0。
