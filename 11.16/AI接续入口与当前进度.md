@@ -1595,3 +1595,10 @@
 
 - root/79 slot191–212已闭合：发送LuaSendMsg(9002,10004,1,2,3,zodiacName,string.len(zodiacName))，随后H[3]=PrintLog输出“锻造生肖：”..zodiacName..“ 第”..tryCount..“次”。
 - root/79主要控制流各段现已分段闭合；下一步不要继续零碎重复分析，应整合成唯一明文函数，H[10]作为已确认的可调用捕获值直接引用；root/72单体实现可继续单独补全，不阻塞root/79主体恢复。
+
+
+## 2026-11-20最新接续点（root/72完成）
+
+- root/72已恢复为helper_root_72：遍历SL:GetMetaValue('ALL_EQUIP_DATAS')，对item.Name执行string.find(item.Name, searchText, 1)，命中返回装备对象，未命中nil。已写入唯一明文并更新原型索引、CSV。
+- root/79 H[10]可直接绑定helper_root_72；不要再把root/72当作缺少完整指令流的阻塞项。
+- 当前统计：完整静态恢复67/162；业务功能累计恢复84/162。下一步继续整合root/79主体，优先按已闭合槽位写入可读业务代码；不再重做root/72。
