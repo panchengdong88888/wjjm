@@ -3272,3 +3272,75 @@ local function helper_root_76()
 
     return auctionMoney[1].id
 end
+
+
+-- ============================================================================
+-- 11.16 root/14：ForgeZodiacToggleHandler（51条物理指令，1个显式参数）。
+-- 高置信候选名：root/10将该闭包捕获为停止回调并传入提示文本。
+-- 捕获：H[0]=MainLeftBottom.z；H[1]=父root N[1]（身份未知，当前主体未读取）；
+-- H[2]=_G.log。按本版指令恢复定时器/状态清理、NPC对话层关闭、
+-- 按钮配置复位、日志及系统提示。
+-- ============================================================================
+local function ForgeZodiacToggleHandler(capturedUpvalues, message)
+    local state = capturedUpvalues[1]
+    local logFunction = capturedUpvalues[3]
+
+    if state.forgeZodiacTimer then
+        SL:UnSchedule(state.forgeZodiacTimer)
+    end
+
+    state.forgeZodiacTimer = nil
+    state.forgeZodiac = nil
+    state.forgeZodiacRunning = false
+
+    global.Facade:sendNotification(global.NoticeTable.Layer_NPC_Talk_Close)
+
+    local button = state.forgezodiacbut
+    if button then
+        local buttonConfig = state.forgezodiacbutCfg
+        if buttonConfig then
+            buttonConfig.toggled = false
+        end
+
+        GUI.Button_setTitleText(button, "锻造生肖")
+        GUI.Button_setTitleColor(button, "#ffffff")
+    end
+
+    logFunction(message)
+    SL:ShowSystemTips(message)
+end
+
+
+-- ============================================================================
+-- 11.16 root/59：苹果下图按钮回调（44条物理指令，1个显式参数）。
+-- 原始符号名未确认，使用合成定位名helper_root_59。
+-- 捕获H[0]=父root N[3]状态对象；H[1]未在本体中读取；
+-- H[2]=父root N[0]（按钮配置所属对象）；H[3]=父root N[5]回调。
+-- ============================================================================
+local function helper_root_59(capturedUpvalues, message)
+    local state = capturedUpvalues[1]
+    local buttonConfigOwner = capturedUpvalues[3]
+    local notifyFunction = capturedUpvalues[4]
+
+    if state.appleMapTimer then
+        SL:UnSchedule(state.appleMapTimer)
+    end
+
+    state.appleMapTimer = nil
+    state.appleMap = nil
+    state.appleMapRunning = false
+
+    local button = state.applebut
+    if button then
+        local buttonConfig = buttonConfigOwner.applebutCfg
+        if buttonConfig then
+            buttonConfig.toggled = false
+        end
+
+        GUI.Button_setTitleText(button, "开苹果图")
+        GUI.Button_setTitleColor(button, "#ffffff")
+    end
+
+    notifyFunction(message)
+    SL:ShowSystemTips(message)
+end
