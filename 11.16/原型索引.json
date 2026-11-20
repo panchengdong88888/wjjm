@@ -1154,8 +1154,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 31,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "helper_root_11（合成定位名）",
+      "identity_status": "部分恢复（H[1]/H[2]共享状态槽业务名称未确认）",
       "constants": [
         "zd",
         {
@@ -1168,7 +1168,9 @@
         "关闭见人跑",
         "cruiseGatherPaused",
         "UnSchedule"
-      ]
+      ],
+      "recovery_status": "已写入唯一明文（本版31条指令主体恢复；两个捕获槽保留代理，不计完整）",
+      "business_summary": "取消并清空MainLeftBottom.z.cruiseRunTimer；两个未命名捕获状态槽置false；调用root/60捕获回调清理目标；恢复巡航暂停状态；不在白名单地图时调用MainLeftBottom.zd(true)；提示关闭见人跑。"
     },
     {
       "preorder_id": 16,
@@ -2117,7 +2119,7 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 32,
-      "candidate_name": null,
+      "candidate_name": "helper_root_28（合成定位名）",
       "identity_status": "待识别",
       "constants": [
         51295,
@@ -2128,7 +2130,9 @@
         0,
         "TITLE_DATA_BY_ID",
         "GetMetaValue"
-      ]
+      ],
+      "recovery_status": "本版32条物理指令已定点提取；业务返回语义待恢复",
+      "business_summary": "常量包含TITLE_DATA_BY_ID、固定ID 51295、time、SERVER_TIME与tonumber；标题时间与服务器时间的比较/返回逻辑待恢复。"
     },
     {
       "preorder_id": 44,
@@ -2385,8 +2389,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 32,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "helper_root_35（合成定位名）",
+      "identity_status": "行为已恢复（原始符号名/父级挂载字段未确认）",
       "constants": [
         {
           "unknown_type": 2
@@ -2402,7 +2406,9 @@
         "sendNotification",
         "global",
         "CloseLayer"
-      ]
+      ],
+      "recovery_status": "已写入唯一明文（本版32条物理指令控制流完整恢复）",
+      "business_summary": "检查Facade；发送Layer_CommonTips_Close通知；取得LayerFacadeMediator._normalMediators；按数组索引逆序遍历并调用每个非nil对象的CloseLayer。"
     },
     {
       "preorder_id": 53,
@@ -2548,8 +2554,8 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 28,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "MainLeftBottom.zd",
+      "identity_status": "已确认真实函数名（root槽52创建root/41，槽53以zd键写入MainLeftBottom）",
       "constants": [
         "global",
         "GetMetaValue",
@@ -2562,7 +2568,9 @@
         "BATTLE_IS_AFK",
         "sendNotification",
         "NoticeTable"
-      ]
+      ],
+      "recovery_status": "已写入唯一明文（本版28条物理指令及分支完整恢复）",
+      "business_summary": "读取BATTLE_IS_AFK；请求true且当前未挂机时发送AFKBegin，请求false且当前挂机时发送AFKEnd；状态相同时不重复发送。"
     },
     {
       "preorder_id": 60,
