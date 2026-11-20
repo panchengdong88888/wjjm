@@ -3732,3 +3732,20 @@ end
 local function make_helper_root_52_35_0(capturedPowerState)
     capturedPowerState.powerRefreshing = false
 end
+
+
+-- 11.16 root/52/34/0：上架输入回调（18条物理指令，3个参数，3个upvalue）。
+-- 参数按常量与写入顺序对应：putinPrice、putinName、putinStacked。
+-- H[0]作为上架状态对象，写入三个字段；H[1]作为后续回调；
+-- H[2]作为回调的首个上下文参数。保留捕获代理，不擅自给外层变量命名。
+-- 尾段还调用状态对象的startPutinGold成员，实参仍按原始寄存器顺序传递。
+local function make_helper_root_52_34_0(capturedUpvalues, putinPrice, putinName, putinStacked)
+    local state = capturedUpvalues[1]
+    state.putinPrice = putinPrice
+    state.putinName = putinName
+    state.putinStacked = putinStacked
+
+    local callbackContext = capturedUpvalues[3]
+    capturedUpvalues[2](callbackContext, putinName, putinStacked)
+    state.startPutinGold(callbackContext, putinName, putinStacked)
+end
