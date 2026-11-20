@@ -3170,3 +3170,23 @@ local function closure_root_15_1(capturedUpvalues)
     SL("上架结束：背包已无" .. tostring(currencyName or ""))
 end
 
+-- 11.16 root/15/0：19条物理指令、1个显式参数、2个upvalue。
+-- 父级root/15在slot60创建本闭包；slot61/62的Opcode132分别捕获父级H[1]/H[2]。
+-- root/15的捕获映射为H[1]=MainLeftBottom.z、H[2]=ShowLocalNoticeByType，
+-- 因此本闭包H[0]为MainLeftBottom.z状态表，H[1]为ShowLocalNoticeByType回调。
+-- slot1/2读取状态表putinTimer；若定时器存在则调用SL:UnSchedule(timer)，并清空状态表putinTimer。
+-- 无论是否存在定时器，均调用ShowLocalNoticeByType(arg1)及SL:ShowSystemTips(arg1)。
+-- 参数原始局部名称未知，使用messageOrType中性命名；函数原始符号名未确认，使用合成定位名。
+local function closure_root_15_0(capturedUpvalues, messageOrType)
+    local state = capturedUpvalues[1]
+    local showLocalNoticeByType = capturedUpvalues[2]
+
+    local timer = state.putinTimer
+    if timer then
+        SL:UnSchedule(timer)
+        state.putinTimer = nil
+    end
+
+    showLocalNoticeByType(messageOrType)
+    SL:ShowSystemTips(messageOrType)
+end
