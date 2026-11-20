@@ -1307,3 +1307,12 @@
 - root/14的生肖按钮/通知/UnSchedule/forgeZodiac状态等常量与`ForgeZodiacToggleHandler`高置信候选名相符，但完整51槽指令流仍缺失，不写函数体。
 - root/78（`SL, Schedule`）与root/47（`ScheduleOnce, SL`）是两个不同2参数、7指令、0捕获闭包。root/10实际捕获root/78，不得混用root/47的ScheduleOnce语义。
 - 唯一明文未改，统计不变：36/162完整静态恢复；39项指令级；15项跨版本复用；54/162业务累计。下一步继续找root/14、root/78原型体；若提取材料不含它们，则转做已具备完整流的短函数。
+
+
+### 2026-11-20续接：新增完整函数 root/52/11
+
+- root/52/11的唯一明文已更新为`_G.LuaSendMsg = MainLeftBottom.a.LuaSendMsg`。
+- 捕获链：root槽633创建root/52，H[2]捕获root N[0]；root N[0]已由初始化段和root/16捕获映射确认是`MainLeftBottom.a`。函数5条物理指令全部闭合。
+- 本次统计：完整静态恢复37/162（22.84%）；指令级直接恢复40项；跨版本业务复用15项；业务功能累计55/162（33.95%）。
+- root/52/28捕获的root N[8]仅能确认是接口方法表，尚不猜测其原始词法名；root/14与root/78指令流仍缺失。
+- 尚未执行语法检查、静态检查、宿主API兼容检查或游戏运行验证。
