@@ -4190,3 +4190,32 @@ local function MakeAppleMapButtonToggleHandler_11_16(capturedUpvalues)
         )
     end
 end
+
+
+-- ============================================================================
+-- 11.16 root/52/22：三项功能定时器停止与按钮复位（34条指令）
+-- ============================================================================
+-- 指令常量明确涉及blacklistTimer/blacklistbut、gatherTimer/yinguaibut、
+-- rewardTimer/rewardbut三组状态。取消定时器并清空句柄是可确认主体。
+-- 按钮复位操作通过resetButton适配回调承接，避免在缺少按钮标题常量证据时
+-- 擅自把内部key当作界面显示文字。三个按钮key按原型常量原样传递。
+local function MakeStopAllFeatureStateReset_11_16(timerState, resetButton)
+    local function stopTimer(timerKey)
+        local timerHandle = timerState[timerKey]
+        if timerHandle then
+            SL:UnSchedule(timerHandle)
+            timerState[timerKey] = nil
+        end
+    end
+
+    return function()
+        stopTimer("blacklistTimer")
+        resetButton("blacklistbut")
+
+        stopTimer("gatherTimer")
+        resetButton("yinguaibut")
+
+        stopTimer("rewardTimer")
+        resetButton("rewardbut")
+    end
+end
