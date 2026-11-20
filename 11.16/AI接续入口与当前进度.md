@@ -1878,3 +1878,10 @@ root/15父函数87槽、3参数，已按A字段真实Opcode推进：slot1–3货
 - 新增写入唯一明文：root/14 `ForgeZodiacToggleHandler`（高置信候选）及root/59 `helper_root_59`（合成定位名）；函数状态CSV已同步。
 - 当前完整静态恢复84/162（51.85%）；业务功能累计101/162（62.35%）。未执行语法、静态全检、API兼容或APK验证。
 - 下一批直接处理root/33与root/54的56槽主体；不要重复root/76、root/14、root/59。
+
+
+### 2026-11-20续接增量（root/33完成）
+- 新增写入root/33 `startPutoutAll`及root/33/1 `helper_root_33_1`，父级4项捕获身份已确认；函数状态CSV、账本已同步。
+- 同步纠正root/14 H[2]=ShowLocalNoticeByType（此前误记为日志函数），不增加统计。
+- 当前完整静态恢复86/162（53.09%）；业务功能累计103/162（63.58%）。未执行语法/API/APK验证。
+- 下一步直接处理root/54苹果下图启停主体；不要重复root/33、root/14。
