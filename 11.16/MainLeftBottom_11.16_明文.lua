@@ -3689,3 +3689,46 @@ local function helper_root_52_32(
     )
     return button
 end
+
+
+-- 11.16 root/52/35：NPC点击/战力刷新请求（37条物理指令，0参数，1个子原型）。
+-- 指令流确认：先读取SL:GetMetaValue("USER_ID")；USER_ID缺失时提前返回。
+-- 随后把USER_ID转为字符串，填入{"UserID":"%s","index":15"}请求文本。
+-- 将powerRefreshing置为true，读取global.MsgType.MSG_CS_NPC_CLICK，
+-- 并以请求文本及其长度组装LuaSendMsg调用参数。
+-- 末段通过SL:ScheduleOnce安排3秒后的复位闭包。
+-- 子闭包root/52/35/0只执行H[0].powerRefreshing=false；
+-- H[0]来自父函数的外层捕获，暂以capturedPowerState保留，不猜测其词法变量名。
+-- 本函数的网络消息前置参数及ScheduleOnce的参数顺序仍按寄存器代理保留待定；
+-- 不把未闭合的调用参数臆写成确定的公开接口签名。
+local function make_helper_root_52_35(capturedPowerState)
+    local userId = SL:GetMetaValue("USER_ID")
+    if not userId then
+        return
+    end
+
+    local requestText = string.format(
+        '{"UserID":"%s","index":15}',
+        tostring(userId)
+    )
+
+    SL.powerRefreshing = true
+
+    -- VM已确认消息类型为global.MsgType.MSG_CS_NPC_CLICK；
+    -- 调用参数区间含固定零值、requestText及#requestText。
+    -- 参数代理保留，等待父级调用上下文确认具体协议字段位置。
+    local messageType = global.MsgType.MSG_CS_NPC_CLICK
+    local requestLength = string.len(requestText)
+    LuaSendMsg(messageType, 0, 0, 0, 0, requestText, requestLength)
+
+    -- 3秒后清除刷新状态；闭包捕获的外层状态对象按H[0]传入。
+    SL:ScheduleOnce(function()
+        make_helper_root_52_35_0(capturedPowerState)
+    end, 3)
+end
+
+-- 11.16 root/52/35/0：3条物理指令，0参数、1个upvalue。
+-- Opcode 88读取H[0]；Opcode 114设置H[0].powerRefreshing=false。
+local function make_helper_root_52_35_0(capturedPowerState)
+    capturedPowerState.powerRefreshing = false
+end
