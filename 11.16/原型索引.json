@@ -1021,7 +1021,10 @@
         "没有可攻击的怪物",
         "find",
         "ACTOR_MAXHP"
-      ]
+      ],
+      "recovery_status": "已写入明文（跨版本业务复用）",
+      "business_summary": "MainLoop主体复用旧版同名状态机；与本版引怪启停/重置状态字段接线",
+      "recovery_evidence": "本轮按用户指定的旧版同名业务复用优先策略写入唯一明文；未执行语法/API/运行验证。"
     },
     {
       "preorder_id": 11,
@@ -2360,7 +2363,10 @@
         "lastHp",
         "GetMapX",
         "HP"
-      ]
+      ],
+      "recovery_status": "已写入明文（跨版本业务复用并按本版对象API调整）",
+      "business_summary": "复用旧版黑名单检测主体；主玩家改由gamePlayerController:GetMainPlayer取得，玩家对象读取ID/名称/坐标，黑名单状态接入MainLeftBottom.a.blacklist",
+      "recovery_evidence": "本轮按用户指定的旧版同名业务复用优先策略写入唯一明文；未执行语法/API/运行验证。"
     },
     {
       "preorder_id": 52,
@@ -5266,7 +5272,10 @@
         {
           "unknown_type": 2
         }
-      ]
+      ],
+      "recovery_status": "已写入明文（跨版本业务复用并补本版清理项）",
+      "business_summary": "复用旧版按钮隐藏/定时器清理主体；补appleMap、buygold、putin/putout、forgeZodiac、newzone等计时器及NetworkUtil.OnLuaMessage恢复",
+      "recovery_evidence": "本轮按用户指定的旧版同名业务复用优先策略写入唯一明文；未执行语法/API/运行验证。"
     },
     {
       "preorder_id": 146,
