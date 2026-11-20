@@ -220,3 +220,31 @@ state.forgeZodiacTimer = helper_root_78("蛇·[普通]", 0.1)
 **当前结论与限制：** 这组指令明确表明 slot151/155 读取的是同一个装备数据对象的 `Index` 与 `Name` 字段；但由于 root/72 的32条物理指令流不在现有可用的7个选定子原型流中，且 slot128–130 的多返回值/寄存器复用尚未完全闭合，本轮不伪造 root/72 的返回结构，也不把 root/79 写成未经证实的可执行源码。root/79 仍未计入完整恢复数。
 
 **当前统计保持不变：** 完整静态恢复 66/162（40.74%）；业务功能累计恢复 83/162（51.23%）。本轮仅增加指令级工作记录，不增加恢复数量。
+
+
+### 2026-11-20续：forgeNextTick按生肖前缀分桶的节拍逻辑已闭合
+
+本轮直接按11.16原始F()分派器重新展开slot159–177，解决此前卡住的Opcode258/398融合问题：
+
+- Opcode258的真实执行体是：先执行`N[A]=N[B][K[4]]`，再消费下一物理槽并执行`N[A]=N[B][N[C]]`。因此root/79 slot164（A=5、B=0、C="forgeNextTick"）与slot165（A=5、B=5、C=3）必须作为一条融合序列理解，结果是`N[5] = state.forgeNextTick[N[3]]`，而不是把slot165当作独立运算。
+- Opcode398本身的分派叶子是`N[A]=N[B][N[C]]`；但在slot165处它只是被Opcode258消费的第二条记录。
+- slot160 Opcode366检查整个forgeNextTick字段是否存在；字段为空时slot162 Opcode199创建空表，slot163 Opcode306将表写回`state.forgeNextTick`。
+- slot164/165随后读取`state.forgeNextTick[N[3]]`。结合slot125–137中N[3]保存当前生肖名称前缀（H[9]处理后的前缀），可确认这是**按生肖名称前缀分别记录下一次允许锻造的tick**，不是一个全局数字。
+- slot166 Opcode358判断该前缀对应的时间值是否存在：不存在时经slot167跳转到slot174，直接建立该前缀的首次节拍值；存在时进入slot168–173读取当前ticks与该前缀时间值比较。
+- slot171 Opcode226在A=0时执行`ticks < forgeNextTick[prefix]`判断：若尚未到期，跳过slot172并执行slot173结束本轮；若已到期，则执行slot172跳过slot173，继续slot174–177。
+- slot174–177将`state.forgeNextTick[prefix]`更新为`state.ticks + 30`。Opcode112在slot177执行动态键表写入`N[A][N[B]]=N[C]`，即写回该生肖前缀的下次允许tick。
+
+因此slot159–177可明确恢复为以下业务逻辑（此处仅表达已闭合段，不代表整个root/79函数已完成）：
+
+```lua
+state.forgeNextTick = state.forgeNextTick or {}
+local nextTick = state.forgeNextTick[prefix]
+if nextTick and state.ticks < nextTick then
+    return
+end
+state.forgeNextTick[prefix] = state.ticks + 30
+```
+
+这意味着每个生肖名称前缀独立节流：首次遇到该前缀时写入当前ticks+30；之后在到达该tick前跳过本轮，到期后再把门槛向后推30 tick。这里的prefix来自当前循环扫描项，不把不同生肖共用同一个节拍槽。
+
+本轮仅闭合slot159–177，不代表root/79其余部分已全部恢复；slot112–158的筛选/物品Index寄存器链、slot66–96的NPC消息字段仍需处理。root/79尚未写入唯一明文，恢复统计不变。
