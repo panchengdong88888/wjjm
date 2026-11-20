@@ -2171,8 +2171,8 @@
         "string"
       ],
       "recovery_status": "已写入明文（跨版本业务复用，按本版字段缩减）",
-      "business_summary": "读取SL:GetMetaValue('BAG_DATA')，使用pairs遍历；对含Name的物品执行string.find(item.Name, searchText, 1, true)，统计名称匹配的物品条目数。",
-      "recovery_evidence": "11.16 root/30：1参数、8常量、31条指令、无子原型。常量包含BAG_DATA、SL、GetMetaValue、pairs、Name、string、find和数值1；不含旧版MakeIndex、ITEM_IS_BIND、OverLap字段，因此没有复制旧版的物品索引/绑定过滤/堆叠数量累加。按本版常量适配恢复；未逐槽模拟。"
+      "business_summary": "读取SL:GetMetaValue('BAG_DATA')，使用pairs遍历；对含Name的物品执行string.find(item.Name, searchText, 1, true)，返回首个名称匹配的背包物品对象；无匹配返回nil。root/79直接读取返回对象的Index和Name并调用SL.UseItemByIndex，排除返回数量的旧误判。",
+      "recovery_evidence": "11.16 root/30：1参数、8常量、31条指令。常量包含BAG_DATA、SL、GetMetaValue、pairs、Name、string、find和数值1。root/79 slot144–157直接将本函数返回值作为物品对象读取.Index/.Name并传入SL.UseItemByIndex，因此返回对象接口由本版调用方证据闭合；按Name字面包含关系返回首个匹配物品。"
     },
     {
       "preorder_id": 46,
