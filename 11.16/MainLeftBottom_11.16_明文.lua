@@ -3060,3 +3060,113 @@ function startForgeZodiac()
 
     state.forgeZodiacTimer = helper_root_78("蛇·[普通]", 0.1)
 end
+
+
+-- ============================================================================
+-- 11.16 root/15/1：拍卖行自动上架物品回调（121条物理指令，0显式参数）。
+--
+-- Upvalue捕获顺序：
+--   H[0] = SL引擎对象（父root/15的N[5]）
+--   H[1] = 货币/物品名称筛选字符串（父N[1]，缺省“金条”）
+--   H[2] = 数量选项（父N[2]）
+--   H[3] = 单价（父N[0]）
+--   H[4] = 父级H[3]，身份尚未确认；此处作为日志函数代理使用
+--   H[5] = 父级H[0]回调
+--
+-- 说明：
+--   1. 此闭包没有显式参数，所有上下文均来自capturedUpvalues。
+--   2. slot73–77的VM数据流确实是把H[0]写入调用寄存器后调用。
+--      虽然H[0]捕获为SL对象，语义看起来反常，但这里忠实保留，不改成H[5]。
+--   3. 数量选项分支按可读业务意图表达；若实际客户端表现与此不同，
+--      由APK运行结果再针对该分支调整。
+-- ============================================================================
+
+local function closure_root_15_1(capturedUpvalues)
+    local SL = capturedUpvalues[1]
+    local currencyName = capturedUpvalues[2]
+    local useStackQuantity = capturedUpvalues[3]
+    local unitPrice = capturedUpvalues[4]
+    local logFunction = capturedUpvalues[5] -- 父级H[3]，词法身份未确认
+    local callback = capturedUpvalues[6] -- 父级H[0]
+
+    local toNumber = tonumber
+
+    -- 读取拍卖行货架上限，缺省6。
+    local shelfLimit = toNumber(SL:GetMetaValue("AUCTION_DEFAULT_SHELF"))
+    if not shelfLimit then
+        shelfLimit = 6
+    end
+
+    -- 读取当前上架数量，缺省0。
+    local listedCount = toNumber(SL:GetMetaValue("AUCTION_PUT_LIST_CNT"))
+    if not listedCount then
+        listedCount = 0
+    end
+
+    if listedCount >= shelfLimit then
+        -- 原VM在此处调用H[0]，按原始Upvalue索引保留。
+        SL("上架结束：拍卖行货架已满")
+        return
+    end
+
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then
+        bagData = {}
+    end
+
+    -- 背包中按名称筛选可上架物品；绑定物品不参与上架。
+    for _, item in pairs(bagData) do
+        if item and item.MakeIndex and item.Name then
+            if string.find(item.Name, currencyName) then
+                local isBound = SL:GetMetaValue("ITEM_IS_BIND", item)
+                if not isBound then
+                    local stackCount = toNumber(item.OverLap)
+                    if not stackCount then
+                        stackCount = 1
+                    end
+
+                    -- VM选项控制是否采用物品堆叠数量。
+                    local quantity = 1
+                    if useStackQuantity then
+                        quantity = stackCount
+                    end
+
+                    local totalPrice = unitPrice * quantity
+                    local maxPrice = toNumber(SL:GetMetaValue("AUCTION_BIDPRICE_MAX"))
+                    if not maxPrice then
+                        maxPrice = 2000000000
+                    end
+
+                    if totalPrice > maxPrice then
+                        -- 与slot98–100相同，保留H[0]调用形态。
+                        SL("上架结束：总价超出上限")
+                        return
+                    end
+
+                    logFunction(
+                        "上架物品：%s MakeIndex=%s 数量=%d 单价=%d 一口价=%d",
+                        currencyName,
+                        tostring(item.MakeIndex),
+                        quantity,
+                        unitPrice,
+                        totalPrice
+                    )
+
+                    SL:RequestAuctionPutin(
+                        item.MakeIndex,
+                        quantity,
+                        0,
+                        totalPrice,
+                        callback,
+                        100
+                    )
+                    return
+                end
+            end
+        end
+    end
+
+    -- 未找到符合名称且未绑定的物品。VM slot73–77直接调用H[0]。
+    SL("上架结束：背包已无" .. tostring(currencyName or ""))
+end
+
