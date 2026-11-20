@@ -4423,3 +4423,54 @@ local function MakeCapturedCallbackAndReturnTrue_11_16(capturedCallback)
     end
 end
 
+
+
+-- ============================================================================
+-- 11.16 root/52/8/0：模式1丢弃循环回调（5条指令，0显式参数）
+-- ============================================================================
+-- 子原型常量只有dropMode与DiuItems；其职责是把父级捕获的模式值
+-- 传给DiuItems。捕获值在父级创建点尚未按寄存器闭合，故显式承接。
+local function MakeDropMode1TimerCallback_11_16(dropMode, diuItems)
+    return function()
+        return diuItems(dropMode)
+    end
+end
+
+
+-- ============================================================================
+-- 11.16 root/52/8：模式1“丢全部物品”按钮处理器（49条指令，0显式参数）
+-- ============================================================================
+-- 常量证据：DiuItems、dropMode=1、UnSchedule、dropTimer、isDiuing，
+-- 以及“关闭丢全部物品”/“开启丢全部物品(模式1)”两条提示文本。
+-- 按钮处理主体沿用同组root/52/18模式2的定时器状态结构；本函数不含
+-- GUI按钮标题/颜色常量，因此不臆造模式2的按钮复位UI逻辑。
+-- 父级11项捕获槽尚未闭合，以下以语义依赖工厂参数承接。
+local function MakeDropMode1ButtonHandler_11_16(
+    timerState, featureState, printLog, diuItems, schedule
+)
+    return function()
+        if timerState.dropTimer and timerState.dropMode == 1 then
+            printLog("关闭丢全部物品")
+            SL:UnSchedule(timerState.dropTimer)
+            timerState.dropTimer = nil
+            featureState.isDiuing = false
+            return
+        end
+
+        if timerState.dropTimer then
+            SL:UnSchedule(timerState.dropTimer)
+            timerState.dropTimer = nil
+        end
+
+        timerState.dropMode = 1
+        printLog("开启丢全部物品(模式1)")
+        diuItems(timerState.dropMode)
+
+        local callback = MakeDropMode1TimerCallback_11_16(
+            timerState.dropMode, diuItems
+        )
+        timerState.dropTimer = schedule(callback, 1.0)
+    end
+end
+
+
