@@ -1131,3 +1131,8 @@ root/15/1捕获来源的业务身份进一步确认：
 - child H[5] <- parent N[3] = parent H[0]回调；父slot7 Opcode127读取H[0]写入N[3]。
 
 注意：H[1]不是固定常量“金条”，而是父N[1]的可传入货币名称，仅在缺省路径由slot3设置为“金条”。H[4]不得猜名为PrintLog。该映射足以推进子函数源码整理，但唯一明文仍待完整组织调用参数。
+
+
+## 2026-11-20续：Opcode403调用点与root/15/1提示分支
+
+原版F()的L==403叶为`N[K[2]]=H[K[3]]`，随后融合消费下一物理槽执行`N[K[2]]=K[3]`。child slot73 A403 B5 C0融合slot74，因此N5=H0、N6=提示文案；slot75读取H1，slot76拼接，slot77 Opcode128调用N5(N6)。按已确认捕获来源H0=parent N5=SL对象，这一处静态调用形态看似反常，但必须按字节码忠实保留为`H[0](message .. H[1])`，不能臆改为SL:ShowSystemTips或H5回调。H5为parent H0回调，走RequestAuctionPutin参数路径。
