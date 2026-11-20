@@ -117,7 +117,7 @@ mode=%s
 110,root/52/21,root/52,2,closure_root_52_21（合成定位名）,行为已恢复,0,9,0,16,已写入明文,LuaSendMsg | 回收完毕 | ShowSystemTips | 901238 | [1\,1] | SL | 9002,MainLeftBottom_11.16_明文.lua,16条物理指令闭合；root/52槽位603 Opcode121创建且captureCount=0；Opcode95/235/361融合载荷已还原，Opcode123/128调用，Opcode110置true，Opcode292返回；SL.ShowSystemTips已查SL.md，LuaSendMsg文档未收录,2026-11-19
 111,root/52/22,root/52,2,,待识别,0,6,0,34,未恢复,blacklistbut | gatherTimer | rewardTimer | yinguaibut | blacklistTimer | rewardbut,,,2026-11-18
 112,root/52/23,root/52,2,,待识别,0,147,0,897,未恢复,ITEM_INDEX_BY_NAME | -- | %s不足(%d/%d) | >=100，等级 | 品 | QUICKUSE_DATA | RELEVEL | autoPanelAt | GetMoneyCountById | 鸣鸿神刀,,,2026-11-18
-113,root/52/24,root/52,2,,待识别,0,18,0,76,未恢复,buygold110Timer | SL | 已停止丢物品、拾取和购买金条 | shiquTimer | UnSchedule | diuqibut | #ffffff | buygoldTimer | shiqubut | Button_setTitleText,,,2026-11-18
+113,root/52/24,root/52,2,StopAllDropPickupAndBuyGold（职责候选）,身份待确认,0,18,0,76,分析中,本轮已从11.16原版按S()格式定点提取完整76槽指令流；含buygold110Timer/shiquTimer/buygoldTimer/dropTimer清理及按钮状态常量；父级捕获/分支尚未闭合,,闭包捕获槽位与76槽控制流需继续模拟；不凭常量直接拼写函数体,2026-11-20
 114,root/52/25,root/52,2,closure_root_52_25,匿名闭包（行为已恢复）,0,1,0,4,已写入明文,startAppleMap,MainLeftBottom_11.16_明文.lua,4条指令：Opcode 9融合读取H[0].startAppleMap；无参数调用；定位名为合成名,2026-11-18
 115,root/52/26,root/52,2,,待识别,0,5,1,23,未恢复,SL | Schedule | 开始检测金币(>500W买金条) | buygoldTimer,,,2026-11-18
 116,root/52/26/0,root/52/26,3,,待识别,0,21,0,77,未恢复,UnSchedule | 金币不足500W，买金条结束 | ShowSystemTips | global | 金币 | 金条 | ProxyTable | 买金条失败： | tostring | 买金条失败：%s,,,2026-11-18
