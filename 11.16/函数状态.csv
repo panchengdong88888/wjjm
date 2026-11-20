@@ -14,7 +14,7 @@
 12,root/8,root,1,GetDroppedItems,高置信候选,0,3,0,8,已写入明文,global | dropItemManager | FindDropItemInCurrViewFieldAll,MainLeftBottom_11.16_明文.lua,,2026-11-18
 13,root/9,root,1,GetMapData2DPtr,候选名称存在冲突：11.2同名函数为距离门控，11.16常量指向地图数据/障碍查询；待复核,5,15,0,162,分析中,GetMapData2DPtr | sceneManager | isObstacle | getMapDataCols | getMapDataRows | floor | global | max | math | abs,,,2026-11-18
 14,root/10,root,1,startForgeZodiac,真实全局导出名已由root槽405确认；29条指令控制流与5个捕获槽已闭合,0,13,0,29,已写入明文（本版指令流恢复）,开始锻造生肖 | state | forgeZodiacRunning | checkGold | forgeZodiac | forgeZodiacTimer | ticks | 已停止锻造生肖 | index；捕获H[0]=MainLeftBottom.z、H[1]=root/14回调、H[2]=_G.log、H[3]=root/78 Schedule包装、H[4]=蛇·[普通],MainLeftBottom_11.16_明文.lua：startForgeZodiac,启动时创建state.forgeZodiac并设置checkGold/ticks/index；停止时调用按钮回调并复位运行标志；启动时日志及0.1秒Schedule注册,2026-11-20
-15,root/11,root,1,,职责候选：关闭见人跑/停止巡航；真实导出名未确认,0,9,0,31,未恢复,zd | IsInWhitelistMap | cruiseRunTimer | SL | 关闭见人跑 | cruiseGatherPaused | UnSchedule；root槽540创建，槽541–546依次捕获N[3]/N[74]/N[75]/N[79]/N[0]/N[5]；N[3]由root槽34–35确认是MainLeftBottom.z,,当前提交的候选原型完整指令提取.json不含root/11的31条子指令；仅父级6项捕获已映射，缺子函数指令流，禁止凭常量补写。,2026-11-18
+15,root/11,root,1,helper_root_11（合成定位名）,部分恢复（H[1]/H[2]共享状态槽业务名称未确认）,0,9,0,31,已写入唯一明文（本版31条指令主体恢复；两个捕获槽保留代理，不计完整）,zd | IsInWhitelistMap | cruiseRunTimer | SL | 关闭见人跑 | cruiseGatherPaused | UnSchedule,MainLeftBottom_11.16_明文.lua：make_helper_root_11,H[1]/H[2]业务变量名未确认；父级N[74]/N[75]共享槽保留代理；父级挂载名未确认,2026-11-20
 16,root/12,root,1,MoveTo,已写入明文（跨版本业务复用；本版常量/参数吻合）,3,20,0,51,已恢复,MMO | y | SL | InputMove | range | tonumber | mapID | sendNotification | x | PlayerPos | NoticeTable | global | abs | MAP_ID | INPUT_MOVE_TYPE_AUTOMOVE | math | GetMetaValue | Facade | type,MainLeftBottom_11.16_明文.lua：MoveTo,,2026-11-19
 17,root/13,root,1,NewZoneFeature,高置信身份确认（与11.9新区启动处理器37指令同规模；本版常量/子闭包吻合）,0,18,1,37,已写入明文（跨版本业务复用并按本版消息参数修正）,Gbtc | newzoneTimer | ScheduleOnce | LuaSendMsg | isNewzone | UnSchedule | SL | 开启新区功能 | 22302 | 9002,MainLeftBottom_11.16_明文.lua,延迟消息调用本版root/13/0；共享状态接入MainLeftBottom.a；周期任务使用已恢复的helper_root_78,2026-11-20
 18,root/13/0,root/13,2,closure_root_13_0（合成定位名）,行为已恢复,0,8,0,10,已写入明文,LuaSendMsg(9002, 22502, 1, 2, 3, , 0),MainLeftBottom_11.16_明文.lua,原始局部符号名待父级注册点确认；调用体和全部可达指令已闭合,2026-11-19
@@ -43,9 +43,9 @@
 40,root/26,root,1,ClearBlacklistItems,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,17,1,63,已写入明文（跨版本业务复用）,取不到好友代理，清空失败 | pairs | lastAttacker | ScheduleOnce | 黑名单为空 | 清空黑名单失败 | ipairs | SL |  人 | 开始清空黑名单，共 %d 人,11.16/MainLeftBottom_11.16_明文.lua：ClearBlacklistItems,按用户要求先完成明文主体，留待APK实测后针对异常功能调整。,2026-11-20
 41,root/26/0,root/26,2,make_helper_root_26_0（合成定位名；旧版对应MakeRequestOutBlacklistCallback）,闭包体及捕获语义已恢复（父级词法变量原名/注册点待确认）,0,4,0,13,已写入明文（本版指令级闭包体完整；父级绑定待接续）,13/13槽位闭合：SL:RequestOutBlacklist(H[0])；读取H[1]._blacklistData，字段为真值时执行[H[0]]=nil。结合旧版同职责闭包及本版指令形状，H[0]=itemKey、H[1]=friendProxy；明文以工厂参数显式承载捕获。父级创建点/真实局部变量名未核验，不影响子闭包体独立恢复。,,root/26父级创建点及两个捕获值的原始局部变量名仍待确认；父级注册关系不纳入本子闭包完成范围。,2026-11-20
 42,root/27,root,1,,待识别,0,56,0,307,未恢复,"{""index"":%d,""UserID"":""%s""} |  | 已进入目标地图： | GetMapName | 苹果未激活：发送关闭巡航 | 攻城时间段结束，苹果图恢复下图 | state | 苹果已激活：开启巡航 | monitor | index",,,2026-11-18
-43,root/28,root,1,,待识别,0,8,0,32,未恢复,tonumber | SERVER_TIME | time | SL | TITLE_DATA_BY_ID | GetMetaValue,,,2026-11-18
+43,root/28,root,1,helper_root_28（合成定位名）,待识别,0,8,0,32,指令流已定点提取；业务返回语义待恢复,tonumber | SERVER_TIME | time | SL | TITLE_DATA_BY_ID | GetMetaValue,,标题时间与服务器时间比较/返回逻辑尚待恢复,2026-11-20
 44,root/29,root,1,ResetGatherMonsterData,跨版本高置信候选（11.2同名函数体复用；11.16签名/常量吻合，20槽已提取未逐槽模拟）,0,3,0,20,已写入明文（跨版本业务复用；非指令级完整还原）,11.16原始载荷定点解析；偏移45507-45734；20物理槽位，20条有效指令；本轮已定点查看本版F()分派器，但多个Opcode/融合边界仍未闭合，维持11.2同名业务体跨版本恢复,MainLeftBottom_11.16_明文.lua：ResetGatherMonsterData,尚未逐槽确认全部状态字段及ClearTargetID_2调用顺序；本轮局部Opcode识别不足以升级为指令级恢复,2026-11-19
-45,root/30,root,1,Nested_find,跨版本职责候选；本版返回值形态由root/79调用点纠正,1,8,0,已写入明文（按本版调用方证据修正为返回物品对象）,已写入明文（跨版本业务复用，按本版字段缩减）,读取BAG_DATA并遍历；名称字面匹配时返回item对象，否则nil；root/79读取返回值.Index和.Name并调用UseItemByIndex,MainLeftBottom_11.16_明文.lua：Nested_find,root/79 slot144–157将H[11](prefix)结果直接读取.Index/.Name并用于SL.UseItemByIndex；旧版“返回匹配数量”的恢复与调用方不兼容，现已修正为返回首个匹配物品对象；未复制旧版绑定/堆叠过滤,1,true)并统计匹配条目数；未逐槽模拟31条指令",2026-11-19
+45,root/30,root,1,Nested_find,跨版本职责候选；本版返回值形态由root/79调用点纠正,1,8,0,已写入明文（按本版调用方证据修正为返回物品对象）,已写入明文（跨版本业务复用，按本版字段缩减）,读取BAG_DATA并遍历；名称字面匹配时返回item对象，否则nil；root/79读取返回值.Index和.Name并调用UseItemByIndex,MainLeftBottom_11.16_明文.lua：Nested_find,root/79 slot144–157将H[11](prefix)结果直接读取.Index/.Name并用于SL.UseItemByIndex；旧版“返回匹配数量”的恢复与调用方不兼容，现已修正为返回首个匹配物品对象；未复制旧版绑定/堆叠过滤,1,"true)并统计匹配条目数；未逐槽模拟31条指令,2026-11-19
 46,root/31,root,1,FindBlacklistPlayer,跨版本业务恢复（11.2同名函数体与11.16参数/常量集合吻合）,1,5,0,35,已写入明文（跨版本业务复用）,_blacklistData | GetMetaValue | ACTOR_MASTER_ID | SL | Name | PCallHelper_2,MainLeftBottom_11.16_明文.lua：FindBlacklistPlayer,本版1参数、5常量、35条指令与11.2同名函数体吻合；依赖root/56 PCallHelper_2，查询目标ID及主角色ID黑名单项，返回命中标志和Name,2026-11-19
 47,root/32,root,1,make_helper_root_32（合成定位名）,闭包体及父级捕获映射完整（原始局部符号名未恢复）,1,4,0,17,已写入明文（本版指令级闭包体及捕获映射完整）,root槽522 Opcode178创建；槽523–525捕获N[75]/N[5]/N[0]；N[75]=false提示门控，N[5]=root/80 ShowLocalNoticeByType，N[0]=MainLeftBottom模块表,MainLeftBottom_11.16_明文.lua,17槽控制流及3项捕获链已闭合；原始局部变量符号名未恢复，不影响业务体,2026-11-20
 48,root/33,root,1,startPutoutAll,本版root父级导出名及4项捕获身份已确认；函数体待提取,0,19,2,56,未恢复,56条指令、0参数、4个捕获；root槽294创建，295–298依次捕获N[3]/N[5]/N[4]/N[7]，映射为MainLeftBottom.z/ShowLocalNoticeByType/PrintLog/Schedule；槽299 Opcode0将N[41]写入全局键startPutoutAll。当前缺少root/33的56条本版子原型指令流，不能用常量或root/33/0子闭包伪造函数体。,,函数身份、全局导出关系及四项捕获均由本版root物理指令/闭包创建记录确认；主体指令流尚未提取。,2026-11-20
@@ -58,7 +58,7 @@
 55,root/38,root,1,DistanceCalculation,高置信候选（跨版本业务对应）,2,6,0,25,已写入明文（跨版本业务复用；未逐槽核验）,99999 | abs | y | math | x | max,MainLeftBottom_11.16_明文.lua：DistanceCalculation,11.2/11.9均有同职责实现；本版参数数、常量数和指令数吻合；未逐槽核验,2026-11-19
 56,root/39,root,1,IsDie,本轮已恢复,1,1,0,7,已写入明文,IsDie,MainLeftBottom_11.16_明文.lua,,2026-11-18
 57,root/40,root,1,onDamageMsg,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,2,19,1,72,已写入明文（跨版本业务复用）,id | name | ACTOR_NAME | SL | ACTOR_MASTER_ID | GetMetaValue | lastAttacker | AttackUserID | string | type,11.16/MainLeftBottom_11.16_明文.lua：onDamageMsg,按用户要求先完成明文主体，留待APK实测后针对异常功能调整。,2026-11-20
-58,root/40/0,root/40,2,make_helper_root_40_0（合成定位名）,闭包体及捕获语义已恢复（父级词法变量原名/注册点待确认）,0,2,0,6,已写入明文（本版指令级闭包体完整；父级绑定待接续）,"6/6槽位闭合：读取全局SL，准备SL:JsonDecode，读取H[0]作为jsonStr，并直接返回调用结果；3.40.x SL.md确认JsonDecode(jsonStr,isfilter)签名。明文以capturedJson工厂参数承载H[0]。",MainLeftBottom_11.16_明文.lua,root/40父级72槽位指令流未保存，H[0]在父级的源寄存器/词法名称及注册点待确认；子闭包体本身已完整。,2026-11-20
+58,root/40/0,root/40,2,make_helper_root_40_0（合成定位名）,闭包体及捕获语义已恢复（父级词法变量原名/注册点待确认）,0,2,0,6,已写入明文（本版指令级闭包体完整；父级绑定待接续）,6/6槽位闭合：读取全局SL，准备SL:JsonDecode，读取H[0]作为jsonStr，并直接返回调用结果；3.40.x SL.md确认JsonDecode(jsonStr","isfilter)签名。明文以capturedJson工厂参数承载H[0]。,MainLeftBottom_11.16_明文.lua,root/40父级72槽位指令流未保存，H[0]在父级的源寄存器/词法名称及注册点待确认；子闭包体本身已完整。,2026-11-20
 59,root/41,root,1,,待识别,1,11,0,28,未恢复,global | GetMetaValue | AFKBegin | Facade | AFKEnd | SL | BATTLE_IS_AFK | sendNotification | NoticeTable,,,2026-11-18
 60,root/42,root,1,ClearTargetID_2,已确认真实函数名（本版指令级恢复）,0,9,0,22,已写入明文,22条指令闭合、无捕获；Facade.retrieveProxy(PlayerInputProxy)后调用SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)，与11.2同名函数完全吻合。,MainLeftBottom_11.16_明文.lua：ClearTargetID_2,本版物理指令全部闭合；旧版声明名和业务体一致；无upvalue捕获,2026-11-19
 61,root/43,root,1,PickUpItems,高置信身份确认（11.9同职责实现172指令与本版172指令同规模；名称/字段/接口常量吻合）,0,34,2,172,已写入明文（跨版本主体复用并接入本版排序闭包）,MoveTo | mCurrMapX | y | ipairs | x | mCurrMapY | dist | 地面无可拾取物品 | sort | find | PickMainPlayerPosItem | GetDroppedItems | PlayerPos | dropItemController,MainLeftBottom_11.16_明文.lua,普通排序比较使用本版root/43/1已恢复的a.dist >= b.dist；优先排序比较器按旧版同职责kIdx/dist规则迁移,2026-11-20
@@ -67,7 +67,7 @@
 64,root/44,root,1,,职责已缩小；函数名待识别,3,10,0,29,未恢复,将三个参数组织成price/name/mode格式文本，并调用FileUtilCtl.writeStringToFile写入可写目录；格式串为price=%s、name=%s、mode=%s。,,函数声明名及三个参数的确切语义/文件名尚未确认；不按职责猜命名。
 name=%s
 mode=%s
-" | format,,,2026-11-18"
+ | format",,,"2026-11-18
 65,root/45,root,1,StorageItems,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,57,2,224,已写入明文（跨版本业务复用）,NPC_STORAGE_MAX_PAGE | find | 玄铁 | BOSS头骨 | 神装碎片 | 圣皇 |  件物品 | GUIDefine | STORAGE_PER_PAGE_MAX | len,11.16/MainLeftBottom_11.16_明文.lua：StorageItems,按用户要求先完成明文主体，留待APK实测后针对异常功能调整。,2026-11-20
 66,root/45/0,root/45,2,,待识别,2,15,0,52,未恢复, DuraMax= | 聚灵珠信息:  | 聚灵珠 | Dura | find | isOutputted | StdMode | DuraMax | string |  Dura=,,,2026-11-18
 67,root/45/1,root/45,2,,待识别,0,1,0,27,未恢复,,,,2026-11-18
@@ -84,7 +84,7 @@ mode=%s
 78,root/51,root,1,PrintLog,跨版本业务复用（11.2同名函数体与11.16常量/签名吻合；未逐槽模拟）,1,13,0,38,已写入明文（跨版本业务复用；非指令级完整还原）,11.16 root/51：1个固定参数并带可变参数、38条指令；常量select、type、#、pcall、Print、table、format、tostring、string、SL等与11.2同名函数吻合。保留其没有实际调用SL.Print的旧版行为；跨版本复用，未逐槽模拟。,MainLeftBottom_11.16_明文.lua：PrintLog,本版指令未逐槽核验；出现行为差异时定点复查,2026-11-19
 79,root/52,root,1,doInit_UI / 主界面初始化,高置信候选,0,176,37,865,未恢复,开拾取 | infoGoldTxt | 开苹果图中
 开苹果图中
-"开苹果图中 | y | Layout_Create | cruiseTxt | 元宝 | -- | 开拉怪 | x,,,2026-11-18"
+开苹果图中 | y | Layout_Create | cruiseTxt | 元宝 | -- | 开拉怪 | x",,,"2026-11-18
 80,root/52/0,root/52,2,closure_root_52_0,匿名闭包（行为已恢复）,0,1,0,4,已写入明文,startForgeZodiac,MainLeftBottom_11.16_明文.lua,4条指令：Opcode 9融合读取H[0].startForgeZodiac；无参数调用；定位名为合成名,2026-11-18
 81,root/52/1,root/52,2,,待识别,0,7,0,23,未恢复,SL | 关闭黑名单功能 | isBlacklisting | UnSchedule | blacklistTimer,,,2026-11-18
 82,root/52/2,root/52,2,,待识别,0,10,0,30,未恢复,显示所有按钮 | hidebut | hide | 隐藏所有按钮 | setOpacity | show | isHidden | GUI,,,2026-11-18
@@ -95,7 +95,7 @@ mode=%s
 87,root/52/6,root/52,2,,待识别,0,72,5,320,未恢复,声望卷 | 绑定元宝 | setTouchEnabled | 血龙宝珠 | 关闭资源信息窗口 | 绑定灵符 | #00FF00 | Win_IsNotNull | ListView_Create | initTimeCell,,,2026-11-18
 88,root/52/6/0,root/52/6,3,,待识别,3,17,0,65,未恢复,_cell_ | #FFFFFF | Layout_Create | _ | ceil | Text_Create | :-- | _text_ | math | GUI,,,2026-11-18
 89,root/52/6/1,root/52/6,3,,待识别,0,31,0,168,未恢复,math | GetMoneyIdByName | 小时 | UnSchedule | 分钟 | : | floor | GUI | initSnapshot | ),,,2026-11-18
-90,root/52/6/2,root/52/6,3,,待识别,0,8,0,20,未恢复,"点击空白,关闭资源信息窗口 | resWin | Win_Close | GUI | resTimer | SL | UnSchedule",,,2026-11-18
+90,root/52/6/2,root/52/6,3,,待识别,0,8,0,20,未恢复,点击空白","关闭资源信息窗口 | resWin | Win_Close | GUI | resTimer | SL | UnSchedule,,,2026-11-18
 91,root/52/6/3,root/52/6,3,,待识别,1,12,0,35,未恢复,string | tostring | format | %.1f亿 | floor | math | 万,,,2026-11-18
 92,root/52/6/4,root/52/6,3,,待识别,1,12,0,46,未恢复,find | BAG_DATA | pairs | string | MakeIndex | OverLap | SL | Name | ITEM_IS_BIND | GetMetaValue,,,2026-11-18
 93,root/52/7,root/52,2,,待识别,0,7,0,26,未恢复,ipairs | slot | SL | names | ITEM_INDEX_BY_NAME | MoveItemToQuickUse | GetMetaValue,,,2026-11-18
@@ -106,7 +106,7 @@ mode=%s
 98,root/52/11,root/52,2,make_helper_root_52_11（合成定位名）,行为已完整恢复；捕获变量已映射,0,2,0,5,已写入明文（本版指令级完整恢复）,_G | LuaSendMsg | MainLeftBottom.a | root槽633捕获映射,MainLeftBottom_11.16_明文.lua,5条指令全部闭合。root槽633创建root/52时，root/52 H[2]捕获root N[0]；root N[0]由初始化段及root/16捕获映射确认是MainLeftBottom.a。因此子闭包等价于_G.LuaSendMsg = MainLeftBottom.a.LuaSendMsg。,2026-11-20
 99,root/52/12,root/52,2,closure_root_52_12（合成定位名）,行为已恢复,0,3,0,5,已写入明文,global | gameWorldController | OnGameLeaveWorld,MainLeftBottom_11.16_明文.lua,5条物理指令全部闭合；Opcode248融合全局加载/成员读取/方法准备，Opcode123调用，Opcode205结束；API文档未收录，按原始调用点恢复,2026-11-19
 100,root/52/13,root/52,2,make_helper_root_52_13（合成定位名）,闭包体已恢复；H[0..2]父级捕获来源待确认,0,1,0,13,闭包体已写入明文；捕获身份待确认（部分恢复）,cruiseRunTimer,MainLeftBottom_11.16_明文.lua,13条指令及两分支闭合；H[0..2]父级符号身份未确认。,2026-11-19
-101,root/52/14,root/52,2,,待识别,6,38,0,174,未恢复,"tostring | sealPanelAt | ancientSwordData | swordPullPending | ""power"" | subData_2 | combatPower | find |  | ,",,,2026-11-18
+101,root/52/14,root/52,2,,待识别,6,38,0,174,未恢复,tostring | sealPanelAt | ancientSwordData | swordPullPending | power | subData_2 | combatPower | find |  | ",",,,2026-11-18
 102,root/52/15,root/52,2,,待识别,0,11,0,36,未恢复,dropTimer | 开丢全部 | diuqibut | dropallbut | Button_setTitleText | GUI | #ff0000 | #ffffff | Button_setTitleColor | 关丢全部,,,2026-11-18
 103,root/52/16,root/52,2,,待识别,0,8,1,33,未恢复,SL | rewardTimer | Schedule | 开启奖励功能 | UnSchedule | 关闭奖励功能,,,2026-11-18
 104,root/52/16/0,root/52/16,3,,待识别,0,5,0,22,未恢复,LuaSendMsg,,,2026-11-18
@@ -132,7 +132,7 @@ mode=%s
 124,root/52/33,root/52,2,,待识别,0,25,0,43,未恢复,%04d%02d%02d | 到达 22:00:05，发送开启巡航协议 | format | hour | sec | date | LuaSendMsg | month | year | ,,,2026-11-18
 125,root/52/34,root/52,2,,待识别,0,12,1,46,未恢复,金条 | price | putinPrice | mode | putinName |  | 上架物品 | 1 | tonumber | inputNumber,,,2026-11-18
 126,root/52/34/0,root/52/34,3,,待识别,3,4,0,18,未恢复,putinStacked | putinPrice | putinName | startPutinGold,,,2026-11-18
-127,root/52/35,root/52,2,,待识别,0,17,1,37,未恢复,"tostring | string | LuaSendMsg | global | format | len | USER_ID | {""UserID"":""%s"",""index"":15} | MsgType | MSG_CS_NPC_CLICK",,,2026-11-18
+127,root/52/35,root/52,2,,待识别,0,17,1,37,未恢复,tostring | string | LuaSendMsg | global | format | len | USER_ID | {UserID:%s","index:15} | MsgType | MSG_CS_NPC_CLICK,,,2026-11-18
 128,root/52/35/0,root/52/35,3,closure_root_52_35_0,匿名闭包（行为已恢复）,0,2,0,3,已写入明文,powerRefreshing,MainLeftBottom_11.16_明文.lua,3条指令：Opcode 88读取H[0]环境表，融合Opcode 114设置powerRefreshing=false；合成定位名,2026-11-18
 129,root/52/36,root/52,2,make_helper_root_52_36（合成定位名）,闭包执行体及3项捕获来源全部闭合；父级局部变量符号名部分未知,0,4,0,19,已写入明文（本版指令级完整恢复；捕获代理保留精确值）,19槽闭合；root/52槽605创建，H[0]/H[1]经父H[3]/H[13]追溯至root N[3]/N[5]，H[2]来自root/52 N[24]；全部捕获源寄存器已确认，明文保留捕获代理。,MainLeftBottom_11.16_明文.lua,函数体与3项捕获来源均闭合；N[24]原始变量名未知，不影响静态恢复。,2026-11-20
 130,root/53,root,1,helper_root_53（合成定位名）,行为已恢复,1,4,0,15,已写入明文,string.match | match | · | ^(.-)·,MainLeftBottom_11.16_明文.lua,原始函数符号名未确认；全部15条物理指令及两条分支已闭合,2026-11-19
@@ -141,7 +141,7 @@ mode=%s
 133,root/56,root,1,PCallHelper_2,跨版本业务恢复（11.2同名函数体与11.16子原型/常量结构吻合）,0,1,1,10,已写入明文（跨版本业务复用）,pcall | 子原型root/56/0 | helper_root_56_0,MainLeftBottom_11.16_明文.lua：PCallHelper_2,本版root/56有1个子原型，root/56/0已按本版指令恢复代理获取闭包；本函数pcall保护该闭包，失败或假值返回nil。旧版同名函数行为吻合,2026-11-19
 134,root/56/0,root/56,3,helper_root_56_0（合成定位名）,行为已恢复,0,5,0,9,已写入明文,Facade | retrieveProxy | ProxyTable | FriendProxy,MainLeftBottom_11.16_明文.lua,9条物理指令全部闭合；Opcode282融合全局/Facade读取及retrieveProxy方法准备，Opcode108融合读取global.ProxyTable.FriendProxy，Opcode202直接return；无H槽；父级未发现创建childIndex=0闭包的指令,2026-11-19
 135,root/57,root,1,,待识别,2,10,0,60,未恢复,abs | math,,,2026-11-18
-136,root/58,root,1,TakeItems（高置信跨版本主体候选）,已写入明文（本版直接恢复）,0,23,0,99,root槽81创建root/58；槽82捕获root N[2]=MainLeftBottom.z，槽83捕获root N[5]=ShowLocalNoticeByType；99/99物理槽位控制流与常量/调用关系闭合,"本版99条指令直接确认：isTaking互斥、GetStorageItemData读取仓库数据、空数据提示与复位、ipairs遍历、Name/MakeIndex检查、string.trim、过滤词“待定”的string.find(...,1,true)循环、LuaSendMsg(MSG_CS_STORAGE_PICK_OUT_REQUEST,999999999,MakeIndex,0,0,itemName,string.len(itemName))、计数及仅在计数大于0时汇总提示。root槽81创建闭包，槽82/83分别捕获N[2]/N[5]，身份为MainLeftBottom.z和ShowLocalNoticeByType。旧版仅作业务表达参考，控制流以本版99槽为准。",,本版99槽及父级捕获来源已闭合；唯一明文写入直接TakeItems()函数，使用MainLeftBottom.z与ShowLocalNoticeByType。,2026-11-20
+136,root/58,root,1,TakeItems（高置信跨版本主体候选）,已写入明文（本版直接恢复）,0,23,0,99,root槽81创建root/58；槽82捕获root N[2]=MainLeftBottom.z，槽83捕获root N[5]=ShowLocalNoticeByType；99/99物理槽位控制流与常量/调用关系闭合,本版99条指令直接确认：isTaking互斥、GetStorageItemData读取仓库数据、空数据提示与复位、ipairs遍历、Name/MakeIndex检查、string.trim、过滤词“待定”的string.find(...",1,true)循环、LuaSendMsg(MSG_CS_STORAGE_PICK_OUT_REQUEST,999999999,MakeIndex,0,0,itemName,"string.len(itemName))、计数及仅在计数大于0时汇总提示。root槽81创建闭包，槽82/83分别捕获N[2]/N[5]，身份为MainLeftBottom.z和ShowLocalNoticeByType。旧版仅作业务表达参考，控制流以本版99槽为准。,,本版99槽及父级捕获来源已闭合；唯一明文写入直接TakeItems()函数，使用MainLeftBottom.z与ShowLocalNoticeByType。,2026-11-20
 137,root/59,root,1,,待识别,1,16,0,44,未恢复,appleMap | #ffffff | GUI | SL | appleMapRunning | UnSchedule | 开苹果图 | toggled | appleMapTimer | Button_setTitleText,,,2026-11-18
 138,root/60,root,1,helper_root_60（合成定位名）,闭包体及唯一实际读取的父级共享槽位已确认；原始变量符号名未知但不影响静态完整恢复,0,6,0,21,已写入明文（本版指令级完整恢复）,21槽控制流闭合；root槽519创建，槽520捕获父级N[76]到H[0]；H[0]为共享门控，真值时清空；随后获取PlayerInputProxy并在代理及ClearAttackTargetID成员存在时无参调用。未读取的其余5个upvalue不臆造；明文以capturedUpvalues[0]保留精确共享单元。,MainLeftBottom_11.16_明文.lua,函数体和唯一实际使用的捕获来源均已闭合；原始局部变量符号名未恢复，不影响静态恢复。,2026-11-20
 139,root/61,root,1,backCity,高置信候选（root/27与root/54引用backCity；本原型查找并使用盟重回城石）,0,15,0,60,候选待核验,QUICKUSE_DATA | GetMetaValue | 盟重回城石 | ITEM_COUNT | ITEM_INDEX_BY_NAME | pairs | tonumber | UseItemByIndex | string | find,,未保存完整指令流；调用绑定待本版指令核验,2026-11-19
@@ -167,3 +167,4 @@ mode=%s
 159,root/78,root,1,Schedule,跨版本高置信候选（11.2包装函数与11.16 SL方法调用形状吻合；本体为官方API包装）,2,2,0,7,已写入明文,SL | Schedule | Opcode 369融合方法准备与两个参数寄存器移动；Opcode 202直接返回调用结果,MainLeftBottom_11.16_明文.lua,原始符号名未确认；return后的尾部槽位不可达,2026-11-18
 160,root/79,root,1,forgeZodiac,生肖锻造周期回调身份已确认；本版212槽控制流及12项捕获映射已闭合,0,48,0,212,已写入明文（本版指令级主体完整恢复）,H[0]=MainLeftBottom.z；H[1]=checkGold；H[2]=root/14回调；H[3]=PrintLog；H[4]/H[5]=151/144；H[6]/H[7]=41/'10030'；H[8]=十二生肖列表；H[9]=helper_root_53；H[10]=helper_root_72；H[11]=Nested_find,MainLeftBottom_11.16_明文.lua：forgeZodiac,212槽主体已整合；MoveTo成功后发送1010 NPC点击消息；10004用于生肖锻造进度消息。未执行Lua语法检查及APK运行验证；root/14回调本体另列待恢复。,2026-11-20
 161,root/80,root,1,ShowLocalNoticeByType,高置信候选,1,14,0,15,已写入明文,screenH | ShowLocalNoticeByType | Type=10 | Msg=参数1 | FColor=249 | BColor=0 | X=5 | Y=screenH-50 | SL,MainLeftBottom_11.16_明文.lua,,2026-11-18
+"
