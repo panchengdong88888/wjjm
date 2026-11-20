@@ -1136,3 +1136,8 @@ root/15/1捕获来源的业务身份进一步确认：
 ## 2026-11-20续：Opcode403调用点与root/15/1提示分支
 
 原版F()的L==403叶为`N[K[2]]=H[K[3]]`，随后融合消费下一物理槽执行`N[K[2]]=K[3]`。child slot73 A403 B5 C0融合slot74，因此N5=H0、N6=提示文案；slot75读取H1，slot76拼接，slot77 Opcode128调用N5(N6)。按已确认捕获来源H0=parent N5=SL对象，这一处静态调用形态看似反常，但必须按字节码忠实保留为`H[0](message .. H[1])`，不能臆改为SL:ShowSystemTips或H5回调。H5为parent H0回调，走RequestAuctionPutin参数路径。
+
+
+## 2026-11-20纠错：Opcode403在root/15/1 slot73读取H[5]
+
+Opcode403执行N[A]=H[B]并融合下一物理槽装入立即值。child slot73为A403、B5、C0，因此读取的是H[5]，不是H[0]。H[5]对应父root/15 N[3]，而父N[3]来自父H[0]回调。slot73–77最终调用形态为`H[5]("上架结束：背包已无" .. H[1])`。不得把此处误写为H0或SL对象。原型JSON parameter_count=0，闭包没有显式参数。
