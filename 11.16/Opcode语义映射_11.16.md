@@ -1118,3 +1118,16 @@ Opcode178的F()叶会取子原型`T[K[3]]`，并读取后续`K[4]`个捕获描�
 - H[5] <- parent N[3] (slot69 A243,C3)
 
 这六个来源已由闭包创建指令和描述符直接确认。业务变量名待沿父函数寄存器定义恢复。
+
+
+## 2026-11-20续：root/15父函数寄存器与child捕获身份
+
+root/15/1捕获来源的业务身份进一步确认：
+- child H[0] <- parent N[5] = SL（父slot53装载SL；slot54随即准备SL.UnSchedule）。
+- child H[1] <- parent N[1] = 货币名称；slot3缺省写入“金条”，所以是可传入、默认“金条”的值。
+- child H[2] <- parent N[2] = 布尔选项；slot6初始化false。
+- child H[3] <- parent N[0] = 上架单价；父函数根据AUCTION_BIDPRICE_MIN做最低单价检查，子函数用它计算总价。
+- child H[4] <- parent H[3]，保留原始upvalue引用；上层创建点尚未确认其名称。
+- child H[5] <- parent N[3] = parent H[0]回调；父slot7 Opcode127读取H[0]写入N[3]。
+
+注意：H[1]不是固定常量“金条”，而是父N[1]的可传入货币名称，仅在缺省路径由slot3设置为“金条”。H[4]不得猜名为PrintLog。该映射足以推进子函数源码整理，但唯一明文仍待完整组织调用参数。
