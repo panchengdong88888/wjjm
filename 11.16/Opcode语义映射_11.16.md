@@ -1105,3 +1105,16 @@ O=O+1; K=W[O]; N[K[2]]=N[K[3]]
 - 68：跳至迭代推进。
 
 root/15/1 slot36–70循环体完整闭合；整个121槽主体slot1–35、36–70、71–121均已逐段闭合。仍需单独整理函数入口参数/upvalue映射，未写唯一明文，不增加项目完成计数。
+
+
+## 2026-11-20：Opcode178闭包创建及root/15/1 Upvalue映射
+
+Opcode178的F()叶会取子原型`T[K[3]]`，并读取后续`K[4]`个捕获描述符：描述符Opcode=243时捕获当前函数寄存器N[descriptor.C]；其他Opcode时捕获当前函数Upvalue H[descriptor.C]。root/15 slot63（A178,B6,C1,D6）创建T[1]并消费slot64–69六个描述符，因此root/15/1捕获环境准确为：
+- H[0] <- parent root/15 N[5] (slot64 A243,C5)
+- H[1] <- parent N[1] (slot65 A243,C1)
+- H[2] <- parent N[2] (slot66 A243,C2)
+- H[3] <- parent N[0] (slot67 A243,C0)
+- H[4] <- parent H[3] (slot68 A132,C3)
+- H[5] <- parent N[3] (slot69 A243,C3)
+
+这六个来源已由闭包创建指令和描述符直接确认。业务变量名待沿父函数寄存器定义恢复。
