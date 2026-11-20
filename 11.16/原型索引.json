@@ -652,8 +652,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 76,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "ProcessNewZoneItems（合成定位名）",
+      "identity_status": "高置信匿名回调（与11.9 MakeNewZoneItemTimerCallback返回闭包同为76指令；本版新区物品常量吻合）",
       "constants": [
         "新区使用：%s",
         "BAG_DATA",
@@ -681,7 +681,9 @@
         },
         "newzoneTimer",
         "global"
-      ]
+      ],
+      "recovery_status": "已写入明文（跨版本业务复用）",
+      "recovery_note": "按11.9同职责76指令回调迁移，使用本版BAG_DATA/MSG_CS_USE_BAG_ITEM/newzoneTimer/Gbtc/ShowSystemTips常量；状态接入MainLeftBottom.a。"
     },
     {
       "preorder_id": 3,
@@ -1213,7 +1215,7 @@
       "parameter_count": 0,
       "instruction_count": 37,
       "candidate_name": "NewZoneFeature",
-      "identity_status": "高置信候选",
+      "identity_status": "高置信身份确认（与11.9新区启动处理器37指令同规模；本版常量/子闭包吻合）",
       "constants": [
         0.05,
         "Gbtc",
@@ -1233,7 +1235,9 @@
         "开启新区功能",
         22302,
         9002
-      ]
+      ],
+      "recovery_status": "已写入明文（跨版本业务复用并按本版消息参数修正）",
+      "recovery_note": "迁移11.9新区启动处理器主体；延迟消息调用本版root/13/0，周期回调使用root/1迁移实现，状态接入MainLeftBottom.a。"
     },
     {
       "preorder_id": 18,
