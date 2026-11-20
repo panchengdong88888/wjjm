@@ -612,12 +612,14 @@
         "userID",
         "CHECK_INTERVAL"
       ],
-      "instruction_stream_exported": false,
-      "instruction_stream_export_status": "解析报告确认解析时有654条指令，但当前11.16仓库未保存root的物理指令记录；索引只保留常量和统计元数据。",
+      "instruction_stream_exported": true,
+      "instruction_stream_export_status": "已从11.16原版内嵌载荷重新执行Base36/LZW、XOR 0x17及S()结构解析，完整导出654个物理槽位；解码142522字节全部消费。",
       "instruction_stream_required_for": [
         "root/2 childIndex=2闭包创建位置",
         "root/2两个upvalue捕获源寄存器"
-      ]
+      ],
+      "instruction_stream_file": "11.16/root_654条物理指令流.json",
+      "instruction_stream_exported_at": "2026-11-20"
     },
     {
       "preorder_id": 1,
