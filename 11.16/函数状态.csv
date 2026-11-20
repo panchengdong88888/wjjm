@@ -31,7 +31,7 @@
 28,root/19/1,root/19,2,,匿名闭包（本版常量/指令数与UID白名单匹配闭包吻合）,1,4,0,27,已写入明文（跨版本业务复用；子原型一并恢复）,tostring | ipairs | 账号不存在，功能已限制，账号ID： | [提示] 账号ID在允许列表中，功能已开启；27条指令、1参数,MainLeftBottom_11.16_明文.lua,原始闭包局部符号名未恢复；明文使用Nested_ID。,2026-11-20
 29,root/20,root,1,FindMonsterInCurrViewField,高置信候选,0,4,0,27,已写入明文,FindMonsterInCurrViewField | GetID | SL | ipairs,IsDie(H[0])过滤存活对象；按GetID结果作为result键,MainLeftBottom_11.16_明文.lua,2026-11-18
 30,root/21,root,1,,待识别,2,36,0,149,未恢复,LimitCount | SL | type | Index | 限购剩余 0 | ITEM_INDEX_BY_NAME | CheckCondition |  | BuyCount | pageData,,,2026-11-18
-31,root/22,root,1,DestroyUI,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,14,0,61,未恢复,GUI | resWin | UnSchedule | pairs | setVisible | Win_CloseAll | appleMapBg | isHidden | infoBg | resTimer,,,2026-11-18
+31,root/22,root,1,DestroyUI,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,14,0,61,已写入明文（跨版本业务复用）,GUI | resWin | UnSchedule | pairs | setVisible | Win_CloseAll | appleMapBg | isHidden | infoBg | resTimer,11.16/MainLeftBottom_11.16_明文.lua：DestroyUI,按用户要求先完成明文主体，留待APK实测后针对异常功能调整。,2026-11-20
 32,root/23,root,1,InitGatherMonsters,高置信候选,0,11,1,36,已写入明文（跨版本业务复用；回调按新版包装）,引怪功能已启动 (阈值: %d) | CHECK_INTERVAL | string | UnSchedule | format | SL | IDLE | gatherTimer | GATHER_THRESHOLD | Schedule | Opcode 9/110/123/128/205/253/289/330/358/388/410已映射；回调捕获与定时器控制流待闭合,MainLeftBottom_11.16_明文.lua：InitGatherMonsters,11.2/11.9共同主体；Schedule回调替换为已恢复的closure_root_23_0；变量映射依据root/3捕获线索,2026-11-19
 33,root/23/0,root/23,2,closure_root_23_0（合成定位名）,行为已恢复,0,1,0,3,已写入明文,MainLoop,MainLeftBottom_11.16_明文.lua,3条物理指令；父级root/23槽位23通过Opcode387创建，captureCount=0；Opcode105读取全局MainLoop，Opcode128无参调用，Opcode205结束,2026-11-19
 34,root/24,root,1,GetMapId,本轮已恢复,0,4,0,9,已写入明文,MAP_ID | SL | GetMetaValue,MainLeftBottom_11.16_明文.lua,,2026-11-18
