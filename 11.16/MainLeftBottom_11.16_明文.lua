@@ -1307,13 +1307,12 @@ end
 --   mode==1：排除命中3项精确名称表的物品；
 --   mode==2：排除命中35项精确名称表的物品；
 --   其他值：仅保留命中28项Lua模式名称表的物品。
--- H[0]为持有isDiuing字段的状态对象，H[1]为提示回调；
--- 父级root原始654槽未导出，故两者保留为显式捕获槽，不猜测词法变量名。
-local function make_DiuItems(capturedUpvalues)
-    local state = capturedUpvalues[0]
-    local notify = capturedUpvalues[1]
-
-    local function DiuItems(mode)
+-- H[0]由root N[2]捕获，即MainLeftBottom状态/模块表；
+-- H[1]由root N[5]捕获，即ShowLocalNoticeByType闭包（root/80），用于本地提示。
+-- root/2闭包捕获已由root槽66–68闭合：H[0]=MainLeftBottom，H[1]=ShowLocalNoticeByType。
+local function DiuItems(mode)
+    local state = MainLeftBottom
+    local notify = ShowLocalNoticeByType
         local MAX_GROUND_ITEMS = 35
         if state.isDiuing then
             return
@@ -1430,9 +1429,6 @@ local function make_DiuItems(capturedUpvalues)
 
         notify("共丢弃 " .. sentCount .. " 件物品")
         state.isDiuing = false
-    end
-
-    return DiuItems
 end
 
 
