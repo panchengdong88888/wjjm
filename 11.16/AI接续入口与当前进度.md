@@ -1602,3 +1602,10 @@
 - root/72已恢复为helper_root_72：遍历SL:GetMetaValue('ALL_EQUIP_DATAS')，对item.Name执行string.find(item.Name, searchText, 1)，命中返回装备对象，未命中nil。已写入唯一明文并更新原型索引、CSV。
 - root/79 H[10]可直接绑定helper_root_72；不要再把root/72当作缺少完整指令流的阻塞项。
 - 当前统计：完整静态恢复67/162；业务功能累计恢复84/162。下一步继续整合root/79主体，优先按已闭合槽位写入可读业务代码；不再重做root/72。
+
+
+## 2026-11-20最新接续点（root/79主体已写入）
+
+- root/72 helper_root_72已恢复；root/79 forgeZodiac的212槽主体也已整合写入`MainLeftBottom_11.16_明文.lua`。
+- forgeZodiac覆盖金币检查、神龍之都地图请求/超时重发、MoveTo(151,144,8)、NPC交互(index=41/UserID=10030)、clickNpc等待5tick、每5tick生肖扫描、ALL_EQUIP_DATAS检查、BAG_DATA物品查找/UseItemByIndex、按前缀30tick节拍、tryCount>200停止、LuaSendMsg/PrintLog进度输出。
+- 当前静态恢复统计：完整静态68/162；业务功能累计85/162。未进行APK运行验证；后续以用户实测结果修正。
