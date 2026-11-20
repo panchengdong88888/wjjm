@@ -3283,7 +3283,7 @@ end
 -- ============================================================================
 local function ForgeZodiacToggleHandler(capturedUpvalues, message)
     local state = capturedUpvalues[1]
-    local logFunction = capturedUpvalues[3]
+    local showLocalNoticeByType = capturedUpvalues[3]
 
     if state.forgeZodiacTimer then
         SL:UnSchedule(state.forgeZodiacTimer)
@@ -3306,7 +3306,7 @@ local function ForgeZodiacToggleHandler(capturedUpvalues, message)
         GUI.Button_setTitleColor(button, "#ffffff")
     end
 
-    logFunction(message)
+    showLocalNoticeByType(message)
     SL:ShowSystemTips(message)
 end
 
@@ -3343,4 +3343,79 @@ local function helper_root_59(capturedUpvalues, message)
 
     notifyFunction(message)
     SL:ShowSystemTips(message)
+end
+
+
+-- ============================================================================
+-- 11.16 root/33：startPutoutAll（56条物理指令，0显式参数，4个捕获值）。
+-- 捕获：H0=MainLeftBottom.z；H1=ShowLocalNoticeByType；
+-- H2=PrintLog；H3=Schedule。父函数负责取消旧任务、检查AuctionProxy、
+-- 初始化下架状态、请求拍卖列表并启动0.1秒轮询。
+-- ============================================================================
+local function startPutoutAll(capturedUpvalues)
+    local state = capturedUpvalues[1]
+    local showLocalNoticeByType = capturedUpvalues[2]
+    local printLog = capturedUpvalues[3]
+    local schedule = capturedUpvalues[4]
+
+    if state.putoutTimer then
+        SL:UnSchedule(state.putoutTimer)
+        state.putoutTimer = nil
+    end
+
+    if state.putinTimer then
+        SL:UnSchedule(state.putinTimer)
+        state.putinTimer = nil
+    end
+
+    local auctionProxy = global.Facade:retrieveProxy(global.ProxyTable.AuctionProxy)
+    if not auctionProxy then
+        SL:ShowSystemTips("拍卖行未就绪")
+        return
+    end
+
+    state.putoutSent = {}
+    state.putoutTicks = 0
+    SL:ShowSystemTips("开始下架拍卖行物品")
+
+    local putoutTick = function()
+        helper_root_33_1({ state, state, printLog })
+    end
+    state.putoutTimer = schedule(putoutTick, 0.1)
+end
+
+
+-- ============================================================================
+-- 11.16 root/33/1：下架轮询回调（77条物理指令，0显式参数）。
+-- 三个捕获值保留为代理：H0/H1为父函数传入的状态引用，
+-- H2为PrintLog。按本体字段恢复列表遍历、已发送去重及下架请求。
+-- ============================================================================
+local function helper_root_33_1(capturedUpvalues)
+    local state = capturedUpvalues[1]
+    local stateAlias = capturedUpvalues[2]
+    local printLog = capturedUpvalues[3]
+
+    state.putoutTicks = (state.putoutTicks or 0) + 1
+
+    if state.putoutTicks % 30 == 0 then
+        SL:RequestAuctionPutList(1)
+    end
+
+    local auctionProxy = global.Facade:retrieveProxy(global.ProxyTable.AuctionProxy)
+    local putList = auctionProxy and auctionProxy._putlist or {}
+    local sent = stateAlias.putoutSent or {}
+
+    for _, item in ipairs(putList) do
+        local makeIndex = item and item.MakeIndex
+        if makeIndex ~= nil and not sent[makeIndex] then
+            sent[makeIndex] = true
+            printLog(string.format("下架物品：MakeIndex=%s", tostring(makeIndex)))
+            SL:RequestAuctionPutout(makeIndex)
+        end
+    end
+
+    if state.putoutTicks >= 40 and #putList == 0 then
+        showLocalNoticeByType("下架完成：已无上架物品")
+        return
+    end
 end
