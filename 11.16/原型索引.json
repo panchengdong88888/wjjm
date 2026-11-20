@@ -1126,7 +1126,7 @@
       "parameter_count": 0,
       "instruction_count": 29,
       "candidate_name": "startForgeZodiac",
-      "identity_status": "真实全局导出名已由root槽405确认；捕获对象与函数体待恢复",
+      "identity_status": "真实全局导出名已由root槽405确认；29条指令控制流与5个捕获槽已闭合",
       "constants": [
         "开始锻造生肖",
         "state",
@@ -1142,7 +1142,8 @@
         "已停止锻造生肖",
         "index"
       ],
-      "recovery_status": "分析中；root槽399创建，400–404捕获N[3]/N[58]/N[5]/N[7]/N[59]"
+      "recovery_status": "已写入明文（本版指令流恢复）",
+      "recovery_note": "按root/优先闭包指令流补充.json逐槽恢复：H[0]=MainLeftBottom.z，H[1]=root/14回调，H[2]=_G.log，H[3]=root/78 Schedule包装，H[4]='蛇·[普通]'；启动/停止分支及state字段赋值闭合。"
     },
     {
       "preorder_id": 15,
