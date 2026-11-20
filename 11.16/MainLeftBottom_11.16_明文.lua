@@ -915,6 +915,33 @@ local function make_helper_root_32(capturedUpvalues)
 end
 
 
+
+-- 11.16 root/0：37条物理指令；1参数、1捕获；root槽335创建，槽336捕获父级N[41]。
+-- 遍历捕获的候选列表，优先收集name不等于参数.lastMapName的项目；
+-- 若排除上一地图后列表为空，则回退为全部候选；最后用math.random随机返回一项。
+-- 父级N[41]的原始局部变量名未确认，使用capturedUpvalues[0]保持同一共享引用。
+local function make_helper_root_0(capturedUpvalues)
+    return function(state)
+        local candidates = {}
+        local sourceList = capturedUpvalues[0]
+
+        for _, item in ipairs(sourceList) do
+            if item.name ~= state.lastMapName then
+                table.insert(candidates, item)
+            end
+        end
+
+        if #candidates == 0 then
+            for _, item in ipairs(sourceList) do
+                table.insert(candidates, item)
+            end
+        end
+
+        return candidates[math.random(#candidates)]
+    end
+end
+
+
 -- 11.16 root/11：31条物理指令；0参数；root槽540创建，槽541–546捕获N[3]/N[74]/N[75]/N[79]/N[0]/N[5]。
 -- H[0]=MainLeftBottom.z，H[3]为root/60捕获回调，H[4]=MainLeftBottom，H[5]=ShowLocalNoticeByType；
 -- H[1]=root N[74]：同时被root/25/0及其两个子闭包共享写入false，属于见人跑流程共享状态门控，但原始变量名未知；H[2]=root N[75]：同时被root/32捕获为见人跑提示的一次性门控，原始变量名未知。两者均保留捕获代理。
