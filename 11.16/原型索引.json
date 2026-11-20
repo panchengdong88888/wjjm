@@ -5610,7 +5610,7 @@
       "parameter_count": 0,
       "instruction_count": 212,
       "candidate_name": "forgeZodiac",
-      "identity_status": "跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）",
+      "identity_status": "生肖锻造周期回调身份已确认；本版212槽控制流及父级12项捕获映射已闭合",
       "constants": [
         "SL",
         " 第",
@@ -5661,9 +5661,9 @@
         "walkNpc",
         "MoveTo"
       ],
-      "recovery_status": "已写入明文（主体业务流程整合完成；保留闭包捕获与状态字段说明）",
-      "business_summary": "定时生肖锻造状态机：检查金币，前往神龍之都，移动并交互NPC；等待后每5 tick扫描十二生肖装备，检查已装备数据并使用背包中对应物品；按生肖前缀30 tick节流，累计最多200次并发送锻造请求与进度日志。",
-      "recovery_evidence": " 父root槽362将立即数41写入N[51]，root/79 H[6]因此为NPC交互JSON的index=41；H[7]='10030'。 已将212槽主体整合为forgeZodiac()写入唯一明文。12个捕获值按root闭包创建点映射；root/72由helper_root_72承接，root/53与root/30分别由helper_root_53/Nested_find承接。"
+      "recovery_status": "已写入明文（本版指令级主体完整恢复）",
+      "business_summary": "生肖锻造周期回调：检查金币，前往神龍之都并交互NPC；等待后每5 tick扫描十二生肖装备与背包物品；按生肖前缀30 tick节拍使用装备并发送锻造请求，tryCount超过200时停止。",
+      "recovery_evidence": "root/79共212条物理指令；父root槽386创建该闭包并捕获12项，映射见root79_forgeZodiac_恢复工作记录.md。各段控制流已闭合并整合写入MainLeftBottom_11.16_明文.lua。MoveTo(151,144,8)成功后发送1010 NPC点击消息，NPC JSON index=41/UserID=10030；生肖进度消息使用10004。"
     },
     {
       "preorder_id": 161,
