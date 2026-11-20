@@ -914,6 +914,75 @@ local function make_helper_root_32(capturedUpvalues)
     end
 end
 
+
+-- 11.16 root/11：31条物理指令；0参数；root槽540创建，槽541–546捕获N[3]/N[74]/N[75]/N[79]/N[0]/N[5]。
+-- H[0]=MainLeftBottom.z，H[3]为root/60捕获回调，H[4]=MainLeftBottom，H[5]=ShowLocalNoticeByType；
+-- H[1]/H[2]两个共享状态槽业务名称未确认，保留捕获代理。
+-- 主体：取消并清空巡航计时器；复位H[1]/H[2]；调用H[3]清理目标；恢复巡航暂停标志；
+-- 不在白名单地图时调用MainLeftBottom.zd(true)，最后提示关闭见人跑。本项不计完整静态恢复。
+local function make_helper_root_11(capturedUpvalues)
+    return function()
+        local state = MainLeftBottom.z
+        if state.cruiseRunTimer then
+            SL:UnSchedule(state.cruiseRunTimer)
+            state.cruiseRunTimer = nil
+        end
+        capturedUpvalues[1] = false
+        capturedUpvalues[2] = false
+        capturedUpvalues[3]()
+        MainLeftBottom.cruiseGatherPaused = false
+        if not IsInWhitelistMap() then
+            MainLeftBottom.zd(true)
+        end
+        ShowLocalNoticeByType("关闭见人跑")
+    end
+end
+
+
+-- 11.16 root/35：32条物理指令；0参数、0捕获；root槽579创建。
+-- 检查Facade，发送Layer_CommonTips_Close通知，取得LayerFacadeMediator；
+-- 逆序遍历其_normalMediators，对每个非nil对象调用CloseLayer()。
+-- 原始符号名/父级挂载字段未确认，helper_root_35为合成定位名。
+local function helper_root_35()
+    local facade = global.Facade
+    if facade == nil then
+        return
+    end
+    facade:sendNotification(global.NoticeTable.Layer_CommonTips_Close)
+    local layerFacadeMediator = facade:retrieveMediator("LayerFacadeMediator")
+    if layerFacadeMediator == nil then
+        return
+    end
+    local normalMediators = layerFacadeMediator._normalMediators
+    if normalMediators == nil then
+        return
+    end
+    for index = #normalMediators, 1, -1 do
+        local layer = normalMediators[index]
+        if layer ~= nil then
+            layer:CloseLayer()
+        end
+    end
+end
+
+
+-- 11.16 root/41：28条物理指令；1参数、0捕获；root槽52创建，槽53以zd键写入MainLeftBottom。
+-- 读取BATTLE_IS_AFK；仅在请求状态与当前状态不一致时发送AFKBegin/AFKEnd通知。
+MainLeftBottom.zd = function(afkEnabled)
+    local isAFK = SL:GetMetaValue("BATTLE_IS_AFK")
+    if afkEnabled == true then
+        if isAFK then
+            return
+        end
+        global.Facade:sendNotification(global.NoticeTable.AFKBegin)
+    elseif afkEnabled == false then
+        if isAFK then
+            global.Facade:sendNotification(global.NoticeTable.AFKEnd)
+        end
+    end
+end
+
+
 -- 11.16 root/42：22条物理指令，0个显式参数、0个upvalue、无子原型。
 -- slot1–5检查global.Facade；Facade不存在时Opcode205直接结束函数。
 -- slot6–12取得global.Facade.retrieveProxy并以global.ProxyTable.PlayerInputProxy调用；
