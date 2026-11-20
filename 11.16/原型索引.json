@@ -3811,7 +3811,7 @@
       "parameter_count": 0,
       "instruction_count": 18,
       "candidate_name": "make_helper_root_52_9（合成定位名）",
-      "identity_status": "闭包体已恢复；父级捕获符号身份待确认",
+      "identity_status": "闭包体及全部捕获来源已闭合；部分父级局部变量原始符号名未恢复",
       "constants": [
         "blacklistTimer",
         11,
@@ -3819,8 +3819,9 @@
         "BlacklistItems",
         "开启黑名单功能，距离格子：%d"
       ],
-      "recovery_status": "闭包体已写入唯一明文；捕获身份待确认，按部分恢复统计",
-      "recovery_note": "root/52槽位550 Opcode178创建childIndex=9闭包，captureCount=5；槽551–555依次捕获父H[6]/H[3]/H[7]/H[8]/H[0]。root槽位633创建root/52时对应root N[67]/N[3]/N[7]/N[62]/N[4]。子体闭合：H[0].distance=11；调用BlacklistItems()；调用H[2](BlacklistItems,H[3])并将返回值写入H[1].blacklistTimer；调用H[4](提示格式字符串,H[0].distance)；返回true。五个捕获值的业务身份未确认，按部分恢复计数。；闭合闭包体已写入唯一明文，捕获槽保留VM编号。"
+      "recovery_status": "已写入明文（本版指令级完整恢复；捕获代理保留精确共享值）",
+      "recovery_note": "root/52槽位550 Opcode178创建childIndex=9闭包，captureCount=5；槽551–555依次捕获父H[6]/H[3]/H[7]/H[8]/H[0]。root槽位633创建root/52时对应root N[67]/N[3]/N[7]/N[62]/N[4]。子体闭合：H[0].distance=11；调用BlacklistItems()；调用H[2](BlacklistItems,H[3])并将返回值写入H[1].blacklistTimer；调用H[4](提示格式字符串,H[0].distance)；返回true。五个捕获值的业务身份未确认，按部分恢复计数。；闭合闭包体已写入唯一明文，捕获槽保留VM编号。",
+      "recovery_notes": "18/18槽控制流闭合；父root/52槽550创建闭包，H[0..4]依次来自root/52 H[6]/H[3]/H[7]/H[8]/H[0]，root槽633创建root/52时进一步对应root N[67]/N[3]/N[7]/N[62]/N[4]。全部捕获链精确，明文以capturedUpvalues保留原始共享值；父级局部变量符号名未全部恢复，不影响静态完整恢复。"
     },
     {
       "preorder_id": 97,
@@ -4797,15 +4798,16 @@
       "parameter_count": 0,
       "instruction_count": 19,
       "candidate_name": "make_helper_root_52_36（合成定位名）",
-      "identity_status": "闭包体已恢复；父级捕获符号身份待确认",
+      "identity_status": "闭包体及全部捕获来源已闭合；部分父级局部变量原始符号名未恢复",
       "constants": [
         "gatherTimer",
         "关闭引怪功能",
         "StopGatherMonsters",
         "开启引怪功能，阈值：11"
       ],
-      "recovery_status": "闭包体已写入唯一明文；捕获身份待确认，按部分恢复统计",
-      "recovery_note": "root/52槽位605 Opcode387创建childIndex=36闭包，captureCount=3；槽606 Opcode132捕获父H[3]到子H[0]，槽607 Opcode132捕获父H[13]到子H[1]，槽608 Opcode243捕获父N[24]到子H[2]。root槽位633创建root/52时，H[3]=root N[3]、H[13]=root N[5]。子体逐槽闭合：检查H[0].gatherTimer；真值路径调用H[1](关闭提示)、全局StopGatherMonsters()并返回true；假值路径调用H[1](开启提示)、H[2]()并返回true。H[2]业务身份待确认，故计部分恢复。；闭合闭包体已写入唯一明文，捕获槽保留VM编号。"
+      "recovery_status": "已写入明文（本版指令级完整恢复；捕获代理保留精确共享值）",
+      "recovery_note": "root/52槽位605 Opcode387创建childIndex=36闭包，captureCount=3；槽606 Opcode132捕获父H[3]到子H[0]，槽607 Opcode132捕获父H[13]到子H[1]，槽608 Opcode243捕获父N[24]到子H[2]。root槽位633创建root/52时，H[3]=root N[3]、H[13]=root N[5]。子体逐槽闭合：检查H[0].gatherTimer；真值路径调用H[1](关闭提示)、全局StopGatherMonsters()并返回true；假值路径调用H[1](开启提示)、H[2]()并返回true。H[2]业务身份待确认，故计部分恢复。；闭合闭包体已写入唯一明文，捕获槽保留VM编号。",
+      "recovery_notes": "19/19槽控制流闭合；父root/52槽605创建闭包，H[0]/H[1]来自父H[3]/H[13]并追溯至root N[3]/N[5]，H[2]直接来自root/52 N[24]。三项捕获来源均精确，明文以capturedUpvalues保留原值；N[24]原始变量名未知，不影响静态完整恢复。"
     },
     {
       "preorder_id": 130,
