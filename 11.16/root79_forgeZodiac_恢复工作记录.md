@@ -272,3 +272,13 @@ state.forgeNextTick[prefix] = state.ticks + 30
 
 #### 当前边界
 root/79 slot112–158现已闭合；slot159–177节拍段此前已闭合。root/79尚未整体写入唯一明文，仍需解决slot66–96的NPC交互字段H[6]来源，以及root/72返回对象的更细节字段/匹配语义。root/30本次是已完成函数的返回类型纠错，不增加root/79恢复统计。
+
+
+### 2026-11-20续：root/79 NPC交互字段H[6]最终来源闭合
+
+重新追踪父root寄存器N[41]在root/79创建前的赋值链，定位到父root slot362：
+- slot362的指令将立即数41写入父寄存器N[51]；root/79在slot386创建时，H[6]正是捕获父N[51]。
+- slot363将字符串"10030"写入父N[52]，对应root/79 H[7]。
+- root/79 slot78–81使用格式串`{"index":%d,"UserID":"%s"}`，将H[6]/H[7]传入string.format。
+
+因此NPC交互JSON可确定为`{"index":41,"UserID":"10030"}`，不再是未知字段，也不能挪用地图配置中3000、3001等其他NPC索引。slot69–74移动目标此前已确定为MoveTo(151,144,8)。root/79的NPC移动与点击字段现已闭合。
