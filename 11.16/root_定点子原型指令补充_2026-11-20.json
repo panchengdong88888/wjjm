@@ -1,0 +1,4056 @@
+{
+  "project": "MainLeftBottom 11.16",
+  "source_blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+  "decoded_bytes": 142522,
+  "consumed_bytes": 142522,
+  "exported_at": "2026-11-20",
+  "method": "从11.16原始载荷重新执行Base36/LZW、XOR 0x17及递归S()结构解析；保留物理槽位、空槽、常量引用标志及嵌套子原型",
+  "prototypes": [
+    {
+      "path": "root/14",
+      "depth": 1,
+      "constant_count": 21,
+      "constants": [
+        "Button_setTitleColor",
+        "NoticeTable",
+        "ShowSystemTips",
+        {
+          "unknown_type": 2
+        },
+        "Button_setTitleText",
+        "锻造生肖",
+        false,
+        "Layer_NPC_Talk_Close",
+        "forgezodiacbut",
+        "sendNotification",
+        "UnSchedule",
+        "#ffffff",
+        "forgezodiacbutCfg",
+        "toggled",
+        "forgeZodiac",
+        "SL",
+        "forgeZodiacRunning",
+        "global",
+        "forgeZodiacTimer",
+        "Facade",
+        "GUI"
+      ],
+      "child_count": 0,
+      "parameter_count": 1,
+      "instruction_count": 51,
+      "instructions": [
+        {
+          "slot": 1,
+          "flag": 0,
+          "opcode": 127,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 2,
+          "flag": 32,
+          "opcode": 410,
+          "A": 1,
+          "B": 1,
+          "C": 19,
+          "constC": "forgeZodiacTimer"
+        },
+        {
+          "slot": 3,
+          "flag": 64,
+          "opcode": 60,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 4,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 11,
+          "C": null
+        },
+        {
+          "slot": 5,
+          "flag": 82,
+          "opcode": 253,
+          "A": 1,
+          "B": 16,
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 6,
+          "flag": 96,
+          "opcode": 393,
+          "A": 1,
+          "B": 1,
+          "C": 11,
+          "constC": "UnSchedule"
+        },
+        {
+          "slot": 7,
+          "flag": 192,
+          "opcode": 9,
+          "A": 3,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 8,
+          "flag": 96,
+          "opcode": 410,
+          "A": 3,
+          "B": 3,
+          "C": 19,
+          "constC": "forgeZodiacTimer"
+        },
+        {
+          "slot": 9,
+          "flag": 128,
+          "opcode": 128,
+          "A": 1,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 10,
+          "flag": 128,
+          "opcode": 324,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 11,
+          "flag": 240,
+          "opcode": 114,
+          "A": 1,
+          "B": 19,
+          "C": 4,
+          "constB": "forgeZodiacTimer",
+          "constC": {
+            "unknown_type": 2
+          }
+        },
+        {
+          "slot": 12,
+          "flag": 64,
+          "opcode": 234,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 13,
+          "flag": 240,
+          "opcode": 114,
+          "A": 1,
+          "B": 15,
+          "C": 4,
+          "constB": "forgeZodiac",
+          "constC": {
+            "unknown_type": 2
+          }
+        },
+        {
+          "slot": 14,
+          "flag": 128,
+          "opcode": 49,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 15,
+          "flag": 112,
+          "opcode": 7,
+          "A": 1,
+          "B": 17,
+          "C": 7,
+          "constB": "forgeZodiacRunning",
+          "constC": false
+        },
+        {
+          "slot": 16,
+          "flag": 18,
+          "opcode": 282,
+          "A": 1,
+          "B": 18,
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 17,
+          "flag": 32,
+          "opcode": 411,
+          "A": 1,
+          "B": 1,
+          "C": 20,
+          "constC": "Facade"
+        },
+        {
+          "slot": 18,
+          "flag": 224,
+          "opcode": 393,
+          "A": 1,
+          "B": 1,
+          "C": 10,
+          "constC": "sendNotification"
+        },
+        {
+          "slot": 19,
+          "flag": 146,
+          "opcode": 108,
+          "A": 3,
+          "B": 18,
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 20,
+          "flag": 96,
+          "opcode": 274,
+          "A": 3,
+          "B": 3,
+          "C": 2,
+          "constC": "NoticeTable"
+        },
+        {
+          "slot": 21,
+          "flag": 32,
+          "opcode": 96,
+          "A": 3,
+          "B": 3,
+          "C": 8,
+          "constC": "Layer_NPC_Talk_Close"
+        },
+        {
+          "slot": 22,
+          "flag": 192,
+          "opcode": 128,
+          "A": 1,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 23,
+          "flag": 0,
+          "opcode": 9,
+          "A": 1,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 24,
+          "flag": 96,
+          "opcode": 274,
+          "A": 1,
+          "B": 1,
+          "C": 9,
+          "constC": "forgezodiacbut"
+        },
+        {
+          "slot": 25,
+          "flag": 0,
+          "opcode": 289,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 26,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 43,
+          "C": null
+        },
+        {
+          "slot": 27,
+          "flag": 128,
+          "opcode": 324,
+          "A": 1,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 28,
+          "flag": 160,
+          "opcode": 96,
+          "A": 1,
+          "B": 1,
+          "C": 13,
+          "constC": "forgezodiacbutCfg"
+        },
+        {
+          "slot": 29,
+          "flag": 128,
+          "opcode": 358,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 30,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 31,
+          "C": null
+        },
+        {
+          "slot": 31,
+          "flag": 48,
+          "opcode": 7,
+          "A": 1,
+          "B": 14,
+          "C": 7,
+          "constB": "toggled",
+          "constC": false
+        },
+        {
+          "slot": 32,
+          "flag": 18,
+          "opcode": 253,
+          "A": 2,
+          "B": 21,
+          "C": null,
+          "constB": "GUI"
+        },
+        {
+          "slot": 33,
+          "flag": 160,
+          "opcode": 138,
+          "A": 2,
+          "B": 2,
+          "C": 5,
+          "constC": "Button_setTitleText"
+        },
+        {
+          "slot": 34,
+          "flag": 128,
+          "opcode": 9,
+          "A": 4,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 35,
+          "flag": 96,
+          "opcode": 163,
+          "A": 4,
+          "B": 4,
+          "C": 9,
+          "constC": "forgezodiacbut"
+        },
+        {
+          "slot": 36,
+          "flag": 146,
+          "opcode": 295,
+          "A": 5,
+          "B": 6,
+          "C": null,
+          "constB": "锻造生肖"
+        },
+        {
+          "slot": 37,
+          "flag": 128,
+          "opcode": 128,
+          "A": 2,
+          "B": 5,
+          "C": 0
+        },
+        {
+          "slot": 38,
+          "flag": 210,
+          "opcode": 253,
+          "A": 2,
+          "B": 21,
+          "C": null,
+          "constB": "GUI"
+        },
+        {
+          "slot": 39,
+          "flag": 224,
+          "opcode": 393,
+          "A": 2,
+          "B": 2,
+          "C": 1,
+          "constC": "Button_setTitleColor"
+        },
+        {
+          "slot": 40,
+          "flag": 64,
+          "opcode": 9,
+          "A": 4,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 41,
+          "flag": 224,
+          "opcode": 163,
+          "A": 4,
+          "B": 4,
+          "C": 9,
+          "constC": "forgezodiacbut"
+        },
+        {
+          "slot": 42,
+          "flag": 210,
+          "opcode": 295,
+          "A": 5,
+          "B": 12,
+          "C": null,
+          "constB": "#ffffff"
+        },
+        {
+          "slot": 43,
+          "flag": 0,
+          "opcode": 123,
+          "A": 2,
+          "B": 5,
+          "C": 0
+        },
+        {
+          "slot": 44,
+          "flag": 64,
+          "opcode": 198,
+          "A": 1,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 45,
+          "flag": 192,
+          "opcode": 241,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 46,
+          "flag": 0,
+          "opcode": 128,
+          "A": 1,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 47,
+          "flag": 146,
+          "opcode": 210,
+          "A": 1,
+          "B": 16,
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 48,
+          "flag": 160,
+          "opcode": 152,
+          "A": 1,
+          "B": 1,
+          "C": 3,
+          "constC": "ShowSystemTips"
+        },
+        {
+          "slot": 49,
+          "flag": 128,
+          "opcode": 288,
+          "A": 3,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 50,
+          "flag": 0,
+          "opcode": 123,
+          "A": 1,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 51,
+          "flag": 0,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        }
+      ],
+      "children": []
+    },
+    {
+      "path": "root/33",
+      "depth": 1,
+      "constant_count": 19,
+      "constants": [
+        "putinTimer",
+        "Facade",
+        "RequestAuctionPutList",
+        "global",
+        "SL",
+        0,
+        0.1,
+        "retrieveProxy",
+        "开始下架拍卖行物品",
+        "AuctionProxy",
+        "UnSchedule",
+        "putoutTimer",
+        "拍卖行未就绪",
+        1,
+        "putoutSent",
+        "ShowSystemTips",
+        "putoutTicks",
+        "ProxyTable",
+        {
+          "unknown_type": 2
+        }
+      ],
+      "child_count": 2,
+      "parameter_count": 0,
+      "instruction_count": 56,
+      "instructions": [
+        {
+          "slot": 1,
+          "flag": 128,
+          "opcode": 9,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 2,
+          "flag": 224,
+          "opcode": 274,
+          "A": 0,
+          "B": 0,
+          "C": 12,
+          "constC": "putoutTimer"
+        },
+        {
+          "slot": 3,
+          "flag": 128,
+          "opcode": 340,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 4,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 5,
+          "C": null
+        },
+        {
+          "slot": 5,
+          "flag": 128,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 6,
+          "flag": 64,
+          "opcode": 9,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 7,
+          "flag": 96,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "constC": "putinTimer"
+        },
+        {
+          "slot": 8,
+          "flag": 0,
+          "opcode": 340,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 9,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 16,
+          "C": null
+        },
+        {
+          "slot": 10,
+          "flag": 146,
+          "opcode": 253,
+          "A": 0,
+          "B": 5,
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 11,
+          "flag": 96,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": 11,
+          "constC": "UnSchedule"
+        },
+        {
+          "slot": 12,
+          "flag": 128,
+          "opcode": 9,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 13,
+          "flag": 32,
+          "opcode": 410,
+          "A": 2,
+          "B": 2,
+          "C": 1,
+          "constC": "putinTimer"
+        },
+        {
+          "slot": 14,
+          "flag": 0,
+          "opcode": 123,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 15,
+          "flag": 64,
+          "opcode": 127,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 16,
+          "flag": 48,
+          "opcode": 7,
+          "A": 0,
+          "B": 1,
+          "C": 19,
+          "constB": "putinTimer",
+          "constC": {
+            "unknown_type": 2
+          }
+        },
+        {
+          "slot": 17,
+          "flag": 146,
+          "opcode": 248,
+          "A": 0,
+          "B": 4,
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 18,
+          "flag": 32,
+          "opcode": 411,
+          "A": 0,
+          "B": 0,
+          "C": 2,
+          "constC": "Facade"
+        },
+        {
+          "slot": 19,
+          "flag": 96,
+          "opcode": 204,
+          "A": 0,
+          "B": 0,
+          "C": 8,
+          "constC": "retrieveProxy"
+        },
+        {
+          "slot": 20,
+          "flag": 82,
+          "opcode": 146,
+          "A": 2,
+          "B": 4,
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 21,
+          "flag": 224,
+          "opcode": 79,
+          "A": 2,
+          "B": 2,
+          "C": 18,
+          "constC": "ProxyTable"
+        },
+        {
+          "slot": 22,
+          "flag": 224,
+          "opcode": 410,
+          "A": 2,
+          "B": 2,
+          "C": 10,
+          "constC": "AuctionProxy"
+        },
+        {
+          "slot": 23,
+          "flag": 192,
+          "opcode": 209,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 24,
+          "flag": 0,
+          "opcode": 325,
+          "A": 0,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 25,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 30,
+          "C": null
+        },
+        {
+          "slot": 26,
+          "flag": 82,
+          "opcode": 361,
+          "A": 1,
+          "B": 5,
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 27,
+          "flag": 32,
+          "opcode": 102,
+          "A": 1,
+          "B": 1,
+          "C": 16,
+          "constC": "ShowSystemTips"
+        },
+        {
+          "slot": 28,
+          "flag": 18,
+          "opcode": 295,
+          "A": 3,
+          "B": 13,
+          "C": null,
+          "constB": "拍卖行未就绪"
+        },
+        {
+          "slot": 29,
+          "flag": 128,
+          "opcode": 128,
+          "A": 1,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 30,
+          "flag": 128,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 31,
+          "flag": 0,
+          "opcode": 324,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 32,
+          "flag": 192,
+          "opcode": 199,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 33,
+          "flag": 144,
+          "opcode": 0,
+          "A": 1,
+          "B": 15,
+          "C": 2,
+          "constB": "putoutSent"
+        },
+        {
+          "slot": 34,
+          "flag": 0,
+          "opcode": 88,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 35,
+          "flag": 112,
+          "opcode": 322,
+          "A": 1,
+          "B": 17,
+          "C": 6,
+          "constB": "putoutTicks",
+          "constC": 0
+        },
+        {
+          "slot": 36,
+          "flag": 128,
+          "opcode": 403,
+          "A": 1,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 37,
+          "flag": 82,
+          "opcode": 295,
+          "A": 2,
+          "B": 9,
+          "C": null,
+          "constB": "开始下架拍卖行物品"
+        },
+        {
+          "slot": 38,
+          "flag": 128,
+          "opcode": 128,
+          "A": 1,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 39,
+          "flag": 0,
+          "opcode": 178,
+          "A": 1,
+          "B": 0,
+          "C": 2
+        },
+        {
+          "slot": 40,
+          "flag": 192,
+          "opcode": 132,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 41,
+          "flag": 0,
+          "opcode": 132,
+          "A": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 42,
+          "flag": 128,
+          "opcode": 387,
+          "A": 2,
+          "B": 1,
+          "C": 3
+        },
+        {
+          "slot": 43,
+          "flag": 64,
+          "opcode": 132,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 44,
+          "flag": 192,
+          "opcode": 243,
+          "A": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 45,
+          "flag": 128,
+          "opcode": 132,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 46,
+          "flag": 210,
+          "opcode": 146,
+          "A": 3,
+          "B": 5,
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 47,
+          "flag": 96,
+          "opcode": 102,
+          "A": 3,
+          "B": 3,
+          "C": 3,
+          "constC": "RequestAuctionPutList"
+        },
+        {
+          "slot": 48,
+          "flag": 146,
+          "opcode": 295,
+          "A": 5,
+          "B": 14,
+          "C": null,
+          "constB": 1
+        },
+        {
+          "slot": 49,
+          "flag": 0,
+          "opcode": 128,
+          "A": 3,
+          "B": 5,
+          "C": 0
+        },
+        {
+          "slot": 50,
+          "flag": 128,
+          "opcode": 127,
+          "A": 3,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 51,
+          "flag": 128,
+          "opcode": 198,
+          "A": 4,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 52,
+          "flag": 128,
+          "opcode": 390,
+          "A": 5,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 53,
+          "flag": 210,
+          "opcode": 295,
+          "A": 6,
+          "B": 7,
+          "C": null,
+          "constB": 0.1
+        },
+        {
+          "slot": 54,
+          "flag": 192,
+          "opcode": 209,
+          "A": 4,
+          "B": 6,
+          "C": 0
+        },
+        {
+          "slot": 55,
+          "flag": 208,
+          "opcode": 0,
+          "A": 3,
+          "B": 12,
+          "C": 4,
+          "constB": "putoutTimer"
+        },
+        {
+          "slot": 56,
+          "flag": 192,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        }
+      ],
+      "children": [
+        {
+          "path": "root/33/0",
+          "depth": 2,
+          "constant_count": 6,
+          "constants": [
+            "UnSchedule",
+            "ShowSystemTips",
+            "putoutSent",
+            "SL",
+            "putoutTimer",
+            {
+              "unknown_type": 2
+            }
+          ],
+          "child_count": 0,
+          "parameter_count": 1,
+          "instruction_count": 21,
+          "instructions": [
+            {
+              "slot": 1,
+              "flag": 0,
+              "opcode": 9,
+              "A": 1,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 2,
+              "flag": 160,
+              "opcode": 410,
+              "A": 1,
+              "B": 1,
+              "C": 5,
+              "constC": "putoutTimer"
+            },
+            {
+              "slot": 3,
+              "flag": 0,
+              "opcode": 289,
+              "A": 1,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 4,
+              "flag": 66,
+              "opcode": 388,
+              "A": 0,
+              "B": 11,
+              "C": null
+            },
+            {
+              "slot": 5,
+              "flag": 210,
+              "opcode": 253,
+              "A": 1,
+              "B": 4,
+              "C": null,
+              "constB": "SL"
+            },
+            {
+              "slot": 6,
+              "flag": 160,
+              "opcode": 204,
+              "A": 1,
+              "B": 1,
+              "C": 1,
+              "constC": "UnSchedule"
+            },
+            {
+              "slot": 7,
+              "flag": 192,
+              "opcode": 324,
+              "A": 3,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 8,
+              "flag": 224,
+              "opcode": 410,
+              "A": 3,
+              "B": 3,
+              "C": 5,
+              "constC": "putoutTimer"
+            },
+            {
+              "slot": 9,
+              "flag": 192,
+              "opcode": 123,
+              "A": 1,
+              "B": 3,
+              "C": 0
+            },
+            {
+              "slot": 10,
+              "flag": 64,
+              "opcode": 234,
+              "A": 1,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 11,
+              "flag": 48,
+              "opcode": 114,
+              "A": 1,
+              "B": 5,
+              "C": 6,
+              "constB": "putoutTimer",
+              "constC": {
+                "unknown_type": 2
+              }
+            },
+            {
+              "slot": 12,
+              "flag": 0,
+              "opcode": 127,
+              "A": 1,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 13,
+              "flag": 48,
+              "opcode": 322,
+              "A": 1,
+              "B": 3,
+              "C": 6,
+              "constB": "putoutSent",
+              "constC": {
+                "unknown_type": 2
+              }
+            },
+            {
+              "slot": 14,
+              "flag": 0,
+              "opcode": 324,
+              "A": 1,
+              "B": 1,
+              "C": 0
+            },
+            {
+              "slot": 15,
+              "flag": 128,
+              "opcode": 64,
+              "A": 2,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 16,
+              "flag": 64,
+              "opcode": 123,
+              "A": 1,
+              "B": 2,
+              "C": 0
+            },
+            {
+              "slot": 17,
+              "flag": 18,
+              "opcode": 210,
+              "A": 1,
+              "B": 4,
+              "C": null,
+              "constB": "SL"
+            },
+            {
+              "slot": 18,
+              "flag": 160,
+              "opcode": 204,
+              "A": 1,
+              "B": 1,
+              "C": 2,
+              "constC": "ShowSystemTips"
+            },
+            {
+              "slot": 19,
+              "flag": 64,
+              "opcode": 288,
+              "A": 3,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 20,
+              "flag": 0,
+              "opcode": 128,
+              "A": 1,
+              "B": 3,
+              "C": 0
+            },
+            {
+              "slot": 21,
+              "flag": 128,
+              "opcode": 339,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            }
+          ],
+          "children": []
+        },
+        {
+          "path": "root/33/1",
+          "depth": 2,
+          "constant_count": 23,
+          "constants": [
+            "Facade",
+            1,
+            "putoutTicks",
+            40,
+            "putoutSent",
+            "ipairs",
+            "global",
+            "SL",
+            30,
+            300,
+            "RequestAuctionPutout",
+            "下架完成：已无上架物品",
+            true,
+            "下架结束",
+            "RequestAuctionPutList",
+            "下架物品：MakeIndex=%s",
+            "retrieveProxy",
+            "AuctionProxy",
+            "MakeIndex",
+            0,
+            "_putlist",
+            "ProxyTable",
+            "tostring"
+          ],
+          "child_count": 0,
+          "parameter_count": 0,
+          "instruction_count": 77,
+          "instructions": [
+            {
+              "slot": 1,
+              "flag": 64,
+              "opcode": 43,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 2,
+              "flag": 0,
+              "opcode": 9,
+              "A": 1,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 3,
+              "flag": 32,
+              "opcode": 274,
+              "A": 1,
+              "B": 1,
+              "C": 3,
+              "constC": "putoutTicks"
+            },
+            {
+              "slot": 4,
+              "flag": 32,
+              "opcode": 144,
+              "A": 1,
+              "B": 1,
+              "C": 2,
+              "constC": 1
+            },
+            {
+              "slot": 5,
+              "flag": 80,
+              "opcode": 306,
+              "A": 0,
+              "B": 3,
+              "C": 1,
+              "constB": "putoutTicks"
+            },
+            {
+              "slot": 6,
+              "flag": 64,
+              "opcode": 9,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 7,
+              "flag": 32,
+              "opcode": 96,
+              "A": 0,
+              "B": 0,
+              "C": 3,
+              "constC": "putoutTicks"
+            },
+            {
+              "slot": 8,
+              "flag": 32,
+              "opcode": 312,
+              "A": 0,
+              "B": 0,
+              "C": 9,
+              "constC": 30
+            },
+            {
+              "slot": 9,
+              "flag": 160,
+              "opcode": 143,
+              "A": 0,
+              "B": 0,
+              "C": 20,
+              "constC": 0
+            },
+            {
+              "slot": 10,
+              "flag": 2,
+              "opcode": 388,
+              "A": 0,
+              "B": 17,
+              "C": null
+            },
+            {
+              "slot": 11,
+              "flag": 0,
+              "opcode": 234,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 12,
+              "flag": 128,
+              "opcode": 279,
+              "A": 1,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 13,
+              "flag": 16,
+              "opcode": 35,
+              "A": 0,
+              "B": 5,
+              "C": 1,
+              "constB": "putoutSent"
+            },
+            {
+              "slot": 14,
+              "flag": 210,
+              "opcode": 361,
+              "A": 0,
+              "B": 8,
+              "C": null,
+              "constB": "SL"
+            },
+            {
+              "slot": 15,
+              "flag": 160,
+              "opcode": 102,
+              "A": 0,
+              "B": 0,
+              "C": 15,
+              "constC": "RequestAuctionPutList"
+            },
+            {
+              "slot": 16,
+              "flag": 146,
+              "opcode": 295,
+              "A": 2,
+              "B": 2,
+              "C": null,
+              "constB": 1
+            },
+            {
+              "slot": 17,
+              "flag": 192,
+              "opcode": 128,
+              "A": 0,
+              "B": 2,
+              "C": 0
+            },
+            {
+              "slot": 18,
+              "flag": 82,
+              "opcode": 282,
+              "A": 0,
+              "B": 7,
+              "C": null,
+              "constB": "global"
+            },
+            {
+              "slot": 19,
+              "flag": 224,
+              "opcode": 411,
+              "A": 0,
+              "B": 0,
+              "C": 1,
+              "constC": "Facade"
+            },
+            {
+              "slot": 20,
+              "flag": 224,
+              "opcode": 103,
+              "A": 0,
+              "B": 0,
+              "C": 17,
+              "constC": "retrieveProxy"
+            },
+            {
+              "slot": 21,
+              "flag": 210,
+              "opcode": 108,
+              "A": 2,
+              "B": 7,
+              "C": null,
+              "constB": "global"
+            },
+            {
+              "slot": 22,
+              "flag": 32,
+              "opcode": 79,
+              "A": 2,
+              "B": 2,
+              "C": 22,
+              "constC": "ProxyTable"
+            },
+            {
+              "slot": 23,
+              "flag": 32,
+              "opcode": 96,
+              "A": 2,
+              "B": 2,
+              "C": 18,
+              "constC": "AuctionProxy"
+            },
+            {
+              "slot": 24,
+              "flag": 64,
+              "opcode": 209,
+              "A": 0,
+              "B": 2,
+              "C": 0
+            },
+            {
+              "slot": 25,
+              "flag": 64,
+              "opcode": 340,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 26,
+              "flag": 2,
+              "opcode": 388,
+              "A": 0,
+              "B": 29,
+              "C": null
+            },
+            {
+              "slot": 27,
+              "flag": 224,
+              "opcode": 274,
+              "A": 1,
+              "B": 0,
+              "C": 21,
+              "constC": "_putlist"
+            },
+            {
+              "slot": 28,
+              "flag": 0,
+              "opcode": 366,
+              "A": 1,
+              "B": 0,
+              "C": 1
+            },
+            {
+              "slot": 29,
+              "flag": 194,
+              "opcode": 388,
+              "A": 0,
+              "B": 30,
+              "C": null
+            },
+            {
+              "slot": 30,
+              "flag": 128,
+              "opcode": 279,
+              "A": 1,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 31,
+              "flag": 64,
+              "opcode": 265,
+              "A": 2,
+              "B": 1,
+              "C": 0
+            },
+            {
+              "slot": 32,
+              "flag": 32,
+              "opcode": 143,
+              "A": 0,
+              "B": 2,
+              "C": 20,
+              "constC": 0
+            },
+            {
+              "slot": 33,
+              "flag": 66,
+              "opcode": 388,
+              "A": 0,
+              "B": 41,
+              "C": null
+            },
+            {
+              "slot": 34,
+              "flag": 128,
+              "opcode": 324,
+              "A": 2,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 35,
+              "flag": 96,
+              "opcode": 96,
+              "A": 2,
+              "B": 2,
+              "C": 3,
+              "constC": "putoutTicks"
+            },
+            {
+              "slot": 36,
+              "flag": 80,
+              "opcode": 345,
+              "A": 0,
+              "B": 4,
+              "C": 2,
+              "constB": 40
+            },
+            {
+              "slot": 37,
+              "flag": 194,
+              "opcode": 388,
+              "A": 0,
+              "B": 40,
+              "C": null
+            },
+            {
+              "slot": 38,
+              "flag": 64,
+              "opcode": 403,
+              "A": 2,
+              "B": 1,
+              "C": 0
+            },
+            {
+              "slot": 39,
+              "flag": 210,
+              "opcode": 295,
+              "A": 3,
+              "B": 12,
+              "C": null,
+              "constB": "下架完成：已无上架物品"
+            },
+            {
+              "slot": 40,
+              "flag": 128,
+              "opcode": 128,
+              "A": 2,
+              "B": 3,
+              "C": 0
+            },
+            {
+              "slot": 41,
+              "flag": 192,
+              "opcode": 205,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 42,
+              "flag": 146,
+              "opcode": 188,
+              "A": 2,
+              "B": 6,
+              "C": null,
+              "constB": "ipairs"
+            },
+            {
+              "slot": 43,
+              "flag": 192,
+              "opcode": 64,
+              "A": 3,
+              "B": 1,
+              "C": 0
+            },
+            {
+              "slot": 44,
+              "flag": 128,
+              "opcode": 314,
+              "A": 2,
+              "B": 3,
+              "C": 4
+            },
+            {
+              "slot": 45,
+              "flag": 66,
+              "opcode": 388,
+              "A": 0,
+              "B": 67,
+              "C": null
+            },
+            {
+              "slot": 46,
+              "flag": 32,
+              "opcode": 410,
+              "A": 7,
+              "B": 6,
+              "C": 19,
+              "constC": "MakeIndex"
+            },
+            {
+              "slot": 47,
+              "flag": 0,
+              "opcode": 60,
+              "A": 7,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 48,
+              "flag": 194,
+              "opcode": 388,
+              "A": 0,
+              "B": 67,
+              "C": null
+            },
+            {
+              "slot": 49,
+              "flag": 64,
+              "opcode": 127,
+              "A": 8,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 50,
+              "flag": 32,
+              "opcode": 96,
+              "A": 8,
+              "B": 8,
+              "C": 5,
+              "constC": "putoutSent"
+            },
+            {
+              "slot": 51,
+              "flag": 64,
+              "opcode": 183,
+              "A": 8,
+              "B": 8,
+              "C": 7
+            },
+            {
+              "slot": 52,
+              "flag": 64,
+              "opcode": 325,
+              "A": 8,
+              "B": 0,
+              "C": 1
+            },
+            {
+              "slot": 53,
+              "flag": 130,
+              "opcode": 388,
+              "A": 0,
+              "B": 67,
+              "C": null
+            },
+            {
+              "slot": 54,
+              "flag": 128,
+              "opcode": 234,
+              "A": 8,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 55,
+              "flag": 224,
+              "opcode": 220,
+              "A": 8,
+              "B": 8,
+              "C": 5,
+              "constC": "putoutSent"
+            },
+            {
+              "slot": 56,
+              "flag": 160,
+              "opcode": 207,
+              "A": 8,
+              "B": 7,
+              "C": 13,
+              "constC": true
+            },
+            {
+              "slot": 57,
+              "flag": 0,
+              "opcode": 403,
+              "A": 8,
+              "B": 2,
+              "C": 0
+            },
+            {
+              "slot": 58,
+              "flag": 210,
+              "opcode": 384,
+              "A": 9,
+              "B": 16,
+              "C": null,
+              "constB": "下架物品：MakeIndex=%s"
+            },
+            {
+              "slot": 59,
+              "flag": 210,
+              "opcode": 146,
+              "A": 10,
+              "B": 23,
+              "C": null,
+              "constB": "tostring"
+            },
+            {
+              "slot": 60,
+              "flag": 192,
+              "opcode": 288,
+              "A": 11,
+              "B": 7,
+              "C": 0
+            },
+            {
+              "slot": 61,
+              "flag": 128,
+              "opcode": 264,
+              "A": 10,
+              "B": 11,
+              "C": 0
+            },
+            {
+              "slot": 62,
+              "flag": 64,
+              "opcode": 376,
+              "A": 8,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 63,
+              "flag": 210,
+              "opcode": 146,
+              "A": 8,
+              "B": 8,
+              "C": null,
+              "constB": "SL"
+            },
+            {
+              "slot": 64,
+              "flag": 224,
+              "opcode": 204,
+              "A": 8,
+              "B": 8,
+              "C": 11,
+              "constC": "RequestAuctionPutout"
+            },
+            {
+              "slot": 65,
+              "flag": 64,
+              "opcode": 288,
+              "A": 10,
+              "B": 7,
+              "C": 0
+            },
+            {
+              "slot": 66,
+              "flag": 128,
+              "opcode": 128,
+              "A": 8,
+              "B": 10,
+              "C": 0
+            },
+            {
+              "slot": 67,
+              "flag": 2,
+              "opcode": 388,
+              "A": 0,
+              "B": 69,
+              "C": null
+            },
+            {
+              "slot": 68,
+              "flag": 128,
+              "opcode": 357,
+              "A": 2,
+              "B": 2,
+              "C": 0
+            },
+            {
+              "slot": 69,
+              "flag": 194,
+              "opcode": 388,
+              "A": 0,
+              "B": 45,
+              "C": null
+            },
+            {
+              "slot": 70,
+              "flag": 192,
+              "opcode": 9,
+              "A": 2,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 71,
+              "flag": 224,
+              "opcode": 410,
+              "A": 2,
+              "B": 2,
+              "C": 3,
+              "constC": "putoutTicks"
+            },
+            {
+              "slot": 72,
+              "flag": 80,
+              "opcode": 345,
+              "A": 0,
+              "B": 10,
+              "C": 2,
+              "constB": 300
+            },
+            {
+              "slot": 73,
+              "flag": 2,
+              "opcode": 388,
+              "A": 0,
+              "B": 76,
+              "C": null
+            },
+            {
+              "slot": 74,
+              "flag": 192,
+              "opcode": 324,
+              "A": 2,
+              "B": 1,
+              "C": 0
+            },
+            {
+              "slot": 75,
+              "flag": 146,
+              "opcode": 295,
+              "A": 3,
+              "B": 14,
+              "C": null,
+              "constB": "下架结束"
+            },
+            {
+              "slot": 76,
+              "flag": 0,
+              "opcode": 123,
+              "A": 2,
+              "B": 3,
+              "C": 0
+            },
+            {
+              "slot": 77,
+              "flag": 128,
+              "opcode": 205,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "path": "root/44",
+      "depth": 1,
+      "constant_count": 10,
+      "constants": [
+        "tostring",
+        "string",
+        "FileUtilCtl",
+        "0",
+        "writeStringToFile",
+        "1",
+        "global",
+        "getWritablePath",
+        "price=%s\nname=%s\nmode=%s\n",
+        "format"
+      ],
+      "child_count": 0,
+      "parameter_count": 3,
+      "instruction_count": 29,
+      "instructions": [
+        {
+          "slot": 1,
+          "flag": 18,
+          "opcode": 248,
+          "A": 3,
+          "B": 7,
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 2,
+          "flag": 96,
+          "opcode": 410,
+          "A": 3,
+          "B": 3,
+          "C": 3,
+          "constC": "FileUtilCtl"
+        },
+        {
+          "slot": 3,
+          "flag": 224,
+          "opcode": 204,
+          "A": 3,
+          "B": 3,
+          "C": 8,
+          "constC": "getWritablePath"
+        },
+        {
+          "slot": 4,
+          "flag": 0,
+          "opcode": 209,
+          "A": 3,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 5,
+          "flag": 64,
+          "opcode": 234,
+          "A": 4,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 6,
+          "flag": 0,
+          "opcode": 93,
+          "A": 3,
+          "B": 3,
+          "C": 4
+        },
+        {
+          "slot": 7,
+          "flag": 82,
+          "opcode": 146,
+          "A": 4,
+          "B": 2,
+          "C": null,
+          "constB": "string"
+        },
+        {
+          "slot": 8,
+          "flag": 32,
+          "opcode": 163,
+          "A": 4,
+          "B": 4,
+          "C": 10,
+          "constC": "format"
+        },
+        {
+          "slot": 9,
+          "flag": 82,
+          "opcode": 384,
+          "A": 5,
+          "B": 9,
+          "C": null,
+          "constB": "price=%s\nname=%s\nmode=%s\n"
+        },
+        {
+          "slot": 10,
+          "flag": 82,
+          "opcode": 188,
+          "A": 6,
+          "B": 1,
+          "C": null,
+          "constB": "tostring"
+        },
+        {
+          "slot": 11,
+          "flag": 128,
+          "opcode": 241,
+          "A": 7,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 12,
+          "flag": 128,
+          "opcode": 209,
+          "A": 6,
+          "B": 7,
+          "C": 0
+        },
+        {
+          "slot": 13,
+          "flag": 210,
+          "opcode": 188,
+          "A": 7,
+          "B": 1,
+          "C": null,
+          "constB": "tostring"
+        },
+        {
+          "slot": 14,
+          "flag": 128,
+          "opcode": 64,
+          "A": 8,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 15,
+          "flag": 192,
+          "opcode": 209,
+          "A": 7,
+          "B": 8,
+          "C": 0
+        },
+        {
+          "slot": 16,
+          "flag": 64,
+          "opcode": 289,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 17,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 20,
+          "C": null
+        },
+        {
+          "slot": 18,
+          "flag": 146,
+          "opcode": 295,
+          "A": 8,
+          "B": 6,
+          "C": null,
+          "constB": "1"
+        },
+        {
+          "slot": 19,
+          "flag": 128,
+          "opcode": 366,
+          "A": 8,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 20,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 21,
+          "C": null
+        },
+        {
+          "slot": 21,
+          "flag": 18,
+          "opcode": 295,
+          "A": 8,
+          "B": 4,
+          "C": null,
+          "constB": "0"
+        },
+        {
+          "slot": 22,
+          "flag": 192,
+          "opcode": 209,
+          "A": 4,
+          "B": 8,
+          "C": 0
+        },
+        {
+          "slot": 23,
+          "flag": 210,
+          "opcode": 105,
+          "A": 5,
+          "B": 7,
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 24,
+          "flag": 224,
+          "opcode": 85,
+          "A": 5,
+          "B": 5,
+          "C": 3,
+          "constC": "FileUtilCtl"
+        },
+        {
+          "slot": 25,
+          "flag": 224,
+          "opcode": 369,
+          "A": 5,
+          "B": 5,
+          "C": 5,
+          "constC": "writeStringToFile"
+        },
+        {
+          "slot": 26,
+          "flag": 0,
+          "opcode": 241,
+          "A": 7,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 27,
+          "flag": 128,
+          "opcode": 288,
+          "A": 8,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 28,
+          "flag": 64,
+          "opcode": 123,
+          "A": 5,
+          "B": 8,
+          "C": 0
+        },
+        {
+          "slot": 29,
+          "flag": 128,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        }
+      ],
+      "children": []
+    },
+    {
+      "path": "root/54",
+      "depth": 1,
+      "constant_count": 18,
+      "constants": [
+        "已停止苹果下图",
+        "cruiseOff",
+        "appleMapRunning",
+        "开始苹果下图",
+        0.1,
+        true,
+        "appleMap",
+        0,
+        {
+          "unknown_type": 2
+        },
+        "ticks",
+        "state",
+        "UnSchedule",
+        "appleMapTimer",
+        "backCity",
+        "SL",
+        "cruiseOn",
+        "背包没有盟重回城石",
+        false
+      ],
+      "child_count": 0,
+      "parameter_count": 0,
+      "instruction_count": 56,
+      "instructions": [
+        {
+          "slot": 1,
+          "flag": 64,
+          "opcode": 9,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 2,
+          "flag": 224,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": 3,
+          "constC": "appleMapRunning"
+        },
+        {
+          "slot": 3,
+          "flag": 0,
+          "opcode": 340,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 4,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 24,
+          "C": null
+        },
+        {
+          "slot": 5,
+          "flag": 192,
+          "opcode": 9,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 6,
+          "flag": 160,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": 13,
+          "constC": "appleMapTimer"
+        },
+        {
+          "slot": 7,
+          "flag": 128,
+          "opcode": 60,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 8,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 15,
+          "C": null
+        },
+        {
+          "slot": 9,
+          "flag": 210,
+          "opcode": 146,
+          "A": 0,
+          "B": 15,
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 10,
+          "flag": 160,
+          "opcode": 204,
+          "A": 0,
+          "B": 0,
+          "C": 12,
+          "constC": "UnSchedule"
+        },
+        {
+          "slot": 11,
+          "flag": 128,
+          "opcode": 127,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 12,
+          "flag": 224,
+          "opcode": 274,
+          "A": 2,
+          "B": 2,
+          "C": 13,
+          "constC": "appleMapTimer"
+        },
+        {
+          "slot": 13,
+          "flag": 64,
+          "opcode": 123,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 14,
+          "flag": 192,
+          "opcode": 88,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 15,
+          "flag": 48,
+          "opcode": 322,
+          "A": 0,
+          "B": 13,
+          "C": 9,
+          "constB": "appleMapTimer",
+          "constC": {
+            "unknown_type": 2
+          }
+        },
+        {
+          "slot": 16,
+          "flag": 64,
+          "opcode": 88,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 17,
+          "flag": 48,
+          "opcode": 114,
+          "A": 0,
+          "B": 7,
+          "C": 9,
+          "constB": "appleMap",
+          "constC": {
+            "unknown_type": 2
+          }
+        },
+        {
+          "slot": 18,
+          "flag": 0,
+          "opcode": 127,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 19,
+          "flag": 112,
+          "opcode": 322,
+          "A": 0,
+          "B": 3,
+          "C": 18,
+          "constB": "appleMapRunning",
+          "constC": false
+        },
+        {
+          "slot": 20,
+          "flag": 0,
+          "opcode": 403,
+          "A": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 21,
+          "flag": 146,
+          "opcode": 295,
+          "A": 1,
+          "B": 1,
+          "C": null,
+          "constB": "已停止苹果下图"
+        },
+        {
+          "slot": 22,
+          "flag": 0,
+          "opcode": 128,
+          "A": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 23,
+          "flag": 64,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 24,
+          "flag": 0,
+          "opcode": 293,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 25,
+          "flag": 192,
+          "opcode": 127,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 26,
+          "flag": 0,
+          "opcode": 279,
+          "A": 1,
+          "B": 0,
+          "C": 4
+        },
+        {
+          "slot": 27,
+          "flag": 240,
+          "opcode": 114,
+          "A": 1,
+          "B": 11,
+          "C": 14,
+          "constB": "state",
+          "constC": "backCity"
+        },
+        {
+          "slot": 28,
+          "flag": 48,
+          "opcode": 322,
+          "A": 1,
+          "B": 10,
+          "C": 8,
+          "constB": "ticks",
+          "constC": 0
+        },
+        {
+          "slot": 29,
+          "flag": 240,
+          "opcode": 114,
+          "A": 1,
+          "B": 2,
+          "C": 18,
+          "constB": "cruiseOff",
+          "constC": false
+        },
+        {
+          "slot": 30,
+          "flag": 112,
+          "opcode": 114,
+          "A": 1,
+          "B": 16,
+          "C": 18,
+          "constB": "cruiseOn",
+          "constC": false
+        },
+        {
+          "slot": 31,
+          "flag": 16,
+          "opcode": 125,
+          "A": 0,
+          "B": 7,
+          "C": 1,
+          "constB": "appleMap"
+        },
+        {
+          "slot": 32,
+          "flag": 0,
+          "opcode": 324,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 33,
+          "flag": 64,
+          "opcode": 209,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 34,
+          "flag": 0,
+          "opcode": 366,
+          "A": 0,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 35,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 42,
+          "C": null
+        },
+        {
+          "slot": 36,
+          "flag": 128,
+          "opcode": 88,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 37,
+          "flag": 112,
+          "opcode": 114,
+          "A": 0,
+          "B": 7,
+          "C": 9,
+          "constB": "appleMap",
+          "constC": {
+            "unknown_type": 2
+          }
+        },
+        {
+          "slot": 38,
+          "flag": 0,
+          "opcode": 324,
+          "A": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 39,
+          "flag": 82,
+          "opcode": 295,
+          "A": 1,
+          "B": 17,
+          "C": null,
+          "constB": "背包没有盟重回城石"
+        },
+        {
+          "slot": 40,
+          "flag": 64,
+          "opcode": 128,
+          "A": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 41,
+          "flag": 64,
+          "opcode": 110,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 42,
+          "flag": 128,
+          "opcode": 292,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 43,
+          "flag": 64,
+          "opcode": 88,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 44,
+          "flag": 112,
+          "opcode": 114,
+          "A": 0,
+          "B": 3,
+          "C": 6,
+          "constB": "appleMapRunning",
+          "constC": true
+        },
+        {
+          "slot": 45,
+          "flag": 64,
+          "opcode": 403,
+          "A": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 46,
+          "flag": 210,
+          "opcode": 295,
+          "A": 1,
+          "B": 4,
+          "C": null,
+          "constB": "开始苹果下图"
+        },
+        {
+          "slot": 47,
+          "flag": 192,
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 48,
+          "flag": 0,
+          "opcode": 127,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 49,
+          "flag": 128,
+          "opcode": 127,
+          "A": 1,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 50,
+          "flag": 128,
+          "opcode": 403,
+          "A": 2,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 51,
+          "flag": 210,
+          "opcode": 295,
+          "A": 3,
+          "B": 5,
+          "C": null,
+          "constB": 0.1
+        },
+        {
+          "slot": 52,
+          "flag": 128,
+          "opcode": 209,
+          "A": 1,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 53,
+          "flag": 16,
+          "opcode": 0,
+          "A": 0,
+          "B": 13,
+          "C": 1,
+          "constB": "appleMapTimer"
+        },
+        {
+          "slot": 54,
+          "flag": 192,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 55,
+          "flag": 128,
+          "opcode": 292,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 56,
+          "flag": 192,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        }
+      ],
+      "children": []
+    },
+    {
+      "path": "root/57",
+      "depth": 1,
+      "constant_count": 10,
+      "constants": [
+        5,
+        4,
+        2,
+        0,
+        "abs",
+        1,
+        3,
+        7,
+        6,
+        "math"
+      ],
+      "child_count": 0,
+      "parameter_count": 2,
+      "instruction_count": 60,
+      "instructions": [
+        {
+          "slot": 1,
+          "flag": 32,
+          "opcode": 143,
+          "A": 0,
+          "B": 0,
+          "C": 4,
+          "constC": 0
+        },
+        {
+          "slot": 2,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 6,
+          "C": null
+        },
+        {
+          "slot": 3,
+          "flag": 160,
+          "opcode": 143,
+          "A": 0,
+          "B": 1,
+          "C": 4,
+          "constC": 0
+        },
+        {
+          "slot": 4,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 6,
+          "C": null
+        },
+        {
+          "slot": 5,
+          "flag": 128,
+          "opcode": 213,
+          "A": 2,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 6,
+          "flag": 0,
+          "opcode": 292,
+          "A": 2,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 7,
+          "flag": 82,
+          "opcode": 105,
+          "A": 2,
+          "B": 10,
+          "C": null,
+          "constB": "math"
+        },
+        {
+          "slot": 8,
+          "flag": 32,
+          "opcode": 406,
+          "A": 2,
+          "B": 2,
+          "C": 5,
+          "constC": "abs"
+        },
+        {
+          "slot": 9,
+          "flag": 192,
+          "opcode": 288,
+          "A": 3,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 10,
+          "flag": 64,
+          "opcode": 209,
+          "A": 2,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 11,
+          "flag": 210,
+          "opcode": 257,
+          "A": 3,
+          "B": 10,
+          "C": null,
+          "constB": "math"
+        },
+        {
+          "slot": 12,
+          "flag": 32,
+          "opcode": 406,
+          "A": 3,
+          "B": 3,
+          "C": 5,
+          "constC": "abs"
+        },
+        {
+          "slot": 13,
+          "flag": 128,
+          "opcode": 288,
+          "A": 4,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 14,
+          "flag": 0,
+          "opcode": 209,
+          "A": 3,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 15,
+          "flag": 160,
+          "opcode": 252,
+          "A": 4,
+          "B": 3,
+          "C": 3,
+          "constC": 2
+        },
+        {
+          "slot": 16,
+          "flag": 0,
+          "opcode": 226,
+          "A": 0,
+          "B": 4,
+          "C": 2
+        },
+        {
+          "slot": 17,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 25,
+          "C": null
+        },
+        {
+          "slot": 18,
+          "flag": 144,
+          "opcode": 342,
+          "A": 0,
+          "B": 4,
+          "C": 0,
+          "constB": 0
+        },
+        {
+          "slot": 19,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 22,
+          "C": null
+        },
+        {
+          "slot": 20,
+          "flag": 18,
+          "opcode": 295,
+          "A": 4,
+          "B": 3,
+          "C": null,
+          "constB": 2
+        },
+        {
+          "slot": 21,
+          "flag": 128,
+          "opcode": 366,
+          "A": 4,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 22,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 23,
+          "C": null
+        },
+        {
+          "slot": 23,
+          "flag": 18,
+          "opcode": 295,
+          "A": 4,
+          "B": 9,
+          "C": null,
+          "constB": 6
+        },
+        {
+          "slot": 24,
+          "flag": 192,
+          "opcode": 11,
+          "A": 4,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 25,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 59,
+          "C": null
+        },
+        {
+          "slot": 26,
+          "flag": 160,
+          "opcode": 343,
+          "A": 4,
+          "B": 2,
+          "C": 3,
+          "constC": 2
+        },
+        {
+          "slot": 27,
+          "flag": 192,
+          "opcode": 226,
+          "A": 0,
+          "B": 4,
+          "C": 3
+        },
+        {
+          "slot": 28,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 36,
+          "C": null
+        },
+        {
+          "slot": 29,
+          "flag": 144,
+          "opcode": 311,
+          "A": 0,
+          "B": 4,
+          "C": 1,
+          "constB": 0
+        },
+        {
+          "slot": 30,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 33,
+          "C": null
+        },
+        {
+          "slot": 31,
+          "flag": 210,
+          "opcode": 295,
+          "A": 4,
+          "B": 2,
+          "C": null,
+          "constB": 4
+        },
+        {
+          "slot": 32,
+          "flag": 0,
+          "opcode": 325,
+          "A": 4,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 33,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 34,
+          "C": null
+        },
+        {
+          "slot": 34,
+          "flag": 18,
+          "opcode": 295,
+          "A": 4,
+          "B": 4,
+          "C": null,
+          "constB": 0
+        },
+        {
+          "slot": 35,
+          "flag": 64,
+          "opcode": 293,
+          "A": 4,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 36,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 59,
+          "C": null
+        },
+        {
+          "slot": 37,
+          "flag": 208,
+          "opcode": 342,
+          "A": 0,
+          "B": 4,
+          "C": 0,
+          "constB": 0
+        },
+        {
+          "slot": 38,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 43,
+          "C": null
+        },
+        {
+          "slot": 39,
+          "flag": 96,
+          "opcode": 32,
+          "A": 0,
+          "B": 1,
+          "C": 4,
+          "constC": 0
+        },
+        {
+          "slot": 40,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 43,
+          "C": null
+        },
+        {
+          "slot": 41,
+          "flag": 82,
+          "opcode": 295,
+          "A": 4,
+          "B": 6,
+          "C": null,
+          "constB": 1
+        },
+        {
+          "slot": 42,
+          "flag": 64,
+          "opcode": 11,
+          "A": 4,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 43,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 59,
+          "C": null
+        },
+        {
+          "slot": 44,
+          "flag": 144,
+          "opcode": 326,
+          "A": 0,
+          "B": 4,
+          "C": 0,
+          "constB": 0
+        },
+        {
+          "slot": 45,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 50,
+          "C": null
+        },
+        {
+          "slot": 46,
+          "flag": 144,
+          "opcode": 311,
+          "A": 0,
+          "B": 4,
+          "C": 1,
+          "constB": 0
+        },
+        {
+          "slot": 47,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 50,
+          "C": null
+        },
+        {
+          "slot": 48,
+          "flag": 210,
+          "opcode": 295,
+          "A": 4,
+          "B": 7,
+          "C": null,
+          "constB": 3
+        },
+        {
+          "slot": 49,
+          "flag": 0,
+          "opcode": 293,
+          "A": 4,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 50,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 59,
+          "C": null
+        },
+        {
+          "slot": 51,
+          "flag": 160,
+          "opcode": 32,
+          "A": 0,
+          "B": 0,
+          "C": 4,
+          "constC": 0
+        },
+        {
+          "slot": 52,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 57,
+          "C": null
+        },
+        {
+          "slot": 53,
+          "flag": 16,
+          "opcode": 271,
+          "A": 0,
+          "B": 4,
+          "C": 1,
+          "constB": 0
+        },
+        {
+          "slot": 54,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 57,
+          "C": null
+        },
+        {
+          "slot": 55,
+          "flag": 82,
+          "opcode": 295,
+          "A": 4,
+          "B": 1,
+          "C": null,
+          "constB": 5
+        },
+        {
+          "slot": 56,
+          "flag": 128,
+          "opcode": 11,
+          "A": 4,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 57,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 59,
+          "C": null
+        },
+        {
+          "slot": 58,
+          "flag": 82,
+          "opcode": 295,
+          "A": 4,
+          "B": 8,
+          "C": null,
+          "constB": 7
+        },
+        {
+          "slot": 59,
+          "flag": 0,
+          "opcode": 292,
+          "A": 4,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 60,
+          "flag": 0,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        }
+      ],
+      "children": []
+    },
+    {
+      "path": "root/59",
+      "depth": 1,
+      "constant_count": 16,
+      "constants": [
+        "appleMap",
+        false,
+        {
+          "unknown_type": 2
+        },
+        "#ffffff",
+        "GUI",
+        "SL",
+        "appleMapRunning",
+        "UnSchedule",
+        "开苹果图",
+        "toggled",
+        "appleMapTimer",
+        "Button_setTitleText",
+        "applebut",
+        "applebutCfg",
+        "ShowSystemTips",
+        "Button_setTitleColor"
+      ],
+      "child_count": 0,
+      "parameter_count": 1,
+      "instruction_count": 44,
+      "instructions": [
+        {
+          "slot": 1,
+          "flag": 0,
+          "opcode": 9,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 2,
+          "flag": 224,
+          "opcode": 274,
+          "A": 1,
+          "B": 1,
+          "C": 11,
+          "constC": "appleMapTimer"
+        },
+        {
+          "slot": 3,
+          "flag": 0,
+          "opcode": 358,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 4,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 11,
+          "C": null
+        },
+        {
+          "slot": 5,
+          "flag": 146,
+          "opcode": 253,
+          "A": 1,
+          "B": 6,
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 6,
+          "flag": 160,
+          "opcode": 204,
+          "A": 1,
+          "B": 1,
+          "C": 8,
+          "constC": "UnSchedule"
+        },
+        {
+          "slot": 7,
+          "flag": 64,
+          "opcode": 234,
+          "A": 3,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 8,
+          "flag": 160,
+          "opcode": 96,
+          "A": 3,
+          "B": 3,
+          "C": 11,
+          "constC": "appleMapTimer"
+        },
+        {
+          "slot": 9,
+          "flag": 192,
+          "opcode": 128,
+          "A": 1,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 10,
+          "flag": 192,
+          "opcode": 88,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 11,
+          "flag": 48,
+          "opcode": 322,
+          "A": 1,
+          "B": 11,
+          "C": 3,
+          "constB": "appleMapTimer",
+          "constC": {
+            "unknown_type": 2
+          }
+        },
+        {
+          "slot": 12,
+          "flag": 128,
+          "opcode": 88,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 13,
+          "flag": 48,
+          "opcode": 114,
+          "A": 1,
+          "B": 1,
+          "C": 3,
+          "constB": "appleMap",
+          "constC": {
+            "unknown_type": 2
+          }
+        },
+        {
+          "slot": 14,
+          "flag": 64,
+          "opcode": 88,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 15,
+          "flag": 112,
+          "opcode": 114,
+          "A": 1,
+          "B": 7,
+          "C": 2,
+          "constB": "appleMapRunning",
+          "constC": false
+        },
+        {
+          "slot": 16,
+          "flag": 0,
+          "opcode": 9,
+          "A": 1,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 17,
+          "flag": 96,
+          "opcode": 274,
+          "A": 1,
+          "B": 1,
+          "C": 13,
+          "constC": "applebut"
+        },
+        {
+          "slot": 18,
+          "flag": 192,
+          "opcode": 60,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 19,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 36,
+          "C": null
+        },
+        {
+          "slot": 20,
+          "flag": 192,
+          "opcode": 9,
+          "A": 1,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 21,
+          "flag": 160,
+          "opcode": 96,
+          "A": 1,
+          "B": 1,
+          "C": 14,
+          "constC": "applebutCfg"
+        },
+        {
+          "slot": 22,
+          "flag": 192,
+          "opcode": 289,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 23,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 24,
+          "C": null
+        },
+        {
+          "slot": 24,
+          "flag": 176,
+          "opcode": 7,
+          "A": 1,
+          "B": 10,
+          "C": 2,
+          "constB": "toggled",
+          "constC": false
+        },
+        {
+          "slot": 25,
+          "flag": 146,
+          "opcode": 146,
+          "A": 2,
+          "B": 5,
+          "C": null,
+          "constB": "GUI"
+        },
+        {
+          "slot": 26,
+          "flag": 160,
+          "opcode": 138,
+          "A": 2,
+          "B": 2,
+          "C": 12,
+          "constC": "Button_setTitleText"
+        },
+        {
+          "slot": 27,
+          "flag": 128,
+          "opcode": 127,
+          "A": 4,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 28,
+          "flag": 224,
+          "opcode": 274,
+          "A": 4,
+          "B": 4,
+          "C": 13,
+          "constC": "applebut"
+        },
+        {
+          "slot": 29,
+          "flag": 18,
+          "opcode": 295,
+          "A": 5,
+          "B": 9,
+          "C": null,
+          "constB": "开苹果图"
+        },
+        {
+          "slot": 30,
+          "flag": 128,
+          "opcode": 123,
+          "A": 2,
+          "B": 5,
+          "C": 0
+        },
+        {
+          "slot": 31,
+          "flag": 210,
+          "opcode": 105,
+          "A": 2,
+          "B": 5,
+          "C": null,
+          "constB": "GUI"
+        },
+        {
+          "slot": 32,
+          "flag": 32,
+          "opcode": 204,
+          "A": 2,
+          "B": 2,
+          "C": 16,
+          "constC": "Button_setTitleColor"
+        },
+        {
+          "slot": 33,
+          "flag": 64,
+          "opcode": 9,
+          "A": 4,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 34,
+          "flag": 160,
+          "opcode": 410,
+          "A": 4,
+          "B": 4,
+          "C": 13,
+          "constC": "applebut"
+        },
+        {
+          "slot": 35,
+          "flag": 18,
+          "opcode": 295,
+          "A": 5,
+          "B": 4,
+          "C": null,
+          "constB": "#ffffff"
+        },
+        {
+          "slot": 36,
+          "flag": 64,
+          "opcode": 128,
+          "A": 2,
+          "B": 5,
+          "C": 0
+        },
+        {
+          "slot": 37,
+          "flag": 0,
+          "opcode": 127,
+          "A": 1,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 38,
+          "flag": 192,
+          "opcode": 64,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 39,
+          "flag": 64,
+          "opcode": 123,
+          "A": 1,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 40,
+          "flag": 18,
+          "opcode": 210,
+          "A": 1,
+          "B": 6,
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 41,
+          "flag": 224,
+          "opcode": 152,
+          "A": 1,
+          "B": 1,
+          "C": 15,
+          "constC": "ShowSystemTips"
+        },
+        {
+          "slot": 42,
+          "flag": 64,
+          "opcode": 288,
+          "A": 3,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 43,
+          "flag": 192,
+          "opcode": 123,
+          "A": 1,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 44,
+          "flag": 64,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        }
+      ],
+      "children": []
+    },
+    {
+      "path": "root/76",
+      "depth": 1,
+      "constant_count": 8,
+      "constants": [
+        1,
+        "AUCTION_MONEY",
+        "元宝",
+        "SL",
+        "GetMetaValue",
+        "ipairs",
+        "name",
+        "id"
+      ],
+      "child_count": 0,
+      "parameter_count": 0,
+      "instruction_count": 25,
+      "instructions": [
+        {
+          "slot": 1,
+          "flag": 210,
+          "opcode": 361,
+          "A": 0,
+          "B": 4,
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 2,
+          "flag": 96,
+          "opcode": 102,
+          "A": 0,
+          "B": 0,
+          "C": 5,
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 3,
+          "flag": 18,
+          "opcode": 295,
+          "A": 2,
+          "B": 2,
+          "C": null,
+          "constB": "AUCTION_MONEY"
+        },
+        {
+          "slot": 4,
+          "flag": 128,
+          "opcode": 209,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 5,
+          "flag": 0,
+          "opcode": 325,
+          "A": 0,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 6,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 7,
+          "C": null
+        },
+        {
+          "slot": 7,
+          "flag": 0,
+          "opcode": 2,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 8,
+          "flag": 18,
+          "opcode": 188,
+          "A": 1,
+          "B": 6,
+          "C": null,
+          "constB": "ipairs"
+        },
+        {
+          "slot": 9,
+          "flag": 128,
+          "opcode": 241,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 10,
+          "flag": 64,
+          "opcode": 21,
+          "A": 1,
+          "B": 2,
+          "C": 3
+        },
+        {
+          "slot": 11,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 16,
+          "C": null
+        },
+        {
+          "slot": 12,
+          "flag": 32,
+          "opcode": 96,
+          "A": 6,
+          "B": 5,
+          "C": 7,
+          "constC": "name"
+        },
+        {
+          "slot": 13,
+          "flag": 96,
+          "opcode": 143,
+          "A": 0,
+          "B": 6,
+          "C": 3,
+          "constC": "元宝"
+        },
+        {
+          "slot": 14,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 16,
+          "C": null
+        },
+        {
+          "slot": 15,
+          "flag": 224,
+          "opcode": 410,
+          "A": 6,
+          "B": 5,
+          "C": 8,
+          "constC": "id"
+        },
+        {
+          "slot": 16,
+          "flag": 0,
+          "opcode": 292,
+          "A": 6,
+          "B": 6,
+          "C": 0
+        },
+        {
+          "slot": 17,
+          "flag": 192,
+          "opcode": 250,
+          "A": 1,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 18,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 11,
+          "C": null
+        },
+        {
+          "slot": 19,
+          "flag": 32,
+          "opcode": 410,
+          "A": 1,
+          "B": 0,
+          "C": 1,
+          "constC": 1
+        },
+        {
+          "slot": 20,
+          "flag": 128,
+          "opcode": 60,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 21,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 23,
+          "C": null
+        },
+        {
+          "slot": 22,
+          "flag": 224,
+          "opcode": 274,
+          "A": 1,
+          "B": 0,
+          "C": 1,
+          "constC": 1
+        },
+        {
+          "slot": 23,
+          "flag": 32,
+          "opcode": 410,
+          "A": 1,
+          "B": 1,
+          "C": 8,
+          "constC": "id"
+        },
+        {
+          "slot": 24,
+          "flag": 128,
+          "opcode": 292,
+          "A": 1,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 25,
+          "flag": 128,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        }
+      ],
+      "children": []
+    }
+  ],
+  "closure_events": [
+    {
+      "createSlot": 281,
+      "createOpcode": 121,
+      "childIndex": 44,
+      "childPath": "root/44",
+      "parameterCount": 3,
+      "instructionCount": 29,
+      "constantPreview": [
+        "tostring",
+        "string",
+        "FileUtilCtl",
+        "0",
+        "writeStringToFile",
+        "1",
+        "global",
+        "getWritablePath",
+        "price=%s\nname=%s\nmode=%s\n",
+        "format"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 282,
+          "opcode": 243,
+          "sourceRegister": 37,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 286,
+      "createOpcode": 121,
+      "childIndex": 76,
+      "childPath": "root/76",
+      "parameterCount": 0,
+      "instructionCount": 25,
+      "constantPreview": [
+        1,
+        "AUCTION_MONEY",
+        "元宝",
+        "SL",
+        "GetMetaValue",
+        "ipairs",
+        "name",
+        "id"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 294,
+      "createOpcode": 121,
+      "childIndex": 33,
+      "childPath": "root/33",
+      "parameterCount": 0,
+      "instructionCount": 56,
+      "constantPreview": [
+        "putinTimer",
+        "Facade",
+        "RequestAuctionPutList",
+        "global",
+        "SL",
+        0,
+        0.1,
+        "retrieveProxy",
+        "开始下架拍卖行物品",
+        "AuctionProxy",
+        "UnSchedule",
+        "putoutTimer",
+        "拍卖行未就绪",
+        1,
+        "putoutSent",
+        "ShowSystemTips",
+        "putoutTicks",
+        "ProxyTable"
+      ],
+      "captureCount": 4,
+      "captures": [
+        {
+          "slot": 295,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register",
+          "source_symbol": "MainLeftBottom.z",
+          "source_evidence": "root N[3]由root/11创建点捕获链及root初始化证据确认为MainLeftBottom.z"
+        },
+        {
+          "slot": 296,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register",
+          "source_symbol": "ShowLocalNoticeByType",
+          "source_evidence": "root N[5]由root槽46创建root/80闭包，身份为ShowLocalNoticeByType"
+        },
+        {
+          "slot": 297,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register",
+          "source_symbol": "PrintLog",
+          "source_evidence": "root N[4]由root槽43创建root/51闭包，身份为PrintLog"
+        },
+        {
+          "slot": 298,
+          "opcode": 243,
+          "sourceRegister": 7,
+          "sourceKind": "parent-local-register",
+          "source_symbol": "Schedule",
+          "source_evidence": "root N[7]由root槽55创建root/78闭包；root/78的7槽包装原型身份为Schedule"
+        }
+      ],
+      "evidence": " 四项父级捕获身份现已分别闭合：H[0]=MainLeftBottom.z、H[1]=ShowLocalNoticeByType、H[2]=PrintLog、H[3]=Schedule。"
+    },
+    {
+      "createSlot": 337,
+      "createOpcode": 387,
+      "childIndex": 59,
+      "childPath": "root/59",
+      "parameterCount": 1,
+      "instructionCount": 44,
+      "constantPreview": [
+        "appleMap",
+        false,
+        null,
+        "#ffffff",
+        "GUI",
+        "SL",
+        "appleMapRunning",
+        "UnSchedule",
+        "开苹果图",
+        "toggled",
+        "appleMapTimer",
+        "Button_setTitleText",
+        "applebut",
+        "applebutCfg",
+        "ShowSystemTips",
+        "Button_setTitleColor"
+      ],
+      "captureCount": 4,
+      "captures": [
+        {
+          "slot": 338,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 339,
+          "opcode": 243,
+          "sourceRegister": 1,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 340,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 341,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 382,
+      "createOpcode": 387,
+      "childIndex": 14,
+      "childPath": "root/14",
+      "parameterCount": 1,
+      "instructionCount": 51,
+      "constantPreview": [
+        "Button_setTitleColor",
+        "NoticeTable",
+        "ShowSystemTips",
+        null,
+        "Button_setTitleText",
+        "锻造生肖",
+        false,
+        "Layer_NPC_Talk_Close",
+        "forgezodiacbut",
+        "sendNotification",
+        "UnSchedule",
+        "#ffffff",
+        "forgezodiacbutCfg",
+        "toggled",
+        "forgeZodiac",
+        "SL",
+        "forgeZodiacRunning",
+        "global"
+      ],
+      "captureCount": 3,
+      "captures": [
+        {
+          "slot": 383,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 384,
+          "opcode": 243,
+          "sourceRegister": 1,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 385,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    }
+  ]
+}
