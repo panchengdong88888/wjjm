@@ -5959,6 +5959,68 @@
       ],
       "start_offset": 89437,
       "end_offset": 90371
+    },
+    {
+      "path": "root/52/18/0",
+      "depth": 3,
+      "parameter_count": 0,
+      "constant_count": 2,
+      "child_count": 0,
+      "instruction_count": 5,
+      "constants": [
+        "DiuItems",
+        "dropMode"
+      ],
+      "physical_slots": 5,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 45,
+          "A": 0,
+          "B": "DiuItems",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 9,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 410,
+          "A": 1,
+          "B": 1,
+          "C": "dropMode",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 128,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        }
+      ],
+      "start_offset": 89697,
+      "end_offset": 89781
     }
   ],
   "closure_events": [
@@ -6179,19 +6241,10 @@
     }
   ],
   "targeted_reextract_2026_11_21": {
-    "method": "从原始Base36+LZW载荷解压，逐字节XOR 0x17，按S()结构递归定点导出；完整消费142522 bytes",
+    "method": "原始Base36+LZW载荷解压，XOR 0x17，按S()递归解析；完整消费142522 bytes",
     "source_blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
-    "paths": [
-      "root/52/15",
-      "root/52/16",
-      "root/52/16/0",
-      "root/52/18"
-    ],
     "added_paths": [
-      "root/52/15",
-      "root/52/16",
-      "root/52/16/0",
-      "root/52/18"
+      "root/52/18/0"
     ],
     "decoded_bytes": 142522,
     "consumed_bytes": 142522
