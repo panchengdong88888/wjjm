@@ -5432,8 +5432,8 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 32,
-      "candidate_name": null,
-      "identity_status": "职责已缩小；函数名待识别",
+      "candidate_name": "helper_root_72",
+      "identity_status": "按本版32条指令及root/79调用点恢复；原始导出名未确认",
       "constants": [
         "find",
         "GetMetaValue",
@@ -5444,8 +5444,9 @@
         "SL",
         "ALL_EQUIP_DATAS"
       ],
-      "business_summary": "接收一个参数，遍历SL:GetMetaValue('ALL_EQUIP_DATAS')并对装备Name字段执行string.find，属于按名称片段检索装备数据的辅助函数。",
-      "recovery_status": "未恢复；缺少足以确认声明名/返回结构的完整指令流"
+      "business_summary": "接收名称片段，遍历SL:GetMetaValue('ALL_EQUIP_DATAS')，对每个装备Name执行string.find(item.Name, searchText, 1)，命中返回装备数据对象，未命中返回nil。",
+      "recovery_status": "已写入明文（32/32槽位按调用形态恢复）",
+      "recovery_evidence": "常量池仅含find、GetMetaValue、string、Name、1、pairs、SL、ALL_EQUIP_DATAS；参数1为名称片段。root/79 H[10]调用本函数后仅作真值分支判断，匹配对象返回可直接作为truthy结果。"
     },
     {
       "preorder_id": 153,
