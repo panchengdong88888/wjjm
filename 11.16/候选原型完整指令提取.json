@@ -7117,6 +7117,1090 @@
       ],
       "recovery_status": "部分恢复（闭包体已恢复，捕获来源待确认）",
       "recovery_note": "21槽闭合：H[0].putoutTimer真值时SL:UnSchedule(timer)并清空putoutTimer；两路均清空H[0].putoutSent；调用H[1](唯一参数,timer)，最后SL:ShowSystemTips(唯一参数)。Opcode114直接执行N[A][K[3]]=K[4]，不融合消费后续槽位。H[0]/H[1]父级捕获来源未保存，保留capturedUpvalues代理。"
+    },
+    {
+      "path": "root/11",
+      "depth": 1,
+      "parameter_count": 0,
+      "constants": [
+        "zd",
+        null,
+        "IsInWhitelistMap",
+        "cruiseRunTimer",
+        false,
+        "SL",
+        "关闭见人跑",
+        "cruiseGatherPaused",
+        "UnSchedule"
+      ],
+      "physical_slots": 31,
+      "instruction_count": 31,
+      "start_offset": 20091,
+      "end_offset": 20498,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 324,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": "cruiseRunTimer",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 60,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 11,
+          "C": null,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 253,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": "UnSchedule",
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 9,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 410,
+          "A": 2,
+          "B": 2,
+          "C": "cruiseRunTimer",
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 123,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 127,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 322,
+          "A": 0,
+          "B": "cruiseRunTimer",
+          "C": null,
+          "operand_flags": 112
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 110,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 62,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 110,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 330,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 234,
+          "A": 0,
+          "B": 3,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 49,
+          "A": 0,
+          "B": 4,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 322,
+          "A": 0,
+          "B": "cruiseGatherPaused",
+          "C": false,
+          "operand_flags": 240
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 105,
+          "A": 0,
+          "B": "IsInWhitelistMap",
+          "C": null,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 209,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 325,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 388,
+          "A": 0,
+          "B": 27,
+          "C": null,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 324,
+          "A": 0,
+          "B": 4,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 274,
+          "A": 0,
+          "B": 0,
+          "C": "zd",
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 110,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 324,
+          "A": 0,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 29,
+          "opcode": 295,
+          "A": 1,
+          "B": "关闭见人跑",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 30,
+          "opcode": 128,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 31,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 128
+        }
+      ],
+      "children": [],
+      "recovery_status": "本版原始S()结构解析器定点提取；完整指令流已恢复，业务源码待继续"
+    },
+    {
+      "path": "root/28",
+      "depth": 1,
+      "parameter_count": 0,
+      "constants": [
+        51295,
+        "tonumber",
+        "SERVER_TIME",
+        "time",
+        "SL",
+        0,
+        "TITLE_DATA_BY_ID",
+        "GetMetaValue"
+      ],
+      "physical_slots": 32,
+      "instruction_count": 32,
+      "start_offset": 45105,
+      "end_offset": 45507,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 361,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 102,
+          "A": 0,
+          "B": 0,
+          "C": "GetMetaValue",
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 374,
+          "A": 2,
+          "B": "TITLE_DATA_BY_ID",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 295,
+          "A": 3,
+          "B": 51295,
+          "C": null,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 209,
+          "A": 0,
+          "B": 3,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 340,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 388,
+          "A": 0,
+          "B": 29,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 274,
+          "A": 1,
+          "B": 0,
+          "C": "time",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 340,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 388,
+          "A": 0,
+          "B": 29,
+          "C": null,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 96,
+          "A": 1,
+          "B": 0,
+          "C": "time",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 326,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 144
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 388,
+          "A": 0,
+          "B": 29,
+          "C": null,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 75,
+          "A": 1,
+          "B": 0,
+          "C": "time",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 105,
+          "A": 2,
+          "B": "tonumber",
+          "C": null,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 361,
+          "A": 3,
+          "B": "SL",
+          "C": null,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 102,
+          "A": 3,
+          "B": 3,
+          "C": "GetMetaValue",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 295,
+          "A": 5,
+          "B": "SERVER_TIME",
+          "C": null,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 264,
+          "A": 3,
+          "B": 5,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 10,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 325,
+          "A": 2,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 388,
+          "A": 0,
+          "B": 23,
+          "C": null,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 295,
+          "A": 2,
+          "B": 0,
+          "C": null,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 167,
+          "A": 1,
+          "B": 1,
+          "C": 2,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 311,
+          "A": 1,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 208
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 388,
+          "A": 0,
+          "B": 27,
+          "C": null,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 59,
+          "A": 2,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 110,
+          "A": 2,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 29,
+          "opcode": 293,
+          "A": 2,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 30,
+          "opcode": 110,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 31,
+          "opcode": 11,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 32,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        }
+      ],
+      "children": [],
+      "recovery_status": "本版原始S()结构解析器定点提取；完整指令流已恢复，业务源码待继续"
+    },
+    {
+      "path": "root/35",
+      "depth": 1,
+      "parameter_count": 0,
+      "constants": [
+        null,
+        "NoticeTable",
+        -1,
+        "Facade",
+        "_normalMediators",
+        "LayerFacadeMediator",
+        "Layer_CommonTips_Close",
+        1,
+        "retrieveMediator",
+        "sendNotification",
+        "global",
+        "CloseLayer"
+      ],
+      "physical_slots": 32,
+      "instruction_count": 32,
+      "start_offset": 52164,
+      "end_offset": 52651,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 218,
+          "A": 0,
+          "B": "global",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": "Facade",
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 143,
+          "A": 0,
+          "B": 0,
+          "C": null,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 5,
+          "C": null,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 204,
+          "A": 1,
+          "B": 0,
+          "C": "sendNotification",
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 108,
+          "A": 3,
+          "B": "global",
+          "C": null,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 410,
+          "A": 3,
+          "B": 3,
+          "C": "NoticeTable",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 274,
+          "A": 3,
+          "B": 3,
+          "C": "Layer_CommonTips_Close",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 123,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 102,
+          "A": 1,
+          "B": 0,
+          "C": "retrieveMediator",
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 295,
+          "A": 3,
+          "B": "LayerFacadeMediator",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 209,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 143,
+          "A": 1,
+          "B": 1,
+          "C": null,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 388,
+          "A": 0,
+          "B": 18,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 96,
+          "A": 2,
+          "B": 1,
+          "C": "_normalMediators",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 143,
+          "A": 0,
+          "B": 2,
+          "C": null,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 388,
+          "A": 0,
+          "B": 19,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 274,
+          "A": 2,
+          "B": 1,
+          "C": "_normalMediators",
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 344,
+          "A": 3,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 374,
+          "A": 4,
+          "B": 1,
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 295,
+          "A": 5,
+          "B": -1,
+          "C": null,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 31,
+          "A": 3,
+          "B": 30,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 189,
+          "A": 7,
+          "B": 2,
+          "C": 6,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 143,
+          "A": 1,
+          "B": 7,
+          "C": null,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 388,
+          "A": 0,
+          "B": 30,
+          "C": null,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 398,
+          "A": 7,
+          "B": 2,
+          "C": 6,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 29,
+          "opcode": 393,
+          "A": 7,
+          "B": 7,
+          "C": "CloseLayer",
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 30,
+          "opcode": 128,
+          "A": 7,
+          "B": 8,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 31,
+          "opcode": 175,
+          "A": 3,
+          "B": 24,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 32,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 128
+        }
+      ],
+      "children": [],
+      "recovery_status": "本版原始S()结构解析器定点提取；完整指令流已恢复并写入唯一明文"
+    },
+    {
+      "path": "root/41",
+      "depth": 1,
+      "parameter_count": 1,
+      "constants": [
+        "global",
+        "GetMetaValue",
+        true,
+        "AFKBegin",
+        "Facade",
+        "AFKEnd",
+        false,
+        "SL",
+        "BATTLE_IS_AFK",
+        "sendNotification",
+        "NoticeTable"
+      ],
+      "physical_slots": 28,
+      "instruction_count": 28,
+      "start_offset": 55089,
+      "end_offset": 55483,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 361,
+          "A": 1,
+          "B": "SL",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 102,
+          "A": 1,
+          "B": 1,
+          "C": "GetMetaValue",
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 295,
+          "A": 3,
+          "B": "BATTLE_IS_AFK",
+          "C": null,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 209,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 143,
+          "A": 0,
+          "B": 0,
+          "C": true,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 388,
+          "A": 0,
+          "B": 16,
+          "C": null,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 366,
+          "A": 1,
+          "B": 0,
+          "C": 1,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 388,
+          "A": 0,
+          "B": 16,
+          "C": null,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 282,
+          "A": 2,
+          "B": "global",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 85,
+          "A": 2,
+          "B": 2,
+          "C": "Facade",
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 138,
+          "A": 2,
+          "B": 2,
+          "C": "sendNotification",
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 108,
+          "A": 4,
+          "B": "global",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 79,
+          "A": 4,
+          "B": 4,
+          "C": "NoticeTable",
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 410,
+          "A": 4,
+          "B": 4,
+          "C": "AFKBegin",
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 123,
+          "A": 2,
+          "B": 4,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 388,
+          "A": 0,
+          "B": 27,
+          "C": null,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 143,
+          "A": 0,
+          "B": 0,
+          "C": false,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 388,
+          "A": 0,
+          "B": 27,
+          "C": null,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 60,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 388,
+          "A": 0,
+          "B": 27,
+          "C": null,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 360,
+          "A": 2,
+          "B": "global",
+          "C": null,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 411,
+          "A": 2,
+          "B": 2,
+          "C": "Facade",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 351,
+          "A": 2,
+          "B": 2,
+          "C": "sendNotification",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 218,
+          "A": 4,
+          "B": "global",
+          "C": null,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 410,
+          "A": 4,
+          "B": 4,
+          "C": "NoticeTable",
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 274,
+          "A": 4,
+          "B": 4,
+          "C": "AFKEnd",
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 123,
+          "A": 2,
+          "B": 4,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        }
+      ],
+      "children": [],
+      "recovery_status": "本版原始S()结构解析器定点提取；完整指令流已恢复并写入唯一明文"
     }
   ],
   "constant_type_notes": {
@@ -7124,5 +8208,17 @@
     "1": "string (length-prefixed decoded string)",
     "2": "nil (S() leaves constant slot unset; K remains nil)",
     "3": "number (decoded IEEE-754 double)"
+  },
+  "targeted_reextract_2026_11_20": {
+    "source": "11.16原版内嵌D()/S()",
+    "xor_key": "0x17",
+    "decoded_bytes": 142522,
+    "consumed_bytes": 142522,
+    "added_prototypes": [
+      "root/11",
+      "root/28",
+      "root/35",
+      "root/41"
+    ]
   }
 }
