@@ -3751,3 +3751,55 @@ local function make_helper_root_52_34_0(capturedUpvalues, putinPrice, putinName,
     capturedUpvalues[2](callbackContext, putinName, putinStacked)
     capturedUpvalues[3].startPutinGold(callbackContext, putinName, putinStacked)
 end
+
+-- ============================================================
+--  11.16 root/52/33：每日巡航协议时间窗口回调（部分恢复）
+-- ============================================================
+-- 43条物理指令与11.9版巡航回调的时间窗口结构一致：
+-- os.date("*t")取本地时间，计算当天秒数，仅在22:00:05至22:00:08窗口内处理；
+-- 日期格式为YYYYMMDD，同一日期只发送一次；协议参数为9002/55556/1/2/3/""/0。
+-- 本版通过捕获对象保存上次发送日期，并通过捕获对象上的LuaSendMsg发送协议。
+-- 父级创建点提供3项捕获，但当前仅能按子函数H[0]/H[1]读写关系使用代理参数；
+-- H[3]对应的辅助对象/函数身份尚未完全闭合，因此本函数标记部分恢复。
+local function MakeCruiseTimerCallback_11_16(capturedUpvalues)
+    local lastDateState = capturedUpvalues[1]
+    local messageState = capturedUpvalues[2]
+    local auxiliary = capturedUpvalues[3]
+
+    return function()
+        local dateParts = os.date("*t")
+        if not dateParts then
+            return
+        end
+
+        local secondsOfDay =
+            dateParts.hour * 3600 +
+            dateParts.min * 60 +
+            dateParts.sec
+
+        if secondsOfDay < 79205 or secondsOfDay > 79208 then
+            return
+        end
+
+        local dateKey = string.format(
+            "%04d%02d%02d",
+            dateParts.year,
+            dateParts.month,
+            dateParts.day
+        )
+
+        if lastDateState.value == dateKey then
+            return
+        end
+
+        lastDateState.value = dateKey
+        messageState.LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)
+
+        -- 本版尾部还会调用捕获的辅助对象/函数输出固定巡航提示；
+        -- 暂以可读代理字段保留调用位置，不伪造其真实字段名。
+        if type(auxiliary) == "function" then
+            auxiliary("到达 22:00:05，发送开启巡航协议")
+        end
+    end
+end
+
