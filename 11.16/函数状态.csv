@@ -106,12 +106,12 @@ mode=%s
 99,root/52/12,root/52,2,closure_root_52_12（合成定位名）,行为已恢复,0,3,0,5,已写入明文,global | gameWorldController | OnGameLeaveWorld,MainLeftBottom_11.16_明文.lua,5条物理指令全部闭合；Opcode248融合全局加载/成员读取/方法准备，Opcode123调用，Opcode205结束；API文档未收录，按原始调用点恢复,2026-11-19
 100,root/52/13,root/52,2,make_helper_root_52_13（合成定位名）,闭包体已恢复；H[0..2]父级捕获来源待确认,0,1,0,13,闭包体已写入明文；捕获身份待确认（部分恢复）,cruiseRunTimer,MainLeftBottom_11.16_明文.lua,13条指令及两分支闭合；H[0..2]父级符号身份未确认。,2026-11-19
 101,root/52/14,root/52,2,,待识别,6,38,0,174,未恢复,tostring | sealPanelAt | ancientSwordData | swordPullPending | power | subData_2 | combatPower | find |  | ",",,,2026-11-18
-102,root/52/15,root/52,2,,待识别,0,11,0,36,未恢复,dropTimer | 开丢全部 | diuqibut | dropallbut | Button_setTitleText | GUI | #ff0000 | #ffffff | Button_setTitleColor | 关丢全部,,,2026-11-18
-103,root/52/16,root/52,2,,待识别,0,8,1,33,未恢复,SL | rewardTimer | Schedule | 开启奖励功能 | UnSchedule | 关闭奖励功能,,,2026-11-18
-104,root/52/16/0,root/52/16,3,,待识别,0,5,0,22,未恢复,LuaSendMsg,,,2026-11-18
+102,root/52/15,root/52,2,helper_root_52_15（孤立原型）,本版完整指令流已提取；父级未发现创建/引用点，暂不将其误接入按钮事件,0,11,0,36,指令流已提取，尚未写入唯一明文（不计恢复）,常量含dropTimer/diuqibut/dropallbut及标题颜色；当前root/52父函数未发现对应闭包创建点，先保留孤立原型记录。,待处理,需要查明其是否为死代码或由动态路径创建；不据常量猜测调用关系,2026-11-21
+103,root/52/16,root/52,2,MakeRewardButtonHandler_11_16,本版完整恢复；奖励开关及定时调度主体与旧版同职责结构吻合,0,8,1,33,已写入唯一明文（本版指令级完整恢复）,父级root/52槽610以Opcode121创建，5项捕获寄存器3/0/16/17/18分别为timerState/PrintLog/modulus/rewardEntries/scheduleInterval；使用SL:UnSchedule与SL:Schedule。,MainLeftBottom_11.16_明文.lua：MakeRewardButtonHandler_11_16,无关键未决项；未执行APK验证,2026-11-21
+104,root/52/16/0,root/52/16,3,MakeRewardTimerCallback_11_16,本版完整恢复；22条指令与奖励循环发送结构闭合,0,5,0,22,已写入唯一明文（本版指令级完整恢复）,父函数root/52/16槽24创建，3项捕获为初始计数0、modulus、rewardEntries；递增计数并按取模索引发送9002奖励协议。,MainLeftBottom_11.16_明文.lua：MakeRewardTimerCallback_11_16,无关键未决项；未执行APK验证,2026-11-21
 105,root/52/17,root/52,2,,helper_root_52_17（合成定位名）,0,8,0,25,已恢复,拾取按钮启停：调用PickUpItems并以0.01秒周期调度；关闭时取消shiquTimer。,,捕获变量按用途命名，原始upvalue槽位身份未确认；未做运行验证。
-106,root/52/18,root/52,2,,待识别,0,18,1,65,未恢复,dropTimer | isDiuing | 开丢全部 | 开启丢弃物品(模式2) | dropallbut | Button_setTitleColor | UnSchedule | GUI | Button_setTitleText | #ffffff,,,2026-11-18
-107,root/52/18/0,root/52/18,3,,,待识别,0,2,0,5,未恢复,DiuItems | dropMode,,指令头需按16位字段重新解码；函数体待确认,,2026-11-18
+106,root/52/18,root/52,2,MakeDropMode2ButtonHandler_11_16,本版完整恢复；模式2丢弃开关、定时器与按钮复位均闭合,0,18,1,65,已写入唯一明文（本版指令级完整恢复）,父级root/52槽643以Opcode121创建，捕获寄存器3/0/1/7/5分别对应timerState/PrintLog/featureState/Schedule包装函数/按钮映射表；分支按dropMode==2判定，启动时立即DiuItems并周期调度子回调。,MainLeftBottom_11.16_明文.lua：MakeDropMode2ButtonHandler_11_16,未发现关键未决项；未执行APK验证,2026-11-21
+107,root/52/18/0,root/52/18,3,MakeDropMode2TimerCallback_11_16,本版完整恢复；5条指令周期回调闭合,0,2,0,5,已写入唯一明文（本版指令级完整恢复）,父函数root/52/18槽44创建，捕获timerState；回调调用DiuItems(timerState.dropMode)。,MainLeftBottom_11.16_明文.lua：MakeDropMode2TimerCallback_11_16,无关键未决项；未执行APK验证,2026-11-21
 108,root/52/19,root/52,2,,helper_root_52_19（合成定位名）,0,10,0,29,已恢复,取物按钮启停：调用TakeItems并以1秒周期调度；关闭时取消takeTimer并清空isTaking。,,捕获变量按用途命名，原始upvalue槽位身份未确认；未做运行验证。
 109,root/52/20,root/52,2,make_helper_root_52_20（合成定位名）,闭包体已恢复；H[0]捕获来源待确认,0,0,0,5,部分恢复（不计完整函数）,父级root/52创建点未映射,H[0]具体父级源寄存器/业务变量名待确认,2026-11-19
 110,root/52/21,root/52,2,closure_root_52_21（合成定位名）,行为已恢复,0,9,0,16,已写入明文,LuaSendMsg | 回收完毕 | ShowSystemTips | 901238 | [1\,1] | SL | 9002,MainLeftBottom_11.16_明文.lua,16条物理指令闭合；root/52槽位603 Opcode121创建且captureCount=0；Opcode95/235/361融合载荷已还原，Opcode123/128调用，Opcode110置true，Opcode292返回；SL.ShowSystemTips已查SL.md，LuaSendMsg文档未收录,2026-11-19
