@@ -86,7 +86,7 @@ mode=%s
 开苹果图中 | y | Layout_Create | cruiseTxt | 元宝 | -- | 开拉怪 | x",,,"2026-11-18
 80,root/52/0,root/52,2,closure_root_52_0,匿名闭包（行为已恢复）,0,1,0,4,已写入明文,startForgeZodiac,MainLeftBottom_11.16_明文.lua,4条指令：Opcode 9融合读取H[0].startForgeZodiac；无参数调用；定位名为合成名,2026-11-18
 81,root/52/1,root/52,2,,helper_root_52_1（合成定位名）,0,7,0,23,已恢复,黑名单停止分支：取消blacklistTimer并清空句柄、isBlacklisting；不补造开启分支。,,捕获变量具体身份待进一步映射；未做运行验证。
-82,root/52/2,root/52,2,,待识别,0,10,0,30,未恢复,显示所有按钮 | hidebut | hide | 隐藏所有按钮 | setOpacity | show | isHidden | GUI,,,2026-11-18
+82,root/52/2,root/52,2,helper_root_52_2（合成定位名）,高置信匿名回调（跨版本同职责主体复用）,0,10,0,30,已写入明文（跨版本业务复用）,30条指令、0显式参数；常量显示所有按钮/hidebut/hide/show/isHidden/setOpacity/GUI/255/0；11.9同职责回调MakeHideButtonHandler主体吻合,MainLeftBottom_11.16_明文.lua：helper_root_52_2,MainLeftBottom.a与PrintLog按旧版对应关系接入；本版捕获槽位顺序未单独闭合，保留工厂参数，不冒充原始捕获映射,2026-11-20
 83,root/52/3,root/52,2,,待识别,0,5,1,23,未恢复,SL | buygold110Timer | 开始检测金币(>110W买金条) | Schedule,,,2026-11-18
 84,root/52/3/0,root/52/3,3,,待识别,0,21,0,77,未恢复,ShowSystemTips | UnSchedule | 买金条失败：%s | 金条 | 买金条失败： | ProxyTable | retrieveProxy | GetMoneyIdByName | buygold110Timer | 金币,,,2026-11-18
 85,root/52/4,root/52,2,closure_root_52_4（合成定位名）,行为已恢复,0,1,0,3,已写入明文,Builtsetting,MainLeftBottom_11.16_明文.lua,3条物理指令；父级槽位559通过Opcode121创建，捕获数0；Opcode105加载Builtsetting，Opcode128无参调用，Opcode339结束,2026-11-19
