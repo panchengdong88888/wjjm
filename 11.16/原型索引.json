@@ -630,8 +630,8 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 37,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_0（合成定位名）",
+      "identity_status": "行为与控制流已恢复（父级N[41]原始名称未确认）",
       "constants": [
         "math",
         "insert",
@@ -641,7 +641,9 @@
         "ipairs",
         "name",
         "random"
-      ]
+      ],
+      "recovery_status": "已写入唯一明文（37条物理指令及1项捕获引用完整恢复）",
+      "business_summary": "遍历捕获列表，优先筛除name等于state.lastMapName的项目；若候选为空则回退全部项目；使用math.random随机返回一项。"
     },
     {
       "preorder_id": 2,
