@@ -125,7 +125,7 @@ mode=%s
 118,root/52/28,root/52,2,,闭包执行体完整；捕获对象来源已追至root N[8]，业务变量名待确认,0,3,0,7,已写入明文（7槽闭包执行体完整；捕获对象以代理承载）,7/7槽位闭合；root/52槽556创建闭包，H[0]来自root/52 H[9]；root槽633创建root/52时H[9]来自root N[8]。root N[8]初始化为持有GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems等方法的接口表。子体设置该捕获表GATHER_THRESHOLD=11，调用InitGatherMonsters()，并返回InitGatherMonsters函数值。,,root N[8]所承载接口表的原始局部变量名待确认；子闭包行为及捕获来源已闭合。,2026-11-20
 119,root/52/29,root/52,2,,待识别,0,10,0,39,未恢复,toggle | #ff0000 | Button_setTitleText | Button_setTitleColor | #ffffff | applebut | toggled | name | GUI,,,2026-11-18
 120,root/52/30,root/52,2,closure_root_52_30,匿名闭包（行为已恢复）,0,1,0,4,已写入明文,startPutoutAll,MainLeftBottom_11.16_明文.lua,4条指令：Opcode 9融合读取H[0].startPutoutAll；无参数调用；定位名为合成名,2026-11-18
-121,root/52/31,root/52,2,,待识别,0,10,0,29,未恢复,isStoring | UnSchedule | StorageItems | storageTimer | 关闭存仓功能 | 开启存仓功能 | SL,,,2026-11-18
+121,root/52/31,root/52,2,helper_root_52_31（合成定位名）,高置信匿名回调（跨版本同职责主体复用）,0,10,0,29,已写入明文（跨版本业务复用）,29条指令、0显式参数；常量isStoring/UnSchedule/StorageItems/storageTimer/1及开启关闭提示，与11.9存仓按钮回调主体吻合,MainLeftBottom_11.16_明文.lua：helper_root_52_31,按旧版回调用途接入timerState、printLog、featureState、schedule；本版捕获槽位顺序未单独闭合,2026-11-20
 122,root/52/32,root/52,2,,待识别,3,18,1,55,未恢复,Button_Create | Button_setTitleFontName | key | res/public/kaiti2.ttf | Button_setTitleColor | #ffffff | Cfg | res/public/fuzhu_btn.png | addOnClickEvent | toggle,,,2026-11-18
 123,root/52/32/0,root/52/32,3,,待识别,0,10,0,48,未恢复,toggle | GUI | name | #ff0000 | Button_setTitleColor | Button_setTitleText | toggled | #ffffff | key,,,2026-11-18
 124,root/52/33,root/52,2,,待识别,0,25,0,43,未恢复,%04d%02d%02d | 到达 22:00:05，发送开启巡航协议 | format | hour | sec | date | LuaSendMsg | month | year | ,,,2026-11-18
