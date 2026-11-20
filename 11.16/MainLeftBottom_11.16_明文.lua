@@ -1888,3 +1888,10 @@ function ClearBlacklistItems()
 
     getMainLeftBottomBlacklistState().lastAttacker = nil
 end
+
+
+-- 11.16 root/45：StorageItems（224条物理指令，0参数、2个子闭包）。
+-- 本版仓库常量与旧版同名存仓主体一致；分页查询复用已恢复的
+-- GetAvailableStoragePage，仓库数据读取复用GetStorageItemData。
+-- 两个内部回调在本函数内以普通Lua词法闭包重建。
+
