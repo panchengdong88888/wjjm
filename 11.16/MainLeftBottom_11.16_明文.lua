@@ -1492,6 +1492,24 @@ local function TakeItems()
 end
 
 
+-- 11.16 root/48：checkGold（26条物理指令、0参数、0个upvalue）。
+-- 通过Facade取得MoneyProxy，依次查询“金币”货币ID与当前数量；
+-- Proxy、货币ID或数量为空时按本版分支返回0。
+local function checkGold()
+    local moneyProxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
+    if not moneyProxy then
+        return 0
+    end
+
+    local moneyId = moneyProxy:GetMoneyIdByName("金币")
+    if not moneyId then
+        return 0
+    end
+
+    return moneyProxy:GetMoneyCountById(moneyId) or 0
+end
+
+
 
 -- 11.16 root/73：本版23条物理指令、0参数、0捕获；按本版指令流独立恢复。
 -- 先取当前日期表，再计算当天秒数；有效时间窗口为20:00（含）至22:00（不含）。
