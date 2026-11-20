@@ -1253,3 +1253,10 @@
 - root/18的H[0]=“dpp”；闭包值root N[38]在root槽620被引用、槽645被后续闭包捕获；文件读取结果的最终用途仍待确认。
 - 本轮仅更新捕获/调用关系证据，未新增完整函数明文。统计保持35/162（21.60%）、指令级38项、跨版本复用15项、业务功能53/162（32.72%）。原始Lua只读；未做语法、静态、API兼容或游戏运行验证。
 - 下一项直接继续root/10的29槽主体控制流，避免重复确认上述捕获身份。
+
+
+### 2026-11-20续接增量：root/16 MainLeftBottom.a.show已完整恢复
+- 已闭合root/16全部25槽控制流：设置MainLeftBottom.a.isHidden=true；遍历MainLeftBottom.b并逐项GUI:setVisible(button,true)；若MainLeftBottom.a.infoBg存在，再GUI:setVisible(infoBg,true)。
+- root/16 H[0]/H[1]分别捕获MainLeftBottom.a与MainLeftBottom.b；父级槽269–272确认注册为MainLeftBottom.a.show。Opcode 183/232/386/358/388等均已定点回看原版F()分派器，布尔方向由本版指令直接确定。
+- 唯一明文和函数状态CSV已更新。完整静态恢复36/162（22.22%）；指令级39项；跨版本复用15项；业务累计54/162（33.33%）。
+- root/10捕获身份已闭合，下一步直接恢复其29槽主体；root/18仍不猜测声明名。原始Lua只读；语法、静态、API兼容及游戏运行验证未执行。
