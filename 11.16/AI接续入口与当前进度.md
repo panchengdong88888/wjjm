@@ -27,11 +27,11 @@
 - 已确认的官方API当作黑盒使用，按官方文档直接调用；不得再去反向研究官方API内部。
 
 ### D. 当前进度与下一批
-- 当前唯一可信进度：完整静态恢复 **55/162（33.95%）**；业务功能累计 **73/162（45.06%）**。两个口径不可混用；以函数状态CSV和账本最新记录为准。
+- 当前唯一可信进度：完整静态恢复 **66/162（40.74%）**；业务功能累计 **83/162（51.23%）**。两个口径不可混用；以函数状态CSV和账本最新记录为准。
 - 已写入且不得重复处理：root/26 ClearBlacklistItems、root/40 onDamageMsg、root/63 LuaSendMsg、root/71 DeathAutoBlacklist、root/45 StorageItems、root/22 DestroyUI，以及此前已完成并登记的其他原型。
-- **下一批直接做**：root/34 BlacklistPlayerDetection、root/6 MainLoop、root/55 Builtsetting、root/67 ShowHideAllButtons。先复用旧版同名主体，再用11.16线索补差异；尽量批量完成。不要重新处理已完成的root/22、root/45等。
-- root/34有gamePlayerController/GetMainPlayer等新版差异线索；root/6优先迁移旧版MainLoop状态机业务；root/55要把新版SETTING_CONFIG、HP保护、PKMODE等扩展纳入可恢复主体；root/67保留新版forgeZodiac、appleMap、buygoldTimer、NetworkUtil等清理动作。若其中某项关键证据不足，先跳过它，继续完成其他项。
-- root/9 GetMapData2DPtr存在新旧职责冲突，不得直接套旧版；root/43 PickUpItems旧版同名实现为空，不得照搬空函数。
+- 最近已完成：root/74 FormatStateChange。H[0]已映射为PrintLog，H[1]为当前状态值；格式化旧状态/新状态后输出日志，再更新状态。
+- **下一项直接继续**：root/79 forgeZodiac。已闭合金币检查、前往神龍之都、NPC交互阶段、背包ipairs遍历骨架、tryCount递增/200次上限及进度消息；剩余重点是背包筛选谓词H[9]–H[11]和forgeNextTick节拍计算。遇到关键身份无法短时间闭合时，先跳过该函数，转做其他可恢复原型，不要无限钻研。
+- root/9 GetMapData2DPtr存在新旧职责冲突，不得直接套旧版；root/43 PickUpItems已按本版业务证据恢复，不再按旧版空函数处理。
 
 ### E. 每批提交要求
 - 先读取最新唯一明文文件和函数状态CSV，再批量修改；同一文件更新前使用最新SHA。
@@ -39,7 +39,7 @@
 - 没有新增源码时，不虚报进度；简要记录阻塞原因并换下一项。
 - 对用户汇报只需说明实际新增了哪些代码、当前进度和下一批，不要输出冗长方法论或每函数停顿。
 
-**新AI接续口令：先读本节和账本末尾最新记录，读取当前唯一明文/CSV，直接批量恢复root/34、root/6、root/55、root/67；遵守旧版同名复用→官方API直接调用→仅剩余业务VM解析；不做验证，不重复已完成工作。**
+**新AI接续口令：先读本节和账本末尾最新记录，读取当前唯一明文/CSV，直接继续root/79 forgeZodiac剩余未闭合逻辑；若短时间无法闭合则切换其他短函数。遵守旧版同名复用→官方API直接调用→仅剩余业务VM解析；不做验证，不重复已完成工作。**
 
 ## 一、项目边界
 
@@ -89,7 +89,7 @@
 ## 五、当前状态（2026-11-20；此处数字以最新账本记录为准）
 
 - 原型总数162（含root），原始文件只读；基础解包与原型结构资料已在仓库保存，不重复重做。
-- 当前完整静态恢复55/162（33.95%）；业务功能累计73/162（45.06%）。两个统计口径不同，不可互相替代；如历史增量出现旧数字，以账本末尾最新一条为准。
+- 当前完整静态恢复66/162（40.74%）；业务功能累计83/162（51.23%）。两个统计口径不同，不可互相替代；如历史增量出现旧数字，以账本末尾最新一条为准。
 - 最近已完成并写入唯一明文：root/26 ClearBlacklistItems、root/40 onDamageMsg、root/63 LuaSendMsg、root/71 DeathAutoBlacklist、root/45 StorageItems、root/22 DestroyUI。对应函数状态CSV已同步。
 - 当前用户要求先完成明文，AI阶段不做语法检查、全文件静态检查、宿主API兼容检查或游戏运行验证；由用户后续打包APK实测。
 - 当前下一批：root/34 BlacklistPlayerDetection、root/6 MainLoop、root/55 Builtsetting、root/67 ShowHideAllButtons。执行时优先旧版同名业务复用，按11.16证据补差异；官方API直接按文档调用；仅剩余自有业务逻辑才VM解析。
@@ -1522,3 +1522,11 @@
 - 使用`root_优先闭包指令流补充.json`中的29条本版指令及root闭包捕获映射，逐槽恢复startForgeZodiac，不再依赖旧版推测。
 - H[0]确认MainLeftBottom.z；H[1]为root/14按钮/通知回调；H[2]为_G.log；H[3]为root/78的SL:Schedule包装；H[4]为“蛇·[普通]”。停止分支调用回调显示“已停止锻造生肖”并复位forgeZodiacRunning；启动分支创建forgeZodiac状态表（checkGold/ticks/index）、设置运行标志、记录日志并以0.1秒间隔注册调度。
 - 唯一明文、函数状态CSV、原型索引、账本和接续入口已同步。完整静态恢复由64/162增至65/162（40.12%）；业务功能累计由81/162增至82/162（50.62%）。root/14回调本体仍缺51条指令流，暂不猜写；root/79的212条完整流保留为下一批重点。
+
+
+### 2026-11-20续接增量：root/74 FormatStateChange完成
+
+- root/74的10条物理指令已闭合。父root槽184捕获root N[4]为H[0]，该寄存器由槽43装载root/51 PrintLog；父root槽185捕获root N[14]为H[1]，作为当前状态值。
+- 修正此前错误解读：Opcode 324读取H[1]作为旧状态，Opcode 288复制新状态参数，Opcode 264调用string.format，Opcode 376调用PrintLog，Opcode 62按B字段写回H[1]。明文现按“格式化旧状态与新状态→PrintLog→更新当前状态”的顺序恢复。
+- 唯一明文、函数状态CSV、原型索引和账本均已同步。完整静态恢复66/162（40.74%）；业务功能累计83/162（51.23%）。未做语法/API/游戏验证。
+- 下一项：继续root/79剩余筛选闭包和forgeNextTick节拍逻辑；短时间无法闭合时切换其他短函数。
