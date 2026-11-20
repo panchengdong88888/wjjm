@@ -1937,3 +1937,8 @@ root/15父函数87槽、3参数，已按A字段真实Opcode推进：slot1–3货
 - root/52/6/2 MakeResourceStatisticsClose_11_16 与 root/52/6/3 FormatResourceCount_11_16 已完整恢复并写入唯一明文。
 - 当前完整静态恢复103/162，部分恢复117/162；未做语法或APK验证。
 - 下一批优先root/52/26、root/52/7，以及root/52/22/29中可闭合的短函数。
+
+
+### 2026-11-21续：快捷栏物品初始化
+- root/52/7 MoveConfiguredQuickUseItems_11_16 已完整恢复并写入唯一明文；完整静态恢复104/162，部分恢复117/162。
+- 下一项继续root/52/26、root/52/22、root/52/29；不重复root/52/7。
