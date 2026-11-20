@@ -248,3 +248,27 @@ state.forgeNextTick[prefix] = state.ticks + 30
 这意味着每个生肖名称前缀独立节流：首次遇到该前缀时写入当前ticks+30；之后在到达该tick前跳过本轮，到期后再把门槛向后推30 tick。这里的prefix来自当前循环扫描项，不把不同生肖共用同一个节拍槽。
 
 本轮仅闭合slot159–177，不代表root/79其余部分已全部恢复；slot112–158的筛选/物品Index寄存器链、slot66–96的NPC消息字段仍需处理。root/79尚未写入唯一明文，恢复统计不变。
+
+
+### 2026-11-20续：root/79 slot112–158闭合，并纠正root/30返回类型
+
+本轮从root/79的实际指令寄存器链闭合生肖扫描与背包物品使用段，同时发现此前root/30明文返回数量的实现与本版调用方不兼容，已纠正。
+
+#### root/79 slot112–158
+- slot112–114：仅在`state.state == "forge"`时继续，否则跳转到后续节拍/消息段。
+- slot115–119：读取ticks并执行`ticks % 5`；slot117 Opcode143与常量0比较，slot118为跳转载荷。ticks不是5的倍数时执行slot119结束本轮；ticks是5的倍数时执行slot118跳过slot119，进入生肖扫描。因此背包扫描每5个回调tick执行一次。
+- slot121–124：建立`ipairs(H[8])`迭代器，H[8]是父root构造的十二生肖名称列表。
+- slot125–127：对当前生肖名称调用H[9]（root/53前缀提取函数），得到用于匹配的名称前缀。
+- slot128–130：调用H[10]（root/72，扫描`SL:GetMetaValue("ALL_EQUIP_DATAS")`并按Name查找）。
+- slot131–137：当H[10]返回假值时，保存当前生肖名称和前缀到N[2]/N[3]；真值时不覆盖。循环继续扫描整个十二生肖列表，因此最终保留列表中最后一个未在ALL_EQUIP_DATAS中找到的生肖项。
+- slot138–143：若没有保存未命中的生肖项，则调用H[2]并传入`"生肖锻造完毕"`；否则进入背包查找。
+- slot144–148：调用H[11](prefix)，检查是否返回物品对象。
+- slot149–157：Opcode253融合slot150准备`SL.UseItemByIndex`方法；slot151读取返回物品对象的`Index`，slot152调用方法；slot154–156拼接`"使用背包生肖装备：" .. item.Name`，slot157调用H[3]（PrintLog）输出提示。
+
+#### root/30 Nested_find返回值纠错
+此前root/30按跨版本职责恢复成“统计匹配数量”，但这与本版root/79的寄存器数据流直接矛盾：slot144–146将H[11](prefix)结果放入N[4]；slot151读取N[4].Index；slot155读取N[4].Name；slot152又将Index传给SL.UseItemByIndex。因此H[11]必须返回背包物品对象，而非数值计数。
+
+已将唯一明文中的Nested_find修正为：遍历`SL:GetMetaValue("BAG_DATA")`，对`item.Name`执行`string.find(item.Name, searchText, 1, true)`，命中时返回该item，未命中返回nil。没有添加旧版MakeIndex、绑定或堆叠过滤条件。同步修正原型索引和CSV证据说明。
+
+#### 当前边界
+root/79 slot112–158现已闭合；slot159–177节拍段此前已闭合。root/79尚未整体写入唯一明文，仍需解决slot66–96的NPC交互字段H[6]来源，以及root/72返回对象的更细节字段/匹配语义。root/30本次是已完成函数的返回类型纠错，不增加root/79恢复统计。
