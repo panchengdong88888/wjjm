@@ -4076,3 +4076,82 @@ local function MoveConfiguredQuickUseItems_11_16(names)
         end
     end
 end
+
+
+-- ============================================================================
+-- 11.16 root/52/26/0：500W自动购买金条周期回调（77条指令，0显式参数，4项捕获）
+-- ============================================================================
+-- 与root/52/3/0同一购买流程；本版独立使用buygoldTimer及5000000金币阈值。
+local function MakeBuyGold500WTimerCallback_11_16(
+    buyStoreItem,
+    showLocalNotice,
+    timerState,
+    unusedCapturedFunction
+)
+    return function()
+        local moneyProxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
+        if not moneyProxy then
+            return
+        end
+
+        local moneyId = moneyProxy:GetMoneyIdByName("金币")
+        if not moneyId then
+            return
+        end
+
+        local goldCount = moneyProxy:GetMoneyCountById(moneyId)
+        if not goldCount then
+            if timerState.buygoldTimer then
+                SL:UnSchedule(timerState.buygoldTimer)
+                timerState.buygoldTimer = nil
+            end
+            SL:ShowSystemTips("金币不足500W，买金条结束")
+            return
+        end
+
+        if goldCount > 5000000 then
+            local buyOK, buyResult = buyStoreItem("金条", 1)
+            if buyOK then
+                showLocalNotice("买金条成功，当前金币：%d", goldCount)
+            else
+                SL:ShowSystemTips(string.format("买金条失败：%s", tostring(buyResult)))
+                if timerState.buygoldTimer then
+                    SL:UnSchedule(timerState.buygoldTimer)
+                    timerState.buygoldTimer = nil
+                end
+            end
+        else
+            if timerState.buygoldTimer then
+                SL:UnSchedule(timerState.buygoldTimer)
+                timerState.buygoldTimer = nil
+            end
+            SL:ShowSystemTips("金币不足500W，买金条结束")
+        end
+    end
+end
+
+
+-- ============================================================================
+-- 11.16 root/52/26：500W金币检测启动回调（23条指令，0显式参数，1项捕获）
+-- ============================================================================
+-- 父级root/52通过Opcode178创建该原型；捕获共享timerState。
+-- 已有检测句柄时不重复启动；否则输出提示并每0.5秒执行一次余额检查。
+local function MakeBuyGold500WButtonHandler_11_16(
+    timerState,
+    buyStoreItem,
+    showLocalNotice,
+    unusedCapturedFunction
+)
+    if timerState.buygoldTimer then
+        return
+    end
+
+    PrintLog("开始检测金币(>500W买金条)")
+    local callback = MakeBuyGold500WTimerCallback_11_16(
+        buyStoreItem,
+        showLocalNotice,
+        timerState,
+        unusedCapturedFunction
+    )
+    timerState.buygoldTimer = SL:Schedule(callback, 0.5)
+end
