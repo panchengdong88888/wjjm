@@ -4148,7 +4148,7 @@ local function MakeBuyGold500WButtonHandler_11_16(timerState)
             return
         end
 
-        PrintLog("开始检测金币(>500W买金条)")
+        ShowLocalNoticeByType("开始检测金币(>500W买金条)")
         local callback = MakeBuyGold500WTimerCallback_11_16(
             BuyStoreItem,
             ShowLocalNoticeByType,
