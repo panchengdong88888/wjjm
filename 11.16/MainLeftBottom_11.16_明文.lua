@@ -4059,3 +4059,20 @@ local function FormatResourceCount_11_16(value)
     local hundredMillions = math.floor((value / 100000000) * 10) / 10
     return string.format("%.1f亿", hundredMillions)
 end
+
+
+-- ============================================================
+--  11.16 root/52/7：快捷栏预设物品批量放置（26条物理指令，0显式参数，1项捕获）
+-- ============================================================
+-- 父级root/52槽147创建childIndex=7闭包，捕获父级寄存器5中的names配置数组。
+-- 每个配置项包含name与slot；从ITEM_INDEX_BY_NAME映射取得物品索引后调用全局MoveItemToQuickUse。
+local function MoveConfiguredQuickUseItems_11_16(names)
+    local itemIndexByName = SL:GetMetaValue("ITEM_INDEX_BY_NAME")
+
+    for _, itemConfig in ipairs(names) do
+        local itemIndex = itemIndexByName[itemConfig.name]
+        if itemIndex then
+            MoveItemToQuickUse(itemIndex, itemConfig.slot)
+        end
+    end
+end
