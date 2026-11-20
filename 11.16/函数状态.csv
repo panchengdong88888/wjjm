@@ -41,7 +41,7 @@
 38,root/25/0/1,root/25/0,3,,待识别,0,22,0,38,未恢复,GetMainPlayer | type | GetMapY | GetMetaValue | NoticeTable | x | INPUT_MOVE_TYPE_JOYSTICK | sendNotification | global | SL,,,2026-11-18
 39,root/25/0/2,root/25/0,3,,待识别,0,0,0,3,部分恢复（共享upvalue已定位，外层名称待确认）,Opcode110置false、Opcode62写H[0]=false、Opcode339结束；root/25/0槽594创建child2，槽595 Opcode132捕获父H[0]；最终共享root/25的H[2]；捕获链最终指向root N[74]，业务变量名待确认,,root N[74]在主函数中的稳定业务身份/创建时序待确认；不计完整,2026-11-19
 40,root/26,root,1,ClearBlacklistItems,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,17,1,63,未恢复,取不到好友代理，清空失败 | pairs | lastAttacker | ScheduleOnce | 黑名单为空 | 清空黑名单失败 | ipairs | SL |  人 | 开始清空黑名单，共 %d 人,,,2026-11-18
-41,root/26/0,root/26,2,make_helper_root_26_0（合成定位名；旧版对应MakeRequestOutBlacklistCallback）,闭包体已恢复（捕获来源待确认）,0,4,0,13,部分恢复（不计完整函数）,RequestOutBlacklist | _blacklistData | SL | 黑名单项移除,,,2026-11-19
+41,root/26/0,root/26,2,make_helper_root_26_0（合成定位名；旧版对应MakeRequestOutBlacklistCallback）,闭包体及捕获语义已恢复（父级词法变量原名/注册点待确认）,0,4,0,13,已写入明文（本版指令级闭包体完整；父级绑定待接续）,13/13槽位闭合：SL:RequestOutBlacklist(H[0])；读取H[1]._blacklistData，字段为真值时执行[H[0]]=nil。结合旧版同职责闭包及本版指令形状，H[0]=itemKey、H[1]=friendProxy；明文以工厂参数显式承载捕获。父级创建点/真实局部变量名未核验，不影响子闭包体独立恢复。,,root/26父级创建点及两个捕获值的原始局部变量名仍待确认；父级注册关系不纳入本子闭包完成范围。,2026-11-20
 42,root/27,root,1,,待识别,0,56,0,307,未恢复,"{""index"":%d,""UserID"":""%s""} |  | 已进入目标地图： | GetMapName | 苹果未激活：发送关闭巡航 | 攻城时间段结束，苹果图恢复下图 | state | 苹果已激活：开启巡航 | monitor | index",,,2026-11-18
 43,root/28,root,1,,待识别,0,8,0,32,未恢复,tonumber | SERVER_TIME | time | SL | TITLE_DATA_BY_ID | GetMetaValue,,,2026-11-18
 44,root/29,root,1,ResetGatherMonsterData,跨版本高置信候选（11.2同名函数体复用；11.16签名/常量吻合，20槽已提取未逐槽模拟）,0,3,0,20,已写入明文（跨版本业务复用；非指令级完整还原）,11.16原始载荷定点解析；偏移45507-45734；20物理槽位，20条有效指令；本轮已定点查看本版F()分派器，但多个Opcode/融合边界仍未闭合，维持11.2同名业务体跨版本恢复,MainLeftBottom_11.16_明文.lua：ResetGatherMonsterData,尚未逐槽确认全部状态字段及ClearTargetID_2调用顺序；本轮局部Opcode识别不足以升级为指令级恢复,2026-11-19
@@ -58,7 +58,7 @@
 55,root/38,root,1,DistanceCalculation,高置信候选（跨版本业务对应）,2,6,0,25,已写入明文（跨版本业务复用；未逐槽核验）,99999 | abs | y | math | x | max,MainLeftBottom_11.16_明文.lua：DistanceCalculation,11.2/11.9均有同职责实现；本版参数数、常量数和指令数吻合；未逐槽核验,2026-11-19
 56,root/39,root,1,IsDie,本轮已恢复,1,1,0,7,已写入明文,IsDie,MainLeftBottom_11.16_明文.lua,,2026-11-18
 57,root/40,root,1,onDamageMsg,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,2,19,1,72,未恢复,id | name | ACTOR_NAME | SL | ACTOR_MASTER_ID | GetMetaValue | lastAttacker | AttackUserID | string | type,,,2026-11-18
-58,root/40/0,root/40,2,make_helper_root_40_0（合成定位名）,闭包体已恢复；H[0]来源待确认,0,2,0,6,部分恢复（不计完整函数）,SL | JsonDecode | SL.md「json字符串解密」签名确认,MainLeftBottom_11.16_明文.lua,H[0]捕获源及父级业务变量名待确认；root/40父级72条指令流未保存,2026-11-19
+58,root/40/0,root/40,2,make_helper_root_40_0（合成定位名）,闭包体及捕获语义已恢复（父级词法变量原名/注册点待确认）,0,2,0,6,已写入明文（本版指令级闭包体完整；父级绑定待接续）,"6/6槽位闭合：读取全局SL，准备SL:JsonDecode，读取H[0]作为jsonStr，并直接返回调用结果；3.40.x SL.md确认JsonDecode(jsonStr,isfilter)签名。明文以capturedJson工厂参数承载H[0]。",MainLeftBottom_11.16_明文.lua,root/40父级72槽位指令流未保存，H[0]在父级的源寄存器/词法名称及注册点待确认；子闭包体本身已完整。,2026-11-20
 59,root/41,root,1,,待识别,1,11,0,28,未恢复,global | GetMetaValue | AFKBegin | Facade | AFKEnd | SL | BATTLE_IS_AFK | sendNotification | NoticeTable,,,2026-11-18
 60,root/42,root,1,ClearTargetID_2,已确认真实函数名（本版指令级恢复）,0,9,0,22,已写入明文,22条指令闭合、无捕获；Facade.retrieveProxy(PlayerInputProxy)后调用SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)，与11.2同名函数完全吻合。,MainLeftBottom_11.16_明文.lua：ClearTargetID_2,本版物理指令全部闭合；旧版声明名和业务体一致；无upvalue捕获,2026-11-19
 61,root/43,root,1,PickUpItems,候选身份（11.2同名PickUpItems为空函数；11.16拾取业务常量吻合，视为新版扩展候选）,0,34,2,172,未恢复,MoveTo | mCurrMapX | y | ipairs | x | mCurrMapY | dist | 地面无可拾取物品 | sort | find,,,2026-11-18
@@ -79,7 +79,7 @@ mode=%s
 73,root/50/0,root/50,2,,待识别,0,15,0,80,未恢复,Win_Close | string | gsub | %s | tonumber | ^%d+$ |  | match | Text_setString | 参数格式不对，请输入数字,,,2026-11-18
 74,root/50/1,root/50,2,make_helper_root_50_1（合成定位名）,闭包体已恢复；H[0]/H[1]父级来源待确认,0,0,0,5,部分恢复（不计完整函数）,H[0]=false；H[1]()；Opcode339结束,H[0]/H[1]父级源寄存器及业务变量名待确认,2026-11-19
 75,root/50/2,root/50,2,make_helper_root_50_2（合成定位名）,闭包体已恢复；H[0]/H[1]父级来源待确认,0,0,0,5,部分恢复（不计完整函数）,Opcode330写H[0]=false并读取H[1]；H[1]()；Opcode205结束,H[0]/H[1]父级源寄存器及业务变量名待确认,2026-11-19
-76,root/50/3,root/50,2,make_helper_root_50_3（合成定位名）,闭包体已恢复；父级捕获变量身份待确认,0,2,0,5,部分恢复（不计完整函数）,root/50槽441 Opcode387创建childIndex=3，槽442 Opcode243捕获父N[7]到H[0]；Opcode253/138准备GUI.Win_Close并保存receiver，Opcode324将H[0]放入参数寄存器N[2]，Opcode123调用参数区间N[1]..N[2]，等价于GUI:Win_Close(H[0]),MainLeftBottom_11.16_明文.lua,父级N[7]的原始词法变量名及业务身份待确认；函数体已闭合但捕获来源名称未确认，不计完整,2026-11-19
+76,root/50/3,root/50,2,make_helper_root_50_3（合成定位名）,闭包体及捕获语义已恢复（父级词法变量原名/注册点待确认）,0,2,0,5,已写入明文（本版指令级闭包体完整；父级绑定待接续）,5/5槽位闭合；root/50槽441创建子闭包，槽442将父N[7]捕获到H[0]。子体准备GUI.Win_Close方法并以H[0]为唯一显式参数调用，等价GUI:Win_Close(capturedWindow)。明文工厂参数显式承载H[0]。,MainLeftBottom_11.16_明文.lua,父root/50的N[7]原始词法变量名和窗口对象来源待确认；子闭包的执行体及捕获值用途已确认。,2026-11-20
 77,root/50/4,root/50,2,,待识别,0,4,0,23,未恢复,Button_setTitleColor | GUI | #ffffff | #00ff00,,,2026-11-18
 78,root/51,root,1,PrintLog,跨版本业务复用（11.2同名函数体与11.16常量/签名吻合；未逐槽模拟）,1,13,0,38,已写入明文（跨版本业务复用；非指令级完整还原）,11.16 root/51：1个固定参数并带可变参数、38条指令；常量select、type、#、pcall、Print、table、format、tostring、string、SL等与11.2同名函数吻合。保留其没有实际调用SL.Print的旧版行为；跨版本复用，未逐槽模拟。,MainLeftBottom_11.16_明文.lua：PrintLog,本版指令未逐槽核验；出现行为差异时定点复查,2026-11-19
 79,root/52,root,1,doInit_UI / 主界面初始化,高置信候选,0,176,37,865,未恢复,开拾取 | infoGoldTxt | 开苹果图中
