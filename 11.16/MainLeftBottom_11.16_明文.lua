@@ -1673,7 +1673,7 @@ local function helper_root_18()
         return result
     end
 
-    for key, value in string.gmatch(data, "([%w_]+)=([^\\r\\n]*)") do
+    for key, value in string.gmatch(data, "([%w_]+)=([^\r\\n]*)") do
         result[key] = value
     end
 
