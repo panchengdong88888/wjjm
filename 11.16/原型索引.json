@@ -2591,7 +2591,7 @@
       "parameter_count": 0,
       "instruction_count": 172,
       "candidate_name": "PickUpItems",
-      "identity_status": "候选身份（11.2同名PickUpItems为空函数；11.16拾取业务常量吻合，视为新版扩展候选）",
+      "identity_status": "高置信身份确认（11.9同职责实现172指令与本版172指令同规模；名称/字段/接口常量吻合）",
       "constants": [
         "MoveTo",
         "mCurrMapX",
@@ -2627,7 +2627,9 @@
         "abs",
         "MapX",
         "math"
-      ]
+      ],
+      "recovery_status": "已写入明文（跨版本主体复用并接入本版排序闭包）",
+      "recovery_note": "复用11.9同为172指令的PickUpItems主体；普通排序比较器使用本版root/43/1已恢复的a.dist >= b.dist；优先排序比较器按旧版同职责kIdx/dist规则迁移。"
     },
     {
       "preorder_id": 62,
@@ -2638,12 +2640,14 @@
       "child_count": 0,
       "parameter_count": 2,
       "instruction_count": 19,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "comparePreferredItems（按职责命名）",
+      "identity_status": "匿名排序闭包（与11.9同职责闭包复用；比较kIdx后比较dist）",
       "constants": [
         "kIdx",
         "dist"
-      ]
+      ],
+      "recovery_status": "已写入明文",
+      "recovery_note": "闭包逻辑内联于PickUpItems的table.sort优先物品比较器：kIdx升序，相等时dist升序。"
     },
     {
       "preorder_id": 63,
