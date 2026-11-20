@@ -1783,3 +1783,8 @@ root/15 slot63 Opcode178创建child proto T[1]=root/15/1，D=6表示后续6个�
 ## 2026-11-20续：root/15/1 slot73–77提示调用的原始形态
 
 原版F()中Opcode403的叶明确为`N[K[2]]=H[K[3]]`并融合下一槽`N[next.K2]=next.K3`。因此child slot73 A403 B5 C0融合slot74，构造N5=H0、N6=“上架结束：背包已无”；slot75取H1货币名称；slot76拼接；slot77调用N5(N6)。虽然H0的父级来源映射为SL对象，这里VM仍明确把H0当可调用值使用。源码恢复必须忠实保留`H[0](message .. H[1])`，不可擅改成SL:ShowSystemTips，也不可错用H[5]回调。H5是父H0回调，传入RequestAuctionPutin路径。唯一明文仍未修改，下一步整合时保留此VM调用形态。
+
+
+## 2026-11-20关键纠错：root/15/1 slot73调用H[5]
+
+slot73字段为A403、B5、C0。Opcode403执行N[A]=H[B]，故这里读H[5]，不是H[0]。H[5]已确认是父root/15的H[0]回调，因此slot73–77构造并调用`H[5]("上架结束：背包已无" .. H[1])`。上一轮“读取H0/调用SL对象”的结论撤销。原型JSON的parameter_count=0，子闭包无显式参数；此前任何“2个显式参数”的说法均作废。下一步直接按0参数和6个upvalue组织明文。
