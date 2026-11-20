@@ -551,25 +551,24 @@ local function make_helper_root_26_0(itemKey, friendProxy)
 end
 
 
--- 11.16 root/74：10条物理指令；1个显式参数；使用H[0]与H[1]两个捕获槽位。
--- 逐条语义：H[0]读取到寄存器；取得string.format；加载“状态切换: %s -> %s”；
--- 将格式串、H[0]及新状态参数交给string.format；把格式化结果作为唯一参数调用H[0]；
--- 最后执行H[1] = 新状态。Opcode 264负责固定参数调用并收集返回值，
--- Opcode 376负责将格式化结果作为可变参数调用目标函数，Opcode 62写回H[1]。
--- H[0]在原始指令中既作为string.format的第一个格式参数，又作为后续可调用值；
--- 此处忠实保留寄存器行为，不擅自把它解释成“旧状态”或“日志函数”之一。
--- capturedUpvalues是VM闭包上值代理的显式占位；root层创建闭包时H[0]/H[1]的真实词法来源
--- 以及原始函数符号名尚未确认。本项为函数体恢复完成、父级捕获身份待确认的部分恢复项。
+-- 11.16 root/74：FormatStateChange（10条物理指令；1个显式参数；2个捕获槽位）。
+-- root父级槽183创建本闭包；槽184捕获N[4]为H[0]，槽185捕获N[14]为H[1]。
+-- root N[4]由槽43装载root/51闭包，身份为PrintLog；H[1]是被更新的当前状态值。
+-- 指令顺序：读取PrintLog；准备string.format("状态切换: %s -> %s", H[1], newState)；
+-- 调用PrintLog输出格式化文本；最后执行H[1] = newState。
+-- Opcode 324读取H[1]，Opcode 288复制旧状态参数，Opcode 264调用string.format并收集结果，
+-- Opcode 376调用PrintLog，Opcode 62按B字段索引写回H[1]。
 local function make_helper_root_74(capturedUpvalues)
     return function(newState)
-        local capturedValue0 = capturedUpvalues[0]
+        local printLog = capturedUpvalues[0]
+        local previousState = capturedUpvalues[1]
         local formattedMessage = string.format(
             "状态切换: %s -> %s",
-            capturedValue0,
+            previousState,
             newState
         )
 
-        capturedValue0(formattedMessage)
+        printLog(formattedMessage)
         capturedUpvalues[1] = newState
     end
 end
