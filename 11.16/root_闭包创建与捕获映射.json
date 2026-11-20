@@ -1822,11 +1822,212 @@
       ],
       "captureCount": 0,
       "captures": []
+    },
+    {
+      "createSlot": 283,
+      "createOpcode": 178,
+      "childIndex": 50,
+      "childPath": "root/50",
+      "parameterCount": 5,
+      "instructionCount": 444,
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 284,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "constantPreview": [
+        "GUI",
+        "Win_Close"
+      ]
+    },
+    {
+      "createSlot": 287,
+      "createOpcode": 178,
+      "childIndex": 15,
+      "childPath": "root/15",
+      "parameterCount": 3,
+      "instructionCount": 87,
+      "captureCount": 5,
+      "captures": [
+        {
+          "slot": 288,
+          "opcode": 243,
+          "sourceRegister": 40,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 289,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 290,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 291,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 292,
+          "opcode": 243,
+          "sourceRegister": 7,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "constantPreview": [
+        "RequestAuctionPutList",
+        "AUCTION_BIDPRICE_MIN",
+        "金条",
+        "开始上架",
+        "putinTimer",
+        "putoutTimer",
+        "startPutinGold"
+      ]
+    },
+    {
+      "createSlot": 633,
+      "createOpcode": 178,
+      "childIndex": 52,
+      "childPath": "root/52",
+      "parameterCount": 0,
+      "instructionCount": 865,
+      "captureCount": 19,
+      "captures": [
+        {
+          "slot": 634,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 635,
+          "opcode": 243,
+          "sourceRegister": 2,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 636,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 637,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 638,
+          "opcode": 243,
+          "sourceRegister": 89,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 639,
+          "opcode": 243,
+          "sourceRegister": 1,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 640,
+          "opcode": 243,
+          "sourceRegister": 67,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 641,
+          "opcode": 243,
+          "sourceRegister": 7,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 642,
+          "opcode": 243,
+          "sourceRegister": 62,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 643,
+          "opcode": 243,
+          "sourceRegister": 8,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 644,
+          "opcode": 243,
+          "sourceRegister": 88,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 645,
+          "opcode": 243,
+          "sourceRegister": 38,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 646,
+          "opcode": 243,
+          "sourceRegister": 39,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 647,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 648,
+          "opcode": 243,
+          "sourceRegister": 83,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 649,
+          "opcode": 243,
+          "sourceRegister": 82,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 650,
+          "opcode": 243,
+          "sourceRegister": 11,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 651,
+          "opcode": 243,
+          "sourceRegister": 12,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 652,
+          "opcode": 243,
+          "sourceRegister": 9,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "constantPreview": [
+        "MainLeftBottom",
+        "doInit"
+      ]
     }
   ],
   "notes": [
     "childIndex按S()生成的root.children零基索引对应root/<childIndex>。",
     "Opcode243捕获父级局部寄存器N；其他捕获Opcode应按原版F()分派器再判定为父级upvalue。",
-    "本文件只记录创建点、子原型身份及捕获寄存器，不把寄存器来源自动命名为业务变量。"
+    "本文件只记录创建点、子原型身份及捕获寄存器，不把寄存器来源自动命名为业务变量。",
+    "2026-11-20补充：从root_654条物理指令流直接补录此前遗漏的Opcode178闭包创建事件。root/50在槽283创建，H[0]=root N[0]；root/15在槽287创建，H[0..4]=root N[40],N[3],N[5],N[4],N[7]；root/52在槽633创建，H[0..18]=root N[4],N[2],N[0],N[3],N[89],N[1],N[67],N[7],N[62],N[8],N[88],N[38],N[39],N[5],N[83],N[82],N[11],N[12],N[9]。这些是父root捕获寄存器的直接证据，不等于已确认变量名或子闭包内部捕获身份。"
   ]
 }
