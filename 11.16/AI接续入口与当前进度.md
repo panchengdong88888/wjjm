@@ -1584,3 +1584,8 @@
 - root/79 slot112–158已闭合：每5 tick扫描十二生肖；H[9]提取前缀，H[10]检查ALL_EQUIP_DATAS，记录最后一个未命中的生肖；H[11]查找BAG_DATA中对应物品对象，读取Index/Name并调用SL.UseItemByIndex、PrintLog。
 - 本轮纠正root/30 Nested_find：旧明文返回数量与root/79直接读取返回值.Index/.Name冲突；现按调用方证据修正为返回首个名称匹配物品对象或nil。唯一明文、原型索引、函数状态CSV已同步。
 - root/79尚未整体写入。下一步处理slot66–96 NPC交互字段H[6]的来源，随后整合已闭合各段；不得重复重做slot112–177。
+
+
+## 2026-11-20续：root/79 NPC交互字段闭合
+
+父root slot362将立即数41写入N[51]，而root/79 H[6]捕获父N[51]；slot363将"10030"写入N[52]，对应H[7]。root/79 slot78–81将二者传入`string.format('{"index":%d,"UserID":"%s"}', H[6], H[7])`，故NPC交互数据明确为index=41、UserID="10030"。配合已确认MoveTo(151,144,8)，root/79 slot66–96闭合。
