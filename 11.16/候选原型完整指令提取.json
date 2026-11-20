@@ -8201,6 +8201,324 @@
       ],
       "children": [],
       "recovery_status": "本版原始S()结构解析器定点提取；完整指令流已恢复并写入唯一明文"
+    },
+    {
+      "path": "root/0",
+      "depth": 1,
+      "parameter_count": 1,
+      "constants": [
+        "math",
+        "insert",
+        "table",
+        0,
+        "lastMapName",
+        "ipairs",
+        "name",
+        "random"
+      ],
+      "physical_slots": 37,
+      "instruction_count": 37,
+      "start_offset": 2898,
+      "end_offset": 3330,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 2,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 45,
+          "A": 2,
+          "B": "ipairs",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 234,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 314,
+          "A": 2,
+          "B": 3,
+          "C": 4,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 388,
+          "A": 0,
+          "B": 14,
+          "C": null,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 79,
+          "A": 7,
+          "B": 6,
+          "C": "name",
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 274,
+          "A": 8,
+          "B": 0,
+          "C": "lastMapName",
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 294,
+          "A": 1,
+          "B": 7,
+          "C": 8,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 388,
+          "A": 0,
+          "B": 14,
+          "C": null,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 105,
+          "A": 7,
+          "B": "table",
+          "C": null,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 68,
+          "A": 7,
+          "B": 7,
+          "C": "insert",
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 221,
+          "A": 8,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 288,
+          "A": 9,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 128,
+          "A": 7,
+          "B": 9,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 122,
+          "A": 2,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 388,
+          "A": 0,
+          "B": 5,
+          "C": null,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 265,
+          "A": 2,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 143,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 388,
+          "A": 0,
+          "B": 30,
+          "C": null,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 45,
+          "A": 2,
+          "B": "ipairs",
+          "C": null,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 324,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 314,
+          "A": 2,
+          "B": 3,
+          "C": 4,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 388,
+          "A": 0,
+          "B": 28,
+          "C": null,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 146,
+          "A": 7,
+          "B": "table",
+          "C": null,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 406,
+          "A": 7,
+          "B": 7,
+          "C": "insert",
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 221,
+          "A": 8,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 64,
+          "A": 9,
+          "B": 6,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 128,
+          "A": 7,
+          "B": 9,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 29,
+          "opcode": 250,
+          "A": 2,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 30,
+          "opcode": 388,
+          "A": 0,
+          "B": 23,
+          "C": null,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 31,
+          "opcode": 218,
+          "A": 2,
+          "B": "math",
+          "C": null,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 32,
+          "opcode": 96,
+          "A": 2,
+          "B": 2,
+          "C": "random",
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 33,
+          "opcode": 265,
+          "A": 3,
+          "B": 1,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 34,
+          "opcode": 209,
+          "A": 2,
+          "B": 3,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 35,
+          "opcode": 189,
+          "A": 2,
+          "B": 1,
+          "C": 2,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 36,
+          "opcode": 11,
+          "A": 2,
+          "B": 2,
+          "C": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 37,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "operand_flags": 0
+        }
+      ],
+      "children": []
     }
   ],
   "constant_type_notes": {
@@ -8218,7 +8536,8 @@
       "root/11",
       "root/28",
       "root/35",
-      "root/41"
+      "root/41",
+      "root/0"
     ]
   }
 }
