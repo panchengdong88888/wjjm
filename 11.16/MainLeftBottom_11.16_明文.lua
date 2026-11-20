@@ -2567,3 +2567,102 @@ function Builtsetting()
         end
     end
 end
+
+-- ============================================================================
+-- 11.16 root/43：PickUpItems（172条物理指令，0参数，2个排序比较子闭包）
+-- 主体复用11.9中同为172条指令的MakePickUpItemsHandler业务实现。
+-- 新版root/43/1的dist比较闭包已独立恢复为a.dist >= b.dist，故排序时直接使用
+-- closure_root_43_1，不用旧版left.dist < right.dist覆盖新版指令结果。
+-- root/43/0的kIdx/dist双字段比较器按旧版同职责闭包迁移。
+-- ============================================================================
+function PickUpItems()
+    local function comparePreferredItems(left, right)
+        if left.kIdx ~= right.kIdx then
+            return left.kIdx < right.kIdx
+        end
+        return left.dist < right.dist
+    end
+
+    local droppedItems, droppedCount = GetDroppedItems()
+    if droppedCount == 0 then
+        ShowLocalNoticeByType("地面无可拾取物品")
+        return
+    end
+
+    local playerX, playerY = PlayerPos()
+    local preferredItems = {}
+    local ordinaryItems = {}
+    local nameRules = {}
+
+    for _, item in ipairs(droppedItems) do
+        local name = item.mName
+            or item.mONameStr
+            or item.Name
+            or item.name
+            or ""
+
+        local x = item.mCurrMapX
+            or item.MapX
+            or item.mapX
+            or item.x
+
+        local y = item.mCurrMapY
+            or item.MapY
+            or item.mapY
+            or item.y
+
+        if x and y then
+            local distance = math.abs(playerX - x)
+                + math.abs(playerY - y)
+            local matchedRuleIndex = 0
+
+            for ruleIndex, rule in ipairs(nameRules) do
+                if string.find(name, rule) then
+                    matchedRuleIndex = ruleIndex
+                    break
+                end
+            end
+
+            if matchedRuleIndex > 0 then
+                table.insert(preferredItems, {
+                    item = item,
+                    dist = distance,
+                    kIdx = matchedRuleIndex,
+                    x = x,
+                    y = y,
+                })
+            else
+                table.insert(ordinaryItems, {
+                    item = item,
+                    dist = distance,
+                    x = x,
+                    y = y,
+                })
+            end
+        end
+    end
+
+    table.sort(preferredItems, comparePreferredItems)
+    table.sort(ordinaryItems, closure_root_43_1)
+
+    local candidates = {}
+    for _, entry in ipairs(preferredItems) do
+        table.insert(candidates, entry)
+    end
+    for _, entry in ipairs(ordinaryItems) do
+        table.insert(candidates, entry)
+    end
+
+    if #candidates == 0 then
+        return
+    end
+
+    local target = candidates[1]
+    MoveTo(target.x, target.y, 0)
+
+    if math.abs(playerX - target.x) <= 1
+        and math.abs(playerY - target.y) <= 1 then
+        global.dropItemController:PickMainPlayerPosItem()
+        ShowLocalNoticeByType("拾取: " .. target.item.mName)
+    end
+end
