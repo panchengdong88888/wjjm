@@ -131,7 +131,7 @@ mode=%s
 124,root/52/33,root/52,2,,待识别,0,25,0,43,未恢复,%04d%02d%02d | 到达 22:00:05，发送开启巡航协议 | format | hour | sec | date | LuaSendMsg | month | year | ,,,2026-11-18
 125,root/52/34,root/52,2,,待识别,0,12,1,46,未恢复,金条 | price | putinPrice | mode | putinName |  | 上架物品 | 1 | tonumber | inputNumber,,,2026-11-18
 126,root/52/34/0,root/52/34,3,,待识别,3,4,0,18,未恢复,putinStacked | putinPrice | putinName | startPutinGold,,,2026-11-18
-127,root/52/35,root/52,2,,待识别,0,17,1,37,未恢复,tostring | string | LuaSendMsg | global | format | len | USER_ID | {UserID:%s","index:15} | MsgType | MSG_CS_NPC_CLICK,,,2026-11-18
+127,root/52/35,root/52,2,,部分恢复,0,17,1,37,USER_ID | MSG_CS_NPC_CLICK | powerRefreshing | ScheduleOnce | 3秒复位闭包；调用参数映射保留待定,make_helper_root_52_35,MainLeftBottom_11.16_明文.lua,父级37槽主体已整理；子闭包3槽完整；网络参数与外层捕获身份待确认,2026-11-20,,2026-11-18
 128,root/52/35/0,root/52/35,3,closure_root_52_35_0,匿名闭包（行为已恢复）,0,2,0,3,已写入明文,powerRefreshing,MainLeftBottom_11.16_明文.lua,3条指令：Opcode 88读取H[0]环境表，融合Opcode 114设置powerRefreshing=false；合成定位名,2026-11-18
 129,root/52/36,root/52,2,make_helper_root_52_36（合成定位名）,闭包执行体及3项捕获来源全部闭合；父级局部变量符号名部分未知,0,4,0,19,已写入明文（本版指令级完整恢复；捕获代理保留精确值）,19槽闭合；root/52槽605创建，H[0]/H[1]经父H[3]/H[13]追溯至root N[3]/N[5]，H[2]来自root/52 N[24]；全部捕获源寄存器已确认，明文保留捕获代理。,MainLeftBottom_11.16_明文.lua,函数体与3项捕获来源均闭合；N[24]原始变量名未知，不影响静态恢复。,2026-11-20
 130,root/53,root,1,helper_root_53（合成定位名）,行为已恢复,1,4,0,15,已写入明文,string.match | match | · | ^(.-)·,MainLeftBottom_11.16_明文.lua,原始函数符号名未确认；全部15条物理指令及两条分支已闭合,2026-11-19
