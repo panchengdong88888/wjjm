@@ -897,8 +897,10 @@ end
 -- H[0]为真时将其置false，并调用H[1]("见人跑：" .. zd)；
 -- Opcode 88读取H[2]并融合写入H[2].cruiseGatherPaused=false；
 -- 随后读取H[2].zd并调用zd(true)。
--- root父级654条指令流未保存，H[0..2]在父级的真实词法来源尚不能确认；
--- 因此用capturedUpvalues显式保留捕获槽，不伪造业务变量名，按部分恢复统计。
+-- root槽522 Opcode178创建root/32，槽523–525依次捕获父级N[75]、N[5]、N[0]。
+-- N[75]在槽517初始化为false，作为本闭包的一次性提示门控；
+-- N[5]由槽46创建并保持为root/80：ShowLocalNoticeByType；
+-- N[0]由槽2装入MainLeftBottom模块表。捕获链与闭包体均已闭合。
 local function make_helper_root_32(capturedUpvalues)
     return function(zd)
         if capturedUpvalues[1] then
