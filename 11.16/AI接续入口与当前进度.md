@@ -1209,9 +1209,18 @@
 
 
 ### 2026-11-20续接增量：DiuItems捕获身份全部闭合，升级完整恢复
-- root/2 H[0]=root N[2]=MainLeftBottom模块/状态表；H[1]=root N[5]=ShowLocalNoticeByType闭包。
+- root/2 H[0]=root N[2]=MainLeftBottom.z共享状态表；H[1]=root N[5]=ShowLocalNoticeByType闭包。
 - H[1]的证据链：root槽46 Opcode121创建child index 80，即root/80；槽47 Opcode243捕获root N[0]环境表。root/80的15条指令、1个参数及常量/调用明确表明其为ShowLocalNoticeByType(Msg)，构造本地提示并调用SL方法。
 - 已将唯一明文中的make_DiuItems(capturedUpvalues)工厂替换为直接local function DiuItems(mode)，捕获值改为MainLeftBottom和ShowLocalNoticeByType的词法引用；CSV状态升级为“已写入明文”。
 - 完整原型函数33/162（20.37%）；指令级直接恢复36项；跨版本复用15项；业务功能累计51/162（31.48%）。root/80不重复计数。
 - 未执行Lua语法检查、全文件静态检查、宿主API兼容检查或游戏运行验证。
 - 下一步利用root完整654槽流批量映射其余闭包创建和全局导出，优先检查root/10、root/15、root/16、root/18、root/28、root/48。
+
+
+### 2026-11-20续接增量：TakeItems已按11.16本版指令恢复
+- 新增root_优先闭包指令流补充.json，完整保存root/10、root/16、root/18、root/48、root/58、root/79、root/80七个子原型指令流。
+- root/58的父级创建点：root槽81创建闭包，槽82捕获N[2]=MainLeftBottom.z，槽83捕获N[5]=ShowLocalNoticeByType。其99条指令确认取仓流程、isTaking互斥、名称trim、“待定”过滤、仓库取出协议和计数提示。
+- 已写入唯一明文TakeItems()，不再使用跨版本工厂占位。root/2的H[0]也同步更正为MainLeftBottom.z。
+- 当前完整原型34/162（20.99%）；指令级直接恢复37项；跨版本复用15项；业务功能累计52/162（32.10%）。
+- 未执行Lua语法、全文件静态、宿主API兼容或游戏运行验证。
+- 下一步：root/16、root/18、root/48、root/10，按捕获数和函数复杂度优先分析。
