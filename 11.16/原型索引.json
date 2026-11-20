@@ -1459,7 +1459,7 @@
         "isFileExist",
         "getDataFromFileEx"
       ],
-      "business_summary": "读取可写目录中的配置文件，并按key=value格式解析文本；常量FileUtilCtl、getWritablePath、isFileExist、getDataFromFileEx、gmatch及匹配式([%w_]+)=([^\\r\\n]*)共同支持该职责。",
+      "business_summary": "读取可写目录中的配置文件，并按key=value格式解析文本；常量FileUtilCtl、getWritablePath、isFileExist、getDataFromFileEx、gmatch及匹配式([%w_]+)=([^\r\\n]*)共同支持该职责。",
       "recovery_status": "已写入唯一明文；34条物理指令逐槽闭合，捕获H[0]为字符串dpp；文件不存在/读取为空返回空表，存在时按key=value解析并返回结果表。"
     },
     {
