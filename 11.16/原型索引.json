@@ -3830,11 +3830,13 @@
       "parameter_count": 0,
       "instruction_count": 6,
       "candidate_name": "make_helper_root_52_10（捕获提示回调待映射）",
-      "identity_status": "闭包体已恢复；H[0]捕获来源待确认",
+      "identity_status": "行为与捕获变量身份已确认；匿名闭包原始符号名未恢复",
       "constants": [
         "ClearBlacklistItems",
         "清空黑名单"
-      ]
+      ],
+      "recovery_status": "已写入明文（本版指令级完整恢复）",
+      "recovery_notes": "6槽、0参数、1个upvalue。root/52 H[0]捕获root N[4]；root N[4]由root槽43创建root/51闭包，root/51按本版原型信息及旧版同名函数复用确认为PrintLog。闭包先调用PrintLog('清空黑名单')，再调用ClearBlacklistItems()。"
     },
     {
       "preorder_id": 98,
@@ -3846,7 +3848,7 @@
       "parameter_count": 0,
       "instruction_count": 5,
       "candidate_name": null,
-      "identity_status": "待识别",
+      "identity_status": "行为与捕获变量身份已确认；匿名闭包原始符号名未恢复",
       "constants": [
         "_G",
         "LuaSendMsg"
@@ -3876,7 +3878,9 @@
         "capture_descriptor_opcode": 243,
         "parent_register": 0,
         "child_upvalue_index": 2
-      }
+      },
+      "recovery_status": "已写入明文（本版指令级完整恢复）",
+      "recovery_notes": "5槽、0参数、1个upvalue。root槽633创建root/52时，root/52 H[2]捕获root N[0]；root N[0]由初始化段及root/16捕获映射确认是MainLeftBottom.a。闭包行为为_G.LuaSendMsg = MainLeftBottom.a.LuaSendMsg。"
     },
     {
       "preorder_id": 99,
@@ -4493,7 +4497,7 @@
       "parameter_count": 0,
       "instruction_count": 7,
       "candidate_name": null,
-      "identity_status": "待识别",
+      "identity_status": "闭包体及捕获对象来源已确认；父级接口表原始局部变量名未恢复",
       "constants": [
         11,
         "InitGatherMonsters",
@@ -4524,7 +4528,9 @@
         "capture_descriptor_opcode": 243,
         "parent_register": 8,
         "child_upvalue_index": 9
-      }
+      },
+      "recovery_status": "已写入明文（本版指令级完整恢复）",
+      "recovery_notes": "7槽、0参数、1个upvalue。root/52槽556创建childIndex=28闭包，H[0]来自root/52 H[9]；root槽633创建root/52时H[9]来自root N[8]。root N[8]为包含GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems等方法的接口表。闭包设置捕获表GATHER_THRESHOLD=11，调用InitGatherMonsters()，并返回InitGatherMonsters函数值。"
     },
     {
       "preorder_id": 119,
