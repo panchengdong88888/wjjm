@@ -4219,3 +4219,38 @@ local function MakeStopAllFeatureStateReset_11_16(timerState, resetButton)
         resetButton("rewardbut")
     end
 end
+
+
+-- ============================================================================
+-- 11.16 root/52/5：按钮toggle状态同步回调（51条指令，2个显式参数，10项捕获）
+-- ============================================================================
+-- 常量及参数形态与11.9同职责回调一致：按buttonKey遍历按钮配置组，
+-- 写入buttonConfig.toggled，并同步更新对应GUI按钮的标题与红/白颜色。
+-- 11.16原型的10个原始捕获槽尚未全部闭合；这里先恢复可确认的业务主体，
+-- 将按钮配置组和主界面按钮映射作为显式依赖传入，不伪造H[0..9]槽位顺序。
+local function MakeButtonToggleStateSync_11_16(buttonGroups, mainLeftBottom)
+    return function(buttonKey, toggled)
+        for _, buttonGroup in ipairs(buttonGroups) do
+            for _, buttonConfig in ipairs(buttonGroup) do
+                if buttonConfig.key == buttonKey then
+                    buttonConfig.toggled = toggled
+
+                    local visibleItems = mainLeftBottom.b
+                    local button = visibleItems[buttonKey]
+                    if button then
+                        GUI:Button_setTitleText(
+                            button,
+                            toggled and buttonConfig.toggle or buttonConfig.name
+                        )
+                        GUI:Button_setTitleColor(
+                            button,
+                            toggled and "#ff0000" or "#ffffff"
+                        )
+                    end
+                    return
+                end
+            end
+        end
+    end
+end
+
