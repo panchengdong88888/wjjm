@@ -1609,3 +1609,12 @@
 - root/72 helper_root_72已恢复；root/79 forgeZodiac的212槽主体也已整合写入`MainLeftBottom_11.16_明文.lua`。
 - forgeZodiac覆盖金币检查、神龍之都地图请求/超时重发、MoveTo(151,144,8)、NPC交互(index=41/UserID=10030)、clickNpc等待5tick、每5tick生肖扫描、ALL_EQUIP_DATAS检查、BAG_DATA物品查找/UseItemByIndex、按前缀30tick节拍、tryCount>200停止、LuaSendMsg/PrintLog进度输出。
 - 当前静态恢复统计：完整静态68/162；业务功能累计85/162。未进行APK运行验证；后续以用户实测结果修正。
+
+
+### 2026-11-20续：root/79 NPC移动与消息分支修正
+
+回看已闭合的slot66–96调用链后，修正主体整合时的两处调用表达：
+- 只有`MoveTo(151,144,8)`返回真值才发送NPC交互消息并切换到`clickNpc`；移动尚未到达时保留`walkNpc`，由下一轮回调继续尝试。
+- NPC点击消息使用消息码1010及四个0参数，随后传入JSON与长度；生肖锻造进度消息仍使用10004，两者不混用。
+
+该次为已恢复主体的调用分支修正，不增加函数恢复计数；未进行APK运行验证。
