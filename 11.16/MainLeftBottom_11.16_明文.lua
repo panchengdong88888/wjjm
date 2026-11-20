@@ -4158,3 +4158,35 @@ local function MakeBuyGold500WButtonHandler_11_16(timerState)
         timerState.buygoldTimer = SL:Schedule(callback, 0.5)
     end
 end
+
+
+-- ============================================================================
+-- 11.16 root/52/29：苹果按钮点击状态切换（39条指令，0显式参数，3项捕获）
+-- ============================================================================
+-- 原型证据确认：读取两个捕获对象的applebut字段；切换配置对象toggled；
+-- 按toggle/name选择按钮标题，并按toggled选择红/白标题颜色。
+-- 三个捕获的父级词法来源尚未闭合，按原始H[0]/H[1]/H[2]顺序保留代理，
+-- 不将代理变量名冒充真实父级变量名。
+local function MakeAppleMapButtonToggleHandler_11_16(capturedUpvalues)
+    local titleButtonHost = capturedUpvalues[1] -- H[0]：提供.applebut标题按钮
+    local applebutCfg = capturedUpvalues[2]     -- H[1]：提供toggled/toggle/name
+    local colorButtonHost = capturedUpvalues[3] -- H[2]：提供.applebut颜色按钮
+
+    return function()
+        if not titleButtonHost.applebut then
+            return
+        end
+
+        applebutCfg.toggled = not applebutCfg.toggled
+
+        GUI:Button_setTitleText(
+            titleButtonHost.applebut,
+            applebutCfg.toggled and applebutCfg.toggle or applebutCfg.name
+        )
+
+        GUI:Button_setTitleColor(
+            colorButtonHost.applebut,
+            applebutCfg.toggled and "#ff0000" or "#ffffff"
+        )
+    end
+end
