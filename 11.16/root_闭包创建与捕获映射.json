@@ -1090,7 +1090,9 @@
           "slot": 336,
           "opcode": 243,
           "sourceRegister": 41,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "source_symbol": "root N[41]：候选列表引用（原始局部变量名未知）",
+          "source_evidence": "root/0完整37槽指令流将H[0]用于ipairs遍历，并读取每项.name；父级root槽335创建闭包，槽336捕获N[41]。明文保留捕获代理，不臆造N[41]的原始变量名。"
         }
       ]
     },
