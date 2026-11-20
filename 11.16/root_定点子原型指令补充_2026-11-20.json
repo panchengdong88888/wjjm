@@ -3834,6 +3834,625 @@
         }
       ],
       "children": []
+    },
+    {
+      "path": "root/52/24",
+      "depth": 2,
+      "constant_count": 18,
+      "constants": [
+        "buygold110Timer",
+        "SL",
+        "已停止丢物品、拾取和购买金条",
+        "shiquTimer",
+        "UnSchedule",
+        "diuqibut",
+        "#ffffff",
+        "buygoldTimer",
+        "shiqubut",
+        "Button_setTitleText",
+        "GUI",
+        false,
+        "Button_setTitleColor",
+        "isDiuing",
+        "dropallbut",
+        "开丢全部",
+        "dropTimer",
+        {
+          "unknown_type": 2
+        }
+      ],
+      "child_count": 0,
+      "parameter_count": 0,
+      "instruction_count": 76,
+      "instructions": [
+        {
+          "slot": 1,
+          "flag": 64,
+          "opcode": 324,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 2,
+          "flag": 224,
+          "opcode": 274,
+          "A": 0,
+          "C": 17
+        },
+        {
+          "slot": 3,
+          "flag": 192,
+          "opcode": 60,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 4,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 13,
+          "C": null
+        },
+        {
+          "slot": 5,
+          "flag": 146,
+          "opcode": 253,
+          "B": 2,
+          "C": null
+        },
+        {
+          "slot": 6,
+          "flag": 224,
+          "opcode": 204,
+          "A": 0,
+          "C": 5
+        },
+        {
+          "slot": 7,
+          "flag": 0,
+          "opcode": 9,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 8,
+          "flag": 224,
+          "opcode": 96,
+          "A": 2,
+          "B": "SL",
+          "C": 17
+        },
+        {
+          "slot": 9,
+          "flag": 64,
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 10,
+          "flag": 0,
+          "opcode": 88,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 11,
+          "flag": 112,
+          "opcode": 114,
+          "B": "dropTimer",
+          "C": 18
+        },
+        {
+          "slot": 12,
+          "flag": 128,
+          "opcode": 88,
+          "A": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 13,
+          "flag": 176,
+          "opcode": 114,
+          "B": "isDiuing",
+          "C": 12
+        },
+        {
+          "slot": 14,
+          "flag": 192,
+          "opcode": 403,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 15,
+          "flag": 82,
+          "opcode": 295,
+          "A": "buygold110Timer",
+          "B": 6,
+          "C": null
+        },
+        {
+          "slot": 16,
+          "flag": 128,
+          "opcode": 110,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 17,
+          "flag": 64,
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 18,
+          "flag": 128,
+          "opcode": 9,
+          "A": 0,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 19,
+          "flag": 160,
+          "opcode": 96,
+          "A": 0,
+          "C": 15
+        },
+        {
+          "slot": 20,
+          "flag": 128,
+          "opcode": 289,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 21,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 33,
+          "C": null
+        },
+        {
+          "slot": 22,
+          "flag": 210,
+          "opcode": 105,
+          "B": 11,
+          "C": null
+        },
+        {
+          "slot": 23,
+          "flag": 224,
+          "opcode": 204,
+          "A": 0,
+          "C": 10
+        },
+        {
+          "slot": 24,
+          "flag": 192,
+          "opcode": 9,
+          "A": 2,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 25,
+          "flag": 160,
+          "opcode": 163,
+          "A": 2,
+          "B": "SL",
+          "C": 15
+        },
+        {
+          "slot": 26,
+          "flag": 18,
+          "opcode": 295,
+          "A": "已停止丢物品、拾取和购买金条",
+          "B": 16,
+          "C": null
+        },
+        {
+          "slot": 27,
+          "flag": 128,
+          "opcode": 128,
+          "A": 0,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 28,
+          "flag": 18,
+          "opcode": 253,
+          "B": 11,
+          "C": null
+        },
+        {
+          "slot": 29,
+          "flag": 32,
+          "opcode": 393,
+          "A": 0,
+          "C": 13
+        },
+        {
+          "slot": 30,
+          "flag": 128,
+          "opcode": 324,
+          "A": 2,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 31,
+          "flag": 96,
+          "opcode": 163,
+          "A": 2,
+          "B": "SL",
+          "C": 15
+        },
+        {
+          "slot": 32,
+          "flag": 18,
+          "opcode": 295,
+          "A": "已停止丢物品、拾取和购买金条",
+          "B": 7,
+          "C": null
+        },
+        {
+          "slot": 33,
+          "flag": 128,
+          "opcode": 128,
+          "A": 0,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 34,
+          "flag": 128,
+          "opcode": 9,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 35,
+          "flag": 96,
+          "opcode": 274,
+          "A": 0,
+          "C": 4
+        },
+        {
+          "slot": 36,
+          "flag": 128,
+          "opcode": 289,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 37,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 44,
+          "C": null
+        },
+        {
+          "slot": 38,
+          "flag": 18,
+          "opcode": 253,
+          "B": 2,
+          "C": null
+        },
+        {
+          "slot": 39,
+          "flag": 96,
+          "opcode": 204,
+          "A": 0,
+          "C": 5
+        },
+        {
+          "slot": 40,
+          "flag": 0,
+          "opcode": 324,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 41,
+          "flag": 32,
+          "opcode": 274,
+          "A": 2,
+          "B": "SL",
+          "C": 4
+        },
+        {
+          "slot": 42,
+          "flag": 0,
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 43,
+          "flag": 192,
+          "opcode": 127,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 44,
+          "flag": 240,
+          "opcode": 322,
+          "B": "shiquTimer",
+          "C": 18
+        },
+        {
+          "slot": 45,
+          "flag": 128,
+          "opcode": 234,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 46,
+          "flag": 18,
+          "opcode": 295,
+          "A": "buygold110Timer",
+          "B": 9,
+          "C": null
+        },
+        {
+          "slot": 47,
+          "flag": 0,
+          "opcode": 110,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 48,
+          "flag": 192,
+          "opcode": 123,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 49,
+          "flag": 192,
+          "opcode": 9,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 50,
+          "flag": 96,
+          "opcode": 274,
+          "A": 0,
+          "C": 8
+        },
+        {
+          "slot": 51,
+          "flag": 192,
+          "opcode": 60,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 52,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 59,
+          "C": null
+        },
+        {
+          "slot": 53,
+          "flag": 210,
+          "opcode": 253,
+          "B": 2,
+          "C": null
+        },
+        {
+          "slot": 54,
+          "flag": 160,
+          "opcode": 204,
+          "A": 0,
+          "C": 5
+        },
+        {
+          "slot": 55,
+          "flag": 64,
+          "opcode": 9,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 56,
+          "flag": 96,
+          "opcode": 410,
+          "A": 2,
+          "B": "SL",
+          "C": 8
+        },
+        {
+          "slot": 57,
+          "flag": 192,
+          "opcode": 123,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 58,
+          "flag": 64,
+          "opcode": 88,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 59,
+          "flag": 240,
+          "opcode": 322,
+          "B": "buygoldTimer",
+          "C": 18
+        },
+        {
+          "slot": 60,
+          "flag": 64,
+          "opcode": 9,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 61,
+          "flag": 224,
+          "opcode": 410,
+          "A": 0,
+          "C": 1
+        },
+        {
+          "slot": 62,
+          "flag": 128,
+          "opcode": 340,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 63,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 70,
+          "C": null
+        },
+        {
+          "slot": 64,
+          "flag": 82,
+          "opcode": 146,
+          "B": 2,
+          "C": null
+        },
+        {
+          "slot": 65,
+          "flag": 32,
+          "opcode": 204,
+          "A": 0,
+          "C": 5
+        },
+        {
+          "slot": 66,
+          "flag": 192,
+          "opcode": 324,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 67,
+          "flag": 224,
+          "opcode": 410,
+          "A": 2,
+          "B": "SL",
+          "C": 1
+        },
+        {
+          "slot": 68,
+          "flag": 192,
+          "opcode": 123,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 69,
+          "flag": 0,
+          "opcode": 88,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 70,
+          "flag": 112,
+          "opcode": 322,
+          "B": "buygold110Timer",
+          "C": 18
+        },
+        {
+          "slot": 71,
+          "flag": 192,
+          "opcode": 403,
+          "A": 0,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 72,
+          "flag": 210,
+          "opcode": 295,
+          "A": "buygold110Timer",
+          "B": 3,
+          "C": null
+        },
+        {
+          "slot": 73,
+          "flag": 0,
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 74,
+          "flag": 128,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 75,
+          "flag": 128,
+          "opcode": 292,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 76,
+          "flag": 192,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        }
+      ],
+      "extraction_note": "2026-11-20从原版载荷定点提取；完整消费142522字节；S()真实指令头解析，保留空槽与常量替换字段。"
     }
   ],
   "closure_events": [
