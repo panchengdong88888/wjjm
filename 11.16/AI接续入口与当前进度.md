@@ -1471,3 +1471,11 @@
 函数状态CSV已同步更新root/22、root/45。当前完整静态恢复由53/162增至55/162（33.95%）；业务功能累计由71/162增至73/162（45.06%）。本轮按用户要求不进行语法/API/运行验证。
 
 下一批优先处理root/34 BlacklistPlayerDetection、root/6 MainLoop及root/55 Builtsetting、root/67 ShowHideAllButtons；继续按旧版业务体迁移与本版状态字段接入，优先推进代码数量，不为验证而停顿。
+
+### 2026-11-20续接增量：三函数批量迁移完成
+- 新增写入唯一明文：root/6 MainLoop、root/34 BlacklistPlayerDetection、root/67 ShowHideAllButtons。
+- root/6复用旧版引怪状态机；root/34按本版gamePlayerController主玩家对象及玩家对象坐标接口接线；root/67补入本版新增定时器清理和NetworkUtil回调恢复。
+- 函数状态CSV与原型索引同步更新。
+- 当前完整静态恢复58/162（35.80%）；业务功能累计76/162（46.91%）。
+- 下一项root/55 Builtsetting：优先恢复旧版基础设置，再补本版SETTING_CONFIG、HP保护优先级、PKMODE等扩展；不要将旧版六项短实现当作完整新版函数。
+- 不做AI阶段验证；用户后续APK实测。
