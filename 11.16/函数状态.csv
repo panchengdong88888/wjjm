@@ -1,5 +1,5 @@
 "序号","原型路径","父原型","深度","候选函数名","身份状态","参数数","常量数","子原型数","指令数","恢复状态","证据/常量线索","明文位置","未决问题","最后更新"
-"0","root","","0","","待识别","0","202","81","654","未恢复","TakeItems | 在线时长10分钟 | distance | 自动拾取 | lastAttacker | 羊·[普通] | 累计登录 6 天 | SendHookList | _G | a","","","2026-11-18"
+"0","root","","0","","待识别","0","202","81","654","完整物理指令流已导出；闭包创建/捕获映射待分析","TakeItems | 在线时长10分钟 | distance | 自动拾取 | lastAttacker | 羊·[普通] | 累计登录 6 天 | SendHookList | _G | a","","","2026-11-18"
 "1","root/0","root","1","","待识别","1","8","0","37","未恢复","math | insert | table | lastMapName | ipairs | name | random","","","2026-11-18"
 "2","root/1","root","1","","待识别","0","24","0","76","未恢复","新区使用：%s | BAG_DATA | ShowSystemTips | pairs | MSG_CS_USE_BAG_ITEM | Gbtc | len | MsgType | LuaSendMsg | SL","","","2026-11-18"
 "3","root/2","root","2","DiuItems","跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）","1","100","3","226","业务函数体已写入明文；H[0]/H[1]父级捕获身份待确认（部分恢复）","GetDroppedItems | isDiuing | BAG_DATA | ITEM_IS_BIND | LuaSendMsg | MSG_CS_MAP_ITEM_DISCARD","MainLeftBottom_11.16_明文.lua","226/226槽位CFG闭合；DiuItems(mode)已按本版分支重写。H[0]状态对象、H[1]提示回调的父级词法来源未确认，不能计完整函数。","2026-11-19"
