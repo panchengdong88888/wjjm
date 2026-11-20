@@ -63,7 +63,7 @@
 61,root/43,root,1,PickUpItems,高置信身份确认（11.9同职责实现172指令与本版172指令同规模；名称/字段/接口常量吻合）,0,34,2,172,已写入明文（跨版本主体复用并接入本版排序闭包）,MoveTo | mCurrMapX | y | ipairs | x | mCurrMapY | dist | 地面无可拾取物品 | sort | find | PickMainPlayerPosItem | GetDroppedItems | PlayerPos | dropItemController,MainLeftBottom_11.16_明文.lua,普通排序比较使用本版root/43/1已恢复的a.dist >= b.dist；优先排序比较器按旧版同职责kIdx/dist规则迁移,2026-11-20
 62,root/43/0,root/43,2,comparePreferredItems（按职责命名）,匿名排序闭包（与11.9同职责闭包复用；比较kIdx后比较dist）,2,2,0,19,已写入明文,常量kIdx/dist；先比较kIdx升序，相等时比较dist升序,MainLeftBottom_11.16_明文.lua,闭包已内联于PickUpItems的table.sort优先物品比较器,2026-11-20
 63,root/43/1,root/43,2,closure_root_43_1,匿名闭包（行为已恢复）,2,1,0,8,已写入明文,dist,MainLeftBottom_11.16_明文.lua,比较两个对象的dist字段：当a.dist小于b.dist时返回false，否则返回true（a.dist >= b.dist）,2026-11-18
-64,root/44,root,1,,职责已缩小；函数名待识别,3,10,0,29,未恢复,将三个参数组织成price/name/mode格式文本，并调用FileUtilCtl.writeStringToFile写入可写目录；格式串为price=%s、name=%s、mode=%s。,,函数声明名及三个参数的确切语义/文件名尚未确认；不按职责猜命名。
+64,root/44,root,1,,合成定位名helper_root_44,3,10,0,29,已恢复,将三个参数转为字符串并按price/name/mode格式写入FileUtilCtl可写路径；原始文件名分支细节待实测。,,原始声明名及模式对应的路径/文件名分支未确认；未做运行验证。
 name=%s
 mode=%s
  | format",,,"2026-11-18
