@@ -3497,3 +3497,24 @@ local function helper_root_52_1(timerState, featureState, printLog)
         featureState.isBlacklisting = false
     end
 end
+
+-- ============================================================================
+-- 11.16 root/52/2：显示/隐藏主界面按钮回调（30条指令，0个显式参数）。
+-- 合成定位名；11.16常量包含显示/隐藏提示、hidebut、hide/show、isHidden、
+-- GUI:setOpacity及透明度255/0，与11.9同职责回调结构吻合。
+-- 捕获对象按旧版对应关系接入MainLeftBottom.a与PrintLog；本版捕获槽位顺序
+-- 未单独闭合，故此处采用显式工厂参数，不宣称原始upvalue槽位已确认。
+-- ============================================================================
+local function helper_root_52_2(mainLeftBottomA, printLog)
+    return function()
+        if mainLeftBottomA.isHidden then
+            printLog("显示所有按钮")
+            mainLeftBottomA:show()
+            GUI:setOpacity(mainLeftBottomA.hidebut, 255)
+        else
+            printLog("隐藏所有按钮")
+            mainLeftBottomA:hide()
+            GUI:setOpacity(mainLeftBottomA.hidebut, 0)
+        end
+    end
+end
