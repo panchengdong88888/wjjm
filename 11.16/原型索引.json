@@ -5066,7 +5066,7 @@
       "parameter_count": 0,
       "instruction_count": 21,
       "candidate_name": "helper_root_60（合成定位名）",
-      "identity_status": "闭包体及唯一实际读取的H[0]父级来源已确认；变量语义名待确认",
+      "identity_status": "闭包体与唯一实际读取的父级共享槽位已确认；原始变量符号名未恢复但不影响完整静态恢复",
       "constants": [
         "PlayerInputProxy",
         "ClearAttackTargetID",
@@ -5076,8 +5076,8 @@
         "Facade"
       ],
       "upvalue_count": 6,
-      "recovery_status": "部分恢复（闭包体已恢复，捕获来源待确认）",
-      "recovery_notes": "21槽已闭合。root槽519 Opcode121创建root/60，槽520 Opcode243捕获父级N[76]到H[0]；索引upvalue_count=6与创建点captureCount=1存在旧索引差异，按实际创建点只确认1项。H[0]为一次性状态门控：真值时清空共享upvalue；随后获取PlayerInputProxy，代理及ClearAttackTargetID成员存在时无参调用。N[76]在父级前序分支中复用，业务语义名暂不猜。"
+      "recovery_status": "已写入明文（本版21条指令及唯一实际读取的捕获来源完整恢复）",
+      "recovery_notes": "21/21槽控制流闭合。root槽519 Opcode121创建root/60，槽520 Opcode243捕获父级N[76]到H[0]。函数先检查共享槽位，为真时将其清空；随后获取PlayerInputProxy，代理及ClearAttackTargetID成员存在时无参调用。upvalue_count=6与创建点captureCount=1不一致，按实际创建点仅确认H[0]；未读取的其余5个槽不臆造。明文用capturedUpvalues[0]保留真实共享槽位，原始业务变量名未知不妨碍静态完整恢复。"
     },
     {
       "preorder_id": 139,
