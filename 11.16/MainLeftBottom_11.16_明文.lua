@@ -3415,7 +3415,8 @@ local function helper_root_33_1(capturedUpvalues)
     end
 
     if state.putoutTicks >= 40 and #putList == 0 then
-        showLocalNoticeByType("下架完成：已无上架物品")
+        SL:ShowSystemTips("下架完成：已无上架物品")
+        SL:ShowSystemTips("下架结束")
         return
     end
 end
