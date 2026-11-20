@@ -1730,4 +1730,4 @@
 
 ## 2026-11-20续接：root/15/1 slot36–70循环体已闭合
 
-重要字段规则：root/15特殊导出记录真实VM Opcode在A字段，B/C/D是操作数；JSON的`opcode`字段不是F()分派码。上一轮把0–14当Opcode的错误结论已撤销。slot36–70现在已按F()闭合：slot36初次跳到slot69；slot69 Opcode250推进pairs(BAG_DATA)，slot70回跳slot37；slot37检查item存在；slot39/40筛MakeIndex；slot42/43筛Name；slot45–47准备string.find；slot48–52执行名称包含筛选；slot54–59调用SL.GetMetaValue("ITEM_IS_BIND", item)并排除绑定物品；slot61–68读取OverLap，tonumber失败时数量回退1。slot33–35为pairs迭代器初始化。详细Opcode与融合边界见进度账本和Opcode语义映射文档。本轮只闭合循环，不增加完整恢复数；接下来继续slot1–35和slot71–121。
+重要字段规则：root/15特殊导出记录真实VM Opcode在A字段，B/C/D是操作数；JSON的`opcode`字段不是F()分派码。上一轮把0–14当Opcode的错误结论已撤销。slot36–70现在已按F()闭合：slot36初次跳到slot69；slot69 Opcode250推进pairs(BAG_DATA)，slot70回跳slot37；slot37检查item存在；slot39/40筛MakeIndex；slot42/43筛Name；slot45–47准备string.find；slot48–52执行名称包含筛选；slot54–58调用SL.GetMetaValue("ITEM_IS_BIND", item)；slot59按D=1检查结果，绑定为真时执行slot60跳到下一轮，绑定为假时跳过该跳转并继续数量处理，因此排除绑定物品；slot61–68读取OverLap，tonumber失败时数量回退1。slot33–35为pairs迭代器初始化。详细Opcode与融合边界见进度账本和Opcode语义映射文档。本轮只闭合循环，不增加完整恢复数；接下来继续slot1–35和slot71–121。
