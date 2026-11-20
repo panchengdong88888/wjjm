@@ -325,6 +325,124 @@ local function helper_root_72(searchText)
 end
 
 
+-- 11.16 root/79：forgeZodiac（212条物理指令；0个显式参数；12个捕获值）。
+-- 定时回调状态位于MainLeftBottom.z.forgeZodiac。
+-- 捕获映射：H[0]=MainLeftBottom.z；H[1]=checkGold；H[2]=ForgeZodiacToggleHandler；
+-- H[3]=PrintLog；H[4]/H[5]=移动坐标151/144；H[6]/H[7]=NPC index 41/UserID 10030；
+-- H[8]=十二生肖普通装备名称表；H[9]=helper_root_53；H[10]=helper_root_72；H[11]=Nested_find。
+local function forgeZodiac()
+    local state = MainLeftBottom.z.forgeZodiac
+    if not state then
+        return
+    end
+
+    state.ticks = (state.ticks or 0) + 1
+    local mapName = GetMapName()
+
+    -- 检查金币并发起前往神龍之都的请求。
+    if state.state == "checkGold" then
+        if checkGold() < 2500000 then
+            ForgeZodiacToggleHandler("金币不足250W，停止锻造")
+            return
+        end
+
+        state.state = "toShenlong"
+        state.ticks = 0
+        LuaSendMsg(9002, 80101, 1, 2, 3, "神龍之都", 12)
+        PrintLog("前往神龍之都锻造生肖")
+        return
+    end
+
+    -- 等待地图切换；超时后重新发送地图请求。
+    if state.state == "toShenlong" then
+        if string.find(mapName, "神龍之都") then
+            state.state = "walkNpc"
+            state.ticks = 0
+        elseif state.ticks >= 50 then
+            state.ticks = 0
+            LuaSendMsg(9002, 80101, 1, 2, 3, "神龍之都", 12)
+        end
+        return
+    end
+
+    -- 移动到NPC并发送交互数据。
+    if state.state == "walkNpc" then
+        MoveTo(151, 144, 8)
+        local npcData = string.format('{"index":%d,"UserID":"%s"}', 41, "10030")
+        LuaSendMsg(9002, 10004, 1, 2, 3, npcData, string.len(npcData))
+        state.state = "clickNpc"
+        state.ticks = 0
+        return
+    end
+
+    -- 点击NPC后至少等待5个回调tick，再开始生肖装备检测。
+    if state.state == "clickNpc" then
+        if state.ticks >= 5 then
+            state.state = "forge"
+            state.ticks = 0
+            state.tryCount = 0
+            state.forgeNextTick = {}
+            PrintLog("开始持续检测生肖装备")
+        end
+        return
+    end
+
+    if state.state ~= "forge" then
+        return
+    end
+
+    -- 生肖扫描每5个回调tick执行一次。
+    if state.ticks % 5 ~= 0 then
+        return
+    end
+
+    local zodiacNames = {
+        "鼠·[普通]", "牛·[普通]", "虎·[普通]", "兔·[普通]",
+        "龙·[普通]", "蛇·[普通]", "马·[普通]", "羊·[普通]",
+        "猴·[普通]", "鸡·[普通]", "狗·[普通]", "猪·[普通]",
+    }
+
+    local zodiacName
+    local prefix
+    for _, name in ipairs(zodiacNames) do
+        local namePrefix = helper_root_53(name)
+        if not helper_root_72(namePrefix) then
+            zodiacName = name
+            prefix = namePrefix
+        end
+    end
+
+    if not zodiacName then
+        ForgeZodiacToggleHandler("生肖锻造完毕")
+        return
+    end
+
+    -- 若背包中已有对应生肖装备，则先使用该物品。
+    local item = Nested_find(prefix)
+    if item then
+        SL.UseItemByIndex(item.Index)
+        PrintLog("使用背包生肖装备：" .. item.Name)
+    end
+
+    -- 每个生肖名称前缀独立设置30 tick节拍。
+    state.forgeNextTick = state.forgeNextTick or {}
+    local nextTick = state.forgeNextTick[prefix]
+    if nextTick and state.ticks < nextTick then
+        return
+    end
+    state.forgeNextTick[prefix] = state.ticks + 30
+
+    state.tryCount = (state.tryCount or 0) + 1
+    if state.tryCount > 200 then
+        ForgeZodiacToggleHandler("生肖锻造未完成，已尝试200次")
+        return
+    end
+
+    LuaSendMsg(9002, 10004, 1, 2, 3, zodiacName, string.len(zodiacName))
+    PrintLog("锻造生肖：" .. zodiacName .. " 第" .. state.tryCount .. "次")
+end
+
+
 -- 11.16 root/23/0：3条物理指令、无参数、无upvalue捕获。
 -- 父级root/23在槽位23通过Opcode387创建childIndex=0闭包，captureCount=0。
 -- Opcode105从全局环境读取MainLoop；Opcode128无参数调用；Opcode205结束。
