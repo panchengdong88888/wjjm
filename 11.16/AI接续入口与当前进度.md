@@ -1634,3 +1634,11 @@
 - root/11的父级闭包创建证据已补入函数状态CSV：root槽540创建root/11，槽541–546捕获N[3]/N[74]/N[75]/N[79]/N[0]/N[5]；root N[3]=MainLeftBottom.z。其业务职责候选是关闭见人跑/停止巡航，但真实导出名和子指令流仍待补齐。
 - root/35是32槽、0参数、0捕获，常量指向关闭Layer_CommonTips提示层；root/41是28槽、1参数、0捕获，常量指向AFKBegin/AFKEnd及BATTLE_IS_AFK状态通知。以上仅为职责线索，未写入唯一明文。
 - 不重做root/79及已恢复函数。下一步需要补齐目标子原型指令流；如果没有新指令数据，就转向当前已提取但仍部分恢复的候选闭包，优先完成能闭合父级捕获映射的项目。
+
+
+## 2026-11-20续接：root/32捕获映射已闭合
+
+- root/32不再是捕获来源未知：root槽522 Opcode178创建，槽523–525依次捕获N[75]/N[5]/N[0]。N[75]在槽517初始化false，为一次性提示门控；N[5]是root/80 `ShowLocalNoticeByType`；N[0]是`MainLeftBottom`模块表。
+- root/32完整行为：门控为真时置false并调用`ShowLocalNoticeByType('见人跑：'..参数)`；随后`MainLeftBottom.cruiseGatherPaused=false`并调用`MainLeftBottom.zd(true)`。唯一明文注释和原型索引/CSV/闭包映射已同步，静态完整恢复计数增加1。
+- root/60父级创建点也已确认：root槽519 Opcode121创建，槽520捕获N[76]。其H[0]具体业务变量身份仍待确认，不伪造名称。
+- 当前统计：完整静态恢复69/162（42.59%）；业务功能累计恢复86/162（53.09%）。
