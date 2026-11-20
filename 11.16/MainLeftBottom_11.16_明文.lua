@@ -3190,3 +3190,63 @@ local function closure_root_15_0(capturedUpvalues, messageOrType)
     showLocalNoticeByType(messageOrType)
     SL:ShowSystemTips(messageOrType)
 end
+
+-- 11.16 root/15：拍卖行金条上架入口（87条物理指令，3个显式参数，5个捕获值）。
+-- 捕获映射：H[0]=父级root N[40]（当前入口主体不直接解释其原始名称）；
+-- H[1]=MainLeftBottom.z；H[2]=ShowLocalNoticeByType；
+-- H[3]=PrintLog；H[4]=Schedule。
+-- 参数按本版寄存器用途命名：unitPrice=N[0]、currencyName=N[1]、
+-- useStackQuantity=N[2]。回调由H[0]装入N[3]并传给root/15/1。
+-- root/15/1和root/15/0均已独立恢复，以下只负责初始化、旧定时器清理和启动上架轮询。
+
+local function startPutinGold(capturedUpvalues, unitPrice, currencyName, useStackQuantity)
+    local state = capturedUpvalues[2]
+    local showLocalNoticeByType = capturedUpvalues[3]
+    local printLog = capturedUpvalues[4]
+    local schedule = capturedUpvalues[5]
+
+    currencyName = currencyName or "金条"
+
+    -- 原始入口先处理拍卖行货币状态；货币未就绪时提示并终止本次上架。
+    local auctionMoney = SL:GetMetaValue("AUCTION_MONEY")
+    if not auctionMoney then
+        SL:ShowSystemTips("未获取到拍卖行货币")
+        return
+    end
+
+    local minimumPrice = tonumber(SL:GetMetaValue("AUCTION_BIDPRICE_MIN")) or 0
+    if unitPrice < minimumPrice then
+        SL:ShowSystemTips(string.format("单价不能低于 %d", minimumPrice))
+        return
+    end
+
+    -- 清理上一轮下架任务，避免新上架与旧下架轮询并行。
+    if state.putoutTimer then
+        SL:UnSchedule(state.putoutTimer)
+        state.putoutTimer = nil
+        state.putoutSent = false
+    end
+
+    -- 清理上一轮上架任务。
+    if state.putinTimer then
+        SL:UnSchedule(state.putinTimer)
+        state.putinTimer = nil
+    end
+
+    local callback = capturedUpvalues[1]
+    local putinCallback = closure_root_15_1({
+        SL,
+        currencyName,
+        useStackQuantity,
+        unitPrice,
+        printLog,
+        callback,
+    })
+
+    SL:RequestAuctionPutList(1)
+
+    local message = "开始上架" .. currencyName .. "，单价：" .. tostring(unitPrice)
+    SL:ShowSystemTips(message)
+
+    state.putinTimer = schedule(putinCallback, 0.1)
+end
