@@ -2225,8 +2225,8 @@
       "child_count": 2,
       "parameter_count": 0,
       "instruction_count": 56,
-      "candidate_name": "startPutoutAll（高置信候选）",
-      "identity_status": "高置信候选（root/52/30无参回调直接调用该全局名；父root导出点待确认）",
+      "candidate_name": "startPutoutAll",
+      "identity_status": "函数身份及全局导出名已由本版root指令确认；函数体指令流尚未提取",
       "constants": [
         "putinTimer",
         "Facade",
@@ -2249,7 +2249,9 @@
         {
           "unknown_type": 2
         }
-      ]
+      ],
+      "recovery_status": "未恢复（缺少root/33的56条本版子原型指令）",
+      "recovery_notes": "root槽294 Opcode121创建root/33闭包并捕获4项；槽295–298依次捕获父级N[3]/N[5]/N[4]/N[7]；槽299 Opcode0以常量键startPutoutAll将N[41]闭包写入全局环境，确认导出名为startPutoutAll。root/33自身56条指令未出现在当前候选完整指令提取中，不能据子闭包root/33/0或常量池伪造函数体。"
     },
     {
       "preorder_id": 49,
@@ -5492,14 +5494,14 @@
       "parameter_count": 1,
       "instruction_count": 10,
       "candidate_name": "FormatStateChange（高置信候选）",
-      "identity_status": "高置信同职责候选；父级捕获来源待确认",
+      "identity_status": "函数身份与父级捕获来源已确认",
       "constants": [
         "format",
         "状态切换: %s -> %s",
         "string"
       ],
-      "recovery_status": "函数体部分恢复；捕获身份未闭合，不计完整函数。",
-      "note": "10条物理指令已逐条闭合：Opcode264固定参数调用并收集返回值；Opcode376可变参数调用；Opcode62将新状态写回H[1]。H[0]既作为string.format第一个格式参数又作为被调用目标，忠实保留此寄存器行为。root层闭包创建点未保存，H[0]/H[1]真实词法来源待确认；明文以VM上值代理占位表达，不计入完整函数。",
+      "recovery_status": "已写入明文（本版10条指令及2项捕获均完整）",
+      "note": "10条物理指令逐条闭合；root槽183创建本闭包，槽184捕获N[4]=PrintLog，槽185捕获N[14]=当前状态值。函数格式化旧状态/新状态提示，调用PrintLog，再将新状态写回共享upvalue。",
       "business_summary": "状态切换提示格式化及共享状态写回；唯一格式串“状态切换: %s -> %s”与旧版FormatStateChange一致，但root层H[0]/H[1]捕获来源尚未确认。"
     },
     {
