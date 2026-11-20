@@ -165,5 +165,5 @@ mode=%s
 157,root/76,root,1,,职责已缩小；函数名待识别,0,8,0,25,未恢复,读取SL:GetMetaValue('AUCTION_MONEY')，遍历含name/id字段的配置项，并与“元宝”名称相关联；属于拍卖货币配置查询。,,函数声明名、是否返回id或配置项尚未由完整指令流确认。,2026-11-18
 158,root/77,root,1,GetMainPlayerID,本轮已恢复,0,3,0,6,已写入明文,gamePlayerController | GetMainPlayerID | global,MainLeftBottom_11.16_明文.lua,,2026-11-18
 159,root/78,root,1,Schedule,跨版本高置信候选（11.2包装函数与11.16 SL方法调用形状吻合；本体为官方API包装）,2,2,0,7,已写入明文,SL | Schedule | Opcode 369融合方法准备与两个参数寄存器移动；Opcode 202直接返回调用结果,MainLeftBottom_11.16_明文.lua,原始符号名未确认；return后的尾部槽位不可达,2026-11-18
-160,root/79,root,1,forgeZodiac,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,48,0,212,未恢复,SL |  第 | checkGold | forge | len | format | clickNpc | 生肖锻造未完成，已尝试200次 | Name | LuaSendMsg,,,2026-11-18
+160,root/79,root,1,forgeZodiac,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,48,0,212,未恢复,父root槽386创建，captureCount=12；H[0]=MainLeftBottom.z、H[1]=checkGold、H[2]=root/14 ForgeZodiacToggleHandler、H[3]=root/51 PrintLog、H[8]=十二生肖名称列表、H[9]=root/53前缀提取、H[10]=root/72装备名称检索、H[11]=root/30 Nested_find；H[4..7]仍待映射。 | SL |  第 | checkGold | forge | len | format | clickNpc | 生肖锻造未完成，已尝试200次 | Name | LuaSendMsg,,,2026-11-18
 161,root/80,root,1,ShowLocalNoticeByType,高置信候选,1,14,0,15,已写入明文,screenH | ShowLocalNoticeByType | Type=10 | Msg=参数1 | FColor=249 | BColor=0 | X=5 | Y=screenH-50 | SL,MainLeftBottom_11.16_明文.lua,,2026-11-18
