@@ -367,11 +367,12 @@ local function forgeZodiac()
 
     -- 移动到NPC并发送交互数据。
     if state.state == "walkNpc" then
-        MoveTo(151, 144, 8)
-        local npcData = string.format('{"index":%d,"UserID":"%s"}', 41, "10030")
-        LuaSendMsg(9002, 10004, 1, 2, 3, npcData, string.len(npcData))
-        state.state = "clickNpc"
-        state.ticks = 0
+        if MoveTo(151, 144, 8) then
+            local npcData = string.format('{"index":%d,"UserID":"%s"}', 41, "10030")
+            LuaSendMsg(9002, 1010, 0, 0, 0, 0, npcData, string.len(npcData))
+            state.state = "clickNpc"
+            state.ticks = 0
+        end
         return
     end
 
