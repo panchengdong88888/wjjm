@@ -3945,21 +3945,23 @@ local function MakeRewardButtonHandler_11_16(
     rewardEntries,
     scheduleInterval
 )
-    if timerState.rewardTimer then
-        printLog("关闭奖励功能")
-        SL:UnSchedule(timerState.rewardTimer)
-        timerState.rewardTimer = nil
+    return function()
+        if timerState.rewardTimer then
+            printLog("关闭奖励功能")
+            SL:UnSchedule(timerState.rewardTimer)
+            timerState.rewardTimer = nil
+            return true
+        end
+
+        printLog("开启奖励功能")
+        local callback = MakeRewardTimerCallback_11_16(
+            0,
+            modulus,
+            rewardEntries
+        )
+        timerState.rewardTimer = SL:Schedule(callback, scheduleInterval)
         return true
     end
-
-    printLog("开启奖励功能")
-    local callback = MakeRewardTimerCallback_11_16(
-        0,
-        modulus,
-        rewardEntries
-    )
-    timerState.rewardTimer = SL:Schedule(callback, scheduleInterval)
-    return true
 end
 
 
@@ -3988,29 +3990,31 @@ local function MakeDropMode2ButtonHandler_11_16(
     schedule,
     buttonItems
 )
-    if timerState.dropTimer and timerState.dropMode == 2 then
-        printLog("关闭丢弃物品")
-        SL:UnSchedule(timerState.dropTimer)
-        timerState.dropTimer = nil
-        featureState.isDiuing = false
-    else
-        if timerState.dropTimer then
+    return function()
+        if timerState.dropTimer and timerState.dropMode == 2 then
+            printLog("关闭丢弃物品")
             SL:UnSchedule(timerState.dropTimer)
             timerState.dropTimer = nil
+            featureState.isDiuing = false
+        else
+            if timerState.dropTimer then
+                SL:UnSchedule(timerState.dropTimer)
+                timerState.dropTimer = nil
+            end
+
+            timerState.dropMode = 2
+            printLog("开启丢弃物品(模式2)")
+            DiuItems(timerState.dropMode)
+
+            local callback = MakeDropMode2TimerCallback_11_16(timerState)
+            timerState.dropTimer = schedule(callback, 1.0)
         end
 
-        timerState.dropMode = 2
-        printLog("开启丢弃物品(模式2)")
-        DiuItems(timerState.dropMode)
-
-        local callback = MakeDropMode2TimerCallback_11_16(timerState)
-        timerState.dropTimer = schedule(callback, 1.0)
-    end
-
-    local button = buttonItems.dropallbut
-    if button then
-        GUI.Button_setTitleText(button, "开丢全部")
-        GUI.Button_setTitleColor(button, "#ffffff")
+        local button = buttonItems.dropallbut
+        if button then
+            GUI.Button_setTitleText(button, "开丢全部")
+            GUI.Button_setTitleColor(button, "#ffffff")
+        end
     end
 end
 
@@ -4067,12 +4071,14 @@ end
 -- 父级root/52槽147创建childIndex=7闭包，捕获父级寄存器5中的names配置数组。
 -- 每个配置项包含name与slot；从ITEM_INDEX_BY_NAME映射取得物品索引后调用全局MoveItemToQuickUse。
 local function MoveConfiguredQuickUseItems_11_16(names)
-    local itemIndexByName = SL:GetMetaValue("ITEM_INDEX_BY_NAME")
+    return function()
+        local itemIndexByName = SL:GetMetaValue("ITEM_INDEX_BY_NAME")
 
-    for _, itemConfig in ipairs(names) do
-        local itemIndex = itemIndexByName[itemConfig.name]
-        if itemIndex then
-            MoveItemToQuickUse(itemIndex, itemConfig.slot)
+        for _, itemConfig in ipairs(names) do
+            local itemIndex = itemIndexByName[itemConfig.name]
+            if itemIndex then
+                MoveItemToQuickUse(itemIndex, itemConfig.slot)
+            end
         end
     end
 end
@@ -4136,22 +4142,19 @@ end
 -- ============================================================================
 -- 父级root/52通过Opcode178创建该原型；捕获共享timerState。
 -- 已有检测句柄时不重复启动；否则输出提示并每0.5秒执行一次余额检查。
-local function MakeBuyGold500WButtonHandler_11_16(
-    timerState,
-    buyStoreItem,
-    showLocalNotice,
-    unusedCapturedFunction
-)
-    if timerState.buygoldTimer then
-        return
-    end
+local function MakeBuyGold500WButtonHandler_11_16(timerState)
+    return function()
+        if timerState.buygoldTimer then
+            return
+        end
 
-    PrintLog("开始检测金币(>500W买金条)")
-    local callback = MakeBuyGold500WTimerCallback_11_16(
-        buyStoreItem,
-        showLocalNotice,
-        timerState,
-        unusedCapturedFunction
-    )
-    timerState.buygoldTimer = SL:Schedule(callback, 0.5)
+        PrintLog("开始检测金币(>500W买金条)")
+        local callback = MakeBuyGold500WTimerCallback_11_16(
+            BuyStoreItem,
+            ShowLocalNoticeByType,
+            timerState,
+            PrintLog
+        )
+        timerState.buygoldTimer = SL:Schedule(callback, 0.5)
+    end
 end
