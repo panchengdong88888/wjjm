@@ -986,3 +986,12 @@ root/79由此确认按生肖名称前缀分别节流：缺少该前缀的时间�
 - slot138–143无未匹配项时调用H[2]并提示“生肖锻造完毕”。
 - slot144–157调用H[11](prefix)，将返回值作为物品对象读取Index和Name，并调用SL.UseItemByIndex(item.Index)。
 - 因此root/30 Nested_find必须返回首个匹配的BAG_DATA物品对象或nil；旧版“统计匹配数量”实现已由本版调用方证据推翻，并已修正唯一明文、原型索引及CSV。
+
+
+## root/79 slot191–212进度消息与提示融合段
+
+- Opcode130在slot197融合消费slot198：复制生肖名并装载string表。
+- slot199读取string.len；slot200复制生肖名；slot201调用string.len(zodiacName)；slot202 Opcode200调用LuaSendMsg。
+- 网络消息参数：`LuaSendMsg(9002, 10004, 1, 2, 3, zodiacName, string.len(zodiacName))`。
+- Opcode194在slot203读取H[3]=PrintLog，并融合消费slot204–206装载“锻造生肖：”、生肖名、“ 第”；slot207读取tryCount，slot208装载“次”，slot209拼接，slot210调用PrintLog。
+- 可读提示：`PrintLog("锻造生肖：" .. zodiacName .. " 第" .. state.tryCount .. "次")`。
