@@ -3250,3 +3250,25 @@ local function startPutinGold(capturedUpvalues, unitPrice, currencyName, useStac
 
     state.putinTimer = schedule(putinCallback, 0.1)
 end
+
+
+-- ============================================================================
+-- 11.16 root/76：拍卖货币ID查询（25条物理指令，0参数）。
+-- 原始符号名未确认，使用合成定位名helper_root_76。
+-- 读取AUCTION_MONEY配置，优先返回名称为“元宝”的条目ID；
+-- 未找到时返回配置列表第一项的ID。按本版Opcode分支/循环/返回槽整理。
+-- ============================================================================
+local function helper_root_76()
+    local auctionMoney = SL:GetMetaValue("AUCTION_MONEY")
+    if not auctionMoney then
+        auctionMoney = {}
+    end
+
+    for _, moneyInfo in ipairs(auctionMoney) do
+        if moneyInfo.name == "元宝" then
+            return moneyInfo.id
+        end
+    end
+
+    return auctionMoney[1].id
+end
