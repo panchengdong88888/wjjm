@@ -1009,27 +1009,36 @@
           "slot": 295,
           "opcode": 243,
           "sourceRegister": 3,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "source_symbol": "MainLeftBottom.z",
+          "source_evidence": "root N[3]由root/11创建点捕获链及root初始化证据确认为MainLeftBottom.z"
         },
         {
           "slot": 296,
           "opcode": 243,
           "sourceRegister": 5,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "source_symbol": "ShowLocalNoticeByType",
+          "source_evidence": "root N[5]由root槽46创建root/80闭包，身份为ShowLocalNoticeByType"
         },
         {
           "slot": 297,
           "opcode": 243,
           "sourceRegister": 4,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "source_symbol": "PrintLog",
+          "source_evidence": "root N[4]由root槽43创建root/51闭包，身份为PrintLog"
         },
         {
           "slot": 298,
           "opcode": 243,
           "sourceRegister": 7,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "source_symbol": "Schedule",
+          "source_evidence": "root N[7]由root槽55创建root/78闭包；root/78的7槽包装原型身份为Schedule"
         }
-      ]
+      ],
+      "evidence": " 四项父级捕获身份现已分别闭合：H[0]=MainLeftBottom.z、H[1]=ShowLocalNoticeByType、H[2]=PrintLog、H[3]=Schedule。"
     },
     {
       "createSlot": 333,
