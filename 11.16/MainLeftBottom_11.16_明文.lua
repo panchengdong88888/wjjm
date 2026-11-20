@@ -3420,3 +3420,25 @@ local function helper_root_33_1(capturedUpvalues)
         return
     end
 end
+
+
+-- ============================================================================
+-- 11.16 root/44：拍卖/价格模式文本写入辅助函数（29条物理指令，3个显式参数）。
+-- 原始函数名未确认，使用合成定位名helper_root_44。
+-- 已确认：三个参数分别转为字符串，按price/name/mode格式组织，
+-- 并通过FileUtilCtl.writeStringToFile写入getWritablePath取得的可写路径。
+-- 参数名仅按格式字段作中性命名；原始分支对应的文件名/模式细节待实测。
+-- ============================================================================
+local function helper_root_44(priceValue, itemName, modeValue)
+    local fileUtil = global.FileUtilCtl
+    local writablePath = fileUtil:getWritablePath()
+
+    local content = string.format(
+        "price=%s\nname=%s\nmode=%s\n",
+        tostring(priceValue),
+        tostring(itemName),
+        tostring(modeValue)
+    )
+
+    fileUtil:writeStringToFile(content, writablePath)
+end
