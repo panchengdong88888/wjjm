@@ -1170,7 +1170,7 @@
         "UnSchedule"
       ],
       "recovery_status": "已写入唯一明文（本版31条指令主体恢复；两个捕获槽保留代理，不计完整）",
-      "business_summary": "取消并清空MainLeftBottom.z.cruiseRunTimer；两个未命名捕获状态槽置false；调用root/60捕获回调清理目标；恢复巡航暂停状态；不在白名单地图时调用MainLeftBottom.zd(true)；提示关闭见人跑。"
+      "business_summary": "主体已恢复：清理巡航计时器、复位两个共享捕获槽、调用root/60回调清理目标、恢复巡航暂停状态、不在白名单地图时调用MainLeftBottom.zd(true)，提示关闭见人跑。H[1]=root N[74]，与root/25/0及其两个子闭包共享，为见人跑流程门控但变量原名未知；H[2]=root N[75]，亦被root/32作为一次性提示门控使用，原名未知。"
     },
     {
       "preorder_id": 16,
