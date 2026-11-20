@@ -3610,3 +3610,82 @@ local function helper_root_52_3_0(buyStoreItem, showLocalNotice, timerState, unu
         end
     end
 end
+
+-- ============================================================================
+-- 11.16 root/52/32/0：通用按钮点击回调（48条指令，0显式参数）。
+-- 合成定位名；对应11.9按钮工厂中的点击闭包。先按配置key分发回调；
+-- 只有回调明确返回false才中止；无toggle配置则直接返回，否则切换标题/颜色。
+-- ============================================================================
+local function helper_root_52_32_0(callbackMap, buttonConfig, button)
+    return function()
+        local callback = callbackMap[buttonConfig.key]
+        local allowed = true
+        if callback then
+            allowed = callback()
+        end
+
+        if allowed == false then
+            return
+        end
+        if not buttonConfig.toggle then
+            return
+        end
+
+        buttonConfig.toggled = not buttonConfig.toggled
+        GUI:Button_setTitleText(
+            button,
+            buttonConfig.toggled and buttonConfig.toggle or buttonConfig.name
+        )
+        GUI:Button_setTitleColor(
+            button,
+            buttonConfig.toggled and "#ff0000" or "#ffffff"
+        )
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/52/32：通用按钮创建回调（55条指令，3个显式参数）。
+-- 采用11.9同职责ButtonFactory主体；本版常量明确包含GUI按钮创建、标题、
+-- 字体、颜色、Cfg、toggle/toggled及addOnClickEvent。
+-- 五项捕获值按用途接入；原始upvalue槽位映射未在当前接续资料中单独闭合。
+-- ============================================================================
+local function helper_root_52_32(
+    uiParent,
+    baseX,
+    baseY,
+    visibleItems,
+    callbackMap,
+    buttonConfig,
+    rowIndex,
+    groupOffset
+)
+    local x = baseX - 85 * rowIndex
+    local y = baseY + groupOffset
+
+    local button = GUI:Button_Create(
+        uiParent,
+        buttonConfig.key,
+        x,
+        y,
+        "res/public/fuzhu_btn.png"
+    )
+    if not button then
+        return nil
+    end
+
+    visibleItems[buttonConfig.key] = button
+    GUI:Button_setTitleText(button, buttonConfig.name)
+    GUI:Button_setTitleFontSize(button, 18)
+    GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
+    GUI:Button_setTitleColor(button, "#ffffff")
+
+    if buttonConfig.toggle then
+        buttonConfig.toggled = false
+    end
+
+    GUI:addOnClickEvent(
+        button,
+        helper_root_52_32_0(callbackMap, buttonConfig, button)
+    )
+    return button
+end
