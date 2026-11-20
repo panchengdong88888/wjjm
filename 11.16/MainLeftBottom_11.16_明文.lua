@@ -3896,3 +3896,118 @@ local function make_startAppleMap(capturedUpvalues)
         return true
     end
 end
+
+
+-- ============================================================
+--  11.16 root/52/16：奖励功能按钮处理器（33条物理指令，0显式参数，5项捕获）
+-- ============================================================
+-- 父级root/52槽610创建闭包，5项捕获依次来自寄存器3、0、16、17、18：
+-- timerState、PrintLog、奖励循环取模基数、奖励记录表、Schedule周期。
+-- 本版函数体与11.9同职责MakeRewardButtonHandler结构一致；本版直接使用SL:Schedule。
+local function MakeRewardButtonHandler_11_16(
+    timerState,
+    printLog,
+    modulus,
+    rewardEntries,
+    scheduleInterval
+)
+    if timerState.rewardTimer then
+        printLog("关闭奖励功能")
+        SL:UnSchedule(timerState.rewardTimer)
+        timerState.rewardTimer = nil
+        return true
+    end
+
+    printLog("开启奖励功能")
+    local callback = MakeRewardTimerCallback_11_16(
+        0,
+        modulus,
+        rewardEntries
+    )
+    timerState.rewardTimer = SL:Schedule(callback, scheduleInterval)
+    return true
+end
+
+
+-- ============================================================
+--  11.16 root/52/16/0：奖励协议循环回调（22条物理指令，0显式参数，3项捕获）
+-- ============================================================
+-- 父函数在root/52/16槽24创建该闭包；捕获初始计数0、modulus、rewardEntries。
+-- 每次触发递增计数，按取模结果选择奖励记录，并发送9002协议。
+local function MakeRewardTimerCallback_11_16(
+    initialCounter,
+    modulus,
+    rewardEntries
+)
+    local counter = initialCounter
+
+    return function()
+        counter = counter + 1
+        local entryIndex = ((counter - 1) % modulus) + 1
+        local entry = rewardEntries[entryIndex]
+
+        if entry then
+            LuaSendMsg(
+                9002,
+                entry[1],
+                1,
+                2,
+                3,
+                entry[2],
+                entry[3]
+            )
+        end
+    end
+end
+
+
+-- ============================================================
+--  11.16 root/52/18：模式2自动丢弃按钮处理器（65条物理指令，0显式参数，5项捕获）
+-- ============================================================
+-- 父级root/52槽643创建闭包，捕获寄存器3、0、1、7、5：
+-- H[0]=timerState；H[1]=PrintLog；H[2]=featureState；
+-- H[3]=Schedule包装函数；H[4]=按钮映射表（含dropallbut）。
+-- 子闭包root/52/18/0捕获timerState，用于周期执行DiuItems(timerState.dropMode)。
+local function MakeDropMode2ButtonHandler_11_16(
+    timerState,
+    printLog,
+    featureState,
+    schedule,
+    buttonItems
+)
+    if timerState.dropTimer and timerState.dropMode == 2 then
+        printLog("关闭丢弃物品")
+        SL:UnSchedule(timerState.dropTimer)
+        timerState.dropTimer = nil
+        featureState.isDiuing = false
+    else
+        if timerState.dropTimer then
+            SL:UnSchedule(timerState.dropTimer)
+            timerState.dropTimer = nil
+        end
+
+        timerState.dropMode = 2
+        printLog("开启丢弃物品(模式2)")
+        DiuItems(timerState.dropMode)
+
+        local callback = MakeDropMode2TimerCallback_11_16(timerState)
+        timerState.dropTimer = schedule(callback, 1.0)
+    end
+
+    local button = buttonItems.dropallbut
+    if button then
+        GUI.Button_setTitleText(button, "开丢全部")
+        GUI.Button_setTitleColor(button, "#ffffff")
+    end
+end
+
+
+-- ============================================================
+--  11.16 root/52/18/0：模式2丢弃周期回调（5条物理指令，0显式参数，1项捕获）
+-- ============================================================
+-- 捕获root/52/18中的timerState；每次触发读取当前dropMode并调用DiuItems。
+local function MakeDropMode2TimerCallback_11_16(timerState)
+    return function()
+        DiuItems(timerState.dropMode)
+    end
+end
