@@ -101,7 +101,7 @@ mode=%s
 93,root/52/7,root/52,2,,待识别,0,7,0,26,未恢复,ipairs | slot | SL | names | ITEM_INDEX_BY_NAME | MoveItemToQuickUse | GetMetaValue,,,2026-11-18
 94,root/52/8,root/52,2,,待识别,0,11,1,49,未恢复,DiuItems | dropMode | SL | 关闭丢全部物品 | 开启丢全部物品(模式1) | isDiuing | UnSchedule | dropTimer,,,2026-11-18
 95,root/52/8/0,root/52/8,3,,,待识别,0,2,0,5,未恢复,dropMode | DiuItems,,指令头需按16位字段重新解码；函数体待确认,,2026-11-18
-96,root/52/9,root/52,2,make_helper_root_52_9（合成定位名）,闭包体已恢复；捕获身份待确认,0,5,0,18,闭包体已写入明文；捕获身份待确认（部分恢复）,blacklistTimer | distance | BlacklistItems | 开启黑名单功能，距离格子：%d,MainLeftBottom_11.16_明文.lua,18条指令闭合；父级捕获槽业务身份未完全确认。,2026-11-19
+96,root/52/9,root/52,2,make_helper_root_52_9（合成定位名）,闭包体已恢复；捕获身份待确认,0,5,0,18,闭包体已写入明文；捕获身份待确认（部分恢复）,blacklistTimer | distance | BlacklistItems | 开启黑名单功能，距离格子：%d,MainLeftBottom_11.16_明文.lua,18条指令闭合；父级捕获槽业务身份未完全确认。,2026-11-20
 97,root/52/10,root/52,2,make_helper_root_52_10（合成定位名）,行为已完整恢复；捕获身份已映射为PrintLog,0,2,0,6,已写入明文（本版指令级完整恢复）,PrintLog | ClearBlacklistItems | 清空黑名单 | root N[4] = root/51,MainLeftBottom_11.16_明文.lua,6条指令闭合。root/52 H[0]捕获root N[4]；root N[4]由root槽43创建root/51闭包，root/51按本版原型信息及11.2同名函数复用确认为PrintLog。闭包先调用PrintLog(清空黑名单)，再调用ClearBlacklistItems()。,2026-11-20
 98,root/52/11,root/52,2,make_helper_root_52_11（合成定位名）,行为已完整恢复；捕获变量已映射,0,2,0,5,已写入明文（本版指令级完整恢复）,_G | LuaSendMsg | MainLeftBottom.a | root槽633捕获映射,MainLeftBottom_11.16_明文.lua,5条指令全部闭合。root槽633创建root/52时，root/52 H[2]捕获root N[0]；root N[0]由初始化段及root/16捕获映射确认是MainLeftBottom.a。因此子闭包等价于_G.LuaSendMsg = MainLeftBottom.a.LuaSendMsg。,2026-11-20
 99,root/52/12,root/52,2,closure_root_52_12（合成定位名）,行为已恢复,0,3,0,5,已写入明文,global | gameWorldController | OnGameLeaveWorld,MainLeftBottom_11.16_明文.lua,5条物理指令全部闭合；Opcode248融合全局加载/成员读取/方法准备，Opcode123调用，Opcode205结束；API文档未收录，按原始调用点恢复,2026-11-19
@@ -123,7 +123,7 @@ mode=%s
 115,root/52/26,root/52,2,,待识别,0,5,1,23,未恢复,SL | Schedule | 开始检测金币(>500W买金条) | buygoldTimer,,,2026-11-18
 116,root/52/26/0,root/52/26,3,,待识别,0,21,0,77,未恢复,UnSchedule | 金币不足500W，买金条结束 | ShowSystemTips | global | 金币 | 金条 | ProxyTable | 买金条失败： | tostring | 买金条失败：%s,,,2026-11-18
 117,root/52/27,root/52,2,,待识别,1,12,0,46,未恢复,pairs | MakeIndex | OverLap | find | Name | BAG_DATA | SL | string | GetMetaValue | ITEM_IS_BIND,,,2026-11-18
-118,root/52/28,root/52,2,,待识别,0,3,0,7,部分恢复（闭包体已恢复；捕获表身份已缩小为引怪配置表，仍待函数调用语义闭合）,root/52槽556 Opcode178创建childIndex=28；槽557 Opcode132捕获父H[9]；子体写H[0].GATHER_THRESHOLD=11、调用InitGatherMonsters并返回其函数值；root/52的H[9]最终来自root N[8]：root槽88创建的引怪配置表，含GATHER_THRESHOLD=11、CHECK_INTERVAL=0.5、ATTACK_WAIT_TIME=1（接口方法表）,,root N[8]原始变量名待确认；不计完整,2026-11-19
+118,root/52/28,root/52,2,,待识别,0,3,0,7,部分恢复（闭包体已恢复；捕获表身份已缩小为引怪配置表，仍待函数调用语义闭合）,root/52槽556 Opcode178创建childIndex=28；槽557 Opcode132捕获父H[9]；子体写H[0].GATHER_THRESHOLD=11、调用InitGatherMonsters并返回其函数值；root/52的H[9]最终来自root N[8]：root槽88创建的引怪配置表，含GATHER_THRESHOLD=11、CHECK_INTERVAL=0.5、ATTACK_WAIT_TIME=1（接口方法表）,,root N[8]原始变量名待确认；不计完整,2026-11-20
 119,root/52/29,root/52,2,,待识别,0,10,0,39,未恢复,toggle | #ff0000 | Button_setTitleText | Button_setTitleColor | #ffffff | applebut | toggled | name | GUI,,,2026-11-18
 120,root/52/30,root/52,2,closure_root_52_30,匿名闭包（行为已恢复）,0,1,0,4,已写入明文,startPutoutAll,MainLeftBottom_11.16_明文.lua,4条指令：Opcode 9融合读取H[0].startPutoutAll；无参数调用；定位名为合成名,2026-11-18
 121,root/52/31,root/52,2,,待识别,0,10,0,29,未恢复,isStoring | UnSchedule | StorageItems | storageTimer | 关闭存仓功能 | 开启存仓功能 | SL,,,2026-11-18
@@ -134,7 +134,7 @@ mode=%s
 126,root/52/34/0,root/52/34,3,,待识别,3,4,0,18,未恢复,putinStacked | putinPrice | putinName | startPutinGold,,,2026-11-18
 127,root/52/35,root/52,2,,待识别,0,17,1,37,未恢复,"tostring | string | LuaSendMsg | global | format | len | USER_ID | {""UserID"":""%s"",""index"":15} | MsgType | MSG_CS_NPC_CLICK",,,2026-11-18
 128,root/52/35/0,root/52/35,3,closure_root_52_35_0,匿名闭包（行为已恢复）,0,2,0,3,已写入明文,powerRefreshing,MainLeftBottom_11.16_明文.lua,3条指令：Opcode 88读取H[0]环境表，融合Opcode 114设置powerRefreshing=false；合成定位名,2026-11-18
-129,root/52/36,root/52,2,make_helper_root_52_36（合成定位名）,闭包体已恢复；捕获身份待确认,0,4,0,19,闭包体已写入明文；捕获身份待确认（部分恢复）,gatherTimer | 关闭引怪功能 | StopGatherMonsters | 开启引怪功能，阈值：11,MainLeftBottom_11.16_明文.lua,19条指令及两分支闭合；H[2]来自父级N[24]，业务身份待确认。,2026-11-19
+129,root/52/36,root/52,2,make_helper_root_52_36（合成定位名）,闭包体已恢复；捕获身份待确认,0,4,0,19,闭包体已写入明文；捕获身份待确认（部分恢复）,gatherTimer | 关闭引怪功能 | StopGatherMonsters | 开启引怪功能，阈值：11,MainLeftBottom_11.16_明文.lua,19条指令及两分支闭合；H[2]来自父级N[24]，业务身份待确认。,2026-11-20
 130,root/53,root,1,helper_root_53（合成定位名）,行为已恢复,1,4,0,15,已写入明文,string.match | match | · | ^(.-)·,MainLeftBottom_11.16_明文.lua,原始函数符号名未确认；全部15条物理指令及两条分支已闭合,2026-11-19
 131,root/54,root,1,startAppleMap（高置信候选）,高置信候选（root/52/25无参回调直接调用该全局名；本体苹果下图启动/停止及定时状态吻合；父root导出点待确认）,0,18,0,56,未恢复,56条指令、0参数；常量含appleMapRunning、appleMap、appleMapTimer、cruiseOn/cruiseOff、backCity、ticks及开始/停止苹果下图提示；唯一明文root/52/25回调明确无参调用全局startAppleMap；root/54业务体负责苹果下图启停及定时控制。,,缺少root的654条物理指令流，尚未直接看到root/54闭包创建后写入_ENV.startAppleMap的槽位；调用点和业务体高度吻合，仍列高置信候选，不标记真实名称已确认。,2026-11-19
 132,root/55,root,1,Builtsetting,候选身份（设置项常量吻合；11.16指令规模显著大于11.2 Builtsetting，待确认扩展范围）,0,51,0,195,未恢复,开启6格范围内有多少怪 不走去拾取 | table | SETTING_CONFIG | HP保护1物品优先级: | GetMetaValue | PKMODE | split | SL | 开启怪物简装 | 随机传送石,,,2026-11-18
