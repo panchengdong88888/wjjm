@@ -1206,3 +1206,12 @@
 - root/2 H[0]=root N[2]，H[1]=root N[5]。root N[2]在slot31装载MainLeftBottom，并在slot36–41初始化多个状态字段，故H[0]确认是MainLeftBottom状态/模块表。
 - H[1]寄存器来源已确定，但N[5]的具体业务身份仍待追踪；root/2仍不计完整函数，明文完成数不变。
 - 下一步直接追踪root N[5]生命周期，并批量利用已导出的root流映射其他根级闭包及全局导出。
+
+
+### 2026-11-20续接增量：DiuItems捕获身份全部闭合，升级完整恢复
+- root/2 H[0]=root N[2]=MainLeftBottom模块/状态表；H[1]=root N[5]=ShowLocalNoticeByType闭包。
+- H[1]的证据链：root槽46 Opcode121创建child index 80，即root/80；槽47 Opcode243捕获root N[0]环境表。root/80的15条指令、1个参数及常量/调用明确表明其为ShowLocalNoticeByType(Msg)，构造本地提示并调用SL方法。
+- 已将唯一明文中的make_DiuItems(capturedUpvalues)工厂替换为直接local function DiuItems(mode)，捕获值改为MainLeftBottom和ShowLocalNoticeByType的词法引用；CSV状态升级为“已写入明文”。
+- 完整原型函数33/162（20.37%）；指令级直接恢复36项；跨版本复用15项；业务功能累计51/162（31.48%）。root/80不重复计数。
+- 未执行Lua语法检查、全文件静态检查、宿主API兼容检查或游戏运行验证。
+- 下一步利用root完整654槽流批量映射其余闭包创建和全局导出，优先检查root/10、root/15、root/16、root/18、root/28、root/48。
