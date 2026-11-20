@@ -3843,3 +3843,56 @@ local function helper_root_52_24(
     showLocalNotice("已停止丢物品、拾取和购买金条")
     return true
 end
+
+
+-- ============================================================
+--  11.16 root/54：startAppleMap（56条物理指令，0显式参数，5项upvalue）
+-- ============================================================
+-- 父级root槽位353 Opcode178创建childIndex=54，captureCount=5；
+-- 槽位354..358 Opcode243依次捕获父级N[3]/N[5]/N[43]/N[7]/N[48]：
+-- H[0]=MainLeftBottom状态表，H[1]=ShowLocalNoticeByType，
+-- H[2]=backCity，H[3]=Schedule，H[4]=root/27定时回调闭包。
+-- root槽位359 Opcode0将该闭包写入_ENV.startAppleMap；
+-- root/52/25的无参回调直接调用全局startAppleMap。
+-- root/27本体是独立原型，作为定时回调对象原样捕获；这里不展开其内部实现。
+local function make_startAppleMap(capturedUpvalues)
+    local mainState = capturedUpvalues[1]
+    local showLocalNotice = capturedUpvalues[2]
+    local backCity = capturedUpvalues[3]
+    local schedule = capturedUpvalues[4]
+    local appleMapTimerCallback = capturedUpvalues[5]
+
+    return function()
+        if mainState.appleMapRunning then
+            if mainState.appleMapTimer then
+                SL:UnSchedule(mainState.appleMapTimer)
+            end
+
+            mainState.appleMapTimer = nil
+            mainState.appleMap = nil
+            mainState.appleMapRunning = false
+
+            showLocalNotice("已停止苹果下图")
+            return true
+        end
+
+        mainState.appleMap = {
+            state = "backCity",
+            ticks = 0,
+            cruiseOff = false,
+            cruiseOn = false,
+        }
+
+        if not backCity() then
+            mainState.appleMap = nil
+            showLocalNotice("背包没有盟重回城石")
+            return false
+        end
+
+        mainState.appleMapRunning = true
+        showLocalNotice("开始苹果下图")
+
+        mainState.appleMapTimer = schedule(appleMapTimerCallback, 0.1)
+        return true
+    end
+end
