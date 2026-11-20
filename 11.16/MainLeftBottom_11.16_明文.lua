@@ -975,8 +975,9 @@ end
 -- slot16 Opcode274读取ClearAttackTargetID成员；slot17 Opcode289检查该成员，
 -- 不存在时slot18跳至函数末尾；存在时slot19 Opcode393准备方法和receiver，
 -- slot20 Opcode123无参调用，等价于playerInputProxy:ClearAttackTargetID()。
--- 六个upvalue中，本函数实际读写H[0]；其父级root捕获创建点/业务身份未保存在当前索引中，
--- 因此用capturedUpvalues[0]显式表示共享槽位，不猜测它的业务名称，按部分恢复统计。
+-- 本函数实际读写H[0]；root槽519创建闭包、槽520明确捕获父级N[76]到H[0]。
+-- 父级共享槽位的原始业务变量名未恢复，但捕获单元及其读写语义已明确，因此用capturedUpvalues[0]
+-- 保留同一共享upvalue，不臆造变量名；函数体和唯一实际使用的捕获来源均已完整恢复。
 -- helper_root_60为按原型路径生成的合成定位名，不代表原始Lua符号名。
 local function make_helper_root_60(capturedUpvalues)
     return function()
