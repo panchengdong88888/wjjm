@@ -94,8 +94,8 @@ mode=%s
 87,root/52/6,root/52,2,,待识别,0,72,5,320,未恢复,声望卷 | 绑定元宝 | setTouchEnabled | 血龙宝珠 | 关闭资源信息窗口 | 绑定灵符 | #00FF00 | Win_IsNotNull | ListView_Create | initTimeCell,,,2026-11-18
 88,root/52/6/0,root/52/6,3,,待识别,3,17,0,65,未恢复,_cell_ | #FFFFFF | Layout_Create | _ | ceil | Text_Create | :-- | _text_ | math | GUI,,,2026-11-18
 89,root/52/6/1,root/52/6,3,,待识别,0,31,0,168,未恢复,math | GetMoneyIdByName | 小时 | UnSchedule | 分钟 | : | floor | GUI | initSnapshot | ),,,2026-11-18
-90,root/52/6/2,root/52/6,3,,待识别,0,8,0,20,未恢复,点击空白","关闭资源信息窗口 | resWin | Win_Close | GUI | resTimer | SL | UnSchedule,,,2026-11-18
-91,root/52/6/3,root/52/6,3,,待识别,1,12,0,35,未恢复,string | tostring | format | %.1f亿 | floor | math | 万,,,2026-11-18
+89,root/52/6/2,root/52/6,3,MakeResourceStatisticsClose_11_16,本版完整恢复；与旧版同职责函数20条指令结构吻合,0,8,0,20,已写入唯一明文（本版指令级完整恢复）,父函数root/52/6槽68以Opcode387创建，捕获寄存器1/2/0，按旧版同职责映射为PrintLog/timerState/moduleState；取消resTimer并关闭resWin。,MainLeftBottom_11.16_明文.lua：MakeResourceStatisticsClose_11_16,无关键未决项；未执行APK验证,2026-11-21
+90,root/52/6/3,root/52/6,3,FormatResourceCount_11_16,本版完整恢复；35条指令与旧版同职责格式化函数一致,1,12,0,35,已写入唯一明文（本版指令级完整恢复）,按100000/100000000两级阈值格式化；低于10万转字符串，低于1亿向下取整为万，1亿以上保留1位小数并附亿。,MainLeftBottom_11.16_明文.lua：FormatResourceCount_11_16,无关键未决项；未执行APK验证,2026-11-21
 92,root/52/6/4,root/52/6,3,,待识别,1,12,0,46,未恢复,find | BAG_DATA | pairs | string | MakeIndex | OverLap | SL | Name | ITEM_IS_BIND | GetMetaValue,,,2026-11-18
 93,root/52/7,root/52,2,,待识别,0,7,0,26,未恢复,ipairs | slot | SL | names | ITEM_INDEX_BY_NAME | MoveItemToQuickUse | GetMetaValue,,,2026-11-18
 94,root/52/8,root/52,2,,待识别,0,11,1,49,未恢复,DiuItems | dropMode | SL | 关闭丢全部物品 | 开启丢全部物品(模式1) | isDiuing | UnSchedule | dropTimer,,,2026-11-18
