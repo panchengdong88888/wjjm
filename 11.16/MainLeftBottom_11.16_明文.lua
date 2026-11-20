@@ -4284,3 +4284,45 @@ local function GetResourceItemCount_11_16(requestedName)
     return totalCount
 end
 
+
+
+-- ============================================================================
+-- 11.16 root/52/6/0：资源统计列表行创建回调（65条指令，3个显式参数）
+-- ============================================================================
+-- listView与cellWidth由父级资源统计窗口提供；回调按resourceNames、
+-- layoutOption、rowType创建分组布局和文本节点，并返回资源名到Text控件的映射。
+local function MakeResourceStatisticsRows_11_16(listView, cellWidth)
+    return function(resourceNames, layoutOption, rowType)
+        local rowTextByName = {}
+        local gui = GUI
+        for groupStart = 1, #resourceNames, layoutOption do
+            local cellNameSuffix = math.ceil(groupStart / layoutOption)
+            local cellName = rowType .. "_cell_" .. cellNameSuffix
+            local cellLayout = gui:Layout_Create(
+                listView, cellName, 0, 0, cellWidth, 35, 1
+            )
+
+            for columnIndex = 1, layoutOption do
+                local resourceIndex = groupStart + columnIndex - 1
+                local resourceName = resourceNames[resourceIndex]
+
+                if resourceName then
+                    local textName = rowType .. "_text_" .. cellNameSuffix .. "_" .. columnIndex
+                    local textX = cellWidth * (columnIndex - 0.5) / layoutOption
+                    local textNode = gui:Text_Create(
+                        cellLayout, textName, textX, 15, 30,
+                        "#FFFFFF", resourceName .. ":--"
+                    )
+
+                    if textNode then
+                        gui:setAnchorPoint(textNode, 0.5, 0.5)
+                        rowTextByName[resourceName] = textNode
+                    end
+                end
+            end
+        end
+
+        return rowTextByName
+    end
+end
+
