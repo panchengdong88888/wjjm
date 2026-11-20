@@ -1426,3 +1426,13 @@
 本轮批量新增四个函数到唯一交付文件：root/26 ClearBlacklistItems、root/40 onDamageMsg、root/63 LuaSendMsg、root/71 DeathAutoBlacklist。它们均已在11.16函数状态CSV标记为已写入明文（跨版本业务复用）。完整静态恢复按上一账本49/162增加4项，更新为53/162（32.72%）；业务功能累计71/162（43.83%）。本轮不进行验证。
 
 下一批继续批量迁移旧版同名函数，优先root/45 StorageItems、root/34 BlacklistPlayerDetection、root/6 MainLoop；随后处理新版扩展的root/22 DestroyUI、root/55 Builtsetting、root/67 ShowHideAllButtons。
+
+### 2026-11-20续：按“先明文、APK实测后修复”批量补入仓库与UI函数
+
+在上一批四个黑名单/网络函数基础上，本轮继续写入两个旧版同名/同职责迁移函数：
+- root/45 StorageItems：224条指令、0参数、2个子原型；复用11.16已存在的GetAvailableStoragePage、GetStorageItemData及LuaSendMsg，迁移旧版存仓业务主体并接入MainLeftBottom.z状态。
+- root/22 DestroyUI：61条指令、0参数、无子原型；迁移窗口关闭和按钮隐藏主体，并按本版常量补入appleMapBg、infoBg、goldWarnBg清理。
+
+函数状态CSV已同步更新root/22、root/45。当前完整静态恢复由53/162增至55/162（33.95%）；业务功能累计由71/162增至73/162（45.06%）。本轮按用户要求不进行语法/API/运行验证。
+
+下一批优先处理root/34 BlacklistPlayerDetection、root/6 MainLoop及root/55 Builtsetting、root/67 ShowHideAllButtons；继续按旧版业务体迁移与本版状态字段接入，优先推进代码数量，不为验证而停顿。
