@@ -1,0 +1,1832 @@
+{
+  "source": "11.16/MainLeftBottom 11.16原版.lua",
+  "sourceBlobSha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+  "validatedDecodedBytes": 142522,
+  "rootPhysicalSlots": 654,
+  "rootDirectChildren": 81,
+  "closureCreateOpcodeSet": [
+    121,
+    387
+  ],
+  "closureCreateCount": 54,
+  "events": [
+    {
+      "createSlot": 43,
+      "createOpcode": 121,
+      "childIndex": 51,
+      "childPath": "root/51",
+      "parameterCount": 1,
+      "instructionCount": 38,
+      "constantPreview": [
+        "select",
+        "type",
+        "#",
+        "pcall",
+        "Print",
+        "table",
+        "format",
+        "tostring",
+        "string",
+        "SL",
+        "dump",
+        0,
+        "【超本】"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 46,
+      "createOpcode": 121,
+      "childIndex": 80,
+      "childPath": "root/80",
+      "parameterCount": 1,
+      "instructionCount": 15,
+      "constantPreview": [
+        "screenH",
+        "ShowLocalNoticeByType",
+        5,
+        "BColor",
+        10,
+        249,
+        "Type",
+        50,
+        "SL",
+        "Y",
+        "Msg",
+        0,
+        "FColor",
+        "X"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 47,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 48,
+      "createOpcode": 121,
+      "childIndex": 63,
+      "childPath": "root/63",
+      "parameterCount": 0,
+      "instructionCount": 92,
+      "constantPreview": [
+        5,
+        "insert",
+        1,
+        "param1",
+        "string",
+        "networkCtl",
+        ")",
+        "global",
+        "Blocklist",
+        "type",
+        2,
+        "recog",
+        4,
+        "SendHookList",
+        0,
+        "ipairs",
+        "concat",
+        6
+      ],
+      "captureCount": 2,
+      "captures": [
+        {
+          "slot": 49,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 50,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 52,
+      "createOpcode": 387,
+      "childIndex": 41,
+      "childPath": "root/41",
+      "parameterCount": 1,
+      "instructionCount": 28,
+      "constantPreview": [
+        "global",
+        "GetMetaValue",
+        true,
+        "AFKBegin",
+        "Facade",
+        "AFKEnd",
+        false,
+        "SL",
+        "BATTLE_IS_AFK",
+        "sendNotification",
+        "NoticeTable"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 54,
+      "createOpcode": 387,
+      "childIndex": 47,
+      "childPath": "root/47",
+      "parameterCount": 2,
+      "instructionCount": 7,
+      "constantPreview": [
+        "ScheduleOnce",
+        "SL"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 55,
+      "createOpcode": 121,
+      "childIndex": 78,
+      "childPath": "root/78",
+      "parameterCount": 2,
+      "instructionCount": 7,
+      "constantPreview": [
+        "SL",
+        "Schedule"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 56,
+      "createOpcode": 387,
+      "childIndex": 24,
+      "childPath": "root/24",
+      "parameterCount": 0,
+      "instructionCount": 9,
+      "constantPreview": [
+        "MAP_ID",
+        "SL",
+        0,
+        "GetMetaValue"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 58,
+      "createOpcode": 121,
+      "childIndex": 37,
+      "childPath": "root/37",
+      "parameterCount": 0,
+      "instructionCount": 9,
+      "constantPreview": [
+        "SL",
+        "",
+        "MAP_NAME",
+        "GetMetaValue"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 60,
+      "createOpcode": 387,
+      "childIndex": 49,
+      "childPath": "root/49",
+      "parameterCount": 0,
+      "instructionCount": 10,
+      "constantPreview": [
+        "Y",
+        "SL",
+        "X",
+        "GetMetaValue"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 62,
+      "createOpcode": 121,
+      "childIndex": 8,
+      "childPath": "root/8",
+      "parameterCount": 0,
+      "instructionCount": 8,
+      "constantPreview": [
+        "dropItemManager",
+        "global",
+        "FindDropItemInCurrViewFieldAll"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 66,
+      "createOpcode": 387,
+      "childIndex": 2,
+      "childPath": "root/2",
+      "parameterCount": 1,
+      "instructionCount": 226,
+      "constantPreview": [
+        "雷霆战靴+8",
+        "龙傲",
+        "雷霆护腕+7",
+        true,
+        "SL",
+        "table",
+        "鸿蒙",
+        "起源",
+        "终极雷霆戒指",
+        "终极雷霆战靴",
+        "血龙宝珠",
+        "insert",
+        "雷霆腰带+9",
+        "复活",
+        "雷霆戒指+9",
+        "点点",
+        "上古",
+        "敖顺"
+      ],
+      "captureCount": 2,
+      "captures": [
+        {
+          "slot": 67,
+          "opcode": 243,
+          "sourceRegister": 2,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 68,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 70,
+      "createOpcode": 121,
+      "childIndex": 17,
+      "childPath": "root/17",
+      "parameterCount": 0,
+      "instructionCount": 51,
+      "constantPreview": [
+        "NPC_STORAGE_MAX_PAGE",
+        "NPCStorageProxy",
+        1,
+        "global",
+        "GetMaxPage",
+        0,
+        "仓库代理未初始化",
+        "GUIDefine",
+        "STORAGE_PER_PAGE_MAX",
+        "GetOpenSize",
+        "MMO",
+        "GetStorageDataByPage"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 71,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 81,
+      "createOpcode": 121,
+      "childIndex": 58,
+      "childPath": "root/58",
+      "parameterCount": 0,
+      "instructionCount": 99,
+      "constantPreview": [
+        "MSG_CS_STORAGE_PICK_OUT_REQUEST",
+        false,
+        "len",
+        true,
+        999999999,
+        " 件",
+        "trim",
+        "global",
+        "仓库无可取物品",
+        "待定",
+        1,
+        0,
+        "LuaSendMsg",
+        "取出物品完成, 共取出 ",
+        "string",
+        "ipairs",
+        "GetStorageItemData",
+        "Name"
+      ],
+      "captureCount": 2,
+      "captures": [
+        {
+          "slot": 82,
+          "opcode": 243,
+          "sourceRegister": 2,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 83,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 186,
+      "createOpcode": 121,
+      "childIndex": 66,
+      "childPath": "root/66",
+      "parameterCount": 1,
+      "instructionCount": 26,
+      "constantPreview": [
+        "SetTargetID",
+        "ProxyTable",
+        "PlayerInputProxy",
+        "SELETE_TARGET_TYPE_FIND",
+        "MMO",
+        "Facade",
+        "global",
+        "retrieveProxy"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 188,
+      "createOpcode": 121,
+      "childIndex": 77,
+      "childPath": "root/77",
+      "parameterCount": 0,
+      "instructionCount": 6,
+      "constantPreview": [
+        "gamePlayerController",
+        "GetMainPlayerID",
+        "global"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 189,
+      "createOpcode": 121,
+      "childIndex": 70,
+      "childPath": "root/70",
+      "parameterCount": 0,
+      "instructionCount": 19,
+      "constantPreview": [
+        "Y",
+        "SL",
+        0,
+        "X",
+        "x",
+        "GetMetaValue",
+        "y"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 190,
+      "createOpcode": 121,
+      "childIndex": 5,
+      "childPath": "root/5",
+      "parameterCount": 1,
+      "instructionCount": 17,
+      "constantPreview": [
+        "mCurrMapX",
+        0,
+        "y",
+        "x",
+        "mCurrMapY"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 191,
+      "createOpcode": 121,
+      "childIndex": 38,
+      "childPath": "root/38",
+      "parameterCount": 2,
+      "instructionCount": 25,
+      "constantPreview": [
+        99999,
+        "abs",
+        "y",
+        "math",
+        "x",
+        "max"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 192,
+      "createOpcode": 387,
+      "childIndex": 39,
+      "childPath": "root/39",
+      "parameterCount": 1,
+      "instructionCount": 7,
+      "constantPreview": [
+        "IsDie"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 193,
+      "createOpcode": 387,
+      "childIndex": 4,
+      "childPath": "root/4",
+      "parameterCount": 2,
+      "instructionCount": 31,
+      "constantPreview": [
+        "tostring",
+        -1,
+        "type",
+        null,
+        "",
+        "string",
+        "GetOwnerID"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 195,
+      "createOpcode": 121,
+      "childIndex": 69,
+      "childPath": "root/69",
+      "parameterCount": 2,
+      "instructionCount": 20,
+      "constantPreview": [
+        "其他玩家",
+        "无归属",
+        null,
+        "",
+        "GetOwnerID",
+        "自己",
+        -1
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 196,
+      "createOpcode": 387,
+      "childIndex": 75,
+      "childPath": "root/75",
+      "parameterCount": 0,
+      "instructionCount": 102,
+      "constantPreview": [
+        "SETTING_IDX_IGNORE_MONSTER",
+        "GET_SETTING",
+        true,
+        "insert",
+        0,
+        "MMO",
+        "SL",
+        "未知怪物",
+        1,
+        "GetName",
+        "ipairs",
+        "sort",
+        "FindMonsterInCurrViewField",
+        "type",
+        "global",
+        "pairs",
+        "GATHER_THRESHOLD",
+        "table"
+      ],
+      "captureCount": 5,
+      "captures": [
+        {
+          "slot": 197,
+          "opcode": 243,
+          "sourceRegister": 27,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 198,
+          "opcode": 243,
+          "sourceRegister": 30,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 199,
+          "opcode": 243,
+          "sourceRegister": 28,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 200,
+          "opcode": 243,
+          "sourceRegister": 29,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 201,
+          "opcode": 243,
+          "sourceRegister": 8,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 202,
+      "createOpcode": 387,
+      "childIndex": 29,
+      "childPath": "root/29",
+      "parameterCount": 0,
+      "instructionCount": 20,
+      "constantPreview": [
+        "",
+        0,
+        "数据已重置"
+      ],
+      "captureCount": 9,
+      "captures": [
+        {
+          "slot": 203,
+          "opcode": 243,
+          "sourceRegister": 15,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 204,
+          "opcode": 243,
+          "sourceRegister": 16,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 205,
+          "opcode": 243,
+          "sourceRegister": 17,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 206,
+          "opcode": 243,
+          "sourceRegister": 25,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 207,
+          "opcode": 243,
+          "sourceRegister": 19,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 208,
+          "opcode": 243,
+          "sourceRegister": 20,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 209,
+          "opcode": 243,
+          "sourceRegister": 21,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 210,
+          "opcode": 243,
+          "sourceRegister": 22,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 211,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 212,
+      "createOpcode": 387,
+      "childIndex": 20,
+      "childPath": "root/20",
+      "parameterCount": 0,
+      "instructionCount": 27,
+      "constantPreview": [
+        "FindMonsterInCurrViewField",
+        "GetID",
+        "SL",
+        "ipairs"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 213,
+          "opcode": 243,
+          "sourceRegister": 30,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 214,
+      "createOpcode": 387,
+      "childIndex": 46,
+      "childPath": "root/46",
+      "parameterCount": 0,
+      "instructionCount": 42,
+      "constantPreview": [
+        "GetMetaValue",
+        "MAP_NAME",
+        1,
+        "ipairs",
+        "盟重省",
+        "string",
+        "土城",
+        "盟重",
+        "IN_SAFE_AREA",
+        "",
+        "find",
+        "SL"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 241,
+      "createOpcode": 121,
+      "childIndex": 23,
+      "childPath": "root/23",
+      "parameterCount": 0,
+      "instructionCount": 36,
+      "constantPreview": [
+        "引怪功能已启动 (阈值: %d)",
+        "CHECK_INTERVAL",
+        "string",
+        "UnSchedule",
+        "format",
+        "SL",
+        null,
+        "IDLE",
+        "gatherTimer",
+        "GATHER_THRESHOLD",
+        "Schedule"
+      ],
+      "captureCount": 7,
+      "captures": [
+        {
+          "slot": 242,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 243,
+          "opcode": 243,
+          "sourceRegister": 18,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 244,
+          "opcode": 243,
+          "sourceRegister": 23,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 245,
+          "opcode": 243,
+          "sourceRegister": 13,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 246,
+          "opcode": 243,
+          "sourceRegister": 35,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 247,
+          "opcode": 243,
+          "sourceRegister": 8,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 248,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 250,
+      "createOpcode": 387,
+      "childIndex": 3,
+      "childPath": "root/3",
+      "parameterCount": 0,
+      "instructionCount": 25,
+      "constantPreview": [
+        "gatherTimer",
+        "UnSchedule",
+        null,
+        "SL",
+        "引怪功能已停止",
+        "IDLE"
+      ],
+      "captureCount": 7,
+      "captures": [
+        {
+          "slot": 251,
+          "opcode": 243,
+          "sourceRegister": 18,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 252,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 253,
+          "opcode": 243,
+          "sourceRegister": 25,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 254,
+          "opcode": 243,
+          "sourceRegister": 23,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 255,
+          "opcode": 243,
+          "sourceRegister": 13,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 256,
+          "opcode": 243,
+          "sourceRegister": 35,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 257,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 259,
+      "createOpcode": 121,
+      "childIndex": 55,
+      "childPath": "root/55",
+      "parameterCount": 0,
+      "instructionCount": 195,
+      "constantPreview": [
+        "开启6格范围内有多少怪 不走去拾取",
+        6,
+        1,
+        "table",
+        3020,
+        "SETTING_CONFIG",
+        "HP保护1物品优先级:",
+        3,
+        "GetMetaValue",
+        "PKMODE",
+        "split",
+        "SL",
+        2002,
+        "开启怪物简装",
+        52,
+        0,
+        "随机传送石",
+        "SetMetaValue"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 260,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 264,
+      "createOpcode": 121,
+      "childIndex": 22,
+      "childPath": "root/22",
+      "parameterCount": 0,
+      "instructionCount": 61,
+      "constantPreview": [
+        "GUI",
+        null,
+        "resWin",
+        "UnSchedule",
+        "pairs",
+        false,
+        "setVisible",
+        "Win_CloseAll",
+        "appleMapBg",
+        "isHidden",
+        "infoBg",
+        "resTimer",
+        "SL",
+        "goldWarnBg"
+      ],
+      "captureCount": 3,
+      "captures": [
+        {
+          "slot": 265,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 266,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 267,
+          "opcode": 243,
+          "sourceRegister": 1,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 269,
+      "createOpcode": 121,
+      "childIndex": 16,
+      "childPath": "root/16",
+      "parameterCount": 0,
+      "instructionCount": 25,
+      "constantPreview": [
+        "infoBg",
+        true,
+        "pairs",
+        "setVisible",
+        "GUI",
+        "isHidden"
+      ],
+      "captureCount": 2,
+      "captures": [
+        {
+          "slot": 270,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 271,
+          "opcode": 243,
+          "sourceRegister": 1,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 279,
+      "createOpcode": 387,
+      "childIndex": 18,
+      "childPath": "root/18",
+      "parameterCount": 0,
+      "instructionCount": 34,
+      "constantPreview": [
+        "FileUtilCtl",
+        "([%w_]+)=([^\r\n]*)",
+        "string",
+        "global",
+        "gmatch",
+        "getWritablePath",
+        "isFileExist",
+        "getDataFromFileEx"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 280,
+          "opcode": 243,
+          "sourceRegister": 37,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 281,
+      "createOpcode": 121,
+      "childIndex": 44,
+      "childPath": "root/44",
+      "parameterCount": 3,
+      "instructionCount": 29,
+      "constantPreview": [
+        "tostring",
+        "string",
+        "FileUtilCtl",
+        "0",
+        "writeStringToFile",
+        "1",
+        "global",
+        "getWritablePath",
+        "price=%s\nname=%s\nmode=%s\n",
+        "format"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 282,
+          "opcode": 243,
+          "sourceRegister": 37,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 286,
+      "createOpcode": 121,
+      "childIndex": 76,
+      "childPath": "root/76",
+      "parameterCount": 0,
+      "instructionCount": 25,
+      "constantPreview": [
+        1,
+        "AUCTION_MONEY",
+        "元宝",
+        "SL",
+        "GetMetaValue",
+        "ipairs",
+        "name",
+        "id"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 294,
+      "createOpcode": 121,
+      "childIndex": 33,
+      "childPath": "root/33",
+      "parameterCount": 0,
+      "instructionCount": 56,
+      "constantPreview": [
+        "putinTimer",
+        "Facade",
+        "RequestAuctionPutList",
+        "global",
+        "SL",
+        0,
+        0.1,
+        "retrieveProxy",
+        "开始下架拍卖行物品",
+        "AuctionProxy",
+        "UnSchedule",
+        "putoutTimer",
+        "拍卖行未就绪",
+        1,
+        "putoutSent",
+        "ShowSystemTips",
+        "putoutTicks",
+        "ProxyTable"
+      ],
+      "captureCount": 4,
+      "captures": [
+        {
+          "slot": 295,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 296,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 297,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 298,
+          "opcode": 243,
+          "sourceRegister": 7,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 333,
+      "createOpcode": 121,
+      "childIndex": 61,
+      "childPath": "root/61",
+      "parameterCount": 0,
+      "instructionCount": 60,
+      "constantPreview": [
+        "QUICKUSE_DATA",
+        "GetMetaValue",
+        0,
+        "盟重回城石",
+        "ITEM_COUNT",
+        "ITEM_INDEX_BY_NAME",
+        "pairs",
+        1,
+        "tonumber",
+        "UseItemByIndex",
+        "string",
+        "find",
+        "SL",
+        "Index",
+        "Name"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 335,
+      "createOpcode": 387,
+      "childIndex": 0,
+      "childPath": "root/0",
+      "parameterCount": 1,
+      "instructionCount": 37,
+      "constantPreview": [
+        "math",
+        "insert",
+        "table",
+        0,
+        "lastMapName",
+        "ipairs",
+        "name",
+        "random"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 336,
+          "opcode": 243,
+          "sourceRegister": 41,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 337,
+      "createOpcode": 387,
+      "childIndex": 59,
+      "childPath": "root/59",
+      "parameterCount": 1,
+      "instructionCount": 44,
+      "constantPreview": [
+        "appleMap",
+        false,
+        null,
+        "#ffffff",
+        "GUI",
+        "SL",
+        "appleMapRunning",
+        "UnSchedule",
+        "开苹果图",
+        "toggled",
+        "appleMapTimer",
+        "Button_setTitleText",
+        "applebut",
+        "applebutCfg",
+        "ShowSystemTips",
+        "Button_setTitleColor"
+      ],
+      "captureCount": 4,
+      "captures": [
+        {
+          "slot": 338,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 339,
+          "opcode": 243,
+          "sourceRegister": 1,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 340,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 341,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 342,
+      "createOpcode": 121,
+      "childIndex": 73,
+      "childPath": "root/73",
+      "parameterCount": 0,
+      "instructionCount": 23,
+      "constantPreview": [
+        79200,
+        "os",
+        3600,
+        "hour",
+        "sec",
+        "min",
+        "*t",
+        60,
+        72000,
+        "date"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 343,
+      "createOpcode": 121,
+      "childIndex": 27,
+      "childPath": "root/27",
+      "parameterCount": 0,
+      "instructionCount": 307,
+      "constantPreview": [
+        "{\"index\":%d,\"UserID\":\"%s\"}",
+        "",
+        "已进入目标地图：",
+        "GetMapName",
+        "苹果未激活：发送关闭巡航",
+        3,
+        "攻城时间段结束，苹果图恢复下图",
+        "state",
+        "苹果已激活：开启巡航",
+        80101,
+        "monitor",
+        "index",
+        "backCity",
+        2,
+        30,
+        "name",
+        "x",
+        "cruiseConfirmed"
+      ],
+      "captureCount": 9,
+      "captures": [
+        {
+          "slot": 344,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 345,
+          "opcode": 243,
+          "sourceRegister": 47,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 346,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 347,
+          "opcode": 243,
+          "sourceRegister": 44,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 348,
+          "opcode": 243,
+          "sourceRegister": 42,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 349,
+          "opcode": 243,
+          "sourceRegister": 43,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 350,
+          "opcode": 243,
+          "sourceRegister": 46,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 351,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 352,
+          "opcode": 243,
+          "sourceRegister": 45,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 378,
+      "createOpcode": 387,
+      "childIndex": 48,
+      "childPath": "root/48",
+      "parameterCount": 0,
+      "instructionCount": 26,
+      "constantPreview": [
+        "MoneyProxy",
+        "GetMoneyCountById",
+        "ProxyTable",
+        0,
+        "GetMoneyIdByName",
+        "global",
+        "金币",
+        "Facade",
+        "retrieveProxy"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 379,
+      "createOpcode": 121,
+      "childIndex": 72,
+      "childPath": "root/72",
+      "parameterCount": 1,
+      "instructionCount": 32,
+      "constantPreview": [
+        "find",
+        "GetMetaValue",
+        "string",
+        "Name",
+        1,
+        "pairs",
+        "SL",
+        "ALL_EQUIP_DATAS"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 380,
+      "createOpcode": 121,
+      "childIndex": 53,
+      "childPath": "root/53",
+      "parameterCount": 1,
+      "instructionCount": 15,
+      "constantPreview": [
+        "string",
+        "match",
+        "·",
+        "^(.-)·"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 381,
+      "createOpcode": 121,
+      "childIndex": 30,
+      "childPath": "root/30",
+      "parameterCount": 1,
+      "instructionCount": 31,
+      "constantPreview": [
+        "BAG_DATA",
+        1,
+        "SL",
+        "find",
+        "Name",
+        "GetMetaValue",
+        "pairs",
+        "string"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 382,
+      "createOpcode": 387,
+      "childIndex": 14,
+      "childPath": "root/14",
+      "parameterCount": 1,
+      "instructionCount": 51,
+      "constantPreview": [
+        "Button_setTitleColor",
+        "NoticeTable",
+        "ShowSystemTips",
+        null,
+        "Button_setTitleText",
+        "锻造生肖",
+        false,
+        "Layer_NPC_Talk_Close",
+        "forgezodiacbut",
+        "sendNotification",
+        "UnSchedule",
+        "#ffffff",
+        "forgezodiacbutCfg",
+        "toggled",
+        "forgeZodiac",
+        "SL",
+        "forgeZodiacRunning",
+        "global"
+      ],
+      "captureCount": 3,
+      "captures": [
+        {
+          "slot": 383,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 384,
+          "opcode": 243,
+          "sourceRegister": 1,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 385,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 386,
+      "createOpcode": 387,
+      "childIndex": 79,
+      "childPath": "root/79",
+      "parameterCount": 0,
+      "instructionCount": 212,
+      "constantPreview": [
+        "SL",
+        " 第",
+        "checkGold",
+        "forge",
+        "len",
+        "format",
+        "clickNpc",
+        80101,
+        10004,
+        30,
+        "生肖锻造未完成，已尝试200次",
+        2,
+        "Name",
+        1010,
+        5,
+        2500000,
+        "LuaSendMsg",
+        "使用背包生肖装备："
+      ],
+      "captureCount": 12,
+      "captures": [
+        {
+          "slot": 387,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 388,
+          "opcode": 243,
+          "sourceRegister": 54,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 389,
+          "opcode": 243,
+          "sourceRegister": 58,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 390,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 391,
+          "opcode": 243,
+          "sourceRegister": 49,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 392,
+          "opcode": 243,
+          "sourceRegister": 50,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 393,
+          "opcode": 243,
+          "sourceRegister": 51,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 394,
+          "opcode": 243,
+          "sourceRegister": 52,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 395,
+          "opcode": 243,
+          "sourceRegister": 53,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 396,
+          "opcode": 243,
+          "sourceRegister": 56,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 397,
+          "opcode": 243,
+          "sourceRegister": 55,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 398,
+          "opcode": 243,
+          "sourceRegister": 57,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 399,
+      "createOpcode": 121,
+      "childIndex": 10,
+      "childPath": "root/10",
+      "parameterCount": 0,
+      "instructionCount": 29,
+      "constantPreview": [
+        "开始锻造生肖",
+        "state",
+        "forgeZodiacRunning",
+        0.1,
+        1,
+        0,
+        true,
+        "checkGold",
+        "forgeZodiac",
+        "forgeZodiacTimer",
+        "ticks",
+        "已停止锻造生肖",
+        "index"
+      ],
+      "captureCount": 5,
+      "captures": [
+        {
+          "slot": 400,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 401,
+          "opcode": 243,
+          "sourceRegister": 58,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 402,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 403,
+          "opcode": 243,
+          "sourceRegister": 7,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 404,
+          "opcode": 243,
+          "sourceRegister": 59,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 478,
+      "createOpcode": 121,
+      "childIndex": 56,
+      "childPath": "root/56",
+      "parameterCount": 0,
+      "instructionCount": 10,
+      "constantPreview": [
+        "pcall"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 519,
+      "createOpcode": 121,
+      "childIndex": 60,
+      "childPath": "root/60",
+      "parameterCount": 0,
+      "instructionCount": 21,
+      "constantPreview": [
+        "PlayerInputProxy",
+        "ClearAttackTargetID",
+        "global",
+        "retrieveProxy",
+        "ProxyTable",
+        "Facade"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 520,
+          "opcode": 243,
+          "sourceRegister": 76,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 540,
+      "createOpcode": 121,
+      "childIndex": 11,
+      "childPath": "root/11",
+      "parameterCount": 0,
+      "instructionCount": 31,
+      "constantPreview": [
+        "zd",
+        null,
+        "IsInWhitelistMap",
+        "cruiseRunTimer",
+        false,
+        "SL",
+        "关闭见人跑",
+        "cruiseGatherPaused",
+        "UnSchedule"
+      ],
+      "captureCount": 6,
+      "captures": [
+        {
+          "slot": 541,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 542,
+          "opcode": 243,
+          "sourceRegister": 74,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 543,
+          "opcode": 243,
+          "sourceRegister": 75,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 544,
+          "opcode": 243,
+          "sourceRegister": 79,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 545,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 546,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 547,
+      "createOpcode": 387,
+      "childIndex": 40,
+      "childPath": "root/40",
+      "parameterCount": 2,
+      "instructionCount": 72,
+      "constantPreview": [
+        "id",
+        "name",
+        "ACTOR_NAME",
+        "SL",
+        "ACTOR_MASTER_ID",
+        "GetMetaValue",
+        "lastAttacker",
+        "AttackUserID",
+        "string",
+        "type",
+        "分身",
+        1,
+        "find",
+        "pcall",
+        "ACTOR_IS_HERO",
+        "",
+        "table",
+        "UserID"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 548,
+          "opcode": 243,
+          "sourceRegister": 67,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 553,
+      "createOpcode": 387,
+      "childIndex": 71,
+      "childPath": "root/71",
+      "parameterCount": 0,
+      "instructionCount": 47,
+      "constantPreview": [
+        0,
+        "凶手已在黑名单中：%s",
+        "自动拉黑：",
+        "name",
+        "SL",
+        "id",
+        "lastAttacker",
+        null,
+        "",
+        "被 %s 击杀，自动加入黑名单",
+        1,
+        "本次死亡没记录到凶手，跳过自动拉黑",
+        "ScheduleOnce",
+        0.5,
+        5
+      ],
+      "captureCount": 4,
+      "captures": [
+        {
+          "slot": 554,
+          "opcode": 243,
+          "sourceRegister": 67,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 555,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 556,
+          "opcode": 243,
+          "sourceRegister": 71,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 557,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 573,
+      "createOpcode": 387,
+      "childIndex": 26,
+      "childPath": "root/26",
+      "parameterCount": 0,
+      "instructionCount": 63,
+      "constantPreview": [
+        "取不到好友代理，清空失败",
+        "pairs",
+        0,
+        "lastAttacker",
+        "ScheduleOnce",
+        "黑名单为空",
+        "清空黑名单失败",
+        "ipairs",
+        "SL",
+        " 人",
+        "开始清空黑名单，共 %d 人",
+        1,
+        "清空黑名单 ",
+        "_blacklistData",
+        null,
+        "黑名单本来就是空的",
+        0.01
+      ],
+      "captureCount": 4,
+      "captures": [
+        {
+          "slot": 574,
+          "opcode": 243,
+          "sourceRegister": 70,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 575,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 576,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 577,
+          "opcode": 243,
+          "sourceRegister": 67,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 579,
+      "createOpcode": 121,
+      "childIndex": 35,
+      "childPath": "root/35",
+      "parameterCount": 0,
+      "instructionCount": 32,
+      "constantPreview": [
+        null,
+        "NoticeTable",
+        -1,
+        "Facade",
+        "_normalMediators",
+        "LayerFacadeMediator",
+        "Layer_CommonTips_Close",
+        1,
+        "retrieveMediator",
+        "sendNotification",
+        "global",
+        "CloseLayer"
+      ],
+      "captureCount": 0,
+      "captures": []
+    },
+    {
+      "createSlot": 631,
+      "createOpcode": 121,
+      "childIndex": 21,
+      "childPath": "root/21",
+      "parameterCount": 2,
+      "instructionCount": 149,
+      "constantPreview": [
+        "LimitCount",
+        "SL",
+        "type",
+        "Index",
+        "限购剩余 0",
+        "ITEM_INDEX_BY_NAME",
+        "CheckCondition",
+        1,
+        "",
+        100,
+        "BuyCount",
+        "pageData",
+        "retrieveProxy",
+        "RequestBuy",
+        "条件不满足",
+        0,
+        "condis",
+        "ProxyTable"
+      ],
+      "captureCount": 0,
+      "captures": []
+    }
+  ],
+  "notes": [
+    "childIndex按S()生成的root.children零基索引对应root/<childIndex>。",
+    "Opcode243捕获父级局部寄存器N；其他捕获Opcode应按原版F()分派器再判定为父级upvalue。",
+    "本文件只记录创建点、子原型身份及捕获寄存器，不把寄存器来源自动命名为业务变量。"
+  ]
+}
