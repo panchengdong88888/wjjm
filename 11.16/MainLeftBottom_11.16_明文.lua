@@ -4487,3 +4487,31 @@ local function GetResourceItemCount_11_16_Duplicate(requestedName)
     return GetResourceItemCount_11_16(requestedName)
 end
 
+
+
+-- ============================================================================
+-- 11.16 root/50/4：数字输入窗口模式按钮颜色同步（23条指令，0显式参数）
+-- ============================================================================
+-- 本版定点指令流已完整提取。两组Button_setTitleColor调用分别在
+-- #00ff00与#ffffff之间切换；颜色选择依赖父级捕获的按钮及模式状态。
+-- 原始捕获寄存器映射未提供，故用语义参数构造回调，不伪造寄存器序号。
+local function MakeInputModeColorSync_11_16(
+    firstButton, firstSelected, secondButton, secondSelected
+)
+    return function()
+        if firstButton then
+            GUI.Button_setTitleColor(
+                firstButton,
+                firstSelected and "#00ff00" or "#ffffff"
+            )
+        end
+
+        if secondButton then
+            GUI.Button_setTitleColor(
+                secondButton,
+                secondSelected and "#00ff00" or "#ffffff"
+            )
+        end
+    end
+end
+
