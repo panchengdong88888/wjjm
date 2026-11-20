@@ -3762,7 +3762,8 @@ end
 -- 父级创建点提供3项捕获，但当前仅能按子函数H[0]/H[1]读写关系使用代理参数；
 -- H[3]对应的辅助对象/函数身份尚未完全闭合，因此本函数标记部分恢复。
 local function MakeCruiseTimerCallback_11_16(capturedUpvalues)
-    local lastDateState = capturedUpvalues[1]
+    -- H[0]是日期字符串本身；在返回闭包中保留可变局部值。
+    local lastSentDate = capturedUpvalues[1]
     local messageState = capturedUpvalues[2]
     local auxiliary = capturedUpvalues[3]
 
@@ -3788,11 +3789,11 @@ local function MakeCruiseTimerCallback_11_16(capturedUpvalues)
             dateParts.day
         )
 
-        if lastDateState.value == dateKey then
+        if lastSentDate == dateKey then
             return
         end
 
-        lastDateState.value = dateKey
+        lastSentDate = dateKey
         messageState.LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)
 
         -- 本版尾部还会调用捕获的辅助对象/函数输出固定巡航提示；
