@@ -2251,7 +2251,7 @@
         }
       ],
       "recovery_status": "未恢复（缺少root/33的56条本版子原型指令）",
-      "recovery_notes": "root槽294 Opcode121创建root/33闭包并捕获4项；槽295–298依次捕获父级N[3]/N[5]/N[4]/N[7]；槽299 Opcode0以常量键startPutoutAll将N[41]闭包写入全局环境，确认导出名为startPutoutAll。root/33自身56条指令未出现在当前候选完整指令提取中，不能据子闭包root/33/0或常量池伪造函数体。"
+      "recovery_notes": "root槽294 Opcode121创建root/33闭包；槽295–298依次捕获父级N[3]/N[5]/N[4]/N[7]，现已全部映射为H[0]=MainLeftBottom.z、H[1]=ShowLocalNoticeByType、H[2]=PrintLog、H[3]=Schedule。槽299 Opcode0将N[41]写入全局键startPutoutAll，确认导出名。root/33自身56条指令流尚未提取，不能写入完整函数体。"
     },
     {
       "preorder_id": 49,
