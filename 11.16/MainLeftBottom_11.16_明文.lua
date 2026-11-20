@@ -1998,3 +1998,36 @@ function StorageItems()
         ShowLocalNoticeByType("存仓完成, 共存入 " .. tostring(queuedCount) .. " 件物品")
     end
 end
+
+
+-- 11.16 root/22：DestroyUI（61条指令，0参数、无子原型）。
+-- 复用旧版窗口销毁/按钮隐藏主体，并将本版新增的appleMapBg、infoBg、
+-- goldWarnBg纳入清理；resWin/resTimer/isHidden按本版状态表字段处理。
+function DestroyUI()
+    local mainState = MainLeftBottom.a
+    local buttons = MainLeftBottom.b
+
+    mainState.isHidden = false
+
+    if mainState.resTimer then
+        SL:UnSchedule(mainState.resTimer)
+        mainState.resTimer = nil
+    end
+
+    mainState.resWin = nil
+    GUI:Win_CloseAll()
+
+    for key in pairs(buttons) do
+        GUI:setVisible(buttons[key], false)
+    end
+
+    if mainState.appleMapBg then
+        GUI:setVisible(mainState.appleMapBg, false)
+    end
+    if mainState.infoBg then
+        GUI:setVisible(mainState.infoBg, false)
+    end
+    if mainState.goldWarnBg then
+        GUI:setVisible(mainState.goldWarnBg, false)
+    end
+end
