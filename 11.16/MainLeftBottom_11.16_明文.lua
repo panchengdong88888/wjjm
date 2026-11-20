@@ -2774,3 +2774,30 @@ function NewZoneFeature()
 
     state.newzoneTimer = helper_root_78(ProcessNewZoneItems, 0.05)
 end
+
+-- ============================================================================
+-- 11.16 root/10：startForgeZodiac（29条物理指令，0参数，5个upvalue）。
+-- 捕获映射：H[0]=MainLeftBottom.z；H[1]=root/14生肖锻造按钮/通知回调；
+-- H[2]=_G.log；H[3]=root/78的SL:Schedule包装；H[4]="蛇·[普通]"。
+-- ============================================================================
+function startForgeZodiac()
+    local state = MainLeftBottom.z
+
+    if state.forgeZodiacRunning then
+        local toggleHandler = ForgeZodiacToggleHandler
+        toggleHandler("已停止锻造生肖")
+        state.forgeZodiacRunning = false
+        return
+    end
+
+    state.forgeZodiac = {
+        checkGold = checkGold,
+        ticks = 0,
+        index = 1,
+    }
+
+    state.forgeZodiacRunning = true
+    _G.log("开始锻造生肖")
+
+    state.forgeZodiacTimer = helper_root_78("蛇·[普通]", 0.1)
+end
