@@ -1798,3 +1798,13 @@ root/15特殊导出格式A=真实Opcode，B/C/D为操作数。Opcode403语义是
 ## 2026-11-20续：slot79–86融合指令确认
 
 slot79读取H2到N5；slot80以N5条件跳过slot81；假值路径slot81跳到84。真值路径执行slot82 Opcode120：`X=N4; N6=X; N5=X[1]`，并融合slot83把N0设为84。slot84 Opcode399设置N5=1，并融合slot85把H3写入N6。slot86 Opcode172执行N6=N6*N5。slot82/83和slot84/85均为融合序列，不能逐槽拆开。此处还不能据此推断最终上架数量，继续追踪N4/N5/N6后续用途。唯一明文未写入，统计不变。
+
+## 2026-11-20续接：root/15/1最后35槽已闭合，下一步写唯一明文
+
+当前唯一任务仍为11.16 root/15拍卖上架模块，不切换其他原型。root/15/1已完成121槽控制流、融合边界、六个Upvalue来源映射；本轮又从原版F()分派树闭合slot87–121的最高单价读取、默认值、总价超限判断、日志参数及RequestAuctionPutin参数。
+
+关键尾段寄存器：N6为计算价格；N7为AUCTION_BIDPRICE_MAX（缺省2000000000）；N8先用于方法/回调，slot102后改为H4日志函数，slot112后改为SL.RequestAuctionPutin；日志参数为H4(format,currencyName,tostring(item.MakeIndex),N5,H3,N6)；上架调用为SL:RequestAuctionPutin(item.MakeIndex,N5,0,N6,H5,100)。slot73提示分支必须保留N[5]=H[0]后调用这一VM形态，不要把H0/H5索引方向再次反转。
+
+六个捕获：H0=父N5=SL；H1=父N1=货币名（缺省“金条”）；H2=父N2布尔选项；H3=父N0单位价格；H4=父H3（名称未知，使用capturedUpvalues代理）；H5=父N3回调。闭包无显式参数。
+
+下一步：直接将121槽整理为可读Lua写入唯一文件11.16/MainLeftBottom_11.16_明文.lua，不要继续逐槽重审或等待H4命名；只有完成写入后才更新函数状态CSV与统计。
