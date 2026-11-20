@@ -1589,3 +1589,9 @@
 ## 2026-11-20续：root/79 NPC交互字段闭合
 
 父root slot362将立即数41写入N[51]，而root/79 H[6]捕获父N[51]；slot363将"10030"写入N[52]，对应H[7]。root/79 slot78–81将二者传入`string.format('{"index":%d,"UserID":"%s"}', H[6], H[7])`，故NPC交互数据明确为index=41、UserID="10030"。配合已确认MoveTo(151,144,8)，root/79 slot66–96闭合。
+
+
+## 2026-11-20最新接续点（再续）
+
+- root/79 slot191–212已闭合：发送LuaSendMsg(9002,10004,1,2,3,zodiacName,string.len(zodiacName))，随后H[3]=PrintLog输出“锻造生肖：”..zodiacName..“ 第”..tryCount..“次”。
+- root/79主要控制流各段现已分段闭合；下一步不要继续零碎重复分析，应整合成唯一明文函数，H[10]作为已确认的可调用捕获值直接引用；root/72单体实现可继续单独补全，不阻塞root/79主体恢复。
