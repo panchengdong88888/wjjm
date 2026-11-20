@@ -68,8 +68,8 @@ name=%s
 mode=%s
  | format",,,"2026-11-18
 65,root/45,root,1,StorageItems,跨版本高置信候选（11.2常量交叉匹配；待本版调用/差异核验）,0,57,2,224,已写入明文（跨版本业务复用）,NPC_STORAGE_MAX_PAGE | find | 玄铁 | BOSS头骨 | 神装碎片 | 圣皇 |  件物品 | GUIDefine | STORAGE_PER_PAGE_MAX | len,11.16/MainLeftBottom_11.16_明文.lua：StorageItems,按用户要求先完成明文主体，留待APK实测后针对异常功能调整。,2026-11-20
-66,root/45/0,root/45,2,,待识别,2,15,0,52,未恢复, DuraMax= | 聚灵珠信息:  | 聚灵珠 | Dura | find | isOutputted | StdMode | DuraMax | string |  Dura=,,,2026-11-18
-67,root/45/1,root/45,2,,待识别,0,1,0,27,未恢复,,,,2026-11-18
+66,root/45/0,root/45,2,isOutputted（父函数内联恢复；原始符号名待确认）,函数体已内联到StorageItems；参数及聚灵珠耐久过滤逻辑已恢复,2,15,0,52,已写入唯一明文（父函数内联）,DuraMax= | 聚灵珠信息: | 聚灵珠 | Dura | find | isOutputted | StdMode | DuraMax | string | Dura= | 两参数；捕获共享状态与日志函数的身份按父级词法引用保留,11.16/MainLeftBottom_11.16_明文.lua：StorageItems内联isOutputted,已在StorageItems内以局部函数isOutputted(item,itemText)实现：非聚灵珠直接通过；首次命中时输出物品及StdMode/Dura/DuraMax信息；缺少Dura或DuraMax时拒绝存仓；否则比较Dura<=DuraMax。未确认原始闭包导出名。,2026-11-20
+67,root/45/1,root/45,2,findAvailablePage（父函数内联恢复；原始符号名待确认）,函数体已内联到StorageItems；分页剩余容量计算已恢复,0,1,0,27,已写入唯一明文（父函数内联）,27条指令、0参数；父函数预先捕获maxPage/pageCapacity/openSize/storedPageData；返回首个仍有开放空格的页码,11.16/MainLeftBottom_11.16_明文.lua：StorageItems内联findAvailablePage,已在StorageItems内以局部函数findAvailablePage()实现：逐页计算remainingOpenSize及pageLimit，与storedPageData[page]比较，返回第一个仍有空位的页码；原始闭包导出名未确认。,2026-11-20
 68,root/46,root,1,IsInWhitelistMap,已写入明文（本版地图名单扩展；跨版本业务复用；未逐槽模拟）,0,12,0,42,已恢复（跨版本业务复用；本版常量扩展重写）,GetMetaValue | MAP_NAME | ipairs | 盟重省 | string | 土城 | 盟重 | IN_SAFE_AREA | find | SL,MainLeftBottom_11.16_明文.lua：IsInWhitelistMap,字符串查找的起始位置按常量1使用；未逐槽确认额外参数/模式位,2026-11-19
 69,root/47,root,1,ScheduleOnce,跨版本高置信候选（11.2包装函数与11.16 SL方法调用形状吻合；本体为官方API包装）,2,2,0,7,已写入明文,SL | ScheduleOnce | Opcode 369融合方法准备与两个参数寄存器移动；Opcode 202直接返回调用结果,MainLeftBottom_11.16_明文.lua,原始符号名未确认；return后的尾部槽位不可达,2026-11-18
 70,root/48,root,1,checkGold,高置信候选（root/10引用checkGold；本原型查询金币数量）,0,9,0,26,已写入明文（本版直接恢复）,MoneyProxy | GetMoneyCountById | ProxyTable | GetMoneyIdByName | global | 金币 | Facade | retrieveProxy,,26/26槽位闭合；0参数、0捕获；root/79通过root N[54]捕获本函数，且其常量/调用点标识checkGold,2026-11-20
