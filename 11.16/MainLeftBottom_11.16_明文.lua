@@ -4326,3 +4326,86 @@ local function MakeResourceStatisticsRows_11_16(listView, cellWidth)
     end
 end
 
+
+
+-- ============================================================================
+-- 11.16 root/52/6/1：资源统计周期刷新回调（168条指令，0显式参数）
+-- ============================================================================
+-- 业务主体与11.9同职责刷新回调一致；新版常量表明确包含时间、货币代理、
+-- initSnapshot、resTimer/resWin及Text_setString等完整操作线索。
+-- 本版原型无显式参数，依赖由父级闭包捕获；在明文恢复层用工厂参数显式表达，
+-- 便于后续按父级真实捕获顺序接线。不要把此工厂参数数量误记为原型参数数。
+local function MakeResourceStatisticsRefresh_11_16(
+    moduleState, timerState, curTimeText, durTimeText, initState,
+    moneyProxy, moneyRows, formatNumber, itemRows, getItemCount
+)
+    return function()
+        local gui = GUI
+
+        if not gui:Win_IsNotNull(moduleState.resWin) then
+            if timerState.resTimer then
+                SL:UnSchedule(timerState.resTimer)
+                timerState.resTimer = nil
+            end
+            return
+        end
+
+        local now
+        if os and os.time then
+            local timeOK, timeValue = pcall(os.time)
+            if timeOK and timeValue then
+                now = timeValue
+            end
+        end
+
+        if now then
+            local dateText
+            if os and os.date then
+                local dateOK, value = pcall(os.date, "%Y-%m-%d %H:%M:%S", now)
+                if dateOK then
+                    dateText = value
+                end
+            end
+            gui:Text_setString(curTimeText, "当前时间:" .. (dateText or "--"))
+
+            local initTime = initState.initTime
+            if initTime and initTime > 0 then
+                local elapsed = now - initTime
+                local hours = math.floor(elapsed / 3600)
+                local minutes = math.floor((elapsed % 3600) / 60)
+                gui:Text_setString(
+                    durTimeText,
+                    "历时:" .. formatNumber(hours) .. "小时"
+                        .. formatNumber(minutes) .. "分钟"
+                )
+            end
+        end
+
+        -- root/52/6/1对应资源统计快照以货币名称作为initSnapshot键；刷新时也必须使用同一名称键。
+        for moneyName, textNode in pairs(moneyRows) do
+            local moneyId = moneyProxy:GetMoneyIdByName(moneyName)
+            if moneyId then
+                local currentCount = moneyProxy:GetMoneyCountById(moneyId) or 0
+                local initialCount = initState.initSnapshot[moneyName] or 0
+                local delta = currentCount - initialCount
+                gui:Text_setString(
+                    textNode,
+                    moneyName .. ":" .. formatNumber(currentCount)
+                        .. "(" .. formatNumber(delta) .. ")"
+                )
+            end
+        end
+
+        for itemName, textNode in pairs(itemRows) do
+            local currentCount = getItemCount(itemName)
+            local initialCount = initState.initSnapshot[itemName] or 0
+            local delta = currentCount - initialCount
+            gui:Text_setString(
+                textNode,
+                itemName .. ":" .. formatNumber(currentCount)
+                    .. "(" .. formatNumber(delta) .. ")"
+            )
+        end
+    end
+end
+
