@@ -3804,3 +3804,42 @@ local function MakeCruiseTimerCallback_11_16(capturedUpvalues)
     end
 end
 
+
+
+-- ============================================================================
+-- 11.16 root/52/24：停止丢弃、拾取及自动购买金条（部分恢复，76个物理槽位）
+-- 依据本版常量和控制流恢复四个定时器清理、丢弃状态复位及按钮复位。
+-- 捕获对象词法名/父级upvalue映射尚未完全闭合，故通过显式代理参数传入。
+-- 该函数比11.9同职责停止回调多出buygold110Timer、buygoldTimer和dropallbut处理。
+-- ============================================================================
+local function helper_root_52_24(
+    timerState,
+    featureState,
+    dropAllButton,
+    showLocalNotice
+)
+    local function cancelTimer(fieldName)
+        local timer = timerState[fieldName]
+        if timer then
+            SL:UnSchedule(timer)
+            timerState[fieldName] = nil
+        end
+    end
+
+    -- 本版常量池确认的自动购买、拾取及丢弃定时器。
+    cancelTimer("buygold110Timer")
+    cancelTimer("buygoldTimer")
+    cancelTimer("shiquTimer")
+    cancelTimer("dropTimer")
+
+    featureState.isDiuing = false
+
+    -- 停止全部操作后，将“丢全部”按钮恢复为未开启状态。
+    if dropAllButton then
+        GUI:Button_setTitleText(dropAllButton, "开丢全部")
+        GUI:Button_setTitleColor(dropAllButton, "#ffffff")
+    end
+
+    showLocalNotice("已停止丢物品、拾取和购买金条")
+    return true
+end
