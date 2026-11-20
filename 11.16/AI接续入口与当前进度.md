@@ -1726,3 +1726,8 @@
 ## 2026-11-20再次纠正：root/15真实Opcode字段是A
 
 上一轮把root/15/1的`opcode`字段误判为VM分派码，现撤销。root/15这批特殊导出记录中，真实VM Opcode在A字段，B/C/D是操作数；`opcode`字段仅是辅助编码/模式字段，精确格式意义暂不猜。证据：A=388对应跳转（slot 8/17/20/30/36/38/41/44/53/60/66/68/70/72/81/83/94/97），A=386对应迭代器多返回调用（slot35），A=339对应函数结束（slot24/78/101/121）。root/15/1实际VM Opcode集合见进度账本。不要把上轮错误的“仅12种Opcode”结论继续传播。唯一明文未改，统计76/162、93/162。继续用A字段与原版F()重建融合边界。
+
+
+## 2026-11-20续接：root/15/1 slot36–70循环体已闭合
+
+重要字段规则：root/15特殊导出记录真实VM Opcode在A字段，B/C/D是操作数；JSON的`opcode`字段不是F()分派码。上一轮把0–14当Opcode的错误结论已撤销。slot36–70现在已按F()闭合：slot36初次跳到slot69；slot69 Opcode250推进pairs(BAG_DATA)，slot70回跳slot37；slot37检查item存在；slot39/40筛MakeIndex；slot42/43筛Name；slot45–47准备string.find；slot48–52执行名称包含筛选；slot54–59调用SL.GetMetaValue("ITEM_IS_BIND", item)并排除绑定物品；slot61–68读取OverLap，tonumber失败时数量回退1。slot33–35为pairs迭代器初始化。详细Opcode与融合边界见进度账本和Opcode语义映射文档。本轮只闭合循环，不增加完整恢复数；接下来继续slot1–35和slot71–121。
