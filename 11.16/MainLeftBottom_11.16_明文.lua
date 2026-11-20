@@ -740,13 +740,14 @@ end
 -- 父级root/52槽位550 Opcode178创建childIndex=9闭包，captureCount=5：
 -- 槽551–555依次将父级H[6]、H[3]、H[7]、H[8]、H[0]绑定到本闭包H[0..4]。
 -- root槽位633创建root/52时，root/52的H[6]/H[3]/H[7]/H[8]/H[0]
--- 分别来自root N[67]/N[3]/N[7]/N[62]/N[4]；这些寄存器值的业务名称尚未全部确认。
+-- 分别来自root N[67]/N[3]/N[7]/N[62]/N[4]；父级寄存器原始业务变量名未全部恢复，
+-- 但5项捕获链及本闭包全部18槽执行体均已闭合，使用capturedUpvalues保留真实值。
 -- Opcode49融合消费槽位2和3：先读取H[0]并设置其distance=11，再装载全局BlacklistItems；
 -- 槽位4调用BlacklistItems()。
 -- 后续读取H[1]作为定时器状态对象，读取H[2]作为调度函数，
 -- 调度函数以BlacklistItems和H[3]为参数，返回值写入H[1].blacklistTimer。
 -- 最后调用H[4](提示格式字符串, H[0].distance)，并返回true。
--- H[0..4]均保留捕获代理，不根据寄存器复用猜测业务变量名。
+-- H[0..4]均保留捕获代理，原始变量符号名未知不影响本闭包的静态完整恢复。
 -- make_helper_root_52_9为原型路径合成定位名，不是原始函数符号名。
 local function make_helper_root_52_9(capturedUpvalues)
     capturedUpvalues[1].distance = 11
@@ -772,11 +773,11 @@ end
 -- 槽位608 Opcode243将父级N[24]绑定到本闭包H[2]。
 -- root/52自身由root槽位633 Opcode178创建，captureCount=19；其H[3]来自root N[3]，
 -- H[13]来自root N[5]。因此本闭包H[0]/H[1]的捕获链已映射到root N[3]/N[5]；
--- H[2]对应root/52创建点的N[24]，其业务身份尚未确认。
+-- H[2]对应root/52创建点的N[24]；该父级局部变量的原始业务名称未知，但捕获来源已精确闭合。
 -- Opcode9融合消费槽位2：先读取H[0]，再读取其gatherTimer字段。
 -- gatherTimer存在时调用H[1](“关闭引怪功能”)，再调用全局业务函数StopGatherMonsters()并返回true；
 -- 不存在时调用H[1](“开启引怪功能，阈值：11”)，再调用H[2]()并返回true。
--- H[2]保留为捕获回调占位，不根据寄存器复用猜测其真实名称。
+-- H[2]以捕获代理保留真实回调值；其原始变量名未知不影响本闭包19槽控制流的静态完整恢复。
 -- make_helper_root_52_36为原型路径合成定位名，不是原始函数符号名。
 local function make_helper_root_52_36(capturedUpvalues)
     return function()
