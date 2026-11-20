@@ -3538,3 +3538,75 @@ local function helper_root_52_31(timerState, printLog, featureState, schedule)
     StorageItems()
     timerState.storageTimer = schedule(StorageItems, 1.0)
 end
+
+-- ============================================================================
+-- 11.16 root/52/3：自动检测金币并购买金条按钮回调（23条指令，0显式参数）。
+-- 合成定位名；父闭包结构与11.9 MakeBuyGoldButtonHandler相同。
+-- 本版专属证据：buygold110Timer、0.5秒周期、提示“开始检测金币(>110W买金条)”。
+-- 捕获参数按旧版已确认职责接入；本版upvalue槽位顺序未单独复核。
+-- ============================================================================
+local function helper_root_52_3(timerState, showLocalNotice, buyStoreItem, unusedCapturedFunction)
+    return function()
+        if timerState.buygold110Timer then
+            return
+        end
+
+        showLocalNotice("开始检测金币(>110W买金条)")
+        local callback = helper_root_52_3_0(
+            buyStoreItem,
+            showLocalNotice,
+            timerState,
+            unusedCapturedFunction
+        )
+        timerState.buygold110Timer = SL:Schedule(callback, 0.5)
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/52/3/0：自动购买金条周期回调（77条指令，0显式参数）。
+-- 主体沿用11.9同结构MakeBuyGoldTimerCallback；严格采用11.16常量中的
+-- 1100000阈值、buygold110Timer字段及本版成功/失败/余额不足提示。
+-- MoneyProxy仅按本版常量与旧版同一调用结构使用，不分析其内部实现。
+-- ============================================================================
+local function helper_root_52_3_0(buyStoreItem, showLocalNotice, timerState, unusedCapturedFunction)
+    return function()
+        local moneyProxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
+        if not moneyProxy then
+            return
+        end
+
+        local moneyId = moneyProxy:GetMoneyIdByName("金币")
+        if not moneyId then
+            return
+        end
+
+        local goldCount = moneyProxy:GetMoneyCountById(moneyId)
+        if not goldCount then
+            if timerState.buygold110Timer then
+                SL:UnSchedule(timerState.buygold110Timer)
+                timerState.buygold110Timer = nil
+            end
+            SL:ShowSystemTips("金币不足110W，买金条结束")
+            return
+        end
+
+        if goldCount > 1100000 then
+            local buyOK, buyResult = buyStoreItem("金条", 1)
+            if buyOK then
+                showLocalNotice("买金条成功，当前金币：%d", goldCount)
+            else
+                SL:ShowSystemTips(string.format("买金条失败：%s", tostring(buyResult)))
+                if timerState.buygold110Timer then
+                    SL:UnSchedule(timerState.buygold110Timer)
+                    timerState.buygold110Timer = nil
+                end
+            end
+        else
+            if timerState.buygold110Timer then
+                SL:UnSchedule(timerState.buygold110Timer)
+                timerState.buygold110Timer = nil
+            end
+            SL:ShowSystemTips("金币不足110W，买金条结束")
+        end
+    end
+end
