@@ -287,23 +287,23 @@ end
 
 -- 11.16 root/30：Nested_find（1参数、31条物理指令、无子原型）。
 -- 本版常量池为BAG_DATA、SL、GetMetaValue、pairs、Name、string、find及数值1。
--- 与11.2同职责函数对照后，明确不保留旧版MakeIndex、ITEM_IS_BIND、OverLap过滤/堆叠累加；
--- 按本版字段证据仅统计名称匹配的背包物品条目数。
+-- root/79 forgeZodiac将本函数返回值直接读取.Index与.Name，并传入SL.UseItemByIndex；
+-- 因此本版接口必须返回匹配到的背包物品对象，而不是旧记录中误恢复的匹配数量。
+-- 不保留旧版MakeIndex、ITEM_IS_BIND、OverLap过滤/堆叠累加；按Name字面包含关系返回首个匹配物品。
 local function Nested_find(searchText)
     local bagData = SL:GetMetaValue("BAG_DATA")
     if not bagData then
-        return 0
+        return nil
     end
 
-    local totalCount = 0
     for _, item in pairs(bagData) do
         if item and item.Name
             and string.find(item.Name, searchText, 1, true) then
-            totalCount = totalCount + 1
+            return item
         end
     end
 
-    return totalCount
+    return nil
 end
 
 
