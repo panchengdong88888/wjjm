@@ -3442,3 +3442,58 @@ local function helper_root_44(priceValue, itemName, modeValue)
 
     fileUtil:writeStringToFile(content, writablePath)
 end
+
+
+-- ============================================================================
+-- 11.16 root/52/17：拾取物品按钮回调（25条指令，0个显式参数）。
+-- 合成定位名；根据本版常量与11.9同职责回调恢复。捕获值按用途命名，
+-- 原始upvalue槽位身份未在此处强行认定。
+-- ============================================================================
+local function helper_root_52_17(timerState, printLog, schedule)
+    return function()
+        if timerState.shiquTimer then
+            printLog("关闭拾取物品")
+            SL:UnSchedule(timerState.shiquTimer)
+            timerState.shiquTimer = nil
+            return
+        end
+
+        printLog("开启拾取物品")
+        PickUpItems()
+        timerState.shiquTimer = schedule(PickUpItems, 0.01)
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/52/19：取物按钮回调（29条指令，0个显式参数）。
+-- 合成定位名；对应takeTimer/isTaking启停分支。
+-- ============================================================================
+local function helper_root_52_19(timerState, printLog, featureState, schedule)
+    return function()
+        if timerState.takeTimer then
+            printLog("关闭取物功能")
+            SL:UnSchedule(timerState.takeTimer)
+            timerState.takeTimer = nil
+            featureState.isTaking = false
+            return
+        end
+
+        printLog("开启取物功能")
+        TakeItems()
+        timerState.takeTimer = schedule(TakeItems, 1.0)
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/52/1：黑名单关闭回调（23条指令，0个显式参数）。
+-- 本版常量仅包含关闭提示、isBlacklisting、blacklistTimer与false；
+-- 按停止分支恢复，不补造开启分支。
+-- ============================================================================
+local function helper_root_52_1(timerState, featureState, printLog)
+    if timerState.blacklistTimer then
+        printLog("关闭黑名单功能")
+        SL:UnSchedule(timerState.blacklistTimer)
+        timerState.blacklistTimer = nil
+        featureState.isBlacklisting = false
+    end
+end
