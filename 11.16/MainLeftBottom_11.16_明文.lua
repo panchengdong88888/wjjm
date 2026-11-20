@@ -983,6 +983,29 @@ MainLeftBottom.zd = function(afkEnabled)
 end
 
 
+
+-- 11.16 root/28：32条物理指令，0参数、0捕获；原始函数名未从父级导出关系确认，使用合成定位名。
+-- 从SL读取固定标题ID 51295的标题数据；标题数据或time字段不存在时返回false。
+-- 将标题time与SL提供的SERVER_TIME转为数字；服务器时间缺失/不可转数字时回退0；
+-- 返回标题截止时间是否仍晚于服务器当前时间。
+local function helper_root_28()
+    local titleData = SL:GetMetaValue("TITLE_DATA_BY_ID", 51295)
+    if not titleData then
+        return false
+    end
+
+    local titleTimeValue = titleData.time
+    if not titleTimeValue then
+        return false
+    end
+
+    local titleTime = tonumber(titleTimeValue)
+    local serverTime = tonumber(SL:GetMetaValue("SERVER_TIME")) or 0
+
+    return titleTime > serverTime
+end
+
+
 -- 11.16 root/42：22条物理指令，0个显式参数、0个upvalue、无子原型。
 -- slot1–5检查global.Facade；Facade不存在时Opcode205直接结束函数。
 -- slot6–12取得global.Facade.retrieveProxy并以global.ProxyTable.PlayerInputProxy调用；
