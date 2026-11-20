@@ -5659,7 +5659,10 @@
         "state",
         "walkNpc",
         "MoveTo"
-      ]
+      ],
+      "recovery_status": "未恢复（主体控制流已大部分闭合；待整合完整Lua并处理root/72辅助函数）",
+      "business_summary": "forgeZodiac状态回调：金币检查、前往神龍之都、移动并点击NPC（index=41，UserID='10030'），等待后每5 tick扫描十二生肖；查询ALL_EQUIP_DATAS找出未装备生肖，再查BAG_DATA取得物品对象并使用其Index；按生肖前缀每30 tick节流，累计尝试次数并发送进度消息。",
+      "recovery_evidence": " 父root槽362将立即数41写入N[51]，root/79 H[6]因此为NPC交互JSON的index=41；H[7]='10030'。"
     },
     {
       "preorder_id": 161,
