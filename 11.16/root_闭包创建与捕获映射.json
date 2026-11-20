@@ -1582,13 +1582,17 @@
           "slot": 542,
           "opcode": 243,
           "sourceRegister": 74,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "source_symbol": "root N[74]：见人跑共享状态门控（业务原名未知）",
+          "source_evidence": "root/25槽18也捕获root N[74]；root/25/0再把同一共享槽传给root/25/0/0和root/25/0/2，两个子闭包均写入false；root/11也写入false。具体原始变量名未确认。"
         },
         {
           "slot": 543,
           "opcode": 243,
           "sourceRegister": 75,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "source_symbol": "root N[75]：见人跑提示一次性门控（业务原名未知）",
+          "source_evidence": "root/32也捕获root N[75]，其闭包在门控为真时清零并显示见人跑提示；root/11同时将该共享槽置false。具体原始变量名未确认。"
         },
         {
           "slot": 544,
