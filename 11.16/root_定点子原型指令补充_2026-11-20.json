@@ -8676,6 +8676,735 @@
       ],
       "start_offset": 104831,
       "end_offset": 105323
+    },
+    {
+      "path": "root/52/26/0",
+      "depth": 3,
+      "parameter_count": 0,
+      "constant_count": 21,
+      "child_count": 0,
+      "instruction_count": 77,
+      "constants": [
+        "UnSchedule",
+        5000000,
+        "金币不足500W，买金条结束",
+        "ShowSystemTips",
+        "global",
+        "金币",
+        "金条",
+        "ProxyTable",
+        "买金条失败：",
+        "tostring",
+        "买金条失败：%s",
+        "MoneyProxy",
+        null,
+        "GetMoneyCountById",
+        "retrieveProxy",
+        "SL",
+        "GetMoneyIdByName",
+        "买金条成功，当前金币：%d",
+        1,
+        "buygoldTimer",
+        "Facade"
+      ],
+      "physical_slots": 77,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 282,
+          "A": 0,
+          "B": "global",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 85,
+          "A": 0,
+          "B": 0,
+          "C": "Facade",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 103,
+          "A": 0,
+          "B": 0,
+          "C": "retrieveProxy",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 108,
+          "A": 2,
+          "B": "global",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 96,
+          "A": 2,
+          "B": 2,
+          "C": "ProxyTable",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 96,
+          "A": 2,
+          "B": 2,
+          "C": "MoneyProxy",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 209,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 60,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 388,
+          "A": 0,
+          "B": 76,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 204,
+          "A": 1,
+          "B": 0,
+          "C": "GetMoneyIdByName",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 295,
+          "A": 3,
+          "B": "金币",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 209,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 358,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 388,
+          "A": 0,
+          "B": 76,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 152,
+          "A": 2,
+          "B": 0,
+          "C": "GetMoneyCountById",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 241,
+          "A": 4,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 209,
+          "A": 2,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 358,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 388,
+          "A": 0,
+          "B": 58,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 271,
+          "A": 0,
+          "B": 5000000,
+          "C": 2,
+          "mode": 0,
+          "operand_flags": 208
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 388,
+          "A": 0,
+          "B": 58,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 234,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 295,
+          "A": 4,
+          "B": "金条",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 295,
+          "A": 5,
+          "B": 1,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 386,
+          "A": 3,
+          "B": 5,
+          "C": 4,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 358,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 388,
+          "A": 0,
+          "B": 32,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 403,
+          "A": 5,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 29,
+          "opcode": 295,
+          "A": 6,
+          "B": "买金条成功，当前金币：%d",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 30,
+          "opcode": 288,
+          "A": 7,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 31,
+          "opcode": 123,
+          "A": 5,
+          "B": 7,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 32,
+          "opcode": 388,
+          "A": 0,
+          "B": 76,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 33,
+          "opcode": 127,
+          "A": 5,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 34,
+          "opcode": 384,
+          "A": 6,
+          "B": "买金条失败：%s",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 35,
+          "opcode": 146,
+          "A": 7,
+          "B": "tostring",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 36,
+          "opcode": 288,
+          "A": 8,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 37,
+          "opcode": 184,
+          "A": 7,
+          "B": 8,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 38,
+          "opcode": 362,
+          "A": 5,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 39,
+          "opcode": 105,
+          "A": 5,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 40,
+          "opcode": 102,
+          "A": 5,
+          "B": 5,
+          "C": "ShowSystemTips",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 41,
+          "opcode": 384,
+          "A": 7,
+          "B": "买金条失败：",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 42,
+          "opcode": 146,
+          "A": 8,
+          "B": "tostring",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 43,
+          "opcode": 288,
+          "A": 9,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 44,
+          "opcode": 209,
+          "A": 8,
+          "B": 9,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 45,
+          "opcode": 93,
+          "A": 7,
+          "B": 7,
+          "C": 8,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 46,
+          "opcode": 123,
+          "A": 5,
+          "B": 7,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 47,
+          "opcode": 9,
+          "A": 5,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 48,
+          "opcode": 410,
+          "A": 5,
+          "B": 5,
+          "C": "buygoldTimer",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 49,
+          "opcode": 289,
+          "A": 5,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 50,
+          "opcode": 388,
+          "A": 0,
+          "B": 76,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 51,
+          "opcode": 146,
+          "A": 5,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 52,
+          "opcode": 204,
+          "A": 5,
+          "B": 5,
+          "C": "UnSchedule",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 53,
+          "opcode": 127,
+          "A": 7,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 54,
+          "opcode": 274,
+          "A": 7,
+          "B": 7,
+          "C": "buygoldTimer",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 55,
+          "opcode": 128,
+          "A": 5,
+          "B": 7,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 56,
+          "opcode": 234,
+          "A": 5,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 57,
+          "opcode": 114,
+          "A": 5,
+          "B": "buygoldTimer",
+          "C": null,
+          "mode": 0,
+          "operand_flags": 240
+        },
+        {
+          "physical_slot": 58,
+          "opcode": 388,
+          "A": 0,
+          "B": 76,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 59,
+          "opcode": 9,
+          "A": 3,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 60,
+          "opcode": 274,
+          "A": 3,
+          "B": 3,
+          "C": "buygoldTimer",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 61,
+          "opcode": 358,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 62,
+          "opcode": 388,
+          "A": 0,
+          "B": 69,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 63,
+          "opcode": 105,
+          "A": 3,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 64,
+          "opcode": 393,
+          "A": 3,
+          "B": 3,
+          "C": "UnSchedule",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 65,
+          "opcode": 9,
+          "A": 5,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 66,
+          "opcode": 410,
+          "A": 5,
+          "B": 5,
+          "C": "buygoldTimer",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 67,
+          "opcode": 128,
+          "A": 3,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 68,
+          "opcode": 88,
+          "A": 3,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 69,
+          "opcode": 114,
+          "A": 3,
+          "B": "buygoldTimer",
+          "C": null,
+          "mode": 0,
+          "operand_flags": 240
+        },
+        {
+          "physical_slot": 70,
+          "opcode": 127,
+          "A": 3,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 71,
+          "opcode": 295,
+          "A": 4,
+          "B": "金币不足500W，买金条结束",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 72,
+          "opcode": 128,
+          "A": 3,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 73,
+          "opcode": 361,
+          "A": 3,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 74,
+          "opcode": 102,
+          "A": 3,
+          "B": 3,
+          "C": "ShowSystemTips",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 75,
+          "opcode": 295,
+          "A": 5,
+          "B": "金币不足500W，买金条结束",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 76,
+          "opcode": 128,
+          "A": 3,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 77,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        }
+      ],
+      "start_offset": 102868,
+      "end_offset": 103926
     }
   ],
   "closure_events": [
@@ -8928,6 +9657,15 @@
       "root/52/6/3",
       "root/25/0/1",
       "root/52/29"
+    ],
+    "decoded_bytes": 142522,
+    "consumed_bytes": 142522
+  },
+  "targeted_reextract_2026_11_21_batch3": {
+    "method": "原始Base36+LZW载荷解压，XOR 0x17，按S()递归解析；完整消费142522 bytes",
+    "source_blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+    "added_paths": [
+      "root/52/26/0"
     ],
     "decoded_bytes": 142522,
     "consumed_bytes": 142522
