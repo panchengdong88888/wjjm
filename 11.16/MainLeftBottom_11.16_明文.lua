@@ -3518,3 +3518,23 @@ local function helper_root_52_2(mainLeftBottomA, printLog)
         end
     end
 end
+
+-- ============================================================================
+-- 11.16 root/52/31：存仓按钮点击回调（29条指令，0个显式参数）。
+-- 合成定位名；本版常量包含isStoring、storageTimer、StorageItems、
+-- UnSchedule、关闭/开启存仓提示及周期值1；与11.9同职责回调主体吻合。
+-- 父级捕获槽位在当前资料中未单独闭合，按旧版职责以用途参数承载。
+-- ============================================================================
+local function helper_root_52_31(timerState, printLog, featureState, schedule)
+    if timerState.storageTimer then
+        printLog("关闭存仓功能")
+        SL:UnSchedule(timerState.storageTimer)
+        timerState.storageTimer = nil
+        featureState.isStoring = false
+        return
+    end
+
+    printLog("开启存仓功能")
+    StorageItems()
+    timerState.storageTimer = schedule(StorageItems, 1.0)
+end
