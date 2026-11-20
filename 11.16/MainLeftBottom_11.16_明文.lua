@@ -2666,3 +2666,111 @@ function PickUpItems()
         ShowLocalNoticeByType("拾取: " .. target.item.mName)
     end
 end
+
+-- ============================================================================
+-- 11.16 root/1：新区物品周期回调（76条指令，0参数）。
+-- 与11.9 MakeNewZoneItemTimerCallback返回的0参数/76指令回调同职责、同规模；
+-- 本版常量BAG_DATA、MSG_CS_USE_BAG_ITEM、newzoneTimer、Gbtc、ShowSystemTips吻合。
+-- ============================================================================
+local NEW_ZONE_ITEM_NAME_KEYWORDS = {
+    "开天",
+    "雷霆战甲(男)",
+    "雷霆战盔",
+    "雷霆项链",
+    "雷霆护腕",
+    "雷霆护腕",
+    "雷霆戒指",
+    "雷霆戒指",
+    "雷霆腰带",
+    "雷霆战靴",
+    "逐日剑法",
+    "半月弯刀",
+    "施毒术",
+    "烈火剑法",
+    "自动回收",
+    "自动拾取",
+    "自动合成",
+    "自由发言",
+    "解锁绑定",
+    "自由交易",
+    "超级狂暴",
+    "超级神器",
+    "超级复活",
+    "超级回血",
+    "超级四神",
+    "回血石Lv.1",
+    "雷霆の护盾",
+    "龙腾玉佩",
+    "龙腾战鼓",
+    "龙腾血符",
+    "斩尽天下不收刀",
+    "梦幻斗笠Lv.1",
+    "复活BUFF",
+    "青铜会员卡",
+    "白银会员卡",
+    "黄金会员卡",
+    "钻石会员卡",
+    "至尊会员卡",
+}
+
+local function ProcessNewZoneItems()
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then
+        return
+    end
+
+    for _, keyword in ipairs(NEW_ZONE_ITEM_NAME_KEYWORDS) do
+        for _, item in pairs(bagData) do
+            if item and item.MakeIndex and item.Name then
+                local matchStart = string.find(item.Name, keyword, 1, true)
+                if matchStart then
+                    LuaSendMsg(
+                        global.MsgType.MSG_CS_USE_BAG_ITEM,
+                        item.MakeIndex,
+                        0,
+                        0,
+                        0,
+                        item.Name,
+                        string.len(item.Name)
+                    )
+                    PrintLog("新区使用：%s", item.Name)
+                    return
+                end
+            end
+        end
+    end
+
+    local state = MainLeftBottom.a
+    local newZoneTimer = state.newzoneTimer
+    if newZoneTimer then
+        SL:UnSchedule(newZoneTimer)
+        state.newzoneTimer = nil
+    end
+
+    PrintLog("新区物品已全部使用完毕，停止定时器")
+    SL:ShowSystemTips("新区物品已全部使用完毕")
+    Gbtc()
+end
+
+
+-- ============================================================================
+-- 11.16 root/13：NewZoneFeature（37条指令，0参数，1个延迟消息子闭包）。
+-- 与11.9同职责root原型37指令主体吻合；新版延迟消息参数以root/13/0实际指令
+-- 为准，调用closure_root_13_0发送9002/22502/1/2/3/空串/0。
+-- ============================================================================
+function NewZoneFeature()
+    local state = MainLeftBottom.a
+    PrintLog("开启新区功能")
+    state.isNewzone = true
+
+    LuaSendMsg(9002, 22302, 1, 2, 3, "", 0)
+    Gbtc()
+
+    SL:ScheduleOnce(closure_root_13_0, 0.5)
+
+    if state.newzoneTimer then
+        SL:UnSchedule(state.newzoneTimer)
+    end
+
+    state.newzoneTimer = helper_root_78(ProcessNewZoneItems, 0.05)
+end
