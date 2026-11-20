@@ -169,4 +169,4 @@ mode=%s
 161,root/80,root,1,ShowLocalNoticeByType,高置信候选,1,14,0,15,已写入明文,screenH | ShowLocalNoticeByType | Type=10 | Msg=参数1 | FColor=249 | BColor=0 | X=5 | Y=screenH-50 | SL,MainLeftBottom_11.16_明文.lua,,2026-11-18
 "
 
-162,root/15/1,root/15,2,,拍卖行上架物品处理回调（职责线索）,0,12,0,121,未恢复,Opcode字段纠错：真实分派码为0/1/2/4/5/6/8/9/10/12/13/14；此前基于A字段的逐槽Opcode解释全部撤回，需按F()分派叶重建融合边界。常量池指向BAG_DATA、绑定检查、价格上限、RequestAuctionPutin等, ,旧slot解释不能复用；待真实Opcode叶与寄存器/调用参数闭合后再写明文,2026-11-20
+162,root/15/1,root/15,2,,拍卖行上架物品处理回调（职责线索）,0,12,0,121,未恢复,再次纠错：本批特殊导出布局的真实VM Opcode在A字段；JSON opcode为辅助模式字段。A=388跳转、386迭代器调用、339结束已交叉确认。常量池指向BAG_DATA、绑定检查、价格上限、RequestAuctionPutin等, ,旧slot解释不能复用；待真实Opcode叶与寄存器/调用参数闭合后再写明文,2026-11-20
