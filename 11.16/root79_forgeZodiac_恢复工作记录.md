@@ -117,3 +117,16 @@ state.forgeZodiacTimer = helper_root_78("蛇·[普通]", 0.1)
 进一步读取`root_闭包创建与捕获映射.json`确认：父root在slot 386以Opcode 387创建root/79，随后slot 387–398连续执行12次Opcode 243捕获，captureCount=12。捕获来源依次为父root局部寄存器：3、54、58、4、49、50、51、52、53、56、55、57，对应root/79的H[0]–H[11]。
 
 说明：函数状态CSV的root/79行中“0”是子原型数（child_count），不是upvalue_count；CSV并未记录upvalue数量。因此不存在“CSV记0个upvalue”的冲突，上一轮阶段记录中这一说法已撤销。当前真正未闭合的是12个父寄存器的业务身份，尤其不能直接认定H[0]=MainLeftBottom.z。
+
+
+## 2026-11-20续：通过同父寄存器交叉映射确认部分upvalue身份
+
+本轮利用闭包创建映射中多个子函数共享同一父root局部寄存器的事实，补齐了root/79的部分捕获身份，不再停留在“12个寄存器身份全部未知”：
+
+- root/79 H[0]来自父root寄存器3；root/10 startForgeZodiac的H[0]也来自同一寄存器3，且root/10已由本版指令确认H[0]=MainLeftBottom.z。因此root/79 H[0]同样是MainLeftBottom.z。入口slot1–2的状态表读取映射得到交叉证据支持。
+- root/79 H[2]来自父root寄存器58；root/10 H[1]也来自寄存器58，root/10该捕获已确认为ForgeZodiacToggleHandler。因此root/79 H[2]为同一个ForgeZodiacToggleHandler回调。
+- root/79 H[10]来自父root寄存器55；root/10 H[4]也来自寄存器55，root/10该捕获已确认为字符串“蛇·[普通]”。因此root/79 H[10]为同一个“蛇·[普通]”字符串。
+- 其余捕获暂列：H[1]=父寄存器54、H[3]=4、H[4]=49、H[5]=50、H[6]=51、H[7]=52、H[8]=53、H[9]=56、H[11]=57。闭包映射中这些寄存器目前没有其他已识别子函数的同源捕获，暂不猜测。
+- 这项交叉映射只解决upvalue身份，不代表函数控制流和融合指令全部闭合；root/79暂不写入明文，计数不变。
+
+接续时可直接以已确认的H[0]、H[2]、H[10]为基础，继续追剩余9项捕获及slot 37–96的NPC调用分支；无需重做本轮寄存器交叉比对。
