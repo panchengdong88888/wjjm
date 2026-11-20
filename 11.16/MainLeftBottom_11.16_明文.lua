@@ -4515,3 +4515,39 @@ local function MakeInputModeColorSync_11_16(
     end
 end
 
+
+
+-- ============================================================================
+-- 11.16 root/25/0/1：摇杆移动通知回调（38条指令，0显式参数，1项捕获）
+-- ============================================================================
+-- 定点指令流闭合：先取gamePlayerController:GetMainPlayer()；
+-- 玩家对象不存在则退出；再取ACTOR_HP，无有效HP则退出。
+-- 唯一捕获对象分别读取.dir与.step，写入UserInputMove通知负载；
+-- 同时写入摇杆输入类型及玩家当前地图X/Y坐标。
+local function MakeJoystickUserInputMove_11_16(moveState)
+    return function()
+        local player = global.gamePlayerController:GetMainPlayer()
+        if not player then
+            return
+        end
+
+        local actorHP = SL:GetMetaValue("ACTOR_HP")
+        if not actorHP then
+            return
+        end
+
+        local payload = {
+            moveDir = moveState.dir,
+            moveStep = moveState.step,
+            type = global.MMO.INPUT_MOVE_TYPE_JOYSTICK,
+            x = player:GetMapX(),
+            y = player:GetMapY()
+        }
+
+        global.Facade.sendNotification(
+            global.NoticeTable.UserInputMove,
+            payload
+        )
+    end
+end
+
