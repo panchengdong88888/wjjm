@@ -1527,3 +1527,23 @@ local function helper_root_73()
 
     return secondsOfDay >= 72000 and secondsOfDay < 79200
 end
+
+
+-- 11.16 root/16：MainLeftBottom.a.show（25条物理指令、0参数、2个upvalue）。
+-- root槽269创建闭包，槽270/271分别捕获MainLeftBottom.a与MainLeftBottom.b；槽272注册为MainLeftBottom.a.show。
+-- Opcode 7写入a.isHidden=true；pairs遍历b的键，按键取按钮对象并调用GUI:setVisible(button,true)。
+-- 最后仅当a.infoBg为真值时，调用GUI:setVisible(a.infoBg,true)。所有可见性布尔值均由本版指令常量直接确认。
+MainLeftBottom.a.show = function()
+    local state = MainLeftBottom.a
+    local buttons = MainLeftBottom.b
+
+    state.isHidden = true
+
+    for key in pairs(buttons) do
+        GUI:setVisible(buttons[key], true)
+    end
+
+    if state.infoBg then
+        GUI:setVisible(state.infoBg, true)
+    end
+end
