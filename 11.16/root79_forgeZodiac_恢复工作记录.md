@@ -282,3 +282,16 @@ root/79 slot112–158现已闭合；slot159–177节拍段此前已闭合。root
 - root/79 slot78–81使用格式串`{"index":%d,"UserID":"%s"}`，将H[6]/H[7]传入string.format。
 
 因此NPC交互JSON可确定为`{"index":41,"UserID":"10030"}`，不再是未知字段，也不能挪用地图配置中3000、3001等其他NPC索引。slot69–74移动目标此前已确定为MoveTo(151,144,8)。root/79的NPC移动与点击字段现已闭合。
+
+
+### 2026-11-20续：root/79末尾进度消息段闭合
+
+slot191–212已按11.16原始F()分派器融合边界闭合：
+- slot191–196装载LuaSendMsg及消息固定参数9002、10004、1、2、3。
+- slot197 Opcode130融合消费slot198：将当前未装备生肖名称复制到参数区，并装载string表；slot199读取string.len。
+- slot200复制生肖名称，slot201调用string.len(生肖名称)，slot202 Opcode200以寄存器区间调用LuaSendMsg。
+- 因此网络消息调用形态为`LuaSendMsg(9002, 10004, 1, 2, 3, zodiacName, string.len(zodiacName))`。
+- slot203 Opcode194读取H[3]（PrintLog），并融合消费slot204–206装载提示前缀、生肖名及“ 第”；slot207读取state.tryCount，slot208装载“次”，slot209按寄存器区间拼接，slot210调用PrintLog。
+- 本段提示文本为`"锻造生肖：" .. zodiacName .. " 第" .. state.tryCount .. "次"`。
+
+至此root/79的可见业务路径已按段闭合：入口金币/地图/移动/NPC交互、clickNpc等待、每5 tick生肖扫描、装备数据与背包对象筛选、每生肖前缀30 tick节拍、tryCount>200停止、网络进度消息及PrintLog提示。尚未整体落入唯一明文的主要原因是root/72的32槽辅助函数未保存完整指令流；root/79自身所有捕获来源现已可识别，其中H[10]直接作为可调用捕获值使用，不必猜写其返回对象结构。
