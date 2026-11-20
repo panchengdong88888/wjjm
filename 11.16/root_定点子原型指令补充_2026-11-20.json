@@ -6021,6 +6021,2661 @@
       ],
       "start_offset": 89697,
       "end_offset": 89781
+    },
+    {
+      "path": "root/52/6/2",
+      "depth": 3,
+      "parameter_count": 0,
+      "constant_count": 8,
+      "child_count": 0,
+      "instruction_count": 20,
+      "constants": [
+        "点击空白,关闭资源信息窗口",
+        "resWin",
+        "Win_Close",
+        "GUI",
+        "resTimer",
+        "SL",
+        "UnSchedule",
+        null
+      ],
+      "physical_slots": 20,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 403,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 295,
+          "A": 1,
+          "B": "点击空白,关闭资源信息窗口",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 9,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": "resTimer",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 60,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 388,
+          "A": 0,
+          "B": 14,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 253,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": "UnSchedule",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 9,
+          "A": 2,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 410,
+          "A": 2,
+          "B": 2,
+          "C": "resTimer",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 49,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 7,
+          "A": 0,
+          "B": "resTimer",
+          "C": null,
+          "mode": 0,
+          "operand_flags": 240
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 253,
+          "A": 0,
+          "B": "GUI",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": "Win_Close",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 9,
+          "A": 2,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 410,
+          "A": 2,
+          "B": 2,
+          "C": "resWin",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        }
+      ],
+      "start_offset": 79853,
+      "end_offset": 80157
+    },
+    {
+      "path": "root/50/4",
+      "depth": 2,
+      "parameter_count": 0,
+      "constant_count": 4,
+      "child_count": 0,
+      "instruction_count": 23,
+      "constants": [
+        "Button_setTitleColor",
+        "GUI",
+        "#ffffff",
+        "#00ff00"
+      ],
+      "physical_slots": 23,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 253,
+          "A": 0,
+          "B": "GUI",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 393,
+          "A": 0,
+          "B": 0,
+          "C": "Button_setTitleColor",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 127,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 324,
+          "A": 3,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 358,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 388,
+          "A": 0,
+          "B": 9,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 295,
+          "A": 3,
+          "B": "#00ff00",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 366,
+          "A": 3,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 388,
+          "A": 0,
+          "B": 10,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 295,
+          "A": 3,
+          "B": "#ffffff",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 123,
+          "A": 0,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 253,
+          "A": 0,
+          "B": "GUI",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 204,
+          "A": 0,
+          "B": 0,
+          "C": "Button_setTitleColor",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 234,
+          "A": 2,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 234,
+          "A": 3,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 60,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 388,
+          "A": 0,
+          "B": 20,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 295,
+          "A": 3,
+          "B": "#ffffff",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 325,
+          "A": 3,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 388,
+          "A": 0,
+          "B": 21,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 295,
+          "A": 3,
+          "B": "#00ff00",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 128,
+          "A": 0,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        }
+      ],
+      "start_offset": 65801,
+      "end_offset": 66078
+    },
+    {
+      "path": "root/52/26",
+      "depth": 2,
+      "parameter_count": 0,
+      "constant_count": 5,
+      "child_count": 1,
+      "instruction_count": 23,
+      "constants": [
+        0.5,
+        "SL",
+        "Schedule",
+        "开始检测金币(>500W买金条)",
+        "buygoldTimer"
+      ],
+      "physical_slots": 23,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 324,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "buygoldTimer",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 60,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 6,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 11,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 403,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 295,
+          "A": 1,
+          "B": "开始检测金币(>500W买金条)",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 324,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 253,
+          "A": 1,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 204,
+          "A": 1,
+          "B": 1,
+          "C": "Schedule",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 387,
+          "A": 3,
+          "B": 0,
+          "C": 4,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 132,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 132,
+          "A": 0,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 132,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 132,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 295,
+          "A": 4,
+          "B": 0.5,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 209,
+          "A": 1,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 306,
+          "A": 0,
+          "B": "buygoldTimer",
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 208
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 293,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        }
+      ],
+      "start_offset": 102775,
+      "end_offset": 104138
+    },
+    {
+      "path": "root/52/7",
+      "depth": 2,
+      "parameter_count": 0,
+      "constant_count": 7,
+      "child_count": 0,
+      "instruction_count": 26,
+      "constants": [
+        "ipairs",
+        "slot",
+        "SL",
+        "names",
+        "ITEM_INDEX_BY_NAME",
+        "MoveItemToQuickUse",
+        "GetMetaValue"
+      ],
+      "physical_slots": 26,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 45,
+          "A": 0,
+          "B": "ipairs",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 127,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 410,
+          "A": 1,
+          "B": 1,
+          "C": "names",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 21,
+          "A": 0,
+          "B": 1,
+          "C": 2,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 388,
+          "A": 0,
+          "B": 23,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 173,
+          "A": 5,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 159,
+          "A": 5,
+          "B": 5,
+          "C": "GetMetaValue",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 295,
+          "A": 7,
+          "B": "ITEM_INDEX_BY_NAME",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 64,
+          "A": 8,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 209,
+          "A": 5,
+          "B": 8,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 358,
+          "A": 5,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 388,
+          "A": 0,
+          "B": 23,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 188,
+          "A": 6,
+          "B": "MoveItemToQuickUse",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 288,
+          "A": 7,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 9,
+          "A": 8,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 274,
+          "A": 8,
+          "B": 8,
+          "C": "slot",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 314,
+          "A": 6,
+          "B": 8,
+          "C": 7,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 198,
+          "A": 8,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 64,
+          "A": 9,
+          "B": 7,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 128,
+          "A": 8,
+          "B": 9,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 358,
+          "A": 6,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 388,
+          "A": 0,
+          "B": 23,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 388,
+          "A": 0,
+          "B": 25,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 357,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 388,
+          "A": 0,
+          "B": 5,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        }
+      ],
+      "start_offset": 84053,
+      "end_offset": 84400
+    },
+    {
+      "path": "root/25",
+      "depth": 1,
+      "parameter_count": 0,
+      "constant_count": 7,
+      "child_count": 1,
+      "instruction_count": 33,
+      "constants": [
+        "Schedule",
+        "SL",
+        "开启见人跑",
+        "UnSchedule",
+        "cruiseRunTimer",
+        null,
+        0.1
+      ],
+      "physical_slots": 33,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 324,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": "cruiseRunTimer",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 289,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 11,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 146,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 204,
+          "A": 0,
+          "B": 0,
+          "C": "UnSchedule",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 9,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 274,
+          "A": 2,
+          "B": 2,
+          "C": "cruiseRunTimer",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 88,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 114,
+          "A": 0,
+          "B": "cruiseRunTimer",
+          "C": null,
+          "mode": 0,
+          "operand_flags": 176
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 403,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 295,
+          "A": 1,
+          "B": "开启见人跑",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 128,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 127,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 253,
+          "A": 1,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 204,
+          "A": 1,
+          "B": 1,
+          "C": "Schedule",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 178,
+          "A": 3,
+          "B": 0,
+          "C": 11,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 132,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 132,
+          "A": 0,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 132,
+          "A": 0,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 132,
+          "A": 0,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 132,
+          "A": 0,
+          "B": 6,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 132,
+          "A": 0,
+          "B": 7,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 132,
+          "A": 0,
+          "B": 8,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 132,
+          "A": 0,
+          "B": 9,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 132,
+          "A": 0,
+          "B": 10,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 132,
+          "A": 0,
+          "B": 11,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 29,
+          "opcode": 132,
+          "A": 0,
+          "B": 12,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 30,
+          "opcode": 295,
+          "A": 4,
+          "B": 0.1,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 31,
+          "opcode": 209,
+          "A": 1,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 32,
+          "opcode": 0,
+          "A": 0,
+          "B": "cruiseRunTimer",
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 80
+        },
+        {
+          "physical_slot": 33,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        }
+      ],
+      "start_offset": 32391,
+      "end_offset": 40438
+    },
+    {
+      "path": "root/52/22",
+      "depth": 2,
+      "parameter_count": 0,
+      "constant_count": 6,
+      "child_count": 0,
+      "instruction_count": 34,
+      "constants": [
+        "blacklistbut",
+        "gatherTimer",
+        "rewardTimer",
+        "yinguaibut",
+        "blacklistTimer",
+        "rewardbut"
+      ],
+      "physical_slots": 34,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 127,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "blacklistTimer",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 325,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 11,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 9,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "blacklistbut",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 123,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 403,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 295,
+          "A": 1,
+          "B": "blacklistbut",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 110,
+          "A": 2,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 123,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 234,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "gatherTimer",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 366,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 388,
+          "A": 0,
+          "B": 22,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 9,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": "yinguaibut",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 123,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 403,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 295,
+          "A": 1,
+          "B": "yinguaibut",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 110,
+          "A": 2,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 234,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 274,
+          "A": 0,
+          "B": 0,
+          "C": "rewardTimer",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 366,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 388,
+          "A": 0,
+          "B": 33,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 9,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "rewardbut",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 29,
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 30,
+          "opcode": 403,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 31,
+          "opcode": 295,
+          "A": 1,
+          "B": "rewardbut",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 32,
+          "opcode": 110,
+          "A": 2,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 33,
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 34,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        }
+      ],
+      "start_offset": 91085,
+      "end_offset": 91501
+    },
+    {
+      "path": "root/52/6/3",
+      "depth": 3,
+      "parameter_count": 1,
+      "constant_count": 12,
+      "child_count": 0,
+      "instruction_count": 35,
+      "constants": [
+        0,
+        "string",
+        10,
+        "tostring",
+        100000000,
+        "format",
+        "%.1f亿",
+        "floor",
+        "math",
+        100000,
+        10000,
+        "万"
+      ],
+      "physical_slots": 35,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 366,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 3,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 295,
+          "A": 0,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 32,
+          "A": 0,
+          "B": 0,
+          "C": 100000,
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 388,
+          "A": 0,
+          "B": 10,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 188,
+          "A": 1,
+          "B": "tostring",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 241,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 202,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 27,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 388,
+          "A": 0,
+          "B": 34,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 32,
+          "A": 0,
+          "B": 0,
+          "C": 100000000,
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 388,
+          "A": 0,
+          "B": 22,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 146,
+          "A": 1,
+          "B": "tostring",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 218,
+          "A": 2,
+          "B": "math",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 410,
+          "A": 2,
+          "B": 2,
+          "C": "floor",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 191,
+          "A": 3,
+          "B": 0,
+          "C": 10000,
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 264,
+          "A": 2,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 10,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 215,
+          "A": 2,
+          "B": "万",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 93,
+          "A": 1,
+          "B": 1,
+          "C": 2,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 11,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 388,
+          "A": 0,
+          "B": 34,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 218,
+          "A": 1,
+          "B": "math",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 274,
+          "A": 1,
+          "B": 1,
+          "C": "floor",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 191,
+          "A": 2,
+          "B": 0,
+          "C": 100000000,
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 275,
+          "A": 2,
+          "B": 2,
+          "C": 10,
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 209,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 191,
+          "A": 1,
+          "B": 1,
+          "C": 10,
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 29,
+          "opcode": 105,
+          "A": 2,
+          "B": "string",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 30,
+          "opcode": 163,
+          "A": 2,
+          "B": 2,
+          "C": "format",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 31,
+          "opcode": 295,
+          "A": 3,
+          "B": "%.1f亿",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 32,
+          "opcode": 241,
+          "A": 4,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 33,
+          "opcode": 202,
+          "A": 2,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 34,
+          "opcode": 244,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 35,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        }
+      ],
+      "start_offset": 80157,
+      "end_offset": 80604
+    },
+    {
+      "path": "root/25/0/1",
+      "depth": 3,
+      "parameter_count": 0,
+      "constant_count": 22,
+      "child_count": 0,
+      "instruction_count": 38,
+      "constants": [
+        "GetMainPlayer",
+        "type",
+        "GetMapY",
+        "GetMetaValue",
+        "NoticeTable",
+        "x",
+        "INPUT_MOVE_TYPE_JOYSTICK",
+        "sendNotification",
+        "global",
+        "SL",
+        "moveDir",
+        "MMO",
+        "gamePlayerController",
+        "UserInputMove",
+        "ACTOR_HP",
+        "moveStep",
+        "dir",
+        "y",
+        0,
+        "Facade",
+        "GetMapX",
+        "step"
+      ],
+      "physical_slots": 38,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 248,
+          "A": 0,
+          "B": "global",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 85,
+          "A": 0,
+          "B": 0,
+          "C": "gamePlayerController",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": "GetMainPlayer",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 209,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 60,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 388,
+          "A": 0,
+          "B": 37,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 361,
+          "A": 1,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 102,
+          "A": 1,
+          "B": 1,
+          "C": "GetMetaValue",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 399,
+          "A": 3,
+          "B": "ACTOR_HP",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 127,
+          "A": 4,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 209,
+          "A": 1,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 326,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 80
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 388,
+          "A": 0,
+          "B": 37,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 146,
+          "A": 1,
+          "B": "global",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 96,
+          "A": 1,
+          "B": 1,
+          "C": "Facade",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 103,
+          "A": 1,
+          "B": 1,
+          "C": "sendNotification",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 108,
+          "A": 3,
+          "B": "global",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 96,
+          "A": 3,
+          "B": 3,
+          "C": "NoticeTable",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 96,
+          "A": 3,
+          "B": 3,
+          "C": "UserInputMove",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 76,
+          "A": 4,
+          "B": 0,
+          "C": 5,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 9,
+          "A": 5,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 400,
+          "A": 5,
+          "B": 5,
+          "C": "dir",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 306,
+          "A": 4,
+          "B": "moveDir",
+          "C": 5,
+          "mode": 0,
+          "operand_flags": 16
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 9,
+          "A": 5,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 400,
+          "A": 5,
+          "B": 5,
+          "C": "step",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 239,
+          "A": 4,
+          "B": "moveStep",
+          "C": 5,
+          "mode": 0,
+          "operand_flags": 208
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 108,
+          "A": 5,
+          "B": "global",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 79,
+          "A": 5,
+          "B": 5,
+          "C": "MMO",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 29,
+          "opcode": 400,
+          "A": 5,
+          "B": 5,
+          "C": "INPUT_MOVE_TYPE_JOYSTICK",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 30,
+          "opcode": 306,
+          "A": 4,
+          "B": "type",
+          "C": 5,
+          "mode": 0,
+          "operand_flags": 144
+        },
+        {
+          "physical_slot": 31,
+          "opcode": 393,
+          "A": 5,
+          "B": 0,
+          "C": "GetMapX",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 32,
+          "opcode": 209,
+          "A": 5,
+          "B": 6,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 33,
+          "opcode": 306,
+          "A": 4,
+          "B": "x",
+          "C": 5,
+          "mode": 0,
+          "operand_flags": 16
+        },
+        {
+          "physical_slot": 34,
+          "opcode": 393,
+          "A": 5,
+          "B": 0,
+          "C": "GetMapY",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 35,
+          "opcode": 209,
+          "A": 5,
+          "B": 6,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 36,
+          "opcode": 306,
+          "A": 4,
+          "B": "y",
+          "C": 5,
+          "mode": 0,
+          "operand_flags": 208
+        },
+        {
+          "physical_slot": 37,
+          "opcode": 123,
+          "A": 1,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 38,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        }
+      ],
+      "start_offset": 34064,
+      "end_offset": 34709
+    },
+    {
+      "path": "root/52/29",
+      "depth": 2,
+      "parameter_count": 0,
+      "constant_count": 10,
+      "child_count": 0,
+      "instruction_count": 39,
+      "constants": [
+        "toggle",
+        "#ff0000",
+        "Button_setTitleText",
+        "Button_setTitleColor",
+        "#ffffff",
+        "applebut",
+        "toggled",
+        "name",
+        "GUI",
+        false
+      ],
+      "physical_slots": 39,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 9,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": "applebut",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 209,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 143,
+          "A": 1,
+          "B": 0,
+          "C": false,
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 388,
+          "A": 0,
+          "B": 38,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 43,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 9,
+          "A": 2,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 410,
+          "A": 2,
+          "B": 2,
+          "C": "toggled",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 61,
+          "A": 2,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 125,
+          "A": 1,
+          "B": "toggled",
+          "C": 2,
+          "mode": 0,
+          "operand_flags": 16
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 146,
+          "A": 1,
+          "B": "GUI",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 138,
+          "A": 1,
+          "B": 1,
+          "C": "Button_setTitleText",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 234,
+          "A": 3,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 97,
+          "A": 3,
+          "B": 3,
+          "C": "applebut",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 9,
+          "A": 4,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 96,
+          "A": 4,
+          "B": 4,
+          "C": "toggled",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 60,
+          "A": 4,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 388,
+          "A": 0,
+          "B": 22,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 9,
+          "A": 4,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 96,
+          "A": 4,
+          "B": 4,
+          "C": "toggle",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 325,
+          "A": 4,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 388,
+          "A": 0,
+          "B": 24,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 9,
+          "A": 4,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 274,
+          "A": 4,
+          "B": 4,
+          "C": "name",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 128,
+          "A": 1,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 105,
+          "A": 1,
+          "B": "GUI",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 393,
+          "A": 1,
+          "B": 1,
+          "C": "Button_setTitleColor",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 9,
+          "A": 3,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 29,
+          "opcode": 97,
+          "A": 3,
+          "B": 3,
+          "C": "applebut",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 30,
+          "opcode": 324,
+          "A": 4,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 31,
+          "opcode": 96,
+          "A": 4,
+          "B": 4,
+          "C": "toggled",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 32,
+          "opcode": 289,
+          "A": 4,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 33,
+          "opcode": 388,
+          "A": 0,
+          "B": 36,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 34,
+          "opcode": 295,
+          "A": 4,
+          "B": "#ff0000",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 35,
+          "opcode": 366,
+          "A": 4,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 36,
+          "opcode": 388,
+          "A": 0,
+          "B": 37,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 37,
+          "opcode": 295,
+          "A": 4,
+          "B": "#ffffff",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 38,
+          "opcode": 128,
+          "A": 1,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 39,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        }
+      ],
+      "start_offset": 104831,
+      "end_offset": 105323
     }
   ],
   "closure_events": [
@@ -6245,6 +8900,34 @@
     "source_blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
     "added_paths": [
       "root/52/18/0"
+    ],
+    "decoded_bytes": 142522,
+    "consumed_bytes": 142522
+  },
+  "targeted_reextract_2026_11_21_batch2": {
+    "method": "原始Base36+LZW载荷解压，XOR 0x17，按S()递归解析；完整消费142522 bytes",
+    "source_blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+    "paths": [
+      "root/52/6/2",
+      "root/50/4",
+      "root/52/26",
+      "root/52/7",
+      "root/25",
+      "root/52/22",
+      "root/52/6/3",
+      "root/25/0/1",
+      "root/52/29"
+    ],
+    "added_paths": [
+      "root/52/6/2",
+      "root/50/4",
+      "root/52/26",
+      "root/52/7",
+      "root/25",
+      "root/52/22",
+      "root/52/6/3",
+      "root/25/0/1",
+      "root/52/29"
     ],
     "decoded_bytes": 142522,
     "consumed_bytes": 142522
