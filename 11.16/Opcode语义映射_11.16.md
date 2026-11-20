@@ -1060,7 +1060,7 @@ root/15特殊导出记录以A字段作为真实VM Opcode。由原版F()确认本
 - 45–47：Opcode108融合准备string.find和item.Name。
 - 48–51：准备捕获的名称筛选文本、起始位置1、plain=true，并执行string.find；52/53按是否匹配决定继续或跳过item。
 - 54–58：Opcode159融合准备SL.GetMetaValue方法、self、ITEM_IS_BIND和item参数，slot58执行调用。
-- 59/60：若绑定状态为真则跳过slot60的跳转，进入后续逻辑；未绑定时执行slot60跳到69，故该分支实际筛除绑定物品。注意以F()原始条件与寄存器含义理解，源码表述按本段控制流为准。
+- 59/60：slot59 Opcode325使用D=1作为真值标志：绑定结果为真时不跳过slot60，执行slot60跳到69以排除当前物品；绑定结果为假时跳过slot60并继续数量处理。
 - 61–64：保存当前item，读取item.OverLap并调用tonumber。
 - 65–68：tonumber结果有效则复制为数量；否则跳过slot66，由slot67设置数量1；最后跳至slot69推进下一项。
 - 69–70：迭代器推进/回跳闭环。
