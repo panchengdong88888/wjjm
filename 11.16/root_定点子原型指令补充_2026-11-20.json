@@ -4453,6 +4453,1512 @@
         }
       ],
       "extraction_note": "2026-11-20从原版载荷定点提取；完整消费142522字节；S()真实指令头解析，保留空槽与常量替换字段。"
+    },
+    {
+      "path": "root/52/15",
+      "depth": 2,
+      "parameter_count": 0,
+      "constant_count": 11,
+      "child_count": 0,
+      "instruction_count": 36,
+      "constants": [
+        "dropTimer",
+        "开丢全部",
+        "diuqibut",
+        false,
+        "dropallbut",
+        "Button_setTitleText",
+        "GUI",
+        "#ff0000",
+        "#ffffff",
+        "Button_setTitleColor",
+        "关丢全部"
+      ],
+      "physical_slots": 36,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 9,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "dropallbut",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 209,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 143,
+          "A": 1,
+          "B": 0,
+          "C": false,
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 388,
+          "A": 0,
+          "B": 35,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 234,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 274,
+          "A": 1,
+          "B": 1,
+          "C": "dropTimer",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 298,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 61,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 146,
+          "A": 2,
+          "B": "GUI",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 138,
+          "A": 2,
+          "B": 2,
+          "C": "Button_setTitleText",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 9,
+          "A": 4,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 96,
+          "A": 4,
+          "B": 4,
+          "C": "dropallbut",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 358,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 388,
+          "A": 0,
+          "B": 18,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 295,
+          "A": 5,
+          "B": "关丢全部",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 366,
+          "A": 5,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 388,
+          "A": 0,
+          "B": 19,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 295,
+          "A": 5,
+          "B": "开丢全部",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 123,
+          "A": 2,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 253,
+          "A": 2,
+          "B": "GUI",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 204,
+          "A": 2,
+          "B": 2,
+          "C": "Button_setTitleColor",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 9,
+          "A": 4,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 274,
+          "A": 4,
+          "B": 4,
+          "C": "dropallbut",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 340,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 388,
+          "A": 0,
+          "B": 29,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 295,
+          "A": 5,
+          "B": "#ff0000",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 325,
+          "A": 5,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 29,
+          "opcode": 388,
+          "A": 0,
+          "B": 30,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 66
+        },
+        {
+          "physical_slot": 30,
+          "opcode": 295,
+          "A": 5,
+          "B": "#ffffff",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 31,
+          "opcode": 123,
+          "A": 2,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 32,
+          "opcode": 403,
+          "A": 2,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 33,
+          "opcode": 295,
+          "A": 3,
+          "B": "diuqibut",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 34,
+          "opcode": 110,
+          "A": 4,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 35,
+          "opcode": 123,
+          "A": 2,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 36,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        }
+      ],
+      "start_offset": 87915,
+      "end_offset": 88411
+    },
+    {
+      "path": "root/52/16",
+      "depth": 2,
+      "parameter_count": 0,
+      "constant_count": 8,
+      "child_count": 1,
+      "instruction_count": 33,
+      "constants": [
+        "SL",
+        null,
+        "rewardTimer",
+        "Schedule",
+        "开启奖励功能",
+        "UnSchedule",
+        0,
+        "关闭奖励功能"
+      ],
+      "physical_slots": 33,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 9,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "rewardTimer",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 358,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 16,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 403,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 295,
+          "A": 1,
+          "B": "关闭奖励功能",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 253,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 204,
+          "A": 0,
+          "B": 0,
+          "C": "UnSchedule",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 234,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 96,
+          "A": 2,
+          "B": 2,
+          "C": "rewardTimer",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 324,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 322,
+          "A": 0,
+          "B": "rewardTimer",
+          "C": null,
+          "mode": 0,
+          "operand_flags": 48
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 110,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 11,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 403,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 295,
+          "A": 1,
+          "B": "开启奖励功能",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 128,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 399,
+          "A": 0,
+          "B": 0,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 127,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 253,
+          "A": 2,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 204,
+          "A": 2,
+          "B": 2,
+          "C": "Schedule",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 178,
+          "A": 4,
+          "B": 0,
+          "C": 3,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 243,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 132,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 132,
+          "A": 0,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 324,
+          "A": 5,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 29,
+          "opcode": 209,
+          "A": 2,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 30,
+          "opcode": 0,
+          "A": 1,
+          "B": "rewardTimer",
+          "C": 2,
+          "mode": 0,
+          "operand_flags": 80
+        },
+        {
+          "physical_slot": 31,
+          "opcode": 110,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 32,
+          "opcode": 293,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 33,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        }
+      ],
+      "start_offset": 88411,
+      "end_offset": 89090
+    },
+    {
+      "path": "root/52/16/0",
+      "depth": 3,
+      "parameter_count": 0,
+      "constant_count": 5,
+      "child_count": 0,
+      "instruction_count": 22,
+      "constants": [
+        2,
+        "LuaSendMsg",
+        3,
+        1,
+        9002
+      ],
+      "physical_slots": 22,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 234,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 363,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 162,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 324,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 296,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 127,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 135,
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 127,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 363,
+          "A": 2,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 398,
+          "A": 1,
+          "B": 1,
+          "C": 2,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 289,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 388,
+          "A": 0,
+          "B": 21,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 146,
+          "A": 2,
+          "B": "LuaSendMsg",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 359,
+          "A": 3,
+          "B": 9002,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 96,
+          "A": 4,
+          "B": 1,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 295,
+          "A": 5,
+          "B": 1,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 374,
+          "A": 6,
+          "B": 2,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 359,
+          "A": 7,
+          "B": 3,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 79,
+          "A": 8,
+          "B": 1,
+          "C": 2,
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 410,
+          "A": 9,
+          "B": 1,
+          "C": 3,
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 123,
+          "A": 2,
+          "B": 9,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        }
+      ],
+      "start_offset": 88526,
+      "end_offset": 88788
+    },
+    {
+      "path": "root/52/18",
+      "depth": 2,
+      "parameter_count": 0,
+      "constant_count": 18,
+      "child_count": 1,
+      "instruction_count": 65,
+      "constants": [
+        "dropTimer",
+        "isDiuing",
+        "开丢全部",
+        "开启丢弃物品(模式2)",
+        "dropallbut",
+        2,
+        null,
+        "Button_setTitleColor",
+        "UnSchedule",
+        "GUI",
+        false,
+        "Button_setTitleText",
+        1,
+        "#ffffff",
+        "SL",
+        "dropMode",
+        "DiuItems",
+        "关闭丢弃物品"
+      ],
+      "physical_slots": 65,
+      "instructions": [
+        {
+          "physical_slot": 1,
+          "opcode": 234,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 2,
+          "opcode": 274,
+          "A": 0,
+          "B": 0,
+          "C": "dropTimer",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 3,
+          "opcode": 289,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 21,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 5,
+          "opcode": 9,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 6,
+          "opcode": 274,
+          "A": 0,
+          "B": 0,
+          "C": "dropMode",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 7,
+          "opcode": 143,
+          "A": 0,
+          "B": 0,
+          "C": 2,
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 8,
+          "opcode": 388,
+          "A": 0,
+          "B": 21,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 9,
+          "opcode": 234,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 10,
+          "opcode": 295,
+          "A": 1,
+          "B": "关闭丢弃物品",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 11,
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 12,
+          "opcode": 105,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 13,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": "UnSchedule",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 14,
+          "opcode": 9,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 15,
+          "opcode": 96,
+          "A": 2,
+          "B": 2,
+          "C": "dropTimer",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 16,
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 17,
+          "opcode": 88,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 18,
+          "opcode": 114,
+          "A": 0,
+          "B": "dropTimer",
+          "C": null,
+          "mode": 0,
+          "operand_flags": 176
+        },
+        {
+          "physical_slot": 19,
+          "opcode": 88,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 20,
+          "opcode": 322,
+          "A": 0,
+          "B": "isDiuing",
+          "C": false,
+          "mode": 0,
+          "operand_flags": 112
+        },
+        {
+          "physical_slot": 21,
+          "opcode": 388,
+          "A": 0,
+          "B": 48,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 2
+        },
+        {
+          "physical_slot": 22,
+          "opcode": 234,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 23,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": "dropTimer",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 24,
+          "opcode": 289,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 25,
+          "opcode": 388,
+          "A": 0,
+          "B": 32,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 194
+        },
+        {
+          "physical_slot": 26,
+          "opcode": 253,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 27,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": "UnSchedule",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 28,
+          "opcode": 324,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 29,
+          "opcode": 96,
+          "A": 2,
+          "B": 2,
+          "C": "dropTimer",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 30,
+          "opcode": 128,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 31,
+          "opcode": 88,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 32,
+          "opcode": 322,
+          "A": 0,
+          "B": "dropTimer",
+          "C": null,
+          "mode": 0,
+          "operand_flags": 240
+        },
+        {
+          "physical_slot": 33,
+          "opcode": 324,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 34,
+          "opcode": 295,
+          "A": 1,
+          "B": "开启丢弃物品(模式2)",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 35,
+          "opcode": 128,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 36,
+          "opcode": 49,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 37,
+          "opcode": 7,
+          "A": 0,
+          "B": "dropMode",
+          "C": 2,
+          "mode": 0,
+          "operand_flags": 240
+        },
+        {
+          "physical_slot": 38,
+          "opcode": 45,
+          "A": 0,
+          "B": "DiuItems",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 18
+        },
+        {
+          "physical_slot": 39,
+          "opcode": 9,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 40,
+          "opcode": 410,
+          "A": 1,
+          "B": 1,
+          "C": "dropMode",
+          "mode": 0,
+          "operand_flags": 224
+        },
+        {
+          "physical_slot": 41,
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 42,
+          "opcode": 324,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 43,
+          "opcode": 324,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 44,
+          "opcode": 387,
+          "A": 2,
+          "B": 0,
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 45,
+          "opcode": 132,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 46,
+          "opcode": 295,
+          "A": 3,
+          "B": 1,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 146
+        },
+        {
+          "physical_slot": 47,
+          "opcode": 209,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 48,
+          "opcode": 306,
+          "A": 0,
+          "B": "dropTimer",
+          "C": 1,
+          "mode": 0,
+          "operand_flags": 208
+        },
+        {
+          "physical_slot": 49,
+          "opcode": 234,
+          "A": 0,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 128
+        },
+        {
+          "physical_slot": 50,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": "dropallbut",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 51,
+          "opcode": 60,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 52,
+          "opcode": 388,
+          "A": 0,
+          "B": 64,
+          "C": null,
+          "mode": 1,
+          "operand_flags": 130
+        },
+        {
+          "physical_slot": 53,
+          "opcode": 105,
+          "A": 0,
+          "B": "GUI",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 54,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": "Button_setTitleText",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 55,
+          "opcode": 9,
+          "A": 2,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 56,
+          "opcode": 163,
+          "A": 2,
+          "B": 2,
+          "C": "dropallbut",
+          "mode": 0,
+          "operand_flags": 96
+        },
+        {
+          "physical_slot": 57,
+          "opcode": 295,
+          "A": 3,
+          "B": "开丢全部",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 82
+        },
+        {
+          "physical_slot": 58,
+          "opcode": 128,
+          "A": 0,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 192
+        },
+        {
+          "physical_slot": 59,
+          "opcode": 253,
+          "A": 0,
+          "B": "GUI",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 60,
+          "opcode": 204,
+          "A": 0,
+          "B": 0,
+          "C": "Button_setTitleColor",
+          "mode": 0,
+          "operand_flags": 160
+        },
+        {
+          "physical_slot": 61,
+          "opcode": 127,
+          "A": 2,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 0
+        },
+        {
+          "physical_slot": 62,
+          "opcode": 96,
+          "A": 2,
+          "B": 2,
+          "C": "dropallbut",
+          "mode": 0,
+          "operand_flags": 32
+        },
+        {
+          "physical_slot": 63,
+          "opcode": 295,
+          "A": 3,
+          "B": "#ffffff",
+          "C": null,
+          "mode": 1,
+          "operand_flags": 210
+        },
+        {
+          "physical_slot": 64,
+          "opcode": 128,
+          "A": 0,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        },
+        {
+          "physical_slot": 65,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "operand_flags": 64
+        }
+      ],
+      "start_offset": 89437,
+      "end_offset": 90371
     }
   ],
   "closure_events": [
@@ -4671,5 +6177,23 @@
         }
       ]
     }
-  ]
+  ],
+  "targeted_reextract_2026_11_21": {
+    "method": "从原始Base36+LZW载荷解压，逐字节XOR 0x17，按S()结构递归定点导出；完整消费142522 bytes",
+    "source_blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+    "paths": [
+      "root/52/15",
+      "root/52/16",
+      "root/52/16/0",
+      "root/52/18"
+    ],
+    "added_paths": [
+      "root/52/15",
+      "root/52/16",
+      "root/52/16/0",
+      "root/52/18"
+    ],
+    "decoded_bytes": 142522,
+    "consumed_bytes": 142522
+  }
 }
