@@ -6158,6 +6158,37 @@ MainLeftBottom.doInit = make_MainLeftBottom_doInit_11_16({
 
 
 
+-- 苹果商城购买：每秒回调计数，每5次触发一次检查；绑定元宝>=100且等级>39时购买1个苹果。
+-- 状态计数保存在root/52/23捕获的MainLeftBottom.a表中。
+local function TryBuyAppleItem_11_16(callbackState, notify)
+    callbackState = callbackState or MainLeftBottom.a
+    callbackState.appleBuyTick = (tonumber(callbackState.appleBuyTick) or 0) + 1
+
+    if callbackState.appleBuyTick % 5 ~= 0 then
+        return false, "not_due"
+    end
+
+    local boundYuanbao = tonumber(SL:GetMetaValue("ITEM_COUNT", 4)) or 0
+    local level = tonumber(SL:GetMetaValue("LEVEL")) or 0
+    if boundYuanbao < 100 or level <= 39 then
+        return false, "condition_not_met"
+    end
+
+    local buyOK, buyResult = BuyStoreItem("苹果", 1)
+    if buyOK then
+        if notify then
+            notify("绑定元宝>=100，等级>39，已购买1个苹果")
+        end
+        return true, buyResult
+    end
+
+    if notify then
+        notify("购买苹果失败：" .. tostring(buyResult))
+    end
+    return false, buyResult
+end
+
+
 -- ============================================================================
 -- 11.16 root/52/23：大型周期业务回调的已确认子流程
 -- 897个物理槽位同时承载邮件维护、苹果使用/金币提示、称号材料检查、
@@ -6238,7 +6269,7 @@ end
 -- 苹果商城购买分支已进一步闭合：每秒回调递增appleBuyTick，每5次尝试一次；
 -- ITEM_COUNT(4)即绑定元宝数量，要求>=100，角色LEVEL要求>39；
 -- 随后调用捕获的root/21商城购买辅助闭包("苹果",1)，按返回值分流成功/失败提示。
--- root/21自身149槽仍未恢复，故此处只记录已确认的调用契约，不猜测内部实现。
+-- root/21 BuyStoreItem已在本文件前部写入（复用11.9同职责主体，尚未逐槽核验本版149槽）。
 -- 同一原型的转生分支已确认会连续发送两条消息：
 -- LuaSendMsg(9002,301000,1,2,3,"转生1",7)及LuaSendMsg(9002,10016,1,2,3,"转世轮回",12)。
 -- 称号证明分支已定位ITEM_COUNT("称号证明")、称号ID 50620/50621/50622及两条升级消息：
@@ -6401,7 +6432,7 @@ end
 
 -- 祝福油使用：root/52/23先检查QUICKUSE_DATA，再检查BAG_DATA；
 -- 找到名称为“祝福油”的物品后，使用本版原始消息类型和MakeIndex构造背包使用请求。
--- 商城购买分支需要父级商店按钮/购买回调的捕获值，故不在此函数内虚构购买参数。
+-- 未找到祝福油时调用已恢复的BuyStoreItem("祝福油",1)，购买入口不依赖额外按钮捕获值。
 local function TryUseBlessingOil_11_16()
     local function findBlessingOil(items)
         if type(items) ~= "table" then
@@ -6513,9 +6544,16 @@ local function ProcessMainLeftBottomMaintenance_11_16(moduleState, moneyProxy, c
     moduleState = moduleState or MainLeftBottom
     controls = controls or {}
 
+    local callbackState = MainLeftBottom.a or moduleState
     local result = {
         mailList = RunMailMaintenance_11_16(),
         appleUsed = TryUseAppleItem_11_16(),
+        applePurchase = {
+            (function()
+                local ok, detail = TryBuyAppleItem_11_16(callbackState, ShowLocalNoticeByType)
+                return ok, detail
+            end)()
+        },
     }
 
     local luckOK, luckStatus, luckDetail, luckValue = MaintainWeaponLuck_11_16()
