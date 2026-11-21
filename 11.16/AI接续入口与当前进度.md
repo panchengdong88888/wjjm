@@ -1,5 +1,11 @@
 
 
+## 2026-11-22补充：root/52/32候选代码隔离提醒
+
+- 发现唯一明文中的`helper_root_52_32`仍是11.9迁移候选，当前8个形参与本版CSV记录的3参数/3项upvalue不符。已在源码注释和CSV中标记为未恢复候选，禁止将它接入11.16 doInit或宣称完成。
+- 后续先定位本版root/52父级创建点和3项捕获来源，再重写55槽通用按钮工厂。已恢复的17组按钮描述配置表可保留。
+
+
 ## 2026-11-22续接：root/52按钮配置表已补入
 
 - 唯一明文新增`BuildMainLeftBottomButtonDefinitions_11_16()`，按槽483–543常量恢复17项按钮描述字段`key/name/toggle`，并在`MainLeftBottom.doInit`初始化时保存到`moduleState.buttonDefinitions`。
