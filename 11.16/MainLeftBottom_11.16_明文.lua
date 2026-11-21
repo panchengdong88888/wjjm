@@ -4611,3 +4611,49 @@ local function SyncDropAllButtonVisual_11_16(
     end
 end
 
+
+
+
+-- ============================================================================
+-- 11.16 root/57：二维向量转八方向编号（60条指令，2个显式参数）
+-- ============================================================================
+-- 依据本版60条定点指令逐槽恢复。方向编号保留原始数值0..7，不擅自
+-- 将其命名为具体地图方位。横/纵主方向阈值为严格2:1；相等边界归入对角方向。
+-- 两个分量同时为0时返回nil。
+local function GetDirectionByVector_11_16(dx, dy)
+    if dx == 0 and dy == 0 then
+        return nil
+    end
+
+    local absX = math.abs(dx)
+    local absY = math.abs(dy)
+
+    -- 横向分量严格超过纵向分量的2倍。
+    if absY * 2 < absX then
+        if dx > 0 then
+            return 2
+        end
+        return 6
+    end
+
+    -- 纵向分量严格超过横向分量的2倍。
+    if absX * 2 < absY then
+        if dy > 0 then
+            return 4
+        end
+        return 0
+    end
+
+    -- 其余为对角方向，按dx/dy正负组合返回。
+    if dx > 0 then
+        if dy < 0 then
+            return 1
+        end
+        return 3
+    end
+
+    if dy > 0 then
+        return 5
+    end
+    return 7
+end
