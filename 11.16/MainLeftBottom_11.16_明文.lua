@@ -3670,56 +3670,55 @@ end
 -- 同职责顺序映射为uiParent/baseX/baseY/visibleItems/callbackMap，原始局部名未知。
 -- 捕获来源寄存器已确认，语义映射保留为适配层；不再沿用8个显式参数的旧签名。
 -- ============================================================================
-local function helper_root_52_32(
-    capturedUpvalues,
-    buttonConfig,
-    rowIndex,
-    groupOffset
-)
+local function make_helper_root_52_32(capturedUpvalues)
     capturedUpvalues = capturedUpvalues or {}
 
+    -- 五项闭包捕获按父级槽667–671的实际顺序保存。
     local uiParent = capturedUpvalues[1]
     local baseX = tonumber(capturedUpvalues[2]) or 0
     local baseY = tonumber(capturedUpvalues[3]) or 0
     local visibleItems = capturedUpvalues[4]
     local callbackMap = capturedUpvalues[5]
 
-    if type(buttonConfig) ~= "table" then
-        return nil
+    -- 原型root/52/32只有三个显式参数；捕获值不占用参数位置。
+    return function(buttonConfig, rowIndex, groupOffset)
+        if type(buttonConfig) ~= "table" then
+            return nil
+        end
+
+        local x = baseX - 85 * (tonumber(rowIndex) or 0)
+        local y = baseY + (tonumber(groupOffset) or 0)
+
+        local button = GUI:Button_Create(
+            uiParent,
+            buttonConfig.key,
+            x,
+            y,
+            "res/public/fuzhu_btn.png"
+        )
+        if not button then
+            return nil
+        end
+
+        if type(visibleItems) == "table" then
+            visibleItems[buttonConfig.key] = button
+        end
+
+        GUI:Button_setTitleText(button, buttonConfig.name)
+        GUI:Button_setTitleFontSize(button, 18)
+        GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
+        GUI:Button_setTitleColor(button, "#ffffff")
+
+        if buttonConfig.toggle then
+            buttonConfig.toggled = false
+        end
+
+        GUI:addOnClickEvent(
+            button,
+            helper_root_52_32_0(callbackMap, buttonConfig, button)
+        )
+        return button
     end
-
-    local x = baseX - 85 * (tonumber(rowIndex) or 0)
-    local y = baseY + (tonumber(groupOffset) or 0)
-
-    local button = GUI:Button_Create(
-        uiParent,
-        buttonConfig.key,
-        x,
-        y,
-        "res/public/fuzhu_btn.png"
-    )
-    if not button then
-        return nil
-    end
-
-    if type(visibleItems) == "table" then
-        visibleItems[buttonConfig.key] = button
-    end
-
-    GUI:Button_setTitleText(button, buttonConfig.name)
-    GUI:Button_setTitleFontSize(button, 18)
-    GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
-    GUI:Button_setTitleColor(button, "#ffffff")
-
-    if buttonConfig.toggle then
-        buttonConfig.toggled = false
-    end
-
-    GUI:addOnClickEvent(
-        button,
-        helper_root_52_32_0(callbackMap, buttonConfig, button)
-    )
-    return button
 end
 
 -- 11.16 root/52/35：NPC点击/战力刷新请求（37条物理指令，0参数，1个子原型）。
