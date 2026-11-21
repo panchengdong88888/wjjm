@@ -6267,3 +6267,25 @@ local function UpdateAppleCruiseStatusUI_11_16(moduleState, appleMapBg, appleMap
         end
     end
 end
+
+
+-- root/52/23槽846–896：两种上古神剑解封请求。
+-- 两个连续分支分别检查对应解封石库存；消息号/参数来自本版物理槽位。
+-- sealPanelAt的节流门控属于父回调状态机，本辅助函数不自行猜测冷却秒数。
+local function RequestAncientSwordSeal_11_16()
+    local requests = {
+        { itemName = "噬魂邪刀解封石", weaponName = "噬魂邪刀" },
+        { itemName = "鸣鸿神刀解封石", weaponName = "鸣鸿神刀" },
+    }
+    local sent = {}
+
+    for _, request in ipairs(requests) do
+        local count = tonumber(SL:GetMetaValue("ITEM_COUNT", request.itemName)) or 0
+        if count > 0 then
+            LuaSendMsg(9002, 12010, 1, 2, 3, request.weaponName, 12)
+            sent[#sent + 1] = request.weaponName
+        end
+    end
+
+    return sent
+end
