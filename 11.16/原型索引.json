@@ -2052,7 +2052,7 @@
       "parameter_count": 0,
       "instruction_count": 307,
       "candidate_name": "AppleMapTimerCallback_11_16（合成定位名）",
-      "identity_status": "业务身份已确认；307槽主体待恢复",
+      "identity_status": "业务身份及9项捕获映射已确认；原始局部符号名未知",
       "constants": [
         "{\"index\":%d,\"UserID\":\"%s\"}",
         "",
@@ -2111,8 +2111,10 @@
         "前往神龍之都",
         "string"
       ],
-      "instruction_stream_exported": false,
-      "instruction_stream_export_status": "待重新提取307槽主体指令"
+      "instruction_stream_exported": true,
+      "instruction_stream_export_status": "完整物理指令流已重新提取；控制流待恢复",
+      "instruction_stream_file": "11.16/root_未恢复七项完整物理指令提取_2026-11-21.json",
+      "instruction_stream_exported_at": "2026-11-21"
     },
     {
       "preorder_id": 43,
@@ -2919,8 +2921,8 @@
       "child_count": 5,
       "parameter_count": 5,
       "instruction_count": 444,
-      "candidate_name": "inputNumber",
-      "identity_status": "真实全局导出名已确认；444槽主体待恢复",
+      "candidate_name": "inputNumber（真实全局导出名）",
+      "identity_status": "真实全局导出名已由root槽283–285确认",
       "constants": [
         78,
         "screenW",
@@ -3005,8 +3007,10 @@
         "Button_setTitleFontSize",
         "取消"
       ],
-      "instruction_stream_exported": false,
-      "instruction_stream_export_status": "缺少444槽父函数主体指令"
+      "instruction_stream_exported": true,
+      "instruction_stream_export_status": "完整物理指令流已重新提取；控制流待恢复",
+      "instruction_stream_file": "11.16/root_未恢复七项完整物理指令提取_2026-11-21.json",
+      "instruction_stream_exported_at": "2026-11-21"
     },
     {
       "preorder_id": 73,
@@ -3172,7 +3176,7 @@
       "parameter_count": 0,
       "instruction_count": 865,
       "candidate_name": "MainLeftBottom.doInit",
-      "identity_status": "真实字段导出名已确认；865槽主体待恢复",
+      "identity_status": "真实字段导出名已由root槽633–653确认",
       "constants": [
         "开拾取",
         "infoGoldTxt",
@@ -3353,8 +3357,10 @@
         "ScheduleOnce",
         "金币不足10W\n金币不足10W\n金币不足10W\n金币不足10W\n金币不足10W"
       ],
-      "instruction_stream_exported": false,
-      "instruction_stream_export_status": "缺少865槽父函数主体指令"
+      "instruction_stream_exported": true,
+      "instruction_stream_export_status": "完整物理指令流已重新提取；控制流待恢复",
+      "instruction_stream_file": "11.16/root_未恢复七项完整物理指令提取_2026-11-21.json",
+      "instruction_stream_exported_at": "2026-11-21"
     },
     {
       "preorder_id": 80,
@@ -4225,8 +4231,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 897,
-      "candidate_name": "root/52/23",
-      "identity_status": "897槽主体待恢复",
+      "candidate_name": "root/52/23（业务名称待识别）",
+      "identity_status": "原型规模及父级已确认；业务身份/原始符号名待恢复",
       "constants": [
         50622,
         "ITEM_INDEX_BY_NAME",
@@ -4378,8 +4384,10 @@
         "苹果",
         3
       ],
-      "instruction_stream_exported": false,
-      "instruction_stream_export_status": "缺少897槽主体指令"
+      "instruction_stream_exported": true,
+      "instruction_stream_export_status": "完整物理指令流已重新提取；控制流待恢复",
+      "instruction_stream_file": "11.16/root_未恢复七项完整物理指令提取_2026-11-21.json",
+      "instruction_stream_exported_at": "2026-11-21"
     },
     {
       "preorder_id": 113,
