@@ -427,3 +427,9 @@
 - 用户上传的 `MainLeftBottom(5).lua` 只有奖励按钮配置，不含奖励handler实现，故不将其当作奖励功能参照。
 - 源码提交：`a3a058166a186df48e23c8a4edf580cea39b3a0b`；content SHA：`a6e2b8782601c29f3fd9541796b205e193eb1802`。
 - 机器状态JSON已更新至检查点361。静态核对完成，未编译/未运行；等待用户替换APP打包实测。若仍无效，下一步定点诊断Schedule是否返回句柄、rewardTimer是否写入、回调是否触发及LuaSendMsg实际绑定，不修改其他功能。
+
+## 11.16恢复最新接续（检查点373，2026-11-22）
+- 当前目标：11.16/MainLeftBottom_11.16_明文.lua，当前root/27仍未完成。
+- root/27槽28–107已逐槽展开：49–58发送55556开启巡航并置cruiseSent=true；59–63输出开启提示并切state=cruise；92–100发送55559关闭巡航；101–104清理cityCloseSent/cruiseOn/cruiseSent/cruiseConfirmed。
+- slot40–48、64–91条件门控和寄存器来源仍未闭合；30 tick常量不能单独证明完整超时/重试逻辑。本轮未修改唯一明文、未增加完成数。
+- 下一步只补本段尚缺opcode分派叶子及融合消费边界，再闭合寄存器控制流。最新机器状态见docs/handoff/05_机器可读接续状态.json，账本检查点373。
