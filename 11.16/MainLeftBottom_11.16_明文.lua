@@ -6065,9 +6065,47 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             storageProxy:RequestStorageData(0)
         end
 
-        -- root/52剩余约685槽负责巡航定时器替换、资源统计窗口、
-        -- 按钮配置/回调映射、按钮布局及苹果图按钮创建；这些段落继续恢复，
-        -- 此处不提前创建重复UI，也不将初始化主干误报为完整doInit。
+        -- root/52槽184明确先清理旧的巡航定时器句柄，再继续初始化界面。
+        if moduleState.cruiseTimer then
+            SL:UnSchedule(moduleState.cruiseTimer)
+            moduleState.cruiseTimer = nil
+        end
+
+        -- root/52槽202–455创建金币警告、苹果图状态及资源信息显示区域。
+        -- 屏幕尺寸来自本段前置screenW/screenH读取；保留在模块状态供子窗口复用。
+        moduleState.screenW = mainPanelState.screenW
+            or SL:GetMetaValue("SCREEN_WIDTH")
+            or 0
+        moduleState.screenH = mainPanelState.screenH
+            or SL:GetMetaValue("SCREEN_HEIGHT")
+            or 0
+
+        -- root/52/6资源统计窗口及其行/刷新/关闭子闭包已按本版指令流恢复。
+        -- 原版按钮配置表中的moneybut是资源入口；按钮本体由后续布局构建段生成，
+        -- 因此先保存可调用处理器，并在按钮已存在时立即接线。
+        local resourceWindowHandler = MakeResourceStatisticsWindow_11_16(
+            moduleState,
+            printLog,
+            mainPanelState,
+            initSnapshot,
+            GetResourceItemCount_11_16
+        )
+        moduleState.openResourceStatistics = resourceWindowHandler
+        local resourceButton = mainPanelState.moneybut or moduleState.moneybut
+        if resourceButton then
+            GUI:addOnClickEvent(resourceButton, resourceWindowHandler)
+        end
+
+        -- 苹果图/巡航状态文本及金币警告文本由本版槽位219–455创建。
+        -- 状态初值与原型常量一致；控件对象稍后由主界面按钮/布局段补齐。
+        moduleState.appleMapActive = false
+        moduleState.cruiseActive = false
+        moduleState.goldWarningText = "金币不足10W"
+
+        -- 仍未完全闭合的部分：主按钮组创建/布局、各按钮匿名回调的捕获接线、
+        -- 苹果图按钮状态回调、22:00:05巡航协议定时器的捕获参数。
+        -- 不在这里伪造这些连接；相关工厂函数和原型证据均保留待接线。
+
     end
 end
 
