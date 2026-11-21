@@ -6309,3 +6309,94 @@ end
 -- slot211-219与229-237的10037消息实参，尚未完成寄存器级逐项绑定。
 -- 因此当前只把这些标记为已定位的物理区段，不把它们伪装成完整可执行逻辑。
 -- ============================================================================
+
+
+-- root/52/23槽505–645：武器幸运值读取与祝福油使用子流程。
+-- 装备数据来自EQUIP_DATA[1]；幸运值优先读取Luck字段，若字段缺失，
+-- 则遍历Values数组，按原型常量Id=59读取对应Value。
+local function GetWeaponLuck_11_16()
+    local equipData = SL:GetMetaValue("EQUIP_DATA")
+    local weapon = type(equipData) == "table" and equipData[1] or nil
+    if type(weapon) ~= "table" then
+        return nil
+    end
+
+    local luck = tonumber(weapon.Luck or weapon.luck)
+    if luck ~= nil then
+        return luck
+    end
+
+    local values = weapon.Values
+    if type(values) == "table" then
+        for _, entry in pairs(values) do
+            if type(entry) == "table" and tonumber(entry.Id) == 59 then
+                return tonumber(entry.Value)
+            end
+        end
+    end
+
+    return nil
+end
+
+-- 祝福油使用：root/52/23先检查QUICKUSE_DATA，再检查BAG_DATA；
+-- 找到名称为“祝福油”的物品后，使用本版原始消息类型和MakeIndex构造背包使用请求。
+-- 商城购买分支需要父级商店按钮/购买回调的捕获值，故不在此函数内虚构购买参数。
+local function TryUseBlessingOil_11_16()
+    local function findBlessingOil(items)
+        if type(items) ~= "table" then
+            return nil
+        end
+        for _, item in pairs(items) do
+            if type(item) == "table" and item.Name == "祝福油" then
+                return item
+            end
+        end
+        return nil
+    end
+
+    local quickUseData = SL:GetMetaValue("QUICKUSE_DATA")
+    local item = findBlessingOil(quickUseData)
+    if not item then
+        local bagData = SL:GetMetaValue("BAG_DATA")
+        item = findBlessingOil(bagData)
+    end
+    if not item then
+        return false, "not_found"
+    end
+
+    local makeIndex = MakeIndex(item.Name)
+    if makeIndex == nil then
+        return false, "invalid_index"
+    end
+
+    LuaSendMsg(
+        global.MsgType.MSG_CS_USE_BAG_ITEM,
+        makeIndex,
+        1, 0, 0,
+        item.Name,
+        string.len(item.Name)
+    )
+    return true, item
+end
+
+-- root/52/23武器幸运分支的已恢复调用入口。
+-- 幸运值未知时不操作；幸运值低于3时优先尝试使用现有祝福油。
+-- 若背包无油，返回purchase_required供父级商店购买分支接续。
+local function MaintainWeaponLuck_11_16()
+    local luck = GetWeaponLuck_11_16()
+    if luck == nil then
+        return false, "luck_unknown"
+    end
+    if luck >= 3 then
+        return true, "target_reached"
+    end
+
+    local used, itemOrReason = TryUseBlessingOil_11_16()
+    if used then
+        return true, "used", itemOrReason, luck
+    end
+    if itemOrReason == "not_found" then
+        return false, "purchase_required", luck
+    end
+    return false, itemOrReason, luck
+end
