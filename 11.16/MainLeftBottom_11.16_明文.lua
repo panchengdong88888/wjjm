@@ -6545,14 +6545,15 @@ local function ProcessMainLeftBottomMaintenance_11_16(moduleState, moneyProxy, c
     controls = controls or {}
 
     local callbackState = MainLeftBottom.a or moduleState
+    local applePurchaseOK, applePurchaseDetail =
+        TryBuyAppleItem_11_16(callbackState, ShowLocalNoticeByType)
+
     local result = {
         mailList = RunMailMaintenance_11_16(),
         appleUsed = TryUseAppleItem_11_16(),
         applePurchase = {
-            (function()
-                local ok, detail = TryBuyAppleItem_11_16(callbackState, ShowLocalNoticeByType)
-                return ok, detail
-            end)()
+            ok = applePurchaseOK,
+            detail = applePurchaseDetail,
         },
     }
 
