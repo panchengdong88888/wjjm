@@ -4925,6 +4925,27 @@ end
 
 
 -- ============================================================================
+-- 11.16 root/25：捕获值直连的周期回调工厂
+-- ============================================================================
+-- root/25创建root/25/0后，捕获顺序由闭包事件记录确定；
+-- 这里统一构造捕获容器，并返回Schedule可直接调用的无参函数。
+-- 未识别的捕获槽原样保留，不对其做业务猜名。
+local function MakeCruiseRunCallback_11_16(upvalues, adapters)
+    local captured = BindCruiseRunCaptures_11_16(upvalues, adapters)
+    return function()
+        return RunCruisePlayerScan_11_16(captured)
+    end
+end
+
+-- 将root/25/0所需的11个捕获值接入周期回调。
+-- 外层负责传入与原闭包同生命周期的upvalues数组及共享门控setter；
+-- 返回值是SL:Schedule可直接使用的无参callback。
+local function BindCruiseRunCallback_11_16(upvalues, adapters)
+    return MakeCruiseRunCallback_11_16(upvalues, adapters)
+end
+
+
+-- ============================================================================
 -- 11.16 root/52/15：丢全部按钮状态显示与状态复位（36条指令，部分恢复）
 -- ============================================================================
 -- 本版常量直接确认按钮映射键dropallbut、GUI按钮标题/颜色方法、
