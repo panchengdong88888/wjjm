@@ -6151,7 +6151,7 @@ end
 -- root/52创建点确认：H[0]=PrintLog、H[2]=MainLeftBottom.a、H[3]=MainLeftBottom。
 MainLeftBottom.doInit = make_MainLeftBottom_doInit_11_16({
     [1] = PrintLog,
-    [3] = MainLeftBottom,
+    [3] = MainLeftBottom.a,
     [4] = MainLeftBottom,
 })
 
