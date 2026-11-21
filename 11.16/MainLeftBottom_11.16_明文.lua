@@ -6395,8 +6395,15 @@ local function MaintainWeaponLuck_11_16()
     if used then
         return true, "used", itemOrReason, luck
     end
-    if itemOrReason == "not_found" then
-        return false, "purchase_required", luck
+    if itemOrReason ~= "not_found" then
+        return false, itemOrReason, luck
     end
-    return false, itemOrReason, luck
+
+    -- 原型槽629–644：快捷栏/背包均无祝福油时调用商城购买函数；
+    -- BuyStoreItem为本版已恢复的商城购买主体，按物品名购买1个。
+    local buyOK, buyResult = BuyStoreItem("祝福油", 1)
+    if buyOK then
+        return true, "purchased", buyResult, luck
+    end
+    return false, "purchase_failed", tostring(buyResult), luck
 end
