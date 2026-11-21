@@ -5465,7 +5465,7 @@ end
 -- H[0]为数字输入控件（numInputEdit），H[1]为提示文本控件（numInputTip），
 -- H[2]控制是否校验物品名称，H[3]为物品名称输入控件（numInputName），
 -- H[4]为窗口标识，H[7]为确认后的业务回调。
--- H[5]/H[6]参与一段无可观察状态差异的布尔跳转；该段无论分支如何均把第三个回调参数置为true。
+-- H[5]控制第三个回调参数：真值路径将其置为false，假值路径保留nil；H[6]只影响两条汇合到同一槽位的跳转路径。
 -- 父级局部变量原名未确认，工厂参数仅按捕获槽承接，不冒充原始符号名。
 local function make_helper_root_50_0(capturedUpvalues)
     return function()
@@ -5498,6 +5498,10 @@ local function make_helper_root_50_0(capturedUpvalues)
         end
 
         GUI:Win_Close(capturedUpvalues[4])
-        capturedUpvalues[7](tonumber(priceText), itemName, true)
+        local callbackFlag
+        if capturedUpvalues[5] then
+            callbackFlag = false
+        end
+        capturedUpvalues[7](tonumber(priceText), itemName, callbackFlag)
     end
 end
