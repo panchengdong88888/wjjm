@@ -4063,26 +4063,68 @@ local function make_AppleMapTimerCallback_11_16(capturedUpvalues)
             return
         end
 
-        if state.state == "waitEnter" then
+        -- walkNpc：目标地图配置提供NPC坐标；MoveTo成功后发送NPC交互请求。
+        if state.state == "walkNpc" then
             local target = state.target
-            local targetName = target and target.name
-            if targetName and string.find(mapName, targetName, 1, true) then
+            if not target then
                 state.state = "monitor"
                 state.ticks = 0
-                state.lastMapName = mapName
-                notify("已进入目标地图：" .. mapName)
                 return
             end
 
-            if state.ticks >= 50 then
+            if MoveTo(target.x, target.y, 8) then
+                local npcData = string.format(
+                    '{"index":%d,"UserID":"%s"}',
+                    tonumber(target.index) or 0,
+                    tostring(target.userID or "")
+                )
+
+                -- 消息1010的参数排列沿用同一模块root/79已恢复的NPC交互调用形式。
+                LuaSendMsg(
+                    9002, 1010, 0, 0, 0, 0,
+                    npcData, string.len(npcData)
+                )
+
+                state.state = "clickNpc"
                 state.ticks = 0
-                printLog("苹果下图：等待进入目标地图，当前地图=%s，目标地图=%s",
-                    tostring(mapName), tostring(targetName))
             end
             return
         end
 
-        -- walkNpc/clickNpc等分支的逐槽寄存器条件仍待补齐；未知状态不发送协议。
+        -- clickNpc：等待3个回调tick后发送NPC点击/确认消息，再进入等待地图状态。
+        if state.state == "clickNpc" then
+            if state.ticks >= 3 then
+                LuaSendMsg(9002, 10037, 1, 2, 3, "", 0)
+                state.state = "waitEnter"
+                state.ticks = 0
+            end
+            return
+        end
+
+        -- waitEnter：每30个回调tick重发一次NPC确认消息，等待地图切换。
+        if state.state == "waitEnter" then
+            if state.ticks >= 30 then
+                LuaSendMsg(9002, 10037, 1, 2, 3, "", 0)
+                state.ticks = 0
+            end
+            return
+        end
+
+        -- monitor：目标地图发生变化时更新记录并提示；继续等待下一轮地图选择。
+        if state.state == "monitor" then
+            local target = state.target
+            local targetName = target and target.name
+            if mapName ~= state.lastMapName then
+                if targetName and string.find(mapName, targetName, 1, true) then
+                    notify("已进入目标地图：" .. mapName)
+                end
+                state.lastMapName = mapName
+                state.ticks = 0
+            end
+            return
+        end
+
+        -- 未知状态不发送协议，保留原状态供后续定位。
     end
 end
 
