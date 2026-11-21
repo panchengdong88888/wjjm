@@ -1921,7 +1921,9 @@
           "slot": 638,
           "opcode": 243,
           "sourceRegister": 89,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "source_symbol": "root/21商店购买辅助闭包（root N[89]）；函数名待识别",
+          "source_evidence": "root槽631 Opcode121创建childIndex=21并写入N[89]；原型索引确认root/21有2参数、149槽、常量包含PageStoreProxy、RequestBuy、CheckStoreLimitStatus、BuyCount、LimitCount，业务身份为商城道具购买辅助函数。root/52/23槽823–826通过捕获H[3]调用该闭包，实参为“苹果”、1。"
         },
         {
           "slot": 639,
@@ -2105,7 +2107,7 @@
           "sourceKind": "parent-local-register"
         }
       ],
-      "evidence": "root/52槽155 Opcode387创建childIndex=23、captureCount=5；槽156–160依次读取捕获描述符。root/52自身由root捕获H[0..18]=root N[4],N[2],N[0],N[3],N[89],N[1],N[67],N[7],N[62],N[8],N[88],N[38],N[39],N[5],N[83],N[82],N[11],N[12],N[9]，因此子原型捕获顺序可换算为MainLeftBottom.a(H2)、MainLeftBottom(H3)、PrintLog(H0)、root N[89](H4，符号未识别)、root/52局部N[5]（slot145已装载SL）。"
+      "evidence": "root/52槽155 Opcode387创建childIndex=23、captureCount=5；槽156–160依次读取捕获描述符。root/52自身由root捕获H[0..18]=root N[4],N[2],N[0],N[3],N[89],N[1],N[67],N[7],N[62],N[8],N[88],N[38],N[39],N[5],N[83],N[82],N[11],N[12],N[9]，因此子原型捕获顺序可换算为MainLeftBottom.a(H2)、MainLeftBottom(H3)、PrintLog(H0)、root N[89](H4，符号未识别)、root/52局部N[5]（slot145已装载SL）。 root/52的H[4]现已由root槽631闭包创建记录进一步定位为root/21商店购买辅助闭包（root N[89]）；root/21原始局部函数名仍未识别。"
     }
   ],
   "notes": [
