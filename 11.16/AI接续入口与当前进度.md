@@ -2264,3 +2264,11 @@ root/25/0方向候选现严格按slot371–410常量顺序恢复：`+4,+3,+5,+2,
 - 新增`MakeGetMapData2DPtr_11_16(unusedCapturedValue)`并写入唯一明文，保留root/9的1项未使用捕获接口。常量池中的sceneManager/isObstacle/getMapDataRows/getMapDataCols属于旧版同体return后的残留尾段线索，不将其错误解释为本函数活动路径。
 - 本项计为部分恢复：尚未逐条闭合11.16后续所有物理槽位及root/9父级导出接线；未做语法/API/APK验证。
 - 下一项继续按“先函数名、再旧版同职责复用、只补新版差异”的顺序，挑选已有本版指令材料且可快速闭合的未恢复短原型；不回头重做root/9及root/25/0。
+
+
+### 2026-11-21续接：root/21 BuyStoreItem商城购买函数已复用
+
+- root/21的2参数、36项常量、149条指令与11.9旧版proto36 `BuyStoreItem(itemName, buyCount)`完全吻合；旧版明文中已有对应业务体，故直接复用并写入11.16唯一明文。
+- 已补齐商城代理获取、物品名称索引查询、pageData商品查找、限购状态检查、Condition/condis条件检查、CountMax/LimitCount/BuyCount数量约束及RequestBuy提交；现有root/52/26购买金条回调对`BuyStoreItem`的引用有了本地实现。
+- 由于11.16尚无root/21逐槽指令流，本项标记为跨版本业务复用，不冒充本版指令级完整恢复；未做语法/API/APK验证。
+- 下一项继续按旧版同职责映射优先，优先从尚未恢复且具备明显业务常量线索的原型中寻找可直接复用项；不重复root/21与root/9。
