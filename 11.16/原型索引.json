@@ -2051,8 +2051,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 307,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "AppleMapTimerCallback_11_16（合成定位名）",
+      "identity_status": "业务身份已确认；307槽主体待恢复",
       "constants": [
         "{\"index\":%d,\"UserID\":\"%s\"}",
         "",
@@ -2110,7 +2110,9 @@
         "target",
         "前往神龍之都",
         "string"
-      ]
+      ],
+      "instruction_stream_exported": false,
+      "instruction_stream_export_status": "待重新提取307槽主体指令"
     },
     {
       "preorder_id": 43,
@@ -2917,8 +2919,8 @@
       "child_count": 5,
       "parameter_count": 5,
       "instruction_count": 444,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "inputNumber",
+      "identity_status": "真实全局导出名已确认；444槽主体待恢复",
       "constants": [
         78,
         "screenW",
@@ -3002,7 +3004,9 @@
         0,
         "Button_setTitleFontSize",
         "取消"
-      ]
+      ],
+      "instruction_stream_exported": false,
+      "instruction_stream_export_status": "缺少444槽父函数主体指令"
     },
     {
       "preorder_id": 73,
@@ -3013,8 +3017,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 80,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_50_0",
+      "identity_status": "匿名确认回调；80槽主体已恢复",
       "constants": [
         "Win_Close",
         "string",
@@ -3031,7 +3035,9 @@
         "TextInput_getString",
         "GUI",
         "TextInput_setString"
-      ]
+      ],
+      "instruction_stream_exported": true,
+      "instruction_stream_export_status": "已写入唯一明文"
     },
     {
       "preorder_id": 74,
@@ -3165,8 +3171,8 @@
       "child_count": 37,
       "parameter_count": 0,
       "instruction_count": 865,
-      "candidate_name": "doInit_UI / 主界面初始化",
-      "identity_status": "高置信候选",
+      "candidate_name": "MainLeftBottom.doInit",
+      "identity_status": "真实字段导出名已确认；865槽主体待恢复",
       "constants": [
         "开拾取",
         "infoGoldTxt",
@@ -3346,7 +3352,9 @@
         "快速小退",
         "ScheduleOnce",
         "金币不足10W\n金币不足10W\n金币不足10W\n金币不足10W\n金币不足10W"
-      ]
+      ],
+      "instruction_stream_exported": false,
+      "instruction_stream_export_status": "缺少865槽父函数主体指令"
     },
     {
       "preorder_id": 80,
@@ -3938,8 +3946,8 @@
       "child_count": 0,
       "parameter_count": 6,
       "instruction_count": 174,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_52_14",
+      "identity_status": "OnLuaMessage包装回调；174槽主体已恢复",
       "constants": [
         "tostring",
         12170,
@@ -3979,7 +3987,9 @@
         "table",
         "level_2",
         "gsub"
-      ]
+      ],
+      "instruction_stream_exported": true,
+      "instruction_stream_export_status": "已写入唯一明文"
     },
     {
       "preorder_id": 102,
@@ -4215,8 +4225,8 @@
       "child_count": 0,
       "parameter_count": 0,
       "instruction_count": 897,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "root/52/23",
+      "identity_status": "897槽主体待恢复",
       "constants": [
         50622,
         "ITEM_INDEX_BY_NAME",
@@ -4367,7 +4377,9 @@
         0,
         "苹果",
         3
-      ]
+      ],
+      "instruction_stream_exported": false,
+      "instruction_stream_export_status": "缺少897槽主体指令"
     },
     {
       "preorder_id": 113,
@@ -4714,8 +4726,8 @@
       "child_count": 1,
       "parameter_count": 0,
       "instruction_count": 46,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "make_helper_root_52_34",
+      "identity_status": "金条上架入口；46槽主体已恢复",
       "constants": [
         "金条",
         {
@@ -4731,7 +4743,9 @@
         "tonumber",
         "inputNumber",
         "name"
-      ]
+      ],
+      "instruction_stream_exported": true,
+      "instruction_stream_export_status": "已写入唯一明文"
     },
     {
       "preorder_id": 126,
