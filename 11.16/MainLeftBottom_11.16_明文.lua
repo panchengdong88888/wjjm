@@ -4008,7 +4008,7 @@ local function make_AppleMapTimerCallback_11_16(capturedUpvalues)
         if not hasAppleTitle() then
             resetAppleMap({
                 [1] = mainState,
-                [3] = MainLeftBottom.a,
+                [3] = MainLeftBottom,
                 [4] = notify,
             }, "苹果图称号已失效，已停止")
             return
@@ -4018,7 +4018,7 @@ local function make_AppleMapTimerCallback_11_16(capturedUpvalues)
             if not backCity() then
                 resetAppleMap({
                     [1] = mainState,
-                    [3] = MainLeftBottom.a,
+                    [3] = MainLeftBottom,
                     [4] = notify,
                 }, "背包没有盟重回城石，已停止")
                 return
@@ -6151,7 +6151,7 @@ end
 -- root/52创建点确认：H[0]=PrintLog、H[2]=MainLeftBottom.a、H[3]=MainLeftBottom。
 MainLeftBottom.doInit = make_MainLeftBottom_doInit_11_16({
     [1] = PrintLog,
-    [3] = MainLeftBottom.a,
+    [3] = MainLeftBottom,
     [4] = MainLeftBottom,
 })
 
