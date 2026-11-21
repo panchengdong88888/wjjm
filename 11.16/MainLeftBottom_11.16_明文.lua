@@ -4760,16 +4760,17 @@ local function BindCruiseRunCaptures_11_16(upvalues, adapters)
     }
 end
 
--- 共享门控复位回调：只有外层提供真实upvalue-cell写入器时才创建。
--- 普通Lua值/数组副本无法替代原闭包共享的upvalue cell，因此不生成空操作回调。
-local function MakeCruisePauseResetCallback_11_16(setSharedPause)
+-- 共享门控复位回调：通过原型中实际恢复出的3槽子闭包执行H[0]=false。
+-- 重建环境以setter函数模拟VM共享upvalue cell；子闭包自身仍保持原始写入语义。
+local function MakeCruisePauseResetCallback_11_16(setSharedPause, childClosureFactory)
     if type(setSharedPause) ~= "function" then
         return nil
     end
 
-    return function()
-        setSharedPause(false)
-    end
+    childClosureFactory = childClosureFactory or make_helper_root_25_0_0
+    return childClosureFactory({
+        [0] = setSharedPause,
+    })
 end
 
 local function RunCruisePlayerScan_11_16(captured)
@@ -5018,7 +5019,8 @@ local function RunCruisePlayerScan_11_16(captured)
                     0.05
                 )
                 local resetPause = MakeCruisePauseResetCallback_11_16(
-                    captured.setSharedPause
+                    captured.setSharedPause,
+                    make_helper_root_25_0_0
                 )
                 if resetPause then
                     SL:ScheduleOnce(resetPause, 0.3)
@@ -5079,7 +5081,8 @@ local function RunCruisePlayerScan_11_16(captured)
     -- slot594–597创建root/25/0/2闭包，0.3秒后将共享门控写回false。
     -- 与普通候选路径的root/25/0/0复位闭包使用同一upvalue单元。
     local resetPause = MakeCruisePauseResetCallback_11_16(
-        captured.setSharedPause
+        captured.setSharedPause,
+        make_helper_root_25_0_2
     )
     if resetPause then
         SL:ScheduleOnce(resetPause, 0.3)
