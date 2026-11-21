@@ -5938,6 +5938,11 @@ end
 -- ============================================================================
 -- 已确认捕获：H[0]=PrintLog；H[2]=MainLeftBottom.a；H[3]=MainLeftBottom；
 -- H[9]为包含GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems
+-- 爷级调度点补充（root/52槽153–184）：槽153–162准备并调用SL:Schedule，
+-- 回调为槽155创建的root/52/23，参数寄存器明确装入间隔1；因此该回调按1秒调度。
+-- 槽164–175检查并取消旧moduleState.cruiseTimer；槽176–184另创建root/52/33，
+-- 以间隔1调用SL:Schedule并将返回句柄写入moduleState.cruiseTimer。
+-- 这两条调度链不可混为一条；root/52/23本身没有保存到cruiseTimer字段。
 -- 等方法的接口表（本段不需要直接解引用）。其余捕获槽保留，不猜变量名。
 --
 -- 本段先恢复root/52前180槽可确认的初始化主干：初始化提示、货币/物品
