@@ -2488,3 +2488,10 @@ root/25/0方向候选现严格按slot371–410常量顺序恢复：`+4,+3,+5,+2,
 - 子回调三个参数依次为putinPrice、putinName、putinStacked：写MainLeftBottom.putinPrice/putinName；将配置写入闭包的putinStacked字段设为putinStacked；调用配置写入闭包(putinPrice,putinName,putinStacked)；最后调用MainLeftBottom.a.startPutinGold(putinPrice,putinName,putinStacked)。
 - 重要纠错：旧明文子回调曾把putinStacked写到MainLeftBottom，并错误地将MainLeftBottom作为配置写入闭包首参；本轮按root/52/34/0真实捕获顺序及18槽寄存器复制修正。现在父46槽和子18槽均已写入唯一明文，CSV/索引已同步。
 - 本轮新增完整恢复1项：root/52/34；子root/52/34/0原已登记，本轮校正捕获与实参后保持完整状态。此前七项未恢复列表现剩4项：root/27、root/50、root/52、root/52/23。未执行Lua编译、API验证或APK/游戏运行验证。
+
+
+### 2026-11-21续：root/27完整指令流与9项捕获映射已取得
+- 原始载荷提取文件已包含root/27全部307个物理槽位、56项常量及空槽位置。root槽343创建root/27，槽344–352依次捕获N[3]/N[47]/N[5]/N[44]/N[42]/N[43]/N[46]/N[4]/N[45]。
+- 捕获身份映射：H[0]=MainLeftBottom；H[1]=root/73时间窗口辅助闭包；H[2]=_G；H[3]=雾隐龙渊地图记录；H[4]=巨龙山谷地图记录；H[5]=逆魔古域地图记录；H[6]=神魔禁地地图记录；H[7]=PrintLog；H[8]=破败山谷地图记录。
+- 常量与调用链支持将root/27定位为苹果地图/神龍之都的定时回调，索引采用合成定位名AppleMapTimerCallback_11_16；原始局部符号名未确认。尚未把307槽控制流整理为可读源码，不计完成。
+- 当前四个剩余大原型为root/27、root/50、root/52、root/52/23；本轮不再重复提取基础载荷。下一步从已保存的完整指令树直接推进root/27控制流，或按用户要求切换到其他剩余项。
