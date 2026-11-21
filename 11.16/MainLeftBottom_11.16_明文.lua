@@ -6348,6 +6348,28 @@ local function UpdateAppleCruiseStatusUI_11_16(moduleState, appleMapBg, appleMap
 end
 
 
+-- root/52/23槽165–182：转生分支两条消息的独立明文封装。
+-- 两条消息的实参由本版物理槽位确认；触发门槛/autoPanelAt分支不在此处猜写。
+local function SendRebirthStageRequest_11_16()
+    LuaSendMsg(9002, 301000, 1, 2, 3, "转生1", 7)
+end
+
+local function SendRebirthCycleRequest_11_16()
+    LuaSendMsg(9002, 10016, 1, 2, 3, "转世轮回", 12)
+end
+
+-- root/52/23槽270–287：称号升级分支两条消息的独立明文封装。
+-- 50620/50621/50622、TITLES、ItemConfigProxy及称号证明数量档位的
+-- 目标筛选/触发关系仍待恢复；这些封装只保存已确认的消息协议。
+local function SendTitleUpgradeStageRequest_11_16()
+    LuaSendMsg(9002, 301000, 1, 2, 3, "称号升级1", 13)
+end
+
+local function SendTitleUpgradeRequest_11_16()
+    LuaSendMsg(9002, 10001, 1, 2, 3, "称号升级", 12)
+end
+
+
 -- root/52/23槽289–356：剑灵数据请求/等待状态的可确认部分。
 -- 仅负责等级上限与12174数据请求；材料表遍历和12171打造由后续函数补齐，
 -- 不在材料配置结构未闭合时发起打造。
