@@ -2425,3 +2425,9 @@ root/25/0方向候选现严格按slot371–410常量顺序恢复：`+4,+3,+5,+2,
 - root/50原型自身仍为5参数、444槽、5个子原型；目前没有root/50的完整本版指令流，因此本次只更新名称索引与身份台账，不补写窗口UI代码，不将函数计为已恢复。
 - root/52/34的业务职责仍仅为高置信候选：常量含金条、price、putinPrice、mode、putinName、上架物品、inputNumber，唯一子闭包含putinStacked/putinPrice/putinName/startPutinGold；其46槽主体和原始函数名仍未确认。
 - 同步修正全部原型函数名称索引及函数名称三方匹配CSV，避免把“业务职责确认”误写成“原始函数名确认”。唯一明文未改动；本轮没有新增完整源码函数。
+
+## 2026-11-21续：root/52/10、root/52/11已写入
+- 新增完整静态恢复2项：root/52/10 ClearBlacklistItemsButtonHandler_11_16；root/52/11 RestoreLuaSendMsgAlias_11_16。
+- root/52/10直接调用ClearBlacklistItems()；root/52/11将捕获对象的LuaSendMsg字段写入_G.LuaSendMsg，父级捕获原名未猜测。
+- 已同步唯一明文、函数状态CSV、进度账本。本轮不调整总百分比，避免沿用账本中相互冲突的历史统计口径。
+- 下一批继续从候选原型完整指令提取中挑选短小且控制流/捕获已闭合的函数；对root/52/9、root/52/13等捕获链不完整项暂缓。
