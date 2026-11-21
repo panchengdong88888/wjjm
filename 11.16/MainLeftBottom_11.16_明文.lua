@@ -6348,6 +6348,46 @@ local function UpdateAppleCruiseStatusUI_11_16(moduleState, appleMapBg, appleMap
 end
 
 
+-- root/52/23槽289–356：剑灵数据请求/等待状态的可确认部分。
+-- 仅负责等级上限与12174数据请求；材料表遍历和12171打造由后续函数补齐，
+-- 不在材料配置结构未闭合时发起打造。
+local function RequestAncientSwordData_11_16(moduleState, now)
+    moduleState = moduleState or MainLeftBottom
+    now = tonumber(now) or os.time()
+
+    local swordData = moduleState.ancientSwordData
+    local swordLevel = type(swordData) == "table"
+        and (tonumber(swordData.level_1) or 0) or 0
+
+    if swordLevel >= 30 then
+        if not moduleState.swordDone then
+            moduleState.swordDone = true
+            ShowLocalNoticeByType("剑灵已达到30级，停止自动打造")
+        end
+        moduleState.swordPullPending = false
+        return false, "level_cap", swordLevel
+    end
+
+    if moduleState.swordDone then
+        return false, "already_done", swordLevel
+    end
+
+    if moduleState.swordPullPending then
+        local requestedAt = tonumber(moduleState.swordReqAt) or now
+        if now - requestedAt < 10 then
+            return false, "request_pending", swordLevel
+        end
+        moduleState.swordPullPending = false
+    end
+
+    -- 原始槽348–356：LuaSendMsg(9002,12174,1,2,3,"",0)。
+    LuaSendMsg(9002, 12174, 1, 2, 3, "", 0)
+    moduleState.swordPullPending = true
+    moduleState.swordReqAt = now
+    return true, "request_sent", swordLevel
+end
+
+
 -- root/52/23槽846–896：两种上古神剑解封请求。
 -- 两个连续分支分别检查对应解封石库存；消息号/参数来自本版物理槽位。
 -- sealPanelAt的节流门控属于父回调状态机，本辅助函数不自行猜测冷却秒数。
