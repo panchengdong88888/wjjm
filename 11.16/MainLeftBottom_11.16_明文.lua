@@ -5456,22 +5456,3 @@ local function MakeResourceStatisticsWindow_11_16(moduleState, printLog, timerSt
         timerState.resTimer = sl:Schedule(refreshResourceStatistics, 1.0)
     end
 end
-
-
--- ============================================================================
--- 11.16 root/52/10：清空黑名单按钮回调（6条指令）
--- ============================================================================
--- 本版6槽指令直接调用全局ClearBlacklistItems，无参数、无捕获。
-local function ClearBlacklistItemsButtonHandler_11_16()
-    ClearBlacklistItems()
-end
-
-
--- ============================================================================
--- 11.16 root/52/11：恢复全局LuaSendMsg别名（5条指令）
--- ============================================================================
--- 本版5槽指令将捕获对象的LuaSendMsg字段写回_G.LuaSendMsg。
--- 捕获对象由父级语义参数传入；不猜测其在root/52中的原始变量名。
-local function RestoreLuaSendMsgAlias_11_16(capturedNetworkController)
-    _G.LuaSendMsg = capturedNetworkController.LuaSendMsg
-end
