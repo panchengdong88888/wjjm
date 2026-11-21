@@ -4560,6 +4560,288 @@ end
 
 
 -- ============================================================================
+-- 11.16 root/25/0：见人跑周期回调（598条指令；主体初稿/部分恢复）
+-- ============================================================================
+-- 本函数按已闭合的控制流组装。captured为root/25/0的11项捕获值容器；
+-- 未确认词法身份的捕获项通过明确的适配字段传入，避免把VM寄存器复用
+-- 误写成真实变量名。调用方必须按父级闭包捕获顺序完成接线。
+--
+-- captured字段约定（仅已确认者直接命名）：
+--   moduleState：MainLeftBottom模块/共享状态对象（捕获身份仍需最终接线）
+--   printLog：日志包装函数
+--   resumeBattle：恢复战斗提示回调
+--   directionOffsets：八方向偏移表（仅当父级捕获映射最终确认后接入）
+--   getDirection：二维坐标差转方向编号的函数
+--   mapData：global.sceneManager:GetMapData2DPtr()结果
+--   其余捕获暂放在captured.raw中，不在这里猜测其业务名称。
+-- 当前版本保留全部已确认业务路径；玩家过滤边界、部分捕获变量的词法身份
+-- 及随机回退中的calcMapDirection/cc.p具体参数仍标记为待接线。
+local function RunCruisePlayerScan_11_16(captured)
+    captured = captured or {}
+
+    if not IsInWhitelistMap() then
+        return
+    end
+
+    local mainPlayer = global.gamePlayerController:GetMainPlayer()
+    if not mainPlayer then
+        return
+    end
+
+    local mainX = mainPlayer:GetMapX()
+    local mainY = mainPlayer:GetMapY()
+    if not mainX then
+        mainX = SL:GetMetaValue("ACTOR_MAP_X")
+    end
+    if not mainY then
+        mainY = SL:GetMetaValue("ACTOR_MAP_Y")
+    end
+
+    local viewPlayers = SL:GetMetaValue("FIND_IN_VIEW_PLAYER_LIST") or {}
+    if #viewPlayers == 0 then
+        if captured.resumeBattle then
+            captured.resumeBattle("附近没有玩家，恢复战斗")
+        end
+        return
+    end
+
+    local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
+    local mainActorName = SL:GetMetaValue("ACTOR_NAME") or ""
+    local mainGuildName = SL:GetMetaValue("ACTOR_GUILD_NAME") or ""
+    local teamMembers = SL:GetMetaValue("TEAM_MEMBER_LIST") or {}
+    local mapData = captured.mapData
+    if mapData == nil then
+        mapData = global.sceneManager:GetMapData2DPtr()
+    end
+
+    local players = {}
+    for _, actor in ipairs(viewPlayers) do
+        if actor and actor.UserID then
+            local id = actor.UserID
+            local actorHP = SL:GetMetaValue("ACTOR_HP", id) or 0
+            if id ~= mainActorID and actorHP > 0 then
+                local record = {
+                    id = id,
+                    name = actor.Name or "",
+                    x = actor.x or actor.X,
+                    y = actor.y or actor.Y,
+                }
+                if record.x == nil then
+                    record.x = SL:GetMetaValue("ACTOR_MAP_X", id)
+                end
+                if record.y == nil then
+                    record.y = SL:GetMetaValue("ACTOR_MAP_Y", id)
+                end
+                if record.x ~= nil and record.y ~= nil then
+                    local dx = math.abs(record.x - mainX)
+                    local dy = math.abs(record.y - mainY)
+                    record.dist = math.max(dx, dy)
+                    record.isHero = SL:GetMetaValue("ACTOR_IS_HERO", id)
+                    record.guildName = SL:GetMetaValue("ACTOR_GUILD_NAME", id) or ""
+                    record.teamMember = teamMembers[id] ~= nil
+                    -- 原指令还对名称/行会/队伍及英雄属性进行过滤；
+                    -- 过滤条件的完整组合尚未逐项命名，交由已确认的适配器处理。
+                    local accept = true
+                    if captured.acceptPlayer then
+                        accept = captured.acceptPlayer(
+                            record, mainActorName, mainGuildName, teamMembers
+                        )
+                    end
+                    if accept then
+                        players[#players + 1] = record
+                    end
+                end
+            end
+        end
+    end
+
+    if #players == 0 then
+        if captured.resumeBattle then
+            captured.resumeBattle("附近没有玩家，恢复战斗")
+        end
+        return
+    end
+
+    local pkMode = SL:GetMetaValue("PKMODE")
+    local attackedSetting = global.CACHE and global.CACHE.CHANGE_SETTING
+    if attackedSetting == nil then
+        attackedSetting = CHANGE_SETTING
+    end
+    local runWhenAttacked = attackedSetting and attackedSetting[3039]
+    local runMode = (pkMode == 1 or pkMode == 6) and runWhenAttacked
+    local target = players[1]
+    for i = 2, #players do
+        if players[i].dist < target.dist then
+            target = players[i]
+        end
+    end
+
+    if not runMode then
+        local playerInputProxy = global.Facade:retrieveProxy(
+            global.ProxyTable.PlayerInputProxy
+        )
+        if not playerInputProxy then
+            return
+        end
+
+        playerInputProxy:SetTargetID(target.id)
+        playerInputProxy:SetAttackTargetID(target.id)
+        playerInputProxy:SetAttackState(1)
+
+        if captured.printLog then
+            captured.printLog(string.format(
+                "见人杀: 锁定 %s(%d格)", target.name, target.dist
+            ))
+        end
+
+        local now = os.clock()
+        local state = captured.moduleState
+        if state and (not state.cruiseAttackAt or now - state.cruiseAttackAt >= 0.6) then
+            state.cruiseAttackAt = now
+            local skillUtils = require("game.proxy.skillUtils")
+            local skill = skillUtils.findLockLaunchSkill()
+            if skill then
+                global.Facade:sendNotification(global.NoticeTable.InputLaunch, {
+                    skillID = skill.skillID,
+                    destPos = skill.destPos,
+                    priority = global.MMO.LAUNCH_PRIORITY_SYSTEM,
+                    launchType = global.MMO.LAUNCH_TYPE_LOCK,
+                    targetID = target.id,
+                })
+            end
+        end
+        return
+    end
+
+    -- 逃跑路径：设置共享暂停标志并通知父级状态回调。
+    if captured.moduleState then
+        captured.moduleState.cruiseGatherPaused = true
+    end
+    if captured.pauseGather then
+        captured.pauseGather(true)
+    end
+
+    local dx = mainX - target.x
+    local dy = mainY - target.y
+    local getDirection = captured.getDirection or GetDirectionByVector_11_16
+    local baseDir = getDirection(dx, dy)
+    if baseDir == nil then
+        return
+    end
+
+    local offsets = captured.directionOffsets
+    local candidates = {}
+    if offsets then
+        local candidateDirs = {
+            baseDir, (baseDir + 1) % 8, (baseDir + 7) % 8,
+            (baseDir + 2) % 8, (baseDir + 6) % 8,
+        }
+        for i, dir in ipairs(candidateDirs) do
+            candidates[#candidates + 1] = {
+                dir = dir,
+                step = (i <= 3) and 2 or 1,
+            }
+        end
+    end
+
+    local playerInputProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.PlayerInputProxy
+    )
+    local function clearTargets()
+        if not playerInputProxy then
+            return
+        end
+        if playerInputProxy.ClearAttackTargetID then
+            playerInputProxy:ClearAttackTargetID()
+        end
+        if playerInputProxy.ClearTarget then
+            playerInputProxy:ClearTarget()
+        end
+        if playerInputProxy.SetTargetID then
+            playerInputProxy:SetTargetID(0)
+        end
+        if playerInputProxy.ClearMove then
+            playerInputProxy:ClearMove()
+        end
+    end
+
+    for _, candidate in ipairs(candidates) do
+        local offset = offsets[tostring(candidate.dir)] or offsets[candidate.dir]
+        if offset then
+            local targetX = target.x + offset.x * candidate.step
+            local targetY = target.y + offset.y * candidate.step
+            local blocked = mapData and mapData:isObstacle(targetX, targetY)
+            if not blocked then
+                clearTargets()
+                SL:SetMetaValue("BATTLE_AFK_END")
+                global.Facade:sendNotification(global.NoticeTable.UserInputMove, {
+                    moveDir = candidate.dir,
+                    moveStep = candidate.step,
+                    type = global.MMO.INPUT_MOVE_TYPE_JOYSTICK,
+                    x = mainPlayer:GetMapX(),
+                    y = mainPlayer:GetMapY(),
+                })
+                SL:ScheduleOnce(
+                    MakeJoystickUserInputMove_11_16(captured.moduleState, candidate),
+                    0.05
+                )
+                SL:ScheduleOnce(function()
+                    if captured.moduleState then
+                        captured.moduleState.cruiseGatherPaused = false
+                    end
+                end, 0.3)
+                if captured.printLog then
+                    captured.printLog(string.format(
+                        "见人跑: %s(%d格)，向%d方向移动%d步",
+                        target.name, target.dist, candidate.dir, candidate.step
+                    ))
+                end
+                return
+            end
+        end
+    end
+
+    -- 所有方向候选均未通过时，执行原指令尾段的随机[-2,2]回退。
+    local randomX = math.random(-2, 2)
+    local randomY = math.random(-2, 2)
+    if mapData and mapData:isObstacle(randomX, randomY) then
+        return
+    end
+    if not playerInputProxy then
+        return
+    end
+
+    local moveDir
+    if playerInputProxy.calcMapDirection then
+        -- 原始流包含两次cc.p及calcMapDirection调用；其参数重载尚未完全确认。
+        -- 先通过适配器保留调用位置，避免错误伪造向量参数。
+        if captured.calcRandomDirection then
+            moveDir = captured.calcRandomDirection(
+                playerInputProxy, randomX, randomY
+            )
+        end
+    end
+    if moveDir == nil then
+        return
+    end
+
+    clearTargets()
+    global.Facade:sendNotification(global.NoticeTable.UserInputMove, {
+        moveDir = moveDir,
+        moveStep = 2,
+        type = global.MMO.INPUT_MOVE_TYPE_JOYSTICK,
+        x = randomX,
+        y = randomY,
+    })
+    SL:ScheduleOnce(function()
+        if captured.onRandomMoveScheduled then
+            captured.onRandomMoveScheduled()
+        end
+    end, 0.3)
+end
+
+
+-- ============================================================================
 -- 11.16 root/25：见人跑定时器启停按钮（33条指令，0显式参数，1个子闭包）
 -- ============================================================================
 -- 本版33条指令流确认：检查共享状态中的cruiseRunTimer；
