@@ -4056,7 +4056,7 @@ local function make_AppleMapTimerCallback_11_16(capturedUpvalues)
             local target = chooseTargetMap(state)
             if target then
                 state.target = target
-                state.state = "waitEnter"
+                state.state = "walkNpc"
                 state.ticks = 0
                 state.lastMapName = mapName
             end
@@ -4101,24 +4101,16 @@ local function make_AppleMapTimerCallback_11_16(capturedUpvalues)
             return
         end
 
-        -- waitEnter：每30个回调tick重发一次NPC确认消息，等待地图切换。
+        -- waitEnter：地图发生变化时转入monitor；未切换则每30 tick重发确认消息。
         if state.state == "waitEnter" then
+            if mapName ~= state.lastMapName then
+                state.state = "monitor"
+                state.ticks = 0
+                return
+            end
+
             if state.ticks >= 30 then
                 LuaSendMsg(9002, 10037, 1, 2, 3, "", 0)
-                state.ticks = 0
-            end
-            return
-        end
-
-        -- monitor：目标地图发生变化时更新记录并提示；继续等待下一轮地图选择。
-        if state.state == "monitor" then
-            local target = state.target
-            local targetName = target and target.name
-            if mapName ~= state.lastMapName then
-                if targetName and string.find(mapName, targetName, 1, true) then
-                    notify("已进入目标地图：" .. mapName)
-                end
-                state.lastMapName = mapName
                 state.ticks = 0
             end
             return
