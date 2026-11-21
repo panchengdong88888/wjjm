@@ -2060,12 +2060,59 @@
         }
       ],
       "evidence": "root_654条物理指令流.json槽522 Opcode178创建childIndex=32、captureCount=3；槽523–525依次捕获父N[75]/N[5]/N[0]。父N[75]在槽517置false；父N[5]由槽46创建为root/80（ShowLocalNoticeByType）；父N[0]由槽2装入MainLeftBottom模块表。"
+    },
+    {
+      "createSlot": 155,
+      "createOpcode": 387,
+      "childIndex": 23,
+      "childPath": "root/52/23",
+      "parameterCount": 0,
+      "instructionCount": 897,
+      "captureCount": 5,
+      "captures": [
+        {
+          "slot": 156,
+          "opcode": 132,
+          "sourceRegister": 2,
+          "sourceKind": "parent-upvalue",
+          "sourceUpvalue": 2
+        },
+        {
+          "slot": 157,
+          "opcode": 132,
+          "sourceRegister": 3,
+          "sourceKind": "parent-upvalue",
+          "sourceUpvalue": 3
+        },
+        {
+          "slot": 158,
+          "opcode": 132,
+          "sourceRegister": 0,
+          "sourceKind": "parent-upvalue",
+          "sourceUpvalue": 0
+        },
+        {
+          "slot": 159,
+          "opcode": 132,
+          "sourceRegister": 4,
+          "sourceKind": "parent-upvalue",
+          "sourceUpvalue": 4
+        },
+        {
+          "slot": 160,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "evidence": "root/52槽155 Opcode387创建childIndex=23、captureCount=5；槽156–160依次读取捕获描述符。root/52自身由root捕获H[0..18]=root N[4],N[2],N[0],N[3],N[89],N[1],N[67],N[7],N[62],N[8],N[88],N[38],N[39],N[5],N[83],N[82],N[11],N[12],N[9]，因此子原型捕获顺序可换算为MainLeftBottom.a(H2)、MainLeftBottom(H3)、PrintLog(H0)、root N[89](H4，符号未识别)、root/52局部N[5]（slot145已装载SL）。"
     }
   ],
   "notes": [
     "childIndex按S()生成的root.children零基索引对应root/<childIndex>。",
     "Opcode243捕获父级局部寄存器N；其他捕获Opcode应按原版F()分派器再判定为父级upvalue。",
     "本文件只记录创建点、子原型身份及捕获寄存器，不把寄存器来源自动命名为业务变量。",
-    "2026-11-20补充：从root_654条物理指令流直接补录此前遗漏的Opcode178闭包创建事件。root/50在槽283创建，H[0]=root N[0]；root/15在槽287创建，H[0..4]=root N[40],N[3],N[5],N[4],N[7]；root/52在槽633创建，H[0..18]=root N[4],N[2],N[0],N[3],N[89],N[1],N[67],N[7],N[62],N[8],N[88],N[38],N[39],N[5],N[83],N[82],N[11],N[12],N[9]。这些是父root捕获寄存器的直接证据，不等于已确认变量名或子闭包内部捕获身份。"
+    "2026-11-20补充：从root_654条物理指令流直接补录此前遗漏的Opcode178闭包创建事件。root/50在槽283创建，H[0]=root N[0]；root/15在槽287创建，H[0..4]=root N[40],N[3],N[5],N[4],N[7]；root/52在槽633创建，H[0..18]=root N[4],N[2],N[0],N[3],N[89],N[1],N[67],N[7],N[62],N[8],N[88],N[38],N[39],N[5],N[83],N[82],N[11],N[12],N[9]。这些是父root捕获寄存器的直接证据，不等于已确认变量名或子闭包内部捕获身份。",
+    "2026-11-21续：补录root/52/23闭包创建点与5项捕获。root/52槽155 Opcode387创建childIndex=23，紧随槽156–160捕获H[2]、H[3]、H[0]、H[4]及父局部N[5]；结合root/52创建时的19项捕获表，前三项映射为MainLeftBottom.a、MainLeftBottom、PrintLog；H[4]为root N[89]（待识别），N[5]为SL。只确认捕获顺序，不代表897槽周期逻辑已恢复。"
   ]
 }
