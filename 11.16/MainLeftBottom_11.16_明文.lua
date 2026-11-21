@@ -3752,23 +3752,64 @@ end
 
 
 -- 11.16 root/52/34/0：上架输入回调（18条物理指令，3个参数，3个upvalue）。
--- 参数按常量与写入顺序对应：putinPrice、putinName、putinStacked。
--- H[0]作为上架状态对象，写入三个字段；H[1]作为后续回调；
--- H[2]作为回调的首个上下文参数。保留捕获代理，不擅自给外层变量命名。
--- 尾段还调用状态对象的startPutinGold成员，实参仍按原始寄存器顺序传递。
-local function make_helper_root_52_34_0(capturedUpvalues, putinPrice, putinName, putinStacked)
-    local state = capturedUpvalues[1]
-    state.putinPrice = putinPrice
-    state.putinName = putinName
-    state.putinStacked = putinStacked
+-- 子闭包由root/52/34槽39创建，捕获顺序为父H[1]、H[3]、H[2]：
+-- H[0]=MainLeftBottom状态表；H[1]=配置写入闭包；H[2]=MainLeftBottom.a模块表。
+-- 执行顺序：写MainLeftBottom.putinPrice/putinName；写配置写入闭包的putinStacked字段；
+-- 调用配置写入闭包(price,name,stacked)；再调用MainLeftBottom.a.startPutinGold(price,name,stacked)。
+local function make_helper_root_52_34_0(capturedUpvalues)
+    return function(putinPrice, putinName, putinStacked)
+        local main = capturedUpvalues[1]
+        local saveInputConfig = capturedUpvalues[2]
+        local module = capturedUpvalues[3]
 
-    -- VM寄存器顺序：N[4]取H[0]；N[5]/N[6]分别取第二、第三参数。
-    -- 先调用H[1](H[0], putinName, putinStacked)，再调用H[2].startPutinGold(H[0], ...)。
-    local callbackContext = capturedUpvalues[1]
-    capturedUpvalues[2](callbackContext, putinName, putinStacked)
-    capturedUpvalues[3].startPutinGold(callbackContext, putinName, putinStacked)
+        main.putinPrice = putinPrice
+        main.putinName = putinName
+
+        saveInputConfig.putinStacked = putinStacked
+        saveInputConfig(putinPrice, putinName, putinStacked)
+
+        module.startPutinGold(putinPrice, putinName, putinStacked)
+    end
 end
 
+-- 11.16 root/52/34：金条上架入口（46条物理指令，0个显式参数，4个upvalue）。
+-- root/52槽564创建此闭包，依次捕获H[11]配置读取闭包、H[3] MainLeftBottom、
+-- H[2] MainLeftBottom.a模块表、H[12]配置写入闭包。
+-- 子闭包root/52/34/0捕获MainLeftBottom、配置写入闭包、MainLeftBottom.a。
+local function make_helper_root_52_34(capturedUpvalues)
+    return function()
+        local readInputConfig = capturedUpvalues[1]
+        local main = capturedUpvalues[2]
+        local module = capturedUpvalues[3]
+        local saveInputConfig = capturedUpvalues[4]
+
+        local inputConfig = readInputConfig()
+        local price = tonumber(inputConfig.price) or main.putinPrice
+
+        local itemName = inputConfig.name
+        if not itemName or itemName == "" then
+            itemName = main.putinName
+            if not itemName then
+                itemName = "金条"
+            end
+        end
+
+        local useStackQuantity = inputConfig.mode == "1"
+        local onConfirm = make_helper_root_52_34_0({
+            main,
+            saveInputConfig,
+            module,
+        })
+
+        module.inputNumber(
+            "上架物品",
+            price,
+            onConfirm,
+            itemName,
+            useStackQuantity
+        )
+    end
+end
 -- ============================================================
 --  11.16 root/52/33：每日巡航协议时间窗口回调（部分恢复）
 -- ============================================================
