@@ -6455,3 +6455,40 @@ local function RefreshMainLeftBottomDisplay_11_16(moduleState, moneyProxy, contr
         combatPower = combatPower,
     }
 end
+
+
+-- root/52/23可确认业务的部分组合入口。
+-- 仅组合已经单独恢复的邮件维护、苹果使用、武器幸运、解封请求和显示刷新；
+-- 不在此处伪造称号升级、剑灵材料/打造、苹果商城购买及父级定时器参数。
+-- 待root/52父级调用/捕获关系闭合后，再由真实回调调用本函数。
+local function ProcessMainLeftBottomMaintenance_11_16(moduleState, moneyProxy, controls)
+    moduleState = moduleState or MainLeftBottom
+    controls = controls or {}
+
+    local result = {
+        mailList = RunMailMaintenance_11_16(),
+        appleUsed = TryUseAppleItem_11_16(),
+    }
+
+    local luckOK, luckStatus, luckDetail, luckValue = MaintainWeaponLuck_11_16()
+    result.weaponLuck = {
+        ok = luckOK,
+        status = luckStatus,
+        detail = luckDetail,
+        value = luckValue,
+    }
+
+    local sealSent, sealStatus = RequestAncientSwordSeal_11_16(moduleState)
+    result.seal = {
+        sent = sealSent,
+        status = sealStatus,
+    }
+
+    result.display = RefreshMainLeftBottomDisplay_11_16(
+        moduleState,
+        moneyProxy,
+        controls
+    )
+
+    return result
+end
