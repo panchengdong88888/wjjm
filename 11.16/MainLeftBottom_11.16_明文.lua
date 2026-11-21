@@ -4151,6 +4151,99 @@ end
 
 
 -- ============================================================================
+-- 11.16 root/21：BuyStoreItem商城购买函数（149条指令，2个参数）
+-- ============================================================================
+-- root/21与11.9旧版proto36的参数数、指令数及36项常量完全吻合。
+-- 直接复用已恢复的商城购买业务体；不分析PageStoreProxy等官方API内部实现。
+local function BuyStoreItem(itemName, buyCount)
+    local pageStoreProxy = global.Facade:retrieveProxy(global.ProxyTable.PageStoreProxy)
+    if not pageStoreProxy then
+        return false, "商城代理不可用"
+    end
+
+    local lookupOK, itemIndex = pcall(
+        SL.GetMetaValue,
+        SL,
+        "ITEM_INDEX_BY_NAME",
+        itemName
+    )
+
+    if not lookupOK
+        or type(itemIndex) ~= "number"
+        or itemIndex <= 0
+    then
+        return false, "物品索引不存在: " .. tostring(itemName)
+    end
+
+    local foundGoods = nil
+    local pageData = pageStoreProxy.pageData
+    if not pageData then
+        pageData = {}
+    end
+
+    for pageKey, pageItems in pairs(pageData) do
+        local numericPageKey = tonumber(pageKey)
+        if numericPageKey and numericPageKey < 100
+            and type(pageItems) == "table"
+        then
+            for _, goods in pairs(pageItems) do
+                if goods and goods.Id == itemIndex then
+                    foundGoods = goods
+                    break
+                end
+            end
+        end
+
+        if foundGoods then
+            break
+        end
+    end
+
+    if not foundGoods then
+        return false, "商城没有这件道具"
+    end
+
+    if not pageStoreProxy:CheckStoreLimitStatus(foundGoods.Index) then
+        return false, "已到限购上限"
+    end
+
+    local condition = foundGoods.Condition
+    if not condition then
+        condition = foundGoods.condis
+    end
+
+    if condition and condition ~= "" then
+        if not SL:CheckCondition(condition) then
+            return false, "条件不满足"
+        end
+    end
+
+    buyCount = tonumber(buyCount) or 1
+
+    local countMax = tonumber(foundGoods.CountMax)
+    if countMax and countMax > 0 and countMax < buyCount then
+        buyCount = countMax
+    end
+
+    local limitCount = tonumber(foundGoods.LimitCount)
+    if limitCount and limitCount > 0 then
+        local alreadyBought = tonumber(foundGoods.BuyCount) or 0
+        local remainingCount = limitCount - alreadyBought
+
+        if remainingCount < buyCount then
+            buyCount = remainingCount
+        end
+
+        if buyCount <= 0 then
+            return false, "限购剩余 0"
+        end
+    end
+
+    pageStoreProxy:RequestBuy(foundGoods.Index, buyCount, 0)
+    return true, buyCount
+end
+
+-- ============================================================================
 -- 11.16 root/52/26：500W金币检测启动回调（23条指令，0显式参数，1项捕获）
 -- ============================================================================
 -- 父级root/52通过Opcode178创建该原型；捕获共享timerState。
