@@ -3959,6 +3959,134 @@ end
 -- root槽位359 Opcode0将该闭包写入_ENV.startAppleMap；
 -- root/52/25的无参回调直接调用全局startAppleMap。
 -- root/27本体是独立原型，作为定时回调对象原样捕获；这里不展开其内部实现。
+-- ============================================================
+-- 11.16 root/27：苹果下图定时回调（307条物理指令，0参数，9项捕获）
+-- ============================================================
+-- 捕获顺序：H[0]=MainLeftBottom.z状态表；H[1]=攻城时间窗口判断；
+-- H[2]=ShowLocalNoticeByType；H[3]=盟重/土城地图判断；
+-- H[4]=称号51295有效期判断；H[5]=backCity；
+-- H[6]=苹果图按钮/定时器复位；H[7]=PrintLog；
+-- H[8]=地图候选选择闭包。
+--
+-- 当前按已确认状态字段与同版本已恢复调用点先写入可执行主干。
+-- 原始307槽中walkNpc/clickNpc/monitor后续分支的具体寄存器
+-- 条件尚未全部闭合；未知协议分支不伪造，保留待统一补齐标记。
+local function make_AppleMapTimerCallback_11_16(capturedUpvalues)
+    local mainState = capturedUpvalues[1]
+    local isSiegeTime = capturedUpvalues[2]
+    local notify = capturedUpvalues[3]
+    local isWhitelistedCity = capturedUpvalues[4]
+    local hasAppleTitle = capturedUpvalues[5]
+    local backCity = capturedUpvalues[6]
+    local resetAppleMap = capturedUpvalues[7]
+    local printLog = capturedUpvalues[8]
+    local chooseTargetMap = capturedUpvalues[9]
+
+    return function()
+        local state = mainState.appleMap
+        if not state or not mainState.appleMapRunning then
+            return
+        end
+
+        state.ticks = (state.ticks or 0) + 1
+
+        if isSiegeTime() then
+            if not state.siegeTip then
+                state.siegeTip = true
+                notify("攻城时间段(20:00-22:00)，苹果图暂停下图")
+                printLog("苹果下图：进入攻城时间窗口，暂停下图")
+            end
+            return
+        elseif state.siegeTip then
+            state.siegeTip = false
+            notify("攻城时间段结束，苹果图恢复下图")
+            printLog("苹果下图：攻城时间窗口结束，恢复下图")
+        end
+
+        local mapName = GetMapName()
+
+        if not hasAppleTitle() then
+            resetAppleMap({
+                [1] = mainState,
+                [3] = MainLeftBottom.a,
+                [4] = notify,
+            }, "苹果图称号已失效，已停止")
+            return
+        end
+
+        if state.state == "backCity" then
+            if not backCity() then
+                resetAppleMap({
+                    [1] = mainState,
+                    [3] = MainLeftBottom.a,
+                    [4] = notify,
+                }, "背包没有盟重回城石，已停止")
+                return
+            end
+
+            state.state = "toShenlong"
+            state.ticks = 0
+            state.cityCloseSent = false
+            printLog("苹果下图：已使用盟重回城石，准备前往神龍之都")
+            return
+        end
+
+        if state.state == "toShenlong" then
+            if string.find(mapName, "神龍之都", 1, true) then
+                state.state = "monitor"
+                state.ticks = 0
+                state.lastMapName = mapName
+                notify("已进入目标地图：" .. mapName)
+                return
+            end
+
+            if state.ticks % 30 == 0 then
+                LuaSendMsg(9002, 80101, 1, 2, 3, "神龍之都", 12)
+                notify("目标地图：神龍之都")
+            end
+            return
+        end
+
+        if state.state == "monitor" then
+            if isWhitelistedCity(mapName) then
+                state.lastMapName = mapName
+                return
+            end
+
+            local target = chooseTargetMap(state)
+            if target then
+                state.target = target
+                state.state = "waitEnter"
+                state.ticks = 0
+                state.lastMapName = mapName
+            end
+            return
+        end
+
+        if state.state == "waitEnter" then
+            local target = state.target
+            local targetName = target and target.name
+            if targetName and string.find(mapName, targetName, 1, true) then
+                state.state = "monitor"
+                state.ticks = 0
+                state.lastMapName = mapName
+                notify("已进入目标地图：" .. mapName)
+                return
+            end
+
+            if state.ticks >= 50 then
+                state.ticks = 0
+                printLog("苹果下图：等待进入目标地图，当前地图=%s，目标地图=%s",
+                    tostring(mapName), tostring(targetName))
+            end
+            return
+        end
+
+        -- walkNpc/clickNpc等分支的逐槽寄存器条件仍待补齐；未知状态不发送协议。
+    end
+end
+
+
 local function make_startAppleMap(capturedUpvalues)
     local mainState = capturedUpvalues[1]
     local showLocalNotice = capturedUpvalues[2]
