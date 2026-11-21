@@ -2180,3 +2180,14 @@ root/15父函数87槽、3参数，已按A字段真实Opcode推进：slot1–3货
 - slot509–516：再次调用`SL:ScheduleOnce(root/25/0/0, 0.3)`。此处创建的是3槽子闭包root/25/0/0，它将父级H[0]（即共享`cruiseGatherPaused`）写为false；不是移动回调，也不是日志闭包。
 - slot517–523：在上述两次调度安排后，父函数当前执行流直接格式化并输出日志`见人跑: %s(%d格)，向%d方向移动%d步`，参数来自当前玩家记录name/dist及当前候选dir/step；这段日志不是延迟闭包。
 - slot513–514的创建与捕获结构已确认；slot505/506双捕获顺序也已确认。此前“0.3秒日志回调/日志闭包”的表述作废。
+
+
+### 2026-11-21续：root/25/0已确认捕获值直接接线（日志/模块状态/方向转换）
+
+继续使用已完成的root/25/0闭包捕获链，不再把已知捕获重复交给外层适配器：
+- H[3]（Lua数组upvalues[4]）来自root N[4]，已确认是日志包装函数；绑定器现在默认将其接入printLog，仍允许显式适配器覆盖。
+- H[4]（upvalues[5]）来自root N[0]，即MainLeftBottom模块表；模块状态从其.a字段取得，作为cruiseAttackAt等共享状态的默认容器。显式moduleState仍可覆盖。
+- H[9]（upvalues[10]）来自root N[80]，已确认是八方向转换函数；绑定器现在默认接入getDirection。
+- H[10]（upvalues[11]）继续接入root N[73]八方向偏移表；H[0]继续是共享cruiseGatherPaused门控单元。
+
+已改动唯一明文文件中的BindCruiseRunCaptures_11_16；其余尚未确认的捕获槽不命名、不猜测。root/25/0仍为部分恢复，玩家筛选条件、随机回退calcMapDirection参数和剩余捕获接线仍待继续；未执行Lua语法/API/APK验证。
