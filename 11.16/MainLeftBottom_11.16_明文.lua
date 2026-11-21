@@ -4679,7 +4679,7 @@ local function RunCruisePlayerScan_11_16(captured)
                 -- 本版指令流在候选玩家循环中明确调用
                 -- SL:GetMetaValue("ACTOR_NAME", actorID)，优先使用引擎元数据名称。
                 local actorName = SL:GetMetaValue("ACTOR_NAME", id)
-                if actorName == nil then
+                if actorName == nil or actorName == "" then
                     actorName = actor.Name or actor.name or ""
                 end
                 local record = {
@@ -4805,17 +4805,20 @@ local function RunCruisePlayerScan_11_16(captured)
     local offsets = directionOffsets
     local candidates = {}
     if offsets then
-        -- slot371–410连续构造了8个候选记录；前5个step=2，后3个step=1。
-        -- 方向围绕远离目标的baseDir按近侧优先、逐步扩展的顺序排列。
+        -- slot371–410逐项构造8个记录。原始常量顺序为：
+        -- (baseDir+4)%8、(baseDir+3)%8、(baseDir+5)%8、
+        -- (baseDir+2)%8、(baseDir+6)%8，以上step=2；
+        -- 随后重复(baseDir+4)%8、(baseDir+3)%8、(baseDir+5)%8，step=1。
+        -- 保留原始构造顺序，不按主观的“近侧优先”重新排序。
         local candidateDirs = {
-            baseDir,
-            (baseDir + 1) % 8,
-            (baseDir + 7) % 8,
-            (baseDir + 2) % 8,
-            (baseDir + 6) % 8,
+            (baseDir + 4) % 8,
             (baseDir + 3) % 8,
             (baseDir + 5) % 8,
+            (baseDir + 2) % 8,
+            (baseDir + 6) % 8,
             (baseDir + 4) % 8,
+            (baseDir + 3) % 8,
+            (baseDir + 5) % 8,
         }
         for i, dir in ipairs(candidateDirs) do
             candidates[#candidates + 1] = {
@@ -4926,11 +4929,13 @@ local function RunCruisePlayerScan_11_16(captured)
         x = mainX,
         y = mainY,
     })
-    SL:ScheduleOnce(function()
-        if captured.onRandomMoveScheduled then
-            captured.onRandomMoveScheduled()
-        end
-    end, 0.3)
+    -- slot594–597创建root/25/0/2闭包，0.3秒后将共享门控写回false。
+    -- 与普通候选路径的root/25/0/0复位闭包使用同一upvalue单元。
+    SL:ScheduleOnce(make_helper_root_25_0_2({
+        [0] = captured.setSharedPause and function(value)
+            captured.setSharedPause(value)
+        end or function() end
+    }), 0.3)
 end
 
 
