@@ -4580,3 +4580,34 @@ local function MakeCruiseRunButtonHandler_11_16(
     end
 end
 
+
+
+-- ============================================================================
+-- 11.16 root/52/15：丢全部按钮状态显示与状态复位（36条指令，部分恢复）
+-- ============================================================================
+-- 本版常量直接确认按钮映射键dropallbut、GUI按钮标题/颜色方法、
+-- 两种标题“关丢全部/开丢全部”及颜色#ff0000/#ffffff；
+-- 尾部还将diuqibut对应状态写为false。父级捕获对象身份尚未闭合，
+-- 因此把按钮、活动状态及状态复位动作显式传入，不伪造捕获变量名。
+local function SyncDropAllButtonVisual_11_16(
+    button,
+    isDropAllActive,
+    resetDropAllFlag
+)
+    if not button then
+        return
+    end
+
+    if isDropAllActive then
+        GUI:Button_setTitleText(button, "关丢全部")
+        GUI:Button_setTitleColor(button, "#ff0000")
+    else
+        GUI:Button_setTitleText(button, "开丢全部")
+        GUI:Button_setTitleColor(button, "#ffffff")
+    end
+
+    if resetDropAllFlag then
+        resetDropAllFlag(false)
+    end
+end
+
