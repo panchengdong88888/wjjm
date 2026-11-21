@@ -822,7 +822,12 @@ end
 -- capturedUpvalues[0]为共享upvalue代理；捕获链最终指向root N[74]，但该寄存器在root主函数中有分支/复用，业务变量身份尚待确认。
 local function make_helper_root_25_0_0(capturedUpvalues)
     return function()
-        capturedUpvalues[0] = false
+        local sharedCell = capturedUpvalues[0]
+        if type(sharedCell) == "function" then
+            sharedCell(false)
+        else
+            capturedUpvalues[0] = false
+        end
     end
 end
 
@@ -834,7 +839,12 @@ end
 -- capturedUpvalues[0]为共享upvalue代理；其在root层的业务变量身份尚待确认。
 local function make_helper_root_25_0_2(capturedUpvalues)
     return function()
-        capturedUpvalues[0] = false
+        local sharedCell = capturedUpvalues[0]
+        if type(sharedCell) == "function" then
+            sharedCell(false)
+        else
+            capturedUpvalues[0] = false
+        end
     end
 end
 
@@ -4591,6 +4601,7 @@ local function BindCruiseRunCaptures_11_16(upvalues, adapters)
         raw = upvalues,
         sharedPauseValue = upvalues[1],
         directionOffsets = upvalues[11],
+        moduleState = adapters.moduleState,
         -- 未知捕获的实际用途不猜测，由外层适配器显式提供已确认回调。
         setSharedPause = adapters.setSharedPause,
         printLog = adapters.printLog,
@@ -4809,7 +4820,7 @@ local function RunCruisePlayerScan_11_16(captured)
                     y = mainPlayer:GetMapY(),
                 })
                 SL:ScheduleOnce(
-                    MakeJoystickUserInputMove_11_16(captured.moduleState, candidate),
+                    MakeJoystickUserInputMove_11_16(captured.sharedPauseValue, candidate),
                     0.05
                 )
                 SL:ScheduleOnce(make_helper_root_25_0_0({
