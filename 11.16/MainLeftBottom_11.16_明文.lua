@@ -5979,6 +5979,32 @@ end
 -- 这两条调度链不可混为一条；root/52/23本身没有保存到cruiseTimer字段。
 -- 等方法的接口表（本段不需要直接解引用）。其余捕获槽保留，不猜变量名。
 --
+-- root/52槽483–543：主界面按钮配置表。
+-- 逐项保留原型中明确出现的key/name/toggle字段；这些描述数据用于后续
+-- UI创建段及状态同步，不在这里提前创建控件或伪造点击行为。
+local function BuildMainLeftBottomButtonDefinitions_11_16()
+    return {
+        { key = "cruisebut", name = "开见人跑", toggle = "关见人跑" },
+        { key = "buygold110", name = "110W" },
+        { key = "moneybut", name = "V10022" },
+        { key = "shiqubut", name = "开拾取", toggle = "关拾取" },
+        { key = "diuqibut", name = "开丢弃", toggle = "关丢弃" },
+        { key = "clearblacklistbut", name = "清黑名单" },
+        { key = "stopallbut", name = "停止脚本" },
+        { key = "recyclebut", name = "回收装备" },
+        { key = "buygoldbut", name = "500W" },
+        { key = "newzone", name = "开新区" },
+        { key = "rewardbut", name = "开奖励", toggle = "关奖励" },
+        { key = "yinguaibut", name = "开拉怪", toggle = "关拉怪" },
+        { key = "blacklistbut", name = "开黑名单", toggle = "关黑名单" },
+        { key = "xiaotuibut", name = "快速小退" },
+        { key = "putinbut", name = "上架金条" },
+        { key = "putoutbut", name = "下架物品" },
+        { key = "forgezodiacbut", name = "锻造生肖" },
+    }
+end
+
+
 -- 本段先恢复root/52前180槽可确认的初始化主干：初始化提示、货币/物品
 -- 名单、时间快照、MoneyProxy资源快照、四组快捷栏预设、每日巡航旧句柄
 -- 清理入口及仓库数据请求。后续UI面板和按钮创建段继续补齐。
@@ -5989,6 +6015,9 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
 
     return function()
         printLog("插件初始化完成")
+
+        -- 保存本版已确认的按钮描述配置；实际控件构建和事件接线仍按后续槽位恢复。
+        moduleState.buttonDefinitions = BuildMainLeftBottomButtonDefinitions_11_16()
 
         local moneyNames = {
             "元宝",
@@ -6141,7 +6170,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
         moduleState.cruiseActive = false
         moduleState.goldWarningText = "金币不足10W"
 
-        -- 仍未完全闭合的部分：主按钮组创建/布局、各按钮匿名回调的捕获接线、
+        -- 仍未完全闭合的部分：主按钮组控件创建/布局、各按钮匿名回调的捕获接线、
         -- 苹果图按钮状态回调、22:00:05巡航协议定时器的捕获参数。
         -- 不在这里伪造这些连接；相关工厂函数和原型证据均保留待接线。
 
