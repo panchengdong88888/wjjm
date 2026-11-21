@@ -2354,3 +2354,7 @@ root/25/0方向候选现严格按slot371–410常量顺序恢复：`+4,+3,+5,+2,
 - 复核root/14的51条指令、closure_events及函数状态CSV：H[0]=MainLeftBottom.z；H[1]=父root N[1]，身份未知且本体未读取；H[2]=ShowLocalNoticeByType。
 - 唯一明文此前注释误写H[2]=_G.log，与CSV及函数末段通过H[2]调用本地提示回调不符。已仅修正注释，明确另有SL:ShowSystemTips(message)调用；未虚构H[1]身份，也未改写函数主体。
 - root/14尚余H[1]来源待父级完整指令流补齐；该捕获不影响当前已恢复主体的可读业务表达。
+
+
+### 2026-11-21续接更新：root/52/6资源统计窗口
+已将11.9同职责窗口构建器迁移到11.16唯一明文，函数名 `MakeResourceStatisticsWindow_11_16`。它负责开关resWin、遮罩点击关闭、创建资源统计ListView及标题/初始时间/当前时间/历时/说明行、创建货币和背包资源行、立即刷新并每秒调度刷新。依赖均接到本版子原型/函数：Rows、Refresh、Close、FormatResourceCount、GetResourceItemCount。root/52/6父级5项捕获的真实寄存器顺序未闭合，当前用语义参数承接；不要将此标成父级接线完整。未做Lua/API/APK验证。
