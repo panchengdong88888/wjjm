@@ -4658,7 +4658,11 @@ local function RunCruisePlayerScan_11_16(captured)
     end
 
     local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
-    local mainActorName = SL:GetMetaValue("ACTOR_NAME") or ""
+    -- slot66–80：优先ACTOR_NAME，缺失时回退H.USERNAME。
+    local mainActorName = SL:GetMetaValue("ACTOR_NAME")
+    if mainActorName == nil or mainActorName == "" then
+        mainActorName = SL:GetMetaValue("H.USERNAME") or ""
+    end
     local mainGuildName = SL:GetMetaValue("ACTOR_GUILD_NAME") or ""
     local teamMembers = SL:GetMetaValue("TEAM_MEMBER_LIST") or {}
     local mapData = captured.mapData
@@ -4708,8 +4712,15 @@ local function RunCruisePlayerScan_11_16(captured)
                     -- 原指令还对名称/行会/队伍及英雄属性进行过滤；
                     -- 过滤条件的完整组合尚未逐项命名，交由已确认的适配器处理。
                     local accept = true
+                    -- slot146–152读取ACTOR_IS_HERO后进入候选跳过分支；
+                    -- slot153–164排除空名称及本角色名称；slot173–193排除队伍成员。
+                    accept = not record.isHero
+                        and record.name ~= nil
+                        and record.name ~= ""
+                        and record.name ~= mainActorName
+                        and not record.teamMember
                     if captured.acceptPlayer then
-                        accept = captured.acceptPlayer(
+                        accept = accept and captured.acceptPlayer(
                             record, mainActorName, mainGuildName, teamMembers
                         )
                     end
@@ -4728,11 +4739,9 @@ local function RunCruisePlayerScan_11_16(captured)
         return
     end
 
-    local pkMode = SL:GetMetaValue("PKMODE")
-    local attackedSetting = global.CACHE and global.CACHE.CHANGE_SETTING
-    if attackedSetting == nil then
-        attackedSetting = CHANGE_SETTING
-    end
+    -- slot213–218：PKMODE先经tonumber转换；slot236–237直接读取CHANGE_SETTING[3039]。
+    local pkMode = tonumber(SL:GetMetaValue("PKMODE"))
+    local attackedSetting = CHANGE_SETTING
     local runWhenAttacked = attackedSetting and attackedSetting[3039]
     local runMode = (pkMode == 1 or pkMode == 6) and runWhenAttacked
     local target = players[1]
