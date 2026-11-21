@@ -2672,3 +2672,10 @@ opcode0=3次表写入；opcode2=创建表+常量池装载；opcode224=8次立即
 - root/27已补入walkNpc、clickNpc、waitEnter、monitor主状态分支；消息实参尚待逐槽核验，未计为已验证完成。
 - root/52/23新增TryBuyAppleItem_11_16并接入部分组合入口：每5秒检查绑定元宝>=100、角色等级>39，调用BuyStoreItem("苹果",1)。
 - root/21 BuyStoreItem已存在，禁止重复恢复。下一重点为root/52/23称号/剑灵剩余分支与897槽完整父回调，再处理root/52 doInit剩余按钮/UI接线。
+
+
+### 2026-11-21续接：root/52/23剑灵请求子流程
+
+- 唯一明文新增`RequestAncientSwordData_11_16`：剑灵等级达到30时停止并设置swordDone；pending请求未满10秒则等待；超时后发送12174数据请求并记录pending与请求时间。
+- 仍未恢复：jianling_Config材料项字段结构、材料数量/金币门槛、12171打造触发及节拍；转生/称号条件与目标选择；897槽完整父回调接线。
+- 下一步继续从槽368–503补齐剑灵材料与打造条件；不要把已定位常量误当成材料字段已确认。
