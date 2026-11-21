@@ -4968,7 +4968,7 @@ end
 local function MakeCruiseRunButtonHandler_11_16(
     timerState,
     sl,
-    printLog,
+    showLocalNotice,
     callbackFactory
 )
     return function()
@@ -4978,7 +4978,7 @@ local function MakeCruiseRunButtonHandler_11_16(
             return
         end
 
-        printLog("开启见人跑")
+        showLocalNotice("开启见人跑")
         local callback = callbackFactory()
         timerState.cruiseRunTimer = sl:Schedule(callback, 0.1)
     end
@@ -5035,7 +5035,7 @@ local function BindCruiseRunButtonFromCaptures_11_16(root25Captures, adapters)
     return MakeCruiseRunButtonHandler_11_16(
         timerState,
         SL,
-        adapters.printLog or root25Captures[6],
+        adapters.showLocalNoticeByType or root25Captures[2],
         callbackFactory
     )
 end
