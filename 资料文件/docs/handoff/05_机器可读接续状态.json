@@ -2,12 +2,12 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-22",
-  "latest_checkpoint": 382,
-  "next_checkpoint": 383,
+  "latest_checkpoint": 383,
+  "next_checkpoint": 384,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "检查点382：root/27槽33–108大部分控制流已闭合。已确认称号有效期门控、地图门控、cruiseConfirmed/cruiseSent确认与重试、ticks%30节拍、55556开启消息、H[5]回城闭包返回值调用、55559关闭消息及四个状态字段复位。slot108读取N[0].state，前后段连接仍待完成。整个307槽原型未完成，唯一明文未修改。",
+    "status": "检查点383：重大控制流纠错——F()循环末尾统一O=O+1，Opcode388设置O=K[3]，跳转参数T的下一执行槽是T+1。已撤销381/382中所有把T直接当下一槽的落点。按新规则重算root/27槽1–108：appleMap保护、攻城提示、称号/地图门控、巡航发送确认与回城回调、关闭消息去重路径已重新厘清。槽109–307尚待融合边界逐段闭合。唯一明文未修改，root/27未完成。",
     "title": "11.16版本MainLeftBottom Lua明文恢复",
     "prototype": "11.16/MainLeftBottom_11.16_明文.lua",
     "scope": [
@@ -19,19 +19,18 @@
     ],
     "focus": [
       "字段规则：七项JSON a=真实Opcode，b/c/d=A/B/C；opcode字段仅为H()标志字节。",
-      "检查点375–377的root/27旧融合表全部废弃。",
-      "root/27槽28–108中段大部分控制流已闭合，详细语义见Opcode语义映射检查点382。",
-      "槽33–39：cityCloseSent复位；H[4]称号有效期判断失败跳86。",
-      "槽40–85：地图判断、cruiseConfirmed/cruiseSent门控、ticks%30节拍、55556发送、H[5]回城返回值和H[6]缺少回城石提示回调已定位。",
-      "槽87–108：地图门控、cityCloseSent去重、55559关闭消息、状态复位及H[7]提示已定位；slot108读取N[0].state，后续连接待确认。",
-      "root/27完整307槽尚未完成，唯一明文未修改。"
+      "关键跳转规则：Opcode388设置O=K[3]，F()循环末尾再O=O+1，因此实际下一执行槽为跳转参数+1；381/382所有直接将参数当下一槽的落点解释已撤销。",
+      "root/27槽1–27：appleMap存在性保护、ticks递增、攻城时间提示/恢复提示已按真实跳转规则闭合。",
+      "root/27槽28–108：已按跳转后置递增重算地图/称号门控、55556开启消息、cruiseConfirmed/cruiseSent确认、ticks%30节拍、H[5]回城失败回调、55559关闭消息和去重状态复位。",
+      "root/27槽109–307：toShenlong、NPC移动交互、waitEnter/monitor、backCity分支待逐段确认融合消费边界与跳转落点。",
+      "唯一明文未修改；root/27完整307槽原型未完成。"
     ],
     "completion_criteria": [
       "root/27槽28–107按VM控制流补入唯一明文，未闭合内容明确标注，不猜写。",
       "同步更新11.16函数状态CSV与源码恢复进度账本，并重新读取确认提交。",
       "root/27只有在完整主体及调用/捕获关系足够闭合后才标记静态恢复完成；不宣称运行时验证。"
     ],
-    "next": "检查点383：继续读取root/27槽1–27与槽109–307，补齐前后段控制流与slot108后的state字段用途；不要重做已闭合的槽28–108，不要提前标记原型完成。"
+    "next": "检查点384：以Opcode语义映射检查点383的后置递增规则为唯一标准，重新核对root/27槽109–307的真实融合消费边界；优先闭合toShenlong周期消息、monitor地图识别、walkNpc/clickNpc/waitEnter以及backCity回调。不要沿用旧明文猜测。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
