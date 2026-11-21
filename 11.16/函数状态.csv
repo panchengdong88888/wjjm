@@ -74,7 +74,7 @@ mode=%s
 69,root/47,root,1,ScheduleOnce,跨版本高置信候选（11.2包装函数与11.16 SL方法调用形状吻合；本体为官方API包装）,2,2,0,7,已写入明文,SL | ScheduleOnce | Opcode 369融合方法准备与两个参数寄存器移动；Opcode 202直接返回调用结果,MainLeftBottom_11.16_明文.lua,原始符号名未确认；return后的尾部槽位不可达,2026-11-18
 70,root/48,root,1,checkGold,高置信候选（root/10引用checkGold；本原型查询金币数量）,0,9,0,26,已写入明文（本版直接恢复）,MoneyProxy | GetMoneyCountById | ProxyTable | GetMoneyIdByName | global | 金币 | Facade | retrieveProxy,,26/26槽位闭合；0参数、0捕获；root/79通过root N[54]捕获本函数，且其常量/调用点标识checkGold,2026-11-20
 71,root/49,root,1,PlayerPos,本轮已恢复,0,4,0,10,已写入明文,Y | SL | X | GetMetaValue,MainLeftBottom_11.16_明文.lua,,2026-11-18
-72,root/50,root,1,,待识别,5,80,5,444,未恢复,screenW | numInputModeStack | screenH | GetWindow | TextInput_Create | numInputEdit | GUI | numInputModeLabel | #ff0000 | TextInput_setInputMode,,,2026-11-18
+72,root/50,root,1,,待识别,5,80,5,444,未恢复（函数身份及父级导出链已确认；444槽主体待恢复）,screenW | numInputModeStack | screenH | GetWindow | TextInput_Create | numInputEdit | GUI | numInputModeLabel | #ff0000 | TextInput_setInputMode,,,2026-11-18
 73,root/50/0,root/50,2,,数字输入确认/格式验证回调（高置信业务候选；原始局部函数名未恢复）,0,15,0,80,待新版指令流（业务职责已定位；主体未写入）,常量包含TextInput_getString、string.gsub(%s)、tonumber、string.match(^%d+$)、Text_setString及两条错误提示；高置信判断为root/50数字上架窗口的输入校验回调。11.9旧版MakeCommonInputPrompt含同类去空白/纯数字匹配/tonumber校验，但旧版使用SL:OpenCommonTipsPop，不可直接照搬到本版GUI TextInput窗口。,11.16完整root/50/0 80槽指令流及root/50创建点/捕获关系未保存；不凭常量猜测调用顺序与字段写入,2026-11-21
 74,root/50/1,root/50,2,make_helper_root_50_1（合成定位名）,闭包体已恢复；H[0]/H[1]父级来源待确认,0,0,0,5,部分恢复（不计完整函数）,H[0]=false；H[1]()；Opcode339结束,H[0]/H[1]父级源寄存器及业务变量名待确认,2026-11-19
 75,root/50/2,root/50,2,make_helper_root_50_2（合成定位名）,闭包体已恢复；H[0]/H[1]父级来源待确认,0,0,0,5,部分恢复（不计完整函数）,Opcode330写H[0]=false并读取H[1]；H[1]()；Opcode205结束,H[0]/H[1]父级源寄存器及业务变量名待确认,2026-11-19
