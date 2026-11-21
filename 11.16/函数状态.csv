@@ -181,3 +181,9 @@ mode=%s
 # 2026-11-21：root/25启停入口新增BindCruiseRunButtonFromCaptures_11_16，按13项捕获顺序将MainLeftBottom.z计时器状态、PrintLog及root/25/0子闭包捕获[3..13]直接接线；共享门控默认同步父/子捕获数组，允许外部真实setter覆盖。root/25/0仍为部分恢复，未执行Lua/APK验证。
 
 # 2026-11-21即时校正：root/25启停按钮“开启见人跑”提示绑定H[1]=ShowLocalNoticeByType；H[5]=PrintLog仅作为root/25/0捕获值继续传递，避免按钮提示误用日志包装器。
+46,root/50/3,root/50,2,make_helper_root_50_3（合成定位名）,闭包体已恢复；父级捕获变量身份待确认,0,2,0,5,已写入唯一明文（5槽闭包体完整；捕获值语义为Win_Close参数，父级N[7]原名待确认）,GUI | Win_Close,MainLeftBottom_11.16_明文.lua：make_helper_root_50_3,root/50槽441创建闭包，槽442捕获N[7]至H[0]；GUI:Win_Close(H[0])；父级变量名未确认,2026-11-21
+47,root/52/4,root/52,2,closure_root_52_4（合成定位名）,行为已恢复,0,1,0,3,已写入唯一明文（本版3槽指令级完整恢复）,Builtsetting,MainLeftBottom_11.16_明文.lua：closure_root_52_4,无捕获；父级root/52槽559创建childIndex=4；原始符号名未确认,2026-11-21
+48,root/52/11,root/52,2,make_helper_root_52_11（合成定位名）,行为与捕获变量身份已确认；匿名闭包原始符号名未恢复,0,2,0,5,已写入唯一明文（本版指令级完整恢复）,_G | LuaSendMsg,MainLeftBottom_11.16_明文.lua：make_helper_root_52_11,H[0]=MainLeftBottom.a；行为为_G.LuaSendMsg=MainLeftBottom.a.LuaSendMsg,2026-11-21
+49,root/52/12,root/52,2,closure_root_52_12（合成定位名）,行为已恢复,0,3,0,5,已写入唯一明文（本版5槽指令级完整恢复）,global | gameWorldController | OnGameLeaveWorld,MainLeftBottom_11.16_明文.lua：closure_root_52_12,无捕获；原始符号名未确认；宿主方法按本版调用点保留,2026-11-21
+50,root/52/28,root/52,2,,闭包体及捕获对象来源已确认；父级接口表原始局部变量名未恢复,0,3,0,7,已写入唯一明文（本版7槽指令级完整恢复；捕获对象使用语义代理）,11 | InitGatherMonsters | GATHER_THRESHOLD,MainLeftBottom_11.16_明文.lua：make_helper_root_52_28,H[0]来自root/52 H[9]，再追到root N[8]接口表；保留capturedUpvalue0代理,2026-11-21
+51,root/56/0,root/56,2,helper_root_56_0（合成定位名）,行为已恢复；父级注册/使用关系待确认,0,5,0,9,已写入唯一明文（本版9槽主体恢复；父级注册点待确认）,global | Facade | retrieveProxy | ProxyTable | FriendProxy,MainLeftBottom_11.16_明文.lua：helper_root_56_0,无捕获；return global.Facade:retrieveProxy(global.ProxyTable.FriendProxy)；父级未发现创建childIndex=0指令,2026-11-21
