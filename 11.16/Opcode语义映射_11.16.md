@@ -1222,3 +1222,18 @@ root/50/0捕获关系：父root/50槽378创建childIndex=0，槽379–386依次�
 Opcode 204/393为方法receiver与成员准备；Opcode 209/128分别执行有返回值/无返回值的寄存器区间调用；Opcode 324/234/127读取upvalue；Opcode 325/340/358/366/143为条件跳过；Opcode 388为跳转；Opcode 295为立即/常量装载；Opcode 131/257/403/221等按分派器融合规则消费相邻槽位。此处按完整物理槽位逐条还原控制流，融合载荷未重复执行。
 
 恢复源码位于`MainLeftBottom_11.16_明文.lua`的`make_helper_root_50_0(capturedUpvalues)`。原始局部符号名未确认，合成定位名保留；父级root/50仍未恢复。
+
+## 2026-11-21：root/52/14 OnLuaMessage包装回调指令语义与恢复
+
+本原型174槽、6个显式参数、3个upvalue。父root/52槽465以Opcode178创建childIndex=14，槽466/467为Opcode132捕获父H[3]/H[0]，槽468为Opcode243捕获父N[15]。父H[3]=MainLeftBottom，父H[0]=PrintLog，父N[15]=原SL.NetworkUtil.OnLuaMessage处理器。
+
+本段使用的分派器语义：Opcode143/294为常量/寄存器相等条件跳过；Opcode60/325/358/366/289为真值条件跳过；Opcode388为跳转；Opcode314/386分别收集调用的多返回值；Opcode376为无返回值调用；Opcode184为调用并收集多返回值；Opcode167/404为减法；Opcode373/77为小于等于条件跳过；Opcode120为条件成立时寄存器复制、否则跳过下一槽；Opcode202为调用并直接返回；Opcode266融合三次寄存器复制；Opcode354按寄存器区间返回。融合消费的物理槽不再独立分派。
+
+### 已闭合控制流
+1. 参数N[1]为12170且payload真值时，pcall调用SL.JsonDecode(SL,payload,false)。成功且结果为table时写MainLeftBottom.ancientSwordData，并将swordPullPending置false；若剑灵等级变化则更新swordLastLevel并调用PrintLog格式化记录。若旧swordPullPending为真，直接返回；否则当swordForgeAt存在且当前时间减该值不超过10秒时返回。
+2. messageId为10000或10015时，若autoPanelAt存在且距当前不超过2秒，返回。
+3. messageId为12000时，若sealPanelAt存在且距当前不超过2秒，返回。
+4. payload含combPower或带引号power字段时，pcall解码；仅在解码成功且结果为table时继续。取combPower或power，先tonumber；失败则tostring(value or "")、移除逗号后再tonumber。成功时写MainLeftBottom.combatPower；若powerRefreshing为真则清为false并返回。
+5. 未拦截的消息调用原处理器并返回结果：`originalOnLuaMessage(0, 1, 2, arg3, arg4, payload)`。末尾Opcode354/205位于该无条件返回之后，不构成另一条可达业务路径。
+
+恢复源码：`MainLeftBottom_11.16_明文.lua`中的`make_helper_root_52_14`。原始局部符号名未确认，保留合成定位名。
