@@ -4563,8 +4563,9 @@ end
 -- 已运行则调用SL:UnSchedule并清空句柄；未运行则输出“开启见人跑”，
 -- 创建root/25/0周期回调并以0.1秒调用SL:Schedule，保存返回句柄。
 -- root/25/0主体598条逐槽指令流已从原版载荷定点提取；玩家筛选、反击锁定技能、
--- 八方向候选构造、障碍过滤、摇杆移动调度及随机回退路径正在分段恢复。
--- callbackFactory对应父级创建的root/25/0闭包工厂接口；当前主体仍有少量捕获变量身份待闭合，
+-- 八方向候选构造、障碍过滤、摇杆移动调度及随机回退路径已按598槽指令流闭合。
+-- N[10]明确来自global.sceneManager:GetMapData2DPtr()，isObstacle由该地图数据指针调用。
+-- callbackFactory对应父级创建的root/25/0闭包工厂接口；当前仍有少量其他捕获变量词法名称待闭合，
 -- 不把未知upvalue强行命名为业务变量。
 local function MakeCruiseRunButtonHandler_11_16(
     timerState,
