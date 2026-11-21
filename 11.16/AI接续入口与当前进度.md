@@ -2161,3 +2161,13 @@ root/15父函数87槽、3参数，已按A字段真实Opcode推进：slot1–3货
 - 候选循环slot419–445：按候选dir查H[10]方向偏移，乘step后加到目标坐标；地图指针不存在或落点被障碍阻挡时跳到slot524推进下一候选；可通行时进入slot446移动处理。
 - 随机回退slot528–598：分别生成[-2,2]随机X/Y偏移；地图指针存在时执行同一`isObstacle(x,y)`检查；随机落点被阻挡则结束本轮，否则继续清理目标并调用`calcMapDirection`，方向有效才发送step=2的摇杆移动通知。
 - 撤销前条中“N[10]门控业务名待确认”和“isObstacle receiver捕获身份待确认”的表述。当前仍待确认的是其他捕获值的词法业务名称，以及部分调度闭包内部变量命名；地图数据指针和障碍检测receiver不再列为未知。
+
+
+### 2026-11-21续：root/25/0三个子闭包指令已确认
+
+重新从定点原型对象直接读取root/25/0的children数组，确认其包含3个匿名子闭包：
+- `root/25/0/0`：3条指令、0常量、0参数，空操作式轻量回调（110/162/205），需要保留为匿名子闭包，不擅自命名业务用途。
+- `root/25/0/1`：38条指令、22个常量、0参数。它是摇杆移动调度回调：重新获取主玩家；读取`SL:GetMetaValue("ACTOR_HP")`，无有效HP则退出；构造`UserInputMove`负载，字段为`moveDir`、`moveStep`、`type=global.MMO.INPUT_MOVE_TYPE_JOYSTICK`、主玩家当前`GetMapX()/GetMapY()`；通过`global.Facade.sendNotification(global.NoticeTable.UserInputMove,payload)`发送。
+- `root/25/0/2`：3条指令、0常量、0参数，空操作式轻量回调（110/162/339），同样保留匿名闭包身份。
+- 父函数slot503–508以0.05秒调度`root/25/0/1`；slot511–516另以0.3秒调度轻量子闭包；slot513–516再次创建匿名子闭包并在slot517–524的日志路径中使用。调度闭包创建点与延迟值均保留原指令证据，不把两个轻量闭包强行合并成同一函数。
+- 本次确认可将此前单独的`MakeJoystickUserInputMove_11_16(moveState)`辅助说明与真实`root/25/0/1`对应；该子闭包是无显式参数、依赖父级捕获的回调，不应写成显式传入moveState的独立工厂。下一步应回到slot503–524逐项闭合两次ScheduleOnce调用与格式化日志闭包的捕获绑定，再整理root/25/0主体明文。
