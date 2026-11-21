@@ -6272,7 +6272,16 @@ end
 -- root/52/23槽846–896：两种上古神剑解封请求。
 -- 两个连续分支分别检查对应解封石库存；消息号/参数来自本版物理槽位。
 -- sealPanelAt的节流门控属于父回调状态机，本辅助函数不自行猜测冷却秒数。
-local function RequestAncientSwordSeal_11_16()
+local function RequestAncientSwordSeal_11_16(moduleState)
+    -- 同一文件root/52/14对12000解封面板消息使用2秒节流；
+    -- root/52/23对应状态字段为sealPanelAt，故在有共享状态时沿用该门控。
+    local now = os.time()
+    if moduleState and moduleState.sealPanelAt
+        and now - moduleState.sealPanelAt <= 2
+    then
+        return {}, "cooldown"
+    end
+
     local requests = {
         { itemName = "噬魂邪刀解封石", weaponName = "噬魂邪刀" },
         { itemName = "鸣鸿神刀解封石", weaponName = "鸣鸿神刀" },
@@ -6287,7 +6296,11 @@ local function RequestAncientSwordSeal_11_16()
         end
     end
 
-    return sent
+    if moduleState and #sent > 0 then
+        moduleState.sealPanelAt = now
+    end
+
+    return sent, #sent > 0 and "sent" or "no_seal_stone"
 end
 
 
@@ -6381,7 +6394,7 @@ end
 
 -- root/52/23武器幸运分支的已恢复调用入口。
 -- 幸运值未知时不操作；幸运值低于3时优先尝试使用现有祝福油。
--- 若背包无油，返回purchase_required供父级商店购买分支接续。
+-- 若快捷栏和背包均无油，直接调用本版已恢复的BuyStoreItem购买1个。
 local function MaintainWeaponLuck_11_16()
     local luck = GetWeaponLuck_11_16()
     if luck == nil then
