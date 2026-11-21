@@ -179,3 +179,5 @@ mode=%s
 # 2026-11-20：root/15/1的121槽闭包已整合写入唯一明文；完整静态恢复数由76/162更新为77/162，业务功能累计由93/162更新为94/162。未执行Lua语法检查或APK测试。
 
 # 2026-11-21：root/25启停入口新增BindCruiseRunButtonFromCaptures_11_16，按13项捕获顺序将MainLeftBottom.z计时器状态、PrintLog及root/25/0子闭包捕获[3..13]直接接线；共享门控默认同步父/子捕获数组，允许外部真实setter覆盖。root/25/0仍为部分恢复，未执行Lua/APK验证。
+
+# 2026-11-21即时校正：root/25启停按钮“开启见人跑”提示绑定H[1]=ShowLocalNoticeByType；H[5]=PrintLog仅作为root/25/0捕获值继续传递，避免按钮提示误用日志包装器。
