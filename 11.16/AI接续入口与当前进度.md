@@ -2318,3 +2318,10 @@ root/25/0方向候选现严格按slot371–410常量顺序恢复：`+4,+3,+5,+2,
 - 检查root/52/35父函数与root/52/35/0复位子闭包时发现：父函数原先写`SL.powerRefreshing=true`，但3秒后子闭包通过捕获H[0]对象写`powerRefreshing=false`，两处状态目标未保证一致。
 - 现改为`local powerState = capturedPowerState or SL`，开启时写`powerState.powerRefreshing=true`，并将同一`powerState`传入3秒复位子闭包。这样父子回调共享同一状态对象；若外层捕获缺失，才回退到SL。
 - `LuaSendMsg`消息参数的具体顺序仍未取得完整37槽指令流佐证，继续保留待定，不计为完整恢复；未执行Lua语法/API/APK验证。
+
+
+## 2026-11-21当前续接位置校正：root/52/15
+
+- root/52/15完整36槽指令流已在`root_定点子原型指令补充_2026-11-20.json`中找到；此前接续入口只标注了按钮视觉片段。下一步从这份36槽记录恢复剩余dropTimer分支和捕获接线。
+- 当前明文`SyncDropAllButtonVisual_11_16`仅为部分片段，仍按部分恢复统计；不得重复已有标题/颜色/diuqibut=false片段。
+- root/50/0完整80槽材料仍缺失，暂缓；本轮未执行任何语法/API/APK验证。
