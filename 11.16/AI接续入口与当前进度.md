@@ -2239,3 +2239,12 @@ root/25/0方向候选现严格按slot371–410常量顺序恢复：`+4,+3,+5,+2,
 ## 2026-11-21续：共享门控复位回调去除空操作
 
 `root/25/0`普通候选和随机回退路径统一使用`MakeCruisePauseResetCallback_11_16`。只有外层传入真实`setSharedPause`时才安排0.3秒复位；缺失setter时不再创建无效空操作闭包。该setter仍需在最终外层接线时映射到真实共享upvalue cell。函数保持部分恢复状态。
+
+
+
+### 2026-11-21续：root/25启停按钮按13项捕获值直接接线
+
+- 已闭合root/25的13项捕获身份：H[0]=MainLeftBottom.z（计时器状态表），H[1]=ShowLocalNoticeByType，H[2]=root N[74]共享门控单元，H[5]=PrintLog，H[6]=MainLeftBottom模块表；H[3]/H[4]/H[7..12]按root N[81]/N[78]/N[75]/N[79]/N[76]/N[77]/N[80]/N[73]保留捕获来源，其中N[80]为方向转换函数、N[73]为方向偏移表。
+- 新增`BindCruiseRunButtonFromCaptures_11_16(root25Captures, adapters)`：按root/25真实捕获顺序接入计时器状态和日志函数；创建root/25/0时严格传入父级捕获[3..13]，由同一个周期回调工厂构造扫描函数，最终直接返回可绑定按钮的点击处理器。
+- 共享门控在重建环境中以捕获数组承载；默认setter同步更新父级[3]与子级[1]，外部若提供真实setter则优先使用。该实现不再要求调用方手工猜测callbackFactory；仍须确保调用方传入的是同一生命周期的捕获数组。
+- root/25/0主体仍保留部分恢复状态：少数捕获槽语义与若干玩家过滤细节尚未全部闭合；未执行Lua语法/API/APK验证。
