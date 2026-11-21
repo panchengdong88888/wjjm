@@ -4521,12 +4521,15 @@ end
 
 
 -- ============================================================================
--- 11.16 root/25/0/1：摇杆移动通知回调（38条指令，0显式参数，1项捕获）
+-- 11.16 root/25/0/1：摇杆移动通知回调（38条指令，0显式参数，2项捕获）
 -- ============================================================================
--- 对应root/25/0/1的38条子闭包指令：这是无显式参数的ScheduleOnce回调，
--- 由父函数闭包环境提供移动状态对象；回调重新取得主玩家并检查ACTOR_HP，
--- 然后读取移动状态.dir/.step，组装UserInputMove摇杆负载，附带玩家当前地图X/Y坐标。
-local function MakeJoystickUserInputMove_11_16(moveState)
+-- 父级root/25/0槽位504创建该闭包，槽位505/506依次捕获父级N[0]与N[24]。
+-- 子闭包指令只读取H[1]的dir/step，因此实际移动状态来自父级N[24]；
+-- H[0]虽被捕获，但本子闭包指令流未读取。回调无显式参数。
+-- 执行顺序：重新获取主玩家；检查SL:GetMetaValue("ACTOR_HP")；
+-- 读取捕获移动状态.dir/.step；组装并发送UserInputMove摇杆通知，
+-- x/y取主玩家当时的GetMapX()/GetMapY()。
+local function MakeJoystickUserInputMove_11_16(unusedModuleCapture, moveStateCapture)
     return function()
         local player = global.gamePlayerController:GetMainPlayer()
         if not player then
@@ -4539,8 +4542,8 @@ local function MakeJoystickUserInputMove_11_16(moveState)
         end
 
         local payload = {
-            moveDir = moveState.dir,
-            moveStep = moveState.step,
+            moveDir = moveStateCapture.dir,
+            moveStep = moveStateCapture.step,
             type = global.MMO.INPUT_MOVE_TYPE_JOYSTICK,
             x = player:GetMapX(),
             y = player:GetMapY()
