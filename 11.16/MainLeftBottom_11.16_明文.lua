@@ -1133,7 +1133,9 @@ end
 
 -- 11.16 root/33/0：21条物理指令，1个显式参数，6个upvalue。
 -- 闭包体已恢复；H[0]与H[1]的父级词法来源尚未由root/33闭包创建点证实，
--- 因此保留capturedUpvalues代理，不把捕获槽猜成具体业务变量名。
+-- root/33槽位39创建本闭包，槽位40/41分别将root/33的H[0]/H[1]捕获到本闭包。
+-- root/33的父级创建映射已确认：H[0]=MainLeftBottom.z，H[1]=ShowLocalNoticeByType。
+-- 因此本闭包capturedUpvalues[0]是主界面状态表，capturedUpvalues[1]是本地提示回调。
 -- slot1–3读取H[0].putoutTimer并判断真值；假值路径经slot4跳到slot12。
 -- 真值路径执行SL:UnSchedule(timer)，随后清空H[0].putoutTimer。
 -- 两条路径均清空H[0].putoutSent，然后以参数和timer（假值路径为nil）
