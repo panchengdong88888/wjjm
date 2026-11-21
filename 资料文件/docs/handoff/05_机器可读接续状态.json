@@ -1,36 +1,34 @@
 {
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
-  "updated_at": "2026-11-15",
-  "latest_checkpoint": 370,
-  "next_checkpoint": 371,
+  "updated_at": "2026-11-22",
+  "latest_checkpoint": 371,
+  "next_checkpoint": 372,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "检查点370已完成ShowLocalNoticeByType公共通知调用链的VM-源码静态复核。root.children[20]原始指令使用SELF语义，必须保留SL receiver；唯一交付源码当前为SL:ShowLocalNoticeByType(notice)。全文件29处业务通知调用均经同一ShowLocalNoticeByType包装函数；未发现其他错误的点调用。此结论仅为静态核对，不代表目标APP运行提示已实测通过。用户已明确禁止实际Lua编译和目标游戏运行验证，不执行、不要求用户重复验证。",
-    "title": "共用本地通知receiver修复静态复核",
-    "prototype": "MainLeftBottom_唯一交付文件.lua",
+    "status": "用户于2026-11-22明确要求恢复并继续11.16版本MainLeftBottom Lua明文工作；本轮以wjjm/11.16目录内唯一明文候选及对应VM指令提取为工作对象。优先补齐root/27苹果图巡航状态机，再处理root/52 doInit与root/52/23父回调。不得重复LZW提取、VM转储、原型统计及已恢复函数；不进行运行验证。",
+    "title": "11.16版本MainLeftBottom Lua明文恢复",
+    "prototype": "11.16/MainLeftBottom_11.16_明文.lua",
     "scope": [
-      "只核对根目录MainLeftBottom_唯一交付文件.lua、资料文件/02_基础索引/MainLeftBottom_vm_dump.json及相关历史证据",
-      "确认root.children[20]通知函数的SELF/receiver调用语义",
-      "核对拾取、丢弃、仓库、黑名单及配置清理等通知入口是否统一调用公共包装函数",
-      "本轮未发现需修改的源码错误，不修改唯一交付源码",
-      "不执行Lua编译或目标游戏运行验证"
+      "仅按用户本轮明确指定的wjjm/11.16目录继续恢复；本次任务切换不修改根目录MainLeftBottom_唯一交付文件.lua。",
+      "以11.16原始Lua、root未恢复七项物理指令提取JSON、函数状态CSV和当前唯一明文为证据。",
+      "先补齐root/27槽28–107苹果图巡航启停状态机；完成后更新11.16唯一明文、函数状态CSV和11.16进度账本。",
+      "之后继续root/52 doInit按钮组创建/回调接线及root/52/23称号/剑灵/苹果购买完整周期回调。",
+      "不重复LZW提取、VM dump、110原型统计、opcode基础研究或已完成函数；不为追求进度猜测未闭合参数。"
     ],
     "focus": [
-      "VM dump SHA 9105bad8dcab43a98dfbf6496370aed00fe30301；root.children[20]含15条指令，末段读取SL及ShowLocalNoticeByType后执行SELF语义，再调用方法。",
-      "唯一交付源码SHA 0ac54b568fb9fb23c82249526644afc06c76da4d；通知包装函数位于第1070行，调用为SL:ShowLocalNoticeByType(notice)。",
-      "全文件检索共34处文本命中：1处函数定义、4处注释、29处实际业务通知调用；未发现可执行的SL.ShowLocalNoticeByType点调用。",
-      "实际通知调用覆盖人物设置、地面物品丢弃、仓库取物/存物、地面拾取、黑名单处理及清理、配置输入失败/成功等分支。",
-      "本轮没有改动源码；静态结论成立，但目标APP运行提示效果仍未得到新的用户实测确认。"
+      "当前11.16/MainLeftBottom_11.16_明文.lua SHA e172c4672a3f95d32a1d2bc1eae63454d0207b67。",
+      "root/27为307槽、56常量、9项捕获；现有make_AppleMapTimerCallback_11_16已写攻城窗口、称号失效、backCity/toShenlong/monitor/walkNpc/clickNpc/waitEnter主体，但缺槽28–107巡航状态机。",
+      "槽87–107已由VM常量/指令定位到cityCloseSent门控的55559关闭巡航消息与状态复位；槽40–85涉及cruiseConfirmed/cruiseSent/cruiseOn及55556开启巡航。必须按指令语义核清后再写。",
+      "此前11.16源码提交/账本存在，后续按实际GitHub文件SHA继续；本次不将root目录唯一交付源码当作11.16版本替代品。"
     ],
     "completion_criteria": [
-      "root.children[20]的VM调用语义与源码receiver形式一致",
-      "所有通知业务入口统一经过ShowLocalNoticeByType包装函数",
-      "不存在遗漏receiver的可执行点调用",
-      "不将静态核对结果冒称为运行时通过"
+      "root/27槽28–107按VM控制流补入唯一明文，未闭合内容明确标注，不猜写。",
+      "同步更新11.16函数状态CSV与源码恢复进度账本，并重新读取确认提交。",
+      "root/27只有在完整主体及调用/捕获关系足够闭合后才标记静态恢复完成；不宣称运行时验证。"
     ],
-    "next": "检查点371：暂不修改已核实正确的公共通知函数。若用户后续报告某个具体按钮仍缺少提示，再只追查该按钮的点击映射、handler执行条件、消息分支及通知调用是否到达；没有新的具体故障证据时，不盲目改动其他业务模块。"
+    "next": "继续root/27槽28–107的VM语义映射，补齐苹果图巡航开启/关闭及状态复位；然后按既定顺序继续root/52与root/52/23。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
