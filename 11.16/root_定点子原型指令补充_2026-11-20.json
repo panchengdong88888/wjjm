@@ -9405,6 +9405,5636 @@
       ],
       "start_offset": 102868,
       "end_offset": 103926
+    },
+    {
+      "path": "root/25/0",
+      "depth": 2,
+      "constant_count": 104,
+      "constants": [
+        "cruiseGatherPaused",
+        "附近没有玩家，恢复战斗",
+        0.6,
+        "见人跑: %s(%d格)，向%d方向移动%d步",
+        "SetTargetID",
+        3,
+        "MMO",
+        "ClearTarget",
+        "",
+        "retrieveProxy",
+        -2,
+        "ipairs",
+        "p",
+        "ACTOR_MAP_Y",
+        "逃跑",
+        false,
+        "calcMapDirection",
+        "game.proxy.skillUtils",
+        "InputLaunch",
+        8,
+        "step",
+        "isObstacle",
+        "y",
+        "cruiseAttackAt",
+        "sendNotification",
+        "SetAttackTargetID",
+        999,
+        "tonumber",
+        "moveDir",
+        4,
+        "ScheduleOnce",
+        "type",
+        "cc",
+        "ClearMove",
+        "dist",
+        "PKMODE",
+        1,
+        "targetID",
+        5,
+        "priority",
+        "GetMapX",
+        true,
+        "敌人已脱离，恢复战斗",
+        "name",
+        0.05,
+        "ProxyTable",
+        "ACTOR_HP",
+        "UserID",
+        "LAUNCH_TYPE_LOCK",
+        "max",
+        "moveStep",
+        "clock",
+        6,
+        "GetMetaValue",
+        "FIND_IN_VIEW_PLAYER_LIST",
+        "sceneManager",
+        "MAIN_ACTOR_ID",
+        "CHANGE_SETTING",
+        "tostring",
+        "GetMapData2DPtr",
+        "ACTOR_MAP_X",
+        "require",
+        "NoticeTable",
+        "destPos",
+        "GetMainPlayer",
+        "IsInWhitelistMap",
+        "skillID",
+        "见人杀: 锁定 %s(%d格)",
+        "SetMetaValue",
+        "launchType",
+        "abs",
+        "math",
+        "ClearAttackTargetID",
+        2,
+        "Facade",
+        "os",
+        "gamePlayerController",
+        "反击",
+        "ACTOR_IS_HERO",
+        "UserInputMove",
+        0.3,
+        "x",
+        "H.USERNAME",
+        "LAUNCH_PRIORITY_SYSTEM",
+        11,
+        "id",
+        "被玩家攻击设置切换为：%s",
+        "INPUT_MOVE_TYPE_JOYSTICK",
+        "global",
+        "GetMapY",
+        "SL",
+        0,
+        "PlayerInputProxy",
+        "TEAM_MEMBER_LIST",
+        {
+          "unknown_type": 2
+        },
+        "findLockLaunchSkill",
+        "BATTLE_AFK_END",
+        "SetAttackState",
+        3039,
+        "ACTOR_NAME",
+        "random",
+        "ACTOR_GUILD_NAME",
+        "zd",
+        "dir"
+      ],
+      "child_count": 3,
+      "parameter_count": 0,
+      "instruction_count": 598,
+      "instructions": [
+        {
+          "slot": 1,
+          "flag": 210,
+          "opcode": 146,
+          "A": 0,
+          "B": "IsInWhitelistMap",
+          "C": null,
+          "constB": "IsInWhitelistMap"
+        },
+        {
+          "slot": 2,
+          "flag": 0,
+          "opcode": 209,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 3,
+          "flag": 64,
+          "opcode": 340,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 4,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 5,
+          "C": null
+        },
+        {
+          "slot": 5,
+          "flag": 64,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 6,
+          "flag": 64,
+          "opcode": 234,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 7,
+          "flag": 0,
+          "opcode": 358,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 8,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 9,
+          "C": null
+        },
+        {
+          "slot": 9,
+          "flag": 128,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 10,
+          "flag": 82,
+          "opcode": 361,
+          "A": 0,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 11,
+          "flag": 32,
+          "opcode": 393,
+          "A": 0,
+          "B": 0,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 12,
+          "flag": 210,
+          "opcode": 295,
+          "A": 2,
+          "B": "MAIN_ACTOR_ID",
+          "C": null,
+          "constB": "MAIN_ACTOR_ID"
+        },
+        {
+          "slot": 13,
+          "flag": 192,
+          "opcode": 209,
+          "A": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 14,
+          "flag": 0,
+          "opcode": 325,
+          "A": 0,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 15,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 16,
+          "C": null
+        },
+        {
+          "slot": 16,
+          "flag": 0,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 17,
+          "flag": 82,
+          "opcode": 218,
+          "A": 1,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 18,
+          "flag": 32,
+          "opcode": 96,
+          "A": 1,
+          "B": 1,
+          "C": "gamePlayerController",
+          "constC": "gamePlayerController"
+        },
+        {
+          "slot": 19,
+          "flag": 64,
+          "opcode": 340,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 20,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 24,
+          "C": null
+        },
+        {
+          "slot": 21,
+          "flag": 82,
+          "opcode": 105,
+          "A": 1,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 22,
+          "flag": 32,
+          "opcode": 85,
+          "A": 1,
+          "B": 1,
+          "C": "gamePlayerController",
+          "constC": "gamePlayerController"
+        },
+        {
+          "slot": 23,
+          "flag": 160,
+          "opcode": 393,
+          "A": 1,
+          "B": 1,
+          "C": "GetMainPlayer",
+          "constC": "GetMainPlayer"
+        },
+        {
+          "slot": 24,
+          "flag": 192,
+          "opcode": 209,
+          "A": 1,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 25,
+          "flag": 0,
+          "opcode": 358,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 26,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 30,
+          "C": null
+        },
+        {
+          "slot": 27,
+          "flag": 160,
+          "opcode": 204,
+          "A": 2,
+          "B": 1,
+          "C": "GetMapX",
+          "constC": "GetMapX"
+        },
+        {
+          "slot": 28,
+          "flag": 128,
+          "opcode": 209,
+          "A": 2,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 29,
+          "flag": 0,
+          "opcode": 325,
+          "A": 2,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 30,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 35,
+          "C": null
+        },
+        {
+          "slot": 31,
+          "flag": 210,
+          "opcode": 253,
+          "A": 2,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 32,
+          "flag": 32,
+          "opcode": 138,
+          "A": 2,
+          "B": 2,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 33,
+          "flag": 146,
+          "opcode": 295,
+          "A": 4,
+          "B": "ACTOR_MAP_X",
+          "C": null,
+          "constB": "ACTOR_MAP_X"
+        },
+        {
+          "slot": 34,
+          "flag": 0,
+          "opcode": 288,
+          "A": 5,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 35,
+          "flag": 0,
+          "opcode": 209,
+          "A": 2,
+          "B": 5,
+          "C": 0
+        },
+        {
+          "slot": 36,
+          "flag": 64,
+          "opcode": 358,
+          "A": 1,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 37,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 41,
+          "C": null
+        },
+        {
+          "slot": 38,
+          "flag": 96,
+          "opcode": 204,
+          "A": 3,
+          "B": 1,
+          "C": "GetMapY",
+          "constC": "GetMapY"
+        },
+        {
+          "slot": 39,
+          "flag": 0,
+          "opcode": 209,
+          "A": 3,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 40,
+          "flag": 0,
+          "opcode": 325,
+          "A": 3,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 41,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 46,
+          "C": null
+        },
+        {
+          "slot": 42,
+          "flag": 146,
+          "opcode": 173,
+          "A": 3,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 43,
+          "flag": 224,
+          "opcode": 159,
+          "A": 3,
+          "B": 3,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 44,
+          "flag": 82,
+          "opcode": 295,
+          "A": 5,
+          "B": "ACTOR_MAP_Y",
+          "C": null,
+          "constB": "ACTOR_MAP_Y"
+        },
+        {
+          "slot": 45,
+          "flag": 64,
+          "opcode": 241,
+          "A": 6,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 46,
+          "flag": 0,
+          "opcode": 209,
+          "A": 3,
+          "B": 6,
+          "C": 0
+        },
+        {
+          "slot": 47,
+          "flag": 64,
+          "opcode": 60,
+          "A": 2,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 48,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 50,
+          "C": null
+        },
+        {
+          "slot": 49,
+          "flag": 0,
+          "opcode": 325,
+          "A": 3,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 50,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 51,
+          "C": null
+        },
+        {
+          "slot": 51,
+          "flag": 64,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 52,
+          "flag": 18,
+          "opcode": 361,
+          "A": 4,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 53,
+          "flag": 224,
+          "opcode": 102,
+          "A": 4,
+          "B": 4,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 54,
+          "flag": 146,
+          "opcode": 295,
+          "A": 6,
+          "B": "FIND_IN_VIEW_PLAYER_LIST",
+          "C": null,
+          "constB": "FIND_IN_VIEW_PLAYER_LIST"
+        },
+        {
+          "slot": 55,
+          "flag": 192,
+          "opcode": 307,
+          "A": 4,
+          "B": 6,
+          "C": 5
+        },
+        {
+          "slot": 56,
+          "flag": 0,
+          "opcode": 60,
+          "A": 4,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 57,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 61,
+          "C": null
+        },
+        {
+          "slot": 58,
+          "flag": 0,
+          "opcode": 289,
+          "A": 5,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 59,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 61,
+          "C": null
+        },
+        {
+          "slot": 60,
+          "flag": 224,
+          "opcode": 20,
+          "A": 0,
+          "B": 5,
+          "C": 0,
+          "constC": 0
+        },
+        {
+          "slot": 61,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 65,
+          "C": null
+        },
+        {
+          "slot": 62,
+          "flag": 0,
+          "opcode": 403,
+          "A": 6,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 63,
+          "flag": 146,
+          "opcode": 295,
+          "A": 7,
+          "B": "附近没有玩家，恢复战斗",
+          "C": null,
+          "constB": "附近没有玩家，恢复战斗"
+        },
+        {
+          "slot": 64,
+          "flag": 0,
+          "opcode": 128,
+          "A": 6,
+          "B": 7,
+          "C": 0
+        },
+        {
+          "slot": 65,
+          "flag": 0,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 66,
+          "flag": 210,
+          "opcode": 173,
+          "A": 6,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 67,
+          "flag": 224,
+          "opcode": 204,
+          "A": 6,
+          "B": 6,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 68,
+          "flag": 82,
+          "opcode": 295,
+          "A": 8,
+          "B": "ACTOR_NAME",
+          "C": null,
+          "constB": "ACTOR_NAME"
+        },
+        {
+          "slot": 69,
+          "flag": 192,
+          "opcode": 288,
+          "A": 9,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 70,
+          "flag": 64,
+          "opcode": 209,
+          "A": 6,
+          "B": 9,
+          "C": 0
+        },
+        {
+          "slot": 71,
+          "flag": 192,
+          "opcode": 325,
+          "A": 6,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 72,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 73,
+          "C": null
+        },
+        {
+          "slot": 73,
+          "flag": 82,
+          "opcode": 309,
+          "A": 6,
+          "B": "",
+          "C": null,
+          "constB": ""
+        },
+        {
+          "slot": 74,
+          "flag": 82,
+          "opcode": 361,
+          "A": 7,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 75,
+          "flag": 224,
+          "opcode": 102,
+          "A": 7,
+          "B": 7,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 76,
+          "flag": 82,
+          "opcode": 295,
+          "A": 9,
+          "B": "H.USERNAME",
+          "C": null,
+          "constB": "H.USERNAME"
+        },
+        {
+          "slot": 77,
+          "flag": 192,
+          "opcode": 209,
+          "A": 7,
+          "B": 9,
+          "C": 0
+        },
+        {
+          "slot": 78,
+          "flag": 192,
+          "opcode": 325,
+          "A": 7,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 79,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 80,
+          "C": null
+        },
+        {
+          "slot": 80,
+          "flag": 18,
+          "opcode": 295,
+          "A": 7,
+          "B": "",
+          "C": null,
+          "constB": ""
+        },
+        {
+          "slot": 81,
+          "flag": 82,
+          "opcode": 173,
+          "A": 8,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 82,
+          "flag": 96,
+          "opcode": 159,
+          "A": 8,
+          "B": 8,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 83,
+          "flag": 146,
+          "opcode": 295,
+          "A": 10,
+          "B": "ACTOR_GUILD_NAME",
+          "C": null,
+          "constB": "ACTOR_GUILD_NAME"
+        },
+        {
+          "slot": 84,
+          "flag": 64,
+          "opcode": 288,
+          "A": 11,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 85,
+          "flag": 128,
+          "opcode": 209,
+          "A": 8,
+          "B": 11,
+          "C": 0
+        },
+        {
+          "slot": 86,
+          "flag": 0,
+          "opcode": 366,
+          "A": 8,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 87,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 88,
+          "C": null
+        },
+        {
+          "slot": 88,
+          "flag": 18,
+          "opcode": 309,
+          "A": 8,
+          "B": "",
+          "C": null,
+          "constB": ""
+        },
+        {
+          "slot": 89,
+          "flag": 82,
+          "opcode": 253,
+          "A": 9,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 90,
+          "flag": 160,
+          "opcode": 102,
+          "A": 9,
+          "B": 9,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 91,
+          "flag": 210,
+          "opcode": 295,
+          "A": 11,
+          "B": "TEAM_MEMBER_LIST",
+          "C": null,
+          "constB": "TEAM_MEMBER_LIST"
+        },
+        {
+          "slot": 92,
+          "flag": 192,
+          "opcode": 209,
+          "A": 9,
+          "B": 11,
+          "C": 0
+        },
+        {
+          "slot": 93,
+          "flag": 64,
+          "opcode": 325,
+          "A": 9,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 94,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 95,
+          "C": null
+        },
+        {
+          "slot": 95,
+          "flag": 64,
+          "opcode": 2,
+          "A": 9,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 96,
+          "flag": 210,
+          "opcode": 218,
+          "A": 10,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 97,
+          "flag": 224,
+          "opcode": 274,
+          "A": 10,
+          "B": 10,
+          "C": "sceneManager",
+          "constC": "sceneManager"
+        },
+        {
+          "slot": 98,
+          "flag": 128,
+          "opcode": 358,
+          "A": 10,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 99,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 103,
+          "C": null
+        },
+        {
+          "slot": 100,
+          "flag": 18,
+          "opcode": 105,
+          "A": 10,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 101,
+          "flag": 32,
+          "opcode": 85,
+          "A": 10,
+          "B": 10,
+          "C": "sceneManager",
+          "constC": "sceneManager"
+        },
+        {
+          "slot": 102,
+          "flag": 160,
+          "opcode": 138,
+          "A": 10,
+          "B": 10,
+          "C": "GetMapData2DPtr",
+          "constC": "GetMapData2DPtr"
+        },
+        {
+          "slot": 103,
+          "flag": 192,
+          "opcode": 209,
+          "A": 10,
+          "B": 11,
+          "C": 0
+        },
+        {
+          "slot": 104,
+          "flag": 192,
+          "opcode": 193,
+          "A": 11,
+          "B": 11,
+          "C": 0
+        },
+        {
+          "slot": 105,
+          "flag": 18,
+          "opcode": 113,
+          "A": 12,
+          "B": 999,
+          "C": null,
+          "constB": 999
+        },
+        {
+          "slot": 106,
+          "flag": 18,
+          "opcode": 295,
+          "A": 13,
+          "B": 1,
+          "C": null,
+          "constB": 1
+        },
+        {
+          "slot": 107,
+          "flag": 0,
+          "opcode": 390,
+          "A": 14,
+          "B": 5,
+          "C": 0
+        },
+        {
+          "slot": 108,
+          "flag": 18,
+          "opcode": 295,
+          "A": 15,
+          "B": 1,
+          "C": null,
+          "constB": 1
+        },
+        {
+          "slot": 109,
+          "flag": 66,
+          "opcode": 331,
+          "A": 13,
+          "B": 212,
+          "C": null
+        },
+        {
+          "slot": 110,
+          "flag": 192,
+          "opcode": 189,
+          "A": 17,
+          "B": 4,
+          "C": 16
+        },
+        {
+          "slot": 111,
+          "flag": 0,
+          "opcode": 289,
+          "A": 17,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 112,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 212,
+          "C": null
+        },
+        {
+          "slot": 113,
+          "flag": 192,
+          "opcode": 294,
+          "A": 1,
+          "B": 17,
+          "C": 0
+        },
+        {
+          "slot": 114,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 212,
+          "C": null
+        },
+        {
+          "slot": 115,
+          "flag": 146,
+          "opcode": 173,
+          "A": 18,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 116,
+          "flag": 160,
+          "opcode": 159,
+          "A": 18,
+          "B": 18,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 117,
+          "flag": 82,
+          "opcode": 295,
+          "A": 20,
+          "B": "ACTOR_MAP_X",
+          "C": null,
+          "constB": "ACTOR_MAP_X"
+        },
+        {
+          "slot": 118,
+          "flag": 0,
+          "opcode": 241,
+          "A": 21,
+          "B": 17,
+          "C": 0
+        },
+        {
+          "slot": 119,
+          "flag": 128,
+          "opcode": 209,
+          "A": 18,
+          "B": 21,
+          "C": 0
+        },
+        {
+          "slot": 120,
+          "flag": 146,
+          "opcode": 173,
+          "A": 19,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 121,
+          "flag": 160,
+          "opcode": 159,
+          "A": 19,
+          "B": 19,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 122,
+          "flag": 146,
+          "opcode": 295,
+          "A": 21,
+          "B": "ACTOR_MAP_Y",
+          "C": null,
+          "constB": "ACTOR_MAP_Y"
+        },
+        {
+          "slot": 123,
+          "flag": 64,
+          "opcode": 64,
+          "A": 22,
+          "B": 17,
+          "C": 0
+        },
+        {
+          "slot": 124,
+          "flag": 64,
+          "opcode": 209,
+          "A": 19,
+          "B": 22,
+          "C": 0
+        },
+        {
+          "slot": 125,
+          "flag": 64,
+          "opcode": 60,
+          "A": 18,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 126,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 212,
+          "C": null
+        },
+        {
+          "slot": 127,
+          "flag": 64,
+          "opcode": 340,
+          "A": 19,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 128,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 212,
+          "C": null
+        },
+        {
+          "slot": 129,
+          "flag": 210,
+          "opcode": 105,
+          "A": 20,
+          "B": "math",
+          "C": null,
+          "constB": "math"
+        },
+        {
+          "slot": 130,
+          "flag": 32,
+          "opcode": 410,
+          "A": 20,
+          "B": 20,
+          "C": "abs",
+          "constC": "abs"
+        },
+        {
+          "slot": 131,
+          "flag": 192,
+          "opcode": 404,
+          "A": 21,
+          "B": 18,
+          "C": 2
+        },
+        {
+          "slot": 132,
+          "flag": 64,
+          "opcode": 209,
+          "A": 20,
+          "B": 21,
+          "C": 0
+        },
+        {
+          "slot": 133,
+          "flag": 146,
+          "opcode": 218,
+          "A": 21,
+          "B": "math",
+          "C": null,
+          "constB": "math"
+        },
+        {
+          "slot": 134,
+          "flag": 32,
+          "opcode": 410,
+          "A": 21,
+          "B": 21,
+          "C": "abs",
+          "constC": "abs"
+        },
+        {
+          "slot": 135,
+          "flag": 0,
+          "opcode": 167,
+          "A": 22,
+          "B": 19,
+          "C": 3
+        },
+        {
+          "slot": 136,
+          "flag": 192,
+          "opcode": 209,
+          "A": 21,
+          "B": 22,
+          "C": 0
+        },
+        {
+          "slot": 137,
+          "flag": 146,
+          "opcode": 105,
+          "A": 22,
+          "B": "math",
+          "C": null,
+          "constB": "math"
+        },
+        {
+          "slot": 138,
+          "flag": 224,
+          "opcode": 68,
+          "A": 22,
+          "B": 22,
+          "C": "max",
+          "constC": "max"
+        },
+        {
+          "slot": 139,
+          "flag": 128,
+          "opcode": 221,
+          "A": 23,
+          "B": 20,
+          "C": 0
+        },
+        {
+          "slot": 140,
+          "flag": 64,
+          "opcode": 288,
+          "A": 24,
+          "B": 21,
+          "C": 0
+        },
+        {
+          "slot": 141,
+          "flag": 192,
+          "opcode": 209,
+          "A": 22,
+          "B": 24,
+          "C": 0
+        },
+        {
+          "slot": 142,
+          "flag": 224,
+          "opcode": 32,
+          "A": 0,
+          "B": 22,
+          "C": 11,
+          "constC": 11
+        },
+        {
+          "slot": 143,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 212,
+          "C": null
+        },
+        {
+          "slot": 144,
+          "flag": 192,
+          "opcode": 226,
+          "A": 0,
+          "B": 22,
+          "C": 12
+        },
+        {
+          "slot": 145,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 212,
+          "C": null
+        },
+        {
+          "slot": 146,
+          "flag": 210,
+          "opcode": 173,
+          "A": 23,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 147,
+          "flag": 32,
+          "opcode": 204,
+          "A": 23,
+          "B": 23,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 148,
+          "flag": 18,
+          "opcode": 295,
+          "A": 25,
+          "B": "ACTOR_IS_HERO",
+          "C": null,
+          "constB": "ACTOR_IS_HERO"
+        },
+        {
+          "slot": 149,
+          "flag": 128,
+          "opcode": 64,
+          "A": 26,
+          "B": 17,
+          "C": 0
+        },
+        {
+          "slot": 150,
+          "flag": 64,
+          "opcode": 209,
+          "A": 23,
+          "B": 26,
+          "C": 0
+        },
+        {
+          "slot": 151,
+          "flag": 192,
+          "opcode": 366,
+          "A": 23,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 152,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 212,
+          "C": null
+        },
+        {
+          "slot": 153,
+          "flag": 18,
+          "opcode": 105,
+          "A": 24,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 154,
+          "flag": 96,
+          "opcode": 204,
+          "A": 24,
+          "B": 24,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 155,
+          "flag": 146,
+          "opcode": 295,
+          "A": 26,
+          "B": "ACTOR_NAME",
+          "C": null,
+          "constB": "ACTOR_NAME"
+        },
+        {
+          "slot": 156,
+          "flag": 128,
+          "opcode": 288,
+          "A": 27,
+          "B": 17,
+          "C": 0
+        },
+        {
+          "slot": 157,
+          "flag": 192,
+          "opcode": 209,
+          "A": 24,
+          "B": 27,
+          "C": 0
+        },
+        {
+          "slot": 158,
+          "flag": 0,
+          "opcode": 366,
+          "A": 24,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 159,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 160,
+          "C": null
+        },
+        {
+          "slot": 160,
+          "flag": 82,
+          "opcode": 295,
+          "A": 24,
+          "B": "",
+          "C": null,
+          "constB": ""
+        },
+        {
+          "slot": 161,
+          "flag": 64,
+          "opcode": 294,
+          "A": 1,
+          "B": 24,
+          "C": 6
+        },
+        {
+          "slot": 162,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 212,
+          "C": null
+        },
+        {
+          "slot": 163,
+          "flag": 0,
+          "opcode": 294,
+          "A": 1,
+          "B": 24,
+          "C": 7
+        },
+        {
+          "slot": 164,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 212,
+          "C": null
+        },
+        {
+          "slot": 165,
+          "flag": 210,
+          "opcode": 253,
+          "A": 25,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 166,
+          "flag": 160,
+          "opcode": 159,
+          "A": 25,
+          "B": 25,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 167,
+          "flag": 18,
+          "opcode": 295,
+          "A": 27,
+          "B": "ACTOR_GUILD_NAME",
+          "C": null,
+          "constB": "ACTOR_GUILD_NAME"
+        },
+        {
+          "slot": 168,
+          "flag": 128,
+          "opcode": 64,
+          "A": 28,
+          "B": 17,
+          "C": 0
+        },
+        {
+          "slot": 169,
+          "flag": 128,
+          "opcode": 209,
+          "A": 25,
+          "B": 28,
+          "C": 0
+        },
+        {
+          "slot": 170,
+          "flag": 64,
+          "opcode": 325,
+          "A": 25,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 171,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 172,
+          "C": null
+        },
+        {
+          "slot": 172,
+          "flag": 18,
+          "opcode": 295,
+          "A": 25,
+          "B": "",
+          "C": null,
+          "constB": ""
+        },
+        {
+          "slot": 173,
+          "flag": 160,
+          "opcode": 143,
+          "A": 1,
+          "B": 8,
+          "C": "",
+          "constC": ""
+        },
+        {
+          "slot": 174,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 176,
+          "C": null
+        },
+        {
+          "slot": 175,
+          "flag": 64,
+          "opcode": 294,
+          "A": 1,
+          "B": 8,
+          "C": 25
+        },
+        {
+          "slot": 176,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 177,
+          "C": null
+        },
+        {
+          "slot": 177,
+          "flag": 0,
+          "opcode": 174,
+          "A": 26,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 178,
+          "flag": 128,
+          "opcode": 110,
+          "A": 26,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 179,
+          "flag": 128,
+          "opcode": 325,
+          "A": 26,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 180,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 212,
+          "C": null
+        },
+        {
+          "slot": 181,
+          "flag": 64,
+          "opcode": 110,
+          "A": 27,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 182,
+          "flag": 82,
+          "opcode": 146,
+          "A": 28,
+          "B": "ipairs",
+          "C": null,
+          "constB": "ipairs"
+        },
+        {
+          "slot": 183,
+          "flag": 128,
+          "opcode": 288,
+          "A": 29,
+          "B": 9,
+          "C": 0
+        },
+        {
+          "slot": 184,
+          "flag": 64,
+          "opcode": 386,
+          "A": 28,
+          "B": 29,
+          "C": 30
+        },
+        {
+          "slot": 185,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 190,
+          "C": null
+        },
+        {
+          "slot": 186,
+          "flag": 32,
+          "opcode": 96,
+          "A": 33,
+          "B": 32,
+          "C": "UserID",
+          "constC": "UserID"
+        },
+        {
+          "slot": 187,
+          "flag": 0,
+          "opcode": 294,
+          "A": 0,
+          "B": 33,
+          "C": 17
+        },
+        {
+          "slot": 188,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 190,
+          "C": null
+        },
+        {
+          "slot": 189,
+          "flag": 128,
+          "opcode": 110,
+          "A": 27,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 190,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 192,
+          "C": null
+        },
+        {
+          "slot": 191,
+          "flag": 64,
+          "opcode": 250,
+          "A": 28,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 192,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 185,
+          "C": null
+        },
+        {
+          "slot": 193,
+          "flag": 64,
+          "opcode": 366,
+          "A": 27,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 194,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 212,
+          "C": null
+        },
+        {
+          "slot": 195,
+          "flag": 82,
+          "opcode": 146,
+          "A": 28,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 196,
+          "flag": 160,
+          "opcode": 159,
+          "A": 28,
+          "B": 28,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 197,
+          "flag": 146,
+          "opcode": 295,
+          "A": 30,
+          "B": "ACTOR_HP",
+          "C": null,
+          "constB": "ACTOR_HP"
+        },
+        {
+          "slot": 198,
+          "flag": 0,
+          "opcode": 288,
+          "A": 31,
+          "B": 17,
+          "C": 0
+        },
+        {
+          "slot": 199,
+          "flag": 128,
+          "opcode": 209,
+          "A": 28,
+          "B": 31,
+          "C": 0
+        },
+        {
+          "slot": 200,
+          "flag": 192,
+          "opcode": 366,
+          "A": 28,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 201,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 202,
+          "C": null
+        },
+        {
+          "slot": 202,
+          "flag": 146,
+          "opcode": 295,
+          "A": 28,
+          "B": 0,
+          "C": null,
+          "constB": 0
+        },
+        {
+          "slot": 203,
+          "flag": 80,
+          "opcode": 271,
+          "A": 0,
+          "B": 0,
+          "C": 28,
+          "constB": 0
+        },
+        {
+          "slot": 204,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 212,
+          "C": null
+        },
+        {
+          "slot": 205,
+          "flag": 128,
+          "opcode": 203,
+          "A": 29,
+          "B": 0,
+          "C": 5
+        },
+        {
+          "slot": 206,
+          "flag": 144,
+          "opcode": 262,
+          "A": 29,
+          "B": "id",
+          "C": 17,
+          "constB": "id"
+        },
+        {
+          "slot": 207,
+          "flag": 208,
+          "opcode": 262,
+          "A": 29,
+          "B": "name",
+          "C": 24,
+          "constB": "name"
+        },
+        {
+          "slot": 208,
+          "flag": 208,
+          "opcode": 1,
+          "A": 29,
+          "B": "x",
+          "C": 18,
+          "constB": "x"
+        },
+        {
+          "slot": 209,
+          "flag": 208,
+          "opcode": 409,
+          "A": 29,
+          "B": "y",
+          "C": 19,
+          "constB": "y"
+        },
+        {
+          "slot": 210,
+          "flag": 80,
+          "opcode": 0,
+          "A": 29,
+          "B": "dist",
+          "C": 22,
+          "constB": "dist"
+        },
+        {
+          "slot": 211,
+          "flag": 64,
+          "opcode": 221,
+          "A": 11,
+          "B": 29,
+          "C": 0
+        },
+        {
+          "slot": 212,
+          "flag": 128,
+          "opcode": 64,
+          "A": 12,
+          "B": 22,
+          "C": 0
+        },
+        {
+          "slot": 213,
+          "flag": 66,
+          "opcode": 395,
+          "A": 13,
+          "B": 109,
+          "C": null
+        },
+        {
+          "slot": 214,
+          "flag": 210,
+          "opcode": 105,
+          "A": 13,
+          "B": "tonumber",
+          "C": null,
+          "constB": "tonumber"
+        },
+        {
+          "slot": 215,
+          "flag": 82,
+          "opcode": 361,
+          "A": 14,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 216,
+          "flag": 96,
+          "opcode": 102,
+          "A": 14,
+          "B": 14,
+          "C": "GetMetaValue",
+          "constC": "GetMetaValue"
+        },
+        {
+          "slot": 217,
+          "flag": 146,
+          "opcode": 295,
+          "A": 16,
+          "B": "PKMODE",
+          "C": null,
+          "constB": "PKMODE"
+        },
+        {
+          "slot": 218,
+          "flag": 128,
+          "opcode": 264,
+          "A": 14,
+          "B": 16,
+          "C": 0
+        },
+        {
+          "slot": 219,
+          "flag": 64,
+          "opcode": 10,
+          "A": 13,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 220,
+          "flag": 224,
+          "opcode": 143,
+          "A": 1,
+          "B": 13,
+          "C": 1,
+          "constC": 1
+        },
+        {
+          "slot": 221,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 224,
+          "C": null
+        },
+        {
+          "slot": 222,
+          "flag": 32,
+          "opcode": 143,
+          "A": 1,
+          "B": 13,
+          "C": 6,
+          "constC": 6
+        },
+        {
+          "slot": 223,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 224,
+          "C": null
+        },
+        {
+          "slot": 224,
+          "flag": 64,
+          "opcode": 174,
+          "A": 14,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 225,
+          "flag": 128,
+          "opcode": 110,
+          "A": 14,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 226,
+          "flag": 0,
+          "opcode": 340,
+          "A": 14,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 227,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 230,
+          "C": null
+        },
+        {
+          "slot": 228,
+          "flag": 82,
+          "opcode": 295,
+          "A": 15,
+          "B": 3,
+          "C": null,
+          "constB": 3
+        },
+        {
+          "slot": 229,
+          "flag": 192,
+          "opcode": 366,
+          "A": 15,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 230,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 231,
+          "C": null
+        },
+        {
+          "slot": 231,
+          "flag": 146,
+          "opcode": 399,
+          "A": 15,
+          "B": 2,
+          "C": null,
+          "constB": 2
+        },
+        {
+          "slot": 232,
+          "flag": 0,
+          "opcode": 324,
+          "A": 16,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 233,
+          "flag": 0,
+          "opcode": 294,
+          "A": 1,
+          "B": 16,
+          "C": 15
+        },
+        {
+          "slot": 234,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 250,
+          "C": null
+        },
+        {
+          "slot": 235,
+          "flag": 128,
+          "opcode": 62,
+          "A": 15,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 236,
+          "flag": 18,
+          "opcode": 95,
+          "A": 16,
+          "B": "CHANGE_SETTING",
+          "C": null,
+          "constB": "CHANGE_SETTING"
+        },
+        {
+          "slot": 237,
+          "flag": 146,
+          "opcode": 295,
+          "A": 17,
+          "B": 3039,
+          "C": null,
+          "constB": 3039
+        },
+        {
+          "slot": 238,
+          "flag": 0,
+          "opcode": 279,
+          "A": 18,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 239,
+          "flag": 192,
+          "opcode": 64,
+          "A": 19,
+          "B": 15,
+          "C": 0
+        },
+        {
+          "slot": 240,
+          "flag": 192,
+          "opcode": 208,
+          "A": 18,
+          "B": 1,
+          "C": 1
+        },
+        {
+          "slot": 241,
+          "flag": 192,
+          "opcode": 123,
+          "A": 16,
+          "B": 18,
+          "C": 0
+        },
+        {
+          "slot": 242,
+          "flag": 192,
+          "opcode": 403,
+          "A": 16,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 243,
+          "flag": 18,
+          "opcode": 295,
+          "A": 17,
+          "B": "被玩家攻击设置切换为：%s",
+          "C": null,
+          "constB": "被玩家攻击设置切换为：%s"
+        },
+        {
+          "slot": 244,
+          "flag": 160,
+          "opcode": 143,
+          "A": 0,
+          "B": 15,
+          "C": 3,
+          "constC": 3
+        },
+        {
+          "slot": 245,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 248,
+          "C": null
+        },
+        {
+          "slot": 246,
+          "flag": 146,
+          "opcode": 295,
+          "A": 18,
+          "B": "逃跑",
+          "C": null,
+          "constB": "逃跑"
+        },
+        {
+          "slot": 247,
+          "flag": 64,
+          "opcode": 366,
+          "A": 18,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 248,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 249,
+          "C": null
+        },
+        {
+          "slot": 249,
+          "flag": 210,
+          "opcode": 295,
+          "A": 18,
+          "B": "反击",
+          "C": null,
+          "constB": "反击"
+        },
+        {
+          "slot": 250,
+          "flag": 0,
+          "opcode": 128,
+          "A": 16,
+          "B": 18,
+          "C": 0
+        },
+        {
+          "slot": 251,
+          "flag": 128,
+          "opcode": 366,
+          "A": 14,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 252,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 342,
+          "C": null
+        },
+        {
+          "slot": 253,
+          "flag": 192,
+          "opcode": 88,
+          "A": 16,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 254,
+          "flag": 48,
+          "opcode": 114,
+          "A": 16,
+          "B": "cruiseGatherPaused",
+          "C": true,
+          "constB": "cruiseGatherPaused",
+          "constC": true
+        },
+        {
+          "slot": 255,
+          "flag": 64,
+          "opcode": 110,
+          "A": 16,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 256,
+          "flag": 192,
+          "opcode": 330,
+          "A": 16,
+          "B": 5,
+          "C": 0
+        },
+        {
+          "slot": 257,
+          "flag": 64,
+          "opcode": 127,
+          "A": 16,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 258,
+          "flag": 224,
+          "opcode": 274,
+          "A": 16,
+          "B": 16,
+          "C": "zd",
+          "constC": "zd"
+        },
+        {
+          "slot": 259,
+          "flag": 128,
+          "opcode": 110,
+          "A": 17,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 260,
+          "flag": 128,
+          "opcode": 128,
+          "A": 16,
+          "B": 17,
+          "C": 0
+        },
+        {
+          "slot": 261,
+          "flag": 0,
+          "opcode": 325,
+          "A": 11,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 262,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 267,
+          "C": null
+        },
+        {
+          "slot": 263,
+          "flag": 192,
+          "opcode": 324,
+          "A": 16,
+          "B": 6,
+          "C": 0
+        },
+        {
+          "slot": 264,
+          "flag": 0,
+          "opcode": 128,
+          "A": 16,
+          "B": 16,
+          "C": 0
+        },
+        {
+          "slot": 265,
+          "flag": 128,
+          "opcode": 88,
+          "A": 16,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 266,
+          "flag": 48,
+          "opcode": 322,
+          "A": 16,
+          "B": "cruiseGatherPaused",
+          "C": false,
+          "constB": "cruiseGatherPaused",
+          "constC": false
+        },
+        {
+          "slot": 267,
+          "flag": 192,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 268,
+          "flag": 146,
+          "opcode": 282,
+          "A": 16,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 269,
+          "flag": 160,
+          "opcode": 411,
+          "A": 16,
+          "B": 16,
+          "C": "Facade",
+          "constC": "Facade"
+        },
+        {
+          "slot": 270,
+          "flag": 160,
+          "opcode": 103,
+          "A": 16,
+          "B": 16,
+          "C": "retrieveProxy",
+          "constC": "retrieveProxy"
+        },
+        {
+          "slot": 271,
+          "flag": 18,
+          "opcode": 105,
+          "A": 18,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 272,
+          "flag": 160,
+          "opcode": 79,
+          "A": 18,
+          "B": 18,
+          "C": "ProxyTable",
+          "constC": "ProxyTable"
+        },
+        {
+          "slot": 273,
+          "flag": 224,
+          "opcode": 96,
+          "A": 18,
+          "B": 18,
+          "C": "PlayerInputProxy",
+          "constC": "PlayerInputProxy"
+        },
+        {
+          "slot": 274,
+          "flag": 128,
+          "opcode": 209,
+          "A": 16,
+          "B": 18,
+          "C": 0
+        },
+        {
+          "slot": 275,
+          "flag": 0,
+          "opcode": 9,
+          "A": 17,
+          "B": 7,
+          "C": 0
+        },
+        {
+          "slot": 276,
+          "flag": 224,
+          "opcode": 96,
+          "A": 18,
+          "B": 11,
+          "C": "id",
+          "constC": "id"
+        },
+        {
+          "slot": 277,
+          "flag": 192,
+          "opcode": 294,
+          "A": 1,
+          "B": 17,
+          "C": 18
+        },
+        {
+          "slot": 278,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 294,
+          "C": null
+        },
+        {
+          "slot": 279,
+          "flag": 160,
+          "opcode": 138,
+          "A": 17,
+          "B": 16,
+          "C": "SetTargetID",
+          "constC": "SetTargetID"
+        },
+        {
+          "slot": 280,
+          "flag": 224,
+          "opcode": 410,
+          "A": 19,
+          "B": 11,
+          "C": "id",
+          "constC": "id"
+        },
+        {
+          "slot": 281,
+          "flag": 192,
+          "opcode": 123,
+          "A": 17,
+          "B": 19,
+          "C": 0
+        },
+        {
+          "slot": 282,
+          "flag": 160,
+          "opcode": 393,
+          "A": 17,
+          "B": 16,
+          "C": "SetAttackTargetID",
+          "constC": "SetAttackTargetID"
+        },
+        {
+          "slot": 283,
+          "flag": 96,
+          "opcode": 410,
+          "A": 19,
+          "B": 11,
+          "C": "id",
+          "constC": "id"
+        },
+        {
+          "slot": 284,
+          "flag": 64,
+          "opcode": 128,
+          "A": 17,
+          "B": 19,
+          "C": 0
+        },
+        {
+          "slot": 285,
+          "flag": 224,
+          "opcode": 138,
+          "A": 17,
+          "B": 16,
+          "C": "SetAttackState",
+          "constC": "SetAttackState"
+        },
+        {
+          "slot": 286,
+          "flag": 0,
+          "opcode": 110,
+          "A": 19,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 287,
+          "flag": 0,
+          "opcode": 128,
+          "A": 17,
+          "B": 19,
+          "C": 0
+        },
+        {
+          "slot": 288,
+          "flag": 224,
+          "opcode": 274,
+          "A": 17,
+          "B": 11,
+          "C": "id",
+          "constC": "id"
+        },
+        {
+          "slot": 289,
+          "flag": 64,
+          "opcode": 330,
+          "A": 17,
+          "B": 7,
+          "C": 0
+        },
+        {
+          "slot": 290,
+          "flag": 128,
+          "opcode": 403,
+          "A": 17,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 291,
+          "flag": 146,
+          "opcode": 359,
+          "A": 18,
+          "B": "见人杀: 锁定 %s(%d格)",
+          "C": null,
+          "constB": "见人杀: 锁定 %s(%d格)"
+        },
+        {
+          "slot": 292,
+          "flag": 160,
+          "opcode": 406,
+          "A": 19,
+          "B": 11,
+          "C": "name",
+          "constC": "name"
+        },
+        {
+          "slot": 293,
+          "flag": 0,
+          "opcode": 241,
+          "A": 20,
+          "B": 12,
+          "C": 0
+        },
+        {
+          "slot": 294,
+          "flag": 192,
+          "opcode": 128,
+          "A": 17,
+          "B": 20,
+          "C": 0
+        },
+        {
+          "slot": 295,
+          "flag": 210,
+          "opcode": 146,
+          "A": 17,
+          "B": "os",
+          "C": null,
+          "constB": "os"
+        },
+        {
+          "slot": 296,
+          "flag": 96,
+          "opcode": 96,
+          "A": 17,
+          "B": 17,
+          "C": "clock",
+          "constC": "clock"
+        },
+        {
+          "slot": 297,
+          "flag": 128,
+          "opcode": 209,
+          "A": 17,
+          "B": 17,
+          "C": 0
+        },
+        {
+          "slot": 298,
+          "flag": 128,
+          "opcode": 9,
+          "A": 18,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 299,
+          "flag": 96,
+          "opcode": 96,
+          "A": 18,
+          "B": 18,
+          "C": "cruiseAttackAt",
+          "constC": "cruiseAttackAt"
+        },
+        {
+          "slot": 300,
+          "flag": 64,
+          "opcode": 289,
+          "A": 18,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 301,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 306,
+          "C": null
+        },
+        {
+          "slot": 302,
+          "flag": 192,
+          "opcode": 9,
+          "A": 18,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 303,
+          "flag": 224,
+          "opcode": 410,
+          "A": 18,
+          "B": 18,
+          "C": "cruiseAttackAt",
+          "constC": "cruiseAttackAt"
+        },
+        {
+          "slot": 304,
+          "flag": 64,
+          "opcode": 404,
+          "A": 18,
+          "B": 17,
+          "C": 18
+        },
+        {
+          "slot": 305,
+          "flag": 208,
+          "opcode": 52,
+          "A": 0,
+          "B": 0.6,
+          "C": 18,
+          "constB": 0.6
+        },
+        {
+          "slot": 306,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 341,
+          "C": null
+        },
+        {
+          "slot": 307,
+          "flag": 192,
+          "opcode": 324,
+          "A": 18,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 308,
+          "flag": 144,
+          "opcode": 125,
+          "A": 18,
+          "B": "cruiseAttackAt",
+          "C": 17,
+          "constB": "cruiseAttackAt"
+        },
+        {
+          "slot": 309,
+          "flag": 64,
+          "opcode": 324,
+          "A": 18,
+          "B": 8,
+          "C": 0
+        },
+        {
+          "slot": 310,
+          "flag": 64,
+          "opcode": 325,
+          "A": 18,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 311,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 315,
+          "C": null
+        },
+        {
+          "slot": 312,
+          "flag": 18,
+          "opcode": 95,
+          "A": 18,
+          "B": "require",
+          "C": null,
+          "constB": "require"
+        },
+        {
+          "slot": 313,
+          "flag": 18,
+          "opcode": 295,
+          "A": 19,
+          "B": "game.proxy.skillUtils",
+          "C": null,
+          "constB": "game.proxy.skillUtils"
+        },
+        {
+          "slot": 314,
+          "flag": 192,
+          "opcode": 209,
+          "A": 18,
+          "B": 19,
+          "C": 0
+        },
+        {
+          "slot": 315,
+          "flag": 128,
+          "opcode": 330,
+          "A": 18,
+          "B": 8,
+          "C": 0
+        },
+        {
+          "slot": 316,
+          "flag": 128,
+          "opcode": 324,
+          "A": 18,
+          "B": 8,
+          "C": 0
+        },
+        {
+          "slot": 317,
+          "flag": 224,
+          "opcode": 96,
+          "A": 18,
+          "B": 18,
+          "C": "findLockLaunchSkill",
+          "constC": "findLockLaunchSkill"
+        },
+        {
+          "slot": 318,
+          "flag": 0,
+          "opcode": 314,
+          "A": 18,
+          "B": 18,
+          "C": 19
+        },
+        {
+          "slot": 319,
+          "flag": 128,
+          "opcode": 325,
+          "A": 18,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 320,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 321,
+          "C": null
+        },
+        {
+          "slot": 321,
+          "flag": 18,
+          "opcode": 47,
+          "A": 18,
+          "B": 0,
+          "C": null,
+          "constB": 0
+        },
+        {
+          "slot": 322,
+          "flag": 210,
+          "opcode": 282,
+          "A": 20,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 323,
+          "flag": 160,
+          "opcode": 411,
+          "A": 20,
+          "B": 20,
+          "C": "Facade",
+          "constC": "Facade"
+        },
+        {
+          "slot": 324,
+          "flag": 160,
+          "opcode": 204,
+          "A": 20,
+          "B": 20,
+          "C": "sendNotification",
+          "constC": "sendNotification"
+        },
+        {
+          "slot": 325,
+          "flag": 146,
+          "opcode": 108,
+          "A": 22,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 326,
+          "flag": 160,
+          "opcode": 79,
+          "A": 22,
+          "B": 22,
+          "C": "NoticeTable",
+          "constC": "NoticeTable"
+        },
+        {
+          "slot": 327,
+          "flag": 32,
+          "opcode": 96,
+          "A": 22,
+          "B": 22,
+          "C": "InputLaunch",
+          "constC": "InputLaunch"
+        },
+        {
+          "slot": 328,
+          "flag": 128,
+          "opcode": 279,
+          "A": 23,
+          "B": 0,
+          "C": 5
+        },
+        {
+          "slot": 329,
+          "flag": 80,
+          "opcode": 409,
+          "A": 23,
+          "B": "skillID",
+          "C": 18,
+          "constB": "skillID"
+        },
+        {
+          "slot": 330,
+          "flag": 80,
+          "opcode": 0,
+          "A": 23,
+          "B": "destPos",
+          "C": 19,
+          "constB": "destPos"
+        },
+        {
+          "slot": 331,
+          "flag": 82,
+          "opcode": 108,
+          "A": 24,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 332,
+          "flag": 32,
+          "opcode": 79,
+          "A": 24,
+          "B": 24,
+          "C": "MMO",
+          "constC": "MMO"
+        },
+        {
+          "slot": 333,
+          "flag": 160,
+          "opcode": 400,
+          "A": 24,
+          "B": 24,
+          "C": "LAUNCH_PRIORITY_SYSTEM",
+          "constC": "LAUNCH_PRIORITY_SYSTEM"
+        },
+        {
+          "slot": 334,
+          "flag": 16,
+          "opcode": 35,
+          "A": 23,
+          "B": "priority",
+          "C": 24,
+          "constB": "priority"
+        },
+        {
+          "slot": 335,
+          "flag": 210,
+          "opcode": 236,
+          "A": 24,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 336,
+          "flag": 224,
+          "opcode": 410,
+          "A": 24,
+          "B": 24,
+          "C": "MMO",
+          "constC": "MMO"
+        },
+        {
+          "slot": 337,
+          "flag": 224,
+          "opcode": 83,
+          "A": 24,
+          "B": 24,
+          "C": "LAUNCH_TYPE_LOCK",
+          "constC": "LAUNCH_TYPE_LOCK"
+        },
+        {
+          "slot": 338,
+          "flag": 208,
+          "opcode": 365,
+          "A": 23,
+          "B": "launchType",
+          "C": 24,
+          "constB": "launchType"
+        },
+        {
+          "slot": 339,
+          "flag": 96,
+          "opcode": 400,
+          "A": 24,
+          "B": 11,
+          "C": "id",
+          "constC": "id"
+        },
+        {
+          "slot": 340,
+          "flag": 208,
+          "opcode": 306,
+          "A": 23,
+          "B": "targetID",
+          "C": 24,
+          "constB": "targetID"
+        },
+        {
+          "slot": 341,
+          "flag": 128,
+          "opcode": 123,
+          "A": 20,
+          "B": 23,
+          "C": 0
+        },
+        {
+          "slot": 342,
+          "flag": 0,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 343,
+          "flag": 128,
+          "opcode": 127,
+          "A": 16,
+          "B": 6,
+          "C": 0
+        },
+        {
+          "slot": 344,
+          "flag": 192,
+          "opcode": 123,
+          "A": 16,
+          "B": 16,
+          "C": 0
+        },
+        {
+          "slot": 345,
+          "flag": 0,
+          "opcode": 366,
+          "A": 11,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 346,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 350,
+          "C": null
+        },
+        {
+          "slot": 347,
+          "flag": 0,
+          "opcode": 403,
+          "A": 16,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 348,
+          "flag": 146,
+          "opcode": 295,
+          "A": 17,
+          "B": "敌人已脱离，恢复战斗",
+          "C": null,
+          "constB": "敌人已脱离，恢复战斗"
+        },
+        {
+          "slot": 349,
+          "flag": 0,
+          "opcode": 123,
+          "A": 16,
+          "B": 17,
+          "C": 0
+        },
+        {
+          "slot": 350,
+          "flag": 128,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 351,
+          "flag": 192,
+          "opcode": 234,
+          "A": 16,
+          "B": 5,
+          "C": 0
+        },
+        {
+          "slot": 352,
+          "flag": 192,
+          "opcode": 325,
+          "A": 16,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 353,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 361,
+          "C": null
+        },
+        {
+          "slot": 354,
+          "flag": 128,
+          "opcode": 110,
+          "A": 16,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 355,
+          "flag": 128,
+          "opcode": 397,
+          "A": 16,
+          "B": 5,
+          "C": 0
+        },
+        {
+          "slot": 356,
+          "flag": 128,
+          "opcode": 234,
+          "A": 16,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 357,
+          "flag": 240,
+          "opcode": 322,
+          "A": 16,
+          "B": "cruiseGatherPaused",
+          "C": true,
+          "constB": "cruiseGatherPaused",
+          "constC": true
+        },
+        {
+          "slot": 358,
+          "flag": 192,
+          "opcode": 9,
+          "A": 16,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 359,
+          "flag": 96,
+          "opcode": 274,
+          "A": 16,
+          "B": 16,
+          "C": "zd",
+          "constC": "zd"
+        },
+        {
+          "slot": 360,
+          "flag": 128,
+          "opcode": 110,
+          "A": 17,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 361,
+          "flag": 64,
+          "opcode": 128,
+          "A": 16,
+          "B": 17,
+          "C": 0
+        },
+        {
+          "slot": 362,
+          "flag": 64,
+          "opcode": 9,
+          "A": 16,
+          "B": 9,
+          "C": 0
+        },
+        {
+          "slot": 363,
+          "flag": 32,
+          "opcode": 290,
+          "A": 17,
+          "B": 11,
+          "C": "x",
+          "constC": "x"
+        },
+        {
+          "slot": 364,
+          "flag": 0,
+          "opcode": 404,
+          "A": 17,
+          "B": 17,
+          "C": 2
+        },
+        {
+          "slot": 365,
+          "flag": 96,
+          "opcode": 290,
+          "A": 18,
+          "B": 11,
+          "C": "y",
+          "constC": "y"
+        },
+        {
+          "slot": 366,
+          "flag": 192,
+          "opcode": 404,
+          "A": 18,
+          "B": 18,
+          "C": 3
+        },
+        {
+          "slot": 367,
+          "flag": 192,
+          "opcode": 209,
+          "A": 16,
+          "B": 18,
+          "C": 0
+        },
+        {
+          "slot": 368,
+          "flag": 64,
+          "opcode": 325,
+          "A": 16,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 369,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 370,
+          "C": null
+        },
+        {
+          "slot": 370,
+          "flag": 128,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 371,
+          "flag": 32,
+          "opcode": 144,
+          "A": 17,
+          "B": 16,
+          "C": 4,
+          "constC": 4
+        },
+        {
+          "slot": 372,
+          "flag": 32,
+          "opcode": 385,
+          "A": 17,
+          "B": 17,
+          "C": 8,
+          "constC": 8
+        },
+        {
+          "slot": 373,
+          "flag": 192,
+          "opcode": 18,
+          "A": 18,
+          "B": 8,
+          "C": 0
+        },
+        {
+          "slot": 374,
+          "flag": 0,
+          "opcode": 199,
+          "A": 19,
+          "B": 0,
+          "C": 2
+        },
+        {
+          "slot": 375,
+          "flag": 80,
+          "opcode": 125,
+          "A": 19,
+          "B": "dir",
+          "C": 17,
+          "constB": "dir"
+        },
+        {
+          "slot": 376,
+          "flag": 48,
+          "opcode": 322,
+          "A": 19,
+          "B": "step",
+          "C": 2,
+          "constB": "step",
+          "constC": 2
+        },
+        {
+          "slot": 377,
+          "flag": 0,
+          "opcode": 279,
+          "A": 20,
+          "B": 0,
+          "C": 2
+        },
+        {
+          "slot": 378,
+          "flag": 224,
+          "opcode": 363,
+          "A": 21,
+          "B": 16,
+          "C": 3,
+          "constC": 3
+        },
+        {
+          "slot": 379,
+          "flag": 160,
+          "opcode": 251,
+          "A": 21,
+          "B": 21,
+          "C": 8,
+          "constC": 8
+        },
+        {
+          "slot": 380,
+          "flag": 16,
+          "opcode": 306,
+          "A": 20,
+          "B": "dir",
+          "C": 21,
+          "constB": "dir"
+        },
+        {
+          "slot": 381,
+          "flag": 176,
+          "opcode": 322,
+          "A": 20,
+          "B": "step",
+          "C": 2,
+          "constB": "step",
+          "constC": 2
+        },
+        {
+          "slot": 382,
+          "flag": 0,
+          "opcode": 279,
+          "A": 21,
+          "B": 0,
+          "C": 2
+        },
+        {
+          "slot": 383,
+          "flag": 32,
+          "opcode": 363,
+          "A": 22,
+          "B": 16,
+          "C": 5,
+          "constC": 5
+        },
+        {
+          "slot": 384,
+          "flag": 96,
+          "opcode": 251,
+          "A": 22,
+          "B": 22,
+          "C": 8,
+          "constC": 8
+        },
+        {
+          "slot": 385,
+          "flag": 16,
+          "opcode": 125,
+          "A": 21,
+          "B": "dir",
+          "C": 22,
+          "constB": "dir"
+        },
+        {
+          "slot": 386,
+          "flag": 48,
+          "opcode": 114,
+          "A": 21,
+          "B": "step",
+          "C": 2,
+          "constB": "step",
+          "constC": 2
+        },
+        {
+          "slot": 387,
+          "flag": 64,
+          "opcode": 279,
+          "A": 22,
+          "B": 0,
+          "C": 2
+        },
+        {
+          "slot": 388,
+          "flag": 96,
+          "opcode": 363,
+          "A": 23,
+          "B": 16,
+          "C": 2,
+          "constC": 2
+        },
+        {
+          "slot": 389,
+          "flag": 32,
+          "opcode": 312,
+          "A": 23,
+          "B": 23,
+          "C": 8,
+          "constC": 8
+        },
+        {
+          "slot": 390,
+          "flag": 144,
+          "opcode": 0,
+          "A": 22,
+          "B": "dir",
+          "C": 23,
+          "constB": "dir"
+        },
+        {
+          "slot": 391,
+          "flag": 176,
+          "opcode": 114,
+          "A": 22,
+          "B": "step",
+          "C": 2,
+          "constB": "step",
+          "constC": 2
+        },
+        {
+          "slot": 392,
+          "flag": 0,
+          "opcode": 199,
+          "A": 23,
+          "B": 0,
+          "C": 2
+        },
+        {
+          "slot": 393,
+          "flag": 160,
+          "opcode": 363,
+          "A": 24,
+          "B": 16,
+          "C": 6,
+          "constC": 6
+        },
+        {
+          "slot": 394,
+          "flag": 96,
+          "opcode": 312,
+          "A": 24,
+          "B": 24,
+          "C": 8,
+          "constC": 8
+        },
+        {
+          "slot": 395,
+          "flag": 80,
+          "opcode": 306,
+          "A": 23,
+          "B": "dir",
+          "C": 24,
+          "constB": "dir"
+        },
+        {
+          "slot": 396,
+          "flag": 176,
+          "opcode": 322,
+          "A": 23,
+          "B": "step",
+          "C": 2,
+          "constB": "step",
+          "constC": 2
+        },
+        {
+          "slot": 397,
+          "flag": 128,
+          "opcode": 279,
+          "A": 24,
+          "B": 0,
+          "C": 2
+        },
+        {
+          "slot": 398,
+          "flag": 16,
+          "opcode": 0,
+          "A": 24,
+          "B": "dir",
+          "C": 17,
+          "constB": "dir"
+        },
+        {
+          "slot": 399,
+          "flag": 112,
+          "opcode": 322,
+          "A": 24,
+          "B": "step",
+          "C": 1,
+          "constB": "step",
+          "constC": 1
+        },
+        {
+          "slot": 400,
+          "flag": 0,
+          "opcode": 279,
+          "A": 25,
+          "B": 0,
+          "C": 2
+        },
+        {
+          "slot": 401,
+          "flag": 96,
+          "opcode": 144,
+          "A": 26,
+          "B": 16,
+          "C": 3,
+          "constC": 3
+        },
+        {
+          "slot": 402,
+          "flag": 224,
+          "opcode": 385,
+          "A": 26,
+          "B": 26,
+          "C": 8,
+          "constC": 8
+        },
+        {
+          "slot": 403,
+          "flag": 16,
+          "opcode": 125,
+          "A": 25,
+          "B": "dir",
+          "C": 26,
+          "constB": "dir"
+        },
+        {
+          "slot": 404,
+          "flag": 112,
+          "opcode": 322,
+          "A": 25,
+          "B": "step",
+          "C": 1,
+          "constB": "step",
+          "constC": 1
+        },
+        {
+          "slot": 405,
+          "flag": 64,
+          "opcode": 279,
+          "A": 26,
+          "B": 0,
+          "C": 2
+        },
+        {
+          "slot": 406,
+          "flag": 224,
+          "opcode": 144,
+          "A": 27,
+          "B": 16,
+          "C": 5,
+          "constC": 5
+        },
+        {
+          "slot": 407,
+          "flag": 160,
+          "opcode": 251,
+          "A": 27,
+          "B": 27,
+          "C": 8,
+          "constC": 8
+        },
+        {
+          "slot": 408,
+          "flag": 16,
+          "opcode": 125,
+          "A": 26,
+          "B": "dir",
+          "C": 27,
+          "constB": "dir"
+        },
+        {
+          "slot": 409,
+          "flag": 176,
+          "opcode": 322,
+          "A": 26,
+          "B": "step",
+          "C": 1,
+          "constB": "step",
+          "constC": 1
+        },
+        {
+          "slot": 410,
+          "flag": 0,
+          "opcode": 41,
+          "A": 18,
+          "B": 8,
+          "C": 1
+        },
+        {
+          "slot": 411,
+          "flag": 18,
+          "opcode": 248,
+          "A": 19,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 412,
+          "flag": 160,
+          "opcode": 85,
+          "A": 19,
+          "B": 19,
+          "C": "gamePlayerController",
+          "constC": "gamePlayerController"
+        },
+        {
+          "slot": 413,
+          "flag": 96,
+          "opcode": 204,
+          "A": 19,
+          "B": 19,
+          "C": "GetMainPlayer",
+          "constC": "GetMainPlayer"
+        },
+        {
+          "slot": 414,
+          "flag": 0,
+          "opcode": 209,
+          "A": 19,
+          "B": 20,
+          "C": 0
+        },
+        {
+          "slot": 415,
+          "flag": 146,
+          "opcode": 105,
+          "A": 20,
+          "B": "ipairs",
+          "C": null,
+          "constB": "ipairs"
+        },
+        {
+          "slot": 416,
+          "flag": 0,
+          "opcode": 241,
+          "A": 21,
+          "B": 18,
+          "C": 0
+        },
+        {
+          "slot": 417,
+          "flag": 192,
+          "opcode": 307,
+          "A": 20,
+          "B": 21,
+          "C": 22
+        },
+        {
+          "slot": 418,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 525,
+          "C": null
+        },
+        {
+          "slot": 419,
+          "flag": 146,
+          "opcode": 146,
+          "A": 25,
+          "B": "tostring",
+          "C": null,
+          "constB": "tostring"
+        },
+        {
+          "slot": 420,
+          "flag": 96,
+          "opcode": 274,
+          "A": 26,
+          "B": 24,
+          "C": "dir",
+          "constC": "dir"
+        },
+        {
+          "slot": 421,
+          "flag": 64,
+          "opcode": 209,
+          "A": 25,
+          "B": 26,
+          "C": 0
+        },
+        {
+          "slot": 422,
+          "flag": 128,
+          "opcode": 127,
+          "A": 26,
+          "B": 10,
+          "C": 0
+        },
+        {
+          "slot": 423,
+          "flag": 0,
+          "opcode": 398,
+          "A": 26,
+          "B": 26,
+          "C": 25
+        },
+        {
+          "slot": 424,
+          "flag": 128,
+          "opcode": 60,
+          "A": 26,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 425,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 524,
+          "C": null
+        },
+        {
+          "slot": 426,
+          "flag": 96,
+          "opcode": 79,
+          "A": 27,
+          "B": 26,
+          "C": "x",
+          "constC": "x"
+        },
+        {
+          "slot": 427,
+          "flag": 160,
+          "opcode": 96,
+          "A": 28,
+          "B": 24,
+          "C": "step",
+          "constC": "step"
+        },
+        {
+          "slot": 428,
+          "flag": 128,
+          "opcode": 172,
+          "A": 27,
+          "B": 27,
+          "C": 28
+        },
+        {
+          "slot": 429,
+          "flag": 192,
+          "opcode": 273,
+          "A": 27,
+          "B": 2,
+          "C": 27
+        },
+        {
+          "slot": 430,
+          "flag": 96,
+          "opcode": 79,
+          "A": 28,
+          "B": 26,
+          "C": "y",
+          "constC": "y"
+        },
+        {
+          "slot": 431,
+          "flag": 224,
+          "opcode": 96,
+          "A": 29,
+          "B": 24,
+          "C": "step",
+          "constC": "step"
+        },
+        {
+          "slot": 432,
+          "flag": 0,
+          "opcode": 172,
+          "A": 28,
+          "B": 28,
+          "C": 29
+        },
+        {
+          "slot": 433,
+          "flag": 128,
+          "opcode": 273,
+          "A": 28,
+          "B": 3,
+          "C": 28
+        },
+        {
+          "slot": 434,
+          "flag": 192,
+          "opcode": 110,
+          "A": 29,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 435,
+          "flag": 192,
+          "opcode": 340,
+          "A": 10,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 436,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 443,
+          "C": null
+        },
+        {
+          "slot": 437,
+          "flag": 224,
+          "opcode": 369,
+          "A": 30,
+          "B": 10,
+          "C": "isObstacle",
+          "constC": "isObstacle"
+        },
+        {
+          "slot": 438,
+          "flag": 128,
+          "opcode": 288,
+          "A": 32,
+          "B": 27,
+          "C": 0
+        },
+        {
+          "slot": 439,
+          "flag": 192,
+          "opcode": 288,
+          "A": 33,
+          "B": 28,
+          "C": 0
+        },
+        {
+          "slot": 440,
+          "flag": 128,
+          "opcode": 209,
+          "A": 30,
+          "B": 33,
+          "C": 0
+        },
+        {
+          "slot": 441,
+          "flag": 32,
+          "opcode": 143,
+          "A": 1,
+          "B": 30,
+          "C": 0,
+          "constC": 0
+        },
+        {
+          "slot": 442,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 443,
+          "C": null
+        },
+        {
+          "slot": 443,
+          "flag": 0,
+          "opcode": 110,
+          "A": 29,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 444,
+          "flag": 128,
+          "opcode": 340,
+          "A": 29,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 445,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 524,
+          "C": null
+        },
+        {
+          "slot": 446,
+          "flag": 18,
+          "opcode": 282,
+          "A": 30,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 447,
+          "flag": 32,
+          "opcode": 411,
+          "A": 30,
+          "B": 30,
+          "C": "Facade",
+          "constC": "Facade"
+        },
+        {
+          "slot": 448,
+          "flag": 224,
+          "opcode": 393,
+          "A": 30,
+          "B": 30,
+          "C": "retrieveProxy",
+          "constC": "retrieveProxy"
+        },
+        {
+          "slot": 449,
+          "flag": 18,
+          "opcode": 146,
+          "A": 32,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 450,
+          "flag": 160,
+          "opcode": 79,
+          "A": 32,
+          "B": 32,
+          "C": "ProxyTable",
+          "constC": "ProxyTable"
+        },
+        {
+          "slot": 451,
+          "flag": 224,
+          "opcode": 96,
+          "A": 32,
+          "B": 32,
+          "C": "PlayerInputProxy",
+          "constC": "PlayerInputProxy"
+        },
+        {
+          "slot": 452,
+          "flag": 64,
+          "opcode": 209,
+          "A": 30,
+          "B": 32,
+          "C": 0
+        },
+        {
+          "slot": 453,
+          "flag": 128,
+          "opcode": 60,
+          "A": 30,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 454,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 475,
+          "C": null
+        },
+        {
+          "slot": 455,
+          "flag": 160,
+          "opcode": 274,
+          "A": 31,
+          "B": 30,
+          "C": "ClearAttackTargetID",
+          "constC": "ClearAttackTargetID"
+        },
+        {
+          "slot": 456,
+          "flag": 64,
+          "opcode": 289,
+          "A": 31,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 457,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 459,
+          "C": null
+        },
+        {
+          "slot": 458,
+          "flag": 224,
+          "opcode": 138,
+          "A": 31,
+          "B": 30,
+          "C": "ClearAttackTargetID",
+          "constC": "ClearAttackTargetID"
+        },
+        {
+          "slot": 459,
+          "flag": 128,
+          "opcode": 123,
+          "A": 31,
+          "B": 32,
+          "C": 0
+        },
+        {
+          "slot": 460,
+          "flag": 96,
+          "opcode": 96,
+          "A": 31,
+          "B": 30,
+          "C": "ClearTarget",
+          "constC": "ClearTarget"
+        },
+        {
+          "slot": 461,
+          "flag": 64,
+          "opcode": 289,
+          "A": 31,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 462,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 464,
+          "C": null
+        },
+        {
+          "slot": 463,
+          "flag": 224,
+          "opcode": 204,
+          "A": 31,
+          "B": 30,
+          "C": "ClearTarget",
+          "constC": "ClearTarget"
+        },
+        {
+          "slot": 464,
+          "flag": 0,
+          "opcode": 128,
+          "A": 31,
+          "B": 32,
+          "C": 0
+        },
+        {
+          "slot": 465,
+          "flag": 224,
+          "opcode": 410,
+          "A": 31,
+          "B": 30,
+          "C": "SetTargetID",
+          "constC": "SetTargetID"
+        },
+        {
+          "slot": 466,
+          "flag": 64,
+          "opcode": 358,
+          "A": 31,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 467,
+          "flag": 2,
+          "opcode": 388,
+          "A": 0,
+          "B": 470,
+          "C": null
+        },
+        {
+          "slot": 468,
+          "flag": 224,
+          "opcode": 393,
+          "A": 31,
+          "B": 30,
+          "C": "SetTargetID",
+          "constC": "SetTargetID"
+        },
+        {
+          "slot": 469,
+          "flag": 192,
+          "opcode": 213,
+          "A": 33,
+          "B": 33,
+          "C": 0
+        },
+        {
+          "slot": 470,
+          "flag": 128,
+          "opcode": 123,
+          "A": 31,
+          "B": 33,
+          "C": 0
+        },
+        {
+          "slot": 471,
+          "flag": 32,
+          "opcode": 274,
+          "A": 31,
+          "B": 30,
+          "C": "ClearMove",
+          "constC": "ClearMove"
+        },
+        {
+          "slot": 472,
+          "flag": 128,
+          "opcode": 60,
+          "A": 31,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 473,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 475,
+          "C": null
+        },
+        {
+          "slot": 474,
+          "flag": 96,
+          "opcode": 138,
+          "A": 31,
+          "B": 30,
+          "C": "ClearMove",
+          "constC": "ClearMove"
+        },
+        {
+          "slot": 475,
+          "flag": 64,
+          "opcode": 128,
+          "A": 31,
+          "B": 32,
+          "C": 0
+        },
+        {
+          "slot": 476,
+          "flag": 210,
+          "opcode": 361,
+          "A": 31,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 477,
+          "flag": 96,
+          "opcode": 102,
+          "A": 31,
+          "B": 31,
+          "C": "SetMetaValue",
+          "constC": "SetMetaValue"
+        },
+        {
+          "slot": 478,
+          "flag": 18,
+          "opcode": 295,
+          "A": 33,
+          "B": "BATTLE_AFK_END",
+          "C": null,
+          "constB": "BATTLE_AFK_END"
+        },
+        {
+          "slot": 479,
+          "flag": 192,
+          "opcode": 128,
+          "A": 31,
+          "B": 33,
+          "C": 0
+        },
+        {
+          "slot": 480,
+          "flag": 210,
+          "opcode": 282,
+          "A": 31,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 481,
+          "flag": 96,
+          "opcode": 411,
+          "A": 31,
+          "B": 31,
+          "C": "Facade",
+          "constC": "Facade"
+        },
+        {
+          "slot": 482,
+          "flag": 32,
+          "opcode": 103,
+          "A": 31,
+          "B": 31,
+          "C": "sendNotification",
+          "constC": "sendNotification"
+        },
+        {
+          "slot": 483,
+          "flag": 18,
+          "opcode": 108,
+          "A": 33,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 484,
+          "flag": 160,
+          "opcode": 79,
+          "A": 33,
+          "B": 33,
+          "C": "NoticeTable",
+          "constC": "NoticeTable"
+        },
+        {
+          "slot": 485,
+          "flag": 160,
+          "opcode": 96,
+          "A": 33,
+          "B": 33,
+          "C": "UserInputMove",
+          "constC": "UserInputMove"
+        },
+        {
+          "slot": 486,
+          "flag": 128,
+          "opcode": 286,
+          "A": 34,
+          "B": 0,
+          "C": 5
+        },
+        {
+          "slot": 487,
+          "flag": 160,
+          "opcode": 83,
+          "A": 35,
+          "B": 24,
+          "C": "dir",
+          "constC": "dir"
+        },
+        {
+          "slot": 488,
+          "flag": 208,
+          "opcode": 365,
+          "A": 34,
+          "B": "moveDir",
+          "C": 35,
+          "constB": "moveDir"
+        },
+        {
+          "slot": 489,
+          "flag": 96,
+          "opcode": 400,
+          "A": 35,
+          "B": 24,
+          "C": "step",
+          "constC": "step"
+        },
+        {
+          "slot": 490,
+          "flag": 208,
+          "opcode": 239,
+          "A": 34,
+          "B": "moveStep",
+          "C": 35,
+          "constB": "moveStep"
+        },
+        {
+          "slot": 491,
+          "flag": 210,
+          "opcode": 105,
+          "A": 35,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 492,
+          "flag": 96,
+          "opcode": 274,
+          "A": 35,
+          "B": 35,
+          "C": "MMO",
+          "constC": "MMO"
+        },
+        {
+          "slot": 493,
+          "flag": 32,
+          "opcode": 400,
+          "A": 35,
+          "B": 35,
+          "C": "INPUT_MOVE_TYPE_JOYSTICK",
+          "constC": "INPUT_MOVE_TYPE_JOYSTICK"
+        },
+        {
+          "slot": 494,
+          "flag": 80,
+          "opcode": 306,
+          "A": 34,
+          "B": "type",
+          "C": 35,
+          "constB": "type"
+        },
+        {
+          "slot": 495,
+          "flag": 224,
+          "opcode": 138,
+          "A": 35,
+          "B": 19,
+          "C": "GetMapX",
+          "constC": "GetMapX"
+        },
+        {
+          "slot": 496,
+          "flag": 64,
+          "opcode": 209,
+          "A": 35,
+          "B": 36,
+          "C": 0
+        },
+        {
+          "slot": 497,
+          "flag": 144,
+          "opcode": 0,
+          "A": 34,
+          "B": "x",
+          "C": 35,
+          "constB": "x"
+        },
+        {
+          "slot": 498,
+          "flag": 96,
+          "opcode": 204,
+          "A": 35,
+          "B": 19,
+          "C": "GetMapY",
+          "constC": "GetMapY"
+        },
+        {
+          "slot": 499,
+          "flag": 128,
+          "opcode": 209,
+          "A": 35,
+          "B": 36,
+          "C": 0
+        },
+        {
+          "slot": 500,
+          "flag": 208,
+          "opcode": 306,
+          "A": 34,
+          "B": "y",
+          "C": 35,
+          "constB": "y"
+        },
+        {
+          "slot": 501,
+          "flag": 0,
+          "opcode": 128,
+          "A": 31,
+          "B": 34,
+          "C": 0
+        },
+        {
+          "slot": 502,
+          "flag": 210,
+          "opcode": 253,
+          "A": 31,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 503,
+          "flag": 224,
+          "opcode": 393,
+          "A": 31,
+          "B": 31,
+          "C": "ScheduleOnce",
+          "constC": "ScheduleOnce"
+        },
+        {
+          "slot": 504,
+          "flag": 192,
+          "opcode": 387,
+          "A": 33,
+          "B": 1,
+          "C": 2
+        },
+        {
+          "slot": 505,
+          "flag": 192,
+          "opcode": 243,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 506,
+          "flag": 0,
+          "opcode": 243,
+          "A": 0,
+          "B": 24,
+          "C": 0
+        },
+        {
+          "slot": 507,
+          "flag": 146,
+          "opcode": 295,
+          "A": 34,
+          "B": 0.05,
+          "C": null,
+          "constB": 0.05
+        },
+        {
+          "slot": 508,
+          "flag": 192,
+          "opcode": 123,
+          "A": 31,
+          "B": 34,
+          "C": 0
+        },
+        {
+          "slot": 509,
+          "flag": 64,
+          "opcode": 110,
+          "A": 31,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 510,
+          "flag": 128,
+          "opcode": 62,
+          "A": 31,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 511,
+          "flag": 146,
+          "opcode": 105,
+          "A": 31,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 512,
+          "flag": 224,
+          "opcode": 138,
+          "A": 31,
+          "B": 31,
+          "C": "ScheduleOnce",
+          "constC": "ScheduleOnce"
+        },
+        {
+          "slot": 513,
+          "flag": 64,
+          "opcode": 178,
+          "A": 33,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 514,
+          "flag": 0,
+          "opcode": 132,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 515,
+          "flag": 146,
+          "opcode": 295,
+          "A": 34,
+          "B": 0.3,
+          "C": null,
+          "constB": 0.3
+        },
+        {
+          "slot": 516,
+          "flag": 0,
+          "opcode": 123,
+          "A": 31,
+          "B": 34,
+          "C": 0
+        },
+        {
+          "slot": 517,
+          "flag": 64,
+          "opcode": 324,
+          "A": 31,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 518,
+          "flag": 210,
+          "opcode": 359,
+          "A": 32,
+          "B": "见人跑: %s(%d格)，向%d方向移动%d步",
+          "C": null,
+          "constB": "见人跑: %s(%d格)，向%d方向移动%d步"
+        },
+        {
+          "slot": 519,
+          "flag": 32,
+          "opcode": 406,
+          "A": 33,
+          "B": 11,
+          "C": "name",
+          "constC": "name"
+        },
+        {
+          "slot": 520,
+          "flag": 0,
+          "opcode": 119,
+          "A": 34,
+          "B": 12,
+          "C": 0
+        },
+        {
+          "slot": 521,
+          "flag": 160,
+          "opcode": 410,
+          "A": 35,
+          "B": 24,
+          "C": "dir",
+          "constC": "dir"
+        },
+        {
+          "slot": 522,
+          "flag": 96,
+          "opcode": 410,
+          "A": 36,
+          "B": 24,
+          "C": "step",
+          "constC": "step"
+        },
+        {
+          "slot": 523,
+          "flag": 0,
+          "opcode": 123,
+          "A": 31,
+          "B": 36,
+          "C": 0
+        },
+        {
+          "slot": 524,
+          "flag": 0,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 525,
+          "flag": 64,
+          "opcode": 321,
+          "A": 23,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 526,
+          "flag": 128,
+          "opcode": 122,
+          "A": 20,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 527,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 418,
+          "C": null
+        },
+        {
+          "slot": 528,
+          "flag": 82,
+          "opcode": 105,
+          "A": 20,
+          "B": "math",
+          "C": null,
+          "constB": "math"
+        },
+        {
+          "slot": 529,
+          "flag": 96,
+          "opcode": 410,
+          "A": 20,
+          "B": 20,
+          "C": "random",
+          "constC": "random"
+        },
+        {
+          "slot": 530,
+          "flag": 210,
+          "opcode": 295,
+          "A": 21,
+          "B": -2,
+          "C": null,
+          "constB": -2
+        },
+        {
+          "slot": 531,
+          "flag": 18,
+          "opcode": 295,
+          "A": 22,
+          "B": 2,
+          "C": null,
+          "constB": 2
+        },
+        {
+          "slot": 532,
+          "flag": 0,
+          "opcode": 209,
+          "A": 20,
+          "B": 22,
+          "C": 0
+        },
+        {
+          "slot": 533,
+          "flag": 0,
+          "opcode": 273,
+          "A": 20,
+          "B": 2,
+          "C": 20
+        },
+        {
+          "slot": 534,
+          "flag": 146,
+          "opcode": 218,
+          "A": 21,
+          "B": "math",
+          "C": null,
+          "constB": "math"
+        },
+        {
+          "slot": 535,
+          "flag": 224,
+          "opcode": 163,
+          "A": 21,
+          "B": 21,
+          "C": "random",
+          "constC": "random"
+        },
+        {
+          "slot": 536,
+          "flag": 146,
+          "opcode": 374,
+          "A": 22,
+          "B": -2,
+          "C": null,
+          "constB": -2
+        },
+        {
+          "slot": 537,
+          "flag": 146,
+          "opcode": 295,
+          "A": 23,
+          "B": 2,
+          "C": null,
+          "constB": 2
+        },
+        {
+          "slot": 538,
+          "flag": 64,
+          "opcode": 209,
+          "A": 21,
+          "B": 23,
+          "C": 0
+        },
+        {
+          "slot": 539,
+          "flag": 192,
+          "opcode": 273,
+          "A": 21,
+          "B": 3,
+          "C": 21
+        },
+        {
+          "slot": 540,
+          "flag": 192,
+          "opcode": 340,
+          "A": 10,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 541,
+          "flag": 66,
+          "opcode": 388,
+          "A": 0,
+          "B": 597,
+          "C": null
+        },
+        {
+          "slot": 542,
+          "flag": 32,
+          "opcode": 138,
+          "A": 22,
+          "B": 10,
+          "C": "isObstacle",
+          "constC": "isObstacle"
+        },
+        {
+          "slot": 543,
+          "flag": 64,
+          "opcode": 221,
+          "A": 24,
+          "B": 20,
+          "C": 0
+        },
+        {
+          "slot": 544,
+          "flag": 192,
+          "opcode": 241,
+          "A": 25,
+          "B": 21,
+          "C": 0
+        },
+        {
+          "slot": 545,
+          "flag": 64,
+          "opcode": 209,
+          "A": 22,
+          "B": 25,
+          "C": 0
+        },
+        {
+          "slot": 546,
+          "flag": 224,
+          "opcode": 143,
+          "A": 0,
+          "B": 22,
+          "C": 0,
+          "constC": 0
+        },
+        {
+          "slot": 547,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 597,
+          "C": null
+        },
+        {
+          "slot": 548,
+          "flag": 146,
+          "opcode": 105,
+          "A": 22,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 549,
+          "flag": 96,
+          "opcode": 85,
+          "A": 22,
+          "B": 22,
+          "C": "Facade",
+          "constC": "Facade"
+        },
+        {
+          "slot": 550,
+          "flag": 96,
+          "opcode": 103,
+          "A": 22,
+          "B": 22,
+          "C": "retrieveProxy",
+          "constC": "retrieveProxy"
+        },
+        {
+          "slot": 551,
+          "flag": 210,
+          "opcode": 108,
+          "A": 24,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 552,
+          "flag": 32,
+          "opcode": 79,
+          "A": 24,
+          "B": 24,
+          "C": "ProxyTable",
+          "constC": "ProxyTable"
+        },
+        {
+          "slot": 553,
+          "flag": 32,
+          "opcode": 410,
+          "A": 24,
+          "B": 24,
+          "C": "PlayerInputProxy",
+          "constC": "PlayerInputProxy"
+        },
+        {
+          "slot": 554,
+          "flag": 64,
+          "opcode": 209,
+          "A": 22,
+          "B": 24,
+          "C": 0
+        },
+        {
+          "slot": 555,
+          "flag": 128,
+          "opcode": 289,
+          "A": 22,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 556,
+          "flag": 194,
+          "opcode": 388,
+          "A": 0,
+          "B": 597,
+          "C": null
+        },
+        {
+          "slot": 557,
+          "flag": 224,
+          "opcode": 274,
+          "A": 23,
+          "B": 22,
+          "C": "calcMapDirection",
+          "constC": "calcMapDirection"
+        },
+        {
+          "slot": 558,
+          "flag": 64,
+          "opcode": 289,
+          "A": 23,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 559,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 597,
+          "C": null
+        },
+        {
+          "slot": 560,
+          "flag": 224,
+          "opcode": 103,
+          "A": 23,
+          "B": 22,
+          "C": "calcMapDirection",
+          "constC": "calcMapDirection"
+        },
+        {
+          "slot": 561,
+          "flag": 210,
+          "opcode": 146,
+          "A": 25,
+          "B": "cc",
+          "C": null,
+          "constB": "cc"
+        },
+        {
+          "slot": 562,
+          "flag": 96,
+          "opcode": 274,
+          "A": 25,
+          "B": 25,
+          "C": "p",
+          "constC": "p"
+        },
+        {
+          "slot": 563,
+          "flag": 64,
+          "opcode": 241,
+          "A": 26,
+          "B": 20,
+          "C": 0
+        },
+        {
+          "slot": 564,
+          "flag": 192,
+          "opcode": 64,
+          "A": 27,
+          "B": 21,
+          "C": 0
+        },
+        {
+          "slot": 565,
+          "flag": 192,
+          "opcode": 209,
+          "A": 25,
+          "B": 27,
+          "C": 0
+        },
+        {
+          "slot": 566,
+          "flag": 18,
+          "opcode": 146,
+          "A": 26,
+          "B": "cc",
+          "C": null,
+          "constB": "cc"
+        },
+        {
+          "slot": 567,
+          "flag": 160,
+          "opcode": 68,
+          "A": 26,
+          "B": 26,
+          "C": "p",
+          "constC": "p"
+        },
+        {
+          "slot": 568,
+          "flag": 128,
+          "opcode": 64,
+          "A": 27,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 569,
+          "flag": 0,
+          "opcode": 288,
+          "A": 28,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 570,
+          "flag": 64,
+          "opcode": 264,
+          "A": 26,
+          "B": 28,
+          "C": 0
+        },
+        {
+          "slot": 571,
+          "flag": 0,
+          "opcode": 10,
+          "A": 23,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 572,
+          "flag": 96,
+          "opcode": 143,
+          "A": 1,
+          "B": 23,
+          "C": {
+            "unknown_type": 2
+          },
+          "constC": {
+            "unknown_type": 2
+          }
+        },
+        {
+          "slot": 573,
+          "flag": 130,
+          "opcode": 388,
+          "A": 0,
+          "B": 597,
+          "C": null
+        },
+        {
+          "slot": 574,
+          "flag": 146,
+          "opcode": 248,
+          "A": 24,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 575,
+          "flag": 224,
+          "opcode": 411,
+          "A": 24,
+          "B": 24,
+          "C": "Facade",
+          "constC": "Facade"
+        },
+        {
+          "slot": 576,
+          "flag": 160,
+          "opcode": 103,
+          "A": 24,
+          "B": 24,
+          "C": "sendNotification",
+          "constC": "sendNotification"
+        },
+        {
+          "slot": 577,
+          "flag": 82,
+          "opcode": 108,
+          "A": 26,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 578,
+          "flag": 160,
+          "opcode": 79,
+          "A": 26,
+          "B": 26,
+          "C": "NoticeTable",
+          "constC": "NoticeTable"
+        },
+        {
+          "slot": 579,
+          "flag": 160,
+          "opcode": 410,
+          "A": 26,
+          "B": 26,
+          "C": "UserInputMove",
+          "constC": "UserInputMove"
+        },
+        {
+          "slot": 580,
+          "flag": 128,
+          "opcode": 279,
+          "A": 27,
+          "B": 0,
+          "C": 5
+        },
+        {
+          "slot": 581,
+          "flag": 144,
+          "opcode": 306,
+          "A": 27,
+          "B": "moveDir",
+          "C": 23,
+          "constB": "moveDir"
+        },
+        {
+          "slot": 582,
+          "flag": 176,
+          "opcode": 7,
+          "A": 27,
+          "B": "moveStep",
+          "C": 2,
+          "constB": "moveStep",
+          "constC": 2
+        },
+        {
+          "slot": 583,
+          "flag": 210,
+          "opcode": 105,
+          "A": 28,
+          "B": "global",
+          "C": null,
+          "constB": "global"
+        },
+        {
+          "slot": 584,
+          "flag": 32,
+          "opcode": 79,
+          "A": 28,
+          "B": 28,
+          "C": "MMO",
+          "constC": "MMO"
+        },
+        {
+          "slot": 585,
+          "flag": 32,
+          "opcode": 274,
+          "A": 28,
+          "B": 28,
+          "C": "INPUT_MOVE_TYPE_JOYSTICK",
+          "constC": "INPUT_MOVE_TYPE_JOYSTICK"
+        },
+        {
+          "slot": 586,
+          "flag": 80,
+          "opcode": 1,
+          "A": 27,
+          "B": "type",
+          "C": 28,
+          "constB": "type"
+        },
+        {
+          "slot": 587,
+          "flag": 208,
+          "opcode": 409,
+          "A": 27,
+          "B": "x",
+          "C": 2,
+          "constB": "x"
+        },
+        {
+          "slot": 588,
+          "flag": 80,
+          "opcode": 125,
+          "A": 27,
+          "B": "y",
+          "C": 3,
+          "constB": "y"
+        },
+        {
+          "slot": 589,
+          "flag": 128,
+          "opcode": 128,
+          "A": 24,
+          "B": 27,
+          "C": 0
+        },
+        {
+          "slot": 590,
+          "flag": 0,
+          "opcode": 110,
+          "A": 24,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 591,
+          "flag": 128,
+          "opcode": 162,
+          "A": 24,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 592,
+          "flag": 18,
+          "opcode": 253,
+          "A": 24,
+          "B": "SL",
+          "C": null,
+          "constB": "SL"
+        },
+        {
+          "slot": 593,
+          "flag": 160,
+          "opcode": 393,
+          "A": 24,
+          "B": 24,
+          "C": "ScheduleOnce",
+          "constC": "ScheduleOnce"
+        },
+        {
+          "slot": 594,
+          "flag": 128,
+          "opcode": 121,
+          "A": 26,
+          "B": 2,
+          "C": 1
+        },
+        {
+          "slot": 595,
+          "flag": 128,
+          "opcode": 132,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 596,
+          "flag": 146,
+          "opcode": 295,
+          "A": 27,
+          "B": 0.3,
+          "C": null,
+          "constB": 0.3
+        },
+        {
+          "slot": 597,
+          "flag": 64,
+          "opcode": 123,
+          "A": 24,
+          "B": 27,
+          "C": 0
+        },
+        {
+          "slot": 598,
+          "flag": 128,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0
+        }
+      ],
+      "children": [
+        {
+          "path": "root/25/0/0",
+          "depth": 3,
+          "constant_count": 0,
+          "constants": [],
+          "child_count": 0,
+          "parameter_count": 0,
+          "instruction_count": 3,
+          "instructions": [
+            {
+              "slot": 1,
+              "flag": 128,
+              "opcode": 110,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 2,
+              "flag": 0,
+              "opcode": 162,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 3,
+              "flag": 128,
+              "opcode": 205,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            }
+          ],
+          "children": []
+        },
+        {
+          "path": "root/25/0/1",
+          "depth": 3,
+          "constant_count": 22,
+          "constants": [
+            "GetMainPlayer",
+            "type",
+            "GetMapY",
+            "GetMetaValue",
+            "NoticeTable",
+            "x",
+            "INPUT_MOVE_TYPE_JOYSTICK",
+            "sendNotification",
+            "global",
+            "SL",
+            "moveDir",
+            "MMO",
+            "gamePlayerController",
+            "UserInputMove",
+            "ACTOR_HP",
+            "moveStep",
+            "dir",
+            "y",
+            0,
+            "Facade",
+            "GetMapX",
+            "step"
+          ],
+          "child_count": 0,
+          "parameter_count": 0,
+          "instruction_count": 38,
+          "instructions": [
+            {
+              "slot": 1,
+              "flag": 210,
+              "opcode": 248,
+              "A": 0,
+              "B": "global",
+              "C": null,
+              "constB": "global"
+            },
+            {
+              "slot": 2,
+              "flag": 224,
+              "opcode": 85,
+              "A": 0,
+              "B": 0,
+              "C": "gamePlayerController",
+              "constC": "gamePlayerController"
+            },
+            {
+              "slot": 3,
+              "flag": 32,
+              "opcode": 138,
+              "A": 0,
+              "B": 0,
+              "C": "GetMainPlayer",
+              "constC": "GetMainPlayer"
+            },
+            {
+              "slot": 4,
+              "flag": 128,
+              "opcode": 209,
+              "A": 0,
+              "B": 1,
+              "C": 0
+            },
+            {
+              "slot": 5,
+              "flag": 128,
+              "opcode": 60,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 6,
+              "flag": 2,
+              "opcode": 388,
+              "A": 0,
+              "B": 37,
+              "C": null
+            },
+            {
+              "slot": 7,
+              "flag": 18,
+              "opcode": 361,
+              "A": 1,
+              "B": "SL",
+              "C": null,
+              "constB": "SL"
+            },
+            {
+              "slot": 8,
+              "flag": 96,
+              "opcode": 102,
+              "A": 1,
+              "B": 1,
+              "C": "GetMetaValue",
+              "constC": "GetMetaValue"
+            },
+            {
+              "slot": 9,
+              "flag": 18,
+              "opcode": 399,
+              "A": 3,
+              "B": "ACTOR_HP",
+              "C": null,
+              "constB": "ACTOR_HP"
+            },
+            {
+              "slot": 10,
+              "flag": 192,
+              "opcode": 127,
+              "A": 4,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 11,
+              "flag": 0,
+              "opcode": 209,
+              "A": 1,
+              "B": 4,
+              "C": 0
+            },
+            {
+              "slot": 12,
+              "flag": 80,
+              "opcode": 326,
+              "A": 0,
+              "B": 0,
+              "C": 1,
+              "constB": 0
+            },
+            {
+              "slot": 13,
+              "flag": 194,
+              "opcode": 388,
+              "A": 0,
+              "B": 37,
+              "C": null
+            },
+            {
+              "slot": 14,
+              "flag": 210,
+              "opcode": 146,
+              "A": 1,
+              "B": "global",
+              "C": null,
+              "constB": "global"
+            },
+            {
+              "slot": 15,
+              "flag": 32,
+              "opcode": 96,
+              "A": 1,
+              "B": 1,
+              "C": "Facade",
+              "constC": "Facade"
+            },
+            {
+              "slot": 16,
+              "flag": 224,
+              "opcode": 103,
+              "A": 1,
+              "B": 1,
+              "C": "sendNotification",
+              "constC": "sendNotification"
+            },
+            {
+              "slot": 17,
+              "flag": 210,
+              "opcode": 108,
+              "A": 3,
+              "B": "global",
+              "C": null,
+              "constB": "global"
+            },
+            {
+              "slot": 18,
+              "flag": 32,
+              "opcode": 96,
+              "A": 3,
+              "B": 3,
+              "C": "NoticeTable",
+              "constC": "NoticeTable"
+            },
+            {
+              "slot": 19,
+              "flag": 32,
+              "opcode": 96,
+              "A": 3,
+              "B": 3,
+              "C": "UserInputMove",
+              "constC": "UserInputMove"
+            },
+            {
+              "slot": 20,
+              "flag": 64,
+              "opcode": 76,
+              "A": 4,
+              "B": 0,
+              "C": 5
+            },
+            {
+              "slot": 21,
+              "flag": 128,
+              "opcode": 9,
+              "A": 5,
+              "B": 1,
+              "C": 0
+            },
+            {
+              "slot": 22,
+              "flag": 224,
+              "opcode": 400,
+              "A": 5,
+              "B": 5,
+              "C": "dir",
+              "constC": "dir"
+            },
+            {
+              "slot": 23,
+              "flag": 16,
+              "opcode": 306,
+              "A": 4,
+              "B": "moveDir",
+              "C": 5,
+              "constB": "moveDir"
+            },
+            {
+              "slot": 24,
+              "flag": 128,
+              "opcode": 9,
+              "A": 5,
+              "B": 1,
+              "C": 0
+            },
+            {
+              "slot": 25,
+              "flag": 160,
+              "opcode": 400,
+              "A": 5,
+              "B": 5,
+              "C": "step",
+              "constC": "step"
+            },
+            {
+              "slot": 26,
+              "flag": 208,
+              "opcode": 239,
+              "A": 4,
+              "B": "moveStep",
+              "C": 5,
+              "constB": "moveStep"
+            },
+            {
+              "slot": 27,
+              "flag": 82,
+              "opcode": 108,
+              "A": 5,
+              "B": "global",
+              "C": null,
+              "constB": "global"
+            },
+            {
+              "slot": 28,
+              "flag": 224,
+              "opcode": 79,
+              "A": 5,
+              "B": 5,
+              "C": "MMO",
+              "constC": "MMO"
+            },
+            {
+              "slot": 29,
+              "flag": 160,
+              "opcode": 400,
+              "A": 5,
+              "B": 5,
+              "C": "INPUT_MOVE_TYPE_JOYSTICK",
+              "constC": "INPUT_MOVE_TYPE_JOYSTICK"
+            },
+            {
+              "slot": 30,
+              "flag": 144,
+              "opcode": 306,
+              "A": 4,
+              "B": "type",
+              "C": 5,
+              "constB": "type"
+            },
+            {
+              "slot": 31,
+              "flag": 96,
+              "opcode": 393,
+              "A": 5,
+              "B": 0,
+              "C": "GetMapX",
+              "constC": "GetMapX"
+            },
+            {
+              "slot": 32,
+              "flag": 128,
+              "opcode": 209,
+              "A": 5,
+              "B": 6,
+              "C": 0
+            },
+            {
+              "slot": 33,
+              "flag": 16,
+              "opcode": 306,
+              "A": 4,
+              "B": "x",
+              "C": 5,
+              "constB": "x"
+            },
+            {
+              "slot": 34,
+              "flag": 32,
+              "opcode": 393,
+              "A": 5,
+              "B": 0,
+              "C": "GetMapY",
+              "constC": "GetMapY"
+            },
+            {
+              "slot": 35,
+              "flag": 64,
+              "opcode": 209,
+              "A": 5,
+              "B": 6,
+              "C": 0
+            },
+            {
+              "slot": 36,
+              "flag": 208,
+              "opcode": 306,
+              "A": 4,
+              "B": "y",
+              "C": 5,
+              "constB": "y"
+            },
+            {
+              "slot": 37,
+              "flag": 192,
+              "opcode": 123,
+              "A": 1,
+              "B": 4,
+              "C": 0
+            },
+            {
+              "slot": 38,
+              "flag": 64,
+              "opcode": 339,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            }
+          ],
+          "children": []
+        },
+        {
+          "path": "root/25/0/2",
+          "depth": 3,
+          "constant_count": 0,
+          "constants": [],
+          "child_count": 0,
+          "parameter_count": 0,
+          "instruction_count": 3,
+          "instructions": [
+            {
+              "slot": 1,
+              "flag": 0,
+              "opcode": 110,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 2,
+              "flag": 128,
+              "opcode": 62,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            },
+            {
+              "slot": 3,
+              "flag": 64,
+              "opcode": 339,
+              "A": 0,
+              "B": 0,
+              "C": 0
+            }
+          ],
+          "children": []
+        }
+      ]
     }
   ],
   "closure_events": [
@@ -9669,5 +15299,18 @@
     ],
     "decoded_bytes": 142522,
     "consumed_bytes": 142522
+  },
+  "targeted_reextract_2026_11_21_batch4": {
+    "method": "使用11.16原版内嵌S()原型解析器的同构字段规则，对已解码载荷进行root/25/0定点遍历；未重做项目级LZW解包流程；逐物理槽保留slot与flag，常量引用保留constA/B/C。",
+    "source_blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+    "path": "root/25/0",
+    "parameter_count": 0,
+    "instruction_slots": 598,
+    "stored_instruction_records": 598,
+    "constants": 104,
+    "children": 3,
+    "decoded_payload_bytes": 142522,
+    "consumed_bytes": 142522,
+    "note": "已补齐598槽主体指令流。后续需按11.16 VM分派器恢复控制流与业务，不从常量池直接猜写。"
   }
 }
