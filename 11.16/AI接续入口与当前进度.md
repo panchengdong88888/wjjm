@@ -2295,3 +2295,11 @@ root/25/0方向候选现严格按slot371–410常量顺序恢复：`+4,+3,+5,+2,
 - root/50/0常量明确包含TextInput_getString、string.gsub(%s)、tonumber、string.match(^%d+$)、Text_setString，以及“参数格式不对，请输入数字”“请输入要上架的物品名称”，故高置信定位为数字输入确认/格式验证回调。
 - 11.9旧版MakeCommonInputPrompt存在相同的去空白、纯数字匹配、tonumber校验流程，可作业务参照；但旧版调用SL:OpenCommonTipsPop，本版为GUI TextInput自定义窗口，不能直接复制旧版UI流程。
 - 本版root/50/0完整80槽指令流和root/50父级创建/捕获关系仍未保存；因此只更新候选职责与旧版参照，不拼造代码，不标记完成。下一步优先取得root/50/0槽位流或其父级创建上下文。
+
+
+### 2026-11-21续：root/25/0恢复提示回调捕获直接接线
+
+- 按root/25的13项捕获链，root/25/0 H[1]（Lua数组upvalues[2]）来自root N[81]；root slot522明确以childIndex=32创建该闭包，结合已恢复的root/32主体，确认它是接受提示文本参数的一次性恢复回调。
+- root/25/0常量中“附近没有玩家，恢复战斗”“敌人已脱离，恢复战斗”均由该捕获回调处理；此前明文仅从captured.resumeBattle读取外部适配器，未默认接入真实捕获，现改为`adapters.resumeBattle or upvalues[2]`。
+- 同一捕获链中H[6]/upvalues[7]来自root N[79]=root/60目标清理闭包，已记录来源，暂不擅自改变其调用分支。
+- 这次是捕获值直接接线，不改变root/25/0的部分恢复统计；未执行Lua语法、API或APK验证。
