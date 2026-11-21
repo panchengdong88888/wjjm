@@ -4596,18 +4596,30 @@ end
 local function BindCruiseRunCaptures_11_16(upvalues, adapters)
     upvalues = upvalues or {}
     adapters = adapters or {}
+
+    -- 已确认的父级捕获直接接入，不再要求调用方重复传入同一对象：
+    -- H[3]（1-based upvalues[4]）= root N[4]日志包装函数；
+    -- H[4]（upvalues[5]）= MainLeftBottom模块表，其.a为模块状态表；
+    -- H[9]（upvalues[10]）= root N[80]八方向转换函数；
+    -- H[10]（upvalues[11]）= root N[73]八方向偏移表。
+    local moduleRoot = upvalues[5]
+    local moduleState = adapters.moduleState
+    if moduleState == nil and type(moduleRoot) == "table" then
+        moduleState = moduleRoot.a
+    end
+
     return {
         upvalues = upvalues,
         raw = upvalues,
         sharedPauseValue = upvalues[1],
         directionOffsets = upvalues[11],
-        moduleState = adapters.moduleState,
-        -- 未知捕获的实际用途不猜测，由外层适配器显式提供已确认回调。
+        moduleRoot = moduleRoot,
+        moduleState = moduleState,
         setSharedPause = adapters.setSharedPause,
-        printLog = adapters.printLog,
+        printLog = adapters.printLog or upvalues[4],
         resumeBattle = adapters.resumeBattle,
         acceptPlayer = adapters.acceptPlayer,
-        getDirection = adapters.getDirection,
+        getDirection = adapters.getDirection or upvalues[10],
         calcRandomDirection = adapters.calcRandomDirection,
         onRandomMoveScheduled = adapters.onRandomMoveScheduled,
         mapData = adapters.mapData,
