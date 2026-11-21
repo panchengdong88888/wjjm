@@ -2431,3 +2431,6 @@ root/25/0方向候选现严格按slot371–410常量顺序恢复：`+4,+3,+5,+2,
 - root/52/10直接调用ClearBlacklistItems()；root/52/11将捕获对象的LuaSendMsg字段写入_G.LuaSendMsg，父级捕获原名未猜测。
 - 已同步唯一明文、函数状态CSV、进度账本。本轮不调整总百分比，避免沿用账本中相互冲突的历史统计口径。
 - 下一批继续从候选原型完整指令提取中挑选短小且控制流/捕获已闭合的函数；对root/52/9、root/52/13等捕获链不完整项暂缓。
+
+## 2026-11-21接续校正
+上一轮对root/52/10、root/52/11的追加经回读确认属于重复：两者原本已分别恢复为make_helper_root_52_10（先PrintLog("清空黑名单")再ClearBlacklistItems）和make_helper_root_52_11（_G.LuaSendMsg=MainLeftBottom.a.LuaSendMsg）。已删除重复源码段及新增的CSV重复行，保留原有实现和状态记录；上一轮不计新增恢复数。下一步先对候选项与唯一明文/CSV去重后再挑真正缺失项。
