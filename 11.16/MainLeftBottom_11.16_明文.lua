@@ -6407,3 +6407,38 @@ local function MaintainWeaponLuck_11_16()
     end
     return false, "purchase_failed", tostring(buyResult), luck
 end
+
+
+-- root/52/23显示刷新辅助接线层（供恢复后的周期回调调用；不自行创建定时器）。
+-- 该包装只组合已恢复的显示函数；控件由调用方传入，避免重复创建UI。
+-- 不在这里猜测root/52/23的回调周期，也不擅自安装定时器。
+local function RefreshMainLeftBottomDisplay_11_16(moduleState, moneyProxy, controls)
+    controls = controls or {}
+
+    local gold = UpdateGoldWarning_11_16(
+        moduleState,
+        controls.goldWarnBg
+    )
+
+    local goldText, yuanbao, combatPower = UpdateMainInfoTexts_11_16(
+        moduleState,
+        moneyProxy,
+        controls.infoGoldTxt,
+        controls.infoYuanbaoTxt,
+        controls.infoPowerTxt
+    )
+
+    UpdateAppleCruiseStatusUI_11_16(
+        moduleState,
+        controls.appleMapBg,
+        controls.appleMapTxt,
+        controls.cruiseTxt
+    )
+
+    return {
+        gold = gold,
+        displayedGold = goldText,
+        yuanbao = yuanbao,
+        combatPower = combatPower,
+    }
+end
