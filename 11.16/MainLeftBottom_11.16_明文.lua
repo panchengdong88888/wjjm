@@ -5634,3 +5634,168 @@ local function make_helper_root_52_14(capturedMainLeftBottom, capturedPrintLog, 
         return originalOnLuaMessage(0, 1, 2, arg3, arg4, payload)
     end
 end
+
+
+-- ============================================================
+-- 11.16 root/50：inputNumber（444条物理指令，5个显式参数，5个子闭包）
+-- ============================================================
+-- 本版常量确认这是自定义数字输入窗口：460x240；包含价格输入框、
+-- 可选物品名称输入框、单个/叠加模式、确认/取消按钮及格式提示。
+-- root/50/0为上方已恢复的确认校验回调；root/50/3负责关闭窗口。
+-- 本函数先按已恢复子闭包和本版常量完成可用主体；具体控件坐标/视觉细节留待整体验证。
+-- 参数对应调用点：标题、初始价格、确认回调、可选物品名称、是否允许叠加数量。
+local function inputNumber(title, initialPrice, onConfirm, itemName, useStackQuantity)
+    local screenW = MainLeftBottom.a.screenW
+        or SL:GetMetaValue("SCREEN_WIDTH")
+        or 0
+    local screenH = MainLeftBottom.a.screenH
+        or SL:GetMetaValue("SCREEN_HEIGHT")
+        or 0
+
+    local windowWidth = 460
+    local windowHeight = 240
+    local windowX = (screenW - windowWidth) / 2
+    local windowY = (screenH - windowHeight) / 2
+
+    local window = GUI:Win_Create(
+        "numInputWin",
+        windowX,
+        windowY,
+        windowWidth,
+        windowHeight,
+        false, true, 1, true, true,
+        nil, 999
+    )
+    if not window then
+        return
+    end
+
+    local panel = GUI:Layout_Create(
+        window, "numInputPanel", 0, 0,
+        windowWidth, windowHeight, 1
+    )
+    GUI:Layout_setBackGroundColorType(panel, 1)
+    GUI:Layout_setBackGroundColor(panel, "#000000")
+    GUI:Layout_setBackGroundColorOpacity(panel, 230)
+
+    local titleText = GUI:Text_Create(
+        panel, "numInputTitle", windowWidth / 2, 215,
+        22, "#ffd700", tostring(title or "数字输入")
+    )
+    if titleText then
+        GUI:setAnchorPoint(titleText, 0.5, 0.5)
+    end
+
+    local priceLabel = GUI:Text_Create(
+        panel, "numInputPriceLabel", 24, 170,
+        18, "#ffffff", "单价"
+    )
+    local priceInput = GUI:TextInput_Create(
+        panel, "numInputEdit", 90, 150, 340, 40
+    )
+    GUI:TextInput_setInputMode(priceInput, 2)
+    GUI:TextInput_setFontColor(priceInput, "#ffffff")
+    GUI:TextInput_setString(priceInput, tostring(initialPrice or ""))
+
+    local needItemName = itemName ~= nil and itemName ~= ""
+    local nameInput
+    if needItemName then
+        GUI:Text_Create(
+            panel, "numInputNameLabel", 24, 112,
+            18, "#ffffff", "物品名称"
+        )
+        nameInput = GUI:TextInput_Create(
+            panel, "numInputName", 90, 92, 340, 36
+        )
+        GUI:TextInput_setFontColor(nameInput, "#ffffff")
+        GUI:TextInput_setString(nameInput, tostring(itemName))
+    end
+
+    local tipText = GUI:Text_Create(
+        panel, "numInputTip", windowWidth / 2, 65,
+        16, "#ff0000", ""
+    )
+    if tipText then
+        GUI:setAnchorPoint(tipText, 0.5, 0.5)
+    end
+
+    local capturedUpvalues = {
+        [0] = priceInput,
+        [1] = tipText,
+        [2] = needItemName,
+        [3] = nameInput,
+        [4] = window,
+        [5] = useStackQuantity and true or false,
+        [6] = nil,
+        [7] = onConfirm
+    }
+
+    local modeLabel = GUI:Text_Create(
+        panel, "numInputModeLabel", 24, 35,
+        16, "#ffffff", "上架方式"
+    )
+    local singleButton = GUI:Button_Create(
+        panel, "numInputModeSingle", 125, 18,
+        "res/public/fuzhu_btn.png"
+    )
+    local stackButton = GUI:Button_Create(
+        panel, "numInputModeStack", 220, 18,
+        "res/public/fuzhu_btn.png"
+    )
+    GUI:Button_setTitleText(singleButton, "单个")
+    GUI:Button_setTitleText(stackButton, "叠加")
+    GUI:Button_setTitleFontSize(singleButton, 18)
+    GUI:Button_setTitleFontSize(stackButton, 18)
+    GUI:Button_setTitleFontName(singleButton, "res/public/kaiti2.ttf")
+    GUI:Button_setTitleFontName(stackButton, "res/public/kaiti2.ttf")
+
+    local function refreshModeColor()
+        local stackMode = capturedUpvalues[5]
+        GUI:Button_setTitleColor(
+            singleButton,
+            stackMode and "#ffffff" or "#00ff00"
+        )
+        GUI:Button_setTitleColor(
+            stackButton,
+            stackMode and "#00ff00" or "#ffffff"
+        )
+    end
+
+    GUI:addOnClickEvent(singleButton, function()
+        capturedUpvalues[5] = false
+        refreshModeColor()
+    end)
+    GUI:addOnClickEvent(stackButton, function()
+        capturedUpvalues[5] = true
+        refreshModeColor()
+    end)
+    refreshModeColor()
+
+    local confirmButton = GUI:Button_Create(
+        panel, "numInputOk", 285, -30,
+        "res/public/fuzhu_btn.png"
+    )
+    local cancelButton = GUI:Button_Create(
+        panel, "numInputCancel", 365, -30,
+        "res/public/fuzhu_btn.png"
+    )
+    GUI:Button_setTitleText(confirmButton, "确定")
+    GUI:Button_setTitleText(cancelButton, "取消")
+    GUI:Button_setTitleFontSize(confirmButton, 18)
+    GUI:Button_setTitleFontSize(cancelButton, 18)
+    GUI:Button_setTitleFontName(confirmButton, "res/public/kaiti2.ttf")
+    GUI:Button_setTitleFontName(cancelButton, "res/public/kaiti2.ttf")
+    GUI:Button_setTitleColor(confirmButton, "#ffffff")
+    GUI:Button_setTitleColor(cancelButton, "#ffffff")
+
+    GUI:addOnClickEvent(
+        confirmButton,
+        make_helper_root_50_0(capturedUpvalues)
+    )
+    GUI:addOnClickEvent(
+        cancelButton,
+        make_helper_root_50_3(window)
+    )
+
+    return window
+end
