@@ -2256,3 +2256,11 @@ root/25/0方向候选现严格按slot371–410常量顺序恢复：`+4,+3,+5,+2,
 - 根据root/25的捕获顺序，按钮自身使用H[1]=root N[5]=ShowLocalNoticeByType显示“开启见人跑”；H[5]=root N[4]=PrintLog是继续传给root/25/0的子闭包捕获，不应拿来替代按钮提示。
 - 已将通用启停处理器的提示参数改为showLocalNotice，并在捕获直连接口中默认绑定root25Captures[2]；扫描子闭包仍通过捕获[6]获得PrintLog。
 - 这次修正仅调整提示函数接线，不改动按钮计时器启停、0.1秒Schedule和子闭包捕获顺序。
+
+
+### 2026-11-21续接：root/9 GetMapData2DPtr距离门控主体已写入
+
+- root/9（5参数、162条物理指令、1项父级捕获）按11.9同职责旧版恢复五参数切比雪夫距离门控：参数缺失返回nil；相同坐标返回0.0；maxDistance非正或距离超限返回nil；否则返回`max(abs(x2-x1), abs(y2-y1))`。
+- 新增`MakeGetMapData2DPtr_11_16(unusedCapturedValue)`并写入唯一明文，保留root/9的1项未使用捕获接口。常量池中的sceneManager/isObstacle/getMapDataRows/getMapDataCols属于旧版同体return后的残留尾段线索，不将其错误解释为本函数活动路径。
+- 本项计为部分恢复：尚未逐条闭合11.16后续所有物理槽位及root/9父级导出接线；未做语法/API/APK验证。
+- 下一项继续按“先函数名、再旧版同职责复用、只补新版差异”的顺序，挑选已有本版指令材料且可快速闭合的未恢复短原型；不回头重做root/9及root/25/0。
