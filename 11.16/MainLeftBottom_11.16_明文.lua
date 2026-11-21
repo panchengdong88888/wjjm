@@ -5505,3 +5505,91 @@ local function make_helper_root_50_0(capturedUpvalues)
         capturedUpvalues[7](tonumber(priceText), itemName, callbackFlag)
     end
 end
+
+
+-- 11.16 root/52/14：NetworkUtil.OnLuaMessage包装回调（174个物理槽位，6个显式参数，3个upvalue）。
+-- root/52槽465创建childIndex=14；槽466/467分别从父H[3]/H[0]捕获，
+-- 槽468从父局部寄存器N[15]捕获。
+-- root/52 H[3]=MainLeftBottom，H[0]=PrintLog；父N[15]是原SL.NetworkUtil.OnLuaMessage处理器。
+-- 原始局部函数符号名未知，make_helper_root_52_14为原型路径合成定位名。
+local function make_helper_root_52_14(capturedMainLeftBottom, capturedPrintLog, originalOnLuaMessage)
+    return function(arg0, messageId, arg2, arg3, arg4, payload)
+        local main = capturedMainLeftBottom
+
+        if messageId == 12170 and payload then
+            local decodeOk, swordData = pcall(SL.JsonDecode, SL, payload, false)
+            if decodeOk and type(swordData) == "table" then
+                local wasSwordPullPending = main.swordPullPending
+                main.ancientSwordData = swordData
+                main.swordPullPending = false
+
+                if main.swordLastLevel ~= swordData.level_1 then
+                    main.swordLastLevel = swordData.level_1
+                    capturedPrintLog(
+                        "上古神剑：剑灵等级=%s 剑灵数量=%s 剑魂等级=%s 剑魂属性=%s",
+                        tostring(swordData.level_1),
+                        tostring(swordData.sword_num),
+                        tostring(swordData.level_2),
+                        tostring(swordData.subData_2)
+                    )
+                end
+
+                if wasSwordPullPending then
+                    return
+                end
+
+                if main.swordForgeAt
+                    and os.time() - main.swordForgeAt <= 10 then
+                    return
+                end
+            end
+        end
+
+        if messageId == 10000 or messageId == 10015 then
+            if main.autoPanelAt and os.time() - main.autoPanelAt <= 2 then
+                return
+            end
+        end
+
+        if messageId == 12000 then
+            if main.sealPanelAt and os.time() - main.sealPanelAt <= 2 then
+                return
+            end
+        end
+
+        if payload then
+            local hasCombPower = string.find(payload, "combPower", 1, true)
+            local hasPower = false
+            if not hasCombPower then
+                hasPower = string.find(payload, "\"power\"", 1, true)
+            end
+
+            if hasCombPower or hasPower then
+                local decodeOk, powerData = pcall(SL.JsonDecode, SL, payload, false)
+                if decodeOk and type(powerData) == "table" then
+                    local rawPower = powerData.combPower or powerData.power
+                    local combatPower = tonumber(rawPower)
+
+                    if not combatPower then
+                        local normalizedPower = string.gsub(
+                            tostring(rawPower or ""),
+                            ",",
+                            ""
+                        )
+                        combatPower = tonumber(normalizedPower)
+                    end
+
+                    if combatPower then
+                        main.combatPower = combatPower
+                        if main.powerRefreshing then
+                            main.powerRefreshing = false
+                            return
+                        end
+                    end
+                end
+            end
+        end
+
+        return originalOnLuaMessage(0, 1, 2, arg3, arg4, payload)
+    end
+end
