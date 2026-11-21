@@ -3629,8 +3629,8 @@ local function helper_root_52_3_0(buyStoreItem, showLocalNotice, timerState, unu
 end
 
 -- ============================================================================
--- 11.16 root/52/32/0：通用按钮点击回调（48条指令，0显式参数）。
--- 合成定位名；对应11.9按钮工厂中的点击闭包。先按配置key分发回调；
+-- 11.16 root/52/32/0：通用按钮点击回调（48条指令，0显式参数，3项捕获）。
+-- 合成定位名；由root/52/32工厂捕获callbackMap、buttonConfig、button后创建点击闭包；先按配置key分发回调；
 -- 只有回调明确返回false才中止；无toggle配置则直接返回，否则切换标题/颜色。
 -- ============================================================================
 local function helper_root_52_32_0(callbackMap, buttonConfig, button)
@@ -3661,24 +3661,35 @@ local function helper_root_52_32_0(callbackMap, buttonConfig, button)
 end
 
 -- ============================================================================
--- root/52/32：通用按钮创建回调候选（55条指令，3个显式参数、3项upvalue）。
--- 注意：当前下方helper_root_52_32仍是11.9同职责迁移候选，采用了8个形参，
--- 与本版CSV记录的3参数/3捕获明显不符；不得将其视为11.16已恢复，也不得
--- 接入本版doInit。保留作比对材料，待补齐本版父级创建点和3项捕获映射后重写。
--- root/52槽483–543的17组key/name/toggle描述已独立恢复，不依赖此候选函数。
+-- 11.16 root/52/32：主界面通用按钮创建工厂（55条指令，3个显式参数，5项捕获）。
+-- 父级root/52槽666创建本闭包，槽667–671按顺序捕获：
+-- H[0]=父N[7]、H[1]=父N[26]、H[2]=父N[27]、H[3]=父H[5]、H[4]=父N[25]。
+-- 本版3个显式参数按父级按钮配置遍历调用点承接为buttonConfig、rowIndex、groupOffset。
+-- 结合本版常量(Button_Create/标题字体/颜色/按钮纹理/addOnClickEvent)及
+-- root/52/32/0三项捕获回调，与11.9同职责按钮工厂主体匹配；5项捕获语义按旧版
+-- 同职责顺序映射为uiParent/baseX/baseY/visibleItems/callbackMap，原始局部名未知。
+-- 捕获来源寄存器已确认，语义映射保留为适配层；不再沿用8个显式参数的旧签名。
 -- ============================================================================
 local function helper_root_52_32(
-    uiParent,
-    baseX,
-    baseY,
-    visibleItems,
-    callbackMap,
+    capturedUpvalues,
     buttonConfig,
     rowIndex,
     groupOffset
 )
-    local x = baseX - 85 * rowIndex
-    local y = baseY + groupOffset
+    capturedUpvalues = capturedUpvalues or {}
+
+    local uiParent = capturedUpvalues[1]
+    local baseX = tonumber(capturedUpvalues[2]) or 0
+    local baseY = tonumber(capturedUpvalues[3]) or 0
+    local visibleItems = capturedUpvalues[4]
+    local callbackMap = capturedUpvalues[5]
+
+    if type(buttonConfig) ~= "table" then
+        return nil
+    end
+
+    local x = baseX - 85 * (tonumber(rowIndex) or 0)
+    local y = baseY + (tonumber(groupOffset) or 0)
 
     local button = GUI:Button_Create(
         uiParent,
@@ -3691,7 +3702,10 @@ local function helper_root_52_32(
         return nil
     end
 
-    visibleItems[buttonConfig.key] = button
+    if type(visibleItems) == "table" then
+        visibleItems[buttonConfig.key] = button
+    end
+
     GUI:Button_setTitleText(button, buttonConfig.name)
     GUI:Button_setTitleFontSize(button, 18)
     GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
@@ -3707,7 +3721,6 @@ local function helper_root_52_32(
     )
     return button
 end
-
 
 -- 11.16 root/52/35：NPC点击/战力刷新请求（37条物理指令，0参数，1个子原型）。
 -- 指令流确认：先读取SL:GetMetaValue("USER_ID")；USER_ID缺失时提前返回。
