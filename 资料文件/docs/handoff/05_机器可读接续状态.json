@@ -2,12 +2,12 @@
   "schema_version": 2,
   "project": "MainLeftBottom(2).lua 功能等价 Lua 重建",
   "updated_at": "2026-11-22",
-  "latest_checkpoint": 380,
-  "next_checkpoint": 381,
+  "latest_checkpoint": 381,
+  "next_checkpoint": 382,
   "goal": "理解原功能并重写为可读、可维护、功能等价的普通 Lua；不以逐字节还原作者源码为首要目标。",
   "current_task": {
     "priority": 1,
-    "status": "检查点380：root/27已按真实Opcode字段重新解析槽28–108。槽28–39地图名/地图判断/称号判断调用链部分闭合；槽40–85开启巡航门控未闭合，Opcode251/385待精确确认；槽87–107关闭分支状态字段已定位。唯一明文未修改，完成数量不变。",
+    "status": "检查点381：root/27槽40–85已确认Opcode251/385为对立即数取模，Opcode143为相等条件分支，Opcode289/366为真值条件分支；确认未确认时按ticks%30==1周期发送，已确认时跳过重发。slot75–77同样按ticks%30==1进入回城回调路径。Opcode325、回城回调返回值、消息参数来源和关闭分支仍未闭合。唯一明文未修改，完成数量不变。",
     "title": "11.16版本MainLeftBottom Lua明文恢复",
     "prototype": "11.16/MainLeftBottom_11.16_明文.lua",
     "scope": [
@@ -20,9 +20,9 @@
     "focus": [
       "字段规则：七项JSON a=真实Opcode，b/c/d=A/B/C；opcode字段仅为H()标志字节。",
       "检查点375–377的root/27旧融合表全部废弃。",
-      "槽28–39：GetMapName、H[3]地图判断、H[4]称号有效期判断调用链已定位，分支方向仍待闭合。",
-      "槽40–85：重点闭合Opcode251/385及cruiseConfirmed/cruiseSent/ticks门控；槽49–58开启消息构造和cruiseSent=true已定位。",
-      "槽87–107：cityCloseSent门控、55559关闭消息路径、状态复位和H[7]提示已定位。",
+      "槽28–39：GetMapName、H[3]地图判断、H[4]称号有效期判断调用链部分闭合，分支含义仍需收口。",
+      "槽40–85：Opcode251/385均为N[A]=N[B]%C；Opcode143比较N[B]==C；Opcode289/366为真值条件分支。已确认cruiseConfirmed为假时，ticks%30==1触发周期发送；ticks%30==1进入回城回调路径。",
+      "仍待Opcode325、slot79–85回城回调返回值、LuaSendMsg参数寄存器来源及slot87–108关闭消息完整闭合。",
       "唯一明文未修改，root/27仍未完成。"
     ],
     "completion_criteria": [
@@ -30,7 +30,7 @@
       "同步更新11.16函数状态CSV与源码恢复进度账本，并重新读取确认提交。",
       "root/27只有在完整主体及调用/捕获关系足够闭合后才标记静态恢复完成；不宣称运行时验证。"
     ],
-    "next": "检查点381：只追踪root/27槽40–85，回到原版F()分派器精确定位Opcode251与385的叶子语义/融合长度，再按真实A/B/C逐槽模拟N寄存器和条件跳转；闭合55556发送门控后才写入唯一明文。"
+    "next": "检查点382：直接从F()分派器补齐Opcode325的准确分支语义，模拟slot79–85的H[5]回城闭包调用及返回值处理；然后顺接slot87–108关闭巡航分支，完成后再更新唯一明文。"
   },
   "source_files": {
     "primary": "MainLeftBottom_唯一交付文件.lua",
