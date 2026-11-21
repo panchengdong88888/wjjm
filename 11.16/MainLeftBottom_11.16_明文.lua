@@ -3724,7 +3724,11 @@ local function make_helper_root_52_35(capturedPowerState)
         tostring(userId)
     )
 
-    SL.powerRefreshing = true
+    -- 开启与3秒后关闭必须写入同一个捕获状态对象。
+    -- 子闭包root/52/35/0明确对H[0].powerRefreshing写false，
+    -- 因此这里也通过同一H[0]对象写true，避免SL全局表与捕获表分离。
+    local powerState = capturedPowerState or SL
+    powerState.powerRefreshing = true
 
     -- VM已确认消息类型为global.MsgType.MSG_CS_NPC_CLICK；
     -- 调用参数区间含固定零值、requestText及#requestText。
@@ -3735,7 +3739,7 @@ local function make_helper_root_52_35(capturedPowerState)
 
     -- 3秒后清除刷新状态；闭包捕获的外层状态对象按H[0]传入。
     SL:ScheduleOnce(function()
-        make_helper_root_52_35_0(capturedPowerState)
+        make_helper_root_52_35_0(powerState)
     end, 3)
 end
 
