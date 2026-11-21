@@ -2582,6 +2582,8 @@ function StorageItems()
         local pageData = storageProxy:GetStorageDataByPage(page)
         storedPageData[page] = pageData and #pageData or 0
     end
+    -- root/45的27槽匿名子原型：仓库分页容量检查闭包（无参数）。
+    -- 依据其唯一常量1及父函数所处的maxPage/openSize/pageCapacity/storedPageData上下文恢复。
     local function findAvailablePage()
         for page = 1, maxPage do
             local remainingOpenSize = openSize - (page - 1) * pageCapacity
@@ -2606,6 +2608,8 @@ function StorageItems()
     end
     local processedMakeIndexes = {}
     local queuedCount = 0
+    -- root/45的52槽匿名子原型：聚灵珠耐久/输出判断闭包（2参数）。
+    -- DuraMax、Dura、StdMode及聚灵珠提示常量与该闭包一一对应。
     local function isOutputted(item, itemText)
         if not string.find(itemText, "聚灵珠", 1, true) then return true end
         if not z.isOutputted then
