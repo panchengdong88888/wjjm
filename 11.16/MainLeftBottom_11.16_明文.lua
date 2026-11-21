@@ -4889,11 +4889,16 @@ local function RunCruisePlayerScan_11_16(captured)
 
     local moveDir
     if playerInputProxy.calcMapDirection then
-        -- 原始流包含两次cc.p及calcMapDirection调用；其参数重载尚未完全确认。
-        -- 先通过适配器保留调用位置，避免错误伪造向量参数。
+        -- slot557–572直接由PlayerInputProxy调用calcMapDirection；
+        -- 两个参数分别是随机落点向量和主玩家当前位置向量。
         if captured.calcRandomDirection then
             moveDir = captured.calcRandomDirection(
                 playerInputProxy,
+                cc.p(randomX, randomY),
+                cc.p(mainX, mainY)
+            )
+        else
+            moveDir = playerInputProxy:calcMapDirection(
                 cc.p(randomX, randomY),
                 cc.p(mainX, mainY)
             )
