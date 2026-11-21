@@ -5325,3 +5325,134 @@ local function MakeGetMapData2DPtr_11_16(unusedCapturedValue)
         return distance
     end
 end
+
+
+-- ============================================================
+-- 11.16 root/52/6：资源统计窗口按钮处理器（跨版本同职责迁移）
+-- ============================================================
+-- 11.16 root/52/6：资源统计窗口按钮处理器（320条指令，0显式参数，5项捕获）。
+-- 11.9同职责窗口构建器与本版72项常量、5个子原型及资源名称/布局参数吻合。
+-- 将5项依赖以语义参数显式承接；父级真实捕获寄存器顺序未闭合，不在此伪造。
+local function MakeResourceStatisticsWindow_11_16(moduleState, printLog, timerState, initState, getItemCount)
+    return function()
+        local gui = GUI
+        local sl = SL
+
+        if gui:Win_IsNotNull(moduleState.resWin) then
+            printLog("关闭资源信息窗口")
+            if timerState.resTimer then
+                sl:UnSchedule(timerState.resTimer)
+                timerState.resTimer = nil
+            end
+            gui:Win_Close(moduleState.resWin)
+            return
+        end
+
+        local resWin = gui:Win_Create(
+            "resWin",
+            0, 0,
+            moduleState.screenW, moduleState.screenH,
+            false, true, 1, true, true,
+            nil, 999
+        )
+        moduleState.resWin = resWin
+
+        local rootLayout = gui:Layout_Create(
+            resWin, "closeResWin", 0, 0,
+            moduleState.screenW, moduleState.screenH, 1
+        )
+        gui:setTouchEnabled(rootLayout, true)
+
+        local closeCallback =
+            MakeResourceStatisticsClose_11_16(printLog, timerState, moduleState)
+        gui:addOnClickEvent(rootLayout, closeCallback)
+
+        -- VM PC73-PC85：列表宽高均为屏幕对应尺寸的0.6。
+        local listWidth = moduleState.screenW * 0.6
+        local listHeight = moduleState.screenH * 0.6
+        local resList = gui:ListView_Create(
+            resWin, "resList",
+            (moduleState.screenW - listWidth) / 2, moduleState.screenH / 2,
+            listWidth, listHeight, 1.0
+        )
+        gui:setAnchorPoint(resList, 0, 0.5)
+        gui:ListView_setBackGroundColorType(resList, 1)
+        gui:ListView_setBackGroundColor(resList, "#CEB5F7")
+        gui:ListView_setBackGroundColorOpacity(resList, 255)
+
+        local titleCell = gui:Layout_Create(
+            resList, "titleCell", 0, 0, listWidth, 30, 1
+        )
+        local titleText = gui:Text_Create(
+            titleCell, "titleText", listWidth / 2, 15, 20, "#FF0000", "资源统计"
+        )
+        if titleText then
+            gui:setAnchorPoint(titleText, 0.5, 0.5)
+        end
+
+        local initTimeCell = gui:Layout_Create(
+            resList, "initTimeCell", 0, 0, listWidth, 30, 1
+        )
+        local initTimeText = gui:Text_Create(
+            initTimeCell, "initTimeText", listWidth / 2, 15, 20, "#00FF00",
+            "初始时间:" .. tostring(initState.initTimeStr or "--")
+        )
+        if initTimeText then
+            gui:setAnchorPoint(initTimeText, 0.5, 0.5)
+        end
+
+        local curTimeCell = gui:Layout_Create(
+            resList, "curTimeCell", 0, 0, listWidth, 30, 1
+        )
+        local curTimeText = gui:Text_Create(
+            curTimeCell, "curTimeText", listWidth / 2, 15, 20, "#00FF00",
+            "当前时间:--"
+        )
+        if curTimeText then
+            gui:setAnchorPoint(curTimeText, 0.5, 0.5)
+        end
+
+        local durTimeCell = gui:Layout_Create(
+            resList, "durTimeCell", 0, 0, listWidth, 30, 1
+        )
+        local durTimeText = gui:Text_Create(
+            durTimeCell, "durTimeText", listWidth / 2, 15, 20, "#00FF00",
+            "历时:--"
+        )
+        if durTimeText then
+            gui:setAnchorPoint(durTimeText, 0.5, 0.5)
+        end
+
+        local noteCell = gui:Layout_Create(
+            resList, "noteCell", 0, 0, listWidth, 30, 1
+        )
+        local noteText = gui:Text_Create(
+            noteCell, "noteText", listWidth / 2, 15, 20, "#FFFF00",
+            "（括号内数量为非绑定资源的收益）"
+        )
+        if noteText then
+            gui:setAnchorPoint(noteText, 0.5, 0.5)
+        end
+
+        local updateResourceRows = MakeResourceStatisticsRows_11_16(resList, listWidth)
+        local moneyNames = { "元宝", "绑定元宝", "灵符", "绑定灵符" }
+        local resourceNames = {
+            "声望卷", "悟道茶", "洗髓丹", "转生水晶", "恶魔令牌", "血龙宝珠"
+        }
+
+        local moneyRows = updateResourceRows(moneyNames, 2, "money")
+        local itemRows = updateResourceRows(resourceNames, 2, "item")
+
+        local moneyProxy = global.Facade:retrieveProxy(
+            global.ProxyTable.MoneyProxy
+        )
+        local refreshResourceStatistics = MakeResourceStatisticsRefresh_11_16(
+            moduleState, timerState, curTimeText, durTimeText, initState,
+            moneyProxy, moneyRows, FormatResourceCount_11_16, itemRows,
+            getItemCount
+        )
+
+        refreshResourceStatistics()
+        timerState.resTimer = sl:Schedule(refreshResourceStatistics, 1.0)
+    end
+end
