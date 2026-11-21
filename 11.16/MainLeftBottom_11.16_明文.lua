@@ -4749,7 +4749,9 @@ local function BindCruiseRunCaptures_11_16(upvalues, adapters)
         moduleState = moduleState,
         setSharedPause = adapters.setSharedPause,
         printLog = adapters.printLog or upvalues[4],
-        resumeBattle = adapters.resumeBattle,
+        -- root/25/0 H[1]（upvalues[2]）直连root N[81]=root/32的一次性恢复提示回调。
+        -- 因此“附近没有玩家/敌人已脱离”两条恢复路径无需外部再注入resumeBattle。
+        resumeBattle = adapters.resumeBattle or upvalues[2],
         acceptPlayer = adapters.acceptPlayer,
         getDirection = adapters.getDirection or upvalues[10],
         calcRandomDirection = adapters.calcRandomDirection,
