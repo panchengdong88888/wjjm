@@ -2464,3 +2464,9 @@ root/25/0方向候选现严格按slot371–410常量顺序恢复：`+4,+3,+5,+2,
 - 控制流已恢复：价格文本去除空白后必须匹配`^%d+$`；失败时更新提示并回写清理后的输入文本。若H[2]为真，则读取并清理物品名称，空名称时显示“请输入要上架的物品名称”。通过后关闭窗口，并调用H[7](tonumber(priceText), itemName, callbackFlag)。
 - 唯一明文已新增`make_helper_root_50_0(capturedUpvalues)`；函数状态CSV及名称索引已同步。原始局部函数名仍未知，保留合成定位名。root/50父函数444槽主体仍未恢复。
 - 本轮新增完整恢复1项：root/50/0。当前此前明确未恢复的7项中，剩余6项：root/27、root/50、root/52、root/52/14、root/52/23、root/52/34。未执行Lua编译、API验证或APK/游戏运行验证。
+
+
+### 2026-11-21续：root/52/14身份与捕获链闭合
+- root/52槽465 Opcode178创建childIndex=14，捕获数为3；槽466、467的Opcode132分别从父级H[3]、H[0]捕获；槽468的Opcode243捕获父级局部寄存器N[15]。
+- root/52的H[3]来自root N[3]，即MainLeftBottom表；root/52的H[0]来自root N[4]，即root/51 PrintLog闭包；父级N[15]在槽460被赋值为SL.NetworkUtil.OnLuaMessage原处理器。
+- 因此root/52/14可高置信定位为NetworkUtil.OnLuaMessage包装回调；本版原始局部函数符号名仍未知，暂用make_helper_root_52_14合成定位。其6个显式参数、174槽主体及全部常量已完整提取，尚未完成逐槽控制流恢复，不计源码完成。
