@@ -2666,3 +2666,9 @@ opcode0=3次表写入；opcode2=创建表+常量池装载；opcode224=8次立即
 ### 2026-11-21接续校正（root/21）
 - `root/21 BuyStoreItem(itemName, buyCount)` 已存在于唯一明文文件，函数状态CSV亦已标记写入；不要再把它列为待恢复。
 - root/52/23苹果购买节拍/门槛/调用目标已闭合，后续只处理称号/剑灵和父回调接线；root/27处理NPC交互分支；root/52处理主按钮初始化接线。
+
+### 2026-11-21续接状态更新
+
+- root/27已补入walkNpc、clickNpc、waitEnter、monitor主状态分支；消息实参尚待逐槽核验，未计为已验证完成。
+- root/52/23新增TryBuyAppleItem_11_16并接入部分组合入口：每5秒检查绑定元宝>=100、角色等级>39，调用BuyStoreItem("苹果",1)。
+- root/21 BuyStoreItem已存在，禁止重复恢复。下一重点为root/52/23称号/剑灵剩余分支与897槽完整父回调，再处理root/52 doInit剩余按钮/UI接线。
