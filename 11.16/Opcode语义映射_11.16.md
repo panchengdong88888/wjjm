@@ -1612,3 +1612,41 @@ F()循环每轮执行完当前指令后，统一执行`O=O+1`。Opcode388的跳�
 - slot283–307包含backCity状态及周期回城尝试、H[5]/H[6]调用和失败提示；仍需逐段闭合融合边界与状态落点。
 
 **重要：** 检查点381/382中凡将跳转参数T直接解释为下一执行槽T的结论均废弃；本节是新的唯一有效控制流解释。唯一明文未修改，root/27未完成。
+
+
+## 检查点384：root/27槽109–307状态机主体闭合（2026-11-22）
+
+本节全部跳转落点按检查点383规则：Opcode388设`O=K[3]`，循环尾再递增，故参数T的下一执行槽是T+1。融合消费按原版F()叶子执行，不把被融合的物理槽当作独立执行起点。
+
+### 槽109–139：toShenlong状态与周期消息
+- slot109比较当前状态是否为`toShenlong`（Opcode143，期望真）。若已经是该状态，slot110跳转参数125，实际从slot126继续周期门控；若不是，跳过slot110，slot111设置`state="toShenlong"`、slot112清零ticks，slot113–121发送`LuaSendMsg(9002,80101,1,2,3,"神龍之都",12)`，slot122–124调用H[7]记录“前往神龍之都”，slot125跳转参数138，实际进入slot139 return。
+- 已处于toShenlong时，slot126读取ticks，slot127执行`ticks % 50`，slot128判断结果是否为0；不为0时slot129跳转参数138，实际进入slot139 return；为0时进入slot130–138再次发送同一80101消息，然后slot139 return。即初始化时立即发送一次，之后每50 tick重发。
+
+### 槽140–169：目标地图识别与选择
+- slot140–146构造并调用`string.find(mapName,"神龍之都",1,true)`；slot147检查返回值。找到目标地图时跳过slot148并继续slot149；未找到时slot148跳转参数239，实际从slot240继续。
+- slot149–157依次比较状态是否为`walkNpc`、`clickNpc`、`waitEnter`；匹配任一状态均跳转到slot170（参数169后置递增）。三者均不匹配时，slot158–160读取并调用H[8]地图选择闭包，参数为当前状态表，返回目标写入N[3]；slot161将其保存为`target`，slot162设`state="walkNpc"`，slot163清零ticks，slot164–169调用H[7]记录“目标地图：”及目标名称。
+
+### 槽170–204：walkNpc移动与NPC交互
+- slot170–172判断当前状态是否为`walkNpc`；不是则跳转到slot205（参数204后置递增），是则继续MoveTo。
+- slot173–179调用`MoveTo(target.x,target.y,8)`并保存返回值。slot180判断成功：失败时slot181跳转参数238，实际进入slot239 return；成功时跳过slot181，slot182–189按模板`{"index":%d,"UserID":"%s"}`构造NPC数据，slot190–201发送`LuaSendMsg(9002,1010,0,0,0,0,npcData,string.len(npcData))`，slot202设`state="clickNpc"`，slot203清零ticks，slot204跳转参数238，实际进入slot239 return。
+
+### 槽205–239：clickNpc与waitEnter
+- slot205–207判断状态是否为`clickNpc`；不是则跳转到slot223（参数222后置递增），是则继续slot208–210检查ticks是否达到3。
+- slot209 Opcode345执行`3 <= ticks`比较。未达到3时slot210跳转参数238，实际进入slot239 return；达到3时跳过slot210，slot211–219发送`LuaSendMsg(9002,10037,1,2,3,"",0)`，slot220设`state="waitEnter"`，slot221清零ticks，slot222跳转参数238，实际进入slot239 return。
+- slot223–225判断状态是否为`waitEnter`；不是则跳转slot239 return。是则slot226读取ticks，slot227 Opcode52执行`30 <= ticks`比较；未达到30时slot228跳转参数238，实际进入slot239 return；达到30时slot229–237重发`LuaSendMsg(9002,10037,1,2,3,"",0)`，slot238清零ticks，slot239 return。
+
+### 槽240–282：monitor地图变化与进入目标地图
+- slot240–242判断当前状态是否为`monitor`。是则继续检查lastMapName；不是则跳转参数255，实际从slot256开始检查target。
+- monitor分支读取lastMapName；若其为空则跳过旧地图比较，进入target匹配。若非空则调用`string.find(mapName,lastMapName,1,true)`；仍匹配则slot253条件分支跳过slot254，进入slot255 return；不匹配则slot254跳转参数255，实际进入slot256检查target。
+- slot256–266检查当前mapName是否包含`target.name`；未匹配时slot268跳转参数282，实际进入slot283 backCity状态处理；匹配时继续slot269–282。
+- slot269–271判断状态是否已经为`monitor`；若已是monitor则跳过状态更新和提示，直接slot282 return；否则slot272设`state="monitor"`，slot273–275更新lastMapName为target.name，slot276清零ticks，slot277–281调用H[7]输出“已进入目标地图：”及lastMapName，slot282 return。
+
+### 槽283–307：主动回城与周期重试
+- slot283–285判断状态是否为`backCity`。若已经处于backCity，跳过立即回城初始化段，进入slot296周期重试；若不是，slot286设置`state="backCity"`，slot287清零ticks，slot288–289调用H[5] backCity并保存返回值。
+- slot290若H[5]返回真值，slot291跳转参数294，实际进入slot295 return；若返回假值，跳过slot291，slot292–294调用H[6]并提示“背包没有盟重回城石，已停止”，slot295 return。
+- 已处于backCity时，slot296读取ticks，slot297取模30，slot298判断是否为0；非0时slot299跳转参数306，实际进入slot307 return；为0时slot300–301调用H[5]，slot302检查返回值。真值则slot303跳转参数306，实际进入slot307 return；假值则slot304–306调用H[6]并提示缺少盟重回城石，slot307 return。
+- 即非backCity状态进入该状态时立即尝试回城；若仍处于backCity则每30 tick重试；任一次回城调用返回假值都执行H[6]停止/复位提示。
+
+### 原型状态
+- root/27的307物理槽位业务主体已按正确字段映射、真实F()分派和跳转后置递增规则形成可读控制流说明；融合边界已按所见F()叶子逐段核对。
+- 尚需将该完整主体整理进唯一明文，并检查槽1–108与109–307的共享寄存器/状态衔接及9项捕获引用。当前唯一明文尚未改写，静态源码恢复未标记完成。
