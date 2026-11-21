@@ -4566,18 +4566,47 @@ end
 -- 未确认词法身份的捕获项通过明确的适配字段传入，避免把VM寄存器复用
 -- 误写成真实变量名。调用方必须按父级闭包捕获顺序完成接线。
 --
--- captured字段约定（仅已确认者直接命名）：
---   moduleState：MainLeftBottom模块/共享状态对象（捕获身份仍需最终接线）
---   printLog：日志包装函数
---   resumeBattle：恢复战斗提示回调
---   directionOffsets：八方向偏移表（仅当父级捕获映射最终确认后接入）
---   getDirection：二维坐标差转方向编号的函数
---   mapData：global.sceneManager:GetMapData2DPtr()结果
---   其余捕获暂放在captured.raw中，不在这里猜测其业务名称。
--- 当前版本保留全部已确认业务路径；玩家过滤边界、部分捕获变量的词法身份
--- 及随机回退中的calcMapDirection/cc.p具体参数仍标记为待接线。
+-- captured由BindCruiseRunCaptures_11_16(upvalues, adapters)生成。
+-- 已确切绑定H[0]共享门控单元与H[10]八方向偏移表；其他捕获保留原始槽位，
+-- 不将未知捕获伪装成模块状态、日志函数或其他业务变量。
+-- root/25/0的11个upvalue按创建闭包的捕获顺序映射：
+-- H[0] <- root/25 H[2] <- root N[74]：共享门控单元；/0、/2子闭包会写false。
+-- H[1] <- root/25 H[3] <- root N[81]
+-- H[2] <- root/25 H[4] <- root N[78]
+-- H[3] <- root/25 H[5] <- root N[4]
+-- H[4] <- root/25 H[6] <- root N[0]
+-- H[5] <- root/25 H[7] <- root N[75]
+-- H[6] <- root/25 H[8] <- root N[79]
+-- H[7] <- root/25 H[9] <- root N[76]
+-- H[8] <- root/25 H[10] <- root N[77]
+-- H[9] <- root/25 H[11] <- root N[80]
+-- H[10] <- root/25 H[12] <- root N[73]：八方向偏移表，键"0".."7"，值含x/y。
+-- root N[73]表在root slot483–515构造；root N[74]临时项slot516置nil后才在slot529捕获，
+-- 因此两者不能混淆。下列数组按Lua 1-based索引存放H[0]..H[10]。
+local function BindCruiseRunCaptures_11_16(upvalues, adapters)
+    upvalues = upvalues or {}
+    adapters = adapters or {}
+    return {
+        upvalues = upvalues,
+        raw = upvalues,
+        sharedPauseValue = upvalues[1],
+        directionOffsets = upvalues[11],
+        -- 未知捕获的实际用途不猜测，由外层适配器显式提供已确认回调。
+        setSharedPause = adapters.setSharedPause,
+        printLog = adapters.printLog,
+        resumeBattle = adapters.resumeBattle,
+        acceptPlayer = adapters.acceptPlayer,
+        getDirection = adapters.getDirection,
+        calcRandomDirection = adapters.calcRandomDirection,
+        onRandomMoveScheduled = adapters.onRandomMoveScheduled,
+        mapData = adapters.mapData,
+    }
+end
+
 local function RunCruisePlayerScan_11_16(captured)
     captured = captured or {}
+    local upvalues = captured.upvalues or captured.raw or {}
+    local directionOffsets = captured.directionOffsets or upvalues[11]
 
     if not IsInWhitelistMap() then
         return
@@ -4714,11 +4743,9 @@ local function RunCruisePlayerScan_11_16(captured)
     end
 
     -- 逃跑路径：设置共享暂停标志并通知父级状态回调。
-    if captured.moduleState then
-        captured.moduleState.cruiseGatherPaused = true
-    end
-    if captured.pauseGather then
-        captured.pauseGather(true)
+    -- root/25/0 H[0]是共享门控upvalue；其可写单元由外层setSharedPause适配器承载。
+    if captured.setSharedPause then
+        captured.setSharedPause(true)
     end
 
     local dx = mainX - target.x
@@ -4729,7 +4756,7 @@ local function RunCruisePlayerScan_11_16(captured)
         return
     end
 
-    local offsets = captured.directionOffsets
+    local offsets = directionOffsets
     local candidates = {}
     if offsets then
         local candidateDirs = {
@@ -4785,11 +4812,11 @@ local function RunCruisePlayerScan_11_16(captured)
                     MakeJoystickUserInputMove_11_16(captured.moduleState, candidate),
                     0.05
                 )
-                SL:ScheduleOnce(function()
-                    if captured.moduleState then
-                        captured.moduleState.cruiseGatherPaused = false
-                    end
-                end, 0.3)
+                SL:ScheduleOnce(make_helper_root_25_0_0({
+                    [0] = captured.setSharedPause and function(value)
+                        captured.setSharedPause(value)
+                    end or function() end
+                }), 0.3)
                 if captured.printLog then
                     captured.printLog(string.format(
                         "见人跑: %s(%d格)，向%d方向移动%d步",
@@ -4847,12 +4874,12 @@ end
 -- 本版33条指令流确认：检查共享状态中的cruiseRunTimer；
 -- 已运行则调用SL:UnSchedule并清空句柄；未运行则输出“开启见人跑”，
 -- 创建root/25/0周期回调并以0.1秒调用SL:Schedule，保存返回句柄。
--- root/25/0的598条逐槽指令流已提取并分段，但主函数主体尚未完整组装到明文。
+-- root/25/0的598条指令已组装为RunCruisePlayerScan_11_16主体初稿，捕获映射部分已进一步闭合。
 -- 已确认分段：slot1–104白名单/玩家与地图状态；105–267玩家筛选、距离及逃跑/反击分支；
 -- 268–342反击锁定技能；371–410八方向候选构造；411–445候选遍历与障碍过滤；
 -- 446–524目标清理、状态复位、摇杆通知调度及日志；525–598随机坐标回退与延迟移动通知。
 -- N[10]明确来自global.sceneManager:GetMapData2DPtr()，isObstacle由该地图数据指针调用。
--- callbackFactory对应root/25/0主体的闭包工厂接口；未闭合捕获词法身份前不伪造完整业务入口。
+-- callbackFactory负责创建RunCruisePlayerScan_11_16的捕获适配回调；剩余未知捕获仍由适配层提供。
 local function MakeCruiseRunButtonHandler_11_16(
     timerState,
     sl,
