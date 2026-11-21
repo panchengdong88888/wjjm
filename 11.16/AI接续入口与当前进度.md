@@ -2279,3 +2279,11 @@ root/25/0方向候选现严格按slot371–410常量顺序恢复：`+4,+3,+5,+2,
 - root/61为0参数、0捕获、60条指令；闭包创建映射确认父级创建点及函数身份候选backCity。常量池完整包含QUICKUSE_DATA、盟重回城石、ITEM_COUNT、ITEM_INDEX_BY_NAME、pairs、tonumber、UseItemByIndex、string.find、Name、Index。
 - 已在唯一明文写入`backCity()`：读取快捷使用数据，遍历名称匹配盟重回城石的记录，按物品名取得索引、读取数量，数量大于0时调用UseItemByIndex并返回true；未找到/无库存返回false。
 - 本项属于依据常量与调用链恢复的主体，不冒充60槽逐条闭合；后续取得本版root/61逐槽流后再补齐分支细节。
+
+
+### 2026-11-21续接：root/33/0下架拍卖行回调捕获映射闭合
+
+- 读取root/33的56槽定点指令材料及闭包创建映射：root/33在槽位39创建root/33/0，槽位40/41分别把父H[0]/H[1]绑定到子H[0]/H[1]。
+- root/33自身的四项捕获已在闭包映射中明确：H[0]=MainLeftBottom.z，H[1]=ShowLocalNoticeByType，H[2]=PrintLog，H[3]=Schedule。因此root/33/0的两个实际读取槽位精确映射为主界面状态表和本地提示回调。
+- 子闭包21槽主体原已恢复；现补齐实际使用的两项捕获身份，更新唯一明文注释与函数状态CSV，root/33/0由部分恢复调整为本版指令级完整恢复。未读取的其余4个upvalue不臆造。
+- root/33父函数本身仍待恢复；本次仅关闭root/33/0子闭包，不代表父函数root/33已完成。未执行Lua语法/API/APK验证。
