@@ -5456,3 +5456,48 @@ local function MakeResourceStatisticsWindow_11_16(moduleState, printLog, timerSt
         timerState.resTimer = sl:Schedule(refreshResourceStatistics, 1.0)
     end
 end
+
+
+-- 11.16 root/50/0：数字输入确认与校验回调（80个物理槽位，0个显式参数，8个upvalue）。
+-- root/50槽378创建此闭包，槽379–386依次捕获父级N[23]、N[24]、N[8]、
+-- N[19]、N[7]、N[9]、N[20]、N[2]至H[0..7]。
+-- 捕获对象用途已由父级创建上下文与本闭包调用链确认：
+-- H[0]为数字输入控件（numInputEdit），H[1]为提示文本控件（numInputTip），
+-- H[2]控制是否校验物品名称，H[3]为物品名称输入控件（numInputName），
+-- H[4]为窗口标识，H[7]为确认后的业务回调。
+-- H[5]/H[6]参与一段无可观察状态差异的布尔跳转；该段无论分支如何均把第三个回调参数置为true。
+-- 父级局部变量原名未确认，工厂参数仅按捕获槽承接，不冒充原始符号名。
+local function make_helper_root_50_0(capturedUpvalues)
+    return function()
+        local priceText = GUI:TextInput_getString(capturedUpvalues[0])
+        priceText = priceText or ""
+        priceText = string.gsub(priceText, "%s", "")
+
+        if priceText == "" or not string.match(priceText, "^%d+$") then
+            GUI:Text_setString(
+                capturedUpvalues[1],
+                "参数格式不对，请输入数字"
+            )
+            GUI:TextInput_setString(capturedUpvalues[0], priceText)
+            return
+        end
+
+        local itemName = ""
+        if capturedUpvalues[2] then
+            itemName = GUI:TextInput_getString(capturedUpvalues[3])
+            itemName = itemName or ""
+            itemName = string.gsub(itemName, "%s", "")
+
+            if itemName == "" then
+                GUI:Text_setString(
+                    capturedUpvalues[1],
+                    "请输入要上架的物品名称"
+                )
+                return
+            end
+        end
+
+        GUI:Win_Close(capturedUpvalues[4])
+        capturedUpvalues[7](tonumber(priceText), itemName, true)
+    end
+end
