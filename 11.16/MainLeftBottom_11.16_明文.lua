@@ -4987,6 +4987,61 @@ end
 
 
 -- ============================================================================
+-- 11.16 root/25：按本版13项真实捕获值接线启停按钮
+-- ============================================================================
+-- root/25捕获顺序（Lua数组1-based）：
+-- [1]=root N[3]=MainLeftBottom.z（计时器状态表）
+-- [2]=root N[5]=ShowLocalNoticeByType
+-- [3]=root N[74]=与root/25/0 H[0]共享的cruiseGatherPaused单元
+-- [4]=root N[81]；[5]=root N[78]；[6]=root N[4]=PrintLog
+-- [7]=root N[0]=MainLeftBottom模块表；[8]=root N[75]；
+-- [9]=root N[79]；[10]=root N[76]；[11]=root N[77]；
+-- [12]=root N[80]=八方向转换函数；[13]=root N[73]=八方向偏移表。
+-- root/25/0捕获父级H[2..12]，故子级11项按[3..13]原序传入。
+-- 这里以同一捕获数组作为重建环境中的共享cell载体；0.3秒复位setter
+-- 同步写回父/子捕获数组，避免只改局部boolean副本。
+local function BindCruiseRunButtonFromCaptures_11_16(root25Captures, adapters)
+    root25Captures = root25Captures or {}
+    adapters = adapters or {}
+
+    local timerState = root25Captures[1]
+    if type(timerState) ~= "table" then
+        timerState = {}
+        root25Captures[1] = timerState
+    end
+
+    local childUpvalues = {}
+    for i = 1, 11 do
+        childUpvalues[i] = root25Captures[i + 2]
+    end
+
+    local childAdapters = {}
+    for key, value in pairs(adapters) do
+        childAdapters[key] = value
+    end
+
+    if type(childAdapters.setSharedPause) ~= "function" then
+        childAdapters.setSharedPause = function(value)
+            -- root/25 H[2]与root/25/0 H[0]代表同一原始共享upvalue。
+            root25Captures[3] = value
+            childUpvalues[1] = value
+        end
+    end
+
+    local callbackFactory = function()
+        return BindCruiseRunCallback_11_16(childUpvalues, childAdapters)
+    end
+
+    return MakeCruiseRunButtonHandler_11_16(
+        timerState,
+        SL,
+        adapters.printLog or root25Captures[6],
+        callbackFactory
+    )
+end
+
+
+-- ============================================================================
 -- 11.16 root/25：捕获值直连的周期回调工厂
 -- ============================================================================
 -- root/25创建root/25/0后，捕获顺序由闭包事件记录确定；
