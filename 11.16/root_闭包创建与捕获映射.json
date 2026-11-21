@@ -2114,5 +2114,18 @@
     "本文件只记录创建点、子原型身份及捕获寄存器，不把寄存器来源自动命名为业务变量。",
     "2026-11-20补充：从root_654条物理指令流直接补录此前遗漏的Opcode178闭包创建事件。root/50在槽283创建，H[0]=root N[0]；root/15在槽287创建，H[0..4]=root N[40],N[3],N[5],N[4],N[7]；root/52在槽633创建，H[0..18]=root N[4],N[2],N[0],N[3],N[89],N[1],N[67],N[7],N[62],N[8],N[88],N[38],N[39],N[5],N[83],N[82],N[11],N[12],N[9]。这些是父root捕获寄存器的直接证据，不等于已确认变量名或子闭包内部捕获身份。",
     "2026-11-21续：补录root/52/23闭包创建点与5项捕获。root/52槽155 Opcode387创建childIndex=23，紧随槽156–160捕获H[2]、H[3]、H[0]、H[4]及父局部N[5]；结合root/52创建时的19项捕获表，前三项映射为MainLeftBottom.a、MainLeftBottom、PrintLog；H[4]为root N[89]（待识别），N[5]为SL。只确认捕获顺序，不代表897槽周期逻辑已恢复。"
+  ],
+  "scheduleSites": [
+    {
+      "parentPath": "root/52",
+      "callbackPath": "root/52/23",
+      "prepareSlot": 153,
+      "createSlot": 155,
+      "callSlot": 162,
+      "api": "SL:Schedule",
+      "interval": 1,
+      "intervalRegisterSlot": 161,
+      "notes": "槽153–154准备SL.Schedule方法；槽155创建root/52/23；槽161装入间隔1；槽162调用。该回调未保存到moduleState.cruiseTimer。槽164–175为旧cruiseTimer清理；槽176–184另创建root/52/33并以间隔1调度，返回句柄写入cruiseTimer。"
+    }
   ]
 }
