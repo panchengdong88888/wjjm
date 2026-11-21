@@ -5931,3 +5931,151 @@ local function inputNumber(title, initialPrice, onConfirm, itemName, useStackQua
 
     return window
 end
+
+
+-- ============================================================================
+-- 11.16 root/52：MainLeftBottom.doInit（865条物理指令，19项捕获）
+-- ============================================================================
+-- 已确认捕获：H[0]=PrintLog；H[2]=MainLeftBottom.a；H[3]=MainLeftBottom；
+-- H[9]为包含GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems
+-- 等方法的接口表（本段不需要直接解引用）。其余捕获槽保留，不猜变量名。
+--
+-- 本段先恢复root/52前180槽可确认的初始化主干：初始化提示、货币/物品
+-- 名单、时间快照、MoneyProxy资源快照、四组快捷栏预设、每日巡航旧句柄
+-- 清理入口及仓库数据请求。后续UI面板和按钮创建段继续补齐。
+local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
+    local printLog = capturedUpvalues[1] or PrintLog
+    local mainPanelState = capturedUpvalues[3] or MainLeftBottom.a
+    local moduleState = capturedUpvalues[4] or MainLeftBottom
+
+    return function()
+        printLog("插件初始化完成")
+
+        local moneyNames = {
+            "元宝",
+            "绑定元宝",
+            "灵符",
+            "绑定灵符",
+        }
+
+        local itemNames = {
+            "声望卷",
+            "悟道茶",
+            "洗髓丹",
+            "转生水晶",
+            "恶魔令牌",
+            "血龙宝珠",
+        }
+
+        local initTime = os.time()
+        local initTimeStr = "--"
+        local ok, formattedTime = pcall(os.date, "%Y-%m-%d %H:%M:%S", initTime)
+        if ok and formattedTime then
+            initTimeStr = formattedTime
+        end
+
+        local initSnapshot = {
+            initTime = initTime,
+            initTimeStr = initTimeStr,
+            money = {},
+            items = {},
+        }
+
+        local moneyProxy
+        local proxyOK, proxyResult = pcall(function()
+            return global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
+        end)
+        if proxyOK then
+            moneyProxy = proxyResult
+        end
+
+        if moneyProxy then
+            for _, moneyName in ipairs(moneyNames) do
+                local moneyID = moneyProxy:GetMoneyIdByName(moneyName)
+                local moneyCount = 0
+                if moneyID then
+                    moneyCount = moneyProxy:GetMoneyCountById(moneyID) or 0
+                end
+                initSnapshot.money[moneyName] = moneyCount
+            end
+        end
+
+        for _, itemName in ipairs(itemNames) do
+            local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)
+            local itemCount = 0
+            if itemIndex then
+                itemCount = SL:GetMetaValue("ITEM_COUNT", itemIndex) or 0
+            end
+            initSnapshot.items[itemName] = itemCount
+        end
+
+        moduleState.initTime = initTime
+        moduleState.initTimeStr = initTimeStr
+        moduleState.initSnapshot = initSnapshot
+        mainPanelState.initSnapshot = initSnapshot
+
+        -- 四组快捷栏预设按槽位错峰执行，延迟分别为0.1/0.2/0.3/0.4秒。
+        local quickUseGroups = {
+            {
+                slot = 1,
+                names = { "永久回城石", "盟重回城石", "盟重传送石" },
+            },
+            {
+                slot = 2,
+                names = { "永久随机石", "随机传送石" },
+            },
+            {
+                slot = 3,
+                names = { "大陆传送石" },
+            },
+            {
+                slot = 4,
+                names = { "免战回城石" },
+            },
+        }
+
+        for slotIndex, slotConfig in ipairs(quickUseGroups) do
+            local currentConfig = slotConfig
+            SL:ScheduleOnce(function()
+                for _, itemName in ipairs(currentConfig.names) do
+                    local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)
+                    if itemIndex then
+                        local succeeded, message =
+                            MoveItemToQuickUse(itemIndex, currentConfig.slot)
+                        printLog(message)
+                        if succeeded then
+                            return
+                        end
+                    end
+                end
+            end, slotIndex * 0.1)
+        end
+
+        -- 仓库代理请求在原型初始化段末尾执行；代理不存在时不抛出异常。
+        local storageProxy
+        local storageOK, storageResult = pcall(function()
+            return global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)
+        end)
+        if storageOK then
+            storageProxy = storageResult
+        end
+
+        moduleState.NPCStorageProxy = storageProxy
+        if storageProxy then
+            storageProxy:RequestStorageData(0)
+        end
+
+        -- root/52剩余约685槽负责巡航定时器替换、资源统计窗口、
+        -- 按钮配置/回调映射、按钮布局及苹果图按钮创建；这些段落继续恢复，
+        -- 此处不提前创建重复UI，也不将初始化主干误报为完整doInit。
+    end
+end
+
+-- root/52创建点确认：H[0]=PrintLog、H[2]=MainLeftBottom.a、H[3]=MainLeftBottom。
+MainLeftBottom.doInit = make_MainLeftBottom_doInit_11_16({
+    [1] = PrintLog,
+    [3] = MainLeftBottom.a,
+    [4] = MainLeftBottom,
+})
+
+
