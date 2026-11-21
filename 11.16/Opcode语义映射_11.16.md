@@ -1576,3 +1576,39 @@ end
 ### 进度边界
 - root/27槽28–108的中段控制流现在大部分可按真实Opcode闭合；slot108后续用途、前后段连接、其余物理槽位仍未完成。
 - 本轮仍未修改唯一明文；不得将root/27标记为完成。下一步继续槽1–27及槽109–307与本段的控制流连接，或按优先级先完成当前原型完整函数主体后再统一写入。
+
+
+## 检查点383：纠正F()跳转目标的后置递增规则（2026-11-22，覆盖此前落点解释）
+
+### 核心纠错
+F()循环每轮执行完当前指令后，统一执行`O=O+1`。Opcode388的跳转叶只执行`O=K[3]`，因此**跳转参数为T时，下一条实际执行的是物理槽T+1**，不是槽T。此前检查点381/382中凡将跳转参数直接当作下一执行槽的解释全部撤销；必须按本节修正后的落点理解。Opcode388本身仍是绝对槽位跳转，不是相对偏移。
+
+### 槽1–27（起始保护与攻城时间提示）
+- slot1 Opcode9融合消费slot2：先从H[0]取值写N[9]，再执行slot2表字段读取`N[0]=N[0].appleMap`。
+- slot3 Opcode325以true为比较值检查N[0]。若N[0]为假，跳过slot4，进入slot5；若为真，执行slot4跳转参数5，循环后置递增后进入slot6。因此slot5 Opcode205是无值return，仅当appleMap状态不存在/为假时退出；存在时继续。
+- slot6读取ticks；slot7执行`N[1]=N[1]+1`；slot8将新值写回`N[0].ticks`；slot9–10读取并调用H[1]攻城时间判断闭包，返回值写N[1]。
+- slot11 Opcode358以false为比较值检查攻城判断结果。结果为真时跳过slot12，进入slot13攻城提示分支；结果为假时执行slot12跳转参数20，实际从slot21继续，进入攻城结束/非攻城分支。
+- slot13读取`siegeTip`；slot14以true为比较值判断。若已经提示过，则执行slot15跳转参数19，实际进入slot20 return；若尚未提示，则跳过slot15，slot16设置`siegeTip=true`，slot17–19调用H[2]通知“攻城时间段(20:00-22:00)，苹果图暂停下图”，slot20 return。
+- slot21读取`siegeTip`；slot22以false为比较值检查。若此前未处于攻城提示状态，执行slot23跳转参数27，实际进入slot28；若此前处于攻城提示状态，跳过slot23，slot24设置`siegeTip=false`，slot25–27调用通知“攻城时间段结束，苹果图恢复下图”，随后进入slot28。
+
+### 槽28–108修正后的控制流
+- slot33 Opcode325检查地图判断结果N[2]是否为真。若为假，跳过slot34，执行slot35将`N[0].cityCloseSent=false`；若为真，slot34跳转参数35，实际从slot36继续，跳过该复位。
+- slot36–37调用H[4]称号有效期判断；slot38若结果为真则跳过slot39进入slot40；若结果为假则slot39跳转参数86，实际从slot87进入关闭巡航路径（不是return）。
+- slot40若地图判断N[2]为真则跳过slot41进入slot42；若为假则slot41跳转参数63，实际从slot64进入发送确认/巡航状态处理。
+- slot43若`cruiseConfirmed=true`，slot44跳转参数61，实际从slot62执行状态写入；若未确认则跳过slot44进入slot45–48节拍发送门控。
+- slot47若`ticks % 30 == 1`，跳过slot48并进入slot49发送；否则slot48跳转参数61，实际从slot62设置`state="cruise"`，随后slot63 return。slot59–61通知调用也在发送路径中，发送消息为`LuaSendMsg(9002,55556,1,2,3,"",0)`，slot58写`cruiseSent=true`。
+- slot65若`cruiseSent=true`，跳过slot66，slot67写`cruiseConfirmed=true`，slot68写`cruiseOn=true`；若为false，slot66跳转参数68，实际从slot69继续，跳过slot67和68。
+- slot70若`cruiseConfirmed=true`，slot71跳转参数85，实际从slot86 return；否则跳过slot71继续slot72。
+- slot73若`cruiseSent=true`，slot74跳转参数85，实际从slot86 return；否则跳过slot74进入slot75–78节拍门控。
+- slot77若`ticks % 30 == 1`，跳过slot78进入slot79–85回城闭包处理；否则slot78跳转参数85，实际从slot86 return。
+- slot81若H[5]回城闭包返回真值，slot82跳转参数85，实际从slot86 return；若返回假值，跳过slot82，slot83–85调用H[6]并传入“背包没有盟重回城石，已停止”，随后slot86 return。此前将真值路径解释为调用返回值的说法撤销。
+- slot87若地图判断N[2]为真，跳过slot88进入slot89关闭消息去重；若为假，slot88跳转参数139，实际从slot140继续，跳过关闭消息分支。
+- slot90若`cityCloseSent=true`，slot91跳转参数107，实际从slot108继续，跳过slot92–107的关闭消息、状态复位与提示；若为false，跳过slot91，执行slot92–107发送关闭消息并复位状态。
+- slot108读取`N[0].state`，后续用途待连接。
+
+### 其余槽位推进提示
+- slot109–138为`toShenlong`状态：slot109比较当前state；非该状态时进入初始化、ticks清零、发送80101前往神龍之都消息并记录日志；已处于该状态时按ticks取模50触发周期发送。
+- slot140–282包含目标地图字符串匹配、状态walkNpc/clickNpc/waitEnter/monitor分支、NPC移动及1010/10037消息、地图进入检测与通知；需按真实融合槽位逐段补齐，暂不将旧明文中的猜测当作证据。
+- slot283–307包含backCity状态及周期回城尝试、H[5]/H[6]调用和失败提示；仍需逐段闭合融合边界与状态落点。
+
+**重要：** 检查点381/382中凡将跳转参数T直接解释为下一执行槽T的结论均废弃；本节是新的唯一有效控制流解释。唯一明文未修改，root/27未完成。
