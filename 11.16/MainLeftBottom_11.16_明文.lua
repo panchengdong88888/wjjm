@@ -6117,3 +6117,87 @@ MainLeftBottom.doInit = make_MainLeftBottom_doInit_11_16({
 })
 
 
+
+
+-- ============================================================================
+-- 11.16 root/52/23：大型周期业务回调的已确认子流程
+-- 897个物理槽位同时承载邮件维护、苹果使用/金币提示、称号材料检查、
+-- 剑灵打造状态、武器幸运检查、战力/资源文本刷新及苹果购买。
+-- 先把可独立确认的业务拆为小函数，避免把未闭合的寄存器/分支伪装成完整回调。
+-- ============================================================================
+
+-- 邮件维护：每次周期执行先刷新邮件列表；若框架标记存在可删除的已读邮件，
+-- 则请求删除。邮件附件领取动作单独保留，避免在没有邮件逐条状态证据时盲领。
+local function RunMailMaintenance_11_16()
+    local mailList = SL:GetMetaValue("MAIL_LIST")
+    if type(mailList) ~= "table" then
+        mailList = {}
+    end
+
+    SL:RequestMailList()
+
+    if SL:GetMetaValue("MAIL_HAVE_DEL_ITEM") then
+        SL:RequestDelReadMail()
+    end
+
+    return mailList
+end
+
+-- 苹果物品自动使用：通过物品名称索引和背包数量确认是否持有，
+-- 有库存时调用框架UseItemByIndex。无库存时不发起使用请求。
+local function TryUseAppleItem_11_16()
+    local itemIndex = tonumber(
+        SL:GetMetaValue("ITEM_INDEX_BY_NAME", "苹果")
+    )
+    if not itemIndex then
+        return false
+    end
+
+    local count = tonumber(SL:GetMetaValue("ITEM_COUNT", itemIndex)) or 0
+    if count <= 0 then
+        return false
+    end
+
+    SL:UseItemByIndex(itemIndex)
+    return true
+end
+
+-- 金币余额读取：使用MoneyProxy官方接口，和本版root/52/23调用序列一致。
+local function GetGoldAmount_11_16()
+    local proxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
+    if not proxy then
+        return 0
+    end
+
+    local moneyId = proxy:GetMoneyIdByName("金币")
+    if not moneyId then
+        return 0
+    end
+
+    return tonumber(proxy:GetMoneyCountById(moneyId)) or 0
+end
+
+-- 金币警告显示。控件对象由root/52主界面构建段创建；未创建时只返回余额，
+-- 不创建重复控件。隐藏条件沿用回调指令中的isHidden状态。
+local function UpdateGoldWarning_11_16(moduleState, goldWarningBg)
+    local gold = GetGoldAmount_11_16()
+    local shouldShow = gold < 100000
+        and not (moduleState and moduleState.isHidden)
+
+    if goldWarningBg then
+        GUI:setVisible(goldWarningBg, shouldShow)
+    end
+
+    if moduleState then
+        moduleState.goldAmount = gold
+        moduleState.goldWarningVisible = shouldShow
+    end
+
+    return gold
+end
+
+-- 11.16 root/52/23已确认包含称号证明数量检查、RELEVEL等级阈值及两类称号升级
+-- LuaSendMsg(9002, 301000/10001, ...)分支。具体称号ID/等级参数依赖原型寄存器
+-- 及TITLES/ItemConfigProxy迭代关系；在父级回调完整接线前不编造升级参数。
+-- 剑灵打造/解封、武器幸运补油、苹果商店购买及战力文本刷新也保留在
+-- root/52/23的待接线清单中，不能将这些子流程标成已恢复。
