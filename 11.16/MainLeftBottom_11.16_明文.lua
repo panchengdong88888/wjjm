@@ -6577,9 +6577,10 @@ end
 
 
 -- root/52/23可确认业务的部分组合入口。
--- 仅组合已经单独恢复的邮件维护、苹果使用、武器幸运、解封请求和显示刷新；
--- 不在此处伪造称号升级、剑灵材料/打造、苹果商城购买及父级定时器参数。
--- 待root/52父级调用/捕获关系闭合后，再由真实回调调用本函数。
+-- 组合已恢复的邮件维护、苹果使用/商城购买、剑灵12174数据请求、
+-- 武器幸运、古剑解封与显示刷新。
+-- 称号升级、剑灵材料检查/12171打造及root/52父级Schedule真实接线仍未闭合；
+-- 本函数是恢复过程中的组合入口，不代表已经接入游戏运行时。
 local function ProcessMainLeftBottomMaintenance_11_16(moduleState, moneyProxy, controls)
     moduleState = moduleState or MainLeftBottom
     controls = controls or {}
@@ -6588,12 +6589,19 @@ local function ProcessMainLeftBottomMaintenance_11_16(moduleState, moneyProxy, c
     local applePurchaseOK, applePurchaseDetail =
         TryBuyAppleItem_11_16(callbackState, ShowLocalNoticeByType)
 
+    local swordRequestOK, swordRequestStatus, swordLevel =
+        RequestAncientSwordData_11_16(moduleState)
     local result = {
         mailList = RunMailMaintenance_11_16(),
         appleUsed = TryUseAppleItem_11_16(),
         applePurchase = {
             ok = applePurchaseOK,
             detail = applePurchaseDetail,
+        },
+        swordDataRequest = {
+            ok = swordRequestOK,
+            status = swordRequestStatus,
+            level = swordLevel,
         },
     }
 
