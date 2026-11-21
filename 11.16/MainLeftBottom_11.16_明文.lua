@@ -4523,10 +4523,9 @@ end
 -- ============================================================================
 -- 11.16 root/25/0/1：摇杆移动通知回调（38条指令，0显式参数，1项捕获）
 -- ============================================================================
--- 定点指令流闭合：先取gamePlayerController:GetMainPlayer()；
--- 玩家对象不存在则退出；再取ACTOR_HP，无有效HP则退出。
--- 唯一捕获对象分别读取.dir与.step，写入UserInputMove通知负载；
--- 同时写入摇杆输入类型及玩家当前地图X/Y坐标。
+-- 对应root/25/0/1的38条子闭包指令：这是无显式参数的ScheduleOnce回调，
+-- 由父函数闭包环境提供移动状态对象；回调重新取得主玩家并检查ACTOR_HP，
+-- 然后读取移动状态.dir/.step，组装UserInputMove摇杆负载，附带玩家当前地图X/Y坐标。
 local function MakeJoystickUserInputMove_11_16(moveState)
     return function()
         local player = global.gamePlayerController:GetMainPlayer()
