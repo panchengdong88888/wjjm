@@ -1537,3 +1537,42 @@ end
 - Opcode325（slot33、slot81）及slot79–85回调返回值的分支方向仍未闭合；本轮不据此猜写源码。
 
 唯一明文未修改，root/27未完成。下一步：补齐Opcode325与slot79–85返回值控制流，随后继续slot87–108关闭巡航路径；消息参数仍须按寄存器来源确认。
+
+
+## 检查点382：root/27槽33–108条件流与调用形式闭合（2026-11-22）
+
+### 新确认的F()叶子语义
+- Opcode325、340、358、366均执行真值条件跳过：`if (not not N[A]) ~= (C ~= 0) then O=O+1 end`。Opcode358与340、366同模板。
+- Opcode324：`N[A]=H[C]`，从捕获表读取闭包/函数。
+- Opcode410、274：`N[A]=N[B][C]`，读取寄存器表字段。
+- Opcode403：`N[A]=H[C]`，并融合消费下一物理槽，将该槽常量写入后续寄存器。
+- Opcode128：直接调用`N[A](N[A+1]...N[B])`，不保存返回值。
+- Opcode209：调用`N[A](N[A+1]...N[B])`并将首个返回值写回`N[A]`。
+- Opcode114：`N[A][C]=D`表字段赋值；Opcode112为`N[A][B]=N[C]`表字段赋值。
+
+### 槽33–48：地图/称号/巡航发送门控
+- slot33 Opcode325检查N[2]是否为真；真时执行slot34跳转到35，假时跳过slot34，两个分支都到slot35。因此slot35必执行：将`N[0].cityCloseSent=false`。
+- slot36–37读取并调用H[4]称号51295有效期判断闭包，返回值写入N[3]。slot38 Opcode358以false为比较值；结果为假时执行slot39跳转86，结果为真时跳过slot39继续。即称号判断不通过时退出本段，通过时继续。
+- slot40 Opcode289以false为比较值检查N[2]；N[2]为假时执行slot41跳转63，N[2]为真时跳过slot41继续。N[2]来自slot30–32的地图判断结果，因此只在地图判断为真时进入巡航门控。
+- slot42读取`cruiseConfirmed`；slot43 Opcode366以true为比较值检查；已确认时执行slot44跳转61，未确认时跳过slot44，继续slot45–48。
+- slot45读取ticks，slot46取模30，slot47比较是否等于1；不等于1跳转61，等于1进入slot49–57发送路径。发送消息为`LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)`；slot58将`cruiseSent=true`。
+- slot59–61调用H[2]通知回调，参数为“苹果已激活：开启巡航”；slot62将状态字段设为`state="cruise"`；slot63结束当前回调。
+
+### 槽64–85：发送确认与回城回调
+- slot64读取`cruiseSent`。slot65 Opcode340以false为比较值判断；当`cruiseSent=true`时跳过slot66并执行slot67写`cruiseConfirmed=true`；为false时执行slot66跳转68，跳过确认写入。slot68无条件写`cruiseOn=true`。
+- slot69读取`cruiseConfirmed`；slot70 Opcode366以true为比较值判断；已确认则slot71跳转85，未确认则跳过slot71继续。
+- slot72读取`cruiseSent`；slot73 Opcode325以true为比较值判断；已发送则slot74跳转85，未发送则跳过slot74，进入slot75–78的tick门控。
+- slot75读取ticks，slot76取模30，slot77比较是否等于1；不等于1跳转85，等于1进入slot79–85。
+- slot79读取H[5] backCity；slot80调用该闭包并将首个返回值写回N[3]。slot81以true为比较值检查返回值：真时执行slot82跳转85；假时跳过slot82，slot83–84装载H[6]复位回调及提示“背包没有盟重回城石，已停止”。slot85直接调用N[3](N[4])。因此H[5]返回真值时，其返回值会作为可调用对象直接调用；返回假值时改为调用H[6]并传入缺少回城石提示。这里只记录VM控制流，不推断H[5]闭包内部实现。
+- slot86结束当前回调。
+
+### 槽87–108：关闭巡航路径
+- slot87 Opcode340以false为比较值检查N[2]；地图判断结果为假时执行slot88跳转139，真时跳过slot88继续关闭流程。
+- slot89 Opcode410读取`N[0].cityCloseSent`到N[3]；slot90 Opcode366以true为比较值检查；已发送关闭消息时执行slot91跳转107，未发送时跳过slot91进入slot92–100。
+- slot92–100构造并调用`LuaSendMsg(9002, 55559, 1, 2, 3, "", 0)`。
+- slot101–104依次设置`cityCloseSent=true`、`cruiseOn=false`、`cruiseSent=false`、`cruiseConfirmed=false`。
+- slot105 Opcode403装载H[7]并融合slot106提示文本“苹果未激活：发送关闭巡航”；slot107通过Opcode128直接调用H[7](提示文本)。slot108读取`N[0].state`字段；其后续用途须结合后续执行槽/闭包结构继续确认。
+
+### 进度边界
+- root/27槽28–108的中段控制流现在大部分可按真实Opcode闭合；slot108后续用途、前后段连接、其余物理槽位仍未完成。
+- 本轮仍未修改唯一明文；不得将root/27标记为完成。下一步继续槽1–27及槽109–307与本段的控制流连接，或按优先级先完成当前原型完整函数主体后再统一写入。
