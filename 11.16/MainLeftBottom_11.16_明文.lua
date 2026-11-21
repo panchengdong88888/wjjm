@@ -6201,3 +6201,69 @@ end
 -- 及TITLES/ItemConfigProxy迭代关系；在父级回调完整接线前不编造升级参数。
 -- 剑灵打造/解封、武器幸运补油、苹果商店购买及战力文本刷新也保留在
 -- root/52/23的待接线清单中，不能将这些子流程标成已恢复。
+
+
+-- root/52/23槽647–747：金币、元宝和战力文本刷新子流程。
+-- 三个文本控件由主界面构建段创建；控件未就绪时只返回读取结果。
+local function UpdateMainInfoTexts_11_16(moduleState, moneyProxy, infoGoldTxt, infoYuanbaoTxt, infoPowerTxt)
+    if not moneyProxy then
+        moneyProxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
+    end
+    if not moneyProxy then
+        return nil
+    end
+
+    local goldId = moneyProxy:GetMoneyIdByName("金币")
+    local yuanbaoId = moneyProxy:GetMoneyIdByName("元宝")
+    local gold = goldId and (tonumber(moneyProxy:GetMoneyCountById(goldId)) or 0) or 0
+    local yuanbao = yuanbaoId and (tonumber(moneyProxy:GetMoneyCountById(yuanbaoId)) or 0) or 0
+
+    local combatPower = moduleState and moduleState.combatPower
+    if combatPower == nil then
+        combatPower = "--"
+    else
+        combatPower = tostring(combatPower)
+    end
+
+    if infoGoldTxt then
+        GUI:Text_setString(
+            infoGoldTxt,
+            string.format("金币:%dW", math.floor(gold / 10000))
+        )
+    end
+    if infoYuanbaoTxt then
+        GUI:Text_setString(infoYuanbaoTxt, string.format("元宝:%d", yuanbao))
+    end
+    if infoPowerTxt then
+        GUI:Text_setString(infoPowerTxt, "战力:" .. combatPower)
+    end
+
+    return gold, yuanbao, combatPower
+end
+
+-- root/52/23槽749–795：苹果图与巡航状态控件可见性同步。
+-- 保留原版状态字段含义；苹果图处于运行状态且主界面未隐藏时显示苹果图背景。
+local function UpdateAppleCruiseStatusUI_11_16(moduleState, appleMapBg, appleMapTxt, cruiseTxt)
+    if not moduleState then
+        return
+    end
+
+    local hidden = moduleState.isHidden == true
+    local appleRunning = moduleState.appleMapRunning == true
+    if appleMapBg then
+        GUI:setVisible(appleMapBg, appleRunning and not hidden)
+    end
+
+    if appleMapTxt then
+        GUI:setVisible(appleMapTxt, not hidden)
+    end
+
+    if cruiseTxt then
+        GUI:setVisible(cruiseTxt, moduleState.cruiseRunTimer ~= nil and not hidden)
+        if moduleState.cruiseRunTimer then
+            GUI:setPositionY(cruiseTxt, 160)
+        else
+            GUI:setPositionY(cruiseTxt, 110)
+        end
+    end
+end
