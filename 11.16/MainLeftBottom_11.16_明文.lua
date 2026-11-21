@@ -3290,8 +3290,9 @@ end
 -- 11.16 root/14：ForgeZodiacToggleHandler（51条物理指令，1个显式参数）。
 -- 高置信候选名：root/10将该闭包捕获为停止回调并传入提示文本。
 -- 捕获：H[0]=MainLeftBottom.z；H[1]=父root N[1]（身份未知，当前主体未读取）；
--- H[2]=_G.log。按本版指令恢复定时器/状态清理、NPC对话层关闭、
--- 按钮配置复位、日志及系统提示。
+-- H[2]=ShowLocalNoticeByType（由CSV捕获映射记录确认，且本体末段调用该回调）。
+-- 另有独立的SL:ShowSystemTips(message)提示调用；本函数没有证据表明调用_G.log。
+-- 按本版指令恢复定时器/状态清理、NPC对话层关闭、按钮配置复位及双提示。
 -- ============================================================================
 local function ForgeZodiacToggleHandler(capturedUpvalues, message)
     local state = capturedUpvalues[1]
