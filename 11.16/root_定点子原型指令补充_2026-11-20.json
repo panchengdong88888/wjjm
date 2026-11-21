@@ -15252,6 +15252,196 @@
           "sourceKind": "parent-local-register"
         }
       ]
+    },
+    {
+      "createSlot": 526,
+      "createOpcode": 178,
+      "childIndex": 25,
+      "childPath": "root/25",
+      "destinationRegister": 82,
+      "captureCount": 13,
+      "captures": [
+        {
+          "slot": 527,
+          "opcode": 243,
+          "upvalueIndex": 0,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 528,
+          "opcode": 243,
+          "upvalueIndex": 1,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 529,
+          "opcode": 243,
+          "upvalueIndex": 2,
+          "sourceRegister": 74,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 530,
+          "opcode": 243,
+          "upvalueIndex": 3,
+          "sourceRegister": 81,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 531,
+          "opcode": 243,
+          "upvalueIndex": 4,
+          "sourceRegister": 78,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 532,
+          "opcode": 243,
+          "upvalueIndex": 5,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 533,
+          "opcode": 243,
+          "upvalueIndex": 6,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 534,
+          "opcode": 243,
+          "upvalueIndex": 7,
+          "sourceRegister": 75,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 535,
+          "opcode": 243,
+          "upvalueIndex": 8,
+          "sourceRegister": 79,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 536,
+          "opcode": 243,
+          "upvalueIndex": 9,
+          "sourceRegister": 76,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 537,
+          "opcode": 243,
+          "upvalueIndex": 10,
+          "sourceRegister": 77,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 538,
+          "opcode": 243,
+          "upvalueIndex": 11,
+          "sourceRegister": 80,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 539,
+          "opcode": 243,
+          "upvalueIndex": 12,
+          "sourceRegister": 73,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "evidence": "root物理指令流slot526为Opcode178，A=82/B=25/C=13；随后slot527-539均为Opcode243捕获描述，按顺序捕获root N[3],N[5],N[74],N[81],N[78],N[4],N[0],N[75],N[79],N[76],N[77],N[80],N[73]。"
+    },
+    {
+      "createSlot": 18,
+      "createOpcode": 178,
+      "childIndex": 0,
+      "childPath": "root/25/0",
+      "destinationRegister": 3,
+      "captureCount": 11,
+      "captures": [
+        {
+          "slot": 19,
+          "opcode": 132,
+          "upvalueIndex": 0,
+          "sourceUpvalue": 2,
+          "sourceKind": "parent-upvalue"
+        },
+        {
+          "slot": 20,
+          "opcode": 132,
+          "upvalueIndex": 1,
+          "sourceUpvalue": 3,
+          "sourceKind": "parent-upvalue"
+        },
+        {
+          "slot": 21,
+          "opcode": 132,
+          "upvalueIndex": 2,
+          "sourceUpvalue": 4,
+          "sourceKind": "parent-upvalue"
+        },
+        {
+          "slot": 22,
+          "opcode": 132,
+          "upvalueIndex": 3,
+          "sourceUpvalue": 5,
+          "sourceKind": "parent-upvalue"
+        },
+        {
+          "slot": 23,
+          "opcode": 132,
+          "upvalueIndex": 4,
+          "sourceUpvalue": 6,
+          "sourceKind": "parent-upvalue"
+        },
+        {
+          "slot": 24,
+          "opcode": 132,
+          "upvalueIndex": 5,
+          "sourceUpvalue": 7,
+          "sourceKind": "parent-upvalue"
+        },
+        {
+          "slot": 25,
+          "opcode": 132,
+          "upvalueIndex": 6,
+          "sourceUpvalue": 8,
+          "sourceKind": "parent-upvalue"
+        },
+        {
+          "slot": 26,
+          "opcode": 132,
+          "upvalueIndex": 7,
+          "sourceUpvalue": 9,
+          "sourceKind": "parent-upvalue"
+        },
+        {
+          "slot": 27,
+          "opcode": 132,
+          "upvalueIndex": 8,
+          "sourceUpvalue": 10,
+          "sourceKind": "parent-upvalue"
+        },
+        {
+          "slot": 28,
+          "opcode": 132,
+          "upvalueIndex": 9,
+          "sourceUpvalue": 11,
+          "sourceKind": "parent-upvalue"
+        },
+        {
+          "slot": 29,
+          "opcode": 132,
+          "upvalueIndex": 10,
+          "sourceUpvalue": 12,
+          "sourceKind": "parent-upvalue"
+        }
+      ],
+      "evidence": "root/25 slot18为Opcode178，A=3/B=0/C=11；slot19-29为11条Opcode132捕获描述，按顺序从父闭包root/25的H[2]至H[12]捕获。由此root/25/0的H[0..10]可准确接到root/25的H[2..12]；root/25的这些H槽仍需向root局部寄存器来源映射。"
     }
   ],
   "targeted_reextract_2026_11_21": {
