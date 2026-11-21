@@ -4672,9 +4672,15 @@ local function RunCruisePlayerScan_11_16(captured)
             local id = actor.UserID
             local actorHP = SL:GetMetaValue("ACTOR_HP", id) or 0
             if id ~= mainActorID and actorHP > 0 then
+                -- 本版指令流在候选玩家循环中明确调用
+                -- SL:GetMetaValue("ACTOR_NAME", actorID)，优先使用引擎元数据名称。
+                local actorName = SL:GetMetaValue("ACTOR_NAME", id)
+                if actorName == nil then
+                    actorName = actor.Name or actor.name or ""
+                end
                 local record = {
                     id = id,
-                    name = actor.Name or "",
+                    name = actorName,
                     x = actor.x or actor.X,
                     y = actor.y or actor.Y,
                 }
