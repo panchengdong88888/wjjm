@@ -4696,7 +4696,15 @@ local function RunCruisePlayerScan_11_16(captured)
                     record.dist = math.max(dx, dy)
                     record.isHero = SL:GetMetaValue("ACTOR_IS_HERO", id)
                     record.guildName = SL:GetMetaValue("ACTOR_GUILD_NAME", id) or ""
-                    record.teamMember = teamMembers[id] ~= nil
+                    -- TEAM_MEMBER_LIST在原指令中通过ipairs遍历，并逐项比较成员.UserID；
+                    -- 它不是以玩家ID为键的字典，不能用teamMembers[id]直接判断。
+                    record.teamMember = false
+                    for _, member in ipairs(teamMembers) do
+                        if member and member.UserID == id then
+                            record.teamMember = true
+                            break
+                        end
+                    end
                     -- 原指令还对名称/行会/队伍及英雄属性进行过滤；
                     -- 过滤条件的完整组合尚未逐项命名，交由已确认的适配器处理。
                     local accept = true
@@ -4832,8 +4840,10 @@ local function RunCruisePlayerScan_11_16(captured)
     for _, candidate in ipairs(candidates) do
         local offset = offsets[tostring(candidate.dir)] or offsets[candidate.dir]
         if offset then
-            local targetX = target.x + offset.x * candidate.step
-            local targetY = target.y + offset.y * candidate.step
+            -- slot411–414重新取得主玩家对象；slot426–433以主玩家当前坐标
+            -- 加上方向偏移*step生成落点，而不是以目标玩家坐标为基准。
+            local targetX = mainX + offset.x * candidate.step
+            local targetY = mainY + offset.y * candidate.step
             local blocked = mapData and mapData:isObstacle(targetX, targetY)
             if not blocked then
                 clearTargets()
@@ -4866,8 +4876,10 @@ local function RunCruisePlayerScan_11_16(captured)
     end
 
     -- 所有方向候选均未通过时，执行原指令尾段的随机[-2,2]回退。
-    local randomX = math.random(-2, 2)
-    local randomY = math.random(-2, 2)
+    -- slot532–539生成[-2,2]随机偏移并叠加主玩家当前坐标；
+    -- slot542–545用最终地图坐标执行isObstacle检查。
+    local randomX = mainX + math.random(-2, 2)
+    local randomY = mainY + math.random(-2, 2)
     if mapData and mapData:isObstacle(randomX, randomY) then
         return
     end
@@ -4881,7 +4893,9 @@ local function RunCruisePlayerScan_11_16(captured)
         -- 先通过适配器保留调用位置，避免错误伪造向量参数。
         if captured.calcRandomDirection then
             moveDir = captured.calcRandomDirection(
-                playerInputProxy, randomX, randomY
+                playerInputProxy,
+                cc.p(randomX, randomY),
+                cc.p(mainX, mainY)
             )
         end
     end
@@ -4894,8 +4908,9 @@ local function RunCruisePlayerScan_11_16(captured)
         moveDir = moveDir,
         moveStep = 2,
         type = global.MMO.INPUT_MOVE_TYPE_JOYSTICK,
-        x = randomX,
-        y = randomY,
+        -- 原指令slot587–588写入主玩家当前坐标寄存器。
+        x = mainX,
+        y = mainY,
     })
     SL:ScheduleOnce(function()
         if captured.onRandomMoveScheduled then
