@@ -4788,14 +4788,22 @@ local function RunCruisePlayerScan_11_16(captured)
     local offsets = directionOffsets
     local candidates = {}
     if offsets then
+        -- slot371–410连续构造了8个候选记录；前5个step=2，后3个step=1。
+        -- 方向围绕远离目标的baseDir按近侧优先、逐步扩展的顺序排列。
         local candidateDirs = {
-            baseDir, (baseDir + 1) % 8, (baseDir + 7) % 8,
-            (baseDir + 2) % 8, (baseDir + 6) % 8,
+            baseDir,
+            (baseDir + 1) % 8,
+            (baseDir + 7) % 8,
+            (baseDir + 2) % 8,
+            (baseDir + 6) % 8,
+            (baseDir + 3) % 8,
+            (baseDir + 5) % 8,
+            (baseDir + 4) % 8,
         }
         for i, dir in ipairs(candidateDirs) do
             candidates[#candidates + 1] = {
                 dir = dir,
-                step = (i <= 3) and 2 or 1,
+                step = (i <= 5) and 2 or 1,
             }
         end
     end
