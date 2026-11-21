@@ -6289,3 +6289,23 @@ local function RequestAncientSwordSeal_11_16()
 
     return sent
 end
+
+
+-- ============================================================================
+-- 11.16 root/27 后半段物理指令定位记录（2026-11-21续）
+-- 下列为原版root/27的槽位/常量交叉定位，不代表对应运行逻辑已全部接入：
+--   slot150/153/156：walkNpc、clickNpc、waitEnter状态字符串进入对应比较/分支区。
+--   slot164-170：目标地图名称与提示文本的组合读取区。
+--   slot171-180：写入walkNpc状态；读取target.x/target.y；出现MoveTo调用入口。
+--   slot181-200：读取target.index/target.userID；出现
+--       {"index":%d,"UserID":"%s"} 格式串及LuaSendMsg/1010调用序列。
+--   slot202-220：clickNpc状态及ticks计数分支；出现LuaSendMsg/9002/10037消息常量。
+--   slot221-238：waitEnter状态及ticks计数分支；出现30计数门控与
+--       LuaSendMsg/9002/10037消息常量。
+--   slot240-282：monitor状态、lastMapName与target.name比较及进入地图提示。
+--   slot283-307：backCity状态、盟重回城石缺失提示及停止/复位分支。
+--
+-- 重要边界：slot173的MoveTo取值/调用链、slot190-200的1010消息实参、
+-- slot211-219与229-237的10037消息实参，尚未完成寄存器级逐项绑定。
+-- 因此当前只把这些标记为已定位的物理区段，不把它们伪装成完整可执行逻辑。
+-- ============================================================================
