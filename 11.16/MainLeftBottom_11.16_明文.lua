@@ -3807,14 +3807,17 @@ end
 
 
 -- ============================================================================
--- 11.16 root/52/24：停止丢弃、拾取及自动购买金条（部分恢复，76个物理槽位）
--- 依据本版常量和控制流恢复四个定时器清理、丢弃状态复位及按钮复位。
--- 捕获对象词法名/父级upvalue映射尚未完全闭合，故通过显式代理参数传入。
--- 该函数比11.9同职责停止回调多出buygold110Timer、buygoldTimer和dropallbut处理。
+-- 11.16 root/52/24：停止丢弃、拾取及自动购买金条（76个物理槽位）
+-- 本版完整指令流确认：取消dropTimer、shiquTimer、buygoldTimer、
+-- buygold110Timer；复位isDiuing；复位diuqibut/shiqubut两个toggle；
+-- 另将dropallbut按钮标题恢复为“开丢全部”、颜色恢复白色，并显示停止提示。
+-- 父级捕获寄存器与词法名称尚未闭合，因此以下依赖按业务职责显式传入，
+-- 不伪造原始upvalue槽位映射。
 -- ============================================================================
 local function helper_root_52_24(
     timerState,
     featureState,
+    syncButtonToggle,
     dropAllButton,
     showLocalNotice
 )
@@ -3826,15 +3829,16 @@ local function helper_root_52_24(
         end
     end
 
-    -- 本版常量池确认的自动购买、拾取及丢弃定时器。
-    cancelTimer("buygold110Timer")
-    cancelTimer("buygoldTimer")
-    cancelTimer("shiquTimer")
     cancelTimer("dropTimer")
-
     featureState.isDiuing = false
+    syncButtonToggle("diuqibut", false)
 
-    -- 停止全部操作后，将“丢全部”按钮恢复为未开启状态。
+    cancelTimer("shiquTimer")
+    syncButtonToggle("shiqubut", false)
+
+    cancelTimer("buygoldTimer")
+    cancelTimer("buygold110Timer")
+
     if dropAllButton then
         GUI:Button_setTitleText(dropAllButton, "开丢全部")
         GUI:Button_setTitleColor(dropAllButton, "#ffffff")
@@ -3843,7 +3847,6 @@ local function helper_root_52_24(
     showLocalNotice("已停止丢物品、拾取和购买金条")
     return true
 end
-
 
 -- ============================================================
 --  11.16 root/54：startAppleMap（56条物理指令，0显式参数，5项upvalue）
