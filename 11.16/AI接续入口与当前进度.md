@@ -2287,3 +2287,11 @@ root/25/0方向候选现严格按slot371–410常量顺序恢复：`+4,+3,+5,+2,
 - root/33自身的四项捕获已在闭包映射中明确：H[0]=MainLeftBottom.z，H[1]=ShowLocalNoticeByType，H[2]=PrintLog，H[3]=Schedule。因此root/33/0的两个实际读取槽位精确映射为主界面状态表和本地提示回调。
 - 子闭包21槽主体原已恢复；现补齐实际使用的两项捕获身份，更新唯一明文注释与函数状态CSV，root/33/0由部分恢复调整为本版指令级完整恢复。未读取的其余4个upvalue不臆造。
 - root/33父函数本身仍待恢复；本次仅关闭root/33/0子闭包，不代表父函数root/33已完成。未执行Lua语法/API/APK验证。
+
+
+### 2026-11-21续接：root/50/0数字输入校验职责定位（未写代码）
+
+- 对照11.16原型索引，root/50为5参数、80常量、5个子闭包的自定义数字上架窗口；root/50/0为0参数、15常量、80条指令。
+- root/50/0常量明确包含TextInput_getString、string.gsub(%s)、tonumber、string.match(^%d+$)、Text_setString，以及“参数格式不对，请输入数字”“请输入要上架的物品名称”，故高置信定位为数字输入确认/格式验证回调。
+- 11.9旧版MakeCommonInputPrompt存在相同的去空白、纯数字匹配、tonumber校验流程，可作业务参照；但旧版调用SL:OpenCommonTipsPop，本版为GUI TextInput自定义窗口，不能直接复制旧版UI流程。
+- 本版root/50/0完整80槽指令流和root/50父级创建/捕获关系仍未保存；因此只更新候选职责与旧版参照，不拼造代码，不标记完成。下一步优先取得root/50/0槽位流或其父级创建上下文。
