@@ -1246,3 +1246,29 @@ Opcode 204/393为方法receiver与成员准备；Opcode 209/128分别执行有�
 - Opcode359：`N[A]=K[3]`，融合消费下一槽执行成员读取`N[next.A]=N[next.B][next.C]`。
 - root/52/34的46槽控制流：读取root/18配置读取闭包返回的配置表；价格为`tonumber(config.price) or MainLeftBottom.putinPrice`；名称优先非空config.name，否则MainLeftBottom.putinName，再否则“金条”；堆叠标志为`config.mode == "1"`。创建root/52/34/0回调并调用`MainLeftBottom.a.inputNumber("上架物品", price, onConfirm, itemName, useStackQuantity)`。
 - 子回调的捕获顺序：MainLeftBottom、root/44配置写入闭包、MainLeftBottom.a。回调先更新MainLeftBottom.putinPrice/putinName，再给配置写入闭包设置putinStacked属性并调用其三参数(price,name,stacked)，最后调用MainLeftBottom.a.startPutinGold(price,name,stacked)。
+
+
+## 2026-11-21续：root/52/23相关Opcode的原始分派器叶节点补证
+
+以下不是根据旧版表格推测，而是直接从本版原始文件 `MainLeftBottom 11.16原版.lua` 的解释器函数 `F` 中读取对应条件叶节点。由于部分opcode会融合消费后续物理槽，必须按`O=O+1; K=W[O]`次数处理；不能把JSON里的每一行都当成独立Lua语句。
+
+| Opcode | 本版解释器实际执行片段 | 对root/52/23恢复的意义 |
+|---:|---|---|
+| 18 | 创建当前寄存器表；前进一槽后再创建下一寄存器表 | 表创建融合指令，第二个物理槽是载荷 |
+| 32 | 比较`N[B] < K[4]`；比较结果与`A~=0`不同时跳过下一槽 | 条件跳过分支，必须保留两条路径 |
+| 64 | `N[A]=N[B]` | 普通寄存器复制 |
+| 82 | `N[A]=N[B][C]`；前进一槽后再次执行一次表成员读取 | 连续两次表读取融合指令 |
+| 96 | `N[A]=N[B][C]` | 单次表成员读取 |
+| 128 | 调用`N[A](Y(N,A+1,C))`，不把返回值写回寄存器 | 无返回值接收的调用 |
+| 130 | `N[A]=N[B]`；前进一槽后`N[A]=Z[C]` | 寄存器复制+常量装载融合指令 |
+| 146 | `N[A]=Z[C]` | 常量池装载 |
+| 160 | 创建表；前进槽读取闭包捕获`H[C]`；再读取表成员；再装载常量；最后复制寄存器 | 多槽融合模板，不能按单槽解释 |
+| 210 | 装载常量；前进槽取接收者并准备方法调用寄存器；再前进槽复制寄存器 | 常量装载+方法调用准备的融合模板 |
+| 224 | 连续装载多个立即数`K[C]`到目标寄存器 | 多立即数载荷模板 |
+| 241 | `N[A]=N[B]` | 普通寄存器复制 |
+
+### 使用边界
+
+- 上表只记录这些opcode在原始分派器中的对应叶节点及融合消费行为；不表示root/52/23的全部控制流已经模拟。
+- JSON导出中的`a/b/c/d`字段包含了提取器的操作数解释；对融合模板，仍需按原始槽顺序读取被消费的后续记录。
+- root/52/23槽221–505的称号/剑灵分支，以及槽798–844的苹果购买分支，后续应先按此表展开融合槽，再做寄存器数据流；不得把载荷槽误当成新的opcode入口。
