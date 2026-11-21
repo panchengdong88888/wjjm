@@ -1237,3 +1237,12 @@ Opcode 204/393为方法receiver与成员准备；Opcode 209/128分别执行有�
 5. 未拦截的消息调用原处理器并返回结果：`originalOnLuaMessage(0, 1, 2, arg3, arg4, payload)`。末尾Opcode354/205位于该无条件返回之后，不构成另一条可达业务路径。
 
 恢复源码：`MainLeftBottom_11.16_明文.lua`中的`make_helper_root_52_14`。原始局部符号名未确认，保留合成定位名。
+
+
+## 2026-11-21：root/52/34金条上架入口Opcode补充
+- Opcode0/306：按常量字段名与寄存器值写表字段，分别为`N[A][K[3]]=N[K[4]]`与`N[A][K[3]]=K[4]`（依本条操作数模式）。
+- Opcode163：`N[A]=N[B][C]`，融合消费下一槽写入常量。
+- Opcode174：`N[A]=(K[3]~=0)`；当K[4]非零时跳过下一物理槽。
+- Opcode359：`N[A]=K[3]`，融合消费下一槽执行成员读取`N[next.A]=N[next.B][next.C]`。
+- root/52/34的46槽控制流：读取root/18配置读取闭包返回的配置表；价格为`tonumber(config.price) or MainLeftBottom.putinPrice`；名称优先非空config.name，否则MainLeftBottom.putinName，再否则“金条”；堆叠标志为`config.mode == "1"`。创建root/52/34/0回调并调用`MainLeftBottom.a.inputNumber("上架物品", price, onConfirm, itemName, useStackQuantity)`。
+- 子回调的捕获顺序：MainLeftBottom、root/44配置写入闭包、MainLeftBottom.a。回调先更新MainLeftBottom.putinPrice/putinName，再给配置写入闭包设置putinStacked属性并调用其三参数(price,name,stacked)，最后调用MainLeftBottom.a.startPutinGold(price,name,stacked)。
