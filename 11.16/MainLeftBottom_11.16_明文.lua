@@ -4526,9 +4526,9 @@ end
 -- 父级root/25/0槽位504创建该闭包，槽位505/506依次捕获父级N[0]与N[24]。
 -- 子闭包指令只读取H[1]的dir/step，因此实际移动状态来自父级N[24]；
 -- H[0]虽被捕获，但本子闭包指令流未读取。回调无显式参数。
--- 执行顺序：重新获取主玩家；检查SL:GetMetaValue("ACTOR_HP")；
--- 读取捕获移动状态.dir/.step；组装并发送UserInputMove摇杆通知，
--- x/y取主玩家当时的GetMapX()/GetMapY()。
+-- 执行顺序：重新获取主玩家；读取SL:GetMetaValue("ACTOR_HP") or 0，
+-- HP小于等于0时直接结束；读取捕获移动状态.dir/.step；
+-- 组装UserInputMove摇杆通知，x/y取主玩家当时的GetMapX()/GetMapY()。
 local function MakeJoystickUserInputMove_11_16(unusedModuleCapture, moveStateCapture)
     return function()
         local player = global.gamePlayerController:GetMainPlayer()
@@ -4536,8 +4536,8 @@ local function MakeJoystickUserInputMove_11_16(unusedModuleCapture, moveStateCap
             return
         end
 
-        local actorHP = SL:GetMetaValue("ACTOR_HP")
-        if not actorHP then
+        local actorHP = SL:GetMetaValue("ACTOR_HP") or 0
+        if actorHP <= 0 then
             return
         end
 
@@ -4549,7 +4549,7 @@ local function MakeJoystickUserInputMove_11_16(unusedModuleCapture, moveStateCap
             y = player:GetMapY()
         }
 
-        global.Facade.sendNotification(
+        global.Facade:sendNotification(
             global.NoticeTable.UserInputMove,
             payload
         )
