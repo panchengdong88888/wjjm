@@ -2272,3 +2272,10 @@ root/25/0方向候选现严格按slot371–410常量顺序恢复：`+4,+3,+5,+2,
 - 已补齐商城代理获取、物品名称索引查询、pageData商品查找、限购状态检查、Condition/condis条件检查、CountMax/LimitCount/BuyCount数量约束及RequestBuy提交；现有root/52/26购买金条回调对`BuyStoreItem`的引用有了本地实现。
 - 由于11.16尚无root/21逐槽指令流，本项标记为跨版本业务复用，不冒充本版指令级完整恢复；未做语法/API/APK验证。
 - 下一项继续按旧版同职责映射优先，优先从尚未恢复且具备明显业务常量线索的原型中寻找可直接复用项；不重复root/21与root/9。
+
+
+### 2026-11-21续接：root/61 backCity回城石使用主体已写入
+
+- root/61为0参数、0捕获、60条指令；闭包创建映射确认父级创建点及函数身份候选backCity。常量池完整包含QUICKUSE_DATA、盟重回城石、ITEM_COUNT、ITEM_INDEX_BY_NAME、pairs、tonumber、UseItemByIndex、string.find、Name、Index。
+- 已在唯一明文写入`backCity()`：读取快捷使用数据，遍历名称匹配盟重回城石的记录，按物品名取得索引、读取数量，数量大于0时调用UseItemByIndex并返回true；未找到/无库存返回false。
+- 本项属于依据常量与调用链恢复的主体，不冒充60槽逐条闭合；后续取得本版root/61逐槽流后再补齐分支细节。
