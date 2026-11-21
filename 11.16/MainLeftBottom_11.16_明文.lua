@@ -4626,6 +4626,18 @@ local function BindCruiseRunCaptures_11_16(upvalues, adapters)
     }
 end
 
+-- 共享门控复位回调：只有外层提供真实upvalue-cell写入器时才创建。
+-- 普通Lua值/数组副本无法替代原闭包共享的upvalue cell，因此不生成空操作回调。
+local function MakeCruisePauseResetCallback_11_16(setSharedPause)
+    if type(setSharedPause) ~= "function" then
+        return nil
+    end
+
+    return function()
+        setSharedPause(false)
+    end
+end
+
 local function RunCruisePlayerScan_11_16(captured)
     captured = captured or {}
     local upvalues = captured.upvalues or captured.raw or {}
@@ -4871,11 +4883,12 @@ local function RunCruisePlayerScan_11_16(captured)
                     MakeJoystickUserInputMove_11_16(captured.sharedPauseValue, candidate),
                     0.05
                 )
-                SL:ScheduleOnce(make_helper_root_25_0_0({
-                    [0] = captured.setSharedPause and function(value)
-                        captured.setSharedPause(value)
-                    end or function() end
-                }), 0.3)
+                local resetPause = MakeCruisePauseResetCallback_11_16(
+                    captured.setSharedPause
+                )
+                if resetPause then
+                    SL:ScheduleOnce(resetPause, 0.3)
+                end
                 if captured.printLog then
                     captured.printLog(string.format(
                         "见人跑: %s(%d格)，向%d方向移动%d步",
@@ -4931,11 +4944,12 @@ local function RunCruisePlayerScan_11_16(captured)
     })
     -- slot594–597创建root/25/0/2闭包，0.3秒后将共享门控写回false。
     -- 与普通候选路径的root/25/0/0复位闭包使用同一upvalue单元。
-    SL:ScheduleOnce(make_helper_root_25_0_2({
-        [0] = captured.setSharedPause and function(value)
-            captured.setSharedPause(value)
-        end or function() end
-    }), 0.3)
+    local resetPause = MakeCruisePauseResetCallback_11_16(
+        captured.setSharedPause
+    )
+    if resetPause then
+        SL:ScheduleOnce(resetPause, 0.3)
+    end
 end
 
 
