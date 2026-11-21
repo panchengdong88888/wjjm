@@ -5137,3 +5137,37 @@ local function GetDirectionByVector_11_16(dx, dy)
     end
     return 7
 end
+
+
+-- ============================================================================
+-- 11.16 root/9：GetMapData2DPtr候选函数（5参数距离门控）
+-- ============================================================================
+-- 本版root/9有5个显式参数及1项父级捕获。对照11.9同职责旧版，活动路径
+-- 返回切比雪夫距离；父级捕获在活动路径不读取，故保留unusedCapturedValue。
+-- 常量池中的sceneManager/isObstacle/getMapDataRows/getMapDataCols等属于
+-- 旧版同体中return之后的残留尾段，不将其误写成地图数据读取逻辑。
+local function MakeGetMapData2DPtr_11_16(unusedCapturedValue)
+    return function(x1, y1, x2, y2, maxDistance)
+        if not x1 or not y1 or not x2 or not y2 or not maxDistance then
+            return nil
+        end
+
+        if x1 == x2 and y1 == y2 then
+            return 0.0
+        end
+
+        if maxDistance <= 0 then
+            return nil
+        end
+
+        local dx = math.abs(x2 - x1)
+        local dy = math.abs(y2 - y1)
+        local distance = math.max(dx, dy)
+
+        if maxDistance < distance then
+            return nil
+        end
+
+        return distance
+    end
+end
