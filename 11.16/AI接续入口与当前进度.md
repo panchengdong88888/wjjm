@@ -2199,3 +2199,10 @@ root/15父函数87槽、3参数，已按A字段真实Opcode推进：slot1–3货
 - 新增`BindCruiseRunCallback_11_16`作为明确的接线入口，供root/25启停按钮的callbackFactory使用；返回值可直接交给`SL:Schedule(callback, 0.1)`。
 - 这一步消除了“捕获适配器”和“周期调度回调”之间缺失的最后一层工厂包装；尚未确认的捕获槽仍原样保留，外层必须提供共享门控setter等真正需要的适配项。
 - 未改动原始VM证据，未执行Lua编译或APK验证。root/25/0仍为部分恢复，尤其玩家筛选条件与随机回退cc.p/calcMapDirection的参数形态仍需继续补齐。
+
+
+### 2026-11-21续：修正root/25/0候选玩家名称来源
+
+- 对照root/25/0定点指令流slot153–164，候选玩家循环明确以当前actorID调用`SL:GetMetaValue("ACTOR_NAME", actorID)`，并在后续以该名称参与记录/过滤逻辑。
+- 之前主体初稿直接取`actor.Name`，漏掉了这次元数据查询。现已改为优先读取`ACTOR_NAME`，仅在元数据缺失时回退到actor.Name/actor.name。
+- 该修正属于指令常量和调用参数直接支持的内容；其余名称/行会/队伍过滤条件仍未完整还原，不以猜测代替原逻辑。
