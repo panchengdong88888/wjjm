@@ -3858,6 +3858,43 @@ local function helper_root_52_24(
     return true
 end
 
+-- ============================================================================
+-- 11.16 root/61：backCity（60条指令，0显式参数，0项捕获）
+-- ============================================================================
+-- 常量池明确指向QUICKUSE_DATA、盟重回城石、ITEM_COUNT、
+-- ITEM_INDEX_BY_NAME、pairs、tonumber、UseItemByIndex及Name/Index字段。
+-- 按该业务链恢复：在快捷使用数据中定位盟重回城石，确认背包数量后使用。
+-- 本版root/61逐槽指令流尚未单独提取，故保留为依据常量与调用关系恢复的主体。
+local function backCity()
+    local quickUseData = SL:GetMetaValue("QUICKUSE_DATA")
+    if type(quickUseData) ~= "table" then
+        return false
+    end
+
+    for _, quickUseItem in pairs(quickUseData) do
+        if quickUseItem and quickUseItem.Name
+            and string.find(quickUseItem.Name, "盟重回城石", 1, true)
+        then
+            local itemIndex = tonumber(
+                SL:GetMetaValue("ITEM_INDEX_BY_NAME", quickUseItem.Name)
+            )
+
+            if itemIndex then
+                local itemCount = tonumber(
+                    SL:GetMetaValue("ITEM_COUNT", itemIndex)
+                ) or 0
+
+                if itemCount > 0 then
+                    SL:UseItemByIndex(itemIndex)
+                    return true
+                end
+            end
+        end
+    end
+
+    return false
+end
+
 -- ============================================================
 --  11.16 root/54：startAppleMap（56条物理指令，0显式参数，5项upvalue）
 -- ============================================================
