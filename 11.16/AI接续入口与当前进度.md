@@ -2139,3 +2139,15 @@ root/15父函数87槽、3参数，已按A字段真实Opcode推进：slot1–3货
 - 移动执行段slot446–524可见PlayerInputProxy清理攻击目标/目标/移动状态的分支；随后设置BATTLE_AFK_END并发送UserInputMove摇杆通知，payload含moveDir、moveStep、INPUT_MOVE_TYPE_JOYSTICK及玩家当前地图X/Y；ScheduleOnce延迟调度子闭包，延迟值0.05秒与0.3秒分别出现，回调中格式化“见人跑: %s(%d格)，向%d方向移动%d步”。另有slot525–598的随机方向/障碍回退路径，尚需闭合最终分支。
 - 本轮未把598槽主体拼成完整Lua函数，也未向唯一明文写入不完整主体；CSV/账本/接续入口同步标记上述已闭合区段和剩余工作。未执行Lua语法/API/APK验证。
 - 下一步优先闭合slot411–445的候选方向过滤及slot446–524移动回调，再闭合slot525–598随机回退；不要重新分析已闭合的反击链和八方向偏移表。
+
+
+### 2026-11-21续：root/25/0候选方向循环与随机回退分支闭合进展
+
+- slot371–410的候选列表构造已按8方向偏移表闭合：先由玩家与目标坐标差调用方向转换函数取得基础方向/距离，再构造多个`{dir, step}`候选项（包含主方向及相邻方向、不同步数），最后以SETLIST式指令写入候选数组N[18]。该候选数组随后由ipairs遍历。
+- slot411–417：读取`global.gamePlayerController:GetMainPlayer()`，并初始化`ipairs(N[18])`迭代器；slot418先跳到迭代推进位置，形成先推进、再进入候选体的循环结构。
+- slot419–445：对当前候选读取dir，经H[10]八方向偏移表取得单位偏移；以候选step乘以偏移，再加到目标坐标上，形成待走坐标；随后按N[10]状态门控调用H[?].isObstacle(x,y)。若该候选被障碍阻挡，则跳到slot524进入下一轮候选；未阻挡则进入slot446移动执行。N[10]具体业务名尚未确认，不擅自命名。
+- slot446–524：取得PlayerInputProxy；按成员是否存在选择调用ClearAttackTargetID、ClearTarget、SetTargetID、ClearMove；设置`SL:SetMetaValue("BATTLE_AFK_END")`；发送UserInputMove摇杆通知，字段包含候选dir/step、`global.MMO.INPUT_MOVE_TYPE_JOYSTICK`及主玩家当前地图坐标；随后ScheduleOnce安排延迟回调，0.05秒和0.3秒两种时长均存在，回调输出“见人跑: %s(%d格)，向%d方向移动%d步”。该分支在完成移动调度后结束当前回调。
+- slot525–598：前段生成X/Y各自[-2,2]范围的随机偏移；slot540–547有状态门控和isObstacle检查；若随机落点不可用则结束本轮。可用时取得PlayerInputProxy，按成员存在情况清理攻击目标/普通目标；调用`calcMapDirection`将随机偏移转换为方向，方向无效则结束；有效时发送UserInputMove摇杆通知，`moveStep=2`，x/y为随机偏移坐标，并以0.3秒ScheduleOnce延迟回调后结束。
+- 重要边界：N[10]状态门控的业务身份仍未确认；候选体中isObstacle receiver来自捕获对象，但捕获身份需沿父寄存器再确认。H[0]=cruiseGatherPaused、H[10]=八方向偏移表及已闭合反击路径不再重复分析。主体虽已获得598条完整逐槽指令，但仍有少量捕获变量名/门控业务名未闭合；因此本轮继续保持“部分恢复”，不把未经确认的词法变量名伪装成真实名称。
+- 唯一明文文件中原先“root/25/0主体尚未取得逐条指令流”的注释已过时，改为“598条指令已提取、正在分段恢复”；MakeCruiseRunButtonHandler中的callbackFactory明确是root/25/0闭包工厂接口，不再称为未取得主体的占位实现。未执行Lua语法/API/APK验证。
+- 下一步优先沿root父函数寄存器定义闭合N[10]及isObstacle receiver的业务身份，然后把已闭合的候选过滤/移动/随机回退路径整理成唯一明文函数；不要重做已确认的反击链和方向表。
