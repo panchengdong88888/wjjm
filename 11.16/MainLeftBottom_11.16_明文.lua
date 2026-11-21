@@ -6410,6 +6410,55 @@ local function RequestAncientSwordData_11_16(moduleState, now)
 end
 
 
+-- root/52/23槽368–463：剑灵打造材料逐项检查。
+-- 原始流确认使用ipairs遍历材料列表，并分别读取每项的[1]与[2]；
+-- 下列适配器按“[1]=材料名称、[2]=需求数量”处理单条配置。
+-- jianling_Config按剑灵等级选择哪一份材料列表仍未闭合，因此由调用方传入
+-- 已选中的materialList；本函数不猜测等级到配置表的索引关系，也不发送打造消息。
+local function CheckAncientSwordMaterials_11_16(materialList)
+    if type(materialList) ~= "table" then
+        return false, { "缺少升级材料配置" }, 0
+    end
+
+    local missing = {}
+    local checked = 0
+
+    for _, material in ipairs(materialList) do
+        if type(material) ~= "table" then
+            missing[#missing + 1] = "缺少升级材料配置"
+        else
+            local itemName = tostring(material[1] or "")
+            local required = tonumber(material[2]) or 0
+
+            if itemName == "" or required <= 0 then
+                missing[#missing + 1] = "缺少升级材料配置"
+            else
+                local current
+                if itemName == "金币" then
+                    current = GetGoldAmount_11_16()
+                else
+                    current = tonumber(
+                        SL:GetMetaValue("ITEM_COUNT", itemName)
+                    ) or 0
+                end
+
+                checked = checked + 1
+                if current < required then
+                    missing[#missing + 1] = string.format(
+                        "%s不足(%d/%d)",
+                        itemName,
+                        current,
+                        required
+                    )
+                end
+            end
+        end
+    end
+
+    return #missing == 0 and checked > 0, missing, checked
+end
+
+
 -- root/52/23槽846–896：两种上古神剑解封请求。
 -- 两个连续分支分别检查对应解封石库存；消息号/参数来自本版物理槽位。
 -- sealPanelAt的节流门控属于父回调状态机，本辅助函数不自行猜测冷却秒数。
