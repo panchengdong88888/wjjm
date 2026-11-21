@@ -5204,22 +5204,34 @@ end
 
 
 -- ============================================================================
--- 11.16 root/52/15：丢全部按钮状态显示与状态复位（36条指令，部分恢复）
+-- 11.16 root/52/15：丢全部按钮状态显示与状态复位（36条指令，完整恢复）
 -- ============================================================================
--- 本版常量直接确认按钮映射键dropallbut、GUI按钮标题/颜色方法、
--- 两种标题“关丢全部/开丢全部”及颜色#ff0000/#ffffff；
--- 尾部还将diuqibut对应状态写为false。父级捕获对象身份尚未闭合，
--- 因此把按钮、活动状态及状态复位动作显式传入，不伪造捕获变量名。
-local function SyncDropAllButtonVisual_11_16(
-    button,
-    isDropAllActive,
-    resetDropAllFlag
-)
-    if not button then
+-- 捕获顺序按本原型H槽原样保留（Lua数组为1-based）：
+-- upvalues[1]：提供dropallbut()状态判断函数的对象；
+-- upvalues[2]：提供dropTimer状态的对象；
+-- upvalues[3]：按钮映射表，dropallbut字段为目标按钮；
+-- upvalues[4]：状态写入回调，接收(key, value)。
+--
+-- 逐槽控制流：
+-- 1-5：调用upvalues[1].dropallbut()；结果恰好为false时直接结束。
+-- 6-9：读取upvalues[2].dropTimer并双重not，规范为布尔值。
+-- 10-20：通过GUI.Button_setTitleText设置按钮标题；dropTimer为真时
+--       使用“关丢全部”，否则使用“开丢全部”。
+-- 21-31：通过GUI.Button_setTitleColor设置颜色；dropTimer为真时红色，
+--        否则白色。slot17/28检查刚装入的非空字符串，属于恒真分支，
+--        不构成额外业务条件。
+-- 32-36：调用upvalues[4]("diuqibut", false)并结束。
+-- 不添加按钮nil保护或额外返回值，以免改变原函数控制流。
+local function SyncDropAllButtonVisual_11_16(upvalues)
+    local shouldUpdate = upvalues[1].dropallbut()
+    if shouldUpdate == false then
         return
     end
 
-    if isDropAllActive then
+    local isDropTimerActive = not not upvalues[2].dropTimer
+    local button = upvalues[3].dropallbut
+
+    if isDropTimerActive then
         GUI:Button_setTitleText(button, "关丢全部")
         GUI:Button_setTitleColor(button, "#ff0000")
     else
@@ -5227,9 +5239,7 @@ local function SyncDropAllButtonVisual_11_16(
         GUI:Button_setTitleColor(button, "#ffffff")
     end
 
-    if resetDropAllFlag then
-        resetDropAllFlag(false)
-    end
+    upvalues[4]("diuqibut", false)
 end
 
 
