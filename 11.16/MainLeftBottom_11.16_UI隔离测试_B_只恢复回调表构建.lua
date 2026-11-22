@@ -6570,7 +6570,11 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
         moduleState.buttonDefinitions = BuildMainLeftBottomButtonDefinitions_11_16()
         moduleState.screenW = mainPanelState.screenW or SL:GetMetaValue("SCREEN_WIDTH") or 0
         moduleState.screenH = mainPanelState.screenH or SL:GetMetaValue("SCREEN_HEIGHT") or 0
-        moduleState.buttonAnchorX, moduleState.buttonAnchorY = GetMainLeftBottomButtonAnchor_11_16(mainPanelState)
+        local anchorChat = MainProperty and MainProperty._ui and MainProperty._ui.Panel_mini_chat
+        local anchorPos = anchorChat:getWorldPosition()
+        local anchorSize = anchorChat:getContentSize()
+        moduleState.buttonAnchorX = anchorPos.x + anchorSize.width - 10
+        moduleState.buttonAnchorY = anchorPos.y + 1
         mainPanelState.buttonAnchorX = moduleState.buttonAnchorX
         mainPanelState.buttonAnchorY = moduleState.buttonAnchorY
         local resourceWindowHandler = nil
