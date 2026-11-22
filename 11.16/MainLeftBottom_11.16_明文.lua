@@ -3757,7 +3757,15 @@ local function make_helper_root_52_32(capturedUpvalues)
             buttonConfig.toggled = false
         end
 
-        -- 本阶段只恢复控件创建与显示；点击事件暂不注册。
+        -- 只为已有完整回调的按钮注册点击事件；缺失捕获的按钮保持显示但不接线。
+        if type(callbackMap) == "table"
+            and type(callbackMap[buttonConfig.key]) == "function"
+        then
+            GUI:addOnClickEvent(
+                button,
+                helper_root_52_32_0(callbackMap, buttonConfig, button)
+            )
+        end
         return button
     end
 end
@@ -6551,8 +6559,13 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             moduleState.buttonGroups = { group1, group2, group3 }
             mainPanelState.buttonGroups = moduleState.buttonGroups
 
-            -- 实机测试准备阶段：只构建按钮外观，不恢复/注册任何业务点击功能。
-            local callbackMap = {}
+            -- 接入已完整恢复的按钮回调；缺少真实捕获来源的按钮不注册事件。
+            local callbackMap = BuildMainLeftBottomCallbackMap_11_16({
+                timerState = MainLeftBottom.z,
+                moduleState = moduleState,
+                visibleItems = visibleItems,
+                resourceWindowHandler = resourceWindowHandler,
+            })
             moduleState.buttonCallbackMap = callbackMap
             mainPanelState.buttonCallbackMap = callbackMap
 
@@ -6603,7 +6616,15 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
                 GUI:Button_setTitleFontSize(dropAllButton, 18)
                 GUI:Button_setTitleFontName(dropAllButton, "res/public/kaiti2.ttf")
                 GUI:Button_setTitleColor(dropAllButton, "#ffffff")
-                -- 暂不注册丢全部按钮点击功能，仅保留原始标题和外观。
+                if type(callbackMap.dropallbut) == "function" then
+                    GUI:addOnClickEvent(
+                        dropAllButton,
+                        helper_root_52_32_0(callbackMap, {
+                            key = "dropallbut",
+                            name = "开丢全部",
+                        }, dropAllButton)
+                    )
+                end
             end
 
             local appleConfig = {
@@ -6625,7 +6646,12 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
                 GUI:Button_setTitleFontSize(appleButton, 18)
                 GUI:Button_setTitleFontName(appleButton, "res/public/kaiti2.ttf")
                 GUI:Button_setTitleColor(appleButton, "#ffffff")
-                -- 暂不注册苹果图按钮点击功能，仅保留“开苹果图”初始显示。
+                if type(callbackMap.applebut) == "function" then
+                    GUI:addOnClickEvent(
+                        appleButton,
+                        helper_root_52_32_0(callbackMap, appleConfig, appleButton)
+                    )
+                end
             end
         end
 
