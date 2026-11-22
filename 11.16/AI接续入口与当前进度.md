@@ -3992,3 +3992,13 @@ D结果解释：
 - G10提交：81f5a6236fd241e17ec95ea24b16f25ba2b84acd。正式明文未修改。
 - G10链接：https://github.com/github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G10_%E4%BB%85MoneyProxy%E4%BB%A3%E7%90%86%E8%8E%B7%E5%8F%96_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - 本轮只测试G10，观察游戏原UI和插件按钮是否显示。
+
+
+## 2026-11-23 G10实测通过：继续隔离MoneyProxy货币ID查询
+
+- 用户实测G10：**游戏原UI与插件按钮均正常显示**。
+- G10只执行`global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)`代理获取（外层pcall保护），未调用代理方法；实测通过，代理获取本身排除为当前UI中断原因。
+- 下一步单独测试正式初始化中的第一个货币ID查询：`moneyProxy:GetMoneyIdByName("元宝")`。只查询一次，不读取货币数量，不遍历其余货币，不加入SL物品元数据或定时任务。
+- 新建G11：`11.16/MainLeftBottom_11.16_UI隔离测试_G11_仅查询元宝货币ID_纯按钮.lua`，以G10已实测通过版为底稿，仅增加上述单次方法调用。
+- G11提交：`a358790896a924280e6d16670f77156e0a9bb939`。正式明文未修改。
+- G11只用于隔离测试；请只测试G11，观察游戏原UI和插件按钮是否显示。
