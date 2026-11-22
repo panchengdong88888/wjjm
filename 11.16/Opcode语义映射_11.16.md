@@ -1701,3 +1701,30 @@ F()循环每轮执行完当前指令后，统一执行`O=O+1`。Opcode388的跳�
 - 槽164 Opcode403读取H[7]并融合槽165装载"目标地图："；槽166 Opcode401融合槽167/168，依次读取state.target、target.name并拼接提示文本；槽169 Opcode123调用H[7]。结合捕获映射，H[7]为PrintLog，日志内容为"目标地图："..target.name。
 - 已确认的关键融合：Opcode276消费141–144；Opcode198消费159；Opcode403消费165；Opcode401消费167–168。条件分支与Opcode388跳转继续按后置递增规则计算。
 - 下一步唯一动作：检查root/27槽170–204，闭合walkNpc分支的MoveTo参数、成功/失败跳转、NPC JSON构造及1010消息实参。
+
+
+## 检查点388（2026-11-22）：root/27槽170–204 walkNpc与NPC交互消息闭合
+
+- 证据：11.16原版F()真实分派叶、root/27七项物理指令提取JSON；字段按检查点379桥接（a=真实Opcode，b/c/d=A/B/C）。
+- 槽170 Opcode274读取state.state；槽171 Opcode143以false标志比较"walkNpc"。状态等于walkNpc时跳过槽172跳转，进入MoveTo；其他状态执行槽172 Opcode388，参数204后置递增实际进入槽205。
+- 槽173 Opcode146装载全局MoveTo。槽174 Opcode230读取state.target并保留对象引用；槽175 Opcode230读取target.x；槽176 Opcode79融合槽177读取state.target.y；槽178 Opcode295装载步长8；槽179 Opcode209调用`MoveTo(target.x,target.y,8)`并保存返回值。
+- 槽180 Opcode340以false为比较值检查MoveTo返回值：成功时跳过槽181跳转，继续构造NPC数据；失败时执行槽181 Opcode388，参数238实际进入槽239 Opcode205，直接结束本轮回调。
+- 成功路径：槽182 Opcode218装载全局string并融合槽183读取format；槽184 Opcode359装载模板`{"index":%d,"UserID":"%s"}`；槽185 Opcode79融合槽186读取target.index；槽187 Opcode79融合槽188读取target.userID；槽189 Opcode209调用string.format，结果写回N[3]。故NPC数据JSON模板与两个格式化字段均已确认。
+- 槽190 Opcode95装载全局LuaSendMsg并融合槽191装载首个参数1010；槽192 Opcode295装载0；槽193 Opcode168融合槽194/195装载三个0；槽196 Opcode64复制NPC JSON到参数寄存器；槽197 Opcode257融合槽198/199装载string.len并复制JSON参数；槽200 Opcode264调用string.len(npcData)取得长度；槽201 Opcode200调用当前函数寄存器及剩余参数。
+- 由槽190–201的完整寄存器区间确认，此处调用是`LuaSendMsg(1010,0,0,0,0,npcData,string.len(npcData))`，**没有9002前缀**。这纠正了当前唯一明文候选中沿用的`LuaSendMsg(9002,1010,...)`写法；先记录，待root/27完整主体闭合后统一修正，不在未完成函数中局部拼补。
+- 槽202 Opcode322写state.state="clickNpc"；槽203 Opcode322写state.ticks=0；槽204 Opcode388跳转参数238，实际进入槽239 return。
+- 本批已闭合MoveTo失败直接return、成功后构造NPC JSON并发送1010、进入clickNpc的完整路径。唯一明文暂不改动。
+
+
+## 检查点389（2026-11-22）：root/27槽205–239 clickNpc与waitEnter闭合
+
+- 证据：11.16原版F()分派叶与root/27七项提取JSON；Opcode143、345、52的条件跳过语义按原版分派器确认，Opcode388跳转按后置递增规则计算。
+- 槽205 Opcode410读取state.state；槽206 Opcode143以false标志比较"clickNpc"。若状态为clickNpc则跳过槽207，进入点击确认门控；否则执行槽207 Opcode388，参数222实际进入槽223 waitEnter处理。
+- 槽208 Opcode410读取state.ticks；槽209 Opcode345执行`3 <= ticks`条件跳过。ticks达到3时跳过槽210跳转，进入发送；未达到3时执行槽210跳转参数238，实际进入槽239 Opcode205返回。
+- clickNpc发送链：槽211 Opcode95装载LuaSendMsg并融合槽212装载9002；槽213 Opcode235融合槽214–218装载10037、1、2、3、空字符串、0；槽219 Opcode123调用，确认为`LuaSendMsg(9002,10037,1,2,3,"",0)`。
+- 槽220 Opcode322写state.state="waitEnter"；槽221 Opcode114写state.ticks=0；槽222 Opcode388跳转参数238，实际进入槽239返回。故clickNpc仅在ticks>=3时发送一次10037并切换waitEnter。
+- waitEnter链：槽223 Opcode410读取state.state；槽224 Opcode143比较"waitEnter"。状态匹配时跳过槽225并继续；不匹配时执行槽225跳转到槽239返回。
+- 槽226 Opcode96读取ticks；槽227 Opcode52执行`30 <= ticks`条件跳过。ticks>=30时跳过槽228跳转并发送；ticks<30时执行槽228跳转至槽239返回。
+- 槽229 Opcode105装载LuaSendMsg；槽230 Opcode374装载9002；槽231 Opcode235融合槽232–236装载10037、1、2、3、空字符串、0；槽237 Opcode128调用，确认为`LuaSendMsg(9002,10037,1,2,3,"",0)`；槽238 Opcode322将state.ticks清零；槽239 Opcode205结束本轮回调。
+- 至此clickNpc和waitEnter两个状态完整闭合：clickNpc在ticks>=3时发送一次10037并切换waitEnter；waitEnter在ticks>=30时重发10037并清零ticks。
+- 下一步唯一动作：继续root/27槽240–307，闭合目标地图monitor、地图变化检测及backCity状态路径；然后整体整合root/27唯一明文，修正前述LuaSendMsg(1010)参数差异。
