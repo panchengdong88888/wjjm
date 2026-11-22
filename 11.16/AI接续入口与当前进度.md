@@ -1,5 +1,15 @@
 
 
+## 2026-11-22 root/52/13见人跑按钮两个分支回调身份确认
+
+- root/52槽591 Opcode178创建childIndex=13，3项捕获为父级H[3]、H[14]、H[15]；槽595绑定cruisebut。
+- root/52的捕获映射：H[3]=root N[3]=MainLeftBottom.z；H[14]=root N[83]；H[15]=root N[82]。
+- root父级槽540创建N[83]=root/11（31槽关闭见人跑回调）；root父级槽526创建N[82]=root/25（33槽见人跑启停处理器）。因此root/52/13的分支语义现在可具体命名：cruiseRunTimer存在时调用root/11停止见人跑；不存在时调用root/25启动见人跑。
+- 唯一明文中root/11主体已写入make_helper_root_11；root/25的按钮处理器已写入MakeCruiseRunButtonHandler_11_16，root/25/0周期扫描主体已写入RunCruisePlayerScan_11_16及捕获适配器。尚未完成的是把root/25的13项原始捕获值按同一生命周期构造成闭包实例，并把root/11/root/25两个闭包实例传入root/52/13。
+- 唯一明文的root/52/13注释已从“两个回调身份未知”更新为上述真实身份；callbackMap仍保留真实闭包实例注入，未用新造空函数替代。
+
+
+
 ## 2026-11-22 root/52奖励按钮捕获链闭合并接入
 
 - root/52槽610 Opcode121创建childIndex=16，captureCount=5；槽611–615的真实捕获描述符依次为父级H[3]、H[0]、H[16]、H[17]、H[18]，槽616将闭包写入rewardbut。
