@@ -6076,6 +6076,41 @@ local function BuildMainLeftBottomButtonDefinitions_11_16()
 end
 
 
+-- ============================================================================
+-- 11.16 root/52槽471–482：依据mini_chat世界坐标与内容宽度计算按钮基准点。
+-- 指令顺序明确为MainProperty._ui.Panel_mini_chat、
+-- getWorldPosition()、getContentSize()、worldPosition.x + contentSize.width、
+-- worldPosition.y。保留坐标读取失败时的nil结果，不伪造屏幕固定坐标。
+local function GetMainLeftBottomButtonAnchor_11_16(mainPanelState)
+    mainPanelState = mainPanelState or MainLeftBottom.a
+    local property = MainProperty
+    local ui = property and property._ui
+    local miniChat = ui and ui.Panel_mini_chat
+    if not miniChat
+        or type(miniChat.getWorldPosition) ~= "function"
+        or type(miniChat.getContentSize) ~= "function"
+    then
+        return nil, nil
+    end
+
+    local ok, worldPosition, contentSize = pcall(function()
+        return miniChat:getWorldPosition(), miniChat:getContentSize()
+    end)
+    if not ok or not worldPosition or not contentSize then
+        return nil, nil
+    end
+
+    local worldX = tonumber(worldPosition.x)
+    local worldY = tonumber(worldPosition.y)
+    local contentWidth = tonumber(contentSize.width)
+    if not worldX or not worldY or not contentWidth then
+        return nil, nil
+    end
+
+    return worldX + contentWidth, worldY
+end
+
+
 -- 本段先恢复root/52前180槽可确认的初始化主干：初始化提示、货币/物品
 -- 名单、时间快照、MoneyProxy资源快照、四组快捷栏预设、每日巡航旧句柄
 -- 清理入口及仓库数据请求。后续UI面板和按钮创建段继续补齐。
@@ -6218,6 +6253,12 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
         moduleState.screenH = mainPanelState.screenH
             or SL:GetMetaValue("SCREEN_HEIGHT")
             or 0
+
+        -- root/52槽471–482：按钮组右侧基准点贴合mini_chat右上边界。
+        moduleState.buttonAnchorX, moduleState.buttonAnchorY =
+            GetMainLeftBottomButtonAnchor_11_16(mainPanelState)
+        mainPanelState.buttonAnchorX = moduleState.buttonAnchorX
+        mainPanelState.buttonAnchorY = moduleState.buttonAnchorY
 
         -- root/52/6资源统计窗口及其行/刷新/关闭子闭包已按本版指令流恢复。
         -- 原版按钮配置表中的moneybut是资源入口；按钮本体由后续布局构建段生成，
