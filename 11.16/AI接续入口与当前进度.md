@@ -1,3 +1,13 @@
+## 检查点400（2026-11-22）：接入root/52末尾三个手动按钮
+
+- 已修改唯一交付文件`11.16/MainLeftBottom_11.16_明文.lua`，代码提交：`135834151c69fd10c9766a7f4f5986c0087a4a9f`；随后修正坐标/共享状态的提交：`65fd1672b4d64063afc2267a6c32eab80f82c9de`。
+- root/52槽711–865已开始落地：在`MainProperty._ui.Panel_mini_chat`下创建hidebut、dropallbut、applebut，补齐标题、18号字体、楷体字体、白色初始标题色和点击回调。
+- 坐标按指令常量修正为：hidebut (0,0)，dropallbut (200,0)，applebut (350,0)；纹理均为`res/public/fuzhu_btn.png`。
+- hidebut接`ShowHideAllButtons`；dropallbut接已恢复的模式2丢弃按钮处理器；applebut建立本版`applebutCfg`并接`MakeAppleMapButtonToggleHandler_11_16`。按钮对象同步放入MainLeftBottom与MainLeftBottom.a对应状态，供隐藏/回调代码读取。
+- 注意：root/52槽545–710三组通用按钮配置表、遍历与`make_helper_root_52_32`批量工厂尚未接入；不可误报主按钮区整体已完成。此次只处理尾部三个独立控件。
+- 尚未运行Lua/客户端；GUI父节点及按钮实际显示效果待游戏测试。
+- 下一步优先继续root/52槽545–710：恢复完整配置表和三组`ipairs`创建循环，使用已存在的`make_helper_root_52_32`与`helper_root_52_32_0`，再补齐各按钮callbackMap。随后回到root/52/23剩余称号/剑灵打造主体。
+
 ## 检查点399（2026-11-22）：恢复root/52槽471–482 mini_chat按钮锚点计算
 
 - 已在唯一交付文件`11.16/MainLeftBottom_11.16_明文.lua`新增`GetMainLeftBottomButtonAnchor_11_16`，并在doInit屏幕尺寸读取后调用，结果存入moduleState及mainPanelState的buttonAnchorX/buttonAnchorY。
