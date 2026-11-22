@@ -3962,3 +3962,12 @@ D结果解释：
 - G7提交：`a3f28e4683e8211c898f72499a04d448224428a7`。
 - G7链接：https://github.com/github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G7_%E4%BB%85%E5%88%9D%E5%A7%8B%E5%8C%96%E5%BF%AB%E7%85%A7%E8%A1%A8%E6%9E%84%E5%BB%BA_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - 只需实测G7，反馈“显示/不显示”。正式明文未修改。
+## 2026-11-23 G7实测通过：初始化快照表构建排除
+
+- 用户实测G7：**游戏原UI与插件按钮正常显示**。
+- G7在G6通过版上只增加普通Lua快照表构造（initTime、initTimeStr、money、items），没有写入模块状态；实测通过，快照表构建本身排除。
+- 新建G8：`11.16/MainLeftBottom_11.16_UI隔离测试_G8_仅初始化状态字段赋值_纯按钮.lua`，基于G7通过版，仅增加moduleState/mainPanelState局部引用，以及四条正式初始化状态字段赋值：initTime、initTimeStr、initSnapshot、mainPanelState.initSnapshot。
+- G8不调用代理、物品元数据、ScheduleOnce、NPCStorageProxy或其他引擎API；正式明文未修改。
+- G8提交：`f5f6ee47189c7f03e87bbc478d17c5e944de0195`。
+- G8链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G8_%E4%BB%85%E5%88%9D%E5%A7%8B%E5%8C%96%E7%8A%B6%E6%80%81%E5%AD%97%E6%AE%B5%E8%B5%8B%E5%80%BC_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 等待用户实测G8，只反馈显示/不显示。
