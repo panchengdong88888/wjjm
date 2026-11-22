@@ -6295,10 +6295,11 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
 
         if miniChat then
             local hideButton = GUI:Button_Create(
-                miniChat, "hidebut", 200, 0, "res/public/fuzhu_btn.png"
+                miniChat, "hidebut", 0, 0, "res/public/fuzhu_btn.png"
             )
             if hideButton then
                 moduleState.hidebut = hideButton
+                mainPanelState.hidebut = hideButton
                 visibleItems.hidebut = hideButton
                 GUI:Button_setTitleText(hideButton, "隐 藏")
                 GUI:Button_setTitleFontSize(hideButton, 18)
@@ -6319,7 +6320,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
                 local dropAllHandler = MakeDropMode2ButtonHandler_11_16(
                     moduleState,
                     printLog,
-                    moduleState,
+                    mainPanelState,
                     function(callback, interval)
                         return SL:Schedule(callback, interval)
                     end,
@@ -6341,6 +6342,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             )
             if appleButton then
                 moduleState.applebut = appleButton
+                mainPanelState.applebut = appleButton
                 visibleItems.applebut = appleButton
                 GUI:Button_setTitleText(appleButton, appleConfig.name)
                 GUI:Button_setTitleFontSize(appleButton, 18)
