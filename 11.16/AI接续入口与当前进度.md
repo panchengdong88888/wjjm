@@ -4133,3 +4133,20 @@ NPCStorageProxy:RequestStorageData() --请求仓库数据
 - 后续必须以11.16原始物理指令、VM分派器语义、闭包/upvalue捕获、寄存器流及本版实际调用关系为准。
 - 用户参考代码只能辅助解释函数意图、可能的API用法；不得据此覆盖11.16原始证据、强行更改变量名/作用域/参数，也不得仅因11.16恢复写法与参考代码不同就判定错误。
 - 当前工作继续静态核查root/52；正式明文不做未经证据支持的修改，不要求用户为此重新打包测试。
+
+
+## 2026-11-23 对照读取《MainLeftBottom 11.2+11.9 整合.lua》：RequestStorageData 参数保留原则
+
+- 按用户要求，已实际读取 `11.16/MainLeftBottom 11.2+11.9 整合.lua`。
+- 旧版 doInit_UI 的明确调用为：
+```lua
+local storageProxy = global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)
+if storageProxy then
+    storageProxy:RequestStorageData(T7)
+end
+```
+- 旧版文件中的静态寄存器追踪说明：T7 初始值来自PC90调用的第三返回值，作为 ipairs 第三参数时为0；四组配置遍历结束后，循环控制变量保留最后索引4。因此 PC180 的 RequestStorageData 实际传入4（PC183 Attach_UITop旧调用也传4；后者后来按用户确认的官方契约调整为无参，但不能类推改写仓库请求）。
+- 这与用户提供的无形参函数定义不构成必然矛盾：Lua调用可传入额外实参，函数体若不使用它可以忽略。更重要的是，源码恢复必须忠实保留本版 VM 实际调用参数。
+- 当前11.16 root/52 在仓库请求附近的物理指令仍需按本版分派器及寄存器流独立闭合；不能将旧版T7=4直接套用到11.16，也不能因旧版函数定义参考而擅自删掉11.16调用实参。
+- 本次结论：旧版调用形式是 `storageProxy:RequestStorageData(T7)`，实际参数4；它支持“仓库请求命令在旧版传一个循环变量”的历史事实。对11.16仍以root/52原始指令为准。
+- 本轮仅做静态对照并记录；未修改正式明文，未要求用户重新打包。
