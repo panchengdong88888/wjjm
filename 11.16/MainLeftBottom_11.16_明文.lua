@@ -818,6 +818,30 @@ local function StopGatherMonsters()
     PrintLog("引怪功能已停止")
 end
 
+-- VM共享upvalue cell适配层：私有标记避免与普通业务table混淆。
+local UPVALUE_CELL_TAG_11_16 = {}
+local function MakeUpvalueCell_11_16(value)
+    return setmetatable({ value = value }, {
+        __index = function(_, key)
+            if key == "__upvalue_cell_11_16" then return UPVALUE_CELL_TAG_11_16 end
+        end,
+    })
+end
+local function IsUpvalueCell_11_16(value)
+    return type(value) == "table" and value.__upvalue_cell_11_16 == UPVALUE_CELL_TAG_11_16
+end
+local function ReadUpvalueCell_11_16(value)
+    if IsUpvalueCell_11_16(value) then return value.value end
+    return value
+end
+local function WriteUpvalueCell_11_16(cell, value)
+    if IsUpvalueCell_11_16(cell) then cell.value = value return true end
+    return false
+end
+local function MakeUpvalueCellSetter_11_16(cell)
+    return function(value) WriteUpvalueCell_11_16(cell, value) end
+end
+
 -- 11.16 root/25/0/0：3条物理指令，0个显式参数，1个upvalue。
 -- 父级root/25槽位18创建root/25/0并将父级H[2]绑定到root/25/0的H[0]；
 -- root/25/0槽位513 Opcode178创建childIndex=0闭包，槽位514 Opcode132将父级H[0]
@@ -829,7 +853,7 @@ local function make_helper_root_25_0_0(capturedUpvalues)
         local sharedCell = capturedUpvalues[0]
         if type(sharedCell) == "function" then
             sharedCell(false)
-        else
+        elseif not WriteUpvalueCell_11_16(sharedCell, false) then
             capturedUpvalues[0] = false
         end
     end
@@ -846,7 +870,7 @@ local function make_helper_root_25_0_2(capturedUpvalues)
         local sharedCell = capturedUpvalues[0]
         if type(sharedCell) == "function" then
             sharedCell(false)
-        else
+        elseif not WriteUpvalueCell_11_16(sharedCell, false) then
             capturedUpvalues[0] = false
         end
     end
@@ -918,8 +942,8 @@ end
 -- N[0]由槽2装入MainLeftBottom模块表。捕获链与闭包体均已闭合。
 local function make_helper_root_32(capturedUpvalues)
     return function(zd)
-        if capturedUpvalues[1] then
-            capturedUpvalues[1] = false
+        if ReadUpvalueCell_11_16(capturedUpvalues[1]) then
+            WriteUpvalueCell_11_16(capturedUpvalues[1], false)
             capturedUpvalues[2]("见人跑：" .. zd)
         end
 
@@ -972,8 +996,8 @@ local function make_helper_root_11(capturedUpvalues)
             SL:UnSchedule(state.cruiseRunTimer)
             state.cruiseRunTimer = nil
         end
-        capturedUpvalues[2] = false
-        capturedUpvalues[3] = false
+        WriteUpvalueCell_11_16(capturedUpvalues[2], false)
+        WriteUpvalueCell_11_16(capturedUpvalues[3], false)
         capturedUpvalues[4]()
         local moduleState = capturedUpvalues[5]
         moduleState.cruiseGatherPaused = false
@@ -1120,11 +1144,11 @@ end
 -- helper_root_60为按原型路径生成的合成定位名，不代表原始Lua符号名。
 local function make_helper_root_60(capturedUpvalues)
     return function()
-        if not capturedUpvalues[0] then
+        if not ReadUpvalueCell_11_16(capturedUpvalues[0]) then
             return
         end
 
-        capturedUpvalues[0] = nil
+        WriteUpvalueCell_11_16(capturedUpvalues[0], nil)
 
         local playerInputProxy =
             global.Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)
@@ -5109,7 +5133,8 @@ local function BindCruiseRunCaptures_11_16(upvalues, adapters)
     return {
         upvalues = upvalues,
         raw = upvalues,
-        sharedPauseValue = upvalues[1],
+        sharedPauseCell = upvalues[1],
+        sharedPauseValue = ReadUpvalueCell_11_16(upvalues[1]),
         directionOffsets = upvalues[11],
         moduleRoot = moduleRoot,
         moduleState = moduleState,
@@ -5517,6 +5542,7 @@ local function BindCruiseRunButtonFromCaptures_11_16(root25Captures, adapters)
     for i = 1, 11 do
         childUpvalues[i] = root25Captures[i + 2]
     end
+    childUpvalues[1] = MakeUpvalueCellSetter_11_16(root25Captures[3])
 
     local childAdapters = {}
     for key, value in pairs(adapters) do
@@ -5524,11 +5550,7 @@ local function BindCruiseRunButtonFromCaptures_11_16(root25Captures, adapters)
     end
 
     if type(childAdapters.setSharedPause) ~= "function" then
-        childAdapters.setSharedPause = function(value)
-            -- root/25 H[2]与root/25/0 H[0]代表同一原始共享upvalue。
-            root25Captures[3] = value
-            childUpvalues[1] = value
-        end
+        childAdapters.setSharedPause = MakeUpvalueCellSetter_11_16(root25Captures[3])
     end
 
     local callbackFactory = function()
