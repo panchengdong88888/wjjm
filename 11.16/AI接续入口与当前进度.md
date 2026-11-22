@@ -3885,3 +3885,15 @@ D结果解释：
 - F刻意不包含屏幕尺寸/坐标计算、资源窗口处理器、`GUI:Attach_UITop()`及正式回调表/按钮工厂；本轮用于判断最前面的MoneyProxy、元数据读取、ScheduleOnce、NPCStorageProxy请求或UnSchedule是否会中断模块。
 - F链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_F_doInit%E5%89%8D%E7%BD%AE%E5%88%9D%E5%A7%8B%E5%8C%96_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - F尚待用户实测。若不显示，问题就在该前置初始化语句组；若显示，继续逐段增加屏幕/坐标、资源窗口、Attach_UI与按钮创建链路。
+
+
+## 2026-11-23 F版实测失败：前置初始化开始二分
+
+- 用户实测F版：游戏原UI和插件按钮均不显示。
+- F版完整加入的前置初始化组不能整体通过，但不能据此认定其中某个API就是根因；需要拆分。
+- 新建G1隔离测试：`11.16/MainLeftBottom_11.16_UI隔离测试_G1_时间与初始化快照_纯按钮.lua`。
+- 提交：`9ccb8177681d2863421923414094cc2b97250567`。
+- G1以E版通过测试为基础，加入初始化提示、按钮描述配置构建、时间读取/格式化、初始化快照表创建及状态字段赋值；不执行MoneyProxy代理获取/货币读取、物品元数据读取、ScheduleOnce、NPCStorageProxy请求和UnSchedule。
+- G1链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G1_%E6%97%B6%E9%97%B4%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96%E5%BF%AB%E7%85%A7_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 当前等待G1实机结果。若G1显示，故障位于MoneyProxy及其后续新增调用；若G1不显示，再继续拆分按钮配置构建、PrintLog或时间读取，不跳步猜测。
+- 正式明文未修改；不需要游戏日志，只观察原UI和按钮是否显示。
