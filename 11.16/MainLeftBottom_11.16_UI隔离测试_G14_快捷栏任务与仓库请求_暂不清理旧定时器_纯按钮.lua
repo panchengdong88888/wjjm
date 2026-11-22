@@ -4499,7 +4499,7 @@ local function doInit_PlainButtons()
     moduleState.initSnapshot = initSnapshot
     mainPanelState.initSnapshot = initSnapshot
 
-    -- G13批量测试：四组快捷栏预设错峰任务、仓库数据请求、旧巡航定时器清理。
+    -- G14二分测试：四组快捷栏ScheduleOnce任务 + NPCStorageProxy仓库请求；暂不执行旧巡航定时器清理。
     local quickUseGroups = {
         { slot = 1, names = { "永久回城石", "盟重回城石", "盟重传送石" } },
         { slot = 2, names = { "永久随机石", "随机传送石" } },
