@@ -1099,7 +1099,7 @@ local function ClearTargetID_2()
 end
 
 
--- 11.16 root/60：21条物理指令，0个显式参数，6个upvalue捕获。
+-- 11.16 root/60：21条物理指令，0个显式参数；root父级创建事件仅明确记录1项捕获。
 -- slot1 Opcode324读取H[0]；slot2 Opcode325判断其真值。
 -- H[0]为假时slot3跳转被slot4 Opcode339结束路径截断；H[0]为真时跳过结束槽继续。
 -- slot5 Opcode213清空N[0]；slot6 Opcode397将N[0]写回H[0]，即消费该捕获状态并置为nil。
@@ -1109,7 +1109,7 @@ end
 -- slot16 Opcode274读取ClearAttackTargetID成员；slot17 Opcode289检查该成员，
 -- 不存在时slot18跳至函数末尾；存在时slot19 Opcode393准备方法和receiver，
 -- slot20 Opcode123无参调用，等价于playerInputProxy:ClearAttackTargetID()。
--- 本函数实际读写H[0]；root槽519创建闭包、槽520明确捕获父级N[76]到H[0]。
+-- 本函数实际读写H[0]；root槽519创建闭包、槽520明确捕获父级N[76]到H[0]。原型索引upvalue_count与创建事件captureCount不一致，按实际创建事件的一项捕获恢复。
 -- 父级共享槽位的原始业务变量名未恢复，但捕获单元及其读写语义已明确，因此用capturedUpvalues[0]
 -- 保留同一共享upvalue，不臆造变量名；函数体和唯一实际使用的捕获来源均已完整恢复。
 -- helper_root_60为按原型路径生成的合成定位名，不代表原始Lua符号名。
@@ -5493,7 +5493,7 @@ end
 -- [3]=root N[74]=与root/25/0 H[0]共享的cruiseGatherPaused单元
 -- [4]=root N[81]；[5]=root N[78]；[6]=root N[4]=PrintLog
 -- [7]=root N[0]=MainLeftBottom模块表；[8]=root N[75]；
--- [9]=root N[79]=root/60清除攻击目标回调；[10]=root N[76]=Opcode193清空后的nil；[11]=root N[77]=1；
+-- [9]=root N[79]=root/60清除攻击目标回调；[10]=root N[76]=Opcode193清空后的共享cell（初值nil）；[11]=root N[77]=Opcode193清空后的nil；
 -- [12]=root N[80]=root/57方向换算函数（2参数，60条指令，math.abs及方向分支）；[13]=root N[73]=八方向偏移表。
 -- root/25/0捕获父级H[2..12]，故子级11项按[3..13]原序传入。
 -- 这里以同一捕获数组作为重建环境中的共享cell载体；0.3秒复位setter
