@@ -654,9 +654,10 @@ end
 
 
 -- 11.16 root/52/13：13条物理指令，0个显式参数，3项捕获。
--- root/52/13函数体自身的3项upvalue语义已从子原型恢复；
--- 但其在root/52父函数中的真实创建槽、捕获来源及cruisebut绑定尚未由opcode字段证实。
--- 不把父级物理记录的a操作数字段误当成Opcode；父级接线待重新扫描融合边界后确认。
+-- 精确父级创建点：root/52槽591 Opcode178，childIndex=13，captureCount=3；
+-- 槽592/593/594依次捕获父级H[3]/H[14]/H[15]，随后槽595将闭包写入cruisebut。
+-- root/52的H[3]来自root N[3]，即MainLeftBottom.z计时器状态表；
+-- H[14]/H[15]分别来自root N[83]/N[82]，其业务身份尚未确认，保留显式回调参数。
 -- H[0].cruiseRunTimer为分支条件；真值分支调用H[1]，假值分支调用H[2]；
 -- 两条分支均将返回寄存器置为true后返回。
 local function make_helper_root_52_13(capturedCruiseState, capturedCallback1, capturedCallback2)
@@ -4321,9 +4322,10 @@ end
 -- ============================================================
 --  11.16 root/52/16：奖励功能按钮处理器（33条物理指令，0显式参数，5项捕获）
 -- ============================================================
--- root/52/16函数体本身已按子原型恢复；
--- 其父级创建槽、5项捕获来源及rewardbut绑定尚未由真实opcode字段和融合边界证实。
--- 下列参数名仅表示函数体所需语义，不代表父级寄存器身份已确认；接线前必须取得真实捕获值。
+-- 精确父级创建点：root/52槽610 Opcode121，childIndex=16，captureCount=5；
+-- 槽611–615依次捕获父级H[3]、H[0]、局部N[16]、N[17]、N[18]；
+-- 槽616将该闭包写入rewardbut。H[3]=root N[3]计时器状态表，H[0]=root N[4] PrintLog；
+-- N[16]/N[17]/N[18]在创建点前的最终赋值仍需追踪，分别保留为modulus/rewardEntries/scheduleInterval。
 -- 本版函数体与11.9同职责MakeRewardButtonHandler结构一致；本版直接使用SL:Schedule。
 local function MakeRewardButtonHandler_11_16(
     timerState,
@@ -6230,13 +6232,13 @@ local function BuildMainLeftBottomCallbackMap_11_16(context)
         })
     end
     callbackMap.applebut = closure_root_52_25
-    -- root/52/13函数体需要3项捕获；父级创建点/捕获映射尚未证实。
-    -- 仅在调用方通过独立证据提供完整捕获数组时才允许接线。
+    -- root/52/13的真实闭包只依赖3项捕获；H[1]/H[2]身份未确认时不猜测。
+    -- 调用方提供真实父级捕获后，按原型本体分支语义直接接线。
     if type(context.cruiseRunButtonCaptures) == "table" then
         local c = context.cruiseRunButtonCaptures
         callbackMap.cruisebut = make_helper_root_52_13(c[1], c[2], c[3])
     end
-    -- rewardbut仅接受调用方通过独立证据确认的5项捕获；当前不宣称父级槽位顺序已恢复。
+    -- rewardbut同样只接受按root/52槽611–615真实顺序恢复的5项捕获。
     if type(context.rewardButtonCaptures) == "table" then
         local c = context.rewardButtonCaptures
         callbackMap.rewardbut = MakeRewardButtonHandler_11_16(
