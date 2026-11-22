@@ -1,5 +1,17 @@
 
 
+## 2026-11-22续接：root/52三组按钮配置与可确认回调已接入
+
+- 明文文件提交：`0f1d59a8002aa111b9dadb1eb201c459cadfefb9`。
+- 根据root/52槽483–543的三段表构造边界，恢复三组配置：N[19] 7项、N[20] 7项、N[21] 3项；组偏移分别为40、0、80。保留原key/name/toggle字段与顺序。
+- doInit现已调用root/52/32通用按钮工厂，按三组数组创建按钮并登记到moduleState/mainPanelState/visibleItems；坐标继续使用已恢复的x=baseX-85*rowIndex、y=baseY+groupOffset。
+- 新增BuildMainLeftBottomCallbackMap_11_16，已把当前明文文件中可执行主体/捕获可安全组装的18项回调接入：settingbut、newzone、putoutbut、applebut、forgezodiacbut、buygoldbut、buygold110、stopallbut、recyclebut、yinguaibut、clearblacklistbut、storagebut、takebut、shiqubut、diuqibut、dropallbut、moneybut、xiaotuibut。
+- 对root/52/32/0通用点击闭包作安全修正：callbackMap缺少真实回调时直接返回，不再假装成功或只翻转toggle视觉状态。
+- 尚未伪造的4项：cruisebut(root/52/13)、rewardbut(root/52/16)、blacklistbut(root/52/1)、putinbut(root/52/34)。原因是对应捕获/启动主体还未完全闭合；后续继续追原型捕获，不用空函数冒充完成。
+- 现有独立hidebut/dropallbut/applebut仍在三组按钮之外按原始槽711–865创建；避免重复创建。
+- 尚未进行Lua语法检查或APK运行测试。下一步优先追root/52/13、/16、/1、/34的捕获与回调实现，再做静态语法检查。
+
+
 ## 2026-11-22续接：root/27与root/54苹果下图闭包已实例化
 
 - 已读取并对照 `root_闭包创建与捕获映射.json` 与 `root_654条物理指令流.json`，确认父级root槽343–352创建root/27，槽353–358创建root/54，槽359将root/54闭包写入全局`_ENV.startAppleMap`。
