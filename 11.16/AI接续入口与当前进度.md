@@ -1,3 +1,10 @@
+## 检查点398（2026-11-22）：修正root/52两张状态表之间的周期回调引用
+
+- 复查检查点397接线时，发现root/52的H[3]不是MainLeftBottom.a，而是父root N[3]局部状态表；因此周期句柄保存在doInit的moduleState，而周期函数定义挂在MainLeftBottom.a。
+- 已修正唯一明文文件`11.16/MainLeftBottom_11.16_明文.lua`：调度前先取`moduleState.root52_23Callback or mainPanelState.root52_23Callback`，避免只从H[3]局部表读取导致回调取不到。提交：`73c5ba63159d0537fcbcff6742a99231b1c19ed4`。
+- 这次是静态接线修正，尚未运行Lua或APK；后续不得把“已接入周期入口”扩大解释为已验证可运行。
+- 下一步仍按检查点397：先完成root/52剩余UI/按钮段，再补齐root/52/23称号与剑灵打造主体；不返工root/27。
+
 ## 检查点397（2026-11-22）：root/52消息钩子与root/52/23一秒周期入口接入
 
 - 已修改唯一交付文件`11.16/MainLeftBottom_11.16_明文.lua`，提交：`4f9f3ca7cb56a7c73e455b051f4c8d64d1a5efaf`。
