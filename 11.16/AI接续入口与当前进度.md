@@ -1,5 +1,33 @@
 
 
+## 2026-11-22 12:10 继续恢复：奖励/黑名单按钮的原型指令进一步定点提取
+
+本轮继续读取 `root_定点子原型指令补充_2026-11-20.json`，已取得并逐槽展开以下此前没有完整贴出的指令流：
+
+### root/52/16（奖励按钮）
+- 33条物理指令，1个子原型 `root/52/16/0`。
+- 主体逻辑已经明确：检查 `rewardTimer`；存在则输出“关闭奖励功能”、调用 `SL:UnSchedule` 并清空句柄；不存在则输出“开启奖励功能”，创建子闭包并调用 `SL:Schedule`，返回句柄写入 `rewardTimer`。
+- 子闭包22条指令，包含 `LuaSendMsg`、常量9002、2、3、1。下一步需将发送协议参数顺序与父闭包捕获值对应起来。
+- 已有明文函数 `MakeRewardButtonHandler_11_16(timerState, printLog, modulus, rewardEntries, scheduleInterval)` 和 `MakeRewardTimerCallback_11_16`，但不能将未恢复的modulus/rewardEntries/scheduleInterval填成猜测值。当前rewardbut仍未接入callbackMap。
+
+### root/52/22（按钮状态同步闭包）
+- 34条物理指令，无子原型。
+- 明确操作三个按钮状态：blacklistbut、yinguaibut、rewardbut；并读取 blacklistTimer、gatherTimer、rewardTimer 等字段。可作为后续确认三项按钮显示同步时的直接证据，不能将它误当作三个业务启动回调。
+
+### root/52/13（见人跑按钮）
+- 13条指令的闭包体明确读取H[0].cruiseRunTimer，真值时调用H[1]，否则调用H[2]，两条分支均返回true。
+- 文件中另有已恢复的 `MakeCruiseRunButtonHandler_11_16` 和 `BindCruiseRunButtonFromCaptures_11_16`，但该绑定工厂需要root/25的真实13项捕获数组；当前doInit没有该数组引用，因此不能把一个临时构造的空数组当成原始捕获接入。
+
+### 本轮没有改动明文Lua
+原因：这三个按钮都依赖尚未闭合的真实捕获关系。把现成工厂用猜测参数硬接入，可能产生按钮可点击但业务状态错乱的问题。本轮只更新接续文件，保留证据与下一步入口。
+
+### 下一步
+1. 从root/52父级指令流中定位创建root/52/16的真实闭包创建点及其5项捕获，恢复奖励取模值、奖励记录表和调度间隔。
+2. 追root/52/1与root/52/9的共享timerState、featureState、PrintLog捕获，确认按钮是否由另一个父级闭包分派启动/停止。
+3. 追root/52/13的H[0..2]，优先复用root/25的同生命周期捕获数组，而不是重建空数组。
+4. 最后补齐root/52/34配置读写闭包注入，并将四个按钮全部接通后再做语法检查。
+
+
 ## 2026-11-22 11:55 接续检查：四个按钮回调捕获审计（本轮新增）
 
 本轮重新读取了 11.16 当前唯一明文文件、原型索引、候选完整指令提取、root/52 的 865 槽指令流及闭包创建映射。没有修改明文代码，也没有把未经确认的函数强行接入 callbackMap。
