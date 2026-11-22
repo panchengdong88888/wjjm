@@ -1,3 +1,11 @@
+## 检查点399（2026-11-22）：恢复root/52槽471–482 mini_chat按钮锚点计算
+
+- 已在唯一交付文件`11.16/MainLeftBottom_11.16_明文.lua`新增`GetMainLeftBottomButtonAnchor_11_16`，并在doInit屏幕尺寸读取后调用，结果存入moduleState及mainPanelState的buttonAnchorX/buttonAnchorY。
+- 按11.16 root/52槽471–482常量与指令顺序恢复：`MainProperty._ui.Panel_mini_chat` → `getWorldPosition()` → `getContentSize()` → `worldPosition.x + contentSize.width`、`worldPosition.y`。读取失败返回nil，不硬编码屏幕坐标。
+- 提交：`85c3d8434ac765f8ea993558b0e7e5cd405857e3`。
+- 仍未把锚点接入三组按钮循环；root/52槽545–710的三组配置遍历、helper_root_52_32五项捕获语义和按钮回调映射尚未闭合。root/52槽711–865的hidebut/dropallbut/applebut控件创建也未完整接线。
+- 这次仅恢复锚点计算，不做运行验证。下一步继续按11.16原型证据恢复三组按钮表与创建调用，不迁移旧版本UI坐标假设。
+
 ## 检查点398（2026-11-22）：修正root/52两张状态表之间的周期回调引用
 
 - 复查检查点397接线时，发现root/52的H[3]不是MainLeftBottom.a，而是父root N[3]局部状态表；因此周期句柄保存在doInit的moduleState，而周期函数定义挂在MainLeftBottom.a。
