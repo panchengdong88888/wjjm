@@ -6684,7 +6684,10 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
 
         moduleState.NPCStorageProxy = storageProxy
         if storageProxy then
-            storageProxy:RequestStorageData(0)
+            -- 与11.2+11.9整合版保持相同的代理调用方式；请求异常不能中断后续UI初始化。
+            pcall(function()
+                storageProxy:RequestStorageData(0)
+            end)
         end
 
         -- root/52槽184明确先清理旧的巡航定时器句柄，再继续初始化界面。
