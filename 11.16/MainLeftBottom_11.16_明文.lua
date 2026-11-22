@@ -6232,8 +6232,8 @@ local function BuildMainLeftBottomButtonGroups_11_16()
     return group1, group2, group3
 end
 
--- root/52回调表：只接入当前明文文件中已有可执行实现的原型。
--- 尚未闭合捕获/主体的root/52/13、/16、/1及/34暂不伪造回调；
+-- root/52回调表：当前19/22项按钮回调已接入。
+-- rewardbut已按真实捕获链及14项奖励表接入；剩余缺口为cruisebut（等待root/11与root/25实例注入）、blacklistbut、putinbut。
 -- 通用点击闭包遇到缺失项会安全返回，不会错误翻转按钮状态。
 local function BuildMainLeftBottomCallbackMap_11_16(context)
     context = context or {}
