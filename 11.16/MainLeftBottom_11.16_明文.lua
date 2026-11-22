@@ -6689,8 +6689,10 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
         moduleState.cruiseActive = false
         moduleState.goldWarningText = "金币不足10W"
 
-        -- root/52槽711–865：创建隐藏、丢全部、苹果图三个独立控件。
-        -- 父容器为mini_chat；原型常量明确给出按钮纹理、标题、字体和坐标X。
+        -- UI按钮统一挂到GUI顶层容器；按钮锚点取mini_chat的世界坐标。
+        -- 旧版同职责doInit及UI坐标用法均确认：GUI:Attach_UITop()返回顶层父容器，
+        -- 不能把mini_chat自身作为父容器后又传入世界坐标，否则坐标系不一致。
+        local uiParent = GUI:Attach_UITop()
         local mainProperty = MainProperty
         local mainUI = mainProperty and mainProperty._ui
         local miniChat = mainUI and mainUI.Panel_mini_chat
@@ -6701,7 +6703,10 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             mainPanelState.b = visibleItems
         end
 
-        if miniChat then
+        if miniChat and uiParent
+            and moduleState.buttonAnchorX ~= nil
+            and moduleState.buttonAnchorY ~= nil
+        then
             -- root/52槽666–710：同一通用工厂按N[19]/N[20]/N[21]三组创建按钮。
             local group1, group2, group3 = BuildMainLeftBottomButtonGroups_11_16()
             moduleState.buttonGroups = { group1, group2, group3 }
@@ -6719,7 +6724,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             mainPanelState.buttonCallbackMap = callbackMap
 
             local buttonFactory = make_helper_root_52_32({
-                miniChat,
+                uiParent,
                 moduleState.buttonAnchorX or 0,
                 moduleState.buttonAnchorY or 0,
                 visibleItems,
@@ -6743,7 +6748,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             end
 
             local hideButton = GUI:Button_Create(
-                miniChat, "hidebut", 0, 0, "res/public/fuzhu_btn.png"
+                uiParent, "hidebut", 0, 0, "res/public/fuzhu_btn.png"
             )
             if hideButton then
                 moduleState.hidebut = hideButton
@@ -6758,7 +6763,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             end
 
             local dropAllButton = GUI:Button_Create(
-                miniChat, "dropallbut", 200, 0, "res/public/fuzhu_btn.png"
+                uiParent, "dropallbut", 200, 0, "res/public/fuzhu_btn.png"
             )
             if dropAllButton then
                 moduleState.dropallbut = dropAllButton
@@ -6787,7 +6792,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             moduleState.applebutCfg = appleConfig
             mainPanelState.applebutCfg = appleConfig
             local appleButton = GUI:Button_Create(
-                miniChat, "applebut", 350, 0, "res/public/fuzhu_btn.png"
+                uiParent, "applebut", 350, 0, "res/public/fuzhu_btn.png"
             )
             if appleButton then
                 moduleState.applebut = appleButton
