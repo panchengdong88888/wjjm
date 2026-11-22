@@ -3329,39 +3329,45 @@ end
 
 
 -- ============================================================================
--- 11.16 root/59：苹果下图按钮回调（44条物理指令，1个显式参数）。
--- 原始符号名未确认，使用合成定位名helper_root_59。
--- 捕获H[0]=父root N[3]状态对象；H[1]未在本体中读取；
--- H[2]=父root N[0]（按钮配置所属对象）；H[3]=父root N[5]回调。
 -- ============================================================================
-local function helper_root_59(capturedUpvalues, message)
+-- 11.16 root/59：苹果下图停止/按钮复位回调（44条物理指令，1个显式参数，4项捕获）。
+-- 父级root槽337 Opcode387创建本闭包；捕获顺序：
+-- H[0]=父root N[3]=MainLeftBottom.z状态表；
+-- H[1]=父root N[1]（本体未读取）；
+-- H[2]=父root N[0]=MainLeftBottom按钮配置所属表；
+-- H[3]=父root N[5]=ShowLocalNoticeByType。
+-- root/27捕获的是此处返回的单参数闭包，因此调用形式为stopAppleMapWithNotice(message)，
+-- 不能把capturedUpvalues表再次作为运行时参数传给root/27。
+-- ============================================================================
+local function make_helper_root_59(capturedUpvalues)
     local state = capturedUpvalues[1]
     local buttonConfigOwner = capturedUpvalues[3]
-    local notifyFunction = capturedUpvalues[4]
+    local showLocalNoticeByType = capturedUpvalues[4]
 
-    if state.appleMapTimer then
-        SL:UnSchedule(state.appleMapTimer)
-    end
-
-    state.appleMapTimer = nil
-    state.appleMap = nil
-    state.appleMapRunning = false
-
-    local button = state.applebut
-    if button then
-        local buttonConfig = buttonConfigOwner.applebutCfg
-        if buttonConfig then
-            buttonConfig.toggled = false
+    return function(message)
+        if state.appleMapTimer then
+            SL:UnSchedule(state.appleMapTimer)
         end
 
-        GUI.Button_setTitleText(button, "开苹果图")
-        GUI.Button_setTitleColor(button, "#ffffff")
+        state.appleMapTimer = nil
+        state.appleMap = nil
+        state.appleMapRunning = false
+
+        local button = state.applebut
+        if button then
+            local buttonConfig = buttonConfigOwner.applebutCfg
+            if buttonConfig then
+                buttonConfig.toggled = false
+            end
+
+            GUI.Button_setTitleText(button, "开苹果图")
+            GUI.Button_setTitleColor(button, "#ffffff")
+        end
+
+        showLocalNoticeByType(message)
+        SL:ShowSystemTips(message)
     end
-
-    notifyFunction(message)
-    SL:ShowSystemTips(message)
 end
-
 
 -- ============================================================================
 -- 11.16 root/33：startPutoutAll（56条物理指令，0显式参数，4个捕获值）。
@@ -3973,166 +3979,205 @@ end
 -- root/52/25的无参回调直接调用全局startAppleMap。
 -- root/27本体是独立原型，作为定时回调对象原样捕获；这里不展开其内部实现。
 -- ============================================================
--- 11.16 root/27：苹果下图定时回调（307条物理指令，0参数，9项捕获）
--- ============================================================
--- 捕获顺序：H[0]=MainLeftBottom.z状态表；H[1]=攻城时间窗口判断；
--- H[2]=ShowLocalNoticeByType；H[3]=盟重/土城地图判断；
--- H[4]=称号51295有效期判断；H[5]=backCity；
--- H[6]=苹果图按钮/定时器复位；H[7]=PrintLog；
--- H[8]=地图候选选择闭包。
---
--- 当前按已确认状态字段与同版本已恢复调用点先写入可执行主干。
--- 原始307槽中walkNpc/clickNpc/monitor后续分支的具体寄存器
--- 条件尚未全部闭合；未知协议分支不伪造，保留待统一补齐标记。
+-- ============================================================================
+-- 11.16 root/27：AppleMapTimerCallback_11_16（307条物理指令，0显式参数，9项捕获）。
+-- 父级root槽343 Opcode121创建，槽344–352按顺序捕获：
+-- H[0]=MainLeftBottom.z；H[1]=root/73攻城时间判断；
+-- H[2]=root/80 ShowLocalNoticeByType；H[3]=root/65盟重/土城字面查找；
+-- H[4]=root/28称号51295有效期判断；H[5]=root/61 backCity；
+-- H[6]=root/59单参数停止/按钮复位回调；H[7]=root/51 PrintLog；
+-- H[8]=root/0候选地图选择闭包。
+-- 307槽控制流、融合消费边界、主要寄存器流和父级捕获来源均已静态闭合。
+-- ============================================================================
 local function make_AppleMapTimerCallback_11_16(capturedUpvalues)
     local mainState = capturedUpvalues[1]
     local isSiegeTime = capturedUpvalues[2]
-    local notify = capturedUpvalues[3]
-    local isWhitelistedCity = capturedUpvalues[4]
+    local showLocalNoticeByType = capturedUpvalues[3]
+    local findWhitelistedCity = capturedUpvalues[4]
     local hasAppleTitle = capturedUpvalues[5]
     local backCity = capturedUpvalues[6]
-    local resetAppleMap = capturedUpvalues[7]
+    local stopAppleMapWithNotice = capturedUpvalues[7]
     local printLog = capturedUpvalues[8]
     local chooseTargetMap = capturedUpvalues[9]
 
     return function()
         local state = mainState.appleMap
-        if not state or not mainState.appleMapRunning then
+        if not state then
             return
         end
 
-        state.ticks = (state.ticks or 0) + 1
+        state.ticks = state.ticks + 1
 
         if isSiegeTime() then
             if not state.siegeTip then
                 state.siegeTip = true
-                notify("攻城时间段(20:00-22:00)，苹果图暂停下图")
-                printLog("苹果下图：进入攻城时间窗口，暂停下图")
+                showLocalNoticeByType("攻城时间段(20:00-22:00)，苹果图暂停下图")
             end
             return
-        elseif state.siegeTip then
+        end
+
+        if state.siegeTip then
             state.siegeTip = false
-            notify("攻城时间段结束，苹果图恢复下图")
-            printLog("苹果下图：攻城时间窗口结束，恢复下图")
+            showLocalNoticeByType("攻城时间段结束，苹果图恢复下图")
         end
 
         local mapName = GetMapName()
+        local cityMatch = findWhitelistedCity(mapName)
 
-        if not hasAppleTitle() then
-            resetAppleMap({
-                [1] = mainState,
-                [3] = MainLeftBottom,
-                [4] = notify,
-            }, "苹果图称号已失效，已停止")
-            return
-        end
-
-        if state.state == "backCity" then
-            if not backCity() then
-                resetAppleMap({
-                    [1] = mainState,
-                    [3] = MainLeftBottom,
-                    [4] = notify,
-                }, "背包没有盟重回城石，已停止")
-                return
-            end
-
-            state.state = "toShenlong"
-            state.ticks = 0
+        if not cityMatch then
             state.cityCloseSent = false
-            printLog("苹果下图：已使用盟重回城石，准备前往神龍之都")
-            return
         end
 
-        if state.state == "toShenlong" then
-            if string.find(mapName, "神龍之都", 1, true) then
-                state.state = "monitor"
-                state.ticks = 0
-                state.lastMapName = mapName
-                notify("已进入目标地图：" .. mapName)
+        if hasAppleTitle() then
+            if cityMatch then
+                if state.cruiseConfirmed then
+                    state.state = "cruise"
+                    return
+                end
+
+                if state.ticks % 30 == 1 then
+                    LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)
+                    state.cruiseSent = true
+                    showLocalNoticeByType("苹果已激活：开启巡航")
+                end
+
+                state.state = "cruise"
                 return
             end
 
-            if state.ticks % 30 == 0 then
+            if state.cruiseSent then
+                state.cruiseConfirmed = true
+            end
+
+            state.cruiseOn = true
+
+            if state.cruiseConfirmed then
+                return
+            end
+
+            if state.cruiseSent then
+                return
+            end
+
+            if state.ticks % 30 == 1 then
+                if not backCity() then
+                    stopAppleMapWithNotice("背包没有盟重回城石，已停止")
+                end
+            end
+            return
+        end
+
+        if cityMatch then
+            if not state.cityCloseSent then
+                LuaSendMsg(9002, 55559, 1, 2, 3, "", 0)
+                state.cityCloseSent = true
+                state.cruiseOn = false
+                state.cruiseSent = false
+                state.cruiseConfirmed = false
+                printLog("苹果未激活：发送关闭巡航")
+            end
+
+            if state.state ~= "toShenlong" then
+                state.state = "toShenlong"
+                state.ticks = 0
                 LuaSendMsg(9002, 80101, 1, 2, 3, "神龍之都", 12)
-                notify("目标地图：神龍之都")
+                printLog("前往神龍之都")
+            elseif state.ticks % 50 == 0 then
+                LuaSendMsg(9002, 80101, 1, 2, 3, "神龍之都", 12)
+            end
+            return
+        end
+
+        if string.find(mapName, "神龍之都", 1, true) then
+            if state.state ~= "walkNpc"
+                and state.state ~= "clickNpc"
+                and state.state ~= "waitEnter"
+            then
+                local target = chooseTargetMap(state)
+                state.target = target
+                state.state = "walkNpc"
+                state.ticks = 0
+                printLog("目标地图：" .. target.name)
+            end
+
+            if state.state == "walkNpc" then
+                local target = state.target
+                if MoveTo(target.x, target.y, 8) then
+                    local npcData = string.format(
+                        "{\"index\":%d,\"UserID\":\"%s\"}",
+                        target.index,
+                        target.userID
+                    )
+
+                    -- Opcode200的实参区间从N[5]开始；本消息没有9002前缀。
+                    LuaSendMsg(
+                        1010,
+                        0,
+                        0,
+                        0,
+                        0,
+                        npcData,
+                        string.len(npcData)
+                    )
+
+                    state.state = "clickNpc"
+                    state.ticks = 0
+                end
+                return
+            end
+
+            if state.state == "clickNpc" then
+                if state.ticks >= 3 then
+                    LuaSendMsg(9002, 10037, 1, 2, 3, "", 0)
+                    state.state = "waitEnter"
+                    state.ticks = 0
+                end
+                return
+            end
+
+            if state.state == "waitEnter" then
+                if state.ticks >= 30 then
+                    LuaSendMsg(9002, 10037, 1, 2, 3, "", 0)
+                    state.ticks = 0
+                end
+                return
             end
             return
         end
 
         if state.state == "monitor" then
-            if isWhitelistedCity(mapName) then
-                state.lastMapName = mapName
+            if state.lastMapName
+                and string.find(mapName, state.lastMapName, 1, true)
+            then
                 return
             end
-
-            local target = chooseTargetMap(state)
-            if target then
-                state.target = target
-                state.state = "walkNpc"
-                state.ticks = 0
-                state.lastMapName = mapName
-            end
-            return
         end
 
-        -- walkNpc：目标地图配置提供NPC坐标；MoveTo成功后发送NPC交互请求。
-        if state.state == "walkNpc" then
-            local target = state.target
-            if not target then
+        local target = state.target
+        if target and string.find(mapName, target.name, 1, true) then
+            if state.state ~= "monitor" then
                 state.state = "monitor"
+                state.lastMapName = target.name
                 state.ticks = 0
-                return
-            end
-
-            if MoveTo(target.x, target.y, 8) then
-                local npcData = string.format(
-                    '{"index":%d,"UserID":"%s"}',
-                    tonumber(target.index) or 0,
-                    tostring(target.userID or "")
-                )
-
-                -- 消息1010的参数排列沿用同一模块root/79已恢复的NPC交互调用形式。
-                LuaSendMsg(
-                    9002, 1010, 0, 0, 0, 0,
-                    npcData, string.len(npcData)
-                )
-
-                state.state = "clickNpc"
-                state.ticks = 0
+                printLog("已进入目标地图：" .. state.lastMapName)
             end
             return
         end
 
-        -- clickNpc：等待3个回调tick后发送NPC点击/确认消息，再进入等待地图状态。
-        if state.state == "clickNpc" then
-            if state.ticks >= 3 then
-                LuaSendMsg(9002, 10037, 1, 2, 3, "", 0)
-                state.state = "waitEnter"
-                state.ticks = 0
+        if state.state ~= "backCity" then
+            state.state = "backCity"
+            state.ticks = 0
+            if not backCity() then
+                stopAppleMapWithNotice("背包没有盟重回城石，已停止")
             end
-            return
+        elseif state.ticks % 30 == 0 then
+            if not backCity() then
+                stopAppleMapWithNotice("背包没有盟重回城石，已停止")
+            end
         end
-
-        -- waitEnter：地图发生变化时转入monitor；未切换则每30 tick重发确认消息。
-        if state.state == "waitEnter" then
-            if mapName ~= state.lastMapName then
-                state.state = "monitor"
-                state.ticks = 0
-                return
-            end
-
-            if state.ticks >= 30 then
-                LuaSendMsg(9002, 10037, 1, 2, 3, "", 0)
-                state.ticks = 0
-            end
-            return
-        end
-
-        -- 未知状态不发送协议，保留原状态供后续定位。
+        return
     end
 end
-
 
 local function make_startAppleMap(capturedUpvalues)
     local mainState = capturedUpvalues[1]
@@ -6537,24 +6582,15 @@ end
 
 
 -- ============================================================================
--- 11.16 root/27 后半段物理指令定位记录（2026-11-21续）
--- 下列为原版root/27的槽位/常量交叉定位，不代表对应运行逻辑已全部接入：
---   slot150/153/156：walkNpc、clickNpc、waitEnter状态字符串进入对应比较/分支区。
---   slot164-170：目标地图名称与提示文本的组合读取区。
---   slot171-180：写入walkNpc状态；读取target.x/target.y；出现MoveTo调用入口。
---   slot181-200：读取target.index/target.userID；出现
---       {"index":%d,"UserID":"%s"} 格式串及LuaSendMsg/1010调用序列。
---   slot202-220：clickNpc状态及ticks计数分支；出现LuaSendMsg/9002/10037消息常量。
---   slot221-238：waitEnter状态及ticks计数分支；出现30计数门控与
---       LuaSendMsg/9002/10037消息常量。
---   slot240-282：monitor状态、lastMapName与target.name比较及进入地图提示。
---   slot283-307：backCity状态、盟重回城石缺失提示及停止/复位分支。
---
--- 重要边界：slot173的MoveTo取值/调用链、slot190-200的1010消息实参、
--- slot211-219与229-237的10037消息实参，尚未完成寄存器级逐项绑定。
--- 因此当前只把这些标记为已定位的物理区段，不把它们伪装成完整可执行逻辑。
 -- ============================================================================
-
+-- 11.16 root/27静态恢复完成记录（2026-11-22）。
+-- 307条物理指令已逐槽闭合并整合到make_AppleMapTimerCallback_11_16；
+-- 父级槽343 Opcode121的9项捕获来源已逐一确认。
+-- 协议参数：55556开启巡航；55559关闭巡航；80101前往神龍之都；
+-- 1010发送NPC index/UserID JSON（无9002前缀）；10037点击/等待确认。
+-- H[6]为root/59单参数停止/按钮复位闭包，不是接收捕获表+消息的resetAppleMap函数。
+-- 已完成静态恢复；尚未执行Lua语法检查或目标游戏运行验证。
+-- ============================================================================
 
 -- root/52/23槽505–645：武器幸运值读取与祝福油使用子流程。
 -- 装备数据来自EQUIP_DATA[1]；幸运值优先读取Luck字段，若字段缺失，
