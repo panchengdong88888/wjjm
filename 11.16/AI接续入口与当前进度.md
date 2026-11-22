@@ -4086,14 +4086,11 @@ D结果解释：
 - 判定：若G18显示，说明pcall可阻止仓库请求调用中的异常/错误传播导致UI中断；若仍不显示，则需继续检查调用时序、同步阻塞或其他副作用。正式明文未修改。
 
 
-## 2026-11-23 G18实测通过：仓库请求异常保护有效
+## 2026-11-23 G18后静态核对：接口文档缺失，参数与代理变量仍待证
 
-- 用户实测G18：**游戏原UI与插件按钮正常显示**。
-- 对照结果：
-  - G16：获取NPCStorageProxy后直接调用`RequestStorageData(0)`，不显示。
-  - G17：只获取NPCStorageProxy并赋值，不调用请求，显示正常。
-  - G18：在G17基础上调用`RequestStorageData(0)`，但将调用单独包入`pcall`，显示正常。
-- 当前最可靠结论：`RequestStorageData(0)`未保护时会导致初始化链路中断；增加`pcall`后，错误被隔离，按钮/UI可继续创建。故障点已收敛到该调用产生的Lua错误/错误传播，而不是NPCStorageProxy获取本身。
-- 这项实测只证明UI初始化不再被该调用阻断，**不证明仓库数据请求本身成功**；由于按用户要求不使用日志，当前无法从按钮显示结果判断请求返回值或仓库数据是否到达。
-- 正式明文`MainLeftBottom_11.16_明文.lua`未修改；G16/G17/G18均为独立隔离测试文件。
-- 本轮没有创建G19，避免在没有可观察判据的情况下重复让用户打包测试。下一步先静态核对11.16调用上下文、仓库代理API定义/同版本调用约定，再决定是否需要延迟请求测试或将异常保护方案移入正式初始化。
+- 已读取`11.16/开发文档_新框架(3_40_xx)/SL.md`：文档明确列出`SL:Schedule`、`SL:ScheduleOnce`、`SL:UnSchedule`等调度接口，但全文没有`NPCStorageProxy`或`RequestStorageData`定义。因此不能把`RequestStorageData`当作已由3.40.x公开文档确认的SL API，也不能据此推断其参数契约。
+- 已核对11.16唯一明文`MainLeftBottom_11.16_明文.lua`：仓库初始化处先用pcall保护`global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)`，随后写入`moduleState.NPCStorageProxy`，再直接调用`storageProxy:RequestStorageData(0)`。G18只在请求调用外再加一层pcall，实测按钮正常。
+- 同一11.16明文中，`GetAvailableStoragePage`、`GetStorageItemData`、`StorageItems`读取的是标识符`NPCStorageProxy`（未限定为`MainLeftBottom.NPCStorageProxy`）；本文件可见引用处没有对应的`NPCStorageProxy = ...`赋值。当前初始化却写入`moduleState.NPCStorageProxy`。这构成一个需要回查原始捕获/全局环境的变量身份疑点，不能擅自将两者视为同一变量，也不能仅凭此断定功能必坏。
+- 对照11.2+11.9整合源码：同样使用裸标识符`NPCStorageProxy`供仓库业务函数读取；doInit中请求参数来自循环寄存器`T7`，历史检查点记录该调用最终实参为4。该跨版本调用形态与11.16当前恢复稿的`RequestStorageData(0)`不同，但不能用旧版参数覆盖11.16；必须回到11.16 root/52原始指令和寄存器流核实。
+- 因此G18目前只证明“将请求调用包入pcall可让UI继续初始化”，并未证明请求成功、参数0正确、或仓库代理变量绑定正确。也没有证据足以直接修改正式明文。
+- 下一步静态工作：回到11.16 root/52初始化原始指令/融合消费边界，核实RequestStorageData调用实参寄存器来源；同时追踪`NPCStorageProxy`是否由外部环境注入或应从模块状态表读取。确认前不创建新的APK测试版、不改正式明文。
