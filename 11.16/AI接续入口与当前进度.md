@@ -4111,3 +4111,17 @@ NPCStorageProxy:RequestStorageData()
 - 这段实现反而强化了代理变量身份核查的重要性：方法定义和示例调用均以 `NPCStorageProxy` 作为接收对象；11.16 初始化当前写入的是 `moduleState.NPCStorageProxy`，而业务函数读取裸变量 `NPCStorageProxy`。除非能证明二者由外部环境/框架自动关联，否则不能认为绑定已完成。
 - G16/G18 的对照仍然只证明：直接调用请求会中断初始化，而用 pcall 包住后 UI 能继续显示；不能由按钮显示推断消息已成功发送或仓库数据已返回。
 - 当前结论：无参是已知正确调用形式；正式明文暂不修改。下一步优先追踪 11.16 root/52 的代理接收者寄存器和赋值目标，并核实 `NPCStorageProxy` 裸变量的来源/作用域；如后续需要做隔离测试，测试点应优先验证裸变量绑定与模块字段是否一致，而不是仅测试去掉参数 0。
+
+
+## 2026-11-23 用户补充完整仓库初始化写法：确认变量绑定差异
+
+- 用户进一步提供完整写法：
+```lua
+local NPCStorageProxy = global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)
+NPCStorageProxy:RequestStorageData() --请求仓库数据
+```
+- 这明确了示例中代理接收对象的局部变量名就是 `NPCStorageProxy`，并且以无参形式调用 `RequestStorageData()`。
+- 与当前11.16恢复稿对比：恢复稿把获取结果放入局部变量 `storageProxy`，随后只赋值 `moduleState.NPCStorageProxy = storageProxy`，并通过 `storageProxy:RequestStorageData(0)` 调用。业务函数却直接读取裸标识符 `NPCStorageProxy`。当前恢复稿没有显式建立局部变量 `NPCStorageProxy` 与该代理对象的绑定。
+- 因此当前最明确的待修复点是代理变量名/作用域绑定：初始化应当让业务函数实际读取的 `NPCStorageProxy` 指向 retrieveProxy 返回的对象。无参调用也应遵循用户提供的实际函数定义和示例。
+- 但仍须先核对 root/52 原始闭包的作用域与捕获关系，确定应恢复为模块级局部变量、模块状态字段还是环境全局变量；不能未经核对直接写入正式明文。用户当前无需重新打包测试。
+- G18的pcall保护仍可保留为异常隔离措施；它不是代理变量绑定的替代方案，也不代表请求已成功发送。
