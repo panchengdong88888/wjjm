@@ -5247,16 +5247,17 @@ local function RunCruisePlayerScan_11_16(captured)
                             break
                         end
                     end
-                    -- 原指令还对名称/行会/队伍及英雄属性进行过滤；
-                    -- 过滤条件的完整组合尚未逐项命名，交由已确认的适配器处理。
-                    local accept = true
-                    -- slot146–152读取ACTOR_IS_HERO后进入候选跳过分支；
-                    -- slot153–164排除空名称及本角色名称；slot173–193排除队伍成员。
+                    -- slot146–152排除英雄；slot153–164排除空名称及本角色名称。
+                    -- slot165–180读取候选行会名，并在本角色行会名非空时排除同会玩家。
+                    -- slot182–193遍历TEAM_MEMBER_LIST，排除队伍成员。
+                    -- 因此这里把已由物理指令确认的过滤条件直接落入主体，
+                    -- 不再依赖外部acceptPlayer适配器才能实现基础过滤。
                     accept = not record.isHero
                         and record.name ~= nil
                         and record.name ~= ""
                         and record.name ~= mainActorName
                         and not record.teamMember
+                        and (mainGuildName == "" or record.guildName ~= mainGuildName)
                     if captured.acceptPlayer then
                         accept = accept and captured.acceptPlayer(
                             record, mainActorName, mainGuildName, teamMembers
