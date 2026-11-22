@@ -3642,11 +3642,12 @@ end
 local function helper_root_52_32_0(callbackMap, buttonConfig, button)
     return function()
         local callback = callbackMap[buttonConfig.key]
-        local allowed = true
-        if callback then
-            allowed = callback()
+        -- 尚未恢复出真实回调的按钮不得假装成功，也不得只翻转toggle外观。
+        if type(callback) ~= "function" then
+            return
         end
 
+        local allowed = callback()
         if allowed == false then
             return
         end
@@ -6170,6 +6171,120 @@ local function GetMainLeftBottomButtonAnchor_11_16(mainPanelState)
 end
 
 
+-- ============================================================================
+-- 11.16 root/52槽483–543：三组真实按钮配置数组。
+-- 由三个表构造段边界恢复：N[19]为7项、N[20]为7项、N[21]为3项。
+-- 顺序与各表中的key/name/toggle字面量保持一致；不是把17项混成一组。
+-- ============================================================================
+local function BuildMainLeftBottomButtonGroups_11_16()
+    local group1 = {
+        { key = "cruisebut", name = "开见人跑", toggle = "关见人跑" },
+        { key = "buygold110", name = "110W" },
+        { key = "moneybut", name = "V10022" },
+        { key = "shiqubut", name = "开拾取", toggle = "关拾取" },
+        { key = "diuqibut", name = "开丢弃", toggle = "关丢弃" },
+        { key = "clearblacklistbut", name = "清黑名单" },
+        { key = "stopallbut", name = "停止脚本" },
+    }
+    local group2 = {
+        { key = "recyclebut", name = "回收装备" },
+        { key = "buygoldbut", name = "500W" },
+        { key = "newzone", name = "开新区" },
+        { key = "rewardbut", name = "开奖励", toggle = "关奖励" },
+        { key = "yinguaibut", name = "开拉怪", toggle = "关拉怪" },
+        { key = "blacklistbut", name = "开黑名单", toggle = "关黑名单" },
+        { key = "xiaotuibut", name = "快速小退" },
+    }
+    local group3 = {
+        { key = "putinbut", name = "上架金条" },
+        { key = "putoutbut", name = "下架物品" },
+        { key = "forgezodiacbut", name = "锻造生肖" },
+    }
+    return group1, group2, group3
+end
+
+-- root/52回调表：只接入当前明文文件中已有可执行实现的原型。
+-- 尚未闭合捕获/主体的root/52/13、/16、/1及/34暂不伪造回调；
+-- 通用点击闭包遇到缺失项会安全返回，不会错误翻转按钮状态。
+local function BuildMainLeftBottomCallbackMap_11_16(context)
+    context = context or {}
+    local timerState = context.timerState or MainLeftBottom.z
+    local moduleState = context.moduleState or MainLeftBottom
+    local visibleItems = context.visibleItems or moduleState.b or {}
+    local schedule = context.schedule or function(callback, interval)
+        return SL:Schedule(callback, interval)
+    end
+    local callbackMap = {}
+
+    callbackMap.settingbut = closure_root_52_4
+    callbackMap.newzone = make_helper_root_52_20(NewZoneFeature)
+    callbackMap.putoutbut = function()
+        return startPutoutAll({
+            timerState,
+            ShowLocalNoticeByType,
+            PrintLog,
+            schedule,
+        })
+    end
+    callbackMap.applebut = closure_root_52_25
+    callbackMap.forgezodiacbut = closure_root_52_0
+    callbackMap.buygoldbut = MakeBuyGold500WButtonHandler_11_16(timerState)
+    callbackMap.buygold110 = helper_root_52_3(
+        timerState, ShowLocalNoticeByType, BuyStoreItem, nil
+    )
+    callbackMap.stopallbut = function()
+        local syncButtonToggle = function(key, enabled)
+            local cfg = moduleState.buttonConfigByKey
+                and moduleState.buttonConfigByKey[key]
+            if cfg then cfg.toggled = enabled end
+            local button = visibleItems[key]
+            if button then
+                local config = cfg
+                if config then
+                    GUI:Button_setTitleText(
+                        button, enabled and config.toggle or config.name
+                    )
+                end
+                GUI:Button_setTitleColor(
+                    button, enabled and "#ff0000" or "#ffffff"
+                )
+            end
+        end
+        return helper_root_52_24(
+            timerState,
+            timerState,
+            syncButtonToggle,
+            visibleItems.dropallbut,
+            ShowLocalNoticeByType
+        )
+    end
+    callbackMap.recyclebut = closure_root_52_21
+    callbackMap.yinguaibut = make_helper_root_52_36({
+        timerState, ShowLocalNoticeByType, InitGatherMonsters
+    })
+    callbackMap.clearblacklistbut = make_helper_root_52_10
+    callbackMap.storagebut = function()
+        return helper_root_52_31(timerState, PrintLog, timerState, schedule)
+    end
+    callbackMap.takebut = helper_root_52_19(
+        timerState, PrintLog, timerState, schedule
+    )
+    callbackMap.shiqubut = helper_root_52_17(
+        timerState, PrintLog, schedule
+    )
+    callbackMap.diuqibut = MakeDropMode2ButtonHandler_11_16(
+        timerState, PrintLog, timerState, schedule, visibleItems
+    )
+    callbackMap.dropallbut = MakeDropMode1ButtonHandler_11_16(
+        timerState, timerState, PrintLog, DiuItems, schedule
+    )
+    callbackMap.moneybut = context.resourceWindowHandler
+    callbackMap.xiaotuibut = closure_root_52_12
+
+    return callbackMap
+end
+
+
 -- 本段先恢复root/52前180槽可确认的初始化主干：初始化提示、货币/物品
 -- 名单、时间快照、MoneyProxy资源快照、四组快捷栏预设、每日巡航旧句柄
 -- 清理入口及仓库数据请求。后续UI面板和按钮创建段继续补齐。
@@ -6353,6 +6468,47 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
         end
 
         if miniChat then
+            -- root/52槽666–710：同一通用工厂按N[19]/N[20]/N[21]三组创建按钮。
+            local group1, group2, group3 = BuildMainLeftBottomButtonGroups_11_16()
+            moduleState.buttonGroups = { group1, group2, group3 }
+            mainPanelState.buttonGroups = moduleState.buttonGroups
+
+            local callbackMap = BuildMainLeftBottomCallbackMap_11_16({
+                timerState = MainLeftBottom.z,
+                moduleState = moduleState,
+                visibleItems = visibleItems,
+                resourceWindowHandler = resourceWindowHandler,
+                schedule = function(callback, interval)
+                    return SL:Schedule(callback, interval)
+                end,
+            })
+            moduleState.buttonCallbackMap = callbackMap
+            mainPanelState.buttonCallbackMap = callbackMap
+
+            local buttonFactory = make_helper_root_52_32({
+                miniChat,
+                moduleState.buttonAnchorX or 0,
+                moduleState.buttonAnchorY or 0,
+                visibleItems,
+                callbackMap,
+            })
+            local buttonGroups = {
+                { items = group1, offset = 40 },
+                { items = group2, offset = 0 },
+                { items = group3, offset = 80 },
+            }
+            moduleState.buttonConfigByKey = {}
+            for _, group in ipairs(buttonGroups) do
+                for rowIndex, config in ipairs(group.items) do
+                    moduleState.buttonConfigByKey[config.key] = config
+                    local button = buttonFactory(config, rowIndex, group.offset)
+                    if button then
+                        moduleState[config.key] = button
+                        mainPanelState[config.key] = button
+                    end
+                end
+            end
+
             local hideButton = GUI:Button_Create(
                 miniChat, "hidebut", 0, 0, "res/public/fuzhu_btn.png"
             )
