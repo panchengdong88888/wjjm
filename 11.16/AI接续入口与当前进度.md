@@ -1,3 +1,20 @@
+## 检查点390（2026-11-22）：root/27槽240–307 monitor与backCity闭环
+
+- 证据：11.16原版F()分派叶、root/27七项物理指令提取JSON；字段桥接遵循检查点379，跳转遵循检查点383。
+- 槽240 Opcode274读取state.state；槽241 Opcode143比较"monitor"（A=0）。state为monitor时跳过槽242跳转，进入lastMapName检测；其他状态执行槽242跳转参数255，实际进入槽256目标匹配。
+- monitor地图变化检测：槽243 Opcode96读取state.lastMapName；槽244 Opcode289检查其真值。为空则跳至槽256；非空则槽246–252构造并调用`string.find(mapName,lastMapName,1,true)`。槽253 Opcode60检查结果：仍能找到lastMapName时跳过槽254并由槽255 Opcode205返回；找不到时执行槽254跳转至槽256，继续目标地图匹配。
+- 槽256 Opcode96读取state.target；槽257 Opcode60检查target真值。target不存在时执行槽258跳转参数282，实际进入槽283 backCity分支；target存在时继续。
+- 槽259–266构造并调用`string.find(mapName,target.name,1,true)`：槽259 Opcode105装载string，槽260 Opcode406读取find，槽261 Opcode119复制当前mapName，槽262 Opcode79融合槽263读取target.name，槽264装载1，槽265装载true，槽266 Opcode209调用。
+- 槽267 Opcode289检查查找结果；未命中时槽268跳转至槽283 backCity；命中时继续槽269–282。
+- 命中目标地图后，槽269 Opcode410读取state.state；槽270 Opcode143比较"monitor"。若已是monitor，槽271跳转至槽282 return；若尚非monitor，继续初始化：槽272 Opcode322设state.state="monitor"；槽273/274读取target.name；Opcode400融合槽275将其写入state.lastMapName；槽276 Opcode114清零ticks；槽277读取H[7]，槽278装载"已进入目标地图："，槽279读取lastMapName，槽280 Opcode93拼接提示，槽281 Opcode128调用H[7]，槽282 Opcode205结束。H[7]为PrintLog。
+- backCity入口：槽283 Opcode96读取state.state；槽284 Opcode143比较"backCity"。已处于backCity时槽285跳转参数295，实际进入槽296周期重试；其他状态跳过跳转，槽286/287分别设置state.state="backCity"和ticks=0。
+- 首次尝试回城：槽288读取H[5]，槽289 Opcode209调用backCity()，槽290 Opcode325以true为期望值检查结果。返回true时执行槽291跳转参数294，实际进入槽295 Opcode339结束；返回false时跳过槽291，槽292/293装载H[6]和提示"背包没有盟重回城石，已停止"，槽294 Opcode123调用H[6](提示)；槽295结束。H[5]=backCity，H[6]=resetAppleMap。
+- 已处于backCity时：槽296读取ticks；槽297 Opcode251执行ticks%30；槽298 Opcode143判断余数是否为0。非0时槽299跳转到槽307结束；为0时继续槽300/301读取并调用H[5]=backCity()；槽302 Opcode366检查返回值。成功时槽303跳转至槽307结束；失败时槽304/305装载H[6]及相同提示，槽306 Opcode128调用H[6](提示)，槽307 Opcode339结束。
+- 因此backCity首次进入立即尝试；若状态持续为backCity，则每30 tick重试；backCity返回false时调用resetAppleMap提示缺少盟重回城石。
+- 本批槽240–307全部闭合。与检查点386–389合并后，root/27槽109–307状态机主体已完成静态控制流恢复；但槽1–108前置逻辑、9项upvalue最终映射/交叉引用及整体明文整合仍未完成，root/27不得标记完成。
+- 下一步：回到root/27槽1–108，逐条复核旧的地图/称号/巡航启停逻辑，并将已确认的109–307状态机与前段正确衔接；优先解决当前唯一明文中LuaSendMsg(1010)多余9002参数的旧候选错误。
+
+
 ## 检查点389（2026-11-22）：root/27槽205–239 clickNpc与waitEnter闭合
 
 - 证据：11.16原版F()分派叶与root/27七项提取JSON；Opcode143、345、52的条件跳过语义按原版分派器确认，Opcode388跳转按后置递增规则计算。
