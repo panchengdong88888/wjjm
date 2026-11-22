@@ -1,5 +1,15 @@
 
 
+## 2026-11-22 三个剩余按钮增加真实捕获注入入口（不伪造闭包值）
+
+- 重新读取root/52原始865槽提取，核实root/52/1创建于槽620，4项捕获槽621–624依次为父H[3]、H[0]、H[1]、局部N[23]，槽625绑定blacklistbut。当前root/52/1停止逻辑已恢复为：存在blacklistTimer时输出“关闭黑名单功能”、UnSchedule并清空句柄、将featureState.isBlacklisting=false。唯一明文helper参数现按捕获顺序调整为(timerState, PrintLog, featureState, buttonItems)，不再把H[0]/H[1]顺序颠倒；第4项捕获保留，尚不猜其内部字段用途。
+- root/52/34创建于槽564，4项捕获顺序已确认：H[11]配置读取闭包、H[3]MainLeftBottom、H[2]MainLeftBottom.a、H[12]配置写入闭包；槽569绑定putinbut。唯一明文工厂make_helper_root_52_34已按该顺序实现，内部确认调用inputNumber并在确认后保存price/name/stacked及调用startPutinGold。
+- 唯一明文BuildMainLeftBottomCallbackMap_11_16新增三个条件接线入口：context.cruiseRunButtonCaptures、context.blacklistButtonCaptures、context.putinButtonCaptures。数组顺序按上述原始捕获描述符传入；缺少数组时不伪造闭包、不假设全局变量身份。
+- 因此当前22个按钮均有代码接入入口，但cruise/blacklist/putin三项仍要求上层在正确生命周期传入真实捕获数组，不能把“有条件接入入口”误记为游戏运行时已完成绑定。rewardbut为本版直接接入。
+- 本轮唯一明文提交：e4913839039eaa568c650555ccba53efd24bbbfe。尚未执行Lua语法、API静态、APK或游戏运行测试。下一步追root N[38]/N[39]读写配置闭包与root/25的13项捕获，尽量从父级创建链直接构造三个数组，避免长期依赖外部注入。
+
+
+
 ## 2026-11-22 root/52/13见人跑按钮两个分支回调身份确认
 
 - root/52槽591 Opcode178创建childIndex=13，3项捕获为父级H[3]、H[14]、H[15]；槽595绑定cruisebut。
