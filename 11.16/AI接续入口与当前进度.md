@@ -3507,3 +3507,25 @@ opcode0=3次表写入；opcode2=创建表+常量池装载；opcode224=8次立即
 - 已提交GitHub主分支，未做Lua语法编译，也未在APK中实测。
 - `GUI:Attach_UITop()` 的调用形式有旧版同职责代码支持；本轮没有从11.16 root/52原始指令流中单独确认该调用槽位，因此日志不把它标记为11.16字节码逐槽恢复事实。
 - 如果这次打包后按钮仍不显示，下一优先检查点是 `GUI:Attach_UITop()` 返回对象是否有效，以及mini_chat世界坐标是否适用于当前UI顶层节点；届时再检查doInit是否确实被宿主调用，不要重新推翻本轮已经修复的父子坐标关系。
+
+
+## 2026-11-22 入口启动链补强（重要：解决宿主未调用main的风险）
+
+用户反馈上次UI挂载修复后仍然没有显示。重新检查唯一主文件后，发现此前的代码仅将 `AccountIDValidation` 注册到 `MainLeftBottom.main`，并假定宿主加载器一定会调用返回模块的 `main()`。仓库目前没有宿主加载器源码可证明这一点。因此增加兼容启动层，避免“chunk被执行并return模块，但宿主不调用main”时整个UI初始化链完全不启动。
+
+实际修改：
+- 主文件：`11.16/MainLeftBottom_11.16_明文.lua`
+- 提交：`bbba9d1316722459dbf15750bc719638499000c3`
+- blob：`8bec13db71d7c1b3b59a29bd0a71a3c66061c86a`
+
+改动明细：
+1. `AccountIDValidation()` 增加 `MainLeftBottom._mainStarted` 幂等保护；宿主主动调用main与文件末尾兼容启动同时存在时只启动一次。
+2. 将就绪轮询改为只取消自己创建的 `waitTimer`，不再调用 `SL:UnSchedule(nil)`，避免误影响其他定时任务。
+3. `Panel_mini_chat` 未就绪时继续等待并输出等待日志。
+4. 主界面就绪后检查 `module.doInit` 是否存在；使用 `pcall` 执行，并将异常写入 `MainLeftBottom._doInitError`、输出明确错误日志。
+5. 在文件最末尾、所有doInit依赖定义完毕后，主动调用一次 `MainLeftBottom.main()`；`_mainStarted` 防止外部加载器随后再次调用造成重复启动。
+
+重要说明：
+- 原始root字节码只注册main字段并返回模块，没有在root内部调用main。文件末尾主动调用是为适配未知宿主加载器行为所加的兼容层，不宣称是原始字节码恢复内容。
+- 这次改动能覆盖“宿主不主动调用main”的加载方式，并能在游戏日志中区分“主界面未就绪”“doInit不存在”“doInit执行异常”“doInit正常返回”。
+- 尚未在用户APK中运行，不能声称UI已修复。若仍不显示，下一步需要用户提供新增的 `[MainLeftBottom启动]` / `[MainLeftBottom启动失败]` 日志，便可根据具体阶段定位，不再盲目改挂载代码。
