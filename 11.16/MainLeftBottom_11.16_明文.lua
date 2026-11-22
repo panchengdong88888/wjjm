@@ -6028,7 +6028,7 @@ end
 -- ============================================================================
 -- 11.16 root/52：MainLeftBottom.doInit（865条物理指令，19项捕获）
 -- ============================================================================
--- 已确认捕获：H[0]=PrintLog；H[2]=MainLeftBottom.a；H[3]=MainLeftBottom；
+-- 已确认捕获：H[0]=root/51 PrintLog；H[2]=MainLeftBottom.a；H[3]=父root N[3]局部状态表。
 -- H[9]为包含GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems
 -- 父级调度点补充（root/52槽153–184）：槽153–162准备并调用SL:Schedule，
 -- 回调为槽155创建的root/52/23，参数寄存器明确装入间隔1；因此该回调按1秒调度。
@@ -6036,6 +6036,19 @@ end
 -- 以间隔1调用SL:Schedule并将返回句柄写入moduleState.cruiseTimer。
 -- 这两条调度链不可混为一条；root/52/23本身没有保存到cruiseTimer字段。
 -- 等方法的接口表（本段不需要直接解引用）。其余捕获槽保留，不猜变量名。
+-- 父root槽42 Opcode199会把N[3]重新置为新表；故H[3]应作为root/52局部moduleState容器，
+-- 不再误标为MainLeftBottom全局表。H[1]与H[2]均来自MainLeftBottom.a相关局部引用。
+-- root/52槽545–664已闭合按钮回调映射：
+-- settingbut→root/52/4；newzone→root/52/20；putinbut→root/52/34；
+-- putoutbut→root/52/30；applebut→root/52/25；forgezodiacbut→root/52/0；
+-- buygoldbut→root/52/26；buygold110→root/52/3；cruisebut→root/52/13；
+-- stopallbut→root/52/24；recyclebut→root/52/21；yinguaibut→root/52/36；
+-- rewardbut→root/52/16；clearblacklistbut→root/52/10；blacklistbut→root/52/1；
+-- storagebut→root/52/31；takebut→root/52/19；shiqubut→root/52/17；
+-- diuqibut→root/52/18；dropallbut→root/52/8；moneybut→root/52/6；
+-- xiaotuibut→root/52/12。
+-- 槽666–710创建root/52/32通用按钮工厂并遍历3组按钮配置；槽711–759创建hidebut，
+-- 槽760–810创建dropallbut，槽811–865创建applebut。主函数尚未把这些已识别回调全部接入唯一明文。
 --
 -- root/52槽483–543：主界面按钮配置表。
 -- 逐项保留原型中明确出现的key/name/toggle字段；这些描述数据用于后续

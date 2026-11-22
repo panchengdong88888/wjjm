@@ -1,3 +1,21 @@
+## 检查点396（2026-11-22）：root/52主入口按钮回调表与UI区间映射
+
+- root/52为MainLeftBottom.doInit，865条物理指令、176项常量、19项父级捕获；父级root槽633 Opcode178创建，槽634–652按顺序捕获root寄存器：N[4],N[2],N[0],N[3],N[89],N[1],N[67],N[7],N[62],N[8],N[88],N[38],N[39],N[5],N[83],N[82],N[11],N[12],N[9]。
+- 当前已可靠确认：H[0]=root/51 PrintLog；H[2]=MainLeftBottom.a；H[3]=父root N[3]局部状态表（父root槽42 Opcode199重新创建空表，不能再误称MainLeftBottom全局表）；H[4]=root/21商城购买闭包；H[9]=父root N[8]接口表（含GetMapId/GetMapName/PlayerPos/GetDroppedItems/MoveTo/DiuItems等）；H[13]=root/80 ShowLocalNoticeByType；H[14]=root/11；H[15]=root/25相关巡航闭包。其他捕获保持寄存器引用，逐步核对，不按旧版猜名。
+- 槽483–543建立17项按钮描述配置，字段为key/name/toggle；配置键包括cruisebut、buygold110、moneybut、shiqubut、diuqibut、clearblacklistbut、stopallbut、recyclebut、buygoldbut、newzone、rewardbut、yinguaibut、blacklistbut、xiaotuibut、putinbut、putoutbut、forgezodiacbut。
+- 槽545–664创建并填充回调表，已按真实childIndex映射：
+  - settingbut→root/52/4；newzone→root/52/20；putinbut→root/52/34；putoutbut→root/52/30；
+  - applebut→root/52/25；forgezodiacbut→root/52/0；buygoldbut→root/52/26；buygold110→root/52/3；
+  - cruisebut→root/52/13；stopallbut→root/52/24；recyclebut→root/52/21；yinguaibut→root/52/36；
+  - rewardbut→root/52/16；clearblacklistbut→root/52/10；blacklistbut→root/52/1；
+  - storagebut→root/52/31；takebut→root/52/19；shiqubut→root/52/17；diuqibut→root/52/18；
+  - dropallbut→root/52/8；moneybut→root/52/6；xiaotuibut→root/52/12。
+- 槽666–710创建root/52/32通用按钮工厂，并通过3组配置数组循环创建普通按钮；槽711–759创建hidebut及root/52/2点击闭包；槽760–810创建dropallbut及其点击闭包；槽811–865创建applebut及root/52/29点击闭包。
+- 已确认root/52/32/0通用点击闭包：按buttonConfig.key从callbackMap分发回调；只有回调明确返回false才中止；若有toggle配置则切换toggled、标题及颜色。root/52/32工厂的5项捕获语义仍需与父级寄存器值交叉核对，不能直接把旧版同职责参数映射当成事实。
+- 当前唯一明文中的root/52主函数仍停在槽455附近，后续按钮回调表和控件构建尚未接入。已在源码注释中补入完整callbackMap映射和三个手动按钮区间，修正H[3]误标。
+- 下一步：继续闭合root/52槽456–482的OnLuaMessage钩子及mini_chat坐标计算，再将槽545–710回调表/通用按钮工厂接入主函数；最后恢复hidebut、dropallbut、applebut三组控件与点击闭包。
+
+
 ## 检查点395（2026-11-22）：root/61 backCity业务身份确认，明文先行
 
 - root/27父级槽333 Opcode121直接创建root/61，0项捕获；root/27 H[5]实际引用此闭包，调用形式为`backCity()`。root/54的捕获链也将root/61作为回城函数使用。
