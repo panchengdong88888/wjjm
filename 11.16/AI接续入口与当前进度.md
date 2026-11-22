@@ -3661,3 +3661,40 @@ opcode0=3次表写入；opcode2=创建表+常量池装载；opcode224=8次立即
 - 若纯按钮测试能显示：继续将11.16正式doInit按块恢复，优先单独插回`BuildMainLeftBottomCallbackMap_11_16`，判定是否该构建阶段阻断。
 - 若纯按钮测试仍不显示：逐项核对最小入口调度、`Attach_UITop`返回值及mini_chat坐标方法，不再恢复业务初始化。
 - 当前所有结论均为静态源码对照，尚未进行Lua运行或APK实测；不得声称已修复。
+
+
+## 2026-11-22 用户实测确认：纯按钮链路正常，正式版故障缩小到业务初始化阶段
+
+用户刚刚确认：将`MainLeftBottom_11.16_纯按钮链路测试.lua`打入APK后，游戏原有UI正常显示，17个按钮及3个独立按钮也正常显示。
+
+### 已经排除
+- `GUI:Attach_UITop()`作为按钮父容器的方式；
+- mini_chat的`getWorldPosition/getContentSize`坐标读取；
+- `Button_Create`、按钮标题、字体、纹理的基础创建流程；
+- 11.16三组按钮配置数组本身；
+- 入口等待主界面就绪的轮询方式（纯按钮版保留了0.5秒Schedule轮询）。
+
+### 当前最重要的源码事实
+正式明文的`make_MainLeftBottom_doInit_11_16`在第一次`GUI:Attach_UITop()`之前，先执行了：
+1. MoneyProxy资源快照读取（`GetMoneyIdByName/GetMoneyCountById`未逐项保护）；
+2. 多个`SL:GetMetaValue`物品索引/数量读取；
+3. 四组`SL:ScheduleOnce`快捷栏任务注册；
+4. NPCStorageProxy获取及`storageProxy:RequestStorageData(0)`调用（请求调用未保护）；
+5. 清理巡航定时器；
+6. 屏幕尺寸读取；
+7. 资源窗口处理器工厂构建。
+任何一个同步步骤抛错，都会在按钮创建前中断。
+
+正式入口`AccountIDValidation`用`pcall(module.doInit)`包住整个初始化函数；失败后只把错误存入`_doInitError`并调用`PrintLog`，不会继续执行后续UI创建。因此游戏表现正是“UI/按钮完全没出现”，且用户看不到游戏内日志时无法从画面判断具体哪行失败。
+
+进入按钮创建区后，正式版还会先调用`BuildMainLeftBottomCallbackMap_11_16`再创建第一颗按钮。回调表工厂含多个恢复出来的构造函数，也可能在第一颗按钮创建前抛错。纯按钮版跳过了这部分，因此它是第二个隔离点。
+
+### 根因解释
+这不是“加密版天生不能显示UI”，而是当前11.16明文恢复版把尚未完全核实的业务初始化/回调构造放在UI创建之前；恢复出的调用、参数、闭包捕获或宿主API细节只要有一处不匹配，就会使整个doInit提前退出。现有静态证据足以确定故障范围，但还不足以诚实地断言某一条具体API调用就是唯一根因。
+
+### 下一步验证策略（不加日志、不盲改）
+按纯按钮测试版作为已知正常基线，分批把正式版代码加回去：
+A. 先只加资源快照/快捷栏/仓库请求等UI前置业务段；
+B. 再只加`BuildMainLeftBottomCallbackMap_11_16`回调表构造；
+C. 最后加网络包装器与周期任务。
+哪一批加回去后UI消失，就继续对该批二分拆分，直到定位具体语句。定位前不覆盖正式明文，不声称已修复。
