@@ -3940,3 +3940,14 @@ D结果解释：
 - G5提交：`b86f2021693ed2c9dee50213a55789e6d0a8ea8d`。
 - G5链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G5_%E4%BB%85PrintLog%E8%B0%83%E7%94%A8_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - 只需用G5替换脚本测试一次，观察游戏原UI和插件按钮是否显示。正式明文没有修改。
+
+
+## 2026-11-23 G5实测通过：PrintLog调用排除
+
+- 用户实测G5：**按钮与游戏原UI均正常显示**。
+- G5唯一新增为`local printLog = PrintLog`及`printLog("插件初始化完成")`，实测通过。该初始化提示调用链排除为当前UI中断原因。
+- 新建G6：`11.16/MainLeftBottom_11.16_UI隔离测试_G6_仅时间读取与格式化_纯按钮.lua`，以G5通过版为底稿，仅加入正式初始化中的时间读取与格式化代码：`os.time()`、`pcall(os.date, "%Y-%m-%d %H:%M:%S", initTime)`及局部变量`initTimeStr`赋值。
+- G6不创建初始化快照表、不写入模块状态，也不加入其他初始化任务。
+- G6提交：`978b3085bbf5201709582e511d9b0c809d47d9ed`。
+- G6链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G6_%E4%BB%85%E6%97%B6%E9%97%B4%E8%AF%BB%E5%8F%96%E4%B8%8E%E6%A0%BC%E5%BC%8F%E5%8C%96_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 正式明文未修改；下一步等待G6实机结果。
