@@ -1,3 +1,16 @@
+## 检查点394（2026-11-22）：修正Opcode178闭包创建漏记，确认root/27九项捕获并整合完整明文
+
+- 原版F()分派器确认Opcode178同Opcode121/387一样创建闭包。root_654父级指令流共81个直接闭包创建点：Opcode121=33、Opcode178=27、Opcode387=21。此前漏记23个Opcode178事件，现已补齐；root/52槽155创建root/52/23的1个嵌套事件继续保留，因此事件记录总数82、root直接创建点81。
+- Opcode121捕获机制按F()叶确认：读取后续K[4]个捕获描述符；描述符opcode=243时从父局部寄存器N[descriptor.C]捕获，否则从父upvalue H[descriptor.C]捕获。root/27槽343的9个描述符槽344–352全部为Opcode243，来源依次父级N[3],N[47],N[5],N[44],N[42],N[43],N[46],N[4],N[45]。
+- 父级寄存器覆盖关系：N[42]–N[46]先在槽301–330构造五张地图候选表，随后被槽332/333/334/335/337的闭包创建覆盖：N[42]=root/28、N[43]=root/61、N[44]=root/65、N[45]=root/0、N[46]=root/59。root/27捕获时取得的是闭包，不是先前的地图表。
+- N[3]为MainLeftBottom.z共享状态表；N[4]在槽43创建root/51 PrintLog；N[5]先参与_G.log赋值，随后槽46被root/80 ShowLocalNoticeByType闭包覆盖；N[47]在槽342创建root/73攻城时间判断闭包。
+- root/27九项捕获最终映射（子闭包upvalue按0起始）：H[0]=MainLeftBottom.z；H[1]=root/73 isSiegeTime；H[2]=root/80 ShowLocalNoticeByType；H[3]=root/65 findWhitelistedCity（返回“盟重”或“土城”的首次字面匹配位置或nil）；H[4]=root/28 hasAppleTitle；H[5]=root/61 backCity；H[6]=root/59停止苹果下图/按钮复位闭包；H[7]=root/51 PrintLog；H[8]=root/0 chooseTargetMap。
+- root/59的4项捕获来源为父级N[3],N[1],N[0],N[5]；唯一显式参数是message。它取消appleMapTimer、清空appleMapTimer/appleMap、设置appleMapRunning=false、复位applebutCfg.toggled与按钮标题/颜色，再调用ShowLocalNoticeByType(message)及SL:ShowSystemTips(message)。因此root/27的H[6]必须按H[6](message)调用，旧候选中的resetAppleMap({captureTable},message)调用形式错误，已修正为单参数stopAppleMapWithNotice。
+- 已按307条真实物理指令重写唯一明文中的root/27函数：移除VM未包含的appleMapRunning入口门控及攻城PrintLog；修正55556/55559/80101巡航/传送门控、按50 tick重发80101、按原始string.find地图状态分支处理walkNpc/clickNpc/waitEnter/monitor/backCity；NPC1010协议修正为LuaSendMsg(1010,0,0,0,0,npcData,string.len(npcData))，不带9002前缀；10037协议按3/30 tick执行。
+- 已将root/59改为四项捕获工厂，返回单参数message闭包；更新root/27/root/59/root/28/root/65原型索引与函数状态CSV；删除函数状态CSV中重复的旧root/27行177，仅保留规范行42。
+- 本批已修改唯一明文，但仅完成静态指令级恢复；未执行Lua语法检查、APK整合或游戏运行验证。下一步按既定优先级转入root/52 doInit按钮创建/回调接线与root/52/23称号/剑灵/苹果购买周期回调，不重复root/27。
+
+
 ## 检查点393（2026-11-22）：root/27父级闭包创建点与9项捕获来源定位
 
 - 直接证据：`11.16/root_654条物理指令流.json`父级槽343 Opcode121创建childIndex=27（root/27），参数0、指令307条；`root_闭包创建与捕获映射.json`同步记录槽344–352九项捕获。
