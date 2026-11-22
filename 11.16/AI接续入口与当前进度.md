@@ -4016,3 +4016,15 @@ D结果解释：
 - G12提交：`854cf3d21574b0fbd1d9271cf74eadea8e313d80`。正式明文未修改。
 - G12链接：https://github.com/github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G12_%E5%AE%8C%E6%95%B4%E8%B4%A7%E5%B8%81%E4%B8%8E%E7%89%A9%E5%93%81%E6%95%B0%E6%8D%AE%E5%BF%AB%E7%85%A7_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - 本轮只测试G12。
+
+
+## 2026-11-23 G12实测通过：批量验证快捷栏与仓库初始化
+
+- 用户实测G12：**游戏原UI与插件按钮正常显示**。
+- G12一次性执行4种货币ID/数量读取、6种物品索引/数量读取，并写入初始化快照；实机通过。这一整组数据读取排除为当前UI中断原因。
+- 按用户要求继续按完整功能段批量测试，不再逐条拆分。
+- 新建G13：`11.16/MainLeftBottom_11.16_UI隔离测试_G13_快捷栏任务与仓库初始化_纯按钮.lua`，以G12已实测通过版为底稿，加入正式doInit中下一整组前置初始化：四组快捷栏预设的`SL:ScheduleOnce`错峰任务、NPCStorageProxy获取及`RequestStorageData(0)`、旧巡航定时器`SL:UnSchedule`清理。
+- G13仍使用纯按钮创建入口，不接入正式UI按钮回调、正式网络包装器或周期任务；正式明文未修改。
+- G13提交：01247e589f882a4fd48753d989b58c91a10092c9。
+- G13链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G13_%E5%BF%AB%E6%8D%B7%E6%A0%8F%E4%BB%BB%E5%8A%A1%E4%B8%8E%E4%BB%93%E5%BA%93%E5%88%9D%E5%A7%8B%E5%8C%96_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 本轮只测试G13，观察游戏原UI与插件按钮是否显示。若失败，下一步按快捷栏任务、仓库请求、旧定时器清理三个功能块二分，不逐条拆API。
