@@ -4002,3 +4002,17 @@ D结果解释：
 - 新建G11：`11.16/MainLeftBottom_11.16_UI隔离测试_G11_仅查询元宝货币ID_纯按钮.lua`，以G10已实测通过版为底稿，仅增加上述单次方法调用。
 - G11提交：`a358790896a924280e6d16670f77156e0a9bb939`。正式明文未修改。
 - G11只用于隔离测试；请只测试G11，观察游戏原UI和插件按钮是否显示。
+
+
+## 2026-11-23 G11实测通过：改为批量验证剩余数据读取
+
+- 用户实测G11：**游戏原UI与插件按钮均正常显示**。单次MoneyProxy:GetMoneyIdByName("元宝")调用通过。
+- 根据用户反馈，后续不再每次只增加一条API调用；改为按完整业务段批量加入，若失败再二分缩小，减少用户打包、安装、登录模拟器的次数。
+- 新建G12：`11.16/MainLeftBottom_11.16_UI隔离测试_G12_完整货币与物品数据快照_纯按钮.lua`，以G11通过版为底稿，一次加入正式初始化完整的数据快照读取：
+  - 对4种货币循环调用GetMoneyIdByName及GetMoneyCountById；
+  - 对6种物品循环调用SL:GetMetaValue("ITEM_INDEX_BY_NAME", ...)及SL:GetMetaValue("ITEM_COUNT", ...)；
+  - 将结果写入已有的initSnapshot.money/items表。
+- 该批次不加入ScheduleOnce、NPCStorageProxy、UnSchedule或正式UI创建链路。若G12不显示，下一轮直接拆为“货币读取组”和“物品元数据读取组”，不逐条测试。
+- G12提交：`854cf3d21574b0fbd1d9271cf74eadea8e313d80`。正式明文未修改。
+- G12链接：https://github.com/github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G12_%E5%AE%8C%E6%95%B4%E8%B4%A7%E5%B8%81%E4%B8%8E%E7%89%A9%E5%93%81%E6%95%B0%E6%8D%AE%E5%BF%AB%E7%85%A7_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 本轮只测试G12。
