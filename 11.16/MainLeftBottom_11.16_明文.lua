@@ -13,6 +13,53 @@
     当前状态：持续增量恢复中；指令级直接恢复35/162；跨版本业务复用恢复15项（root/7、root/12、root/17、root/23、root/29、root/30、root/31、root/36、root/38、root/46、root/51、root/56、root/64、root/66、root/75）；业务功能恢复累计50/162（30.86%）。两种口径分开统计，以函数状态CSV及源码恢复进度账本为准。
 ]]
 
+
+-- ============================================================================
+-- 11.16 root模块启动骨架（依据原始root 654条物理指令恢复）
+-- 原始VM PC1-PC42：创建ENV.MainLeftBottom及a/b/z三张状态表。
+-- 原始VM PC407-PC410：创建AccountIDValidation闭包并写入MainLeftBottom.main。
+-- 原始VM PC653-PC654：写入MainLeftBottom.doInit并返回模块根表。
+-- 注意：root字节码只注册main字段，不在模块内部自行调用main；
+-- 加载器取得模块后通过MainLeftBottom.main()触发入口。
+-- ============================================================================
+local rootEnvironment
+if type(getfenv) == "function" then
+    rootEnvironment = getfenv(1)
+elseif type(_ENV) == "table" then
+    rootEnvironment = _ENV
+else
+    rootEnvironment = _G
+end
+
+local MainLeftBottom = {}
+rootEnvironment.MainLeftBottom = MainLeftBottom
+
+-- PC3-PC29：MainLeftBottom.a状态表。
+local a = {}
+MainLeftBottom.a = a
+a.version = "10000"
+a.screenW = SL:GetMetaValue("SCREEN_WIDTH")
+a.screenH = SL:GetMetaValue("SCREEN_HEIGHT")
+a.Blocklist = { 1.0, 9.0, 10.0, 60000.0 }
+a.SendHookList = {}
+a.RecvHookList = {}
+a.isHidden = true
+a.hidebut = nil
+
+-- PC30-PC32：按钮对象映射表。
+local b = {}
+MainLeftBottom.b = b
+
+-- PC33-PC41：共享运行状态表。
+local z = {}
+MainLeftBottom.z = z
+z.isPaused = false
+z.isRunning = false
+z.isStoring = false
+z.isTaking = false
+z.isDiuing = false
+z.isOutputted = false
+
 --[[
     首批恢复函数（2026-11-18）
     以下函数的参数、常量和调用形状均由11.16原型自身支持。
@@ -2124,6 +2171,9 @@ local function AccountIDValidation()
     SL:Schedule(waitForMainProperty, 0.5)
 end
 
+-- 原始root PC407-PC410：把入口闭包注册到模块main字段。
+-- 由模块加载器在加载完成后调用MainLeftBottom.main()；这里不自行重复调用。
+MainLeftBottom.main = AccountIDValidation
 
 
 -- 11.16 root/68：InstallDamageHook（40条指令）及其子闭包root/68/0（18条指令）。
@@ -7349,3 +7399,6 @@ MainLeftBottom.a.root52_23Callback = function()
         }
     )
 end
+
+-- 原始root PC653-PC654：doInit字段已在上方恢复；模块执行结果返回根表。
+return MainLeftBottom
