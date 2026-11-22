@@ -3431,3 +3431,13 @@ opcode0=3次表写入；opcode2=创建表+常量池装载；opcode224=8次立即
 代码提交：`c924e9bdb158ed0771d0820c61caaaf358baba58`（MainLeftBottom_11.16_明文.lua）。
 
 下一步：先做Lua语法/加载级检查；随后用户打包APK观察按钮是否出现、位置/标题/字体/颜色是否正确。只根据实机反馈调整UI，不提前恢复点击业务功能。
+
+
+## 2026-11-22：已恢复按钮功能接线（仅接入已有完整回调）
+
+- 唯一明文文件更新提交：`66c5fbadc5c7dc3c16afa3dd336aafec718c419c`；文件 blob：`773d59b7b139b7c5b253045182bc4582d033a795`。
+- 将 `BuildMainLeftBottomCallbackMap_11_16` 正式用于 doInit，传入当前 `timerState`、`moduleState`、`visibleItems` 和资源统计窗口处理器。
+- 通用按钮工厂现在仅在对应 `callbackMap[key]` 确实为函数时注册 `GUI:addOnClickEvent`；缺少回调的按钮不会伪装成可用。
+- 已接入的16个按钮：`buygold110`（110W）、`moneybut`（资源统计窗口）、`shiqubut`（拾取）、`diuqibut`（丢弃）、`clearblacklistbut`（清黑名单）、`stopallbut`（停止脚本）、`recyclebut`（回收装备）、`buygoldbut`（500W）、`newzone`（开新区）、`rewardbut`（奖励）、`yinguaibut`（拉怪）、`xiaotuibut`（快速小退）、`putoutbut`（下架物品）、`forgezodiacbut`（锻造生肖）、`dropallbut`（丢全部）、`applebut`（苹果图）。
+- 仍未接入的4个按钮：`cruisebut`（见人跑，缺少关闭/启动闭包的真实实例捕获）、`blacklistbut`（黑名单，缺少完整捕获来源）、`putinbut`（上架金条，缺少配置读写闭包的实际捕获实例）、`hidebut`（隐藏，尚无完整功能回调恢复）。
+- 这次只完成接线，不代表上述16项已在游戏中验证。尚未执行 Lua 语法检查、引擎 API 检查、APK 打包或实机测试。下一步让用户打包测试；若按钮点击异常，再按具体按钮定位。
