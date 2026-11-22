@@ -1,8 +1,8 @@
 --[[
 11.16 UI隔离测试D：恢复源码前半段函数定义 + C纯按钮入口
 目的：确认A/B共同源码前半段（至root级苹果下图闭包实例化之前）是否导致模块加载/UI中断。
-从A复制行63-4325，仅保留函数/辅助定义；不包含A/B的doInit实现及root级苹果下图顶层闭包实例化。
-按钮创建和启动入口沿用已实测正常的C版本。正式明文、A/B、C均不修改。
+构造方式：保留C的模块状态表和完整按钮配置函数；插入A正式源码第63-4324行；再接回C的纯按钮创建函数与入口。
+重要：函数源码插入点位于完整的按钮配置函数之后，不截断任何Lua table/function结构。
 本文件为独立测试副本，不覆盖正式明文文件。
 ]]
 
@@ -59,6 +59,12 @@ local function BuildMainLeftBottomButtonGroups_11_16()
         { key = "xiaotuibut", name = "快速小退" },
     }
     local group3 = {
+        { key = "putinbut", name = "上架金条" },
+        { key = "putoutbut", name = "下架物品" },
+        { key = "forgezodiacbut", name = "锻造生肖" },
+    }
+    return group1, group2, group3
+end
 --[[
     首批恢复函数（2026-11-18）
     以下函数的参数、常量和调用形状均由11.16原型自身支持。
@@ -4321,14 +4327,6 @@ end
 -- root/65、root/28、root/61、root/59、root/51、root/0。
 -- root/54的5项捕获：MainLeftBottom.z、ShowLocalNoticeByType、
 -- root/61 backCity、root/78的SL:Schedule包装、root/27回调。
--- ============================================================================
-        { key = "putinbut", name = "上架金条" },
-        { key = "putoutbut", name = "下架物品" },
-        { key = "forgezodiacbut", name = "锻造生肖" },
-    }
-    return group1, group2, group3
-end
-
 local function CreatePlainButton(uiParent, config, x, y)
     local button = GUI:Button_Create(
         uiParent, config.key, x, y, "res/public/fuzhu_btn.png"
