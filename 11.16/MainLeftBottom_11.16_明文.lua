@@ -3516,7 +3516,7 @@ end
 -- 本版常量仅包含关闭提示、isBlacklisting、blacklistTimer与false；
 -- 按停止分支恢复，不补造开启分支。
 -- ============================================================================
-local function helper_root_52_1(timerState, featureState, printLog)
+local function helper_root_52_1(timerState, printLog, featureState, buttonItems)
     if timerState.blacklistTimer then
         printLog("关闭黑名单功能")
         SL:UnSchedule(timerState.blacklistTimer)
@@ -6232,9 +6232,9 @@ local function BuildMainLeftBottomButtonGroups_11_16()
     return group1, group2, group3
 end
 
--- root/52回调表：当前19/22项按钮回调已接入。
--- rewardbut已按真实捕获链及14项奖励表接入；剩余缺口为cruisebut（等待root/11与root/25实例注入）、blacklistbut、putinbut。
--- 通用点击闭包遇到缺失项会安全返回，不会错误翻转按钮状态。
+-- root/52回调表：22项按钮回调均有明确接入入口；3项需由同一运行生命周期提供原始闭包捕获值。
+-- cruisebut、blacklistbut、putinbut不伪造root父级闭包或模块配置对象；缺少捕获数组时保持未绑定。
+-- rewardbut已按真实捕获链及14项奖励表直接接入。
 local function BuildMainLeftBottomCallbackMap_11_16(context)
     context = context or {}
     local timerState = context.timerState or MainLeftBottom.z
@@ -6261,6 +6261,17 @@ local function BuildMainLeftBottomCallbackMap_11_16(context)
     if type(context.cruiseRunButtonCaptures) == "table" then
         local c = context.cruiseRunButtonCaptures
         callbackMap.cruisebut = make_helper_root_52_13(c[1], c[2], c[3])
+    end
+    -- root/52/1捕获顺序：timerState(H[3])、PrintLog(H[0])、
+    -- featureState(H[1])、按钮映射表(N[23])。第四项保留原始捕获，不猜字段用途。
+    if type(context.blacklistButtonCaptures) == "table" then
+        local c = context.blacklistButtonCaptures
+        callbackMap.blacklistbut = helper_root_52_1(c[1], c[2], c[3], c[4])
+    end
+    -- root/52/34捕获顺序：配置读取闭包(H[11])、MainLeftBottom(H[3])、
+    -- MainLeftBottom.a(H[2])、配置写入闭包(H[12])。
+    if type(context.putinButtonCaptures) == "table" then
+        callbackMap.putinbut = make_helper_root_52_34(context.putinButtonCaptures)
     end
     -- root/52/16父级捕获已闭合：H[3]=timerState、H[0]=PrintLog，
     -- H[16]=36、H[17]=14项奖励记录、H[18]=0.2秒。
