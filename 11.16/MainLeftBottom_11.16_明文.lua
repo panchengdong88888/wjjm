@@ -4226,6 +4226,61 @@ local function make_startAppleMap(capturedUpvalues)
 end
 
 
+-- ============================================================================
+-- 11.16 root级苹果下图闭包实例化（root/27 + root/54）。
+-- 本段严格按root_闭包创建与捕获映射.json中的槽343–359顺序组装。
+-- root/27的9项捕获：MainLeftBottom.z、root/73、root/80、
+-- root/65、root/28、root/61、root/59、root/51、root/0。
+-- root/54的5项捕获：MainLeftBottom.z、ShowLocalNoticeByType、
+-- root/61 backCity、root/78的SL:Schedule包装、root/27回调。
+-- ============================================================================
+local appleMapTargetCandidates_11_16 = {
+    { name = "巨龙山谷", index = 3000, userID = "10034", x = 166, y = 155 },
+    { name = "逆魔古域", index = 3001, userID = "10035", x = 166, y = 155 },
+    { name = "雾隐龙渊", index = 3002, userID = "10036", x = 160, y = 161 },
+    { name = "破败山谷", index = 3003, userID = "10037", x = 160, y = 161 },
+    { name = "神魔禁地", index = 3004, userID = "10038", x = 160, y = 161 },
+}
+
+local appleMapState_11_16 = MainLeftBottom.z
+local appleMapStopCallback_11_16 = make_helper_root_59({
+    appleMapState_11_16,
+    nil, -- root/59的第二项捕获在本体中不读取；保留原始捕获槽位
+    MainLeftBottom,
+    ShowLocalNoticeByType,
+})
+
+local appleMapChooseTarget_11_16 = make_helper_root_0({
+    [0] = appleMapTargetCandidates_11_16,
+})
+
+local appleMapTimerCallback_11_16 = make_AppleMapTimerCallback_11_16({
+    appleMapState_11_16,
+    helper_root_73,
+    ShowLocalNoticeByType,
+    helper_root_65,
+    helper_root_28,
+    backCity,
+    appleMapStopCallback_11_16,
+    PrintLog,
+    appleMapChooseTarget_11_16,
+})
+
+-- root/78：Schedule(callback, interval)包装函数；底层调用SL:Schedule。
+local function ScheduleAppleMap_11_16(callback, interval)
+    return SL:Schedule(callback, interval)
+end
+
+-- root/54闭包在root槽359写入_ENV.startAppleMap，故此处必须写入全局环境。
+startAppleMap = make_startAppleMap({
+    appleMapState_11_16,
+    ShowLocalNoticeByType,
+    backCity,
+    ScheduleAppleMap_11_16,
+    appleMapTimerCallback_11_16,
+})
+
+
 -- ============================================================
 --  11.16 root/52/16/0：奖励协议循环回调（22条物理指令，0显式参数，3项捕获）
 -- ============================================================
