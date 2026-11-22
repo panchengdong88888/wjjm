@@ -1,3 +1,34 @@
+## 检查点401（2026-11-22）：校正dropallbut处理器并锁定按钮回调映射
+
+- 明文代码提交：`94d69364b2a6b9d7854e62836a16996f5d0c66d8`。
+- 重新对照root/52槽545–664的回调表写入点，确认22个按钮key及目标原型映射：
+  - settingbut→root/52/4
+  - newzone→root/52/20
+  - putinbut→root/52/34
+  - putoutbut→root/52/30
+  - applebut→root/52/25
+  - forgezodiacbut→root/52/0
+  - buygoldbut→root/52/26
+  - buygold110→root/52/3
+  - cruisebut→root/52/13
+  - stopallbut→root/52/24
+  - recyclebut→root/52/21
+  - yinguaibut→root/52/36
+  - rewardbut→root/52/16
+  - clearblacklistbut→root/52/10
+  - blacklistbut→root/52/1
+  - storagebut→root/52/31
+  - takebut→root/52/19
+  - shiqubut→root/52/17
+  - diuqibut→root/52/18
+  - dropallbut→root/52/8
+  - moneybut→root/52/6
+  - xiaotuibut→root/52/12
+- 已发现并修正一个实际接线错误：`dropallbut`在root/52槽805创建的闭包目标为root/52/8（模式1丢全部），不是root/52/18（模式2）；现已改接`MakeDropMode1ButtonHandler_11_16`。root/52/18是`diuqibut`的模式2丢弃回调。
+- root/52槽666–710的循环确认为三组配置表分别调用同一个通用按钮工厂；三个数组对应父级N[19]/N[20]/N[21]，遍历项传入配置对象、循环索引和固定组偏移。当前尚未准确恢复三组配置表每项的完整字段/组归属，不能简单把现有17项描述表当成三组原始配置直接套入。
+- root/52槽711–865坐标再次按原始指令确认：hidebut为(0,0)，dropallbut为(200,0)，applebut为(350,0)；本版代码坐标与之吻合。
+- 下一步：恢复三组按钮配置表与工厂捕获参数的真实关系；随后按上述22项映射建立callbackMap并接通按钮事件。不要重复分析root/52/8和root/52/18的职责差异。
+
 ## 检查点400（2026-11-22）：接入root/52末尾三个手动按钮
 
 - 已修改唯一交付文件`11.16/MainLeftBottom_11.16_明文.lua`，代码提交：`135834151c69fd10c9766a7f4f5986c0087a4a9f`；随后修正坐标/共享状态的提交：`65fd1672b4d64063afc2267a6c32eab80f82c9de`。
