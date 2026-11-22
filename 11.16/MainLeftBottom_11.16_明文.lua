@@ -6260,7 +6260,7 @@ local function BuildMainLeftBottomButtonGroups_11_16()
     return group1, group2, group3
 end
 
--- root/52回调表：已恢复的按钮回调直接接入；cruisebut与blacklistbut仍保留捕获注入入口。
+-- root/52回调表：已恢复按钮回调直接接入；cruisebut已由doInit提供三项捕获自动接线；blacklistbut仍保留捕获注入入口。
 -- putinbut的配置读写闭包已由root父级N[38]/N[39]定位，并在doInit生命周期中真实接入。
 -- rewardbut按真实捕获链及14项奖励表直接接入。
 local function BuildMainLeftBottomCallbackMap_11_16(context)
