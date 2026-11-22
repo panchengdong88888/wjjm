@@ -1807,3 +1807,25 @@ F()循环每轮执行完当前指令后，统一执行`O=O+1`。Opcode388的跳�
 - 已按307条真实物理指令重写唯一明文中的root/27函数：移除VM未包含的appleMapRunning入口门控及攻城PrintLog；修正55556/55559/80101巡航/传送门控、按50 tick重发80101、按原始string.find地图状态分支处理walkNpc/clickNpc/waitEnter/monitor/backCity；NPC1010协议修正为LuaSendMsg(1010,0,0,0,0,npcData,string.len(npcData))，不带9002前缀；10037协议按3/30 tick执行。
 - 已将root/59改为四项捕获工厂，返回单参数message闭包；更新root/27/root/59/root/28/root/65原型索引与函数状态CSV；删除函数状态CSV中重复的旧root/27行177，仅保留规范行42。
 - 本批已修改唯一明文，但仅完成静态指令级恢复；未执行Lua语法检查、APK整合或游戏运行验证。下一步按既定优先级转入root/52 doInit按钮创建/回调接线与root/52/23称号/剑灵/苹果购买周期回调，不重复root/27。
+
+
+## 检查点394（2026-11-22）：root/27九项upvalue捕获最终闭合，确认唯一明文已完成
+
+- 关键证据：11.16原版F()分派器中Opcode121/387闭包创建叶、Opcode243捕获描述符叶；父级root 654条指令流槽332–352；root/27 307槽提取；原型索引与闭包创建映射。
+- Opcode121/387的闭包创建都读取后续C条捕获描述符；Opcode243描述符表示捕获父级局部寄存器N[B]。父级槽343 Opcode121创建childIndex=27、captureCount=9；槽344–352依次捕获N[3],N[47],N[5],N[44],N[42],N[43],N[46],N[4],N[45]。
+- 关键纠正：N[42]–N[46]最初确实用于五张地图候选表，但在槽332–337被新的闭包覆盖，不能以早期表值命名最终捕获。槽332将N[42]替换为root/28；槽333将N[43]替换为root/61；槽334将N[44]替换为root/65；槽335将N[45]替换为root/0（捕获N[41]）；槽337将N[46]替换为root/59（捕获N[3]/N[1]/N[0]/N[5]）。N[5]在槽46已替换为root/80。
+- 最终child upvalue索引（按0起始）：
+  - H[0]←N[3]：MainLeftBottom模块/状态表；
+  - H[1]←N[47]：root/73，isSiegeTime；
+  - H[2]←N[5]：root/80，ShowLocalNoticeByType；
+  - H[3]←N[44]：root/65，findWhitelistedCity（盟重/土城纯文本查找）；
+  - H[4]←N[42]：root/28，hasAppleTitle（51295称号有效期）；
+  - H[5]←N[43]：root/61，backCity（使用盟重回城石）；
+  - H[6]←N[46]：root/59，单参数message停止苹果图/按钮复位闭包；
+  - H[7]←N[4]：root/51，PrintLog；
+  - H[8]←N[45]：root/0，候选地图随机选择闭包。
+- 这也解释了root/27中H[5]被无参调用、H[6]接收一条提示字符串的VM形状；H[6]并不是直接调用一个猜测的全局resetAppleMap，而是root/59返回的单参数闭包。
+- 复核唯一明文文件`11.16/MainLeftBottom_11.16_明文.lua`：`make_AppleMapTimerCallback_11_16`已存在且九项capturedUpvalues顺序与上表一致；307槽状态机、55556/55559/80101/10037协议，以及LuaSendMsg(1010,0,0,0,0,npcData,string.len(npcData))均已整合。无需重复改写函数。
+- `11.16/函数状态.csv`的root/27行本已标记“已写入唯一明文”；现有源码注释与捕获表相符。root/61业务身份/调用点已确认，但其60条指令本体仍是依据常量池与调用关系恢复，未完成指令级独立复核，故不提前标记完整。
+- 对检查点393的纠正：N[42]–N[46]不能最终命名为地图候选表；它们在创建root/27前已被闭包覆盖。H[2]=notify的旧命名撤销，正确身份为root/80 ShowLocalNoticeByType。H[6]=root/59单参数停止闭包的身份现已确认。
+- 下一步：按函数状态表继续处理尚未指令级闭合的root/61（60条、0参数）及其后续待恢复原型；root/27不再返工。优先从`候选原型完整指令提取.json`或定点补充中提取root/61完整物理指令，再按11.16 F()分派器逐槽恢复。
