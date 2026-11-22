@@ -4039,3 +4039,17 @@ D结果解释：
 - G14最终提交：9a0d1337fa3576956541313d3afb690d3a42a4e4（创建提交为c830516df3b2a72b043978b6fb7c8ee52f6994a5，随后仅修正测试说明注释）。
 - G14链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G14_%E5%BF%AB%E6%8D%B7%E6%A0%8F%E4%BB%BB%E5%8A%A1%E4%B8%8E%E4%BB%93%E5%BA%93%E8%AF%B7%E6%B1%82_%E6%9A%82%E4%B8%8D%E6%B8%85%E7%90%86%E6%97%A7%E5%AE%9A%E6%97%B6%E5%99%A8_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - 下一步只测试G14：若显示，旧定时器清理是G13失败候选；若不显示，故障在快捷栏任务或仓库请求，再把这两组二分。正式明文未修改。
+
+
+## 2026-11-23 G14实测失败：快捷栏任务与仓库请求继续拆分
+
+- 用户实测：G12显示正常；G13不显示；G14不显示。
+- G14已移除G13中的旧巡航定时器SL:UnSchedule清理，但仍不显示。因此旧定时器清理不是当前唯一故障点；阻断范围缩小到快捷栏ScheduleOnce错峰任务与NPCStorageProxy仓库请求两组中的至少一组。
+- 新建G15：`11.16/MainLeftBottom_11.16_UI隔离测试_G15_仅快捷栏错峰任务_纯按钮.lua`。严格以G12通过版为底稿，只加入四组快捷栏SL:ScheduleOnce错峰任务，不获取NPCStorageProxy，不请求仓库数据，不清理旧定时器。
+- G15提交：`50d1c0bdecce7cc2a3fa553445947f68f39f1d7d`。
+- G15链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G15_%E4%BB%85%E5%BF%AB%E6%8D%B7%E6%A0%8F%E9%94%99%E5%B3%B0%E4%BB%BB%E5%8A%A1_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 新建G16：`11.16/MainLeftBottom_11.16_UI隔离测试_G16_仅仓库代理请求_纯按钮.lua`。严格以G12通过版为底稿，只获取NPCStorageProxy并调用RequestStorageData(0)，不执行快捷栏ScheduleOnce任务，不清理旧定时器。
+- G16提交：`a135314f90e4a1cedf9caf6b9eb61e6bd68d398d`。
+- G16链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G16_%E4%BB%85%E4%BB%93%E5%BA%93%E4%BB%A3%E7%90%86%E8%AF%B7%E6%B1%82_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 两个文件均已重新从GitHub取回核对：都以G12为基线，新增段位于纯按钮创建之前，后续UI初始化及入口保持不变；G15仅包含快捷栏任务代码，G16仅包含仓库代理请求代码。
+- 下一步先测试G15。G15显示则快捷栏任务组通过，接着测试G16；G15不显示则问题位于快捷栏任务组，先修复该组，不要求用户同时测G16。正式明文未修改。
