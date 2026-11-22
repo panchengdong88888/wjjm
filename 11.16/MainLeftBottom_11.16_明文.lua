@@ -2826,6 +2826,7 @@ function ShowHideAllButtons()
         NetworkUtil.OnLuaMessage = NetworkUtil._origOnLuaMessage
         NetworkUtil._origOnLuaMessage = nil
     end
+end
 
 -- ============================================================================
 -- 11.16 root/55：Builtsetting（195条指令，0参数，51个常量）
