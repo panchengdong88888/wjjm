@@ -3866,3 +3866,12 @@ D结果解释：
 - 正式明文修复提交：`4e6db1126a657a7ea5cb642a519c67f45fb4ff6e`；新blob：`c8e9b10f6359a9c966f9106f854cd882f4caecb9`。
 - 修复内容仅是在`ShowHideAllButtons()`网络回调恢复代码之后补入一个`end`，没有改动其他函数或业务逻辑。
 - 下一步：请用户用正式明文重新打包APK实测。D版通过证明该修复点有效，但正式明文整文件仍需实机验证；若正式版UI恢复，再继续排查是否还有其他运行时问题。不要把“D版通过”误写成“正式版已验证通过”。
+
+## 2026-11-22 正式明文复测失败后的下一轮隔离
+
+- 用户反馈：正式明文补入`ShowHideAllButtons()`缺失的`end`后，游戏UI仍不显示。故该语法修复虽真实且必要，但不是正式版唯一阻断点；正式整文件仍未通过实机验证。
+- 已确认D测试版（截至前半段函数定义、止于root级苹果闭包实例化之前）可正常显示。
+- 正式明文在D覆盖范围之后，第一段新增的顶层执行代码是root级苹果下图闭包实例化（约第4327–4371行）：构造候选地图表，依次创建`make_helper_root_59`、`make_helper_root_0`、`make_AppleMapTimerCallback_11_16`闭包，并把`make_startAppleMap`结果写入全局`startAppleMap`。
+- 新建隔离测试E：`11.16/MainLeftBottom_11.16_UI隔离测试_E_苹果闭包顶层实例化_纯按钮.lua`，提交`cf8c81b25874ef3e67e5951e5c8a5af3bb688b8a`。E以已实测通过的D为底稿，只额外加入上述正式源码顶层苹果闭包实例化段，仍使用D的纯按钮初始化入口，不执行正式doInit业务初始化。
+- E测试目的：若E不显示，阻断点就在这段苹果闭包顶层实例化；若E显示，则继续检查正式doInit同步初始化链路（尤其首次`GUI:Attach_UITop()`之前的代理/元数据/定时器调用），而不是再回头重复查D已经通过的函数定义段。
+- E链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_E_%E8%8B%B9%E6%9E%9C%E9%97%AD%E5%8C%85%E9%A1%B6%E5%B1%82%E5%AE%9E%E4%BE%8B%E5%8C%96_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
