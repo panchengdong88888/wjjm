@@ -1,3 +1,14 @@
+## 检查点397（2026-11-22）：root/52消息钩子与root/52/23一秒周期入口接入
+
+- 已修改唯一交付文件`11.16/MainLeftBottom_11.16_明文.lua`，提交：`4f9f3ca7cb56a7c73e455b051f4c8d64d1a5efaf`。
+- root/52槽456–468：在`make_MainLeftBottom_doInit_11_16`中接入`NetworkUtil.OnLuaMessage`包装器；先保存`_origOnLuaMessage`，再用已恢复的`make_helper_root_52_14(moduleState, printLog, original)`安装，避免重复doInit时把包装器再包一层。
+- root/52父级槽153–162已确认root/52/23按1秒调度；现将`ProcessMainLeftBottomMaintenance_11_16`封装为`MainLeftBottom.a.root52_23Callback`，并在doInit中清理旧`maintenanceTimer`后执行`SL:Schedule(callback, 1)`。周期入口现已实际接入唯一明文。
+- 周期回调当前组合已写入的邮件维护、苹果使用/购买、剑灵12174数据请求、武器幸运/祝福油、古剑解封及显示刷新辅助函数；这只是当前已恢复子流程的组合入口，不能标记root/52/23完整恢复。
+- 尚未接入root/52/23中的称号证明目标筛选/升级门槛、jianling_Config等级材料表选择、12171打造消息条件与完整状态机；这些是root/52/23剩余主体，不得误报完成。
+- root/52仍待处理：槽471–482 mini_chat坐标计算；槽545–710按钮回调表、三组通用按钮批量创建与root/52/32捕获语义；槽711–865 hidebut/dropallbut/applebut手动控件与点击回调接线。root/52/23周期已按1秒接线，但按钮UI并未完成。
+- 本次仅做明文接线，不做Lua编译、API核验、APK整合或游戏运行验证。
+- 下一步：优先继续root/52槽471–482及545–865的UI/按钮创建明文，再回到root/52/23补齐称号与剑灵打造主体；不返工root/27。
+
 ## 检查点396（2026-11-22）：root/52主入口按钮回调表与UI区间映射
 
 - root/52为MainLeftBottom.doInit，865条物理指令、176项常量、19项父级捕获；父级root槽633 Opcode178创建，槽634–652按顺序捕获root寄存器：N[4],N[2],N[0],N[3],N[89],N[1],N[67],N[7],N[62],N[8],N[88],N[38],N[39],N[5],N[83],N[82],N[11],N[12],N[9]。
