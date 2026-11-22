@@ -4053,3 +4053,13 @@ D结果解释：
 - G16链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G16_%E4%BB%85%E4%BB%93%E5%BA%93%E4%BB%A3%E7%90%86%E8%AF%B7%E6%B1%82_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - 两个文件均已重新从GitHub取回核对：都以G12为基线，新增段位于纯按钮创建之前，后续UI初始化及入口保持不变；G15仅包含快捷栏任务代码，G16仅包含仓库代理请求代码。
 - 下一步先测试G15。G15显示则快捷栏任务组通过，接着测试G16；G15不显示则问题位于快捷栏任务组，先修复该组，不要求用户同时测G16。正式明文未修改。
+
+
+## 2026-11-23 G15实测通过：快捷栏错峰任务组排除
+
+- 用户实测G15：**游戏原UI与插件按钮均正常显示**。
+- G15以G12通过版为基线，仅加入四组快捷栏SL:ScheduleOnce错峰任务；未获取NPCStorageProxy、未请求仓库数据、未清理旧定时器。实测通过，说明快捷栏任务组本身不会阻断UI初始化。
+- 因G14（快捷栏任务+仓库请求）不显示，而G15（仅快捷栏任务）显示，当前嫌疑进一步集中到NPCStorageProxy获取或RequestStorageData(0)仓库请求。
+- 下一步测试已准备好的G16：`11.16/MainLeftBottom_11.16_UI隔离测试_G16_仅仓库代理请求_纯按钮.lua`。G16仅加入NPCStorageProxy获取及RequestStorageData(0)，不执行快捷栏任务和旧定时器清理。
+- G16链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G16_%E4%BB%85%E4%BB%93%E5%BA%93%E4%BB%A3%E7%90%86%E8%AF%B7%E6%B1%82_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 下一步只测试G16。若不显示，故障可锁定在仓库代理获取/请求代码段；若显示，则需检查两组同时存在时的交互或执行时序。正式明文未修改。
