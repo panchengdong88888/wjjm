@@ -2052,7 +2052,7 @@
       "parameter_count": 0,
       "instruction_count": 307,
       "candidate_name": "AppleMapTimerCallback_11_16（合成定位名）",
-      "identity_status": "业务身份及9项捕获映射已确认；原始局部符号名未知",
+      "identity_status": "业务身份确认：AppleMapTimerCallback_11_16；原始导出符号名未知；9项父级捕获来源已闭合",
       "constants": [
         "{\"index\":%d,\"UserID\":\"%s\"}",
         "",
@@ -2112,9 +2112,11 @@
         "string"
       ],
       "instruction_stream_exported": true,
-      "instruction_stream_export_status": "完整物理指令流已重新提取；控制流待恢复",
+      "instruction_stream_export_status": "307条物理指令已按原版F()真实Opcode逐槽闭合并整合唯一明文；9项父级捕获来源已确认；未做运行验证。",
       "instruction_stream_file": "11.16/root_未恢复七项完整物理指令提取_2026-11-21.json",
-      "instruction_stream_exported_at": "2026-11-21"
+      "instruction_stream_exported_at": "2026-11-21",
+      "recovery_status": "已写入唯一明文（307槽真实Opcode/控制流/寄存器路径/9项捕获静态完整恢复；游戏运行验证待测）",
+      "business_summary": "0显式参数、9项捕获。每tick先检查攻城时间并单次提示；按51295称号有效期及盟重/土城地图匹配管理55556开启、55559关闭巡航；称号失效且处于盟重/土城时发送80101前往神龍之都并每50 tick重发；在神龍之都按目标地图配置选择NPC、MoveTo后以LuaSendMsg(1010,0,0,0,0,npcData,len)发送index/UserID JSON，再按3/30 tick发送10037；目标地图命中后进入monitor，地图丢失则调用backCity，失败通过root/59停止/复位按钮并提示。"
     },
     {
       "preorder_id": 43,
@@ -2126,7 +2128,7 @@
       "parameter_count": 0,
       "instruction_count": 32,
       "candidate_name": "helper_root_28（合成定位名）",
-      "identity_status": "业务逻辑已恢复（原始符号名/父级挂载字段未确认）",
+      "identity_status": "业务角色已确认：hasAppleTitle（检查TITLE_DATA_BY_ID 51295是否晚于SERVER_TIME）；原始导出符号名未知",
       "constants": [
         51295,
         "tonumber",
@@ -5067,8 +5069,8 @@
       "child_count": 0,
       "parameter_count": 1,
       "instruction_count": 44,
-      "candidate_name": null,
-      "identity_status": "待识别",
+      "candidate_name": "helper_root_59（苹果下图停止/按钮复位回调；合成定位名）",
+      "identity_status": "业务行为及父级4项捕获已确认；原始导出符号名未知",
       "constants": [
         "appleMap",
         false,
@@ -5088,7 +5090,9 @@
         "applebutCfg",
         "ShowSystemTips",
         "Button_setTitleColor"
-      ]
+      ],
+      "recovery_status": "已写入唯一明文（44槽闭包体完整恢复；以工厂形式绑定4项捕获，返回单参数message闭包）",
+      "business_summary": "1个显式参数message、4项捕获：若appleMapTimer存在则UnSchedule；清空appleMapTimer与appleMap并设appleMapRunning=false；将applebutCfg.toggled复位为false、按钮标题改回“开苹果图”、颜色设为#ffffff；调用ShowLocalNoticeByType(message)及SL:ShowSystemTips(message)。root/27通过H[6](message)调用此闭包。"
     },
     {
       "preorder_id": 138,
@@ -5251,7 +5255,7 @@
       "parameter_count": 1,
       "instruction_count": 18,
       "candidate_name": "helper_root_65（合成定位名）",
-      "identity_status": "行为已恢复（原始符号名未确认）",
+      "identity_status": "业务角色已确认：findWhitelistedCity（返回地图名中“盟重”或“土城”的首次字面匹配位置，均无匹配则nil）；原始导出符号名未知",
       "constants": [
         "find",
         "string",
