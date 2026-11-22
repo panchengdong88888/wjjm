@@ -3368,3 +3368,18 @@ opcode0=3次表写入；opcode2=创建表+常量池装载；opcode224=8次立即
 发现唯一明文中的make_helper_root_11此前错误地把捕获数组[1]、[2]直接置false，并把[3]当函数调用；这与真实捕获顺序冲突：会误写计时器状态表位置、尝试调用布尔门控。现已按真实捕获顺序修正：先通过[1]取消/清空cruiseRunTimer，再复位[2]/[3]，调用[4]()清理攻击目标，通过[5]恢复cruiseGatherPaused并在非白名单地图调用zd(true)，最后通过[6]显示“关闭见人跑”。
 
 本轮未自动接通cruisebut：虽然root/25与root/11的捕获来源均已明确，但N[74]/N[75]在多个闭包间属于同一VM共享upvalue cell，当前Lua重建层仍需统一cell适配，不能用彼此独立的标量数组冒充共享引用。下一步应先统一共享cell读写接口，再在doInit中同时构造root/11与root/25实例并传入root/52/13。未执行Lua语法/API/APK或游戏测试。
+
+
+## 2026-11-22 共享upvalue跨root/11、root/32、root/25接续审计
+
+本轮回看唯一明文的实际调用点与root闭包创建事件，明确两个共享状态单元的完整共享范围：
+
+- N[74]初值false（root槽516写入），被root/25 H[2]、root/11 H[1]捕获；root/25/0 H[0]从父级H[2]继续捕获，root/25/0/0和root/25/0/2再各自捕获该H[0]并写false。它必须贯穿root/25、周期扫描和两个延迟复位闭包、root/11关闭回调共享。
+- N[75]初值false（root槽517写入），被root/25 H[7]、root/11 H[2]捕获；root/32 H[0]也捕获它并在为真时清false、提示“见人跑：”。它必须由root/32、root/25、root/11共享。
+- root/25/0主体通过captured.setSharedPause(true)设置N[74]；两个延迟复位子闭包通过setter写回false。现有BindCruiseRunButtonFromCaptures_11_16只把root25Captures[3]和childUpvalues[1]两个普通数组元素分别赋值，无法完整模拟root/11、root/32及root/25/0之间的共享cell。
+- root/11当前直接执行capturedUpvalues[2]=false、[3]=false；root/32当前直接执行capturedUpvalues[1]=false。若传入的是普通boolean，这些赋值只改变各自Lua数组副本，不会同步到其他闭包。后续必须统一为共享cell读写代理（至少支持get/set），并让三个闭包的读写均走同一代理。
+- 实际调用点审计：make_helper_root_11、make_helper_root_32、BindCruiseRunButtonFromCaptures_11_16目前在唯一明文中只有定义，没有调用点；BuildMainLeftBottomCallbackMap_11_16只在context.cruiseRunButtonCaptures存在时创建cruisebut。doInit调用callback map时目前只传putinButtonCaptures，没有传cruiseRunButtonCaptures。故见人跑按钮尚未在恢复版初始化流程中自动接通。
+
+本轮只更新捕获代理约束注释与接续记录，未伪造自动接线。下一步按此边界实现共享cell工厂：N[74]和N[75]各建一个cell，root/25/0的setter与root/11/root/32的读写都引用同一cell；在doInit中构造root/32提示回调、root/11关闭回调、root/25开启回调，再把三者按root/52/13捕获顺序装入callbackMap。构造root/25捕获表时还需传入真实N[73]方向偏移表和root/57方向换算函数；禁止用猜测值替代。
+
+未执行Lua语法/API/APK/游戏测试。
