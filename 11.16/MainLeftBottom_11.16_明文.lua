@@ -963,19 +963,24 @@ end
 -- 不在白名单地图时调用MainLeftBottom.zd(true)，最后提示关闭见人跑。本项不计完整静态恢复。
 local function make_helper_root_11(capturedUpvalues)
     return function()
-        local state = MainLeftBottom.z
+        -- root/11捕获数组按Lua 1-based顺序：
+        -- [1]=root N[3]计时器状态表，[2]=root N[74]共享暂停门控，
+        -- [3]=root N[75]提示一次性门控，[4]=root N[79]清理攻击目标回调，
+        -- [5]=root N[0]MainLeftBottom模块表，[6]=root N[5]关闭提示函数。
+        local state = capturedUpvalues[1]
         if state.cruiseRunTimer then
             SL:UnSchedule(state.cruiseRunTimer)
             state.cruiseRunTimer = nil
         end
-        capturedUpvalues[1] = false
         capturedUpvalues[2] = false
-        capturedUpvalues[3]()
-        MainLeftBottom.cruiseGatherPaused = false
+        capturedUpvalues[3] = false
+        capturedUpvalues[4]()
+        local moduleState = capturedUpvalues[5]
+        moduleState.cruiseGatherPaused = false
         if not IsInWhitelistMap() then
-            MainLeftBottom.zd(true)
+            moduleState.zd(true)
         end
-        ShowLocalNoticeByType("关闭见人跑")
+        capturedUpvalues[6]("关闭见人跑")
     end
 end
 
