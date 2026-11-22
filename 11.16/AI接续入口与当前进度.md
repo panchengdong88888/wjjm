@@ -1,5 +1,35 @@
 
 
+## 2026-11-22 按原始提取JSON确认root/52按钮闭包真实创建点（修复事件索引漏项）
+
+本轮重新读取`11.16/候选原型完整指令提取.json`与`root_未恢复七项完整物理指令提取_2026-11-21.json`，直接以原型`parent_capture_audit`及root/52物理槽的`a/b/c/d`操作数核对。此前仅依赖`root_闭包创建与捕获映射.json`的events列表会漏掉root/52内多个真实嵌套闭包；该events列表并不完整，不能再用“未列出”推断“没有创建点”。
+
+### 已确认的真实创建与按钮绑定
+
+- `root/52/13`：父级槽591 Opcode178，childIndex=13，captureCount=3；槽592/593/594依次捕获父级H[3]/H[14]/H[15]；槽595把该闭包写入`cruisebut`。H[3]沿root/52创建链对应root N[3]，即MainLeftBottom.z计时器状态表；H[14]/H[15]来自root N[83]/N[82]，业务身份尚未确认。函数体已恢复为：若H[0].cruiseRunTimer为真则调用H[1]()，否则调用H[2]()，均返回true。
+- `root/52/16`：父级槽610 Opcode121，childIndex=16，captureCount=5；槽611–615依次捕获父级H[3]、H[0]、局部N[16]、N[17]、N[18]；槽616写入`rewardbut`。H[3]=root N[3]计时器状态表，H[0]=root N[4] PrintLog；后三项仍需追槽610之前最终赋值，不能用猜测常量替代。
+- `root/52/1`：父级槽620 Opcode387，childIndex=1，captureCount=4；槽621–624依次捕获父级H[3]、H[0]、H[1]、局部N[23]；槽625写入`blacklistbut`。H[3]与H[0]分别对应计时器状态表和PrintLog；H[1]/N[23]业务身份仍待确认。
+- `root/52/9`：父级槽550 Opcode178，childIndex=9，5项捕获位于槽551–555，原型audit已记录父H[6]/H[3]/H[7]/H[8]/H[0]；此前已恢复其启动黑名单流程。
+- `root/52/34`：父级槽564 Opcode178，childIndex=34，4项捕获依次为父H[11]/H[3]/H[2]/H[12]，随后槽569绑定`putinbut`。现有明文工厂已按此顺序接收捕获值；配置读写闭包仍需从root N[38]/N[39]向外追踪。
+
+### 本轮代码变更
+
+已修改`MainLeftBottom_11.16_明文.lua`：
+- 修正root/52/13注释，记录槽591及H[3]/H[14]/H[15]真实捕获来源。
+- 修正root/52/16注释，记录槽610及H[3]/H[0]/N[16]/N[17]/N[18]真实捕获顺序。
+- `BuildMainLeftBottomCallbackMap_11_16(context)`新增可选的真实捕获接线：调用方提供`context.cruiseRunButtonCaptures`（3项）时接入`cruisebut`；提供`context.rewardButtonCaptures`（5项）时接入`rewardbut`。未提供时保持不接线，不伪造捕获值。
+- 本轮未强行接入`blacklistbut`与`putinbut`，因为捕获值仍有未知项。
+
+代码提交：`d8112af6cd858d85367f17747ba344d359c19050`。
+
+### 下一步
+
+1. 追踪root/52槽610之前N[16]/N[17]/N[18]的最后写入，确定奖励模数、奖励表、调度间隔。
+2. 追root N[83]/N[82]与root/52 H[14]/H[15]，确认cruisebut的两个分支回调真实身份。
+3. 追root/52 H[1]及局部N[23]，补齐blacklistbut关闭闭包；确认H[11]/H[12]的root N[38]/N[39]实现后接入putinbut。
+4. 本轮没有执行Lua语法检查、APK整合或游戏运行测试。
+
+
 ## 2026-11-22 二次纠错：指令提取JSON字段含义与闭包候选槽位
 
 紧接上一条纠错后，重新核对Opcode语义映射中的字段桥接说明、root/52原始提取记录及闭包事件表，发现上一条纠错把字段含义反过来了：该提取格式中`a`才是真实Opcode，`b/c/d`才是A/B/C操作数；`opcode`字段是解码记录的附加字段，不能用它判断VM分派操作码。此前“a只是操作数”的说法撤销。
