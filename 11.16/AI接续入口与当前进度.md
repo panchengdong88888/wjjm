@@ -1,3 +1,14 @@
+
+
+## 2026-11-22续接：root/27与root/54苹果下图闭包已实例化
+
+- 已读取并对照 `root_闭包创建与捕获映射.json` 与 `root_654条物理指令流.json`，确认父级root槽343–352创建root/27，槽353–358创建root/54，槽359将root/54闭包写入全局`_ENV.startAppleMap`。
+- 已在唯一明文文件中实例化root/27的9项捕获：MainLeftBottom.z、helper_root_73、ShowLocalNoticeByType、helper_root_65、helper_root_28、backCity、root/59停止回调、PrintLog、root/0目标地图选择闭包。
+- 已恢复root/0使用的5张目标地图候选数据：巨龙山谷(3000/10034/166,155)、逆魔古域(3001/10035/166,155)、雾隐龙渊(3002/10036/160,161)、破败山谷(3003/10037/160,161)、神魔禁地(3004/10038/160,161)。
+- 已实例化root/54的5项捕获，并通过`ScheduleAppleMap_11_16`包装`SL:Schedule`；现已执行`startAppleMap = make_startAppleMap(...)`全局绑定。applebut原回调调用的入口不再是未绑定状态。
+- 代码提交：`a7851bd4fb5dd1ebbd2bb8e5362373485474ca04`。
+- 注意：以上为静态恢复与捕获组装，尚未运行Lua语法检查或APK游戏内测试；root/59第二项捕获在其本体未读取，按原槽位保留nil占位，不影响本体当前已恢复的字段访问。
+- 下一步：继续root/52的22个按钮callbackMap实际构造与三组按钮配置数组恢复；不要重新分析root/27的307条指令主体。
 ## 检查点403（2026-11-22）：修正applebut回调语义
 
 - 明文代码提交：`47e85e08d6470ae42a12c78a6f4b63e3d55c8326`。
