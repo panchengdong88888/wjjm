@@ -2157,18 +2157,50 @@ end
 -- 不弹出账号限制提示；保留原来的主界面就绪轮询与MainLeftBottom.doInit初始化流程。
 -- 测试完成后如需恢复验证，可从Git历史提交中还原本函数的验证段。
 local function AccountIDValidation()
-    PrintLog("[测试模式] 已跳过游戏ID与账号UID验证")
+    -- 兼容两种宿主加载方式：加载器主动调用main，或仅执行并返回模块文件。
+    -- 两种方式同时存在时只启动一次，避免重复创建定时器和UI。
+    if MainLeftBottom._mainStarted then
+        return
+    end
+    MainLeftBottom._mainStarted = true
 
-    -- 对应root/19/0：24条指令，0参数；保留主界面初始化调度。
+    PrintLog("[测试模式] 已跳过游戏ID与账号UID验证")
+    local waitTimer
+
+    -- SL:Schedule为周期调度；主界面未就绪时继续等待，不提前终止轮询。
     local function waitForMainProperty()
-        if MainProperty and MainProperty._ui and MainProperty._ui.Panel_mini_chat then
-            SL:UnSchedule(nil)
-            MainLeftBottom.doInit()
+        local mainProperty = MainProperty
+        local miniChat = mainProperty and mainProperty._ui
+            and mainProperty._ui.Panel_mini_chat
+
+        if not miniChat then
+            PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
+            return
         end
-        PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
+
+        -- 只取消本入口创建的定时器，绝不使用UnSchedule(nil)影响其他任务。
+        if waitTimer then
+            SL:UnSchedule(waitTimer)
+            waitTimer = nil
+        end
+
+        local module = rootEnvironment.MainLeftBottom
+        if not module or type(module.doInit) ~= "function" then
+            PrintLog("[MainLeftBottom启动失败] 模块doInit入口不存在")
+            return
+        end
+
+        PrintLog("[MainLeftBottom启动] 主界面已就绪，开始执行doInit")
+        local ok, err = pcall(module.doInit)
+        if not ok then
+            module._doInitError = tostring(err)
+            PrintLog("[MainLeftBottom启动失败] doInit异常: " .. tostring(err))
+        else
+            PrintLog("[MainLeftBottom启动] doInit调用已返回")
+        end
     end
 
-    SL:Schedule(waitForMainProperty, 0.5)
+    waitTimer = SL:Schedule(waitForMainProperty, 0.5)
 end
 
 -- 原始root PC407-PC410：把入口闭包注册到模块main字段。
@@ -7405,5 +7437,12 @@ MainLeftBottom.a.root52_23Callback = function()
     )
 end
 
--- 原始root PC653-PC654：doInit字段已在上方恢复；模块执行结果返回根表。
+-- 启动兼容层：原始root仅注册main字段；部分宿主加载器只执行chunk并接收return值，
+-- 不会自动调用返回表的main。此处主动启动，并由_mainStarted防止宿主再次调用时重复启动。
+-- 该调用位于文件末尾，确保doInit及所有依赖函数均已定义。
+if type(MainLeftBottom.main) == "function" then
+    MainLeftBottom.main()
+end
+
+-- 原始root PC653-PC654：模块执行结果返回根表。
 return MainLeftBottom
