@@ -4285,6 +4285,29 @@ startAppleMap = make_startAppleMap({
 })
 
 
+-- root父级奖励数据：root N[11]=floor(180*0.2)=36，N[12]为14项奖励记录表，N[9]=0.2。
+-- N[12]由root槽98创建，槽100–168逐项构造记录，槽169一次性写入14项。
+-- 每项结构为{物品ID,提示文本,数量}，按原始root常量及寄存器值直接还原。
+local function BuildRewardEntries_11_16()
+    return {
+        {56061, "累计登录 1 天", 18},
+        {56061, "累计登录 2 天", 18},
+        {56061, "累计登录 3 天", 18},
+        {56061, "累计登录 4 天", 18},
+        {56061, "累计登录 5 天", 18},
+        {56061, "累计登录 6 天", 18},
+        {56061, "累计登录 7 天", 18},
+        {56011, "在线时长5分钟", 19},
+        {56011, "在线时长10分钟", 20},
+        {56011, "在线时长20分钟", 20},
+        {56011, "在线时长30分钟", 20},
+        {56011, "在线时长60分钟", 20},
+        {56011, "在线时长90分钟", 20},
+        {56011, "在线时长120分钟", 21},
+    }
+end
+
+
 -- ============================================================
 --  11.16 root/52/16/0：奖励协议循环回调（22条物理指令，0显式参数，3项捕获）
 -- ============================================================
@@ -4323,9 +4346,9 @@ end
 --  11.16 root/52/16：奖励功能按钮处理器（33条物理指令，0显式参数，5项捕获）
 -- ============================================================
 -- 精确父级创建点：root/52槽610 Opcode121，childIndex=16，captureCount=5；
--- 槽611–615依次捕获父级H[3]、H[0]、局部N[16]、N[17]、N[18]；
+-- 槽611–615依次捕获父级H[3]、H[0]、H[16]、H[17]、H[18]；
 -- 槽616将该闭包写入rewardbut。H[3]=root N[3]计时器状态表，H[0]=root N[4] PrintLog；
--- N[16]/N[17]/N[18]在创建点前的最终赋值仍需追踪，分别保留为modulus/rewardEntries/scheduleInterval。
+-- root创建root/52时H[16]=root N[11]=36，H[17]=root N[12]奖励记录表，H[18]=root N[9]=0.2秒。
 -- 本版函数体与11.9同职责MakeRewardButtonHandler结构一致；本版直接使用SL:Schedule。
 local function MakeRewardButtonHandler_11_16(
     timerState,
@@ -6238,13 +6261,15 @@ local function BuildMainLeftBottomCallbackMap_11_16(context)
         local c = context.cruiseRunButtonCaptures
         callbackMap.cruisebut = make_helper_root_52_13(c[1], c[2], c[3])
     end
-    -- rewardbut同样只接受按root/52槽611–615真实顺序恢复的5项捕获。
-    if type(context.rewardButtonCaptures) == "table" then
-        local c = context.rewardButtonCaptures
-        callbackMap.rewardbut = MakeRewardButtonHandler_11_16(
-            c[1], c[2], c[3], c[4], c[5]
-        )
-    end
+    -- root/52/16父级捕获已闭合：H[3]=timerState、H[0]=PrintLog，
+    -- H[16]=36、H[17]=14项奖励记录、H[18]=0.2秒。
+    callbackMap.rewardbut = MakeRewardButtonHandler_11_16(
+        timerState,
+        PrintLog,
+        36,
+        BuildRewardEntries_11_16(),
+        0.2
+    )
     callbackMap.forgezodiacbut = closure_root_52_0
     callbackMap.buygoldbut = MakeBuyGold500WButtonHandler_11_16(timerState)
     callbackMap.buygold110 = helper_root_52_3(
