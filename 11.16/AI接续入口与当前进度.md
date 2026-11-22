@@ -3383,3 +3383,10 @@ opcode0=3次表写入；opcode2=创建表+常量池装载；opcode224=8次立即
 本轮只更新捕获代理约束注释与接续记录，未伪造自动接线。下一步按此边界实现共享cell工厂：N[74]和N[75]各建一个cell，root/25/0的setter与root/11/root/32的读写都引用同一cell；在doInit中构造root/32提示回调、root/11关闭回调、root/25开启回调，再把三者按root/52/13捕获顺序装入callbackMap。构造root/25捕获表时还需传入真实N[73]方向偏移表和root/57方向换算函数；禁止用猜测值替代。
 
 未执行Lua语法/API/APK/游戏测试。
+
+
+## 2026-11-22 VM共享upvalue cell适配层第一阶段
+
+明文新增带私有标记的共享cell工厂及读/写/setter接口，避免普通业务table被误判为cell。root/32的一次性提示门控改为cell访问；root/11对N[74]/N[75]复位改为cell写入；root/25/0的两个延迟复位闭包支持cell对象；root/60对N[76]的判空与清nil改为cell访问；root/25捕获绑定将N[74]包装为同一cell setter供周期回调使用。`BindCruiseRunCaptures_11_16`保留共享cell引用并读取当前快照。
+
+本阶段尚未完成doInit自动接线：root/25/0还需逐项补齐N[81]恢复回调、N[79]清理回调、N[76]共享cell、N[80]方向函数、N[73]方向表，以及扫描回调所需的地图/玩家筛选适配器；方向函数和方向表已有静态恢复依据，但仍需核对扫描主体的剩余适配输入。root/11与root/32实例也尚未由doInit构造并注入root/52/13。不得将cell接口已加入表述为cruisebut已接通。未执行Lua语法/API/APK/游戏测试。
