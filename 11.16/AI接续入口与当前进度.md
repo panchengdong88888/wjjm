@@ -3441,3 +3441,22 @@ opcode0=3次表写入；opcode2=创建表+常量池装载；opcode224=8次立即
 - 已接入的16个按钮：`buygold110`（110W）、`moneybut`（资源统计窗口）、`shiqubut`（拾取）、`diuqibut`（丢弃）、`clearblacklistbut`（清黑名单）、`stopallbut`（停止脚本）、`recyclebut`（回收装备）、`buygoldbut`（500W）、`newzone`（开新区）、`rewardbut`（奖励）、`yinguaibut`（拉怪）、`xiaotuibut`（快速小退）、`putoutbut`（下架物品）、`forgezodiacbut`（锻造生肖）、`dropallbut`（丢全部）、`applebut`（苹果图）。
 - 仍未接入的4个按钮：`cruisebut`（见人跑，缺少关闭/启动闭包的真实实例捕获）、`blacklistbut`（黑名单，缺少完整捕获来源）、`putinbut`（上架金条，缺少配置读写闭包的实际捕获实例）、`hidebut`（隐藏，尚无完整功能回调恢复）。
 - 这次只完成接线，不代表上述16项已在游戏中验证。尚未执行 Lua 语法检查、引擎 API 检查、APK 打包或实机测试。下一步让用户打包测试；若按钮点击异常，再按具体按钮定位。
+
+
+
+## 2026-11-22：剩余4个按钮功能全部写入并接入
+
+本轮按“先写出可打包测试的代码，运行问题留到APK测试后逐项修复”的方案，直接修改唯一明文文件；不再重复分析已完成的16个按钮。
+
+- `cruisebut`（见人跑）：doInit回调表现在自动构造root/52/13启停闭包；使用已恢复的root/11停止回调、root/25启动回调、root/25/0周期扫描、root/32恢复提示，并将暂停门控/一次性提示门控接入共享cell。方向换算使用GetDirectionByVector_11_16，周期按0.1秒调度。
+- `blacklistbut`（黑名单）：按本版root/52/9启动闭包组装5项捕获，设置distance=11、立即调用BlacklistItems并按0.1秒调度；关闭时调用root/52/1停止闭包，清空blacklistTimer并复位isBlacklisting。
+- `putinbut`（上架金条）：按root/52/34捕获顺序注入helper_root_18配置读取、MainLeftBottom、MainLeftBottom.a及helper_root_44配置写入闭包；使用已恢复的inputNumber和确认回调。
+- `hidebut`（隐藏）：接入root/52/2回调，根据MainLeftBottom.a.isHidden切换容器show/hide，并同步hidebut透明度。
+
+唯一明文文件提交：
+- `a7a72817df9932622d5666d84a79b218920a83ee`：四个按钮首次接入。
+- `91a7af83adc7eeee6c31d85a21a6b4b922e4de02`：黑名单启动分支改用本版root/52/9原始闭包，并清理过期注释。
+
+当前按钮接线统计：**20/20全部写入点击回调**，不再有“4个按钮未接入”。这表示源码接线已完成，不代表游戏内功能已通过测试。尚未执行Lua 5.1语法编译、目标引擎API检查、APK打包或实机测试；下一步可直接打包，遇到具体问题再逐个修复。
+
+仍需区分：root/52/23大型周期维护回调在源码恢复账本中仍标记为部分恢复；本轮完成的是用户要求的20个按钮功能接线，不把周期维护回调未完成伪装成已验证。
