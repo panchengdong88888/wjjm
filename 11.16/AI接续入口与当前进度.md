@@ -3971,3 +3971,13 @@ D结果解释：
 - G8提交：`f5f6ee47189c7f03e87bbc478d17c5e944de0195`。
 - G8链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G8_%E4%BB%85%E5%88%9D%E5%A7%8B%E5%8C%96%E7%8A%B6%E6%80%81%E5%AD%97%E6%AE%B5%E8%B5%8B%E5%80%BC_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - 等待用户实测G8，只反馈显示/不显示。
+
+## 2026-11-23 G8实测通过：继续隔离初始化名称表
+
+- 用户实测G8：**游戏原UI与插件按钮正常显示**。
+- G8新增的四条初始化状态字段赋值均通过：`moduleState.initTime`、`moduleState.initTimeStr`、`moduleState.initSnapshot`、`mainPanelState.initSnapshot`。模块状态表及主面板状态表字段写入排除为当前UI中断原因。
+- 下一步回到正式doInit中时间处理之前的两组局部常量表：`moneyNames`与`itemNames`。这两组表仅包含普通字符串，不调用宿主API。
+- 新建G9：`${g9path}`，以G8通过版为底稿，仅增加这两组名称表定义；不遍历、不读取MoneyProxy、不调用SL元数据接口。
+- G9提交：`${created.result.commit_sha}`。正式明文未修改。
+- G9链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G9_%E4%BB%85%E8%B4%A7%E5%B8%81%E4%B8%8E%E7%89%A9%E5%93%81%E5%90%8D%E7%A7%B0%E8%A1%A8_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 本轮只测试G9，观察游戏原UI和插件按钮是否显示。
