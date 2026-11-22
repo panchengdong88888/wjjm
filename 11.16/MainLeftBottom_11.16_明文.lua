@@ -5679,6 +5679,98 @@ local function GetDirectionByVector_11_16(dx, dy)
     return 7
 end
 
+-- 11.16 root/52/13、root/25、root/11：见人跑按钮完整接线。
+-- 用已恢复的共享状态cell、一次性提示回调、清理目标回调、方向换算和八方向偏移表
+-- 组装root/25的13项捕获；root/25/0周期回调由BindCruiseRunButtonFromCaptures生成。
+BuildCruiseRunButtonHandler_11_16 = function(timerState, moduleRoot, printLog, showNotice)
+    timerState = timerState or MainLeftBottom.z
+    moduleRoot = moduleRoot or MainLeftBottom
+    printLog = printLog or PrintLog
+    showNotice = showNotice or ShowLocalNoticeByType
+
+    local sharedPauseCell = MakeUpvalueCell_11_16(false)
+    local promptOnceCell = MakeUpvalueCell_11_16(true)
+
+    -- root/32：见人跑周期回调在无玩家/目标消失时的一次性提示与恢复战斗回调。
+    local resumeBattle = make_helper_root_32({
+        promptOnceCell,
+        showNotice,
+        moduleRoot,
+    })
+
+    -- root/60：停止巡航时清理当前攻击目标；按本版接口调用ClearAttackTargetID。
+    local function clearCruiseTargets()
+        local facade = global.Facade
+        if not facade then return end
+        local playerInputProxy = facade:retrieveProxy(
+            global.ProxyTable.PlayerInputProxy
+        )
+        if playerInputProxy and playerInputProxy.ClearAttackTargetID then
+            playerInputProxy:ClearAttackTargetID()
+        end
+    end
+
+    local directionOffsets = {
+        ["0"] = { x = 0, y = -1 },
+        ["1"] = { x = 1, y = -1 },
+        ["2"] = { x = 1, y = 0 },
+        ["3"] = { x = 1, y = 1 },
+        ["4"] = { x = 0, y = 1 },
+        ["5"] = { x = -1, y = 1 },
+        ["6"] = { x = -1, y = 0 },
+        ["7"] = { x = -1, y = -1 },
+    }
+
+    -- root/25的13项捕获值，顺序按本版源码恢复记录组织。
+    local root25Captures = {
+        [1] = timerState,
+        [2] = showNotice,
+        [3] = sharedPauseCell,
+        [4] = resumeBattle,
+        [5] = function(callback, interval)
+            return SL:Schedule(callback, interval)
+        end,
+        [6] = printLog,
+        [7] = moduleRoot,
+        [8] = promptOnceCell,
+        [9] = clearCruiseTargets,
+        [10] = nil,
+        [11] = nil,
+        [12] = GetDirectionByVector_11_16,
+        [13] = directionOffsets,
+    }
+
+    local startCruise = BindCruiseRunButtonFromCaptures_11_16(
+        root25Captures,
+        {
+            moduleState = moduleRoot.a,
+            showLocalNoticeByType = showNotice,
+            printLog = printLog,
+            getDirection = GetDirectionByVector_11_16,
+        }
+    )
+
+    local function stopCruise()
+        return make_helper_root_11({
+            [1] = timerState,
+            [2] = sharedPauseCell,
+            [3] = promptOnceCell,
+            [4] = clearCruiseTargets,
+            [5] = moduleRoot,
+            [6] = showNotice,
+        })()
+    end
+
+    return make_helper_root_52_13(
+        timerState,
+        stopCruise,
+        function()
+            promptOnceCell.value = true
+            return startCruise()
+        end
+    )
+end
+
 
 -- ============================================================================
 -- 11.16 root/9：GetMapData2DPtr候选函数（5参数距离门控）
@@ -6268,6 +6360,8 @@ end
 -- root/52回调表：已恢复按钮回调直接接入；cruisebut已由doInit提供三项捕获自动接线；blacklistbut仍保留捕获注入入口。
 -- putinbut的配置读写闭包已由root父级N[38]/N[39]定位，并在doInit生命周期中真实接入。
 -- rewardbut按真实捕获链及14项奖励表直接接入。
+local BuildCruiseRunButtonHandler_11_16
+
 local function BuildMainLeftBottomCallbackMap_11_16(context)
     context = context or {}
     local timerState = context.timerState or MainLeftBottom.z
@@ -6289,23 +6383,60 @@ local function BuildMainLeftBottomCallbackMap_11_16(context)
         })
     end
     callbackMap.applebut = closure_root_52_25
-    -- root/52/13的捕获顺序：timerState、root/11关闭见人跑回调、root/25开启见人跑回调。
-    -- root/11与root/25函数身份已确认；调用方仍须提供同一生命周期的两个真实闭包实例。
-    if type(context.cruiseRunButtonCaptures) == "table" then
-        local c = context.cruiseRunButtonCaptures
-        callbackMap.cruisebut = make_helper_root_52_13(c[1], c[2], c[3])
+    -- 11.16 root/52/13：直接组装本版已恢复的root/11与root/25闭包。
+    callbackMap.cruisebut = BuildCruiseRunButtonHandler_11_16(
+        timerState, moduleState, PrintLog, ShowLocalNoticeByType
+    )
+
+    -- 11.16 root/52/1是关闭分支；开启分支调用本版完整黑名单检测函数，
+    -- 使用同一timerState.blacklistTimer保存句柄，周期与旧版同职责入口一致为0.1秒。
+    callbackMap.blacklistbut = function()
+        local button = visibleItems.blacklistbut
+        local config = moduleState.buttonConfigByKey
+            and moduleState.buttonConfigByKey.blacklistbut
+        local function sync(enabled)
+            if config then config.toggled = enabled end
+            if button then
+                GUI:Button_setTitleText(
+                    button, enabled and "关黑名单" or "开黑名单"
+                )
+                GUI:Button_setTitleColor(
+                    button, enabled and "#ff0000" or "#ffffff"
+                )
+            end
+        end
+
+        if timerState.blacklistTimer then
+            helper_root_52_1(
+                timerState, PrintLog, timerState, visibleItems
+            )
+            sync(false)
+            return true
+        end
+
+        PrintLog("开启黑名单功能")
+        BlacklistPlayerDetection()
+        timerState.blacklistTimer = schedule(
+            BlacklistPlayerDetection, 0.1
+        )
+        timerState.isBlacklisting = true
+        sync(true)
+        return true
     end
-    -- root/52/1捕获顺序：timerState(H[3])、PrintLog(H[0])、
-    -- featureState(H[1])、按钮映射表(N[23])。第四项保留原始捕获，不猜字段用途。
-    if type(context.blacklistButtonCaptures) == "table" then
-        local c = context.blacklistButtonCaptures
-        callbackMap.blacklistbut = helper_root_52_1(c[1], c[2], c[3], c[4])
-    end
-    -- root/52/34捕获顺序：配置读取闭包(H[11])、MainLeftBottom(H[3])、
-    -- MainLeftBottom.a(H[2])、配置写入闭包(H[12])。
-    if type(context.putinButtonCaptures) == "table" then
-        callbackMap.putinbut = make_helper_root_52_34(context.putinButtonCaptures)
-    end
+
+    -- root/52/34：配置读取/写入闭包已在root初始化时创建，按原捕获顺序传入。
+    callbackMap.putinbut = make_helper_root_52_34({
+        helper_root_18,
+        moduleState,
+        context.mainPanelState or moduleState.a,
+        helper_root_44,
+    })
+
+    -- root/52/2：隐藏/显示主界面容器，并同步hidebut透明度。
+    callbackMap.hidebut = helper_root_52_2(
+        context.mainPanelState or moduleState.a,
+        PrintLog
+    )
     -- root/52/16父级捕获已闭合：H[3]=timerState、H[0]=PrintLog，
     -- H[16]=36、H[17]=14项奖励记录、H[18]=0.2秒。
     callbackMap.rewardbut = MakeRewardButtonHandler_11_16(
@@ -6563,6 +6694,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             local callbackMap = BuildMainLeftBottomCallbackMap_11_16({
                 timerState = MainLeftBottom.z,
                 moduleState = moduleState,
+                mainPanelState = mainPanelState,
                 visibleItems = visibleItems,
                 resourceWindowHandler = resourceWindowHandler,
             })
@@ -6603,7 +6735,9 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
                 GUI:Button_setTitleText(hideButton, "隐 藏")
                 GUI:Button_setTitleFontSize(hideButton, 18)
                 GUI:Button_setTitleFontName(hideButton, "res/public/kaiti2.ttf")
-                -- 暂不注册隐藏按钮点击功能。
+                if type(callbackMap.hidebut) == "function" then
+                    GUI:addOnClickEvent(hideButton, callbackMap.hidebut)
+                end
             end
 
             local dropAllButton = GUI:Button_Create(
