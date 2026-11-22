@@ -3757,10 +3757,7 @@ local function make_helper_root_52_32(capturedUpvalues)
             buttonConfig.toggled = false
         end
 
-        GUI:addOnClickEvent(
-            button,
-            helper_root_52_32_0(callbackMap, buttonConfig, button)
-        )
+        -- 本阶段只恢复控件创建与显示；点击事件暂不注册。
         return button
     end
 end
@@ -6529,9 +6526,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
         )
         moduleState.openResourceStatistics = resourceWindowHandler
         local resourceButton = mainPanelState.moneybut or moduleState.moneybut
-        if resourceButton then
-            GUI:addOnClickEvent(resourceButton, resourceWindowHandler)
-        end
+        -- 资源统计按钮的点击功能暂不接线；本阶段只处理主界面按钮显示。
 
         -- 苹果图/巡航状态初值及金币警告文本。
         moduleState.appleMapActive = false
@@ -6556,90 +6551,8 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             moduleState.buttonGroups = { group1, group2, group3 }
             mainPanelState.buttonGroups = moduleState.buttonGroups
 
-            -- root级N[74]/N[75]/N[76]共享upvalue cell在本次初始化生命周期内只创建一次。
-            local cruisePauseCell = moduleState._cruisePauseCell
-            if not IsUpvalueCell_11_16(cruisePauseCell) then
-                cruisePauseCell = MakeUpvalueCell_11_16(false)
-                moduleState._cruisePauseCell = cruisePauseCell
-            end
-            local cruiseNoticeCell = moduleState._cruiseNoticeCell
-            if not IsUpvalueCell_11_16(cruiseNoticeCell) then
-                cruiseNoticeCell = MakeUpvalueCell_11_16(false)
-                moduleState._cruiseNoticeCell = cruiseNoticeCell
-            end
-            local cruiseClearTargetCell = moduleState._cruiseClearTargetCell
-            if not IsUpvalueCell_11_16(cruiseClearTargetCell) then
-                cruiseClearTargetCell = MakeUpvalueCell_11_16(nil)
-                moduleState._cruiseClearTargetCell = cruiseClearTargetCell
-            end
-
-            local cruiseResumeCallback = make_helper_root_32({
-                cruiseNoticeCell,
-                ShowLocalNoticeByType,
-                moduleState,
-            })
-            local cruiseStopCallback = make_helper_root_11({
-                MainLeftBottom.z,
-                cruisePauseCell,
-                cruiseNoticeCell,
-                make_helper_root_60({ [0] = cruiseClearTargetCell }),
-                MainLeftBottom,
-                ShowLocalNoticeByType,
-            })
-            local directionOffsets = {
-                ["0"] = { x = 0, y = -1 },
-                ["1"] = { x = 1, y = -1 },
-                ["2"] = { x = 1, y = 0 },
-                ["3"] = { x = 1, y = 1 },
-                ["4"] = { x = 0, y = 1 },
-                ["5"] = { x = -1, y = 1 },
-                ["6"] = { x = -1, y = 0 },
-                ["7"] = { x = -1, y = -1 },
-            }
-            local cruiseRootCaptures = {
-                MainLeftBottom.z,
-                ShowLocalNoticeByType,
-                cruisePauseCell,
-                cruiseResumeCallback,
-                nil,
-                PrintLog,
-                MainLeftBottom,
-                cruiseNoticeCell,
-                make_helper_root_60({ [0] = cruiseClearTargetCell }),
-                cruiseClearTargetCell,
-                nil,
-                GetDirectionByVector_11_16,
-                directionOffsets,
-            }
-            local cruiseStartCallback = BindCruiseRunButtonFromCaptures_11_16(
-                cruiseRootCaptures,
-                {
-                    showLocalNoticeByType = ShowLocalNoticeByType,
-                }
-            )
-
-            local callbackMap = BuildMainLeftBottomCallbackMap_11_16({
-                cruiseRunButtonCaptures = {
-                    MainLeftBottom.z,
-                    cruiseStopCallback,
-                    cruiseStartCallback,
-                },
-                timerState = MainLeftBottom.z,
-                moduleState = moduleState,
-                visibleItems = visibleItems,
-                resourceWindowHandler = resourceWindowHandler,
-                -- root/52 H[11]/H[12]分别来自root父级N[38]/N[39]：
-                -- helper_root_18读取dpp配置；helper_root_44写入price/name/mode文本。
-                putinButtonCaptures = {
-                    capturedUpvalues[12],
-                    moduleState,
-                    mainPanelState,
-                    capturedUpvalues[13],
-                },
-                schedule = function(callback, interval)
-                    return SL:Schedule(callback, interval)
-                end,
-            })
+            -- 实机测试准备阶段：只构建按钮外观，不恢复/注册任何业务点击功能。
+            local callbackMap = {}
             moduleState.buttonCallbackMap = callbackMap
             mainPanelState.buttonCallbackMap = callbackMap
 
@@ -6677,7 +6590,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
                 GUI:Button_setTitleText(hideButton, "隐 藏")
                 GUI:Button_setTitleFontSize(hideButton, 18)
                 GUI:Button_setTitleFontName(hideButton, "res/public/kaiti2.ttf")
-                GUI:addOnClickEvent(hideButton, ShowHideAllButtons)
+                -- 暂不注册隐藏按钮点击功能。
             end
 
             local dropAllButton = GUI:Button_Create(
@@ -6690,18 +6603,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
                 GUI:Button_setTitleFontSize(dropAllButton, 18)
                 GUI:Button_setTitleFontName(dropAllButton, "res/public/kaiti2.ttf")
                 GUI:Button_setTitleColor(dropAllButton, "#ffffff")
-                -- root/52槽805的子原型索引明确指向root/52/8：
-                -- dropallbut是模式1处理器，不是shiqubut对应的模式2处理器。
-                local dropAllHandler = MakeDropMode1ButtonHandler_11_16(
-                    moduleState,
-                    moduleState,
-                    printLog,
-                    DiuItems,
-                    function(callback, interval)
-                        return SL:Schedule(callback, interval)
-                    end
-                )
-                GUI:addOnClickEvent(dropAllButton, dropAllHandler)
+                -- 暂不注册丢全部按钮点击功能，仅保留原始标题和外观。
             end
 
             local appleConfig = {
@@ -6723,17 +6625,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
                 GUI:Button_setTitleFontSize(appleButton, 18)
                 GUI:Button_setTitleFontName(appleButton, "res/public/kaiti2.ttf")
                 GUI:Button_setTitleColor(appleButton, "#ffffff")
-                -- root/52/25原型并非标题/颜色切换器：它只调用全局startAppleMap()。
-                -- 真正开关状态由root/54创建的startAppleMap闭包管理；
-                -- 不在按钮层擅自翻转appleConfig.toggled，避免UI显示与下图状态脱节。
-                local appleMapClick = function()
-                    if type(startAppleMap) == "function" then
-                        return startAppleMap()
-                    end
-                    printLog("苹果下图入口尚未完成绑定：startAppleMap")
-                    return false
-                end
-                GUI:addOnClickEvent(appleButton, appleMapClick)
+                -- 暂不注册苹果图按钮点击功能，仅保留“开苹果图”初始显示。
             end
         end
 
