@@ -6235,15 +6235,35 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             GUI:addOnClickEvent(resourceButton, resourceWindowHandler)
         end
 
-        -- 苹果图/巡航状态文本及金币警告文本由本版槽位219–455创建。
-        -- 状态初值与原型常量一致；控件对象稍后由主界面按钮/布局段补齐。
+        -- 苹果图/巡航状态初值及金币警告文本。
         moduleState.appleMapActive = false
         moduleState.cruiseActive = false
         moduleState.goldWarningText = "金币不足10W"
 
-        -- 仍未完全闭合的部分：主按钮组控件创建/布局、各按钮匿名回调的捕获接线、
-        -- 苹果图按钮状态回调、22:00:05巡航协议定时器的捕获参数。
-        -- 不在这里伪造这些连接；相关工厂函数和原型证据均保留待接线。
+        -- root/52槽456–468：保存原始NetworkUtil.OnLuaMessage并安装本版包装器。
+        -- 包装器捕获顺序：MainLeftBottom、PrintLog、原始OnLuaMessage。
+        local networkUtil = NetworkUtil
+        if networkUtil and type(networkUtil.OnLuaMessage) == "function" then
+            if type(networkUtil._origOnLuaMessage) ~= "function" then
+                networkUtil._origOnLuaMessage = networkUtil.OnLuaMessage
+            end
+            networkUtil.OnLuaMessage = make_helper_root_52_14(
+                moduleState,
+                printLog,
+                networkUtil._origOnLuaMessage
+            )
+        end
+
+        -- root/52槽153–162创建的root/52/23周期回调按1秒调度。
+        -- 回调函数在本文件后段完成定义后挂入共享状态；doInit运行时已可读取。
+        if moduleState.maintenanceTimer then
+            SL:UnSchedule(moduleState.maintenanceTimer)
+            moduleState.maintenanceTimer = nil
+        end
+        if type(moduleState.root52_23Callback) == "function" then
+            moduleState.maintenanceTimer =
+                SL:Schedule(moduleState.root52_23Callback, 1)
+        end
 
     end
 end
@@ -6788,4 +6808,23 @@ local function ProcessMainLeftBottomMaintenance_11_16(moduleState, moneyProxy, c
     )
 
     return result
+end
+
+-- root/52/23周期回调的运行时入口。
+-- 父级root/52槽153–162已确认SL:Schedule(callback, 1)；将可恢复业务组合
+-- 挂到doInit使用的共享状态表，避免在doInit定义点之前引用后声明的局部函数。
+MainLeftBottom.a.root52_23Callback = function()
+    return ProcessMainLeftBottomMaintenance_11_16(
+        MainLeftBottom.a,
+        nil,
+        {
+            goldWarningBg = MainLeftBottom.a.goldWarnBg,
+            infoGoldTxt = MainLeftBottom.a.infoGoldTxt,
+            infoYuanbaoTxt = MainLeftBottom.a.infoYuanbaoTxt,
+            infoPowerTxt = MainLeftBottom.a.infoPowerTxt,
+            appleMapBg = MainLeftBottom.a.appleMapBg,
+            appleMapTxt = MainLeftBottom.a.appleMapTxt,
+            cruiseTxt = MainLeftBottom.a.cruiseTxt,
+        }
+    )
 end
