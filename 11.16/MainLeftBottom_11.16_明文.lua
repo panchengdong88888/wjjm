@@ -5493,7 +5493,7 @@ end
 -- [3]=root N[74]=与root/25/0 H[0]共享的cruiseGatherPaused单元
 -- [4]=root N[81]；[5]=root N[78]；[6]=root N[4]=PrintLog
 -- [7]=root N[0]=MainLeftBottom模块表；[8]=root N[75]；
--- [9]=root N[79]；[10]=root N[76]；[11]=root N[77]；
+-- [9]=root N[79]=root/60清除攻击目标回调；[10]=root N[76]=Opcode193清空后的nil；[11]=root N[77]=1；
 -- [12]=root N[80]=root/57方向换算函数（2参数，60条指令，math.abs及方向分支）；[13]=root N[73]=八方向偏移表。
 -- root/25/0捕获父级H[2..12]，故子级11项按[3..13]原序传入。
 -- 这里以同一捕获数组作为重建环境中的共享cell载体；0.3秒复位setter
