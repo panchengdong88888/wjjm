@@ -6262,7 +6262,7 @@ end
 -- diuqibut→root/52/18；dropallbut→root/52/8；moneybut→root/52/6；
 -- xiaotuibut→root/52/12。
 -- 槽666–710创建root/52/32通用按钮工厂并遍历3组按钮配置；槽711–759创建hidebut，
--- 槽760–810创建dropallbut，槽811–865创建applebut。主函数尚未把这些已识别回调全部接入唯一明文。
+-- 槽760–810创建dropallbut，槽811–865创建applebut。四个此前缺失的按钮回调已在本轮接入。
 --
 -- root/52槽483–543：主界面按钮配置表。
 -- 逐项保留原型中明确出现的key/name/toggle字段；这些描述数据用于后续
@@ -6357,9 +6357,9 @@ local function BuildMainLeftBottomButtonGroups_11_16()
     return group1, group2, group3
 end
 
--- root/52回调表：已恢复按钮回调直接接入；cruisebut已由doInit提供三项捕获自动接线；blacklistbut仍保留捕获注入入口。
--- putinbut的配置读写闭包已由root父级N[38]/N[39]定位，并在doInit生命周期中真实接入。
--- rewardbut按真实捕获链及14项奖励表直接接入。
+-- root/52回调表：20个界面按钮均建立点击处理器；见人跑使用本版root/11、root/25捕获适配，
+-- 黑名单使用root/52/9启动与root/52/1停止，上架金条使用root/18、root/44配置读写闭包，
+-- 隐藏使用root/52/2容器显隐回调。
 local BuildCruiseRunButtonHandler_11_16
 
 local function BuildMainLeftBottomCallbackMap_11_16(context)
@@ -6414,11 +6414,15 @@ local function BuildMainLeftBottomCallbackMap_11_16(context)
             return true
         end
 
-        PrintLog("开启黑名单功能")
-        BlacklistPlayerDetection()
-        timerState.blacklistTimer = schedule(
-            BlacklistPlayerDetection, 0.1
-        )
+        local blacklistState = getMainLeftBottomBlacklistState()
+        local startCaptures = {
+            blacklistState,
+            timerState,
+            schedule,
+            0.1,
+            PrintLog,
+        }
+        make_helper_root_52_9(startCaptures)
         timerState.isBlacklisting = true
         sync(true)
         return true
@@ -6654,8 +6658,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
         mainPanelState.buttonAnchorY = moduleState.buttonAnchorY
 
         -- root/52/6资源统计窗口及其行/刷新/关闭子闭包已按本版指令流恢复。
-        -- 原版按钮配置表中的moneybut是资源入口；按钮本体由后续布局构建段生成，
-        -- 因此先保存可调用处理器，并在按钮已存在时立即接线。
+        -- moneybut的窗口处理器传入按钮回调表，由通用按钮工厂在创建按钮后接线。
         local resourceWindowHandler = MakeResourceStatisticsWindow_11_16(
             moduleState,
             printLog,
@@ -6665,7 +6668,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
         )
         moduleState.openResourceStatistics = resourceWindowHandler
         local resourceButton = mainPanelState.moneybut or moduleState.moneybut
-        -- 资源统计按钮的点击功能暂不接线；本阶段只处理主界面按钮显示。
+        -- 按钮尚未创建时保留处理器；后续通用工厂会将其绑定到moneybut。
 
         -- 苹果图/巡航状态初值及金币警告文本。
         moduleState.appleMapActive = false
