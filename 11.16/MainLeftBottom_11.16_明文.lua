@@ -2189,6 +2189,10 @@ local function AccountIDValidation()
             PrintLog("[MainLeftBottom启动失败] 模块doInit入口不存在")
             return
         end
+        if module._doInitStarted then
+            return
+        end
+        module._doInitStarted = true
 
         PrintLog("[MainLeftBottom启动] 主界面已就绪，开始执行doInit")
         local ok, err = pcall(module.doInit)
