@@ -3390,3 +3390,10 @@ opcode0=3次表写入；opcode2=创建表+常量池装载；opcode224=8次立即
 明文新增带私有标记的共享cell工厂及读/写/setter接口，避免普通业务table被误判为cell。root/32的一次性提示门控改为cell访问；root/11对N[74]/N[75]复位改为cell写入；root/25/0的两个延迟复位闭包支持cell对象；root/60对N[76]的判空与清nil改为cell访问；root/25捕获绑定将N[74]包装为同一cell setter供周期回调使用。`BindCruiseRunCaptures_11_16`保留共享cell引用并读取当前快照。
 
 本阶段尚未完成doInit自动接线：root/25/0还需逐项补齐N[81]恢复回调、N[79]清理回调、N[76]共享cell、N[80]方向函数、N[73]方向表，以及扫描回调所需的地图/玩家筛选适配器；方向函数和方向表已有静态恢复依据，但仍需核对扫描主体的剩余适配输入。root/11与root/32实例也尚未由doInit构造并注入root/52/13。不得将cell接口已加入表述为cruisebut已接通。未执行Lua语法/API/APK/游戏测试。
+
+
+## 2026-11-22 cruisebut生命周期接线阶段
+
+已在doInit创建见人跑三个共享cell并保存在moduleState中：N[74]暂停门控、N[75]提示一次性门控、N[76]清理目标门控。root/32提示闭包、root/11关闭闭包、root/60清理目标闭包和root/25周期回调捕获均接入对应cell；root/25捕获按13项真实顺序组装，方向换算函数使用已逐槽恢复的GetDirectionByVector_11_16，方向偏移表按root槽483–515确认的0..7坐标构造。BindCruiseRunButtonFromCaptures_11_16创建启动回调，并把root/11关闭回调与root/25启动回调按root/52/13的捕获顺序传入callbackMap.cruisebut。
+
+限制：目前方向偏移表和cell的静态接线已完成，但root/25/0的玩家额外筛选适配器acceptPlayer仍未补齐；现有扫描主体有基础过滤（英雄、空名、本角色、队伍成员），其余名称/行会条件保持可选适配。该按钮现在在doInit源码路径上自动构造，但没有执行Lua语法、API、APK或游戏运行验证；不要宣称实机可用。root/52/13按钮创建流程是否成功注册仍需目标环境测试。
