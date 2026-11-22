@@ -4073,3 +4073,14 @@ D结果解释：
 - G17提交：`8f70aad1b49c94afed938deea02abbca9f6e118f`。
 - G17链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G17_%E4%BB%85%E8%8E%B7%E5%8F%96%E4%BB%93%E5%BA%93%E4%BB%A3%E7%90%86%E4%B8%8D%E5%8F%91%E8%AF%B7%E6%B1%82_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - 判定：G17显示则代理获取本身通过，问题集中在`RequestStorageData(0)`调用；G17不显示则问题在NPCStorageProxy代理获取或相关字段写入。正式明文未修改。
+
+
+## 2026-11-23 G17实测通过：仓库请求调用增加异常保护测试G18
+
+- 用户实测G17：**游戏原UI与插件按钮正常显示**。
+- G17仅获取NPCStorageProxy（retrieveProxy由pcall保护）并赋值给moduleState.NPCStorageProxy，不调用RequestStorageData(0)，实测通过。代理获取与字段赋值排除为当前故障原因。
+- 与G16（获取代理后直接调用RequestStorageData(0)，不显示）对照，当前故障点集中在RequestStorageData(0)调用本身或其调用时序/环境。
+- 新建G18：`11.16/MainLeftBottom_11.16_UI隔离测试_G18_仓库请求增加异常保护_纯按钮.lua`，以G17通过版为底稿，仅增加`storageProxy:RequestStorageData(0)`，并将该调用单独包入pcall；其他代码保持不变。
+- G18提交：`2f04e08ed8fb204f15bc2ae046b1affb8a91a86b`。
+- G18链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G18_%E4%BB%93%E5%BA%93%E8%AF%B7%E6%B1%82%E5%A2%9E%E5%8A%A0%E5%BC%82%E5%B8%B8%E4%BF%9D%E6%8A%A4_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 判定：若G18显示，说明pcall可阻止仓库请求调用中的异常/错误传播导致UI中断；若仍不显示，则需继续检查调用时序、同步阻塞或其他副作用。正式明文未修改。
