@@ -3292,3 +3292,20 @@ opcode0=3次表写入；opcode2=创建表+常量池装载；opcode224=8次立即
 - root N[38]/N[39]的真实身份已解决，但root/25的13项捕获尚未全部语义化，因此cruisebut仍不应强行自动接线。
 
 本轮只更新接续记录，未修改唯一明文Lua，也未执行Lua语法/API/APK测试。下一步优先取得root/18与root/44的完整指令体并恢复读写配置helper；同时继续追root/25捕获数组的剩余对象。
+
+
+## 2026-11-22 本轮续接：putinbut配置读写捕获链已由root父级自动接入
+
+本轮从`root_定点子原型指令补充_2026-11-20.json`及`原型索引.json`重新确认：
+
+- `root/18`（34条指令、0参数、1捕获）已在唯一明文中恢复为`helper_root_18()`，读取可写目录下`dpp`配置文件并按key=value解析。原型索引也明确记录该函数体已完整恢复，唯一捕获为字符串"dpp"。
+- `root/44`（29条指令、3参数、1捕获）已有明文`helper_root_44(priceValue,itemName,modeValue)`，把三参数转字符串并格式化为`price/name/mode`文本，再调用`FileUtilCtl.writeStringToFile`。
+- root父级槽279创建`root/18`并写入N[38]；槽281创建`root/44`并写入N[39]。两者唯一捕获均为N[37]（FileUtilCtl）。root/52创建事件槽633的捕获表明确H[11]来自父N[38]、H[12]来自父N[39]。
+- 因此root/52的捕获数组按Lua 1-based位置应为`capturedUpvalues[12]`和`capturedUpvalues[13]`。本轮已修改唯一明文：在`MainLeftBottom.doInit`工厂捕获表中分别加入`[12]=helper_root_18`、`[13]=helper_root_44`；在按钮回调映射构建时，自动按真实顺序构造`putinButtonCaptures={readConfig,moduleState,mainPanelState,writeConfig}`并传给`make_helper_root_52_34`。`putinbut`不再依赖外部context手工提供捕获数组。
+- `root/18`、`root/44`是子原型路径；父局部寄存器N[38]/N[39]是创建闭包实例的寄存器，不能混淆为`root/38`、`root/39`子原型。
+
+代码提交：`a0d6ea17cf216f6269b4fd044b3ee2e2fdbd4cc9`（`MainLeftBottom_11.16_明文.lua`）。本轮没有执行Lua语法检查、文件写入参数实测或游戏运行验证；特别是root/44写入路径参数的实际行为仍应在APK测试时验证，不把静态接线等同于功能验证。
+
+### 当前下一步
+
+继续追root/25的13项父级捕获（N[3],N[5],N[74],N[81],N[78],N[4],N[0],N[75],N[79],N[76],N[77],N[80],N[73]），重点恢复N[74]/N[75]门控状态及N[73]表结构，进而为`cruisebut`建立同生命周期的root/11、root/25实例；随后追`blacklistbut`的N[2]/N[23]来源并自动接线。不要把捕获数组仍依赖外部注入误记为运行时已接通。
