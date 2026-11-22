@@ -4063,3 +4063,13 @@ D结果解释：
 - 下一步测试已准备好的G16：`11.16/MainLeftBottom_11.16_UI隔离测试_G16_仅仓库代理请求_纯按钮.lua`。G16仅加入NPCStorageProxy获取及RequestStorageData(0)，不执行快捷栏任务和旧定时器清理。
 - G16链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G16_%E4%BB%85%E4%BB%93%E5%BA%93%E4%BB%A3%E7%90%86%E8%AF%B7%E6%B1%82_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - 下一步只测试G16。若不显示，故障可锁定在仓库代理获取/请求代码段；若显示，则需检查两组同时存在时的交互或执行时序。正式明文未修改。
+
+
+## 2026-11-23 G16实测失败：仓库代理获取与请求拆分为G17
+
+- 用户实测G16：**游戏原UI与插件按钮均不显示**。
+- G16仅加入NPCStorageProxy代理获取及`RequestStorageData(0)`调用，未加入快捷栏任务。G15仅快捷栏任务显示正常，因此故障范围继续锁定在仓库代理初始化代码段。
+- 新建G17：`11.16/MainLeftBottom_11.16_UI隔离测试_G17_仅获取仓库代理不发请求_纯按钮.lua`，严格以G16为底稿，只移除`storageProxy:RequestStorageData(0)`调用及其条件执行，保留`global.Facade:retrieveProxy(global.ProxyTable.NPCStorageProxy)`代理获取（仍由pcall保护）和模块字段赋值。
+- G17提交：`8f70aad1b49c94afed938deea02abbca9f6e118f`。
+- G17链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G17_%E4%BB%85%E8%8E%B7%E5%8F%96%E4%BB%93%E5%BA%93%E4%BB%A3%E7%90%86%E4%B8%8D%E5%8F%91%E8%AF%B7%E6%B1%82_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 判定：G17显示则代理获取本身通过，问题集中在`RequestStorageData(0)`调用；G17不显示则问题在NPCStorageProxy代理获取或相关字段写入。正式明文未修改。
