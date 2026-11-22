@@ -6232,9 +6232,9 @@ local function BuildMainLeftBottomButtonGroups_11_16()
     return group1, group2, group3
 end
 
--- root/52回调表：22项按钮回调均有明确接入入口；3项需由同一运行生命周期提供原始闭包捕获值。
--- cruisebut、blacklistbut、putinbut不伪造root父级闭包或模块配置对象；缺少捕获数组时保持未绑定。
--- rewardbut已按真实捕获链及14项奖励表直接接入。
+-- root/52回调表：已恢复的按钮回调直接接入；cruisebut与blacklistbut仍保留捕获注入入口。
+-- putinbut的配置读写闭包已由root父级N[38]/N[39]定位，并在doInit生命周期中真实接入。
+-- rewardbut按真实捕获链及14项奖励表直接接入。
 local function BuildMainLeftBottomCallbackMap_11_16(context)
     context = context or {}
     local timerState = context.timerState or MainLeftBottom.z
@@ -6533,6 +6533,14 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
                 moduleState = moduleState,
                 visibleItems = visibleItems,
                 resourceWindowHandler = resourceWindowHandler,
+                -- root/52 H[11]/H[12]分别来自root父级N[38]/N[39]：
+                -- helper_root_18读取dpp配置；helper_root_44写入price/name/mode文本。
+                putinButtonCaptures = {
+                    capturedUpvalues[12],
+                    moduleState,
+                    mainPanelState,
+                    capturedUpvalues[13],
+                },
                 schedule = function(callback, interval)
                     return SL:Schedule(callback, interval)
                 end,
@@ -6669,6 +6677,9 @@ MainLeftBottom.doInit = make_MainLeftBottom_doInit_11_16({
     [1] = PrintLog,
     [3] = MainLeftBottom.a,
     [4] = MainLeftBottom,
+    -- root/52父级真实捕获：H[11]=root N[38]配置读取闭包，H[12]=root N[39]配置写入闭包。
+    [12] = helper_root_18,
+    [13] = helper_root_44,
 })
 
 
