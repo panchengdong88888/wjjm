@@ -6354,12 +6354,17 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
                 GUI:Button_setTitleFontSize(appleButton, 18)
                 GUI:Button_setTitleFontName(appleButton, "res/public/kaiti2.ttf")
                 GUI:Button_setTitleColor(appleButton, "#ffffff")
-                local appleToggle = MakeAppleMapButtonToggleHandler_11_16({
-                    [1] = moduleState,
-                    [2] = appleConfig,
-                    [3] = mainPanelState,
-                })
-                GUI:addOnClickEvent(appleButton, appleToggle)
+                -- root/52/25原型并非标题/颜色切换器：它只调用全局startAppleMap()。
+                -- 真正开关状态由root/54创建的startAppleMap闭包管理；
+                -- 不在按钮层擅自翻转appleConfig.toggled，避免UI显示与下图状态脱节。
+                local appleMapClick = function()
+                    if type(startAppleMap) == "function" then
+                        return startAppleMap()
+                    end
+                    printLog("苹果下图入口尚未完成绑定：startAppleMap")
+                    return false
+                end
+                GUI:addOnClickEvent(appleButton, appleMapClick)
             end
         end
 
