@@ -2106,49 +2106,13 @@ end
 
 
 -- 11.16 root/19：AccountIDValidation（64条指令，2个子原型）。
--- 11.16常量包含GAME_ID、UID、9个白名单账号、验证成功/失败提示及Schedule；
--- 两个子原型分别为24条的主界面就绪回调、27条的UID白名单匹配闭包。
--- 11.9同职责实现的主体与本版签名/常量/子原型规模吻合；本版回调仍按本版
--- MainProperty、MainLeftBottom.doInit及SL:Schedule语义组织。未补写未证实的宿主注册赋值。
+-- 测试版临时屏蔽游戏ID/账号UID白名单验证：不读取GAME_ID/UID，不检查9个白名单账号，
+-- 不弹出账号限制提示；保留原来的主界面就绪轮询与MainLeftBottom.doInit初始化流程。
+-- 测试完成后如需恢复验证，可从Git历史提交中还原本函数的验证段。
 local function AccountIDValidation()
-    local gameID = SL:GetMetaValue("GAME_ID")
-    PrintLog("游戏id：" .. tostring(gameID))
-    if gameID ~= 204208 then
-        PrintLog("游戏不一致，id：" .. tostring(gameID))
-        return
-    end
+    PrintLog("[测试模式] 已跳过游戏ID与账号UID验证")
 
-    local accountID = SL:GetMetaValue("UID")
-    PrintLog("账号ID：" .. tostring(accountID))
-
-    local allowedAccountIDs = {
-        "6324648", "39770358", "3548598", "1957840929", "1488903257",
-        "1585201915", "1627987432", "1580027021", "1304755149",
-    }
-
-    -- 对应root/19/1：27条指令，1参数；遍历UID白名单并给出命中/未命中提示。
-    local function Nested_ID(checkAccountID)
-        for _, allowedID in ipairs(allowedAccountIDs) do
-            if tostring(checkAccountID) == tostring(allowedID) then
-                PrintLog("[提示] 账号ID在允许列表中，功能已开启")
-                return true
-            end
-        end
-
-        ShowLocalNoticeByType(
-            "账号不存在，功能已限制，账号ID：" .. tostring(checkAccountID)
-        )
-        return false
-    end
-
-    local validationResult = Nested_ID(accountID)
-    if validationResult then
-        PrintLog("[验证成功] 账号ID验证通过")
-    else
-        PrintLog("[验证失败] 账号ID未在允许列表中")
-    end
-
-    -- 对应root/19/0：24条指令，0参数；保持本版常量所确认的检查顺序。
+    -- 对应root/19/0：24条指令，0参数；保留主界面初始化调度。
     local function waitForMainProperty()
         if MainProperty and MainProperty._ui and MainProperty._ui.Panel_mini_chat then
             SL:UnSchedule(nil)
