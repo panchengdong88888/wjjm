@@ -6555,7 +6555,74 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             moduleState.buttonGroups = { group1, group2, group3 }
             mainPanelState.buttonGroups = moduleState.buttonGroups
 
+            -- root级N[74]/N[75]/N[76]共享upvalue cell在本次初始化生命周期内只创建一次。
+            local cruisePauseCell = moduleState._cruisePauseCell
+            if not IsUpvalueCell_11_16(cruisePauseCell) then
+                cruisePauseCell = MakeUpvalueCell_11_16(false)
+                moduleState._cruisePauseCell = cruisePauseCell
+            end
+            local cruiseNoticeCell = moduleState._cruiseNoticeCell
+            if not IsUpvalueCell_11_16(cruiseNoticeCell) then
+                cruiseNoticeCell = MakeUpvalueCell_11_16(false)
+                moduleState._cruiseNoticeCell = cruiseNoticeCell
+            end
+            local cruiseClearTargetCell = moduleState._cruiseClearTargetCell
+            if not IsUpvalueCell_11_16(cruiseClearTargetCell) then
+                cruiseClearTargetCell = MakeUpvalueCell_11_16(nil)
+                moduleState._cruiseClearTargetCell = cruiseClearTargetCell
+            end
+
+            local cruiseResumeCallback = make_helper_root_32({
+                cruiseNoticeCell,
+                ShowLocalNoticeByType,
+                moduleState,
+            })
+            local cruiseStopCallback = make_helper_root_11({
+                MainLeftBottom.z,
+                cruisePauseCell,
+                cruiseNoticeCell,
+                make_helper_root_60({ [0] = cruiseClearTargetCell }),
+                MainLeftBottom,
+                ShowLocalNoticeByType,
+            })
+            local directionOffsets = {
+                ["0"] = { x = 0, y = -1 },
+                ["1"] = { x = 1, y = -1 },
+                ["2"] = { x = 1, y = 0 },
+                ["3"] = { x = 1, y = 1 },
+                ["4"] = { x = 0, y = 1 },
+                ["5"] = { x = -1, y = 1 },
+                ["6"] = { x = -1, y = 0 },
+                ["7"] = { x = -1, y = -1 },
+            }
+            local cruiseRootCaptures = {
+                MainLeftBottom.z,
+                ShowLocalNoticeByType,
+                cruisePauseCell,
+                cruiseResumeCallback,
+                nil,
+                PrintLog,
+                MainLeftBottom,
+                cruiseNoticeCell,
+                make_helper_root_60({ [0] = cruiseClearTargetCell }),
+                cruiseClearTargetCell,
+                nil,
+                GetDirectionByVector_11_16,
+                directionOffsets,
+            }
+            local cruiseStartCallback = BindCruiseRunButtonFromCaptures_11_16(
+                cruiseRootCaptures,
+                {
+                    showLocalNoticeByType = ShowLocalNoticeByType,
+                }
+            )
+
             local callbackMap = BuildMainLeftBottomCallbackMap_11_16({
+                cruiseRunButtonCaptures = {
+                    MainLeftBottom.z,
+                    cruiseStopCallback,
+                    cruiseStartCallback,
+                },
                 timerState = MainLeftBottom.z,
                 moduleState = moduleState,
                 visibleItems = visibleItems,
