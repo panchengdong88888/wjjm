@@ -3477,3 +3477,33 @@ opcode0=3次表写入；opcode2=创建表+常量池装载；opcode224=8次立即
 - 本次提交：456f1bc8b1bee133e20c624352f856fa63124d34；主文件blob：66adb8559fc7f8050c6230d0b6a12c98e4bac2d3。
 - 重要边界：11.16加密root内部证据显示的是“注册main字段”，并没有在root chunk内部调用MainLeftBottom.main()；实际调用发生在模块加载器/宿主模块调度层，当前仓库尚未找到该加载器源码，因此不能把宿主调用点说成已从本Lua内部解出。旧版整合文件同样采用MainLeftBottom.main = AccountIDValidation并return MainLeftBottom的模块约定。
 - 本次只修复根模块装配和入口注册，尚未完成Lua语法检查、APK运行验证；UI挂载父容器（Attach_UITop与坐标系）仍需单独核对。
+
+
+## 2026-11-22 16:20 UI挂载父容器/坐标系修复（已提交）
+
+本轮继续处理APK中主界面UI与按钮均不显示的问题，实际修改唯一主明文文件：
+
+- 文件：`11.16/MainLeftBottom_11.16_明文.lua`
+- 提交：`224e9f7aeec080933ee779b37d63c8a8d0f71a21`
+- 新blob：`33ca69c522f391921f7f3c5866c381183a7539a2`
+
+### 已修复内容
+
+1. 在doInit的按钮创建段新增 `local uiParent = GUI:Attach_UITop()`，使用GUI顶层UI容器作为按钮父节点。
+2. root/52/32通用按钮工厂的第1个捕获参数由 `miniChat` 改为 `uiParent`。
+3. `hidebut`、`dropallbut`、`applebut` 三个独立按钮的父节点也由 `miniChat` 改为 `uiParent`。
+4. mini_chat仍只用于读取 `getWorldPosition()` 和 `getContentSize()` 计算按钮锚点，不再同时充当按钮父容器。
+5. 增加创建条件：必须同时取得mini_chat、uiParent及有效的X/Y锚点；坐标读取失败时不再把nil强制回退为0后在屏幕原点创建整组按钮。
+
+### 修改依据
+
+- 仓库旧版 `MainLeftBottom_唯一交付文件.lua` 的doInit_UI明确使用 `GUI:Attach_UITop()` 创建uiParent。
+- 旧版同职责代码读取mini_chat的世界坐标/尺寸，并以这些世界坐标计算按钮位置，随后将按钮创建在uiParent上。
+- 旧版通用按钮工厂的GUI:Button_Create第一个参数也是uiParent。
+- 当前11.16代码此前却把miniChat直接传给按钮工厂，同时把miniChat世界坐标作为局部坐标使用；这是明确的父容器/坐标系不匹配。此次仅复用已知UI宿主挂载契约，不复制旧版业务回调。
+
+### 当前边界
+
+- 已提交GitHub主分支，未做Lua语法编译，也未在APK中实测。
+- `GUI:Attach_UITop()` 的调用形式有旧版同职责代码支持；本轮没有从11.16 root/52原始指令流中单独确认该调用槽位，因此日志不把它标记为11.16字节码逐槽恢复事实。
+- 如果这次打包后按钮仍不显示，下一优先检查点是 `GUI:Attach_UITop()` 返回对象是否有效，以及mini_chat世界坐标是否适用于当前UI顶层节点；届时再检查doInit是否确实被宿主调用，不要重新推翻本轮已经修复的父子坐标关系。
