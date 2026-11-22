@@ -1,5 +1,16 @@
 
 
+## 2026-11-22 root/52奖励按钮捕获链闭合并接入
+
+- root/52槽610 Opcode121创建childIndex=16，captureCount=5；槽611–615的真实捕获描述符依次为父级H[3]、H[0]、H[16]、H[17]、H[18]，槽616将闭包写入rewardbut。
+- root/52自身由root槽633创建时，H[0..18]映射记录显示：H[3]=root N[3]（MainLeftBottom.z）；H[0]=root N[4]（PrintLog）；H[16]=root N[11]；H[17]=root N[12]；H[18]=root N[9]。
+- root父级指令槽92–97：N[9]=0.2，N[10]=180，N[11]=math.floor，N[12]=floor(180*0.2)=36；注意槽98随后将N[12]重置为空表，因此真正创建root/52时N[11]为36、N[12]为奖励表，N[9]仍为0.2。
+- root槽100–168构造14条奖励记录，槽169将N[13]–N[26]批量写入N[12]。已按原始常量、数量和顺序在唯一明文新增BuildRewardEntries_11_16()，记录为7项登录奖励和7项在线时长奖励。
+- BuildMainLeftBottomCallbackMap_11_16现已直接接入rewardbut：timerState、PrintLog、36、14项奖励表、0.2秒；不再要求外部传入未定义的捕获数组。
+- 这只完成rewardbut接线，不代表其余三个缺口已完成。cruisebut的两个回调身份可由父级捕获链定位为root/11（停止见人跑）与root/25（启动见人跑），但root/25的13项捕获对象仍需正确构造；blacklistbut和putinbut继续按真实捕获追踪。未做Lua语法/API/APK测试。
+
+
+
 ## 2026-11-22 即时勘误：撤销上一节对root/52原始提取字段的反向误读
 
 紧接上一条纠错，重新对照 `root_闭包创建与捕获映射.json`、`root_未恢复七项完整物理指令提取_2026-11-21.json` 与其生成约定，确认我上一条又把字段解释反了：在这份“七项完整物理指令提取”文件中，`a`字段才是原始Opcode，`b/c/d`是操作数；JSON额外的 `opcode` 字段不是分派操作码。证据包括：root/52槽155的 `a=387` 与闭包映射文件中 `createSlot=155, createOpcode=387, childIndex=23`完全吻合；root/52槽591的 `a=178`、槽610的 `a=121`、槽620的 `a=387`也与闭包创建/捕获记录一致。
