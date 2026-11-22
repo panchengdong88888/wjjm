@@ -958,7 +958,7 @@ end
 
 -- 11.16 root/11：31条物理指令；0参数；root槽540创建，槽541–546捕获N[3]/N[74]/N[75]/N[79]/N[0]/N[5]。
 -- H[0]=MainLeftBottom.z，H[3]为root/60捕获回调，H[4]=MainLeftBottom，H[5]=ShowLocalNoticeByType；
--- H[1]=root N[74]：同时被root/25/0及其两个子闭包共享写入false，属于见人跑流程共享状态门控，但原始变量名未知；H[2]=root N[75]：同时被root/32捕获为见人跑提示的一次性门控，原始变量名未知。两者均保留捕获代理。
+-- H[1]=root N[74]：同时被root/25/0及其两个子闭包共享写入false，属于见人跑流程共享状态门控；H[2]=root N[75]：同时被root/32捕获为见人跑提示的一次性门控。两者必须以共享cell代理接入，不能以普通boolean副本模拟。
 -- 主体：取消并清空巡航计时器；复位H[1]/H[2]；调用H[3]清理目标；恢复巡航暂停标志；
 -- 不在白名单地图时调用MainLeftBottom.zd(true)，最后提示关闭见人跑。本项不计完整静态恢复。
 local function make_helper_root_11(capturedUpvalues)
