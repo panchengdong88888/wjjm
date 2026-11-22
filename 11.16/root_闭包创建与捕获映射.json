@@ -6,9 +6,10 @@
   "rootDirectChildren": 81,
   "closureCreateOpcodeSet": [
     121,
+    178,
     387
   ],
-  "closureCreateCount": 57,
+  "closureCreateCount": 81,
   "events": [
     {
       "createSlot": 43,
@@ -33,7 +34,8 @@
         "【超本】"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 46,
@@ -66,7 +68,8 @@
           "sourceRegister": 0,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 48,
@@ -109,7 +112,8 @@
           "sourceRegister": 4,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 52,
@@ -132,7 +136,8 @@
         "NoticeTable"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 54,
@@ -146,7 +151,8 @@
         "SL"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 55,
@@ -160,7 +166,8 @@
         "Schedule"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 56,
@@ -176,7 +183,8 @@
         "GetMetaValue"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 58,
@@ -192,7 +200,8 @@
         "GetMetaValue"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 60,
@@ -208,7 +217,8 @@
         "GetMetaValue"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 62,
@@ -221,6 +231,38 @@
         "dropItemManager",
         "global",
         "FindDropItemInCurrViewFieldAll"
+      ],
+      "captureCount": 0,
+      "captures": [],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 64,
+      "createOpcode": 178,
+      "childIndex": 12,
+      "childPath": "root/12",
+      "parentPath": "root",
+      "parameterCount": 3,
+      "instructionCount": 51,
+      "constantPreview": [
+        "MMO",
+        "y",
+        "SL",
+        "InputMove",
+        "range",
+        "tonumber",
+        "mapID",
+        "sendNotification",
+        "x",
+        "PlayerPos",
+        "NoticeTable",
+        "global",
+        "abs",
+        "MAP_ID",
+        "INPUT_MOVE_TYPE_AUTOMOVE",
+        "math",
+        "GetMetaValue",
+        0
       ],
       "captureCount": 0,
       "captures": []
@@ -266,7 +308,8 @@
           "sourceRegister": 5,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 70,
@@ -295,6 +338,97 @@
           "slot": 71,
           "opcode": 243,
           "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 73,
+      "createOpcode": 178,
+      "childIndex": 36,
+      "childPath": "root/36",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 77,
+      "constantPreview": [
+        "table",
+        "STORAGE_PER_PAGE_MAX",
+        "ipairs",
+        "insert",
+        "仓库总可用格子: ",
+        "MMO",
+        "global",
+        0,
+        "NPCStorageProxy",
+        "GetOpenSize",
+        "GetMaxPage",
+        "GUIDefine",
+        1,
+        "GetStorageDataByPage",
+        "type",
+        "NPC_STORAGE_MAX_PAGE"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 74,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 76,
+      "createOpcode": 178,
+      "childIndex": 45,
+      "childPath": "root/45",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 224,
+      "constantPreview": [
+        "NPC_STORAGE_MAX_PAGE",
+        "find",
+        "玄铁",
+        true,
+        false,
+        "BOSS头骨",
+        "神装碎片",
+        "圣皇",
+        " 件物品",
+        "GUIDefine",
+        0,
+        "STORAGE_PER_PAGE_MAX",
+        "len",
+        "魔神石",
+        "Name",
+        "pairs",
+        "MakeIndex",
+        "SL"
+      ],
+      "captureCount": 3,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 77,
+          "opcode": 243,
+          "sourceRegister": 2,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 1,
+          "slot": 78,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 2,
+          "slot": 79,
+          "opcode": 243,
+          "sourceRegister": 5,
           "sourceKind": "parent-local-register"
         }
       ]
@@ -340,6 +474,124 @@
           "sourceRegister": 5,
           "sourceKind": "parent-local-register"
         }
+      ],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 85,
+      "createOpcode": 178,
+      "childIndex": 43,
+      "childPath": "root/43",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 172,
+      "constantPreview": [
+        "MoveTo",
+        "mCurrMapX",
+        "y",
+        "ipairs",
+        "x",
+        "mCurrMapY",
+        "dist",
+        "地面无可拾取物品",
+        "sort",
+        "find",
+        "mapX",
+        "PickMainPlayerPosItem",
+        "GetDroppedItems",
+        1,
+        "table",
+        "string",
+        "dropItemController",
+        "item"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 86,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 155,
+      "createOpcode": 387,
+      "childIndex": 23,
+      "childPath": "root/52/23",
+      "parameterCount": 0,
+      "instructionCount": 897,
+      "captureCount": 5,
+      "captures": [
+        {
+          "slot": 156,
+          "opcode": 132,
+          "sourceRegister": 2,
+          "sourceKind": "parent-upvalue",
+          "sourceUpvalue": 2
+        },
+        {
+          "slot": 157,
+          "opcode": 132,
+          "sourceRegister": 3,
+          "sourceKind": "parent-upvalue",
+          "sourceUpvalue": 3
+        },
+        {
+          "slot": 158,
+          "opcode": 132,
+          "sourceRegister": 0,
+          "sourceKind": "parent-upvalue",
+          "sourceUpvalue": 0
+        },
+        {
+          "slot": 159,
+          "opcode": 132,
+          "sourceRegister": 4,
+          "sourceKind": "parent-upvalue",
+          "sourceUpvalue": 4
+        },
+        {
+          "slot": 160,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "evidence": "root/52槽155 Opcode387创建childIndex=23、captureCount=5；槽156–160依次读取捕获描述符。root/52自身由root捕获H[0..18]=root N[4],N[2],N[0],N[3],N[89],N[1],N[67],N[7],N[62],N[8],N[88],N[38],N[39],N[5],N[83],N[82],N[11],N[12],N[9]，因此子原型捕获顺序可换算为MainLeftBottom.a(H2)、MainLeftBottom(H3)、PrintLog(H0)、root N[89](H4，符号未识别)、root/52局部N[5]（slot145已装载SL）。 root/52的H[4]现已由root槽631闭包创建记录进一步定位为root/21商店购买辅助闭包（root N[89]）；root/21原始局部函数名仍未识别。",
+      "parentPath": "root/52"
+    },
+    {
+      "createSlot": 183,
+      "createOpcode": 178,
+      "childIndex": 74,
+      "childPath": "root/74",
+      "parentPath": "root",
+      "parameterCount": 1,
+      "instructionCount": 10,
+      "constantPreview": [
+        "format",
+        "状态切换: %s -> %s",
+        "string"
+      ],
+      "captureCount": 2,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 184,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 1,
+          "slot": 185,
+          "opcode": 243,
+          "sourceRegister": 14,
+          "sourceKind": "parent-local-register"
+        }
       ]
     },
     {
@@ -360,6 +612,29 @@
         "retrieveProxy"
       ],
       "captureCount": 0,
+      "captures": [],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 187,
+      "createOpcode": 178,
+      "childIndex": 42,
+      "childPath": "root/42",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 22,
+      "constantPreview": [
+        0,
+        "PlayerInputProxy",
+        "ProxyTable",
+        "Facade",
+        "retrieveProxy",
+        "MMO",
+        "global",
+        "SetTargetID",
+        "SELETE_TARGET_TYPE_FIND"
+      ],
+      "captureCount": 0,
       "captures": []
     },
     {
@@ -375,7 +650,8 @@
         "global"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 189,
@@ -394,7 +670,8 @@
         "y"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 190,
@@ -411,7 +688,8 @@
         "mCurrMapY"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 191,
@@ -429,7 +707,8 @@
         "max"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 192,
@@ -442,7 +721,8 @@
         "IsDie"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 193,
@@ -459,6 +739,29 @@
         "",
         "string",
         "GetOwnerID"
+      ],
+      "captureCount": 0,
+      "captures": [],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 194,
+      "createOpcode": 178,
+      "childIndex": 64,
+      "childPath": "root/64",
+      "parentPath": "root",
+      "parameterCount": 2,
+      "instructionCount": 31,
+      "constantPreview": [
+        "tostring",
+        {
+          "unknown_type": 2
+        },
+        "type",
+        "",
+        -1,
+        "GetOwnerID",
+        "string"
       ],
       "captureCount": 0,
       "captures": []
@@ -480,7 +783,8 @@
         -1
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 196,
@@ -541,7 +845,8 @@
           "sourceRegister": 8,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 202,
@@ -611,7 +916,8 @@
           "sourceRegister": 4,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 212,
@@ -634,7 +940,8 @@
           "sourceRegister": 30,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 214,
@@ -658,7 +965,201 @@
         "SL"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 216,
+      "createOpcode": 178,
+      "childIndex": 6,
+      "childPath": "root/6",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 573,
+      "constantPreview": [
+        "锁定怪物 %s 失败",
+        "攻击怪物 %d: %s (ID: %s)",
+        "ACTOR_HAS_ONE_BUFF",
+        "pairs",
+        "所有怪物归属已获取，切换到攻击状态",
+        "怪物 %d (ID: %s) 已死亡或离开视野",
+        "MagicID",
+        "ATTACK_WAIT_TIME",
+        1,
+        0,
+        "time",
+        "锁定怪物 %d: %s (ID: %s, 归属: %s)",
+        "SL",
+        "开始引怪，目标数量: %d",
+        "见人跑遇敌中, 暂停拉怪",
+        "string",
+        "poisonCastAt",
+        "GetName"
+      ],
+      "captureCount": 23,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 217,
+          "opcode": 243,
+          "sourceRegister": 18,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 1,
+          "slot": 218,
+          "opcode": 243,
+          "sourceRegister": 14,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 2,
+          "slot": 219,
+          "opcode": 243,
+          "sourceRegister": 13,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 3,
+          "slot": 220,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 4,
+          "slot": 221,
+          "opcode": 243,
+          "sourceRegister": 23,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 5,
+          "slot": 222,
+          "opcode": 243,
+          "sourceRegister": 35,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 6,
+          "slot": 223,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 7,
+          "slot": 224,
+          "opcode": 243,
+          "sourceRegister": 26,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 8,
+          "slot": 225,
+          "opcode": 243,
+          "sourceRegister": 34,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 9,
+          "slot": 226,
+          "opcode": 243,
+          "sourceRegister": 15,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 10,
+          "slot": 227,
+          "opcode": 243,
+          "sourceRegister": 32,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 11,
+          "slot": 228,
+          "opcode": 243,
+          "sourceRegister": 17,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 12,
+          "slot": 229,
+          "opcode": 243,
+          "sourceRegister": 16,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 13,
+          "slot": 230,
+          "opcode": 243,
+          "sourceRegister": 36,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 14,
+          "slot": 231,
+          "opcode": 243,
+          "sourceRegister": 19,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 15,
+          "slot": 232,
+          "opcode": 243,
+          "sourceRegister": 20,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 16,
+          "slot": 233,
+          "opcode": 243,
+          "sourceRegister": 22,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 17,
+          "slot": 234,
+          "opcode": 243,
+          "sourceRegister": 21,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 18,
+          "slot": 235,
+          "opcode": 243,
+          "sourceRegister": 31,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 19,
+          "slot": 236,
+          "opcode": 243,
+          "sourceRegister": 30,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 20,
+          "slot": 237,
+          "opcode": 243,
+          "sourceRegister": 33,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 21,
+          "slot": 238,
+          "opcode": 243,
+          "sourceRegister": 24,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 22,
+          "slot": 239,
+          "opcode": 243,
+          "sourceRegister": 8,
+          "sourceKind": "parent-local-register"
+        }
+      ]
     },
     {
       "createSlot": 241,
@@ -724,7 +1225,8 @@
           "sourceRegister": 4,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 250,
@@ -785,7 +1287,8 @@
           "sourceRegister": 4,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 259,
@@ -822,7 +1325,39 @@
           "sourceRegister": 5,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 262,
+      "createOpcode": 178,
+      "childIndex": 7,
+      "childPath": "root/7",
+      "parentPath": "root",
+      "parameterCount": 2,
+      "instructionCount": 133,
+      "constantPreview": [
+        "GetQuickUseSize",
+        "DelItemData",
+        1,
+        "ProxyTable",
+        "GetQuickUseData",
+        "next",
+        "目标位置超出范围",
+        "retrieveProxy",
+        "string",
+        "快捷栏交换: %d ↔ %d",
+        "QuickUseProxy",
+        "pairs",
+        "快捷栏移动: %d → %d",
+        "物品不存在",
+        "Index",
+        "SetQuickUsePosData",
+        "format",
+        "物品已在目标位置"
+      ],
+      "captureCount": 0,
+      "captures": []
     },
     {
       "createSlot": 264,
@@ -867,7 +1402,8 @@
           "sourceRegister": 1,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 269,
@@ -894,6 +1430,60 @@
         },
         {
           "slot": 271,
+          "opcode": 243,
+          "sourceRegister": 1,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 273,
+      "createOpcode": 178,
+      "childIndex": 67,
+      "childPath": "root/67",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 154,
+      "constantPreview": [
+        "forgeZodiac",
+        "appleMap",
+        "appleMapTimer",
+        "pairs",
+        "SL",
+        "buygoldTimer",
+        "NetworkUtil",
+        "_origOnLuaMessage",
+        "putinTimer",
+        "cruiseRunTimer",
+        "setVisible",
+        "putoutTimer",
+        "rewardTimer",
+        "forgeZodiacTimer",
+        "UnSchedule",
+        "putinStart",
+        "newzoneTimer",
+        "hidebut"
+      ],
+      "captureCount": 3,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 274,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 1,
+          "slot": 275,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 2,
+          "slot": 276,
           "opcode": 243,
           "sourceRegister": 1,
           "sourceKind": "parent-local-register"
@@ -925,7 +1515,8 @@
           "sourceRegister": 37,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 281,
@@ -954,7 +1545,30 @@
           "sourceRegister": 37,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 283,
+      "createOpcode": 178,
+      "childIndex": 50,
+      "childPath": "root/50",
+      "parameterCount": 5,
+      "instructionCount": 444,
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 284,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "constantPreview": [
+        "GUI",
+        "Win_Close"
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 286,
@@ -974,7 +1588,59 @@
         "id"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 287,
+      "createOpcode": 178,
+      "childIndex": 15,
+      "childPath": "root/15",
+      "parameterCount": 3,
+      "instructionCount": 87,
+      "captureCount": 5,
+      "captures": [
+        {
+          "slot": 288,
+          "opcode": 243,
+          "sourceRegister": 40,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 289,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 290,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 291,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 292,
+          "opcode": 243,
+          "sourceRegister": 7,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "constantPreview": [
+        "RequestAuctionPutList",
+        "AUCTION_BIDPRICE_MIN",
+        "金条",
+        "开始上架",
+        "putinTimer",
+        "putoutTimer",
+        "startPutinGold"
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 294,
@@ -1038,7 +1704,29 @@
           "source_evidence": "root N[7]由root槽55创建root/78闭包；root/78的7槽包装原型身份为Schedule"
         }
       ],
-      "evidence": " 四项父级捕获身份现已分别闭合：H[0]=MainLeftBottom.z、H[1]=ShowLocalNoticeByType、H[2]=PrintLog、H[3]=Schedule。"
+      "evidence": " 四项父级捕获身份现已分别闭合：H[0]=MainLeftBottom.z、H[1]=ShowLocalNoticeByType、H[2]=PrintLog、H[3]=Schedule。",
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 332,
+      "createOpcode": 178,
+      "childIndex": 28,
+      "childPath": "root/28",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 32,
+      "constantPreview": [
+        51295,
+        "tonumber",
+        "SERVER_TIME",
+        "time",
+        "SL",
+        0,
+        "TITLE_DATA_BY_ID",
+        "GetMetaValue"
+      ],
+      "captureCount": 0,
+      "captures": []
     },
     {
       "createSlot": 333,
@@ -1063,6 +1751,25 @@
         "SL",
         "Index",
         "Name"
+      ],
+      "captureCount": 0,
+      "captures": [],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 334,
+      "createOpcode": 178,
+      "childIndex": 65,
+      "childPath": "root/65",
+      "parentPath": "root",
+      "parameterCount": 1,
+      "instructionCount": 18,
+      "constantPreview": [
+        "find",
+        "string",
+        "土城",
+        1,
+        "盟重"
       ],
       "captureCount": 0,
       "captures": []
@@ -1094,7 +1801,8 @@
           "source_symbol": "root N[41]：候选列表引用（原始局部变量名未知）",
           "source_evidence": "root/0完整37槽指令流将H[0]用于ipairs遍历，并读取每项.name；父级root槽335创建闭包，槽336捕获N[41]。明文保留捕获代理，不臆造N[41]的原始变量名。"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 337,
@@ -1127,27 +1835,36 @@
           "slot": 338,
           "opcode": 243,
           "sourceRegister": 3,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "childUpvalueIndex": 0,
+          "sourceSymbol": "MainLeftBottom.z状态表"
         },
         {
           "slot": 339,
           "opcode": 243,
           "sourceRegister": 1,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "childUpvalueIndex": 1,
+          "sourceSymbol": "父root N[1]（root/59本体未读取）"
         },
         {
           "slot": 340,
           "opcode": 243,
           "sourceRegister": 0,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "childUpvalueIndex": 2,
+          "sourceSymbol": "MainLeftBottom按钮配置所属表"
         },
         {
           "slot": 341,
           "opcode": 243,
           "sourceRegister": 5,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "childUpvalueIndex": 3,
+          "sourceSymbol": "root/80（ShowLocalNoticeByType）"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 342,
@@ -1169,7 +1886,8 @@
         "date"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 343,
@@ -1204,54 +1922,142 @@
           "slot": 344,
           "opcode": 243,
           "sourceRegister": 3,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "childUpvalueIndex": 0,
+          "sourceSymbol": "MainLeftBottom.z"
         },
         {
           "slot": 345,
           "opcode": 243,
           "sourceRegister": 47,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "childUpvalueIndex": 1,
+          "sourceSymbol": "root/73（isSiegeTime）"
         },
         {
           "slot": 346,
           "opcode": 243,
           "sourceRegister": 5,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "childUpvalueIndex": 2,
+          "sourceSymbol": "root/80（ShowLocalNoticeByType）"
         },
         {
           "slot": 347,
           "opcode": 243,
           "sourceRegister": 44,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "childUpvalueIndex": 3,
+          "sourceSymbol": "root/65（findWhitelistedCity）"
         },
         {
           "slot": 348,
           "opcode": 243,
           "sourceRegister": 42,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "childUpvalueIndex": 4,
+          "sourceSymbol": "root/28（hasAppleTitle）"
         },
         {
           "slot": 349,
           "opcode": 243,
           "sourceRegister": 43,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "childUpvalueIndex": 5,
+          "sourceSymbol": "root/61（backCity）"
         },
         {
           "slot": 350,
           "opcode": 243,
           "sourceRegister": 46,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "childUpvalueIndex": 6,
+          "sourceSymbol": "root/59（stopAppleMapWithNotice）"
         },
         {
           "slot": 351,
           "opcode": 243,
           "sourceRegister": 4,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "childUpvalueIndex": 7,
+          "sourceSymbol": "root/51（PrintLog）"
         },
         {
           "slot": 352,
           "opcode": 243,
           "sourceRegister": 45,
+          "sourceKind": "parent-local-register",
+          "childUpvalueIndex": 8,
+          "sourceSymbol": "root/0（chooseTargetMap）"
+        }
+      ],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 353,
+      "createOpcode": 178,
+      "childIndex": 54,
+      "childPath": "root/54",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 56,
+      "constantPreview": [
+        "已停止苹果下图",
+        "cruiseOff",
+        "appleMapRunning",
+        "开始苹果下图",
+        0.1,
+        true,
+        "appleMap",
+        0,
+        {
+          "unknown_type": 2
+        },
+        "ticks",
+        "state",
+        "UnSchedule",
+        "appleMapTimer",
+        "backCity",
+        "SL",
+        "cruiseOn",
+        "背包没有盟重回城石",
+        false
+      ],
+      "captureCount": 5,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 354,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 1,
+          "slot": 355,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 2,
+          "slot": 356,
+          "opcode": 243,
+          "sourceRegister": 43,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 3,
+          "slot": 357,
+          "opcode": 243,
+          "sourceRegister": 7,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 4,
+          "slot": 358,
+          "opcode": 243,
+          "sourceRegister": 48,
           "sourceKind": "parent-local-register"
         }
       ]
@@ -1275,7 +2081,8 @@
         "retrieveProxy"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 379,
@@ -1295,7 +2102,8 @@
         "ALL_EQUIP_DATAS"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 380,
@@ -1311,7 +2119,8 @@
         "^(.-)·"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 381,
@@ -1331,7 +2140,8 @@
         "string"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 382,
@@ -1380,7 +2190,8 @@
           "sourceRegister": 5,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 386,
@@ -1483,7 +2294,8 @@
           "sourceRegister": 57,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 399,
@@ -1539,6 +2351,91 @@
           "sourceRegister": 59,
           "sourceKind": "parent-local-register"
         }
+      ],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 407,
+      "createOpcode": 178,
+      "childIndex": 19,
+      "childPath": "root/19",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 64,
+      "constantPreview": [
+        0.5,
+        "GAME_ID",
+        "Schedule",
+        "6324648",
+        "GetMetaValue",
+        "1957840929",
+        "1304755149",
+        "39770358",
+        "UID",
+        "3548598",
+        "[验证成功] 账号ID验证通过",
+        "账号ID：",
+        "1585201915",
+        "1488903257",
+        "SL",
+        "1627987432",
+        "游戏不一致，id：",
+        204208
+      ],
+      "captureCount": 2,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 408,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 1,
+          "slot": 409,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 476,
+      "createOpcode": 178,
+      "childIndex": 9,
+      "childPath": "root/9",
+      "parentPath": "root",
+      "parameterCount": 5,
+      "instructionCount": 162,
+      "constantPreview": [
+        "GetMapData2DPtr",
+        0,
+        "sceneManager",
+        "isObstacle",
+        {
+          "unknown_type": 2
+        },
+        2,
+        "getMapDataCols",
+        10000,
+        "getMapDataRows",
+        "floor",
+        "global",
+        "max",
+        "math",
+        1,
+        "abs"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 477,
+          "opcode": 243,
+          "sourceRegister": 68,
+          "sourceKind": "parent-local-register"
+        }
       ]
     },
     {
@@ -1552,7 +2449,250 @@
         "pcall"
       ],
       "captureCount": 0,
+      "captures": [],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 479,
+      "createOpcode": 178,
+      "childIndex": 31,
+      "childPath": "root/31",
+      "parentPath": "root",
+      "parameterCount": 1,
+      "instructionCount": 35,
+      "constantPreview": [
+        "_blacklistData",
+        "GetMetaValue",
+        "ACTOR_MASTER_ID",
+        "SL",
+        "Name"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 480,
+          "opcode": 243,
+          "sourceRegister": 70,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 481,
+      "createOpcode": 178,
+      "childIndex": 62,
+      "childPath": "root/62",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 33,
+      "constantPreview": [
+        0,
+        "ipairs",
+        "GetMetaValue",
+        "ITEM_INDEX_BY_NAME",
+        "UseItemByIndex",
+        "SL",
+        "ITEM_COUNT",
+        "tonumber"
+      ],
+      "captureCount": 1,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 482,
+          "opcode": 243,
+          "sourceRegister": 60,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 519,
+      "createOpcode": 121,
+      "childIndex": 60,
+      "childPath": "root/60",
+      "parameterCount": 0,
+      "instructionCount": 21,
+      "captureCount": 1,
+      "captures": [
+        {
+          "slot": 520,
+          "opcode": 243,
+          "sourceRegister": 76,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "evidence": "root_654条物理指令流.json槽519 Opcode121 A=79 B=60 C=1；紧随槽520 Opcode243捕获父级N[76]。索引记录的upvalue_count=6与创建点captureCount=1不一致，暂保留差异，不推断其余捕获。",
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 521,
+      "createOpcode": 178,
+      "childIndex": 57,
+      "childPath": "root/57",
+      "parentPath": "root",
+      "parameterCount": 2,
+      "instructionCount": 60,
+      "constantPreview": [
+        5,
+        4,
+        2,
+        0,
+        "abs",
+        1,
+        3,
+        7,
+        6,
+        "math"
+      ],
+      "captureCount": 0,
       "captures": []
+    },
+    {
+      "createSlot": 522,
+      "createOpcode": 178,
+      "childIndex": 32,
+      "childPath": "root/32",
+      "parameterCount": 1,
+      "instructionCount": 17,
+      "captureCount": 3,
+      "captures": [
+        {
+          "slot": 523,
+          "opcode": 243,
+          "sourceRegister": 75,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 524,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "slot": 525,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "evidence": "root_654条物理指令流.json槽522 Opcode178创建childIndex=32、captureCount=3；槽523–525依次捕获父N[75]/N[5]/N[0]。父N[75]在槽517置false；父N[5]由槽46创建为root/80（ShowLocalNoticeByType）；父N[0]由槽2装入MainLeftBottom模块表。",
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 526,
+      "createOpcode": 178,
+      "childIndex": 25,
+      "childPath": "root/25",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 33,
+      "constantPreview": [
+        "Schedule",
+        "SL",
+        "开启见人跑",
+        "UnSchedule",
+        "cruiseRunTimer",
+        {
+          "unknown_type": 2
+        },
+        0.1
+      ],
+      "captureCount": 13,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 527,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 1,
+          "slot": 528,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 2,
+          "slot": 529,
+          "opcode": 243,
+          "sourceRegister": 74,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 3,
+          "slot": 530,
+          "opcode": 243,
+          "sourceRegister": 81,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 4,
+          "slot": 531,
+          "opcode": 243,
+          "sourceRegister": 78,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 5,
+          "slot": 532,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 6,
+          "slot": 533,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 7,
+          "slot": 534,
+          "opcode": 243,
+          "sourceRegister": 75,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 8,
+          "slot": 535,
+          "opcode": 243,
+          "sourceRegister": 79,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 9,
+          "slot": 536,
+          "opcode": 243,
+          "sourceRegister": 76,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 10,
+          "slot": 537,
+          "opcode": 243,
+          "sourceRegister": 77,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 11,
+          "slot": 538,
+          "opcode": 243,
+          "sourceRegister": 80,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 12,
+          "slot": 539,
+          "opcode": 243,
+          "sourceRegister": 73,
+          "sourceKind": "parent-local-register"
+        }
+      ]
     },
     {
       "createSlot": 540,
@@ -1614,7 +2754,8 @@
           "sourceRegister": 5,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 547,
@@ -1649,6 +2790,44 @@
           "slot": 548,
           "opcode": 243,
           "sourceRegister": 67,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 550,
+      "createOpcode": 178,
+      "childIndex": 68,
+      "childPath": "root/68",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 40,
+      "constantPreview": [
+        "table",
+        "gameMapController",
+        "mNetMsgHandle",
+        "MsgType",
+        "type",
+        "已挂接伤害消息钩子（击杀拉黑用）",
+        "MSG_SC_DAMAGE_HP",
+        "__ylwHookedOrigin",
+        "global"
+      ],
+      "captureCount": 2,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 551,
+          "opcode": 243,
+          "sourceRegister": 0,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 1,
+          "slot": 552,
+          "opcode": 243,
+          "sourceRegister": 4,
           "sourceKind": "parent-local-register"
         }
       ]
@@ -1701,6 +2880,130 @@
           "slot": 557,
           "opcode": 243,
           "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        }
+      ],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 558,
+      "createOpcode": 178,
+      "childIndex": 34,
+      "childPath": "root/34",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 274,
+      "constantPreview": [
+        "IsInWhitelistMap",
+        1,
+        "gamePlayerController",
+        "GetMainPlayer",
+        "concat",
+        "deathHandled",
+        "GetMetaValue",
+        "table",
+        "os",
+        "time",
+        false,
+        "noStoneWarned",
+        "ACTOR_MAP_Y",
+        "ACTOR_NAME",
+        "alertAt",
+        "global",
+        true,
+        "ACTOR_MAP_X"
+      ],
+      "captureCount": 13,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 559,
+          "opcode": 243,
+          "sourceRegister": 2,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 1,
+          "slot": 560,
+          "opcode": 243,
+          "sourceRegister": 84,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 2,
+          "slot": 561,
+          "opcode": 243,
+          "sourceRegister": 67,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 3,
+          "slot": 562,
+          "opcode": 243,
+          "sourceRegister": 85,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 4,
+          "slot": 563,
+          "opcode": 243,
+          "sourceRegister": 71,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 5,
+          "slot": 564,
+          "opcode": 243,
+          "sourceRegister": 69,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 6,
+          "slot": 565,
+          "opcode": 243,
+          "sourceRegister": 61,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 7,
+          "slot": 566,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 8,
+          "slot": 567,
+          "opcode": 243,
+          "sourceRegister": 72,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 9,
+          "slot": 568,
+          "opcode": 243,
+          "sourceRegister": 65,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 10,
+          "slot": 569,
+          "opcode": 243,
+          "sourceRegister": 5,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 11,
+          "slot": 570,
+          "opcode": 243,
+          "sourceRegister": 66,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 12,
+          "slot": 571,
+          "opcode": 243,
+          "sourceRegister": 60,
           "sourceKind": "parent-local-register"
         }
       ]
@@ -1757,7 +3060,8 @@
           "sourceRegister": 67,
           "sourceKind": "parent-local-register"
         }
-      ]
+      ],
+      "parentPath": "root"
     },
     {
       "createSlot": 579,
@@ -1781,7 +3085,128 @@
         "CloseLayer"
       ],
       "captureCount": 0,
-      "captures": []
+      "captures": [],
+      "parentPath": "root"
+    },
+    {
+      "createSlot": 621,
+      "createOpcode": 178,
+      "childIndex": 1,
+      "childPath": "root/1",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 76,
+      "constantPreview": [
+        "新区使用：%s",
+        "BAG_DATA",
+        "ShowSystemTips",
+        "pairs",
+        "MSG_CS_USE_BAG_ITEM",
+        "Gbtc",
+        "len",
+        "MsgType",
+        "LuaSendMsg",
+        "SL",
+        "新区物品已全部使用完毕",
+        "GetMetaValue",
+        1,
+        "string",
+        "ipairs",
+        "MakeIndex",
+        "Name",
+        0
+      ],
+      "captureCount": 3,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 622,
+          "opcode": 243,
+          "sourceRegister": 86,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 1,
+          "slot": 623,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 2,
+          "slot": 624,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        }
+      ]
+    },
+    {
+      "createSlot": 625,
+      "createOpcode": 178,
+      "childIndex": 13,
+      "childPath": "root/13",
+      "parentPath": "root",
+      "parameterCount": 0,
+      "instructionCount": 37,
+      "constantPreview": [
+        0.05,
+        "Gbtc",
+        "newzoneTimer",
+        3,
+        1,
+        0,
+        "",
+        "ScheduleOnce",
+        "LuaSendMsg",
+        "isNewzone",
+        0.5,
+        "UnSchedule",
+        true,
+        "SL",
+        2,
+        "开启新区功能",
+        22302,
+        9002
+      ],
+      "captureCount": 5,
+      "captures": [
+        {
+          "childUpvalueIndex": 0,
+          "slot": 626,
+          "opcode": 243,
+          "sourceRegister": 4,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 1,
+          "slot": 627,
+          "opcode": 243,
+          "sourceRegister": 2,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 2,
+          "slot": 628,
+          "opcode": 243,
+          "sourceRegister": 3,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 3,
+          "slot": 629,
+          "opcode": 243,
+          "sourceRegister": 7,
+          "sourceKind": "parent-local-register"
+        },
+        {
+          "childUpvalueIndex": 4,
+          "slot": 630,
+          "opcode": 243,
+          "sourceRegister": 87,
+          "sourceKind": "parent-local-register"
+        }
+      ]
     },
     {
       "createSlot": 631,
@@ -1811,78 +3236,8 @@
         "ProxyTable"
       ],
       "captureCount": 0,
-      "captures": []
-    },
-    {
-      "createSlot": 283,
-      "createOpcode": 178,
-      "childIndex": 50,
-      "childPath": "root/50",
-      "parameterCount": 5,
-      "instructionCount": 444,
-      "captureCount": 1,
-      "captures": [
-        {
-          "slot": 284,
-          "opcode": 243,
-          "sourceRegister": 0,
-          "sourceKind": "parent-local-register"
-        }
-      ],
-      "constantPreview": [
-        "GUI",
-        "Win_Close"
-      ]
-    },
-    {
-      "createSlot": 287,
-      "createOpcode": 178,
-      "childIndex": 15,
-      "childPath": "root/15",
-      "parameterCount": 3,
-      "instructionCount": 87,
-      "captureCount": 5,
-      "captures": [
-        {
-          "slot": 288,
-          "opcode": 243,
-          "sourceRegister": 40,
-          "sourceKind": "parent-local-register"
-        },
-        {
-          "slot": 289,
-          "opcode": 243,
-          "sourceRegister": 3,
-          "sourceKind": "parent-local-register"
-        },
-        {
-          "slot": 290,
-          "opcode": 243,
-          "sourceRegister": 5,
-          "sourceKind": "parent-local-register"
-        },
-        {
-          "slot": 291,
-          "opcode": 243,
-          "sourceRegister": 4,
-          "sourceKind": "parent-local-register"
-        },
-        {
-          "slot": 292,
-          "opcode": 243,
-          "sourceRegister": 7,
-          "sourceKind": "parent-local-register"
-        }
-      ],
-      "constantPreview": [
-        "RequestAuctionPutList",
-        "AUCTION_BIDPRICE_MIN",
-        "金条",
-        "开始上架",
-        "putinTimer",
-        "putoutTimer",
-        "startPutinGold"
-      ]
+      "captures": [],
+      "parentPath": "root"
     },
     {
       "createSlot": 633,
@@ -2013,101 +3368,8 @@
       "constantPreview": [
         "MainLeftBottom",
         "doInit"
-      ]
-    },
-    {
-      "createSlot": 519,
-      "createOpcode": 121,
-      "childIndex": 60,
-      "childPath": "root/60",
-      "parameterCount": 0,
-      "instructionCount": 21,
-      "captureCount": 1,
-      "captures": [
-        {
-          "slot": 520,
-          "opcode": 243,
-          "sourceRegister": 76,
-          "sourceKind": "parent-local-register"
-        }
       ],
-      "evidence": "root_654条物理指令流.json槽519 Opcode121 A=79 B=60 C=1；紧随槽520 Opcode243捕获父级N[76]。索引记录的upvalue_count=6与创建点captureCount=1不一致，暂保留差异，不推断其余捕获。"
-    },
-    {
-      "createSlot": 522,
-      "createOpcode": 178,
-      "childIndex": 32,
-      "childPath": "root/32",
-      "parameterCount": 1,
-      "instructionCount": 17,
-      "captureCount": 3,
-      "captures": [
-        {
-          "slot": 523,
-          "opcode": 243,
-          "sourceRegister": 75,
-          "sourceKind": "parent-local-register"
-        },
-        {
-          "slot": 524,
-          "opcode": 243,
-          "sourceRegister": 5,
-          "sourceKind": "parent-local-register"
-        },
-        {
-          "slot": 525,
-          "opcode": 243,
-          "sourceRegister": 0,
-          "sourceKind": "parent-local-register"
-        }
-      ],
-      "evidence": "root_654条物理指令流.json槽522 Opcode178创建childIndex=32、captureCount=3；槽523–525依次捕获父N[75]/N[5]/N[0]。父N[75]在槽517置false；父N[5]由槽46创建为root/80（ShowLocalNoticeByType）；父N[0]由槽2装入MainLeftBottom模块表。"
-    },
-    {
-      "createSlot": 155,
-      "createOpcode": 387,
-      "childIndex": 23,
-      "childPath": "root/52/23",
-      "parameterCount": 0,
-      "instructionCount": 897,
-      "captureCount": 5,
-      "captures": [
-        {
-          "slot": 156,
-          "opcode": 132,
-          "sourceRegister": 2,
-          "sourceKind": "parent-upvalue",
-          "sourceUpvalue": 2
-        },
-        {
-          "slot": 157,
-          "opcode": 132,
-          "sourceRegister": 3,
-          "sourceKind": "parent-upvalue",
-          "sourceUpvalue": 3
-        },
-        {
-          "slot": 158,
-          "opcode": 132,
-          "sourceRegister": 0,
-          "sourceKind": "parent-upvalue",
-          "sourceUpvalue": 0
-        },
-        {
-          "slot": 159,
-          "opcode": 132,
-          "sourceRegister": 4,
-          "sourceKind": "parent-upvalue",
-          "sourceUpvalue": 4
-        },
-        {
-          "slot": 160,
-          "opcode": 243,
-          "sourceRegister": 5,
-          "sourceKind": "parent-local-register"
-        }
-      ],
-      "evidence": "root/52槽155 Opcode387创建childIndex=23、captureCount=5；槽156–160依次读取捕获描述符。root/52自身由root捕获H[0..18]=root N[4],N[2],N[0],N[3],N[89],N[1],N[67],N[7],N[62],N[8],N[88],N[38],N[39],N[5],N[83],N[82],N[11],N[12],N[9]，因此子原型捕获顺序可换算为MainLeftBottom.a(H2)、MainLeftBottom(H3)、PrintLog(H0)、root N[89](H4，符号未识别)、root/52局部N[5]（slot145已装载SL）。 root/52的H[4]现已由root槽631闭包创建记录进一步定位为root/21商店购买辅助闭包（root N[89]）；root/21原始局部函数名仍未识别。"
+      "parentPath": "root"
     }
   ],
   "notes": [
@@ -2115,7 +3377,10 @@
     "Opcode243捕获父级局部寄存器N；其他捕获Opcode应按原版F()分派器再判定为父级upvalue。",
     "本文件只记录创建点、子原型身份及捕获寄存器，不把寄存器来源自动命名为业务变量。",
     "2026-11-20补充：从root_654条物理指令流直接补录此前遗漏的Opcode178闭包创建事件。root/50在槽283创建，H[0]=root N[0]；root/15在槽287创建，H[0..4]=root N[40],N[3],N[5],N[4],N[7]；root/52在槽633创建，H[0..18]=root N[4],N[2],N[0],N[3],N[89],N[1],N[67],N[7],N[62],N[8],N[88],N[38],N[39],N[5],N[83],N[82],N[11],N[12],N[9]。这些是父root捕获寄存器的直接证据，不等于已确认变量名或子闭包内部捕获身份。",
-    "2026-11-21续：补录root/52/23闭包创建点与5项捕获。root/52槽155 Opcode387创建childIndex=23，紧随槽156–160捕获H[2]、H[3]、H[0]、H[4]及父局部N[5]；结合root/52创建时的19项捕获表，前三项映射为MainLeftBottom.a、MainLeftBottom、PrintLog；H[4]为root N[89]（待识别），N[5]为SL。只确认捕获顺序，不代表897槽周期逻辑已恢复。"
+    "2026-11-21续：补录root/52/23闭包创建点与5项捕获。root/52槽155 Opcode387创建childIndex=23，紧随槽156–160捕获H[2]、H[3]、H[0]、H[4]及父局部N[5]；结合root/52创建时的19项捕获表，前三项映射为MainLeftBottom.a、MainLeftBottom、PrintLog；H[4]为root N[89]（待识别），N[5]为SL。只确认捕获顺序，不代表897槽周期逻辑已恢复。",
+    "2026-11-22纠错：Opcode178与Opcode121/387一样也是闭包创建指令。root_654父级指令流共81个直接闭包创建点（Opcode121=33、Opcode178=27、Opcode387=21），此前漏记23个Opcode178事件，现已补齐。events另保留root/52槽155创建root/52/23的1个嵌套事件，因此事件记录总数82，rootDirectClosureCreateCount=81。",
+    "Opcode121捕获机制：读取后续K[4]个描述符；描述符Opcode243时从父局部寄存器N[descriptor.C]捕获，否则从父upvalue H[descriptor.C]捕获。root/27槽343的9个描述符均为Opcode243，来源依次N[3],N[47],N[5],N[44],N[42],N[43],N[46],N[4],N[45]。",
+    "root寄存器N[42]–N[46]先在槽301–330构造地图候选表，随后被槽332/333/334/335/337创建的root/28、root/61、root/65、root/0、root/59闭包覆盖；root/27捕获时取得的是这些闭包。N[5]先参与_G.log赋值，随后槽46被root/80（ShowLocalNoticeByType）闭包覆盖，因此root/27的H[2]=ShowLocalNoticeByType。"
   ],
   "scheduleSites": [
     {
@@ -2129,5 +3394,7 @@
       "intervalRegisterSlot": 161,
       "notes": "槽153–154准备SL.Schedule方法；槽155创建root/52/23；槽161装入间隔1；槽162调用。该回调未保存到moduleState.cruiseTimer。槽164–175为旧cruiseTimer清理；槽176–184另创建root/52/33并以间隔1调度，返回句柄写入cruiseTimer。"
     }
-  ]
+  ],
+  "rootDirectClosureCreateCount": 81,
+  "eventRecordCount": 82
 }
