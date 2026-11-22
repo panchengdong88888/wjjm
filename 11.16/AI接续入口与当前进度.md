@@ -3466,3 +3466,14 @@ opcode0=3次表写入；opcode2=创建表+常量池装载；opcode224=8次立即
 - 主文件 `MainLeftBottom_11.16_明文.lua` 中 `AccountIDValidation()` 已临时跳过 `GAME_ID == 204208` 检查及 UID 9账号白名单比对，不再读取账号UID、不弹出账号限制提示。
 - 保留原有 `SL:Schedule` 主界面就绪轮询和 `MainLeftBottom.doInit()` 初始化流程，避免因整个函数被注释而影响界面初始化。
 - 提交：`afa67e3298211308bd9eac3f7fb9aa45409b8122`；尚未进行Lua语法检查或游戏内APK实测。需要恢复时可从Git历史还原。
+
+
+## 2026-11-22：补回11.16根模块启动骨架与main入口注册
+
+用户实测替换后游戏UI和按钮均未显示。复查唯一交付文件，确认此前只恢复了root子函数主体，遗漏了root级模块装配：
+- 原始 MainLeftBottom 11.16原版.lua 解码对应的 root_654条物理指令流.json：PC1-PC42创建ENV.MainLeftBottom并初始化a/b/z状态表；PC407创建root/19（AccountIDValidation），PC410将该闭包写入MainLeftBottom.main；PC653将root/52写入MainLeftBottom.doInit；PC654返回模块根表。
+- 当前明文文件此前没有模块表创建、a/b/z状态表初始化、MainLeftBottom.main注册和最终return MainLeftBottom，因此引用MainLeftBottom.a/b/z时存在启动即报错风险。
+- 已在唯一交付文件顶部按11.16 root PC1-PC42补回模块根表与a/b/z状态表初始化；在AccountIDValidation定义后按PC407-PC410补回MainLeftBottom.main = AccountIDValidation；文件末尾补回return MainLeftBottom。原有MainLeftBottom.doInit定义保留。
+- 本次提交：456f1bc8b1bee133e20c624352f856fa63124d34；主文件blob：66adb8559fc7f8050c6230d0b6a12c98e4bac2d3。
+- 重要边界：11.16加密root内部证据显示的是“注册main字段”，并没有在root chunk内部调用MainLeftBottom.main()；实际调用发生在模块加载器/宿主模块调度层，当前仓库尚未找到该加载器源码，因此不能把宿主调用点说成已从本Lua内部解出。旧版整合文件同样采用MainLeftBottom.main = AccountIDValidation并return MainLeftBottom的模块约定。
+- 本次只修复根模块装配和入口注册，尚未完成Lua语法检查、APK运行验证；UI挂载父容器（Attach_UITop与坐标系）仍需单独核对。
