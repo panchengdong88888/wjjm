@@ -3671,6 +3671,10 @@ end
 -- 父级root/52槽666创建本闭包，槽667–671按顺序捕获：
 -- H[0]=父N[7]、H[1]=父N[26]、H[2]=父N[27]、H[3]=父H[5]、H[4]=父N[25]。
 -- 本版3个显式参数按父级按钮配置遍历调用点承接为buttonConfig、rowIndex、groupOffset。
+-- 槽675–684遍历N[19]，每项groupOffset=40；
+-- 槽685–697遍历N[20]，每项groupOffset=0；
+-- 槽698–710遍历N[21]，每项groupOffset=80。
+-- 三组均使用同一工厂；工厂坐标公式为x=baseX-85*rowIndex、y=baseY+groupOffset。
 -- 结合本版常量(Button_Create/标题字体/颜色/按钮纹理/addOnClickEvent)及
 -- root/52/32/0三项捕获回调，与11.9同职责按钮工厂主体匹配；5项捕获语义按旧版
 -- 同职责顺序映射为uiParent/baseX/baseY/visibleItems/callbackMap，原始局部名未知。
