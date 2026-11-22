@@ -1,3 +1,12 @@
+## 检查点395（2026-11-22）：root/61 backCity业务身份确认，明文先行
+
+- root/27父级槽333 Opcode121直接创建root/61，0项捕获；root/27 H[5]实际引用此闭包，调用形式为`backCity()`。root/54的捕获链也将root/61作为回城函数使用。
+- root/61原型索引：1个显式参数？校正：参数数为0；60条物理指令、0项捕获。常量池包含QUICKUSE_DATA、盟重回城石、ITEM_COUNT、ITEM_INDEX_BY_NAME、pairs、tonumber、UseItemByIndex、string.find、SL、Index、Name。
+- 唯一明文`MainLeftBottom_11.16_明文.lua`已存在`backCity()`：读取QUICKUSE_DATA，遍历快捷使用物品，按Name匹配“盟重回城石”，查询ITEM_INDEX_BY_NAME与ITEM_COUNT，数量大于0时调用UseItemByIndex并返回true，否则false。
+- 按当前工作策略，先保留该完整可读明文，不因缺少独立60槽逐条提取而阻塞后续函数恢复；状态更新为“明文已写入，指令级统一核实待后续进行”，不宣称已完成指令级验证。
+- 下一步转向主入口root/52 MainLeftBottom.doInit（865条指令）的剩余明文恢复；继续先补齐可读业务代码，最后统一核实，不再回头重复root/27。
+
+
 ## 检查点394（2026-11-22）：root/27九项upvalue捕获最终闭合，确认唯一明文已完成
 
 - 关键证据：11.16原版F()分派器中Opcode121/387闭包创建叶、Opcode243捕获描述符叶；父级root 654条指令流槽332–352；root/27 307槽提取；原型索引与闭包创建映射。
