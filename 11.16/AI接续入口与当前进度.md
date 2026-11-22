@@ -4028,3 +4028,14 @@ D结果解释：
 - G13提交：01247e589f882a4fd48753d989b58c91a10092c9。
 - G13链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G13_%E5%BF%AB%E6%8D%B7%E6%A0%8F%E4%BB%BB%E5%8A%A1%E4%B8%8E%E4%BB%93%E5%BA%93%E5%88%9D%E5%A7%8B%E5%8C%96_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - 本轮只测试G13，观察游戏原UI与插件按钮是否显示。若失败，下一步按快捷栏任务、仓库请求、旧定时器清理三个功能块二分，不逐条拆API。
+
+## 2026-11-23 G13实测失败：按功能块二分为G14
+
+- 用户实测G13：**插件按钮不显示（游戏UI亦未正常显示）**。
+- G13相对已实测通过的G12，唯一新增为三组初始化任务：四组快捷栏SL:ScheduleOnce错峰任务、NPCStorageProxy获取及RequestStorageData(0)仓库请求、旧巡航定时器SL:UnSchedule清理。
+- 已核对G13与G12源码插入位置：新增段位于纯按钮创建之前；G13不显示说明这段新增任务组存在阻断，但尚不能确定具体是哪一组。
+- 按二分策略新建G14：以G12通过版为底稿，加入前两组（快捷栏ScheduleOnce任务 + NPCStorageProxy仓库请求），暂不执行旧巡航定时器清理。其余代码保持G12不变。
+- G14文件：11.16/MainLeftBottom_11.16_UI隔离测试_G14_快捷栏任务与仓库请求_暂不清理旧定时器_纯按钮.lua
+- G14最终提交：9a0d1337fa3576956541313d3afb690d3a42a4e4（创建提交为c830516df3b2a72b043978b6fb7c8ee52f6994a5，随后仅修正测试说明注释）。
+- G14链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G14_%E5%BF%AB%E6%8D%B7%E6%A0%8F%E4%BB%BB%E5%8A%A1%E4%B8%8E%E4%BB%93%E5%BA%93%E8%AF%B7%E6%B1%82_%E6%9A%82%E4%B8%8D%E6%B8%85%E7%90%86%E6%97%A7%E5%AE%9A%E6%97%B6%E5%99%A8_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 下一步只测试G14：若显示，旧定时器清理是G13失败候选；若不显示，故障在快捷栏任务或仓库请求，再把这两组二分。正式明文未修改。
