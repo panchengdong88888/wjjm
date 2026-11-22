@@ -6260,9 +6260,11 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             SL:UnSchedule(moduleState.maintenanceTimer)
             moduleState.maintenanceTimer = nil
         end
-        if type(moduleState.root52_23Callback) == "function" then
+        local periodicCallback = moduleState.root52_23Callback
+            or mainPanelState.root52_23Callback
+        if type(periodicCallback) == "function" then
             moduleState.maintenanceTimer =
-                SL:Schedule(moduleState.root52_23Callback, 1)
+                SL:Schedule(periodicCallback, 1)
         end
 
     end
