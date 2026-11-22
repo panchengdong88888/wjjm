@@ -3981,3 +3981,14 @@ D结果解释：
 - G9提交：`${created.result.commit_sha}`。正式明文未修改。
 - G9链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G9_%E4%BB%85%E8%B4%A7%E5%B8%81%E4%B8%8E%E7%89%A9%E5%93%81%E5%90%8D%E7%A7%B0%E8%A1%A8_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - 本轮只测试G9，观察游戏原UI和插件按钮是否显示。
+
+
+## 2026-11-23 G9实测通过：继续隔离MoneyProxy代理获取
+
+- 用户实测G9：**游戏原UI与插件按钮正常显示**。
+- G9只增加moneyNames和itemNames两组普通字符串表，实测通过；名称表定义排除为当前UI中断原因。
+- 正式doInit下一段是通过global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)获取MoneyProxy，外层由pcall保护。本轮单独测试代理获取，不调用代理方法、不读取货币数量。
+- 新建G10：11.16/MainLeftBottom_11.16_UI隔离测试_G10_仅MoneyProxy代理获取_纯按钮.lua，以G9通过版为底稿，只增加MoneyProxy代理获取代码。
+- G10提交：81f5a6236fd241e17ec95ea24b16f25ba2b84acd。正式明文未修改。
+- G10链接：https://github.com/github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G10_%E4%BB%85MoneyProxy%E4%BB%A3%E7%90%86%E8%8E%B7%E5%8F%96_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 本轮只测试G10，观察游戏原UI和插件按钮是否显示。
