@@ -1,3 +1,13 @@
+## 检查点403（2026-11-22）：修正applebut回调语义
+
+- 明文代码提交：`47e85e08d6470ae42a12c78a6f4b63e3d55c8326`。
+- root/52槽575–576的回调目标是root/52/25；该原型只调用全局`startAppleMap()`，不是简单切换按钮标题/颜色。
+- 已将独立applebut点击回调改为调用`startAppleMap()`；若入口尚未绑定，会输出明确日志并返回false，不再错误地仅翻转appleConfig.toggled。
+- `make_startAppleMap(capturedUpvalues)`的5项捕获顺序已有原始证据：MainLeftBottom状态表、ShowLocalNoticeByType、backCity、Schedule、root/27苹果地图周期回调。
+- 重要未闭合项：当前明文文件有`make_startAppleMap`工厂和`make_AppleMapTimerCallback_11_16`工厂，但搜索确认没有`_ENV.startAppleMap`/全局`startAppleMap =`的实际实例化绑定，也没有`make_startAppleMap({...})`调用。root/27周期回调的9项捕获组装亦尚未接入。因此applebut现在已按原型语义调用入口，但入口绑定仍待完成；不能误报苹果下图功能已运行接通。
+- `MakeAppleMapButtonToggleHandler_11_16`仍保留作独立恢复出的原型逻辑记录，但不再被applebut按钮误用。
+- 下一步优先追踪root级root/27、root/54的捕获创建与初始化顺序，补齐全局startAppleMap绑定；完成后再接callbackMap与三组批量按钮工厂。三组N[19]/N[20]/N[21]偏移已在检查点402记录，不重复处理。
+
 ## 检查点402（2026-11-22）：闭合三组按钮遍历偏移和工厂坐标公式
 
 - 明文代码提交：`29fa7f96611cc53ad8d2d2550c3b3ff943443e81`。
