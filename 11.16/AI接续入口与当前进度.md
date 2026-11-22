@@ -3951,3 +3951,14 @@ D结果解释：
 - G6提交：`978b3085bbf5201709582e511d9b0c809d47d9ed`。
 - G6链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G6_%E4%BB%85%E6%97%B6%E9%97%B4%E8%AF%BB%E5%8F%96%E4%B8%8E%E6%A0%BC%E5%BC%8F%E5%8C%96_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - 正式明文未修改；下一步等待G6实机结果。
+
+## 2026-11-23 G6实测通过：单独检查初始化快照表构建
+
+- 用户实测G6：**游戏原UI与插件按钮均正常显示**。
+- G6只新增os.time()、pcall(os.date, ...)及时间字符串局部变量，实测通过；时间读取和格式化已排除为当前UI中断原因。
+- 下一步针对正式初始化中紧随时间处理的initSnapshot表构造做单点测试，不混入任何字段写入或代理/物品读取。
+- 新建G7：`11.16/MainLeftBottom_11.16_UI隔离测试_G7_仅初始化快照表构建_纯按钮.lua`。
+- G7以G6已通过版为底稿，仅增加普通Lua表构造：`local initSnapshot = { initTime = initTime, initTimeStr = initTimeStr, money = {}, items = {} }`；不将表写入MainLeftBottom或其他状态字段，也不读取MoneyProxy、物品元数据或调用定时器。
+- G7提交：`a3f28e4683e8211c898f72499a04d448224428a7`。
+- G7链接：https://github.com/github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G7_%E4%BB%85%E5%88%9D%E5%A7%8B%E5%8C%96%E5%BF%AB%E7%85%A7%E8%A1%A8%E6%9E%84%E5%BB%BA_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 只需实测G7，反馈“显示/不显示”。正式明文未修改。
