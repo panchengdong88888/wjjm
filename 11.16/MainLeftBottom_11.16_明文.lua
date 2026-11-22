@@ -6317,14 +6317,16 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
                 GUI:Button_setTitleFontSize(dropAllButton, 18)
                 GUI:Button_setTitleFontName(dropAllButton, "res/public/kaiti2.ttf")
                 GUI:Button_setTitleColor(dropAllButton, "#ffffff")
-                local dropAllHandler = MakeDropMode2ButtonHandler_11_16(
+                -- root/52槽805的子原型索引明确指向root/52/8：
+                -- dropallbut是模式1处理器，不是shiqubut对应的模式2处理器。
+                local dropAllHandler = MakeDropMode1ButtonHandler_11_16(
+                    moduleState,
                     moduleState,
                     printLog,
-                    mainPanelState,
+                    DiuItems,
                     function(callback, interval)
                         return SL:Schedule(callback, interval)
-                    end,
-                    visibleItems
+                    end
                 )
                 GUI:addOnClickEvent(dropAllButton, dropAllHandler)
             end
