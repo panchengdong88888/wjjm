@@ -3875,3 +3875,13 @@ D结果解释：
 - 新建隔离测试E：`11.16/MainLeftBottom_11.16_UI隔离测试_E_苹果闭包顶层实例化_纯按钮.lua`，提交`cf8c81b25874ef3e67e5951e5c8a5af3bb688b8a`。E以已实测通过的D为底稿，只额外加入上述正式源码顶层苹果闭包实例化段，仍使用D的纯按钮初始化入口，不执行正式doInit业务初始化。
 - E测试目的：若E不显示，阻断点就在这段苹果闭包顶层实例化；若E显示，则继续检查正式doInit同步初始化链路（尤其首次`GUI:Attach_UITop()`之前的代理/元数据/定时器调用），而不是再回头重复查D已经通过的函数定义段。
 - E链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_E_%E8%8B%B9%E6%9E%9C%E9%97%AD%E5%8C%85%E9%A1%B6%E5%B1%82%E5%AE%9E%E4%BE%8B%E5%8C%96_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+
+## 2026-11-22 E版通过，进入doInit前置初始化隔离
+
+- 用户实测E版：**按钮显示、游戏UI显示，测试通过**。
+- 因此，E加入的root级苹果下图闭包顶层实例化段不是导致正式版UI消失的原因。
+- 新建F隔离测试：`11.16/MainLeftBottom_11.16_UI隔离测试_F_doInit前置初始化_纯按钮.lua`，提交`9d91f8ac1b924ffef6b03c704763e8998179d868`。
+- F以E通过版为底稿，增加正式`make_MainLeftBottom_doInit_11_16`中从`printLog("插件初始化完成")`到仓库数据请求、巡航旧定时器清理为止的原始同步初始化语句，然后仍调用E的纯按钮创建入口。
+- F刻意不包含屏幕尺寸/坐标计算、资源窗口处理器、`GUI:Attach_UITop()`及正式回调表/按钮工厂；本轮用于判断最前面的MoneyProxy、元数据读取、ScheduleOnce、NPCStorageProxy请求或UnSchedule是否会中断模块。
+- F链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_F_doInit%E5%89%8D%E7%BD%AE%E5%88%9D%E5%A7%8B%E5%8C%96_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- F尚待用户实测。若不显示，问题就在该前置初始化语句组；若显示，继续逐段增加屏幕/坐标、资源窗口、Attach_UI与按钮创建链路。
