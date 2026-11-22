@@ -4094,3 +4094,20 @@ D结果解释：
 - 对照11.2+11.9整合源码：同样使用裸标识符`NPCStorageProxy`供仓库业务函数读取；doInit中请求参数来自循环寄存器`T7`，历史检查点记录该调用最终实参为4。该跨版本调用形态与11.16当前恢复稿的`RequestStorageData(0)`不同，但不能用旧版参数覆盖11.16；必须回到11.16 root/52原始指令和寄存器流核实。
 - 因此G18目前只证明“将请求调用包入pcall可让UI继续初始化”，并未证明请求成功、参数0正确、或仓库代理变量绑定正确。也没有证据足以直接修改正式明文。
 - 下一步静态工作：回到11.16 root/52初始化原始指令/融合消费边界，核实RequestStorageData调用实参寄存器来源；同时追踪`NPCStorageProxy`是否由外部环境注入或应从模块状态表读取。确认前不创建新的APK测试版、不改正式明文。
+
+
+## 2026-11-23 用户补充 RequestStorageData 实际实现：调用参数与代理绑定重新判定
+
+- 用户提供了实际函数定义：
+```lua
+function NPCStorageProxy:RequestStorageData()
+    LuaSendMsg(global.MsgType.MSG_CS_STORAGEDATA_REQUEST, 0, 0, 0, 0, 0, 0)
+end
+
+NPCStorageProxy:RequestStorageData()
+```
+- 该实现确认：`RequestStorageData` 本身定义为无显式业务参数；仓库请求消息的多个零参数由函数内部传给 `LuaSendMsg`。
+- 重要语义修正：Lua 普通函数调用允许多传参数，未声明/未使用的额外参数通常被忽略。因此 11.16 明文的 `storageProxy:RequestStorageData(0)` 与无参调用形式不一致，但**不能仅凭多传一个 0 就断言会报错或导致 G16 UI 不显示**。必须结合该代理对象上的实际方法实现/元表行为判断。
+- 这段实现反而强化了代理变量身份核查的重要性：方法定义和示例调用均以 `NPCStorageProxy` 作为接收对象；11.16 初始化当前写入的是 `moduleState.NPCStorageProxy`，而业务函数读取裸变量 `NPCStorageProxy`。除非能证明二者由外部环境/框架自动关联，否则不能认为绑定已完成。
+- G16/G18 的对照仍然只证明：直接调用请求会中断初始化，而用 pcall 包住后 UI 能继续显示；不能由按钮显示推断消息已成功发送或仓库数据已返回。
+- 当前结论：无参是已知正确调用形式；正式明文暂不修改。下一步优先追踪 11.16 root/52 的代理接收者寄存器和赋值目标，并核实 `NPCStorageProxy` 裸变量的来源/作用域；如后续需要做隔离测试，测试点应优先验证裸变量绑定与模块字段是否一致，而不是仅测试去掉参数 0。
