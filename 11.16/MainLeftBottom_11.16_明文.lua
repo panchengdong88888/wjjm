@@ -6281,6 +6281,80 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
         moduleState.cruiseActive = false
         moduleState.goldWarningText = "金币不足10W"
 
+        -- root/52槽711–865：创建隐藏、丢全部、苹果图三个独立控件。
+        -- 父容器为mini_chat；原型常量明确给出按钮纹理、标题、字体和坐标X。
+        local mainProperty = MainProperty
+        local mainUI = mainProperty and mainProperty._ui
+        local miniChat = mainUI and mainUI.Panel_mini_chat
+        local visibleItems = moduleState.b or mainPanelState.b
+        if type(visibleItems) ~= "table" then
+            visibleItems = {}
+            moduleState.b = visibleItems
+            mainPanelState.b = visibleItems
+        end
+
+        if miniChat then
+            local hideButton = GUI:Button_Create(
+                miniChat, "hidebut", 200, 0, "res/public/fuzhu_btn.png"
+            )
+            if hideButton then
+                moduleState.hidebut = hideButton
+                visibleItems.hidebut = hideButton
+                GUI:Button_setTitleText(hideButton, "隐 藏")
+                GUI:Button_setTitleFontSize(hideButton, 18)
+                GUI:Button_setTitleFontName(hideButton, "res/public/kaiti2.ttf")
+                GUI:addOnClickEvent(hideButton, ShowHideAllButtons)
+            end
+
+            local dropAllButton = GUI:Button_Create(
+                miniChat, "dropallbut", 200, 0, "res/public/fuzhu_btn.png"
+            )
+            if dropAllButton then
+                moduleState.dropallbut = dropAllButton
+                visibleItems.dropallbut = dropAllButton
+                GUI:Button_setTitleText(dropAllButton, "开丢全部")
+                GUI:Button_setTitleFontSize(dropAllButton, 18)
+                GUI:Button_setTitleFontName(dropAllButton, "res/public/kaiti2.ttf")
+                GUI:Button_setTitleColor(dropAllButton, "#ffffff")
+                local dropAllHandler = MakeDropMode2ButtonHandler_11_16(
+                    moduleState,
+                    printLog,
+                    moduleState,
+                    function(callback, interval)
+                        return SL:Schedule(callback, interval)
+                    end,
+                    visibleItems
+                )
+                GUI:addOnClickEvent(dropAllButton, dropAllHandler)
+            end
+
+            local appleConfig = {
+                key = "applebut",
+                name = "开苹果图",
+                toggle = "关苹果图",
+                toggled = false,
+            }
+            moduleState.applebutCfg = appleConfig
+            mainPanelState.applebutCfg = appleConfig
+            local appleButton = GUI:Button_Create(
+                miniChat, "applebut", 350, 0, "res/public/fuzhu_btn.png"
+            )
+            if appleButton then
+                moduleState.applebut = appleButton
+                visibleItems.applebut = appleButton
+                GUI:Button_setTitleText(appleButton, appleConfig.name)
+                GUI:Button_setTitleFontSize(appleButton, 18)
+                GUI:Button_setTitleFontName(appleButton, "res/public/kaiti2.ttf")
+                GUI:Button_setTitleColor(appleButton, "#ffffff")
+                local appleToggle = MakeAppleMapButtonToggleHandler_11_16({
+                    [1] = moduleState,
+                    [2] = appleConfig,
+                    [3] = mainPanelState,
+                })
+                GUI:addOnClickEvent(appleButton, appleToggle)
+            end
+        end
+
         -- root/52槽456–468：保存原始NetworkUtil.OnLuaMessage并安装本版包装器。
         -- 包装器捕获顺序：MainLeftBottom、PrintLog、原始OnLuaMessage。
         local networkUtil = NetworkUtil
