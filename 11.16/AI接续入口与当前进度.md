@@ -3897,3 +3897,15 @@ D结果解释：
 - G1链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G1_%E6%97%B6%E9%97%B4%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96%E5%BF%AB%E7%85%A7_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
 - 当前等待G1实机结果。若G1显示，故障位于MoneyProxy及其后续新增调用；若G1不显示，再继续拆分按钮配置构建、PrintLog或时间读取，不跳步猜测。
 - 正式明文未修改；不需要游戏日志，只观察原UI和按钮是否显示。
+
+
+## 2026-11-23 G1实测失败：继续缩小到按钮配置构建/时间初始化
+
+- 用户实测G1：游戏原UI与按钮均不显示。
+- G1中初始化提示、按钮配置表构建、时间读取/格式化及快照状态赋值仍未能通过；但尚未区分其中哪一项导致中断。
+- 新建G2：`11.16/MainLeftBottom_11.16_UI隔离测试_G2_仅按钮配置构建_纯按钮.lua`。
+- 提交：`274492efc8457a1ddf466b99ed5934768b06eb6c`。
+- G2从E已通过版出发，只调用`BuildMainLeftBottomButtonDefinitions_11_16()`并把返回表赋给`MainLeftBottom.buttonDefinitions`，然后调用纯按钮创建入口；明确不调用PrintLog、不读取os.time/os.date、不执行快照字段赋值、不访问宿主代理或其他引擎API。
+- G2链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E9%9A%94%E7%A6%BB%E6%B5%8B%E8%AF%95_G2_%E4%BB%85%E6%8C%89%E9%92%AE%E9%85%8D%E7%BD%AE%E6%9E%84%E5%BB%BA_%E7%BA%AF%E6%8C%89%E9%92%AE.lua
+- 判定：G2显示则按钮配置构建本身可通过，下一步独立检查PrintLog与时间初始化；G2不显示则重点检查该函数调用/赋值或测试文件加载结构。
+- 正式明文未修改，等待用户只测试G2并反馈显示/不显示。
