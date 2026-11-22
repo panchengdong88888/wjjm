@@ -657,7 +657,8 @@ end
 -- 精确父级创建点：root/52槽591 Opcode178，childIndex=13，captureCount=3；
 -- 槽592/593/594依次捕获父级H[3]/H[14]/H[15]，随后槽595将闭包写入cruisebut。
 -- root/52的H[3]来自root N[3]，即MainLeftBottom.z计时器状态表；
--- H[14]/H[15]分别来自root N[83]/N[82]，其业务身份尚未确认，保留显式回调参数。
+-- H[14]=root N[83]=root/11（关闭见人跑回调）；H[15]=root N[82]=root/25（开启见人跑回调）。
+-- 两个回调原型均已分别恢复；root/25本身的13项捕获数组仍须保持原始生命周期并正确注入。
 -- H[0].cruiseRunTimer为分支条件；真值分支调用H[1]，假值分支调用H[2]；
 -- 两条分支均将返回寄存器置为true后返回。
 local function make_helper_root_52_13(capturedCruiseState, capturedCallback1, capturedCallback2)
@@ -6255,8 +6256,8 @@ local function BuildMainLeftBottomCallbackMap_11_16(context)
         })
     end
     callbackMap.applebut = closure_root_52_25
-    -- root/52/13的真实闭包只依赖3项捕获；H[1]/H[2]身份未确认时不猜测。
-    -- 调用方提供真实父级捕获后，按原型本体分支语义直接接线。
+    -- root/52/13的捕获顺序：timerState、root/11关闭见人跑回调、root/25开启见人跑回调。
+    -- root/11与root/25函数身份已确认；调用方仍须提供同一生命周期的两个真实闭包实例。
     if type(context.cruiseRunButtonCaptures) == "table" then
         local c = context.cruiseRunButtonCaptures
         callbackMap.cruisebut = make_helper_root_52_13(c[1], c[2], c[3])
