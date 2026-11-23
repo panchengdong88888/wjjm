@@ -4473,6 +4473,7 @@ local function MakeDropMode2TimerCallback_11_16(timerState)
     return function()
         DiuItems(timerState.dropMode)
     end
+end
 
 -- ============================================================
 --  11.16 root/52/18：模式2自动丢弃按钮处理器（65条物理指令，0显式参数，5项捕获）
@@ -4514,10 +4515,6 @@ local function MakeDropMode2ButtonHandler_11_16(
             GUI.Button_setTitleColor(button, "#ffffff")
         end
     end
-end
-
-
-
 end
 
 
