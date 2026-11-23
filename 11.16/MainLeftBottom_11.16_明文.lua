@@ -3606,27 +3606,25 @@ local function helper_root_52_1(timerState, printLog, featureState, buttonItems)
 end
 
 -- ============================================================================
--- 11.16 root/52/2：显示/隐藏主界面按钮回调（30条指令，0个显式参数）。
--- 合成定位名；11.16常量包含显示/隐藏提示、hidebut、hide/show、isHidden、
--- GUI:setOpacity及透明度255/0，与11.9同职责回调结构吻合。
--- 捕获对象按旧版对应关系接入MainLeftBottom.a与PrintLog；本版捕获槽位顺序
--- 未单独闭合，故此处采用显式工厂参数，不宣称原始upvalue槽位已确认。
--- ============================================================================
+-- 11.16 root/52/2：隐藏/显示主界面按钮回调（原版30条物理指令，0个显式参数）。
+-- 原版root/52槽755创建该闭包；槽756/757依次捕获H[2]=MainLeftBottom.a、
+-- H[0]=PrintLog，因此工厂参数顺序为(mainLeftBottomA, printLog)。
+-- 原始控制流：isHidden真值时执行hide分支；假值时执行show分支。
+-- hide/show均为无显式参数的点调用；GUI:setOpacity为带GUI receiver的冒号方法调用。
 local function helper_root_52_2(mainLeftBottomA, printLog)
     return function()
         if mainLeftBottomA.isHidden then
-            printLog("显示所有按钮")
-            mainLeftBottomA:show()
-            GUI:setOpacity(mainLeftBottomA.hidebut, 255)
-        else
             printLog("隐藏所有按钮")
-            mainLeftBottomA:hide()
+            mainLeftBottomA.hide()
             GUI:setOpacity(mainLeftBottomA.hidebut, 0)
+        else
+            printLog("显示所有按钮")
+            mainLeftBottomA.show()
+            GUI:setOpacity(mainLeftBottomA.hidebut, 255)
         end
     end
 end
 
--- ============================================================================
 -- 11.16 root/52/31：存仓按钮点击回调（29条指令，0个显式参数）。
 -- 合成定位名；本版常量包含isStoring、storageTimer、StorageItems、
 -- UnSchedule、关闭/开启存仓提示及周期值1；与11.9同职责回调主体吻合。
