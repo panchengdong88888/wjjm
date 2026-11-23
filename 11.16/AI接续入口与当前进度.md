@@ -4503,3 +4503,16 @@ G28显示，当前待测G29
 - G51首次创建提交：`406d31359830cfcc6f39c7941159f04ef2825b72`；随后修正提取代码边界和重复局部声明，最终提交：`a5714d66090c4e97d464a0c75564faa99b0f319e`；最终文件blob：`10967a009566f1ba7846060e98723baa59a56714`。
 - 当前等待用户实测G51。若通过，下一轮单独验证文件末尾主动调用main的兼容启动层（不能与G51合并）；若异常，再细分苹果下图四个工厂/顶层赋值组。
 - 唯一正式明文 `MainLeftBottom_11.16_明文.lua` 未修改。
+
+
+## 2026-11-23 G51通过，G52 main启动兼容层测试待测
+
+- 用户实测反馈：G51正常。G51覆盖苹果下图四个闭包工厂的顶层实例化、捕获组装、候选地图表创建，以及 `startAppleMap` 顶层全局赋值；没有调用任何返回闭包，也没有启动苹果下图定时任务。
+- G48/G49/G50/G51连续通过。现阶段单独测试过的加载期动作均未复现异常。
+- 新建G52：`11.16/MainLeftBottom_11.16_UI批量诊断_G52_main启动兼容层测试.lua`。
+- G52保留G51通过基线，然后加入正式明文中的完整 `AccountIDValidation`、`MainLeftBottom.main = AccountIDValidation` 注册，以及文件末尾主动 `MainLeftBottom.main()` 调用。
+- 为避免main定时回调触发后执行真实业务初始化，G52将 `MainLeftBottom.doInit` 替换为空函数；并提供已就绪的 `MainProperty._ui.Panel_mini_chat` 占位，使等待回调能够走到取消自身定时器及调用空doInit的路径。G52仍会实际调用 `PrintLog` 和 `SL:Schedule`/`SL:UnSchedule`，所以本轮验证main启动入口及调度接口的加载期影响，不验证真实doInit。
+- G52文件链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E6%89%B9%E9%87%8F%E8%AF%8A%E6%96%AD_G52_main%E5%90%AF%E5%8A%A8%E5%85%BC%E5%AE%B9%E5%B1%82%E6%B5%8B%E8%AF%95.lua
+- G52提交：`df1af9bff7e732de847ce7bf68deb0dfcde4db65`；最终文件blob：`f4fe85e8d5dea51d629b36c4267393f71c22baaf`。
+- 当前等待用户实测G52。若通过，说明末尾主动main启动层本身在该隔离环境下也未复现异常；之后应回到原版模块加载顺序，继续清点其余顶层立即执行语句/赋值，尤其确认正式明文是否有未恢复或错序的加载期代码，而不是立即把所有功能闭包一次性放回。
+- 唯一正式明文 `MainLeftBottom_11.16_明文.lua` 未修改。
