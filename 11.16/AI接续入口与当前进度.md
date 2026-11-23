@@ -4227,3 +4227,12 @@ end
 - G26文件：[`MainLeftBottom_11.16_UI批量诊断_G26_完整文件保留顶层_G17初始化体.lua`](./MainLeftBottom_11.16_UI批量诊断_G26_完整文件保留顶层_G17初始化体.lua)
 - G26创建提交：`c64d9975b3a10435cfb44a1e3a39dc94cb8f1e1f`；blob SHA：`7dfbf36631747f059005881f1ddf2cbd7a1d21ee`。
 - 不得将G26诊断版当作正式修复；根据G26结果继续收敛顶层加载阶段或完整doInit阶段。
+## 2026-11-23 G26不显示，当前待测G27
+
+- G26用户实测：不显示。G26保留完整文件顶层定义/闭包实例化，仅替换doInit为G17已通过按钮初始化体，仍失败。
+- 新建G27：[MainLeftBottom_11.16_UI批量诊断_G27_截断doInit后置函数.lua](./MainLeftBottom_11.16_UI批量诊断_G27_截断doInit后置函数.lua)
+- G27保留完整源码直到MainLeftBottom.doInit赋值完成，保留G17纯按钮初始化体与MainLeftBottom.main()入口；仅删除doInit赋值之后、文件末尾入口之前的后置函数定义/状态挂接。
+- G27提交：ae046f85b2c7372fac289358bc2073392acd4db5；blob SHA：3ce25745dcadb1822baf21d4a3fceeee8338ba58。
+- 结果判定：G27显示→检查doInit之后的后置源码；G27不显示→检查doInit之前的额外定义/模块加载/入口。
+- 静态另发现MakeDropMode2TimerCallback_11_16缺少外层end，使MakeDropMode2ButtonHandler_11_16意外嵌套，后续回调表中引用不到该局部函数。该缺陷影响正式回调表，但G26的G17按钮体未调用回调表，不能将其当作G26不显示的原因。正式明文尚未修改。
+- 详细记录见[按钮显示问题排查记录_2026-11-23.md](./按钮显示问题排查记录_2026-11-23.md)。
