@@ -4516,3 +4516,22 @@ G28显示，当前待测G29
 - G52提交：`df1af9bff7e732de847ce7bf68deb0dfcde4db65`；最终文件blob：`f4fe85e8d5dea51d629b36c4267393f71c22baaf`。
 - 当前等待用户实测G52。若通过，说明末尾主动main启动层本身在该隔离环境下也未复现异常；之后应回到原版模块加载顺序，继续清点其余顶层立即执行语句/赋值，尤其确认正式明文是否有未恢复或错序的加载期代码，而不是立即把所有功能闭包一次性放回。
 - 唯一正式明文 `MainLeftBottom_11.16_明文.lua` 未修改。
+
+
+## 2026-11-23 G52通过：模块加载期顶层执行清点
+
+- 用户实测G52反馈：正常。
+- G52验证范围：正式明文中的完整AccountIDValidation、MainLeftBottom.main注册、文件末尾主动main调用；在隔离条件下保留PrintLog、SL:Schedule、SL:UnSchedule实际调用，并用空doInit及已就绪MainProperty避免进入真实业务初始化。结果正常。
+- G48/G49/G50/G51/G52连续通过。分别覆盖：模块环境获取与全局MainLeftBottom赋值、屏幕宽高元数据读取、doInit工厂定义及顶层实例化、苹果下图四个工厂顶层实例化/捕获组装/startAppleMap赋值、main启动兼容层。
+- 本轮重新读取唯一正式明文，SHA仍为`f75385f350f30ac5e18cd19ef8a9775888efc4b7`，共7457行。按顶层语句位置清点，除函数/闭包定义外，当前可识别的模块加载期主动执行点主要为：
+  1. rootEnvironment选择：getfenv(1)、_ENV类型判断、_G回退；G48基线通过。
+  2. 创建MainLeftBottom及a/b/z表、字段初始化、写入rootEnvironment.MainLeftBottom；G48通过。
+  3. a.screenW/a.screenH两次SL:GetMetaValue读取；G49通过。
+  4. 苹果下图四个闭包工厂实例化、候选表构建、startAppleMap赋值；G51通过。
+  5. make_MainLeftBottom_doInit_11_16工厂实例化并写入MainLeftBottom.doInit；G50通过。
+  6. AccountIDValidation函数注册为MainLeftBottom.main，并在文件末尾主动调用；G52通过。
+  7. MainLeftBottom.zd、MainLeftBottom.a.show、BuildCruiseRunButtonHandler_11_16、MainLeftBottom.a.root52_23Callback等顶层匿名函数赋值，只创建闭包，不执行函数体；无需为其单独安排加载期模拟器测试。
+  8. 其余顶层普通/局部函数声明只注册函数，不执行函数体；表格/常量赋值只构造数据，不调用业务函数。
+- 目前静态清点未发现另一个尚未覆盖、且会在模块chunk加载期间主动执行的业务调用点。注意这是对当前明文文本的静态清点，不等于已证明明文与原始VM在每个语句位置、每项副作用上完全一致。
+- 结论边界：G48–G52说明已识别的加载期动作在隔离测试中均未复现游戏UI异常；不能据此断言正式模块整体正常，也不能排除明文与原始字节码的注册顺序/捕获值/全局覆盖差异。下一步不再制造没有执行意义的G53加载期测试；应对照11.16原始root 654条指令及其子原型调用时序，核对顶层函数注册、闭包创建/捕获、root返回和宿主main调用的先后关系。若加载期对照仍无差异，再另开阶段测试真实doInit入口，不能把两阶段混测。
+- 唯一正式明文未修改。本轮只更新接续记录。
