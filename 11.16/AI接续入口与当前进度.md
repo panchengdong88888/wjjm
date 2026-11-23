@@ -4411,3 +4411,14 @@ G28显示，当前待测G29
 - G43是诊断版，不修改唯一正式明文。此版本没有MainLeftBottom功能按钮，因此不测试按钮点击；只观察游戏UI/脚本是否正常、是否还会在一段时间后断线。
 - 结果解释：若G43不再断线，说明问题位于被跳过的UI/按钮创建链范围内（还不能仅凭这一轮断言具体是Button_Create）；若G43仍断线，则按钮创建不是断线的必要条件，应转查保留的初始化/API请求或其他定时/网络逻辑。
 - 用户尚未测试G43。
+
+
+## 2026-11-23 G43实测结果与G44精确隔离
+
+- 用户实测G43：功能按钮不显示；游戏UI也不显示；弹出的窗口仍可点击。
+- G43在moduleState.NPCStorageProxy = storageProxy之后、if MainLeftBottom._uiButtonsCreated then之前直接return。因此它不仅跳过按钮创建，还同时跳过GUI:Attach_UITop()、mini_chat坐标/尺寸读取、按钮组配置构建等UI初始化步骤。
+- 所以“游戏UI不显示”不能归因于GUI:Button_Create；G43没有执行Attach_UITop，该结果符合测试代码本身的影响。弹出窗口仍可点击，说明至少独立弹窗的点击链路可用。
+- 新建G44：基于G43完整源码，只移除提前return，并在doInit_PlainButtons()内部、按钮组配置构建之后定义两个局部同名空函数，局部遮蔽外层CreatePlainButton与CreateStandaloneButton。这样保留GUI:Attach_UITop()、mini_chat坐标读取、按钮组配置构建和循环调用，但不执行GUI:Button_Create、标题/字体/颜色设置及按钮点击事件接线。
+- G44文件：11.16/MainLeftBottom_11.16_UI批量诊断_G44_保留UI挂接仅屏蔽Button_Create.lua
+- G44提交：610a291620adddf3324724d44fe9635604065504
+- G44是诊断文件，不修改唯一正式明文。下一步以G44观察游戏UI是否恢复、是否断线；若游戏UI恢复且不再断线，才支持Button_Create/按钮工厂内部链路是问题范围；若UI仍不显示，则应查Attach_UITop之后的初始化或其他因素。不要把单次结果扩大解释为服务器封禁/请求异常。
