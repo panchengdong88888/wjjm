@@ -2152,63 +2152,34 @@ MainLeftBottom.a.show = function()
 end
 
 
--- 11.16 root/19：AccountIDValidation（64条指令，2个子原型）。
--- 测试版临时屏蔽游戏ID/账号UID白名单验证：不读取GAME_ID/UID，不检查9个白名单账号，
--- 不弹出账号限制提示；保留原来的主界面就绪轮询与MainLeftBottom.doInit初始化流程。
--- 测试完成后如需恢复验证，可从Git历史提交中还原本函数的验证段。
+-- 11.16 root/19：AccountIDValidation（64条指令，两个子原型已按本版原始字节码提取）。
+-- 测试模式保留：暂时跳过原始GAME_ID/UID白名单门控，避免测试账号被原始白名单拦截。
+-- root/19/0原始回调：检查MainProperty._ui.Panel_mini_chat；未就绪时PrintLog并等待；
+-- 就绪时UnSchedule本回调的Schedule句柄，然后直接调用MainLeftBottom.doInit()。
+-- 当前文件末尾有主动main兼容调用，因此保留_mainStarted只用于避免加载器重复调用；它不是原始root/19业务逻辑。
 local function AccountIDValidation()
-    -- 兼容两种宿主加载方式：加载器主动调用main，或仅执行并返回模块文件。
-    -- 两种方式同时存在时只启动一次，避免重复创建定时器和UI。
     if MainLeftBottom._mainStarted then
         return
     end
     MainLeftBottom._mainStarted = true
 
-    PrintLog("[测试模式] 已跳过游戏ID与账号UID验证")
     local waitTimer
-
-    -- SL:Schedule为周期调度；主界面未就绪时继续等待，不提前终止轮询。
     local function waitForMainProperty()
         local mainProperty = MainProperty
-        local miniChat = mainProperty and mainProperty._ui
-            and mainProperty._ui.Panel_mini_chat
-
-        if not miniChat then
-            PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
-            return
-        end
-
-        -- 只取消本入口创建的定时器，绝不使用UnSchedule(nil)影响其他任务。
-        if waitTimer then
+        if mainProperty and mainProperty._ui and mainProperty._ui.Panel_mini_chat then
             SL:UnSchedule(waitTimer)
-            waitTimer = nil
-        end
-
-        local module = rootEnvironment.MainLeftBottom
-        if not module or type(module.doInit) ~= "function" then
-            PrintLog("[MainLeftBottom启动失败] 模块doInit入口不存在")
-            return
-        end
-        if module._doInitStarted then
-            return
-        end
-        module._doInitStarted = true
-
-        PrintLog("[MainLeftBottom启动] 主界面已就绪，开始执行doInit")
-        local ok, err = pcall(module.doInit)
-        if not ok then
-            module._doInitError = tostring(err)
-            PrintLog("[MainLeftBottom启动失败] doInit异常: " .. tostring(err))
+            MainLeftBottom.doInit()
         else
-            PrintLog("[MainLeftBottom启动] doInit调用已返回")
+            PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
         end
     end
 
+    -- 对应root/19 slot 56–63：Schedule回调，间隔0.5秒；
+    -- 回调闭包按引用捕获waitTimer，Schedule返回后将句柄写回同一变量。
     waitTimer = SL:Schedule(waitForMainProperty, 0.5)
 end
 
--- 原始root PC407-PC410：把入口闭包注册到模块main字段。
--- 由模块加载器在加载完成后调用MainLeftBottom.main()；这里不自行重复调用。
+-- root slot 407–410：创建root/19闭包并写入MainLeftBottom.main。
 MainLeftBottom.main = AccountIDValidation
 
 
