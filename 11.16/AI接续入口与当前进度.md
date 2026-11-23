@@ -4585,3 +4585,39 @@ G28显示，当前待测G29
    - 目前明文中root/6附近存在大量分散的功能函数与跨版本恢复代码，但尚未建立唯一的root/6函数身份及23项捕获接线。不能凭常量预览直接把它等同于某个现有函数；需先从root/6完整指令和原型索引识别业务身份，再定位明文候选。
 - 本轮最重要结论：G48–G52加载期动作通过，不代表root闭包的捕获/注册语义已恢复。当前证据更支持把排查重点转向原始root/34与root/52的捕获接线，以及root/6缺少明确映射，而不是继续做空白模块加载测试。
 - 本轮没有修改唯一正式明文，没有新建G53，也没有安排模拟器测试。下一步先单独解析root/34的13项捕获来源与274条指令的真实字段访问，核对明文BlacklistPlayerDetection逐项差异；完成后再处理root/52。
+
+
+## 2026-11-23 root/34 捕获来源进一步定位（当前11.16证据）
+
+本轮重新读取11.16原始root指令流、闭包创建映射、原型索引和Opcode说明。重要更正：仓库归档资料中有一份旧版/旧分支的`BlacklistPlayerDetection`审计（216条指令、root.children[47]），它不是当前11.16的root/34（274条指令、root/34）。旧审计只可作业务线索，不能把其13项捕获表直接移植到11.16。
+
+### 当前11.16已证实的root/34信息
+
+- 原型索引：root/34，274条指令、0参数、43项常量；候选身份BlacklistPlayerDetection，身份状态仍是“跨版本高置信候选，待本版调用/差异核验”。
+- 当前常量明确包含：IsInWhitelistMap、gamePlayerController、GetMainPlayer、deathHandled、GetMetaValue、noStoneWarned、ACTOR_MAP_X/Y、ACTOR_NAME、alertAt、distLogAt、cdTicks、MAIN_ACTOR_ID、FIND_IN_VIEW_PLAYER_LIST、distance、GetMapX/GetMapY、黑名单通知文案、HP、lastHp等。业务身份高度吻合黑名单玩家检测，但不能仅凭常量列表写回函数体。
+- root槽558创建root/34；槽559–571依次捕获父级寄存器：2、84、67、85、71、69、61、4、72、65、5、66、60。
+- 根据当前11.16 root指令的生产者/前置创建点，已能确认部分捕获来源：
+  - H[0] ← N[2]：root早期初始化的MainLeftBottom.z状态表（槽33创建并赋值）。
+  - H[2] ← N[67]：槽433–441构造并写入MainLeftBottom.blacklist的黑名单状态表，字段包括lastAttacker、lastHp、deathHandled、alertAt、cdTicks、noStoneWarned、distance、distLogAt。
+  - H[6] ← N[4]：PrintLog闭包（root槽43创建）。
+  - H[10] ← N[5]：ShowLocalNoticeByType闭包（root槽46创建）。
+  - H[5] ← N[69]：root/9闭包；原型索引候选名GetMapData2DPtr，5参数、162条指令，当前用途/确切返回仍需结合本版闭包主体核验。
+  - H[4] ← N[71]：root/31闭包；常量包含_blacklistData、GetMetaValue、ACTOR_MASTER_ID、SL、Name，1参数、35条指令。
+  - H[8] ← N[72]：root/62闭包；常量包含ipairs、GetMetaValue、ITEM_INDEX_BY_NAME、UseItemByIndex、ITEM_COUNT、tonumber，0参数、33条指令。
+  - H[1] ← N[84]：root/68闭包；常量包含gameMapController、mNetMsgHandle、MSG_SC_DAMAGE_HP等，0参数、40条指令，疑似伤害消息钩子安装入口（root槽549还将先前寄存器84写入MainLeftBottom.onDamageMsg，随后槽550重用寄存器84创建root/68；捕获时N[84]实际是后者）。
+  - H[3] ← N[85]：root/71闭包；常量包含lastAttacker、ScheduleOnce、自动拉黑文案等，0参数、47条指令。
+- 尚未解释的捕获来源：H[7]←N[61]、H[9]←N[65]、H[11]←N[66]、H[12]←N[60]。这些值必须从root寄存器生命周期及当前11.16分派器语义继续核实，暂不猜成旧版的2.0秒、0.01秒、30秒或随机传送道具表。
+
+### 对当前明文的实际差异
+
+- 当前正式明文第2317–2325行把root/34写为全局函数`BlacklistPlayerDetection()`，不接收13项捕获容器。
+- 函数主体以`MainLeftBottom.z`、`MainLeftBottom.a.blacklist`和全局API调用替代若干捕获引用，但没有显式保留已确认的root/31、root/62、root/68、root/71、root/9等闭包引用。
+- 这构成可证实的“原始闭包捕获语义未显式映射”问题；但其中部分引用可能被内联或通过全局/模块字段等价替代，尚不能单凭此点断言运行时根因。
+- 当前明文root/34主体是跨版本复用，并按本版对象API调整；而当前原型索引也明确记录“未执行语法/API/运行验证”。因此不能把旧版216条审计当成当前274条原型的逐指令证明。
+
+### 下一步静态核对顺序
+
+1. 继续追踪N[60]、N[61]、N[65]、N[66]在root槽558前的最后赋值与真实含义。
+2. 结合当前11.16分派器，对root/34的调用、返回、分支和字段访问建立本版CFG；当前仓库尚未找到root/34完整物理指令导出文件，不能假装已经逐条分析274条。
+3. 之后把已确认的13项捕获与明文函数逐项对照，形成差异清单；在证据闭合前不修改正式明文、不安排模拟器测试。
+- 本轮没有修改唯一正式明文，没有新建测试文件。 
