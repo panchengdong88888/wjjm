@@ -83,7 +83,7 @@ local function newEnvironment(gameID, uid)
     return env
 end
 
-local function runWith(env)
+local function withEnvironment(env, callback)
     local previous = {}
     local names = {"PrintLog", "ShowLocalNoticeByType", "MainLeftBottom", "SL", "MainProperty"}
     for _, name in ipairs(names) do
@@ -95,12 +95,16 @@ local function runWith(env)
     _G.SL = env.SL
     _G.MainProperty = env.MainProperty
 
-    local ok, err = pcall(AccountIDValidation)
+    local ok, err = pcall(callback)
 
     for _, name in ipairs(names) do
         _G[name] = previous[name]
     end
-    assert(ok, "main执行异常：" .. tostring(err))
+    assert(ok, "隔离用例执行异常：" .. tostring(err))
+end
+
+local function runWith(env)
+    withEnvironment(env, AccountIDValidation)
 end
 
 local function contains(list, expected)
@@ -158,22 +162,19 @@ do
     runWith(env)
     assert(env.scheduledCallback, "测试前提：回调已注册")
 
-    _G.PrintLog = env.PrintLog
-    _G.ShowLocalNoticeByType = env.ShowLocalNoticeByType
-    _G.MainLeftBottom = env.MainLeftBottom
-    _G.SL = env.SL
+    withEnvironment(env, function()
+        _G.MainProperty = nil
+        env.scheduledCallback()
+        assert(env.unscheduledHandle == nil and env.doInitCount == 0, "MainProperty=nil时不应取消或初始化")
 
-    _G.MainProperty = nil
-    env.scheduledCallback()
-    assert(env.unscheduledHandle == nil and env.doInitCount == 0, "MainProperty=nil时不应取消或初始化")
+        _G.MainProperty = {}
+        env.scheduledCallback()
+        assert(env.unscheduledHandle == nil and env.doInitCount == 0, "_ui=nil时不应取消或初始化")
 
-    _G.MainProperty = {}
-    env.scheduledCallback()
-    assert(env.unscheduledHandle == nil and env.doInitCount == 0, "_ui=nil时不应取消或初始化")
-
-    _G.MainProperty = {_ui = {}}
-    env.scheduledCallback()
-    assert(env.unscheduledHandle == nil and env.doInitCount == 0, "Panel_mini_chat=nil时不应取消或初始化")
+        _G.MainProperty = {_ui = {}}
+        env.scheduledCallback()
+        assert(env.unscheduledHandle == nil and env.doInitCount == 0, "Panel_mini_chat=nil时不应取消或初始化")
+    end)
 
     local waitCount = 0
     for _, message in ipairs(env.logs) do
@@ -191,15 +192,12 @@ do
     runWith(env)
     assert(env.scheduledCallback, "测试前提：回调已注册")
 
-    _G.PrintLog = env.PrintLog
-    _G.ShowLocalNoticeByType = env.ShowLocalNoticeByType
-    _G.MainLeftBottom = env.MainLeftBottom
-    _G.SL = env.SL
-    _G.MainProperty = {_ui = {Panel_mini_chat = {}}}
-
-    env.scheduledCallback()
-    assert(env.unscheduledHandle == "mock-timer-1", "应取消Schedule返回的同一句柄")
-    assert(env.doInitCount == 1, "主界面就绪后应直接调用一次doInit")
+    withEnvironment(env, function()
+        _G.MainProperty = {_ui = {Panel_mini_chat = {}}}
+        env.scheduledCallback()
+        assert(env.unscheduledHandle == "mock-timer-1", "应取消Schedule返回的同一句柄")
+        assert(env.doInitCount == 1, "主界面就绪后应直接调用一次doInit")
+    end)
     pass("主界面就绪后UnSchedule并调用doInit")
 end
 
