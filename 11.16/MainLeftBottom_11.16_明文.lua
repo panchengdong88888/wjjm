@@ -2214,6 +2214,8 @@ local function AccountIDValidation()
             else
                 PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
             end
+        else
+            PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
         end
     end
 
