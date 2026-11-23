@@ -1,0 +1,2531 @@
+{
+  "source": "11.16/MainLeftBottom 11.16原版.lua",
+  "source_blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+  "decode": {
+    "outer": "Base36 LZW",
+    "inner": "XOR 0x17",
+    "decoded_bytes": 142522,
+    "consumed_bytes": 142522,
+    "parser": "S()结构等价重写；递归常量/子原型/参数数/物理槽解析"
+  },
+  "prototype": {
+    "path": "root/34",
+    "depth": 1,
+    "parameter_count": 0,
+    "constants": [
+      "IsInWhitelistMap",
+      1,
+      "gamePlayerController",
+      "GetMainPlayer",
+      "concat",
+      "deathHandled",
+      "GetMetaValue",
+      "table",
+      "os",
+      "time",
+      false,
+      "noStoneWarned",
+      "ACTOR_MAP_Y",
+      "ACTOR_NAME",
+      "alertAt",
+      "global",
+      true,
+      "ACTOR_MAP_X",
+      "tostring",
+      "黑名单距离未命中：我(%s,%s) 对方(%s,%s) 限制%s格（不可达或超出）",
+      "distLogAt",
+      "cdTicks",
+      "没有可用的随机传送道具（%s）",
+      "MAIN_ACTOR_ID",
+      "没有随机传送石，黑名单玩家传送暂停",
+      "黑名单玩家 %s，距离 %d 格，使用 %s 随机传送",
+      "黑名单玩家：%s（%d格），飞随机",
+      "string",
+      "FIND_IN_VIEW_PLAYER_LIST",
+      "distance",
+      "GetMapY",
+      "format",
+      null,
+      "黑名单玩家",
+      "/",
+      "isBlacklisting",
+      0,
+      "野外观测到黑名单玩家：%s（%d格）",
+      "tonumber",
+      "SL",
+      "lastHp",
+      "GetMapX",
+      "HP"
+    ],
+    "instruction_count": 274,
+    "instructions": [
+      {
+        "slot": 1,
+        "opcode": 88,
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 2,
+        "opcode": 114,
+        "A": 0,
+        "B": "isBlacklisting",
+        "C": true,
+        "operand_flags": 6,
+        "mode": 0
+      },
+      {
+        "slot": 3,
+        "opcode": 234,
+        "A": 0,
+        "B": 1,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 4,
+        "opcode": 123,
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 5,
+        "opcode": 9,
+        "A": 0,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 6,
+        "opcode": 274,
+        "A": 0,
+        "B": 0,
+        "C": "cdTicks",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 7,
+        "opcode": 271,
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 2,
+        "mode": 0
+      },
+      {
+        "slot": 8,
+        "opcode": 388,
+        "A": 0,
+        "B": 13,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 9,
+        "opcode": 234,
+        "A": 0,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 10,
+        "opcode": 9,
+        "A": 1,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 11,
+        "opcode": 410,
+        "A": 1,
+        "B": 1,
+        "C": "cdTicks",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 12,
+        "opcode": 378,
+        "A": 1,
+        "B": 1,
+        "C": 1,
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 13,
+        "opcode": 125,
+        "A": 0,
+        "B": "cdTicks",
+        "C": 1,
+        "operand_flags": 2,
+        "mode": 0
+      },
+      {
+        "slot": 14,
+        "opcode": 146,
+        "A": 0,
+        "B": "SL",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 15,
+        "opcode": 204,
+        "A": 0,
+        "B": 0,
+        "C": "GetMetaValue",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 16,
+        "opcode": 295,
+        "A": 2,
+        "B": "MAIN_ACTOR_ID",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 17,
+        "opcode": 209,
+        "A": 0,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 18,
+        "opcode": 366,
+        "A": 0,
+        "B": 0,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 19,
+        "opcode": 388,
+        "A": 0,
+        "B": 20,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 20,
+        "opcode": 339,
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 21,
+        "opcode": 146,
+        "A": 1,
+        "B": "tonumber",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 22,
+        "opcode": 361,
+        "A": 2,
+        "B": "SL",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 23,
+        "opcode": 102,
+        "A": 2,
+        "B": 2,
+        "C": "GetMetaValue",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 24,
+        "opcode": 295,
+        "A": 4,
+        "B": "HP",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 25,
+        "opcode": 264,
+        "A": 2,
+        "B": 4,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 26,
+        "opcode": 10,
+        "A": 1,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 27,
+        "opcode": 325,
+        "A": 1,
+        "B": 0,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 28,
+        "opcode": 388,
+        "A": 0,
+        "B": 29,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 29,
+        "opcode": 399,
+        "A": 1,
+        "B": 0,
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 30,
+        "opcode": 9,
+        "A": 2,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 31,
+        "opcode": 410,
+        "A": 2,
+        "B": 2,
+        "C": "lastHp",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 32,
+        "opcode": 143,
+        "A": 0,
+        "B": 2,
+        "C": null,
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 33,
+        "opcode": 388,
+        "A": 0,
+        "B": 42,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 34,
+        "opcode": 234,
+        "A": 2,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 35,
+        "opcode": 306,
+        "A": 2,
+        "B": "lastHp",
+        "C": 1,
+        "operand_flags": 2,
+        "mode": 0
+      },
+      {
+        "slot": 36,
+        "opcode": 234,
+        "A": 2,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 37,
+        "opcode": 20,
+        "A": 1,
+        "B": 1,
+        "C": 0,
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 38,
+        "opcode": 388,
+        "A": 0,
+        "B": 39,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 39,
+        "opcode": 59,
+        "A": 3,
+        "B": 0,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 40,
+        "opcode": 110,
+        "A": 3,
+        "B": 1,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 41,
+        "opcode": 306,
+        "A": 2,
+        "B": "deathHandled",
+        "C": 3,
+        "operand_flags": 2,
+        "mode": 0
+      },
+      {
+        "slot": 42,
+        "opcode": 388,
+        "A": 0,
+        "B": 63,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 43,
+        "opcode": 271,
+        "A": 0,
+        "B": 0,
+        "C": 1,
+        "operand_flags": 2,
+        "mode": 0
+      },
+      {
+        "slot": 44,
+        "opcode": 388,
+        "A": 0,
+        "B": 49,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 45,
+        "opcode": 234,
+        "A": 2,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 46,
+        "opcode": 306,
+        "A": 2,
+        "B": "lastHp",
+        "C": 1,
+        "operand_flags": 2,
+        "mode": 0
+      },
+      {
+        "slot": 47,
+        "opcode": 88,
+        "A": 2,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 48,
+        "opcode": 114,
+        "A": 2,
+        "B": "deathHandled",
+        "C": false,
+        "operand_flags": 6,
+        "mode": 0
+      },
+      {
+        "slot": 49,
+        "opcode": 388,
+        "A": 0,
+        "B": 63,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 50,
+        "opcode": 127,
+        "A": 2,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 51,
+        "opcode": 96,
+        "A": 2,
+        "B": 2,
+        "C": "lastHp",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 52,
+        "opcode": 311,
+        "A": 0,
+        "B": 0,
+        "C": 2,
+        "operand_flags": 2,
+        "mode": 0
+      },
+      {
+        "slot": 53,
+        "opcode": 388,
+        "A": 0,
+        "B": 63,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 54,
+        "opcode": 9,
+        "A": 2,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 55,
+        "opcode": 96,
+        "A": 2,
+        "B": 2,
+        "C": "deathHandled",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 56,
+        "opcode": 325,
+        "A": 2,
+        "B": 0,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 57,
+        "opcode": 388,
+        "A": 0,
+        "B": 63,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 58,
+        "opcode": 127,
+        "A": 2,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 59,
+        "opcode": 114,
+        "A": 2,
+        "B": "deathHandled",
+        "C": true,
+        "operand_flags": 6,
+        "mode": 0
+      },
+      {
+        "slot": 60,
+        "opcode": 234,
+        "A": 2,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 61,
+        "opcode": 114,
+        "A": 2,
+        "B": "lastHp",
+        "C": 0,
+        "operand_flags": 6,
+        "mode": 0
+      },
+      {
+        "slot": 62,
+        "opcode": 324,
+        "A": 2,
+        "B": 3,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 63,
+        "opcode": 128,
+        "A": 2,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 64,
+        "opcode": 373,
+        "A": 0,
+        "B": 1,
+        "C": 0,
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 65,
+        "opcode": 388,
+        "A": 0,
+        "B": 66,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 66,
+        "opcode": 339,
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 67,
+        "opcode": 105,
+        "A": 2,
+        "B": "IsInWhitelistMap",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 68,
+        "opcode": 209,
+        "A": 2,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 69,
+        "opcode": 358,
+        "A": 2,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 70,
+        "opcode": 388,
+        "A": 0,
+        "B": 71,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 71,
+        "opcode": 205,
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 72,
+        "opcode": 361,
+        "A": 2,
+        "B": "SL",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 73,
+        "opcode": 204,
+        "A": 2,
+        "B": 2,
+        "C": "GetMetaValue",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 74,
+        "opcode": 295,
+        "A": 4,
+        "B": "FIND_IN_VIEW_PLAYER_LIST",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 75,
+        "opcode": 21,
+        "A": 2,
+        "B": 4,
+        "C": 3,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 76,
+        "opcode": 340,
+        "A": 2,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 77,
+        "opcode": 388,
+        "A": 0,
+        "B": 81,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 78,
+        "opcode": 358,
+        "A": 3,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 79,
+        "opcode": 388,
+        "A": 0,
+        "B": 81,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 80,
+        "opcode": 77,
+        "A": 0,
+        "B": 3,
+        "C": 0,
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 81,
+        "opcode": 388,
+        "A": 0,
+        "B": 82,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 82,
+        "opcode": 339,
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 83,
+        "opcode": 153,
+        "A": 4,
+        "B": 1,
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 84,
+        "opcode": 241,
+        "A": 5,
+        "B": 3,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 85,
+        "opcode": 295,
+        "A": 6,
+        "B": 1,
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 86,
+        "opcode": 31,
+        "A": 4,
+        "B": 272,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 87,
+        "opcode": 398,
+        "A": 8,
+        "B": 2,
+        "C": 7,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 88,
+        "opcode": 110,
+        "A": 9,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 89,
+        "opcode": 193,
+        "A": 10,
+        "B": 10,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 90,
+        "opcode": 358,
+        "A": 8,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 91,
+        "opcode": 388,
+        "A": 0,
+        "B": 98,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 92,
+        "opcode": 294,
+        "A": 1,
+        "B": 8,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 93,
+        "opcode": 388,
+        "A": 0,
+        "B": 98,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 94,
+        "opcode": 198,
+        "A": 11,
+        "B": 4,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 95,
+        "opcode": 64,
+        "A": 12,
+        "B": 8,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 96,
+        "opcode": 386,
+        "A": 11,
+        "B": 12,
+        "C": 12,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 97,
+        "opcode": 221,
+        "A": 10,
+        "B": 12,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 98,
+        "opcode": 288,
+        "A": 9,
+        "B": 11,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 99,
+        "opcode": 358,
+        "A": 9,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 100,
+        "opcode": 388,
+        "A": 0,
+        "B": 272,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 101,
+        "opcode": 315,
+        "A": 11,
+        "B": 10,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 102,
+        "opcode": 388,
+        "A": 0,
+        "B": 110,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 103,
+        "opcode": 173,
+        "A": 11,
+        "B": "SL",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 104,
+        "opcode": 159,
+        "A": 11,
+        "B": 11,
+        "C": "GetMetaValue",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 105,
+        "opcode": 295,
+        "A": 13,
+        "B": "ACTOR_NAME",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 106,
+        "opcode": 64,
+        "A": 14,
+        "B": 8,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 107,
+        "opcode": 209,
+        "A": 11,
+        "B": 14,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 108,
+        "opcode": 366,
+        "A": 11,
+        "B": 0,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 109,
+        "opcode": 388,
+        "A": 0,
+        "B": 110,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 110,
+        "opcode": 399,
+        "A": 11,
+        "B": "黑名单玩家",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 111,
+        "opcode": 9,
+        "A": 12,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 112,
+        "opcode": 96,
+        "A": 12,
+        "B": 12,
+        "C": "distance",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 113,
+        "opcode": 110,
+        "A": 13,
+        "B": 1,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 114,
+        "opcode": 193,
+        "A": 14,
+        "B": 14,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 115,
+        "opcode": 289,
+        "A": 12,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 116,
+        "opcode": 388,
+        "A": 0,
+        "B": 199,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 117,
+        "opcode": 218,
+        "A": 15,
+        "B": "global",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 118,
+        "opcode": 410,
+        "A": 15,
+        "B": 15,
+        "C": "gamePlayerController",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 119,
+        "opcode": 358,
+        "A": 15,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 120,
+        "opcode": 388,
+        "A": 0,
+        "B": 124,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 121,
+        "opcode": 248,
+        "A": 15,
+        "B": "global",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 122,
+        "opcode": 96,
+        "A": 15,
+        "B": 15,
+        "C": "gamePlayerController",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 123,
+        "opcode": 393,
+        "A": 15,
+        "B": 15,
+        "C": "GetMainPlayer",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 124,
+        "opcode": 209,
+        "A": 15,
+        "B": 16,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 125,
+        "opcode": 60,
+        "A": 15,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 126,
+        "opcode": 388,
+        "A": 0,
+        "B": 130,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 127,
+        "opcode": 138,
+        "A": 16,
+        "B": 15,
+        "C": "GetMapX",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 128,
+        "opcode": 209,
+        "A": 16,
+        "B": 17,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 129,
+        "opcode": 366,
+        "A": 16,
+        "B": 0,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 130,
+        "opcode": 388,
+        "A": 0,
+        "B": 135,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 131,
+        "opcode": 173,
+        "A": 16,
+        "B": "SL",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 132,
+        "opcode": 102,
+        "A": 16,
+        "B": 16,
+        "C": "GetMetaValue",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 133,
+        "opcode": 295,
+        "A": 18,
+        "B": "ACTOR_MAP_X",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 134,
+        "opcode": 288,
+        "A": 19,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 135,
+        "opcode": 209,
+        "A": 16,
+        "B": 19,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 136,
+        "opcode": 340,
+        "A": 15,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 137,
+        "opcode": 388,
+        "A": 0,
+        "B": 141,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 138,
+        "opcode": 393,
+        "A": 17,
+        "B": 15,
+        "C": "GetMapY",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 139,
+        "opcode": 209,
+        "A": 17,
+        "B": 18,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 140,
+        "opcode": 366,
+        "A": 17,
+        "B": 0,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 141,
+        "opcode": 388,
+        "A": 0,
+        "B": 146,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 142,
+        "opcode": 146,
+        "A": 17,
+        "B": "SL",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 143,
+        "opcode": 204,
+        "A": 17,
+        "B": 17,
+        "C": "GetMetaValue",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 144,
+        "opcode": 295,
+        "A": 19,
+        "B": "ACTOR_MAP_Y",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 145,
+        "opcode": 64,
+        "A": 20,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 146,
+        "opcode": 209,
+        "A": 17,
+        "B": 20,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 147,
+        "opcode": 146,
+        "A": 18,
+        "B": "SL",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 148,
+        "opcode": 102,
+        "A": 18,
+        "B": 18,
+        "C": "GetMetaValue",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 149,
+        "opcode": 295,
+        "A": 20,
+        "B": "ACTOR_MAP_X",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 150,
+        "opcode": 288,
+        "A": 21,
+        "B": 8,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 151,
+        "opcode": 209,
+        "A": 18,
+        "B": 21,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 152,
+        "opcode": 105,
+        "A": 19,
+        "B": "SL",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 153,
+        "opcode": 393,
+        "A": 19,
+        "B": 19,
+        "C": "GetMetaValue",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 154,
+        "opcode": 295,
+        "A": 21,
+        "B": "ACTOR_MAP_Y",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 155,
+        "opcode": 241,
+        "A": 22,
+        "B": 8,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 156,
+        "opcode": 209,
+        "A": 19,
+        "B": 22,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 157,
+        "opcode": 336,
+        "A": 20,
+        "B": 5,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 158,
+        "opcode": 241,
+        "A": 21,
+        "B": 16,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 159,
+        "opcode": 266,
+        "A": 22,
+        "B": 17,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 160,
+        "opcode": 64,
+        "A": 23,
+        "B": 18,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 161,
+        "opcode": 221,
+        "A": 24,
+        "B": 19,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 162,
+        "opcode": 241,
+        "A": 25,
+        "B": 12,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 163,
+        "opcode": 209,
+        "A": 20,
+        "B": 25,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 164,
+        "opcode": 288,
+        "A": 14,
+        "B": 20,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 165,
+        "opcode": 143,
+        "A": 0,
+        "B": 14,
+        "C": null,
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 166,
+        "opcode": 388,
+        "A": 0,
+        "B": 167,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 167,
+        "opcode": 174,
+        "A": 13,
+        "B": 0,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 168,
+        "opcode": 110,
+        "A": 13,
+        "B": 1,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 169,
+        "opcode": 366,
+        "A": 13,
+        "B": 0,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 170,
+        "opcode": 388,
+        "A": 0,
+        "B": 199,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 171,
+        "opcode": 218,
+        "A": 20,
+        "B": "os",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 172,
+        "opcode": 96,
+        "A": 20,
+        "B": 20,
+        "C": "time",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 173,
+        "opcode": 209,
+        "A": 20,
+        "B": 20,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 174,
+        "opcode": 324,
+        "A": 21,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 175,
+        "opcode": 290,
+        "A": 21,
+        "B": 21,
+        "C": "distLogAt",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 176,
+        "opcode": 167,
+        "A": 21,
+        "B": 20,
+        "C": 21,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 177,
+        "opcode": 234,
+        "A": 22,
+        "B": 6,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 178,
+        "opcode": 225,
+        "A": 0,
+        "B": 22,
+        "C": 21,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 179,
+        "opcode": 388,
+        "A": 0,
+        "B": 199,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 180,
+        "opcode": 234,
+        "A": 21,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 181,
+        "opcode": 125,
+        "A": 21,
+        "B": "distLogAt",
+        "C": 20,
+        "operand_flags": 2,
+        "mode": 0
+      },
+      {
+        "slot": 182,
+        "opcode": 403,
+        "A": 21,
+        "B": 7,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 183,
+        "opcode": 295,
+        "A": 22,
+        "B": "黑名单距离未命中：我(%s,%s) 对方(%s,%s) 限制%s格（不可达或超出）",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 184,
+        "opcode": 188,
+        "A": 23,
+        "B": "tostring",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 185,
+        "opcode": 64,
+        "A": 24,
+        "B": 16,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 186,
+        "opcode": 209,
+        "A": 23,
+        "B": 24,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 187,
+        "opcode": 188,
+        "A": 24,
+        "B": "tostring",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 188,
+        "opcode": 241,
+        "A": 25,
+        "B": 17,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 189,
+        "opcode": 209,
+        "A": 24,
+        "B": 25,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 190,
+        "opcode": 105,
+        "A": 25,
+        "B": "tostring",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 191,
+        "opcode": 288,
+        "A": 26,
+        "B": 18,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 192,
+        "opcode": 209,
+        "A": 25,
+        "B": 26,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 193,
+        "opcode": 188,
+        "A": 26,
+        "B": "tostring",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 194,
+        "opcode": 64,
+        "A": 27,
+        "B": 19,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 195,
+        "opcode": 209,
+        "A": 26,
+        "B": 27,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 196,
+        "opcode": 146,
+        "A": 27,
+        "B": "tostring",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 197,
+        "opcode": 288,
+        "A": 28,
+        "B": 12,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 198,
+        "opcode": 184,
+        "A": 27,
+        "B": 28,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 199,
+        "opcode": 376,
+        "A": 21,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 200,
+        "opcode": 60,
+        "A": 13,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 201,
+        "opcode": 388,
+        "A": 0,
+        "B": 272,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 202,
+        "opcode": 105,
+        "A": 15,
+        "B": "os",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 203,
+        "opcode": 410,
+        "A": 15,
+        "B": 15,
+        "C": "time",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 204,
+        "opcode": 209,
+        "A": 15,
+        "B": 15,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 205,
+        "opcode": 9,
+        "A": 16,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 206,
+        "opcode": 290,
+        "A": 16,
+        "B": 16,
+        "C": "alertAt",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 207,
+        "opcode": 147,
+        "A": 16,
+        "B": 15,
+        "C": 16,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 208,
+        "opcode": 127,
+        "A": 17,
+        "B": 6,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 209,
+        "opcode": 190,
+        "A": 0,
+        "B": 17,
+        "C": 16,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 210,
+        "opcode": 388,
+        "A": 0,
+        "B": 219,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 211,
+        "opcode": 127,
+        "A": 16,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 212,
+        "opcode": 306,
+        "A": 16,
+        "B": "alertAt",
+        "C": 15,
+        "operand_flags": 2,
+        "mode": 0
+      },
+      {
+        "slot": 213,
+        "opcode": 403,
+        "A": 16,
+        "B": 7,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 214,
+        "opcode": 295,
+        "A": 17,
+        "B": "野外观测到黑名单玩家：%s（%d格）",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 215,
+        "opcode": 241,
+        "A": 18,
+        "B": 11,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 216,
+        "opcode": 120,
+        "A": 19,
+        "B": 14,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 217,
+        "opcode": 388,
+        "A": 0,
+        "B": 218,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 218,
+        "opcode": 295,
+        "A": 19,
+        "B": 0,
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 219,
+        "opcode": 128,
+        "A": 16,
+        "B": 19,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 220,
+        "opcode": 9,
+        "A": 16,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 221,
+        "opcode": 410,
+        "A": 16,
+        "B": 16,
+        "C": "cdTicks",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 222,
+        "opcode": 77,
+        "A": 0,
+        "B": 16,
+        "C": 0,
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 223,
+        "opcode": 388,
+        "A": 0,
+        "B": 273,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 224,
+        "opcode": 324,
+        "A": 16,
+        "B": 8,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 225,
+        "opcode": 209,
+        "A": 16,
+        "B": 16,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 226,
+        "opcode": 60,
+        "A": 16,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 227,
+        "opcode": 388,
+        "A": 0,
+        "B": 251,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 228,
+        "opcode": 127,
+        "A": 17,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 229,
+        "opcode": 324,
+        "A": 18,
+        "B": 9,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 230,
+        "opcode": 0,
+        "A": 17,
+        "B": "cdTicks",
+        "C": 18,
+        "operand_flags": 2,
+        "mode": 0
+      },
+      {
+        "slot": 231,
+        "opcode": 88,
+        "A": 17,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 232,
+        "opcode": 114,
+        "A": 17,
+        "B": "noStoneWarned",
+        "C": false,
+        "operand_flags": 6,
+        "mode": 0
+      },
+      {
+        "slot": 233,
+        "opcode": 127,
+        "A": 17,
+        "B": 10,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 234,
+        "opcode": 218,
+        "A": 18,
+        "B": "string",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 235,
+        "opcode": 163,
+        "A": 18,
+        "B": 18,
+        "C": "format",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 236,
+        "opcode": 295,
+        "A": 19,
+        "B": "黑名单玩家：%s（%d格），飞随机",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 237,
+        "opcode": 64,
+        "A": 20,
+        "B": 11,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 238,
+        "opcode": 120,
+        "A": 21,
+        "B": 14,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 239,
+        "opcode": 388,
+        "A": 0,
+        "B": 240,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 240,
+        "opcode": 295,
+        "A": 21,
+        "B": 0,
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 241,
+        "opcode": 264,
+        "A": 18,
+        "B": 21,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 242,
+        "opcode": 200,
+        "A": 17,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 243,
+        "opcode": 403,
+        "A": 17,
+        "B": 7,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 244,
+        "opcode": 295,
+        "A": 18,
+        "B": "黑名单玩家 %s，距离 %d 格，使用 %s 随机传送",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 245,
+        "opcode": 241,
+        "A": 19,
+        "B": 11,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 246,
+        "opcode": 120,
+        "A": 20,
+        "B": 14,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 247,
+        "opcode": 388,
+        "A": 0,
+        "B": 248,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 248,
+        "opcode": 295,
+        "A": 20,
+        "B": 0,
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 249,
+        "opcode": 241,
+        "A": 21,
+        "B": 16,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 250,
+        "opcode": 128,
+        "A": 17,
+        "B": 21,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 251,
+        "opcode": 388,
+        "A": 0,
+        "B": 273,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 252,
+        "opcode": 234,
+        "A": 17,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 253,
+        "opcode": 324,
+        "A": 18,
+        "B": 11,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 254,
+        "opcode": 306,
+        "A": 17,
+        "B": "cdTicks",
+        "C": 18,
+        "operand_flags": 2,
+        "mode": 0
+      },
+      {
+        "slot": 255,
+        "opcode": 9,
+        "A": 17,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 256,
+        "opcode": 96,
+        "A": 17,
+        "B": 17,
+        "C": "noStoneWarned",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 257,
+        "opcode": 366,
+        "A": 17,
+        "B": 0,
+        "C": 1,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 258,
+        "opcode": 388,
+        "A": 0,
+        "B": 273,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 259,
+        "opcode": 234,
+        "A": 17,
+        "B": 2,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 260,
+        "opcode": 322,
+        "A": 17,
+        "B": "noStoneWarned",
+        "C": true,
+        "operand_flags": 6,
+        "mode": 0
+      },
+      {
+        "slot": 261,
+        "opcode": 234,
+        "A": 17,
+        "B": 10,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 262,
+        "opcode": 295,
+        "A": 18,
+        "B": "没有随机传送石，黑名单玩家传送暂停",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 263,
+        "opcode": 128,
+        "A": 17,
+        "B": 18,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 264,
+        "opcode": 81,
+        "A": 17,
+        "B": 7,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 265,
+        "opcode": 47,
+        "A": 18,
+        "B": "没有可用的随机传送道具（%s）",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 266,
+        "opcode": 218,
+        "A": 19,
+        "B": "table",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 267,
+        "opcode": 274,
+        "A": 19,
+        "B": 19,
+        "C": "concat",
+        "operand_flags": 4,
+        "mode": 0
+      },
+      {
+        "slot": 268,
+        "opcode": 127,
+        "A": 20,
+        "B": 12,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 269,
+        "opcode": 295,
+        "A": 21,
+        "B": "/",
+        "C": null,
+        "operand_flags": 2,
+        "mode": 1
+      },
+      {
+        "slot": 270,
+        "opcode": 264,
+        "A": 19,
+        "B": 21,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 271,
+        "opcode": 376,
+        "A": 17,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      },
+      {
+        "slot": 272,
+        "opcode": 388,
+        "A": 0,
+        "B": 273,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 273,
+        "opcode": 395,
+        "A": 4,
+        "B": 86,
+        "C": null,
+        "operand_flags": 0,
+        "mode": 1
+      },
+      {
+        "slot": 274,
+        "opcode": 339,
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "operand_flags": 0,
+        "mode": 0
+      }
+    ],
+    "children": []
+  }
+}
