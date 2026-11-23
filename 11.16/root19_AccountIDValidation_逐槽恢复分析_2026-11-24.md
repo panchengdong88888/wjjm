@@ -138,3 +138,18 @@
 - 新测试副本：`11.16/MainLeftBottom_11.16_main回调修正版_G57_完整模块实机测试.lua`，commit：`9f7dbef17f3982d9bee0ab5da7e19953c2273330`。
 - G57测试范围必须准确描述：完整模块chunk全部顶层代码 + 文件末尾MainLeftBottom.main()调用；不是隔离main函数测试。与G54/G55一样，若出现异常不能单凭本次结果归因到main内部。G57尚未实测，等待用户反馈。
 - G56仍未实测，不再要求测试G56。当前唯一待实机验证版本为G57；测试前无需重测G48–G52。
+ 
+
+## 2026-11-24后续：完整恢复main并写入唯一明文
+
+本节覆盖前文“测试模式跳过账号验证”的旧状态；以本节和当前唯一明文为准。
+
+- 唯一明文已更新：`11.16/MainLeftBottom_11.16_明文.lua`
+- 更新commit：`f311ab2f0833a1e1e2194c4fe1f8e324a5b3bc02`
+- 新blob：`8cf2a467be5888523348e34b0a5c597452a7c3ef`
+- 当前AccountIDValidation已恢复完整顺序：读取GAME_ID并与204208比较；读取UID；建立原始九项字符串白名单；按ipairs遍历并对双方tostring比较；命中时PrintLog成功提示；未命中时调用现有`ShowLocalNoticeByType`通知闭包并PrintLog失败提示后return；验证成功才注册0.5秒Schedule。
+- 等待回调检查`MainProperty`、`_ui`、`Panel_mini_chat`；就绪后直接`SL:UnSchedule(waitTimer)`并调用`MainLeftBottom.doInit()`；未就绪时输出原始等待提示。
+- 已移除旧测试版的`_mainStarted`保护。原始root/19没有该状态；当前文件末尾主动调用main一次，因此不再额外引入防重复分支。
+- 静态审计结果：GAME_ID门控、UID读取、九项白名单（数量=9）、未命中通知、成功/失败日志、0.5秒Schedule、UnSchedule、直接doInit均存在；未发现pcall、doInit类型保护或额外启动状态。
+- 本次只替换AccountIDValidation函数区域，后续模块代码及`MainLeftBottom.main = AccountIDValidation`绑定保留。未生成G58，也未要求用户安装测试。
+- 该提交完成的是源码恢复和静态检查，不代表已完成游戏内实机验证。G57反馈仍然是“按钮与游戏UI显示，但部分UI异常”；G57运行的是完整模块chunk，不能据此单独归因main。
