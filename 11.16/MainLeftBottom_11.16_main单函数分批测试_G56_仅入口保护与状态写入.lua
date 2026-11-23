@@ -3,7 +3,7 @@ G56｜11.16 main() 内部第二批：仅入口防重复判断与状态写入
 基线：G53完整测试快照；保留正式明文全部模块代码。
 目的：在G55仍出现问题后，继续隔离main()。完整执行模块chunk，但main()仅保留入口防重复判断和_mainStarted状态写入。
 本批不注册main等待定时器；其他模块中的Schedule/ScheduleOnce仍使用G54相同拦截器，只登记不执行。
-waitForMainProperty只构造、不注册、不触发；doInit()不调用。
+本轮完全不定义/构造waitForMainProperty；doInit()不调用。
 本文件是G55实测仍有问题后的第二批逻辑块定位测试。
 本文件为独立测试文件，不覆盖正式明文。
 ]]
