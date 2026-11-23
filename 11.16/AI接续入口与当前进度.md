@@ -4490,3 +4490,16 @@ G28显示，当前待测G29
 - 注意：G50没有完整引入原版文件其他顶层闭包工厂（如苹果下图工厂）；也没有主动调用main/doInit。G50只隔离doInit工厂这一组。
 - 下一步等待用户实测G50。通过后再处理苹果下图顶层工厂组；之后单独测试main闭包创建、main主动调用（文件末尾兼容启动层）。不通过则检查doInit工厂本身或其捕获表/环境读取，进一步缩小。
 - 唯一正式明文未修改。
+
+
+## 2026-11-23 G50通过，建立G51苹果下图顶层工厂实例化测试
+
+- 用户实测反馈：G50正常。11.16原版 `make_MainLeftBottom_doInit_11_16` 工厂定义与顶层实例化调用通过；当前没有证据表明doInit工厂实例化本身导致加载异常。
+- G48、G49、G50连续通过。G49覆盖root骨架及SCREEN_WIDTH/SCREEN_HEIGHT读取；G50额外覆盖doInit工厂定义与实例化。上述测试均未调用doInit闭包，也未主动调用main。
+- 下一组按原版加载阶段顺序，检查苹果下图顶层闭包工厂组：`make_helper_root_59`、`make_helper_root_0`、`make_AppleMapTimerCallback_11_16`、`make_startAppleMap`，以及顶层 `startAppleMap = make_startAppleMap({...})` 赋值。
+- 新建G51：`11.16/MainLeftBottom_11.16_UI批量诊断_G51_苹果下图顶层工厂实例化测试.lua`。基于G50，通过后追加上述工厂定义及原版候选地图表/捕获顺序/顶层实例化语句。工厂函数体按正式明文复制；只执行工厂实例化，不调用返回闭包，不启动Schedule，不触发苹果下图业务。
+- 为避免将尚未纳入本轮的其他依赖函数混进来，G51对苹果下图工厂捕获的ShowLocalNoticeByType、helper_root_73、helper_root_65、helper_root_28、backCity、PrintLog提供本地空/安全占位函数。这些占位值只用于捕获闭包；在不调用回调的前提下不会执行。**因此G51专门验证苹果下图工厂实例化/顶层startAppleMap赋值链，不验证这些依赖函数自身的加载期行为。**
+- G51文件链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E6%89%B9%E9%87%8F%E8%AF%8A%E6%96%AD_G51_%E8%8B%B9%E6%9E%9C%E4%B8%8B%E5%9B%BE%E9%A1%B6%E5%B1%82%E5%B7%A5%E5%8E%82%E5%AE%9E%E4%BE%8B%E5%8C%96%E6%B5%8B%E8%AF%95.lua
+- G51首次创建提交：`406d31359830cfcc6f39c7941159f04ef2825b72`；随后修正提取代码边界和重复局部声明，最终提交：`a5714d66090c4e97d464a0c75564faa99b0f319e`；最终文件blob：`10967a009566f1ba7846060e98723baa59a56714`。
+- 当前等待用户实测G51。若通过，下一轮单独验证文件末尾主动调用main的兼容启动层（不能与G51合并）；若异常，再细分苹果下图四个工厂/顶层赋值组。
+- 唯一正式明文 `MainLeftBottom_11.16_明文.lua` 未修改。
