@@ -4771,3 +4771,19 @@ G28显示，当前待测G29
 - G55保留完整模块chunk、main入口防重复/状态写入/启动PrintLog及等待闭包构造，仅移除main最后的等待Schedule注册；其他定时器拦截与G54相同，doInit未调用。
 - 静态检查已确认main等待Schedule注册0处，文件末尾main主动调用保留，doInit不执行。
 - **下一步：用户实测G55。** G55通过则再单独恢复main的等待Schedule注册；G55异常则继续拆分main前置同步段。不得重复G48–G52，不得跳到doInit或定时器回调阶段。
+
+
+## 2026-11-24续：G55实测仍有问题，创建G56入口保护隔离测试
+
+- 用户实测G55反馈：“有问题”。不补问具体UI表现，按既定方法继续拆分main()。
+- G55执行完整模块chunk；main()执行入口防重复判断、写入`_mainStarted`、启动PrintLog、构造`waitForMainProperty`闭包；仅屏蔽main末尾等待Schedule注册。定时器回调和doInit均不执行。
+- 因G55仍有问题，当前只能排除“main末尾等待Schedule注册是唯一原因”；问题仍可能来自完整模块chunk中的顶层代码、main入口保护/状态写入、PrintLog或等待闭包构造，不能直接归因到其中某一项。
+- 新建G56：`11.16/MainLeftBottom_11.16_main单函数分批测试_G56_仅入口保护与状态写入.lua`
+  - 提交：`6f9aff0ca793bcf5f9b721d3e168ea0ecaea99b9`
+  - blob：`9212b09ec79f508e8a45bb0c02e0d16b9a3303dd`
+  - 保留完整模块chunk与G54相同的定时器拦截；main()仅执行`_mainStarted`防重复判断和状态写入。
+  - 本轮不执行PrintLog，不创建waitTimer，不构造waitForMainProperty闭包，不注册main等待定时器；不调用doInit；其他定时器仍只登记、不执行。
+- G56判定：
+  - 若正常：问题范围缩小到G55额外执行的PrintLog或等待闭包构造，下一轮再将两者分开。
+  - 若仍有问题：问题范围落在完整模块chunk顶层代码或main入口保护/状态写入；再结合G48–G52已通过的具体差异继续缩小，不进入doInit/定时器回调阶段。
+- 当前状态：G56待用户实机测试。G48–G52不重复；G53仍只记为main+doInit联合异常、无法归因。
