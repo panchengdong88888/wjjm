@@ -4683,3 +4683,25 @@ G28显示，当前待测G29
 1. 继续提取root/34本版274条完整物理指令，核对函数主体实际如何读取H[0]–H[12]，不要只按当前明文的变量名反向猜测。
 2. 提取完成前不改唯一正式明文；随后再决定是改成捕获工厂，还是在模块级建立等价且生命周期正确的本地绑定。
 3. 同时核对root/34是否在函数体内调用H[1]（root/68）及H[5]（root/9），避免只修四个数值却遗漏其他捕获。
+
+
+## 2026-11-23续：root/34另一个明确脱接——root/62物品使用闭包未调用
+
+继续检查root/34的13项捕获和当前明文全文件引用，确认：
+
+- 父级root槽481创建root/62，槽482捕获父级N[60]；root/62的常量包含`ipairs`、`GetMetaValue`、`ITEM_INDEX_BY_NAME`、`ITEM_COUNT`、`tonumber`、`UseItemByIndex`，其职责是按捕获的随机传送道具名称列表检查库存并调用`SL:UseItemByIndex`。
+- root/34槽567将该闭包捕获为H[8]。因此root/34需要通过该捕获闭包执行随机传送道具使用。
+- 当前明文第2420行却调用`UseItemByIndex()`。全文件没有`UseItemByIndex`的全局/局部函数定义；第948行只有`makeUseItemByIndex(randomTeleportItemNames)`工厂定义，并未实例化为`UseItemByIndex`。
+- 当前明文第948行工厂参数`randomTeleportItemNames`只在该工厂返回的内部闭包词法作用域内有效，不能供第2445行的root/34全局函数直接读取。
+- 因而除了四个数值/列表捕获未接入外，H[8]这个实际物品使用闭包也没有接入root/34；当前`UseItemByIndex()`是未绑定全局名。
+
+本轮还复核root槽433–441：N[67]状态表由槽441写入root局部N[0]的`blacklist`字段；N[0]在root早期已作为`MainLeftBottom.a`共享状态表建立。因此当前`getMainLeftBottomBlacklistState()`读取`MainLeftBottom.a.blacklist`与该父级字段路径一致，不将其误报为差异。
+
+**当前已确认的root/34明文脱接项：**
+1. `blacklistAlertThreshold`应接H[7]=2；
+2. `blacklistShortRetryDelay`应接H[9]=1；
+3. `blacklistNoItemRetryDelay`应接H[11]=300；
+4. `randomTeleportItemNames`应接H[12]={“随机传送石”}；
+5. `UseItemByIndex()`应核对并接H[8]闭包，而不是调用当前文件中不存在的全局函数。
+
+这些均为静态作用域/捕获差异；仍不据此宣称已确认游戏UI故障根因。正式明文未修改。
