@@ -676,7 +676,6 @@ local appleMapTargetCandidates_11_16 = {
 }
 
 local appleMapState_11_16 = MainLeftBottom.z
-local appleMapState_11_16 = MainLeftBottom.z
 local appleMapStopCallback_11_16 = make_helper_root_59({
     appleMapState_11_16,
     nil, -- root/59的第二项捕获在本体中不读取；保留原始捕获槽位
@@ -700,6 +699,8 @@ local appleMapTimerCallback_11_16 = make_AppleMapTimerCallback_11_16({
 -- root/78：Schedule(callback, interval)包装函数；底层调用SL:Schedule。
 local function ScheduleAppleMap_11_16(callback, interval)
     return SL:Schedule(callback, interval)
+end
+
 startAppleMap = make_startAppleMap({
     appleMapState_11_16,
     ShowLocalNoticeByType,
