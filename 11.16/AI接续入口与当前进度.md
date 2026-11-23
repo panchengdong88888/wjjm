@@ -4367,3 +4367,15 @@ G28显示，当前待测G29
 - G38已创建：基于G35显示版，仅恢复G27原4494–5101段，并补缺失的外层`end`、移除原多余`end`；其余不变。文件`MainLeftBottom_11.16_UI批量诊断_G38_修正模式2回调边界并恢复4494-5101.lua`；提交`e6bd1888cb0556a0f6657554b2109d594f870b78`；blob`da24e113b672d44cb53c260c0cb013150b0f9f13`。
 - G38链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E6%89%B9%E9%87%8F%E8%AF%8A%E6%96%AD_G38_%E4%BF%AE%E6%AD%A3%E6%A8%A1%E5%BC%8F2%E5%9B%9E%E8%B0%83%E8%BE%B9%E7%95%8C%E5%B9%B6%E6%81%A2%E5%A4%8D4494-5101.lua
 - G38显示则确认函数边界错误是关键；不显示则继续拆分4494–5101。正式明文没有修改。用户下一步只需反馈“显示/不显示”。
+
+
+## 2026-11-23 root/52/2隐藏按钮回调闭合（原始指令已恢复）
+
+- 直接从11.16原版内嵌载荷重跑LZW/XOR/S()：142,522字节完整消费、162个原型、11,334个物理槽。
+- `root/52/2`完整30槽已提取，字节区间[73654,74067)，记录见`root52_2_原始30槽指令提取_2026-11-23.json`。
+- 捕获：子H[0]=MainLeftBottom.a，子H[1]=PrintLog；父root/52槽755创建闭包，756/757绑定，758将闭包注册到hidebut按钮。
+- 字节码确认：isHidden真值→PrintLog“隐藏所有按钮”→对象.hide()→GUI:setOpacity(hidebut,0)；isHidden假值→PrintLog“显示所有按钮”→对象.show()→GUI:setOpacity(hidebut,255)。
+- hide/show为无参数点调用，不是冒号调用；GUI:setOpacity为冒号方法调用。
+- 已按原始字节码修正唯一正式明文`MainLeftBottom_11.16_明文.lua`中的helper_root_52_2。提交40780d1e66c08933165272bd6311fda053ff5416；新blob f75385f350f30ac5e18cd19ef8a9775888efc4b7。
+- 原始30槽提取提交88068da2c48dd67918a9bf41c0a53e453bc1b6c9。
+- 未修改其他函数或诊断测试文件，尚未进行模拟器运行验证。若实测仍无响应，下一步检查运行时传入对象是否为MainLeftBottom.a，以及hide/show成员是否存在。
