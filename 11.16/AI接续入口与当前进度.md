@@ -4882,3 +4882,14 @@ G28显示，当前待测G29
 - 测试环境只mock PrintLog、ShowLocalNoticeByType、SL元数据读取、Schedule/UnSchedule、MainProperty及doInit；不加载完整模块、不触碰游戏UI。
 - 当前执行环境没有Lua/LuaJIT解释器，因此本轮只完成工具源码检查与唯一明文边界/断言覆盖的静态核对，**5组Lua用例尚未实际运行，不能报告为5/5通过**。工具可在有Lua解释器的环境运行：从`11.16`目录执行`lua 测试工具_Main函数隔离验证.lua`。
 - 本轮未修改唯一明文，当前仍为commit `99fe3fc39b77d5af7844fc2751bcc0710caab6a5` / blob `a46c19f05f5cf025ed6db8c575554698a8514dec`；未生成G58，未要求用户安装。
+
+
+### 2026-11-24追加：main隔离测试已在真实Lua 5.4运行通过
+
+- 已增加GitHub Actions工作流：`.github/workflows/main-lua-isolation.yml`，commit `87770e2706ab2edff86a7bef72c2434214a99197`。
+- 工作流使用Lua 5.4，直接在仓库`11.16`目录执行`lua 测试工具_Main函数隔离验证.lua`。
+- GitHub Actions job/check：`main-isolation`，job ID `137872419231`，run ID `45225971208`；结论`success`。
+- 真实Lua执行输出：`[通过] GAME_ID不匹配时立即退出`、`[通过] UID不在白名单时通知并退出`、`[通过] 白名单UID通过并注册0.5秒回调`、`[通过] 主界面三层未就绪时持续等待`、`[通过] 主界面就绪后UnSchedule并调用doInit`；最终`main隔离验证完成：5/5项通过`。
+- 因此前一条“没有Lua解释器，尚未实际运行”的状态已被本次CI实测结果取代。现在可以确认：当前唯一明文中的AccountIDValidation函数在Lua 5.4下可成功提取、编译并通过上述5组mock隔离用例。
+- 测试边界仍需严格区分：这证明main函数逻辑在Lua 5.4模拟环境下行为符合断言；**不证明**游戏内SL接口实际行为、Schedule真实回调时序、游戏主界面对象结构、完整模块顶层执行或G57所见的其他UI异常已解决。
+- 唯一明文仍未修改，仍为commit `99fe3fc39b77d5af7844fc2751bcc0710caab6a5` / blob `a46c19f05f5cf025ed6db8c575554698a8514dec`。没有新建G58，没有要求用户安装测试。
