@@ -8,29 +8,29 @@ main注册的waitForMainProperty回调本轮不触发，留待后续独立定时
 本文件为独立测试文件，不覆盖正式明文。
 ]]
 
-local __g53_timer_stats = { schedule = 0, scheduleOnce = 0, unschedule = 0, callbacks = {} }
-local __g53_timer_seq = 0
+local __g54_timer_stats = { schedule = 0, scheduleOnce = 0, unschedule = 0, callbacks = {} }
+local __g54_timer_seq = 0
 
 local function MainLeftBottom_TestSchedule(_scheduler, callback, interval)
-    __g53_timer_stats.schedule = __g53_timer_stats.schedule + 1
-    __g53_timer_seq = __g53_timer_seq + 1
-    __g53_timer_stats.callbacks[__g53_timer_seq] = {
+    __g54_timer_stats.schedule = __g54_timer_stats.schedule + 1
+    __g54_timer_seq = __g54_timer_seq + 1
+    __g54_timer_stats.callbacks[__g54_timer_seq] = {
         kind = "Schedule", callback = callback, interval = interval
     }
-    return { __g53_timer_id = __g53_timer_seq }
+    return { __g54_timer_id = __g54_timer_seq }
 end
 
 local function MainLeftBottom_TestScheduleOnce(_scheduler, callback, delay)
-    __g53_timer_stats.scheduleOnce = __g53_timer_stats.scheduleOnce + 1
-    __g53_timer_seq = __g53_timer_seq + 1
-    __g53_timer_stats.callbacks[__g53_timer_seq] = {
+    __g54_timer_stats.scheduleOnce = __g54_timer_stats.scheduleOnce + 1
+    __g54_timer_seq = __g54_timer_seq + 1
+    __g54_timer_stats.callbacks[__g54_timer_seq] = {
         kind = "ScheduleOnce", callback = callback, delay = delay
     }
-    return { __g53_timer_id = __g53_timer_seq }
+    return { __g54_timer_id = __g54_timer_seq }
 end
 
 local function MainLeftBottom_TestUnSchedule(_scheduler, _timer)
-    __g53_timer_stats.unschedule = __g53_timer_stats.unschedule + 1
+    __g54_timer_stats.unschedule = __g54_timer_stats.unschedule + 1
     return true
 end
 
@@ -7486,14 +7486,14 @@ end
 -- 该调用位于文件末尾，确保doInit及所有依赖函数均已定义。
 
 
--- G53：模块chunk完成后，按真实顺序执行main的同步部分；Schedule仅记录，不触发等待回调。
+-- G54：模块chunk完成后，按真实顺序执行main的同步部分；Schedule仅记录，不触发等待回调。
 if type(MainLeftBottom.main) == "function" then
     MainLeftBottom.main()
 end
 
 -- G54：只执行main()，不模拟主界面就绪，不调用doInit()。
 -- main内部完整同步代码执行；定时器仅登记，不触发waitForMainProperty。
-MainLeftBottom._g54TimerStats = __g53_timer_stats
+MainLeftBottom._g54TimerStats = __g54_timer_stats
 
 return MainLeftBottom
 
