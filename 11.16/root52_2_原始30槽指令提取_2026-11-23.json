@@ -1,0 +1,538 @@
+{
+  "title": "11.16 root/52/2 原始30槽指令定点提取",
+  "source": {
+    "path": "11.16/MainLeftBottom 11.16原版.lua",
+    "blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+    "encoded_payload_length": 147000,
+    "decoded_payload_bytes": 142522,
+    "xor_key": "0x17"
+  },
+  "parser_validation": {
+    "consumed_bytes": 142522,
+    "prototype_count": 162,
+    "total_physical_slots": 11334,
+    "complete": true
+  },
+  "target": {
+    "path": "root/52/2",
+    "start_byte": 73654,
+    "end_byte": 74067,
+    "constant_count": 10,
+    "parameter_count": 0,
+    "instruction_count": 30,
+    "constants": [
+      {
+        "index": 1,
+        "type": 1,
+        "value": "显示所有按钮"
+      },
+      {
+        "index": 2,
+        "type": 1,
+        "value": "hidebut"
+      },
+      {
+        "index": 3,
+        "type": 1,
+        "value": "hide"
+      },
+      {
+        "index": 4,
+        "type": 3,
+        "value": 255
+      },
+      {
+        "index": 5,
+        "type": 3,
+        "value": 0
+      },
+      {
+        "index": 6,
+        "type": 1,
+        "value": "隐藏所有按钮"
+      },
+      {
+        "index": 7,
+        "type": 1,
+        "value": "setOpacity"
+      },
+      {
+        "index": 8,
+        "type": 1,
+        "value": "show"
+      },
+      {
+        "index": 9,
+        "type": 1,
+        "value": "isHidden"
+      },
+      {
+        "index": 10,
+        "type": 1,
+        "value": "GUI"
+      }
+    ],
+    "instructions": [
+      {
+        "slot": 1,
+        "flags": 0,
+        "opcode": 234,
+        "A": 0,
+        "C": 0,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 0,
+        "resolvedD": 0
+      },
+      {
+        "slot": 2,
+        "flags": 32,
+        "opcode": 96,
+        "A": 0,
+        "C": 0,
+        "D": 9,
+        "mode": 0,
+        "constantMask": 4,
+        "resolvedC": 0,
+        "resolvedD": "isHidden"
+      },
+      {
+        "slot": 3,
+        "flags": 192,
+        "opcode": 289,
+        "A": 0,
+        "C": 0,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 0,
+        "resolvedD": 0
+      },
+      {
+        "slot": 4,
+        "flags": 194,
+        "opcode": 388,
+        "A": 0,
+        "C": 17,
+        "D": null,
+        "mode": 1,
+        "constantMask": 0,
+        "resolvedC": 17,
+        "resolvedD": null
+      },
+      {
+        "slot": 5,
+        "flags": 64,
+        "opcode": 403,
+        "A": 0,
+        "C": 1,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 1,
+        "resolvedD": 0
+      },
+      {
+        "slot": 6,
+        "flags": 82,
+        "opcode": 295,
+        "A": 1,
+        "C": 6,
+        "D": null,
+        "mode": 1,
+        "constantMask": 2,
+        "resolvedC": "隐藏所有按钮",
+        "resolvedD": null
+      },
+      {
+        "slot": 7,
+        "flags": 128,
+        "opcode": 123,
+        "A": 0,
+        "C": 1,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 1,
+        "resolvedD": 0
+      },
+      {
+        "slot": 8,
+        "flags": 192,
+        "opcode": 9,
+        "A": 0,
+        "C": 0,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 0,
+        "resolvedD": 0
+      },
+      {
+        "slot": 9,
+        "flags": 96,
+        "opcode": 410,
+        "A": 0,
+        "C": 0,
+        "D": 3,
+        "mode": 0,
+        "constantMask": 4,
+        "resolvedC": 0,
+        "resolvedD": "hide"
+      },
+      {
+        "slot": 10,
+        "flags": 0,
+        "opcode": 123,
+        "A": 0,
+        "C": 0,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 0,
+        "resolvedD": 0
+      },
+      {
+        "slot": 11,
+        "flags": 18,
+        "opcode": 253,
+        "A": 0,
+        "C": 10,
+        "D": null,
+        "mode": 1,
+        "constantMask": 2,
+        "resolvedC": "GUI",
+        "resolvedD": null
+      },
+      {
+        "slot": 12,
+        "flags": 96,
+        "opcode": 138,
+        "A": 0,
+        "C": 0,
+        "D": 7,
+        "mode": 0,
+        "constantMask": 4,
+        "resolvedC": 0,
+        "resolvedD": "setOpacity"
+      },
+      {
+        "slot": 13,
+        "flags": 64,
+        "opcode": 9,
+        "A": 2,
+        "C": 0,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 0,
+        "resolvedD": 0
+      },
+      {
+        "slot": 14,
+        "flags": 96,
+        "opcode": 410,
+        "A": 2,
+        "C": 2,
+        "D": 2,
+        "mode": 0,
+        "constantMask": 4,
+        "resolvedC": 2,
+        "resolvedD": "hidebut"
+      },
+      {
+        "slot": 15,
+        "flags": 18,
+        "opcode": 295,
+        "A": 3,
+        "C": 5,
+        "D": null,
+        "mode": 1,
+        "constantMask": 2,
+        "resolvedC": 0,
+        "resolvedD": null
+      },
+      {
+        "slot": 16,
+        "flags": 64,
+        "opcode": 123,
+        "A": 0,
+        "C": 3,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 3,
+        "resolvedD": 0
+      },
+      {
+        "slot": 17,
+        "flags": 130,
+        "opcode": 388,
+        "A": 0,
+        "C": 29,
+        "D": null,
+        "mode": 1,
+        "constantMask": 0,
+        "resolvedC": 29,
+        "resolvedD": null
+      },
+      {
+        "slot": 18,
+        "flags": 192,
+        "opcode": 234,
+        "A": 0,
+        "C": 1,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 1,
+        "resolvedD": 0
+      },
+      {
+        "slot": 19,
+        "flags": 18,
+        "opcode": 295,
+        "A": 1,
+        "C": 1,
+        "D": null,
+        "mode": 1,
+        "constantMask": 2,
+        "resolvedC": "显示所有按钮",
+        "resolvedD": null
+      },
+      {
+        "slot": 20,
+        "flags": 192,
+        "opcode": 128,
+        "A": 0,
+        "C": 1,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 1,
+        "resolvedD": 0
+      },
+      {
+        "slot": 21,
+        "flags": 128,
+        "opcode": 9,
+        "A": 0,
+        "C": 0,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 0,
+        "resolvedD": 0
+      },
+      {
+        "slot": 22,
+        "flags": 224,
+        "opcode": 96,
+        "A": 0,
+        "C": 0,
+        "D": 8,
+        "mode": 0,
+        "constantMask": 4,
+        "resolvedC": 0,
+        "resolvedD": "show"
+      },
+      {
+        "slot": 23,
+        "flags": 64,
+        "opcode": 123,
+        "A": 0,
+        "C": 0,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 0,
+        "resolvedD": 0
+      },
+      {
+        "slot": 24,
+        "flags": 82,
+        "opcode": 105,
+        "A": 0,
+        "C": 10,
+        "D": null,
+        "mode": 1,
+        "constantMask": 2,
+        "resolvedC": "GUI",
+        "resolvedD": null
+      },
+      {
+        "slot": 25,
+        "flags": 96,
+        "opcode": 138,
+        "A": 0,
+        "C": 0,
+        "D": 7,
+        "mode": 0,
+        "constantMask": 4,
+        "resolvedC": 0,
+        "resolvedD": "setOpacity"
+      },
+      {
+        "slot": 26,
+        "flags": 0,
+        "opcode": 9,
+        "A": 2,
+        "C": 0,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 0,
+        "resolvedD": 0
+      },
+      {
+        "slot": 27,
+        "flags": 224,
+        "opcode": 163,
+        "A": 2,
+        "C": 2,
+        "D": 2,
+        "mode": 0,
+        "constantMask": 4,
+        "resolvedC": 2,
+        "resolvedD": "hidebut"
+      },
+      {
+        "slot": 28,
+        "flags": 82,
+        "opcode": 295,
+        "A": 3,
+        "C": 4,
+        "D": null,
+        "mode": 1,
+        "constantMask": 2,
+        "resolvedC": 255,
+        "resolvedD": null
+      },
+      {
+        "slot": 29,
+        "flags": 64,
+        "opcode": 123,
+        "A": 0,
+        "C": 3,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 3,
+        "resolvedD": 0
+      },
+      {
+        "slot": 30,
+        "flags": 0,
+        "opcode": 205,
+        "A": 0,
+        "C": 0,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 0,
+        "resolvedD": 0
+      }
+    ]
+  },
+  "parent_creation": {
+    "parent_path": "root/52",
+    "parent_start_byte": 70567,
+    "parent_instruction_count": 865,
+    "slots_754_to_757": [
+      {
+        "slot": 754,
+        "flags": 96,
+        "opcode": 410,
+        "A": 31,
+        "C": 31,
+        "D": 169,
+        "mode": 0,
+        "constantMask": 4,
+        "resolvedC": 31,
+        "resolvedD": "hidebut"
+      },
+      {
+        "slot": 755,
+        "flags": 64,
+        "opcode": 387,
+        "A": 32,
+        "C": 2,
+        "D": 2,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 2,
+        "resolvedD": 2
+      },
+      {
+        "slot": 756,
+        "flags": 128,
+        "opcode": 132,
+        "A": 0,
+        "C": 2,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 2,
+        "resolvedD": 0
+      },
+      {
+        "slot": 757,
+        "flags": 0,
+        "opcode": 132,
+        "A": 0,
+        "C": 0,
+        "D": 0,
+        "mode": 0,
+        "constantMask": 0,
+        "resolvedC": 0,
+        "resolvedD": 0
+      }
+    ],
+    "meaning": "slot755 Opcode387 creates childIndex=2 with captureCount=2; slot756 binds parent H[2] to child H[0]; slot757 binds parent H[0] to child H[1]."
+  },
+  "fusion_map": [
+    {
+      "slot": 5,
+      "consumes": [
+        6
+      ],
+      "meaning": "load H[1] (PrintLog) and message constant"
+    },
+    {
+      "slot": 8,
+      "consumes": [
+        9
+      ],
+      "meaning": "load H[0] and read its hide member"
+    },
+    {
+      "slot": 11,
+      "consumes": [
+        12
+      ],
+      "meaning": "load global GUI and prepare setOpacity receiver/method"
+    },
+    {
+      "slot": 13,
+      "consumes": [
+        14
+      ],
+      "meaning": "load H[0] and read hidebut member"
+    },
+    {
+      "slot": 21,
+      "consumes": [
+        22
+      ],
+      "meaning": "load H[0] and read its show member"
+    },
+    {
+      "slot": 26,
+      "consumes": [
+        27
+      ],
+      "meaning": "load H[0] and read hidebut member"
+    }
+  ]
+}
