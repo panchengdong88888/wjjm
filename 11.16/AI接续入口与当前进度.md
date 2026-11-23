@@ -4433,3 +4433,15 @@ G28显示，当前待测G29
 - G45文件：11.16/MainLeftBottom_11.16_UI批量诊断_G45_跳过初始化代理及元数据API.lua
 - G45提交：1283f8e5f414962ace3098427f8f890b38af0809
 - 判定：若G45游戏功能恢复，问题范围落在本轮跳过的代理/元数据API调用组；若仍异常，则继续查PrintLog、时间/状态写入或加载/初始化其他部分。G45不修改唯一正式明文。
+
+
+## 2026-11-23 G45仍异常，当前待测G46
+
+- 用户反馈G45仍未解决游戏功能异常。G45已跳过MoneyProxy/NPCStorageProxy代理获取、货币方法调用及全部初始化物品元数据查询；因此这些调用组单独被跳过后，仍不足以恢复游戏功能。
+- 回读G45实际文件后，确认其初始化前缀仍保留两个未隔离的外部调用组：① `PrintLog`读取并调用（原doInit约第6680–6682行）；② `os.time()`及`os.date()`（约第6705–6710行）。普通Lua快照表构建和模块状态字段赋值也保留。
+- 新建G46：`11.16/MainLeftBottom_11.16_UI批量诊断_G46_跳过PrintLog及时间API.lua`，以G45为基线，仅跳过初始化阶段PrintLog函数读取/调用，并将时间字段设为固定占位值（`initTime=0`、`initTimeStr="--"`），不再调用os.time/os.date。
+- G46继续保留普通Lua表构建、快照状态写入、NPCStorageProxy字段写入、GUI:Attach_UITop、mini_chat坐标读取、按钮组配置构建；按钮工厂仍屏蔽。G45已经隔离的代理/元数据API调用继续保持跳过。
+- G46创建提交：`e6ad4e460056a7efc480fcce60307d54b4a30caf`；基于G45 blob：`73f16c926c6cbe9879512ae671ef48159162bfb5`。
+- G46文件链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E6%89%B9%E9%87%8F%E8%AF%8A%E6%96%AD_G46_%E8%B7%B3%E8%BF%87PrintLog%E5%8F%8A%E6%97%B6%E9%97%B4API.lua
+- 测试只需观察：游戏功能是否恢复、原生UI是否正常、是否仍断线。若G46恢复，嫌疑集中在PrintLog/os时间API组；若仍异常，下一轮再隔离普通状态赋值与Attach_UITop/mini_chat读取，不要同时改多个组。
+- G46仅用于诊断，唯一正式明文未修改。当前等待用户实测G46结果。
