@@ -5733,6 +5733,8 @@ end
 -- 11.16 root/52/13、root/25、root/11：见人跑按钮完整接线。
 -- 用已恢复的共享状态cell、一次性提示回调、清理目标回调、方向换算和八方向偏移表
 -- 组装root/25的13项捕获；root/25/0周期回调由BindCruiseRunButtonFromCaptures生成。
+local BuildCruiseRunButtonHandler_11_16
+
 BuildCruiseRunButtonHandler_11_16 = function(timerState, moduleRoot, printLog, showNotice)
     timerState = timerState or MainLeftBottom.z
     moduleRoot = moduleRoot or MainLeftBottom
@@ -6411,8 +6413,6 @@ end
 -- root/52回调表：20个界面按钮均建立点击处理器；见人跑使用本版root/11、root/25捕获适配，
 -- 黑名单使用root/52/9启动与root/52/1停止，上架金条使用root/18、root/44配置读写闭包，
 -- 隐藏使用root/52/2容器显隐回调。
-local BuildCruiseRunButtonHandler_11_16
-
 local function BuildMainLeftBottomCallbackMap_11_16(context)
     context = context or {}
     local timerState = context.timerState or MainLeftBottom.z
