@@ -4445,3 +4445,15 @@ G28显示，当前待测G29
 - G46文件链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E6%89%B9%E9%87%8F%E8%AF%8A%E6%96%AD_G46_%E8%B7%B3%E8%BF%87PrintLog%E5%8F%8A%E6%97%B6%E9%97%B4API.lua
 - 测试只需观察：游戏功能是否恢复、原生UI是否正常、是否仍断线。若G46恢复，嫌疑集中在PrintLog/os时间API组；若仍异常，下一轮再隔离普通状态赋值与Attach_UITop/mini_chat读取，不要同时改多个组。
 - G46仅用于诊断，唯一正式明文未修改。当前等待用户实测G46结果。
+
+
+## 2026-11-23 改为从空白模块正向递增：G47
+
+- 用户指出此前G43–G46采用“从大段代码中逐步屏蔽”的方式不合适，要求改为“空文件起步，逐组加入代码；每组通过后再加入下一组”。确认采用此方法，后续不再以G45/G46为基线继续做删减式诊断。
+- 新建G47空白模块基线：`11.16/MainLeftBottom_11.16_UI批量诊断_G47_空白模块基线.lua`。
+- G47仅包含：获取当前Lua环境（getfenv/_ENV/_G）、建立MainLeftBottom表并导出、建立空的a/b/z状态表、空main入口、return模块根表。
+- G47不调用任何SL/GUI/global/Facade/Proxy/PrintLog/os外部API；不创建按钮、不注册回调、不发送消息、不启动定时器。
+- G47创建提交：`0fcc8abcecaeb019ef48a187d1a3d33cda0de237`。
+- G47链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E6%89%B9%E9%87%8F%E8%AF%8A%E6%96%AD_G47_%E7%A9%BA%E7%99%BD%E6%A8%A1%E5%9D%97%E5%9F%BA%E7%BA%BF.lua
+- 本轮只验证空模块加载后游戏本体是否正常；插件功能按钮不显示属于预期。若G47仍导致游戏功能异常/原生UI中断，优先怀疑加载器兼容、模块导出/入口约定或测试文件替换方式，而不是原业务函数。若G47正常，再从G48开始正向加入最小root骨架，每轮仅增加一组并记录结果。
+- 正式明文不变；G45/G46保留作历史诊断，不再作为下一轮基线。
