@@ -4457,3 +4457,23 @@ G28显示，当前待测G29
 - G47链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E6%89%B9%E9%87%8F%E8%AF%8A%E6%96%AD_G47_%E7%A9%BA%E7%99%BD%E6%A8%A1%E5%9D%97%E5%9F%BA%E7%BA%BF.lua
 - 本轮只验证空模块加载后游戏本体是否正常；插件功能按钮不显示属于预期。若G47仍导致游戏功能异常/原生UI中断，优先怀疑加载器兼容、模块导出/入口约定或测试文件替换方式，而不是原业务函数。若G47正常，再从G48开始正向加入最小root骨架，每轮仅增加一组并记录结果。
 - 正式明文不变；G45/G46保留作历史诊断，不再作为下一轮基线。
+
+
+## 2026-11-23 改为只排查模块加载阶段代码：G48通过、G49测试屏幕元变量读取
+
+- 用户确认其自行构建的G48代码已在游戏内测试，游戏原生UI、游戏功能“好像都正常”。G48结构：沿用G47环境获取/全局导出方式，创建MainLeftBottom及a/b/z表，main为空函数，doInit为空函数，最后return模块表。G48保留全局环境赋值，但补上了doInit入口；因此G47异常与G48正常之间的差异不能简单归因于getfenv/_ENV/_G。
+- 用户明确要求：只测试模块加载时实际执行的代码。功能回调/按钮点击/仓库等触发后才运行的代码不作为当前排查范围。
+- 已读取当前唯一正式明文 MainLeftBottom_11.16_明文.lua（blob SHA：f75385f350f30ac5e18cd19ef8a9775888efc4b7），确认加载阶段值得注意的语句：
+  1. root环境选择及 rootEnvironment.MainLeftBottom = MainLeftBottom；
+  2. 创建a/b/z表及字段写入；
+  3. 顶层立即执行 SL:GetMetaValue("SCREEN_WIDTH")、SL:GetMetaValue("SCREEN_HEIGHT")；
+  4. 顶层闭包/工厂实例化：苹果下图段的 make_helper_root_59(...)、make_helper_root_0(...)、make_AppleMapTimerCallback_11_16(...)、make_startAppleMap(...)；以及 make_MainLeftBottom_doInit_11_16({...})。这些工厂调用在加载时执行，但其返回闭包的函数体通常要等后续调用；仍需逐一静态核对工厂体是否存在额外副作用；
+  5. 顶层全局赋值 startAppleMap = ...；
+  6. 多处 function/function()...end 定义及闭包赋值只创建函数，不执行函数体；
+  7. 文件末尾当前存在 if type(MainLeftBottom.main) == "function" then MainLeftBottom.main() end，会在模块chunk执行期间主动调用main。其main（AccountIDValidation）会立即调用PrintLog并执行 SL:Schedule(waitForMainProperty, 0.5)，这不是单纯注册入口。此兼容启动层与root原始字节码“注册main并由加载器调用”的注释不一致，必须作为独立测试组，不应与其他加载代码混在一起。
+- G48正常不能证明所有顶层加载操作都安全；尤其屏幕元变量读取、苹果下图工厂实例化、doInit工厂实例化、main主动调用均尚未通过G48验证。
+- 新建G49：11.16/MainLeftBottom_11.16_UI批量诊断_G49_模块加载屏幕元变量测试.lua。以用户实测通过的G48为基线，加入11.16 root骨架的普通状态字段，并只增加两次屏幕元变量读取 SL:GetMetaValue("SCREEN_WIDTH") / SL:GetMetaValue("SCREEN_HEIGHT")；main/doInit仍为空函数，不调用，不实例化业务工厂，不注册事件，不创建定时器，不主动调用main。
+- G49提交：d933835a0d3908eae54549fac4b63fcfa1aae825。
+- G49链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E6%89%B9%E9%87%8F%E8%AF%8A%E6%96%AD_G49_%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD%E5%B1%8F%E5%B9%95%E5%85%83%E5%8F%98%E9%87%8F%E6%B5%8B%E8%AF%95.lua
+- 下一步等待用户测试G49。若通过，再逐组加入顶层工厂实例化（先苹果下图工厂，再doInit工厂）；main赋值与文件末尾主动调用main必须分开，最后单独验证主动启动是否导致异常。若G49异常，再把SCREEN_WIDTH与SCREEN_HEIGHT两次调用拆开测试。
+- 本轮未修改唯一正式明文；当前诊断范围只限模块加载阶段。
