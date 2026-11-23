@@ -4477,3 +4477,16 @@ G28显示，当前待测G29
 - G49链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E6%89%B9%E9%87%8F%E8%AF%8A%E6%96%AD_G49_%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD%E5%B1%8F%E5%B9%95%E5%85%83%E5%8F%98%E9%87%8F%E6%B5%8B%E8%AF%95.lua
 - 下一步等待用户测试G49。若通过，再逐组加入顶层工厂实例化（先苹果下图工厂，再doInit工厂）；main赋值与文件末尾主动调用main必须分开，最后单独验证主动启动是否导致异常。若G49异常，再把SCREEN_WIDTH与SCREEN_HEIGHT两次调用拆开测试。
 - 本轮未修改唯一正式明文；当前诊断范围只限模块加载阶段。
+
+
+## 2026-11-23 G49通过，建立G50验证doInit工厂加载期实例化
+
+- 用户实测反馈：G49正常。G49在G48通过基线上增加11.16 root骨架状态字段，并执行 `SL:GetMetaValue("SCREEN_WIDTH")` 与 `SL:GetMetaValue("SCREEN_HEIGHT")` 两次读取；游戏正常。暂时排除这两次读取单独导致当前异常。
+- 按用户要求，当前严格只排查模块chunk加载期间立即执行的顶层代码；不测试按钮点击、仓库请求、功能回调等触发式业务代码。
+- 核对正式明文后，`MainLeftBottom.doInit = make_MainLeftBottom_doInit_11_16({...})` 是加载期立即执行的工厂调用；但工厂函数内部只读取捕获表中的 `[1]`、`[3]`、`[4]`，并返回一个闭包。闭包内部的PrintLog、代理请求、Schedule、GUI创建等业务代码不会因工厂实例化而执行。
+- 新建G50：`11.16/MainLeftBottom_11.16_UI批量诊断_G50_doInit工厂实例化测试.lua`。以G49为基线，原样加入正式明文中的 `make_MainLeftBottom_doInit_11_16` 工厂函数定义及顶层工厂调用；`main`保持空函数，返回的`doInit`闭包不调用。该文件只验证工厂实例化和捕获读取是否引发加载期异常，不会运行doInit业务主体。
+- G50提交：`3580634f7f3c5fffe49ea8b7c512b682ef51193a`。
+- G50链接：https://github.com/panchengdong88888/wjjm/blob/main/11.16/MainLeftBottom_11.16_UI%E6%89%B9%E9%87%8F%E8%AF%8A%E6%96%AD_G50_doInit%E5%B7%A5%E5%8E%82%E5%AE%9E%E4%BE%8B%E5%8C%96%E6%B5%8B%E8%AF%95.lua
+- 注意：G50没有完整引入原版文件其他顶层闭包工厂（如苹果下图工厂）；也没有主动调用main/doInit。G50只隔离doInit工厂这一组。
+- 下一步等待用户实测G50。通过后再处理苹果下图顶层工厂组；之后单独测试main闭包创建、main主动调用（文件末尾兼容启动层）。不通过则检查doInit工厂本身或其捕获表/环境读取，进一步缩小。
+- 唯一正式明文未修改。
