@@ -4549,3 +4549,19 @@ G28显示，当前待测G29
   - 当前唯一明文第122–133行的`ShowLocalNoticeByType(Msg)`却直接读取未声明的全局`screenH`：`Y = screenH - 50`。当前root骨架只将高度写入`a.screenH`，没有声明同名局部变量。因此这段明文没有按原始字节码保留root/80对局部screenH的捕获语义；在运行时可能读取到nil/错误的全局值。
   - 该差异不是G48–G52加载期测试失败原因（这些测试没有调用ShowLocalNoticeByType），也尚不能认定它就是UI不显示的根因；但它是有原始指令与捕获映射双重证据支持的明文不一致点。
 - 下一步先继续扫描root 81个直接子闭包的捕获语义，按“原始捕获来源 → 当前明文实现引用方式 → 是否保留相同局部/upvalue”逐项列出，不立即批量修改。优先检查root/80、root/63、root/45、root/74等有捕获项且可能影响UI/启动链的闭包。唯一正式明文本轮未修改。
+
+
+## 2026-11-23 root捕获语义第二轮核对（继续）
+
+- 继续读取原始`root_闭包创建与捕获映射.json`与唯一正式明文，核对47个有捕获的root直接子闭包。
+- 本轮重点逐项对照了苹果下图链及下架金条链：
+  - root/59（苹果下图停止/按钮复位）：原始捕获顺序为z状态、未使用的N[1]、按钮配置所属表、ShowLocalNoticeByType；当前`make_helper_root_59`的工厂参数和调用顺序一致。
+  - root/27（苹果下图定时回调）：9项捕获顺序与`make_AppleMapTimerCallback_11_16`注入顺序一致。
+  - root/54（startAppleMap）：5项捕获顺序与`make_startAppleMap`注入顺序一致，且写入全局`startAppleMap`符合原始root槽359。
+  - root/33（startPutoutAll）：4项捕获顺序为z、ShowLocalNoticeByType、PrintLog、Schedule；当前按钮回调按此顺序构造传入表，主体按相同顺序读取。
+  - root/52（doInit）：正式明文传入的[1]/[3]/[4]被工厂读取；[12]/[13]虽然传入，但当前doInit工厂体没有读取这两个索引。暂列“未使用捕获槽/恢复完整度待核对”，不能直接认定为错误，因为对应原始闭包可能在未恢复部分本来就不读取，或当前业务代码未使用相关路径。
+- 当前确认的高置信度捕获语义不一致仍是root/80：
+  - 原始root槽46创建root/80，槽47捕获父级局部寄存器0；root槽16刚将SCREEN_HEIGHT读取结果写入该局部寄存器。
+  - 明文ShowLocalNoticeByType（第122–133行）直接读取全局screenH；模块初始化只写入MainLeftBottom.a.screenH，没有声明同名局部screenH。
+  - 这会导致通知Y坐标依赖未定义/外部全局值，和原始upvalue捕获不同。当前建议的最小语义修复方向是让ShowLocalNoticeByType闭包读取同一个初始化时的screenH局部值，而不是简单读取动态全局；具体改动先不执行，等待进一步核对其余捕获关系。
+- 本轮未修改唯一正式明文，也未安排模拟器测试。后续继续检查其余高捕获数量闭包（尤其root/6、root/25、root/34、root/52），重点确认每个捕获槽的父级寄存器身份、当前工厂参数顺序、是否出现把本应捕获的局部值改成全局查找，或捕获表索引错位。
