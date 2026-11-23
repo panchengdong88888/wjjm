@@ -4400,3 +4400,14 @@ G28显示，当前待测G29
 - **未改唯一正式明文。** 新建G42诊断版，以G41为完整基线，只增加一行`MainLeftBottom.a.hide = DestroyUI`（放在DestroyUI定义之后），其余代码完全沿用G41。此测试用于验证G41是否因`a.hide`未绑定而在点击时中断。
 - G42文件：`11.16/MainLeftBottom_11.16_UI批量诊断_G42_仅补绑定a_hide到DestroyUI.lua`；提交：`545c5b66f275be4c870287ad9284c92ce716c9f2`。
 - G42待用户模拟器验证。若G42点击后能正常隐藏/恢复，则证明缺失绑定是直接故障点；再回到11.16原始root父级创建/导出指令补齐`a.hide`的正式恢复证据。若仍无反应，则继续核实回调接收到的状态对象是否就是`MainLeftBottom.a`及按钮事件是否实际触发，不把G42结果过度解释。
+
+
+## 2026-11-23 G42仍无响应且随后断线：建立G43完全跳过功能按钮创建测试
+
+- 用户反馈：G42点击仍无反应，过一会游戏断线；用户怀疑脚本异常请求/代码异常被服务器断线处理，并提出先屏蔽全部按钮创建来隔离验证。
+- 检查G42诊断版 doInit_PlainButtons()：在初始化提示、货币/物品快照读取、NPCStorageProxy获取和状态写入后，进入UI创建链。其后依次执行 _uiButtonsCreated判断、GUI:Attach_UITop()、读取mini_chat坐标/尺寸、构建三组按钮配置、循环调用CreatePlainButton()，最后调用三次CreateStandaloneButton()创建hidebut/dropallbut/applebut。
+- 新建G43，以G42完整文件为基线，只在 moduleState.NPCStorageProxy = storageProxy 之后、if MainLeftBottom._uiButtonsCreated then 之前插入无条件 return。因此保留此前初始化/数据读取/代理获取，完全跳过UI顶层挂接、坐标读取、按钮配置组构建、全部功能按钮创建、按钮外观设置及这些按钮的点击事件注册。
+- G43文件：11.16/MainLeftBottom_11.16_UI批量诊断_G43_完全跳过功能按钮创建.lua；提交：6225390e6570a45ea4a8230a9fcfcf991ef9852b。
+- G43是诊断版，不修改唯一正式明文。此版本没有MainLeftBottom功能按钮，因此不测试按钮点击；只观察游戏UI/脚本是否正常、是否还会在一段时间后断线。
+- 结果解释：若G43不再断线，说明问题位于被跳过的UI/按钮创建链范围内（还不能仅凭这一轮断言具体是Button_Create）；若G43仍断线，则按钮创建不是断线的必要条件，应转查保留的初始化/API请求或其他定时/网络逻辑。
+- 用户尚未测试G43。
