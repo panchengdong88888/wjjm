@@ -4389,3 +4389,14 @@ G28显示，当前待测G29
 - G41提交：`9659f11b5eebc1ed3d9874e4bff653ffce54e5ba`。
 - 正式明文修正提交：`40780d1e66c08933165272bd6311fda053ff5416`；原始30槽提取提交：`88068da2c48dd67918a9bf41c0a53e453bc1b6c9`。
 - G41用于检验回调逻辑差异，不代表已在模拟器通过。待用户测试后，根据显示情况继续判断。
+
+
+## 2026-11-23 G41隐藏按钮点击无反应：发现a.hide缺少赋值，建立G42单点验证
+
+- 用户实测反馈：G41点击“隐藏”按钮仍无反应。
+- 重新扫描当前唯一明文`MainLeftBottom_11.16_明文.lua`全文件：`MainLeftBottom.a.show = function()`存在（约第2143行）；`MainLeftBottom.a.hide`、`a.hide =`、`state.hide =`及`hide = function`均无定义/赋值。
+- 11.16 `root/52/2`原始30槽已确认先检查`mainLeftBottomA.isHidden`，真分支直接调用`mainLeftBottomA.hide()`，然后才设置hidebut透明度为0。状态表初始化`a.isHidden = true`。因此若`a.hide`确实为nil，点击会在第一条方法调用处报错，透明度设置不会执行；这与“点击后没反应”高度吻合。
+- 当前明文中已有`DestroyUI()`（root/22，约第2766行），其逻辑将`MainLeftBottom.a.isHidden=false`、关闭窗口、遍历并隐藏所有按钮及本版新增背景控件，职责与“隐藏/收起”分支吻合。旧整合文件存在`a.hide = DestroyUI`的绑定，但该旧版证据只作为候选线索，不当作11.16原始字节码证明。
+- **未改唯一正式明文。** 新建G42诊断版，以G41为完整基线，只增加一行`MainLeftBottom.a.hide = DestroyUI`（放在DestroyUI定义之后），其余代码完全沿用G41。此测试用于验证G41是否因`a.hide`未绑定而在点击时中断。
+- G42文件：`11.16/MainLeftBottom_11.16_UI批量诊断_G42_仅补绑定a_hide到DestroyUI.lua`；提交：`545c5b66f275be4c870287ad9284c92ce716c9f2`。
+- G42待用户模拟器验证。若G42点击后能正常隐藏/恢复，则证明缺失绑定是直接故障点；再回到11.16原始root父级创建/导出指令补齐`a.hide`的正式恢复证据。若仍无反应，则继续核实回调接收到的状态对象是否就是`MainLeftBottom.a`及按钮事件是否实际触发，不把G42结果过度解释。
