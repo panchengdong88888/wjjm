@@ -127,3 +127,14 @@
 5. G54/G55的实测结果仍不能单独归因main，因为测试执行了整个模块chunk顶层代码。G56未实测，不要求用户现在测试。
 6. 下一步应先根据本报告修正唯一明文中的main/等待回调，使测试模式只保留明确需要的账号验证跳过策略，并去掉未获原始证据支持、会改变错误传播的doInit pcall；完成静态差异核对后再做真正隔离的main测试。不要直接要求用户测试G56或生成G57。
 
+
+
+## 2026-11-24后续：按root/19恢复等待回调并生成G57
+
+- 唯一明文`11.16/MainLeftBottom_11.16_明文.lua`已更新，commit：`a8b14bff6531ddf8a4b5771a60b87eda80e1ee05`，新blob：`5e36c2814264b3e34fb380936298013a2981296d`。
+- AccountIDValidation保留当前测试模式“暂时跳过GAME_ID/UID白名单门控”，但等待回调已按root/19/0原始指令改为：检查MainProperty._ui.Panel_mini_chat；就绪时直接`SL:UnSchedule(waitTimer)`并调用`MainLeftBottom.doInit()`；未就绪时通过PrintLog输出原始等待提示；Schedule间隔0.5秒。
+- 删除了当前函数中没有原始指令依据的`pcall(doInit)`、doInit类型检查、`_doInitStarted`、错误状态/错误提示，以及UnSchedule前的timer非空保护。保留`_mainStarted`，仅用于当前文件末尾主动main兼容调用，避免加载器重复调用；注释明确标记其不是root/19原始逻辑。
+- 已解释闭包捕获关系：root/19/0的H[0]引用父级N[4]寄存器单元；Schedule返回后slot63把timer句柄写回同一N[4]，回调执行时H[0]读取到句柄。因此Lua局部变量waitTimer按引用捕获可复现原始语义。
+- 新测试副本：`11.16/MainLeftBottom_11.16_main回调修正版_G57_完整模块实机测试.lua`，commit：`9f7dbef17f3982d9bee0ab5da7e19953c2273330`。
+- G57测试范围必须准确描述：完整模块chunk全部顶层代码 + 文件末尾MainLeftBottom.main()调用；不是隔离main函数测试。与G54/G55一样，若出现异常不能单凭本次结果归因到main内部。G57尚未实测，等待用户反馈。
+- G56仍未实测，不再要求测试G56。当前唯一待实机验证版本为G57；测试前无需重测G48–G52。
