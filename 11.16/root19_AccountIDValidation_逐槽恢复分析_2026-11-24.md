@@ -153,3 +153,11 @@
 - 静态审计结果：GAME_ID门控、UID读取、九项白名单（数量=9）、未命中通知、成功/失败日志、0.5秒Schedule、UnSchedule、直接doInit均存在；未发现pcall、doInit类型保护或额外启动状态。
 - 本次只替换AccountIDValidation函数区域，后续模块代码及`MainLeftBottom.main = AccountIDValidation`绑定保留。未生成G58，也未要求用户安装测试。
 - 该提交完成的是源码恢复和静态检查，不代表已完成游戏内实机验证。G57反馈仍然是“按钮与游戏UI显示，但部分UI异常”；G57运行的是完整模块chunk，不能据此单独归因main。
+
+
+### 2026-11-24再次静态对齐：等待回调逐分支读取顺序
+
+- 后续复核原始root/19/0指令后，发现上一版明文把MainProperty缓存到局部变量；原始指令实际分别读取MainProperty（slot1、slot4、slot8），并分别检查其_truthiness、_ui及Panel_mini_chat。现已按原始读取顺序改为逐层判断。
+- 本次修正中曾短暂遗漏MainProperty为nil时的等待日志分支，已立即补齐；当前三种未就绪状态（MainProperty为nil、_ui为nil、Panel_mini_chat为nil）都会输出完全相同的原始等待提示；就绪时UnSchedule(waitTimer)并直接doInit。
+- 最新唯一明文commit：`99fe3fc39b77d5af7844fc2751bcc0710caab6a5`；blob：`a46c19f05f5cf025ed6db8c575554698a8514dec`。这取代前面本节记录的commit `f311ab2f0833a1e1e2194c4fe1f8e324a5b3bc02` / blob `8cf2a467be5888523348e34b0a5c597452a7c3ef`。
+- 本轮没有改GAME_ID/UID/九项白名单验证逻辑，没有改后续模块代码，没有生成G58或要求实机安装。
