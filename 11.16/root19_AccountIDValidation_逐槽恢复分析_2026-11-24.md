@@ -161,3 +161,13 @@
 - 本次修正中曾短暂遗漏MainProperty为nil时的等待日志分支，已立即补齐；当前三种未就绪状态（MainProperty为nil、_ui为nil、Panel_mini_chat为nil）都会输出完全相同的原始等待提示；就绪时UnSchedule(waitTimer)并直接doInit。
 - 最新唯一明文commit：`99fe3fc39b77d5af7844fc2751bcc0710caab6a5`；blob：`a46c19f05f5cf025ed6db8c575554698a8514dec`。这取代前面本节记录的commit `f311ab2f0833a1e1e2194c4fe1f8e324a5b3bc02` / blob `8cf2a467be5888523348e34b0a5c597452a7c3ef`。
 - 本轮没有改GAME_ID/UID/九项白名单验证逻辑，没有改后续模块代码，没有生成G58或要求实机安装。
+
+
+### 原版执行器分支语义复核补充（2026-11-24）
+
+已回到原版文件 `MainLeftBottom 11.16原版.lua` 的F()执行器，核对本函数最关键的比较分支：
+- root/19 slot10 Opcode143在执行器中使用`(N[K[3]] == K[4]) ~= (K[2] ~= 0)`条件跳转；该槽A=1、常量=204208，因此“不等于204208”进入游戏不匹配提示并return，“等于204208”跳过错误分支。当前`gameID ~= 204208`分支与其一致。
+- root/19/1 slot11 Opcode294使用`(N[K[3]] == N[K[4]]) ~= (K[2] ~= 0)`；A=0，命中时进入成功提示并返回true，未命中继续遍历。当前字符串化比较与原始slot5–10的两次tostring调用一致。
+- root/19/1 slot21–26拼接“账号不存在，功能已限制，账号ID：”及UID，调用捕获的root/80通知闭包；当前全局`ShowLocalNoticeByType`就是本文件root/80恢复函数，行为入口一致。
+- root/19/0三个未就绪跳转最终汇合到同一PrintLog提示；最新明文已为MainProperty、_ui、Panel_mini_chat三种缺失情况分别输出该提示。
+- 以上是原始比较/分支与现有明文的静态语义核对，不等于Lua运行时或游戏内实测。当前最新唯一明文仍为commit `99fe3fc39b77d5af7844fc2751bcc0710caab6a5` / blob `a46c19f05f5cf025ed6db8c575554698a8514dec`。
