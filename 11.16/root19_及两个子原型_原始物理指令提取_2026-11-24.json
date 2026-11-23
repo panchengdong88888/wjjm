@@ -1,0 +1,1632 @@
+{
+  "project": "MainLeftBottom 11.16",
+  "source_file": "11.16/MainLeftBottom 11.16原版.lua",
+  "source_blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+  "extraction": "从原版文件内Base36长度字段+LZW载荷提取；按原版S()递归原型解析；读取器逐字节XOR 0x17；保持物理slot及原始操作数",
+  "decoded_bytes": 142522,
+  "consumed_bytes": 142522,
+  "root_validation": {
+    "instruction_count": 654,
+    "child_count": 81
+  },
+  "parent_registration": {
+    "slots": [
+      {
+        "slot": 406,
+        "opcode": 146,
+        "A": 60,
+        "B": "MainLeftBottom",
+        "mode": 1,
+        "flags": 2
+      },
+      {
+        "slot": 407,
+        "opcode": 178,
+        "A": 61,
+        "B": 19,
+        "C": 2,
+        "mode": 0,
+        "flags": 0
+      },
+      {
+        "slot": 408,
+        "opcode": 243,
+        "A": 0,
+        "B": 4,
+        "C": 0,
+        "mode": 0,
+        "flags": 0
+      },
+      {
+        "slot": 409,
+        "opcode": 243,
+        "A": 0,
+        "B": 5,
+        "C": 0,
+        "mode": 0,
+        "flags": 0
+      },
+      {
+        "slot": 410,
+        "opcode": 0,
+        "A": 60,
+        "B": "main",
+        "C": 61,
+        "mode": 0,
+        "flags": 2
+      }
+    ],
+    "closure_capture_event": {
+      "create_slot": 407,
+      "child_path": "root/19",
+      "capture_count": 2,
+      "captures": [
+        {
+          "child_upvalue_index": 0,
+          "parent_register": 4,
+          "descriptor_slot": 408
+        },
+        {
+          "child_upvalue_index": 1,
+          "parent_register": 5,
+          "descriptor_slot": 409
+        }
+      ],
+      "assignment_slot": 410,
+      "assignment": "MainLeftBottom.main = root/19 closure"
+    }
+  },
+  "prototypes": [
+    {
+      "path": "root/19",
+      "start_offset": 27070,
+      "end_offset": 28787,
+      "constant_count": 21,
+      "constants": [
+        0.5,
+        "GAME_ID",
+        "Schedule",
+        "6324648",
+        "GetMetaValue",
+        "1957840929",
+        "1304755149",
+        "39770358",
+        "UID",
+        "3548598",
+        "[验证成功] 账号ID验证通过",
+        "账号ID：",
+        "1585201915",
+        "1488903257",
+        "SL",
+        "1627987432",
+        "游戏不一致，id：",
+        204208,
+        "1580027021",
+        "[验证失败] 账号ID未在允许列表中",
+        "游戏id："
+      ],
+      "child_count": 2,
+      "parameter_count": 0,
+      "instruction_count": 64,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 146,
+          "A": 0,
+          "B": "SL",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 102,
+          "A": 0,
+          "B": 0,
+          "C": "GetMetaValue",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 3,
+          "opcode": 295,
+          "A": 2,
+          "B": "GAME_ID",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 4,
+          "opcode": 209,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 278,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 40,
+          "A": 2,
+          "B": "游戏id：",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 7,
+          "opcode": 288,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 93,
+          "A": 2,
+          "B": 2,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 123,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 143,
+          "A": 1,
+          "B": 0,
+          "C": 204208,
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 11,
+          "opcode": 388,
+          "A": 0,
+          "B": 17,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 127,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 40,
+          "A": 2,
+          "B": "游戏不一致，id：",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 14,
+          "opcode": 288,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 15,
+          "opcode": 93,
+          "A": 2,
+          "B": 2,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 16,
+          "opcode": 128,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 17,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 18,
+          "opcode": 361,
+          "A": 1,
+          "B": "SL",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 19,
+          "opcode": 138,
+          "A": 1,
+          "B": 1,
+          "C": "GetMetaValue",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 20,
+          "opcode": 295,
+          "A": 3,
+          "B": "UID",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 21,
+          "opcode": 209,
+          "A": 1,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 22,
+          "opcode": 278,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 23,
+          "opcode": 40,
+          "A": 3,
+          "B": "账号ID：",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 24,
+          "opcode": 64,
+          "A": 4,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 25,
+          "opcode": 93,
+          "A": 3,
+          "B": 3,
+          "C": 4,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 26,
+          "opcode": 128,
+          "A": 2,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 27,
+          "opcode": 53,
+          "A": 2,
+          "B": 9,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 28,
+          "opcode": 295,
+          "A": 3,
+          "B": "6324648",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 29,
+          "opcode": 295,
+          "A": 4,
+          "B": "39770358",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 30,
+          "opcode": 54,
+          "A": 5,
+          "B": "3548598",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 31,
+          "opcode": 235,
+          "A": 6,
+          "B": "1957840929",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 32,
+          "opcode": 247,
+          "A": 7,
+          "B": "1488903257",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 33,
+          "opcode": 327,
+          "A": 8,
+          "B": "1585201915",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 34,
+          "opcode": 168,
+          "A": 9,
+          "B": "1627987432",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 35,
+          "opcode": 295,
+          "A": 10,
+          "B": "1580027021",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 36,
+          "opcode": 295,
+          "A": 11,
+          "B": "1304755149",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 37,
+          "opcode": 208,
+          "A": 2,
+          "B": 9,
+          "C": 1,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 38,
+          "opcode": 387,
+          "A": 3,
+          "B": 1,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 39,
+          "opcode": 243,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 40,
+          "opcode": 132,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 41,
+          "opcode": 132,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 42,
+          "opcode": 221,
+          "A": 4,
+          "B": 3,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 43,
+          "opcode": 288,
+          "A": 5,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 44,
+          "opcode": 209,
+          "A": 4,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 45,
+          "opcode": 340,
+          "A": 4,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 46,
+          "opcode": 388,
+          "A": 0,
+          "B": 50,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 47,
+          "opcode": 403,
+          "A": 4,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 48,
+          "opcode": 295,
+          "A": 5,
+          "B": "[验证成功] 账号ID验证通过",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 49,
+          "opcode": 123,
+          "A": 4,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 50,
+          "opcode": 388,
+          "A": 0,
+          "B": 54,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 51,
+          "opcode": 403,
+          "A": 4,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 52,
+          "opcode": 295,
+          "A": 5,
+          "B": "[验证失败] 账号ID未在允许列表中",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 53,
+          "opcode": 123,
+          "A": 4,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 54,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 55,
+          "opcode": 213,
+          "A": 4,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 56,
+          "opcode": 253,
+          "A": 5,
+          "B": "SL",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 57,
+          "opcode": 138,
+          "A": 5,
+          "B": 5,
+          "C": "Schedule",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 58,
+          "opcode": 121,
+          "A": 7,
+          "B": 0,
+          "C": 2,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 59,
+          "opcode": 243,
+          "A": 0,
+          "B": 4,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 60,
+          "opcode": 132,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 61,
+          "opcode": 295,
+          "A": 8,
+          "B": 0.5,
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 62,
+          "opcode": 209,
+          "A": 5,
+          "B": 8,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 63,
+          "opcode": 241,
+          "A": 4,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 64,
+          "opcode": 205,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "children": [
+        {
+          "path": "root/19/0",
+          "start_offset": 27429,
+          "end_offset": 27816,
+          "constant_count": 8,
+          "constants": [
+            "doInit",
+            "等待主界面属性栏(MainProperty)初始化完成...",
+            "UnSchedule",
+            "_ui",
+            "SL",
+            "MainProperty",
+            "MainLeftBottom",
+            "Panel_mini_chat"
+          ],
+          "child_count": 0,
+          "parameter_count": 0,
+          "instruction_count": 24,
+          "instructions": [
+            {
+              "slot": 1,
+              "opcode": 146,
+              "A": 0,
+              "B": "MainProperty",
+              "mode": 1,
+              "flags": 2
+            },
+            {
+              "slot": 2,
+              "opcode": 60,
+              "A": 0,
+              "B": 0,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 3,
+              "opcode": 388,
+              "A": 0,
+              "B": 20,
+              "mode": 1,
+              "flags": 0
+            },
+            {
+              "slot": 4,
+              "opcode": 105,
+              "A": 0,
+              "B": "MainProperty",
+              "mode": 1,
+              "flags": 2
+            },
+            {
+              "slot": 5,
+              "opcode": 96,
+              "A": 0,
+              "B": 0,
+              "C": "_ui",
+              "mode": 0,
+              "flags": 4
+            },
+            {
+              "slot": 6,
+              "opcode": 358,
+              "A": 0,
+              "B": 0,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 7,
+              "opcode": 388,
+              "A": 0,
+              "B": 20,
+              "mode": 1,
+              "flags": 0
+            },
+            {
+              "slot": 8,
+              "opcode": 218,
+              "A": 0,
+              "B": "MainProperty",
+              "mode": 1,
+              "flags": 2
+            },
+            {
+              "slot": 9,
+              "opcode": 410,
+              "A": 0,
+              "B": 0,
+              "C": "_ui",
+              "mode": 0,
+              "flags": 4
+            },
+            {
+              "slot": 10,
+              "opcode": 96,
+              "A": 0,
+              "B": 0,
+              "C": "Panel_mini_chat",
+              "mode": 0,
+              "flags": 4
+            },
+            {
+              "slot": 11,
+              "opcode": 60,
+              "A": 0,
+              "B": 0,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 12,
+              "opcode": 388,
+              "A": 0,
+              "B": 20,
+              "mode": 1,
+              "flags": 0
+            },
+            {
+              "slot": 13,
+              "opcode": 253,
+              "A": 0,
+              "B": "SL",
+              "mode": 1,
+              "flags": 2
+            },
+            {
+              "slot": 14,
+              "opcode": 138,
+              "A": 0,
+              "B": 0,
+              "C": "UnSchedule",
+              "mode": 0,
+              "flags": 4
+            },
+            {
+              "slot": 15,
+              "opcode": 234,
+              "A": 2,
+              "B": 0,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 16,
+              "opcode": 123,
+              "A": 0,
+              "B": 2,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 17,
+              "opcode": 218,
+              "A": 0,
+              "B": "MainLeftBottom",
+              "mode": 1,
+              "flags": 2
+            },
+            {
+              "slot": 18,
+              "opcode": 96,
+              "A": 0,
+              "B": 0,
+              "C": "doInit",
+              "mode": 0,
+              "flags": 4
+            },
+            {
+              "slot": 19,
+              "opcode": 128,
+              "A": 0,
+              "B": 0,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 20,
+              "opcode": 388,
+              "A": 0,
+              "B": 23,
+              "mode": 1,
+              "flags": 0
+            },
+            {
+              "slot": 21,
+              "opcode": 234,
+              "A": 0,
+              "B": 1,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 22,
+              "opcode": 295,
+              "A": 1,
+              "B": "等待主界面属性栏(MainProperty)初始化完成...",
+              "mode": 1,
+              "flags": 2
+            },
+            {
+              "slot": 23,
+              "opcode": 123,
+              "A": 0,
+              "B": 1,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 24,
+              "opcode": 339,
+              "A": 0,
+              "B": 0,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            }
+          ],
+          "children": []
+        },
+        {
+          "path": "root/19/1",
+          "start_offset": 27816,
+          "end_offset": 28206,
+          "constant_count": 4,
+          "constants": [
+            "tostring",
+            "ipairs",
+            "账号不存在，功能已限制，账号ID：",
+            "[提示] 账号ID在允许列表中，功能已开启"
+          ],
+          "child_count": 0,
+          "parameter_count": 1,
+          "instruction_count": 27,
+          "instructions": [
+            {
+              "slot": 1,
+              "opcode": 45,
+              "A": 1,
+              "B": "ipairs",
+              "mode": 1,
+              "flags": 2
+            },
+            {
+              "slot": 2,
+              "opcode": 324,
+              "A": 2,
+              "B": 0,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 3,
+              "opcode": 314,
+              "A": 1,
+              "B": 2,
+              "C": 3,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 4,
+              "opcode": 388,
+              "A": 0,
+              "B": 17,
+              "mode": 1,
+              "flags": 0
+            },
+            {
+              "slot": 5,
+              "opcode": 188,
+              "A": 6,
+              "B": "tostring",
+              "mode": 1,
+              "flags": 2
+            },
+            {
+              "slot": 6,
+              "opcode": 288,
+              "A": 7,
+              "B": 5,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 7,
+              "opcode": 209,
+              "A": 6,
+              "B": 7,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 8,
+              "opcode": 188,
+              "A": 7,
+              "B": "tostring",
+              "mode": 1,
+              "flags": 2
+            },
+            {
+              "slot": 9,
+              "opcode": 64,
+              "A": 8,
+              "B": 0,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 10,
+              "opcode": 209,
+              "A": 7,
+              "B": 8,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 11,
+              "opcode": 294,
+              "A": 0,
+              "B": 6,
+              "C": 7,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 12,
+              "opcode": 388,
+              "A": 0,
+              "B": 17,
+              "mode": 1,
+              "flags": 0
+            },
+            {
+              "slot": 13,
+              "opcode": 403,
+              "A": 6,
+              "B": 1,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 14,
+              "opcode": 295,
+              "A": 7,
+              "B": "[提示] 账号ID在允许列表中，功能已开启",
+              "mode": 1,
+              "flags": 2
+            },
+            {
+              "slot": 15,
+              "opcode": 123,
+              "A": 6,
+              "B": 7,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 16,
+              "opcode": 110,
+              "A": 6,
+              "B": 1,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 17,
+              "opcode": 293,
+              "A": 6,
+              "B": 6,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 18,
+              "opcode": 357,
+              "A": 1,
+              "B": 2,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 19,
+              "opcode": 388,
+              "A": 0,
+              "B": 4,
+              "mode": 1,
+              "flags": 0
+            },
+            {
+              "slot": 20,
+              "opcode": 278,
+              "A": 1,
+              "B": 2,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 21,
+              "opcode": 40,
+              "A": 2,
+              "B": "账号不存在，功能已限制，账号ID：",
+              "mode": 1,
+              "flags": 2
+            },
+            {
+              "slot": 22,
+              "opcode": 64,
+              "A": 3,
+              "B": 0,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 23,
+              "opcode": 93,
+              "A": 2,
+              "B": 2,
+              "C": 3,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 24,
+              "opcode": 128,
+              "A": 1,
+              "B": 2,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 25,
+              "opcode": 110,
+              "A": 1,
+              "B": 0,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 26,
+              "opcode": 293,
+              "A": 1,
+              "B": 1,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            },
+            {
+              "slot": 27,
+              "opcode": 339,
+              "A": 0,
+              "B": 0,
+              "C": 0,
+              "mode": 0,
+              "flags": 0
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "path": "root/19/0",
+      "start_offset": 27429,
+      "end_offset": 27816,
+      "constant_count": 8,
+      "constants": [
+        "doInit",
+        "等待主界面属性栏(MainProperty)初始化完成...",
+        "UnSchedule",
+        "_ui",
+        "SL",
+        "MainProperty",
+        "MainLeftBottom",
+        "Panel_mini_chat"
+      ],
+      "child_count": 0,
+      "parameter_count": 0,
+      "instruction_count": 24,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 146,
+          "A": 0,
+          "B": "MainProperty",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 60,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 388,
+          "A": 0,
+          "B": 20,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 105,
+          "A": 0,
+          "B": "MainProperty",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 5,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "_ui",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 6,
+          "opcode": 358,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 388,
+          "A": 0,
+          "B": 20,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 218,
+          "A": 0,
+          "B": "MainProperty",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 9,
+          "opcode": 410,
+          "A": 0,
+          "B": 0,
+          "C": "_ui",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 10,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "Panel_mini_chat",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 11,
+          "opcode": 60,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 388,
+          "A": 0,
+          "B": 20,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 253,
+          "A": 0,
+          "B": "SL",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 14,
+          "opcode": 138,
+          "A": 0,
+          "B": 0,
+          "C": "UnSchedule",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 15,
+          "opcode": 234,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 16,
+          "opcode": 123,
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 17,
+          "opcode": 218,
+          "A": 0,
+          "B": "MainLeftBottom",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 18,
+          "opcode": 96,
+          "A": 0,
+          "B": 0,
+          "C": "doInit",
+          "mode": 0,
+          "flags": 4
+        },
+        {
+          "slot": 19,
+          "opcode": 128,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 20,
+          "opcode": 388,
+          "A": 0,
+          "B": 23,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 21,
+          "opcode": 234,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 22,
+          "opcode": 295,
+          "A": 1,
+          "B": "等待主界面属性栏(MainProperty)初始化完成...",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 23,
+          "opcode": 123,
+          "A": 0,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 24,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "children": []
+    },
+    {
+      "path": "root/19/1",
+      "start_offset": 27816,
+      "end_offset": 28206,
+      "constant_count": 4,
+      "constants": [
+        "tostring",
+        "ipairs",
+        "账号不存在，功能已限制，账号ID：",
+        "[提示] 账号ID在允许列表中，功能已开启"
+      ],
+      "child_count": 0,
+      "parameter_count": 1,
+      "instruction_count": 27,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 45,
+          "A": 1,
+          "B": "ipairs",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 2,
+          "opcode": 324,
+          "A": 2,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 314,
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 388,
+          "A": 0,
+          "B": 17,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 5,
+          "opcode": 188,
+          "A": 6,
+          "B": "tostring",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 6,
+          "opcode": 288,
+          "A": 7,
+          "B": 5,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 209,
+          "A": 6,
+          "B": 7,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 8,
+          "opcode": 188,
+          "A": 7,
+          "B": "tostring",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 9,
+          "opcode": 64,
+          "A": 8,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 209,
+          "A": 7,
+          "B": 8,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 11,
+          "opcode": 294,
+          "A": 0,
+          "B": 6,
+          "C": 7,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 388,
+          "A": 0,
+          "B": 17,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 13,
+          "opcode": 403,
+          "A": 6,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 14,
+          "opcode": 295,
+          "A": 7,
+          "B": "[提示] 账号ID在允许列表中，功能已开启",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 15,
+          "opcode": 123,
+          "A": 6,
+          "B": 7,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 16,
+          "opcode": 110,
+          "A": 6,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 17,
+          "opcode": 293,
+          "A": 6,
+          "B": 6,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 18,
+          "opcode": 357,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 19,
+          "opcode": 388,
+          "A": 0,
+          "B": 4,
+          "mode": 1,
+          "flags": 0
+        },
+        {
+          "slot": 20,
+          "opcode": 278,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 21,
+          "opcode": 40,
+          "A": 2,
+          "B": "账号不存在，功能已限制，账号ID：",
+          "mode": 1,
+          "flags": 2
+        },
+        {
+          "slot": 22,
+          "opcode": 64,
+          "A": 3,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 23,
+          "opcode": 93,
+          "A": 2,
+          "B": 2,
+          "C": 3,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 24,
+          "opcode": 128,
+          "A": 1,
+          "B": 2,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 25,
+          "opcode": 110,
+          "A": 1,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 26,
+          "opcode": 293,
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        },
+        {
+          "slot": 27,
+          "opcode": 339,
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "mode": 0,
+          "flags": 0
+        }
+      ],
+      "children": []
+    }
+  ]
+}
