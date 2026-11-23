@@ -4767,7 +4767,7 @@ G28显示，当前待测G29
 - 用户明确：不需要追问具体异常控件，直接将main()内部按逻辑代码块分批测试；异常表现不能替代代码分批实测定位。
 - G54实机反馈：游戏UI会显示，但有些UI异常。G54执行完整main()同步主体，定时器回调不执行，doInit未调用。
 - 已静态确认main同步主体的执行动作：防重复入口判断、写入`_mainStarted`、启动提示PrintLog、构造等待主界面就绪的闭包、注册0.5秒Schedule。闭包体不会在main中执行。
-- G55文件：`11.16/MainLeftBottom_11.16_main单函数分批测试_G55_仅测试main前置同步段.lua`；提交 `a263bd82f44494b92e8d265c7ef46c0dfe49dd1f`；blob `0fa023baa3cbf6ea110792f09356e020839df5d9`。
+- G55文件：`11.16/MainLeftBottom_11.16_main单函数分批测试_G55_仅测试main前置同步段.lua`；提交 `a263bd82f44494b92e8d265c7ef46c0dfe49dd1f`；blob `25d1d50fef4eca00791feaa12a679a236b817ec3`。
 - G55保留完整模块chunk、main入口防重复/状态写入/启动PrintLog及等待闭包构造，仅移除main最后的等待Schedule注册；其他定时器拦截与G54相同，doInit未调用。
 - 静态检查已确认main等待Schedule注册0处，文件末尾main主动调用保留，doInit不执行。
 - **下一步：用户实测G55。** G55通过则再单独恢复main的等待Schedule注册；G55异常则继续拆分main前置同步段。不得重复G48–G52，不得跳到doInit或定时器回调阶段。
