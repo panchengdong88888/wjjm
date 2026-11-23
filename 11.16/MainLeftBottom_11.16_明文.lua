@@ -2153,10 +2153,9 @@ end
 
 
 -- 11.16 root/19：AccountIDValidation（64条指令，两个子原型已按本版原始字节码提取）。
--- 测试模式保留：暂时跳过原始GAME_ID/UID白名单门控，避免测试账号被原始白名单拦截。
--- root/19/0原始回调：检查MainProperty._ui.Panel_mini_chat；未就绪时PrintLog并等待；
--- 就绪时UnSchedule本回调的Schedule句柄，然后直接调用MainLeftBottom.doInit()。
--- 当前文件末尾有主动main兼容调用，因此保留_mainStarted只用于避免加载器重复调用；它不是原始root/19业务逻辑。
+-- 按原始指令顺序恢复GAME_ID门控、UID白名单校验、验证提示及主界面等待回调。
+-- root/19/0回调依次检查MainProperty、MainProperty._ui、MainProperty._ui.Panel_mini_chat；
+-- 就绪时取消本回调的Schedule句柄并直接调用MainLeftBottom.doInit()。
 local function AccountIDValidation()
     -- root/19 slot 1–17：验证游戏ID，只有204208允许继续。
     local gameID = SL:GetMetaValue("GAME_ID")
@@ -2204,12 +2203,17 @@ local function AccountIDValidation()
     -- root/19 slot 55–63：Schedule每0.5秒检查主界面；闭包按引用捕获句柄变量。
     local waitTimer
     local function waitForMainProperty()
-        local mainProperty = MainProperty
-        if mainProperty and mainProperty._ui and mainProperty._ui.Panel_mini_chat then
-            SL:UnSchedule(waitTimer)
-            MainLeftBottom.doInit()
-        else
-            PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
+        if MainProperty then
+            if MainProperty._ui then
+                if MainProperty._ui.Panel_mini_chat then
+                    SL:UnSchedule(waitTimer)
+                    MainLeftBottom.doInit()
+                else
+                    PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
+                end
+            else
+                PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
+            end
         end
     end
 
