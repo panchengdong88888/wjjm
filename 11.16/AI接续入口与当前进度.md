@@ -4852,3 +4852,11 @@ G28显示，当前待测G29
 - 静态审计通过：九项数量准确，关键分支和调用齐全，唯一明文main绑定仍为`MainLeftBottom.main = AccountIDValidation`，后续模块区域未动。
 - G57用户反馈为“按钮和游戏UI显示，但部分UI异常”。G57运行整个模块chunk，不是main隔离测试；不可单独归因main。G56未测，不要求补测。
 - 本轮没有创建G58，也没有要求用户实机安装。接续者下一步应先核对原版F()解释器中相关opcode的调用、比较和跳转语义，再做独立main验证；完成后再考虑整模块测试。不要重跑LZW/原型提取，不要让用户重测G48–G52。
+
+
+### 2026-11-24再次静态对齐：等待回调逐分支读取顺序
+
+- 后续复核原始root/19/0指令后，发现上一版明文把MainProperty缓存到局部变量；原始指令实际分别读取MainProperty（slot1、slot4、slot8），并分别检查其_truthiness、_ui及Panel_mini_chat。现已按原始读取顺序改为逐层判断。
+- 本次修正中曾短暂遗漏MainProperty为nil时的等待日志分支，已立即补齐；当前三种未就绪状态（MainProperty为nil、_ui为nil、Panel_mini_chat为nil）都会输出完全相同的原始等待提示；就绪时UnSchedule(waitTimer)并直接doInit。
+- 最新唯一明文commit：`99fe3fc39b77d5af7844fc2751bcc0710caab6a5`；blob：`a46c19f05f5cf025ed6db8c575554698a8514dec`。这取代前面本节记录的commit `f311ab2f0833a1e1e2194c4fe1f8e324a5b3bc02` / blob `8cf2a467be5888523348e34b0a5c597452a7c3ef`。
+- 本轮没有改GAME_ID/UID/九项白名单验证逻辑，没有改后续模块代码，没有生成G58或要求实机安装。
