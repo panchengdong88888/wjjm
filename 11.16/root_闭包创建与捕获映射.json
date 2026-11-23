@@ -2969,7 +2969,10 @@
           "slot": 566,
           "opcode": 243,
           "sourceRegister": 4,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "source_symbol": "blacklistAlertThreshold",
+          "source_value": 2,
+          "source_evidence": "root槽371–417数据流：N[61]先装载“马·[普通]”后在槽407被root/19闭包覆盖为main；槽412重新装载“随机传送石”，槽413 Opcode208将其装入N[60]数组；槽414 Opcode327融合装载立即数2到N[61]。root/34创建于槽558，期间N[61]无后续写入。root/34明文告警节流使用blacklistAlertThreshold，故该捕获值对应阈值2。"
         },
         {
           "childUpvalueIndex": 8,
@@ -2983,7 +2986,10 @@
           "slot": 568,
           "opcode": 243,
           "sourceRegister": 65,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "source_symbol": "blacklistShortRetryDelay",
+          "source_value": 1,
+          "source_evidence": "root槽418–426：N[65]=math.max；N[66]=1；N[67]=math.floor；N[68]=0.1*0.1+0.5=0.51；槽425对math.floor调用得0；槽426以动态参数调用math.max(1,0)，N[65]=1。槽558前无后续写入。root/34明文成功使用道具后以blacklistShortRetryDelay设置nextTryAt。"
         },
         {
           "childUpvalueIndex": 10,
@@ -2997,14 +3003,22 @@
           "slot": 570,
           "opcode": 243,
           "sourceRegister": 66,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "source_symbol": "blacklistNoItemRetryDelay",
+          "source_value": 300,
+          "source_evidence": "root槽427–431：N[66]=math.floor；N[67]=30/0.1+0.5=300.5；槽431调用math.floor，N[66]=300。槽558前无后续写入。root/34明文无道具时以blacklistNoItemRetryDelay设置nextTryAt。"
         },
         {
           "childUpvalueIndex": 12,
           "slot": 571,
           "opcode": 243,
           "sourceRegister": 60,
-          "sourceKind": "parent-local-register"
+          "sourceKind": "parent-local-register",
+          "source_symbol": "randomTeleportItemNames",
+          "source_value": [
+            "随机传送石"
+          ],
+          "source_evidence": "root槽412将常量“随机传送石”装入N[61]；槽413 Opcode208按SETLIST表构造语义将N[61]放入N[60]索引1，得到单元素数组；槽414–417随后覆盖N[61]为数值2，但N[60]数组保持不变。槽558前N[60]无后续写入。root/34明文将该列表传给table.concat用于无道具提示。"
         }
       ]
     },
