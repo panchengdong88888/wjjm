@@ -4422,3 +4422,14 @@ G28显示，当前待测G29
 - G44文件：11.16/MainLeftBottom_11.16_UI批量诊断_G44_保留UI挂接仅屏蔽Button_Create.lua
 - G44提交：610a291620adddf3324724d44fe9635604065504
 - G44是诊断文件，不修改唯一正式明文。下一步以G44观察游戏UI是否恢复、是否断线；若游戏UI恢复且不再断线，才支持Button_Create/按钮工厂内部链路是问题范围；若UI仍不显示，则应查Attach_UITop之后的初始化或其他因素。不要把单次结果扩大解释为服务器封禁/请求异常。
+
+
+## 2026-11-23 G44实测结果与G45初始化API隔离
+
+- 用户实测G44：功能按钮不显示（预期）；游戏原生UI显示；但游戏功能仍异常。
+- G44保留了doInit中的初始化前缀：PrintLog、MoneyProxy代理获取及GetMoneyIdByName、时间/快照构建、MoneyProxy货币ID/数量读取、SL:GetMetaValue物品索引/数量读取、初始化状态写入、NPCStorageProxy代理获取及状态写入；同时保留GUI:Attach_UITop、mini_chat坐标读取、按钮组配置构建；只屏蔽按钮工厂。
+- 因而G44表明UI挂接/坐标/按钮组配置构建本身没有阻止原生游戏UI显示，但尚不能证明这些操作完全无异常。当前优先怀疑初始化阶段的代理/元数据API调用。
+- 新建G45，基于G44，仅隔离初始化API调用：跳过MoneyProxy代理获取、GetMoneyIdByName、GetMoneyCountById、全部SL:GetMetaValue查询、NPCStorageProxy代理获取；money/items快照仍构建为空表，原有模块状态字段写入保留；PrintLog、os.time/os.date、普通Lua表构建、GUI:Attach_UITop、mini_chat坐标读取、按钮组配置构建继续保留；按钮工厂仍屏蔽。
+- G45文件：11.16/MainLeftBottom_11.16_UI批量诊断_G45_跳过初始化代理及元数据API.lua
+- G45提交：1283f8e5f414962ace3098427f8f890b38af0809
+- 判定：若G45游戏功能恢复，问题范围落在本轮跳过的代理/元数据API调用组；若仍异常，则继续查PrintLog、时间/状态写入或加载/初始化其他部分。G45不修改唯一正式明文。
