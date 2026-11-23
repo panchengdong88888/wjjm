@@ -1,0 +1,23 @@
+name: 11.16 Main Lua isolation test
+
+on:
+  push:
+    paths:
+      - "11.16/MainLeftBottom_11.16_明文.lua"
+      - "11.16/测试工具_Main函数隔离验证.lua"
+      - ".github/workflows/main-lua-isolation.yml"
+  workflow_dispatch:
+
+jobs:
+  main-isolation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Lua 5.4
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.4"
+      - name: Run main isolation tests
+        working-directory: 11.16
+        run: lua 测试工具_Main函数隔离验证.lua
