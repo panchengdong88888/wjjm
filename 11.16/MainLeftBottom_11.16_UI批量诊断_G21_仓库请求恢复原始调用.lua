@@ -2,13 +2,13 @@
 G21 仓库请求原始调用还原测试
 基准文件：11.16/MainLeftBottom_11.16_UI批量诊断_G19_完整初始化直建按钮.lua
 基准Blob SHA：f426ba181b7673f2ea902db9a8f526590aaa5ddf
-测试改动：仅移除后来添加在 RequestStorageData(0) 外层的 pcall；保留原有代理获取 pcall，
+测试改动：仅移除后来添加在 RequestStorageData() 外层的 pcall；保留原有代理获取 pcall，
           不改变其他初始化与G19直建按钮测试逻辑。
 正式明文：不修改。
 对照文件：11.16/MainLeftBottom 11.2+11.9 整合.lua
 对照结论：整合版直接 retrieveProxy、直接 RequestStorageData(T7)，没有请求pcall；
           但其实参是T7（该整合文件注释记录循环结束后T7为4），
-          11.16本版恢复调用的实参是0，不能直接把整合版的T7照搬到11.16。
+          11.16本次测试按无参调用 RequestStorageData()；整合版的T7参数不应照搬。
 ]]
 -- G19完整初始化批量诊断测试
 -- 基准：MainLeftBottom_11.16_明文.lua（原文件未修改）
@@ -6708,7 +6708,7 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
         moduleState.NPCStorageProxy = storageProxy
         if storageProxy then
             -- 11.16原始恢复调用：直接请求，不用pcall吞掉请求异常。
-            storageProxy:RequestStorageData(0)
+            storageProxy:RequestStorageData()
         end
 
         -- root/52槽184明确先清理旧的巡航定时器句柄，再继续初始化界面。
