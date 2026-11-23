@@ -6399,20 +6399,16 @@ local function BuildMainLeftBottomButtonGroups_11_16()
         { key = "blacklistbut", name = "开黑名单", toggle = "关黑名单" },
         { key = "xiaotuibut", name = "快速小退" },
     }
+    -- 三个新增入口放在“锻造生肖”左侧，与原第三组保持同一行。
     local group3 = {
         { key = "putinbut", name = "上架金条" },
         { key = "putoutbut", name = "下架物品" },
-        { key = "forgezodiacbut", name = "锻造生肖" },
-    }
-
-    -- 用户要求补入原回调表已有、但原三组配置未显示的三个入口。
-    -- 独立放在第四行，避免改变原有17个按钮的分组、顺序和坐标。
-    local group4 = {
         { key = "storagebut", name = "存仓" },
         { key = "takebut", name = "取物" },
         { key = "settingbut", name = "内挂设置" },
+        { key = "forgezodiacbut", name = "锻造生肖" },
     }
-    return group1, group2, group3, group4
+    return group1, group2, group3
 end
 
 -- root/52回调表：20个界面按钮均建立点击处理器；见人跑使用本版root/11、root/25捕获适配，
@@ -6753,9 +6749,9 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             and moduleState.buttonAnchorY ~= nil
         then
             -- root/52槽666–710：同一通用工厂按N[19]/N[20]/N[21]三组创建按钮。
-            local group1, group2, group3, group4 =
+            local group1, group2, group3 =
                 BuildMainLeftBottomButtonGroups_11_16()
-            moduleState.buttonGroups = { group1, group2, group3, group4 }
+            moduleState.buttonGroups = { group1, group2, group3 }
             mainPanelState.buttonGroups = moduleState.buttonGroups
 
             -- 接入已完整恢复的按钮回调；缺少真实捕获来源的按钮不注册事件。
@@ -6780,7 +6776,6 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
                 { items = group1, offset = 40 },
                 { items = group2, offset = 0 },
                 { items = group3, offset = 80 },
-                { items = group4, offset = 120 },
             }
             moduleState.buttonConfigByKey = {}
             for _, group in ipairs(buttonGroups) do
