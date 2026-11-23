@@ -2158,11 +2158,50 @@ end
 -- 就绪时UnSchedule本回调的Schedule句柄，然后直接调用MainLeftBottom.doInit()。
 -- 当前文件末尾有主动main兼容调用，因此保留_mainStarted只用于避免加载器重复调用；它不是原始root/19业务逻辑。
 local function AccountIDValidation()
-    if MainLeftBottom._mainStarted then
+    -- root/19 slot 1–17：验证游戏ID，只有204208允许继续。
+    local gameID = SL:GetMetaValue("GAME_ID")
+    PrintLog("游戏id：" .. tostring(gameID))
+    if gameID ~= 204208 then
+        PrintLog("游戏不一致，id：" .. tostring(gameID))
         return
     end
-    MainLeftBottom._mainStarted = true
 
+    -- root/19 slot 18–26：读取并记录账号UID。
+    local uid = SL:GetMetaValue("UID")
+    PrintLog("账号ID：" .. tostring(uid))
+
+    -- root/19 slot 27–37：原始九项账号白名单。
+    local allowedUIDs = {
+        "6324648",
+        "39770358",
+        "3548598",
+        "1957840929",
+        "1488903257",
+        "1585201915",
+        "1627987432",
+        "1580027021",
+        "1304755149",
+    }
+
+    -- root/19/1：逐项转为字符串比较；命中后记录成功提示并返回true。
+    local allowed = false
+    for _, allowedUID in ipairs(allowedUIDs) do
+        if tostring(allowedUID) == tostring(uid) then
+            PrintLog("[提示] 账号ID在允许列表中，功能已开启")
+            allowed = true
+            break
+        end
+    end
+
+    if not allowed then
+        ShowLocalNoticeByType("账号不存在，功能已限制，账号ID：" .. tostring(uid))
+        PrintLog("[验证失败] 账号ID未在允许列表中")
+        return
+    end
+
+    PrintLog("[验证成功] 账号ID验证通过")
+
+    -- root/19 slot 55–63：Schedule每0.5秒检查主界面；闭包按引用捕获句柄变量。
     local waitTimer
     local function waitForMainProperty()
         local mainProperty = MainProperty
@@ -2174,8 +2213,6 @@ local function AccountIDValidation()
         end
     end
 
-    -- 对应root/19 slot 56–63：Schedule回调，间隔0.5秒；
-    -- 回调闭包按引用捕获waitTimer，Schedule返回后将句柄写回同一变量。
     waitTimer = SL:Schedule(waitForMainProperty, 0.5)
 end
 
