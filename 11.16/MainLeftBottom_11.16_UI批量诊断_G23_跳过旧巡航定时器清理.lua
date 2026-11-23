@@ -6760,10 +6760,8 @@ local function make_MainLeftBottom_doInit_11_16(capturedUpvalues)
             mainPanelState.b = visibleItems
         end
 
-        if miniChat and uiParent
-            and moduleState.buttonAnchorX ~= nil
-            and moduleState.buttonAnchorY ~= nil
-        then
+        -- G23沿用G20结论：不以锚点非空作为按钮创建门槛。
+        if miniChat and uiParent then
             local group1, group2, group3 = BuildMainLeftBottomButtonGroups_11_16()
             moduleState.buttonGroups = { group1, group2, group3 }
             mainPanelState.buttonGroups = moduleState.buttonGroups
