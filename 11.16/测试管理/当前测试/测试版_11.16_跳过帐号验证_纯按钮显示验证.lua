@@ -3631,13 +3631,13 @@ end
 local function helper_root_52_2(mainLeftBottomA, printLog)
     return function()
         if mainLeftBottomA.isHidden then
-            printLog("显示所有按钮")
-            mainLeftBottomA.show()
-            GUI:setOpacity(mainLeftBottomA.hidebut, 255)
-        else
             printLog("隐藏所有按钮")
             mainLeftBottomA.hide()
             GUI:setOpacity(mainLeftBottomA.hidebut, 0)
+        else
+            printLog("显示所有按钮")
+            mainLeftBottomA.show()
+            GUI:setOpacity(mainLeftBottomA.hidebut, 255)
         end
     end
 end
