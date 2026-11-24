@@ -6785,9 +6785,10 @@ local function doInit_PlainButtons()
     local miniChatRight = miniChatPosition.x + miniChatSize.width
     local miniChatY = miniChatPosition.y
 
-    -- 与11.2+11.9整合版的坐标修正保持一致。
-    local xBase = miniChatRight - 10
-    local yBase = miniChatY + 1
+    -- 严格按11.16 root/52槽471–482：基准点就是mini_chat右边界及其世界Y坐标。
+    -- 不叠加11.2+11.9旧版的-10/+1偏移。
+    local xBase = miniChatRight
+    local yBase = miniChatY
 
     local group1, group2, group3 = BuildMainLeftBottomButtonGroups_11_16()
     local buttonGroups = {
