@@ -573,3 +573,50 @@ root/52槽151创建root/52/35战力请求闭包并存入parent local N[5]，槽1
 2. 接收端：`make_helper_root_52_14`未安装到`NetworkUtil.OnLuaMessage`，不能据此处理返回payload。
 
 这两处都能解释`MainLeftBottom.combatPower`一直为nil、UI显示`战力:--`。尚未修改测试Lua。下一步应核对原版root/52/35的捕获对象与消息包装器安装参数，随后提出只补齐这两条接线的最小补丁；金币、元宝逻辑保持不动。
+
+
+## 2026-11-24 新闭合：原版消息包装器安装/恢复对象、参数转发及测试版最小接线
+
+本轮读取原版机械提取文件 `root_未恢复七项完整物理指令提取_2026-11-21.json` 中 `root/52`（865槽）和 `root/52/14`（174槽），并复核当前测试Lua。
+
+### 原版安装链（root/52父函数槽456–470）
+
+- 槽456–458取得 `SL.NetworkUtil.OnLuaMessage` 原始处理器，保存到父局部寄存器N[15]。
+- 槽463读取父H[2]（MainLeftBottom.a）到N[16]。
+- 槽464将原始处理器写入 `MainLeftBottom.a._origOnLuaMessage`。
+- 槽465创建root/52/14包装闭包；槽466/467/468依次捕获父H[3]、父H[0]、父N[15]。
+- 已确认父H[3]=MainLeftBottom根表，父H[0]=PrintLog，父H[2]=MainLeftBottom.a。
+- 槽469将包装闭包赋给 `SL.NetworkUtil.OnLuaMessage`。因此原版的准确保存位置是 `MainLeftBottom.a._origOnLuaMessage`，准确替换目标是 `SL.NetworkUtil.OnLuaMessage`，不是全局 `NetworkUtil` 上的备份字段。
+
+### 原版包装器的参数转发
+
+root/52/14是6个显式参数、3个upvalue的回调。槽165–172读取H[2]原始回调，并将6个参数寄存器逐个复制到调用区间，最后直接返回原回调结果。因此原始回调必须收到包装器的6个原始参数，顺序不变：
+`originalOnLuaMessage(arg0, messageId, arg2, arg3, arg4, payload)`。
+此前测试明文中的 `originalOnLuaMessage(0, 1, 2, arg3, arg4, payload)` 错把前三个参数替换成数字常量，现已修正。
+
+### 战力请求状态对象
+
+root/52槽151创建root/52/35闭包，槽152捕获父H[3]到子闭包H[0]。父H[3]为MainLeftBottom根表，所以root/52/35及其3秒复位子闭包操作的都是 `MainLeftBottom.powerRefreshing`。测试版此前的 `capturedPowerState or SL` 回退会在未正确传入捕获对象时写错位置；现改为只使用传入的捕获对象，不再回退到SL。
+
+### 已提交的测试版修复
+
+文件：`11.16/测试管理/当前测试/测试版_11.16_跳过帐号验证_纯按钮显示验证.lua`
+
+已完成以下修改：
+1. 新增 `InstallCombatPowerMessageHook_11_16`：保存原回调到 `MainLeftBottom.a._origOnLuaMessage`，包装并安装到 `SL.NetworkUtil.OnLuaMessage`。
+2. 初始化末尾先安装消息包装器，再启动纯显示刷新器。
+3. 每秒刷新回调增加 `pcall(make_helper_root_52_35, MainLeftBottom)`，按原版周期调用战力请求闭包。
+4. 修正包装器向原回调转发6个原始参数。
+5. 修正隐藏/关闭清理逻辑：从 `MainLeftBottom.a._origOnLuaMessage` 恢复到 `SL.NetworkUtil.OnLuaMessage`，并仅在当前回调仍是本包装器时执行恢复。
+6. 请求状态只写入捕获的MainLeftBottom根表。
+
+### 静态复核结果与测试状态
+
+- 战力请求函数：1处定义、1处实际周期调用。
+- 消息包装器：1处定义、1处安装工厂调用；安装函数在初始化中调用。
+- 旧错误转发 `originalOnLuaMessage(0, 1, 2, ...)` 已不存在。
+- 旧错误恢复位置 `NetworkUtil._origOnLuaMessage` 已不存在。
+- 测试版文件已提交，最新blob SHA：`41e9a268dcdd5220ab280917317b49ac3a33632c`。
+- 本轮测试版修改提交SHA：`abf932850b687827c884207e710852c83e013339`（其前一提交为首次接线修复）。
+- 尚未进行Lua运行时/模拟器实机验证；不能声称战力显示已实测修复。
+- 未触碰金币、元宝的读取和显示逻辑。
