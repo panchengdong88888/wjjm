@@ -173,3 +173,38 @@ GitHub Actions双版本矩阵：
 ### 下一步唯一候选
 
 先静态检查这28个名称是否与框架/宿主已知全局接口重名，并检查这些函数是否确实应导出到全局环境。若静态资料不足，再构造一个单变量隔离版本：保留完整chunk及函数体，只将这28个顶层全局函数声明改为模块局部声明，且保持main/doInit均不执行；先做精确diff和Lua 5.1/5.4语法CI，再由用户进行一次实机测试。若结果恢复，再二分两组定位具体名称；若仍不恢复，则该组不是单独原因。此候选测试尚未生成，不能当作当前待测文件。
+
+
+## 第四轮静态对照：12个全局函数声明缺少root级名称证据
+
+将28个顶层全局函数名与`root_654条物理指令流.json`的root常量池及root直接指令字段交叉核对：
+
+- 28个当前全局函数名中，16个出现在root级常量池，并且有对应root指令引用。
+- 另有12个名称不在root级常量池：`GetMainPlayerID`、`IsDie`、`GetOwnerID`、`ShowLocalNoticeByType`、`FindMonsterInCurrViewField`、`ResetGatherMonsterData`、`PrintLog`、`BlacklistPlayerDetection`、`DeathAutoBlacklist`、`DestroyUI`、`ShowHideAllButtons`、`NewZoneFeature`。
+
+这12个名称不在root级常量池，意味着目前没有root级字符串常量证据支持“原始root chunk把同名字段写入全局环境”。不能仅凭这个事实直接判定它们都应改为local，因为它们可能是父级局部寄存器/子闭包捕获，也可能是恢复稿新增的辅助包装；必须逐项回到闭包创建点和寄存器流。
+
+### 已有闭包创建证据（仅用于定位，不代替完整寄存器数据流）
+
+- `GetMainPlayerID`：root/77，父root槽188创建。
+- `ShowLocalNoticeByType`：root/80，父root槽46创建。
+- `PrintLog`：现有闭包映射记录将root/51标识为PrintLog，父root槽43创建；紧随槽44–45涉及`_G.log`写入。
+- `IsDie`：root/39，父root槽192创建。
+- `GetOwnerID`：root/4、root/64、root/69分别在父root槽193–195创建。
+- `FindMonsterInCurrViewField`：root/75在父root槽196创建，root/20在父root槽212创建。
+
+这些事件证明对应子原型由root创建，但还必须检查创建后存入哪个父寄存器、后续如何传给其他闭包，以及是否有全局写入指令。不得把“闭包存在”直接等同于“全局导出”。
+
+### 当前高优先级风险
+
+当前明文将上述12个函数全部写成顶层`function Name()`，Lua加载chunk时会向当前环境写入/覆盖这些全局名称。若原始root实际把其中某些闭包保存在局部寄存器并作为upvalue传递，则当前重建版额外污染全局环境，可能影响同一游戏进程中的其他脚本/UI。
+
+这是有字节码常量池和闭包创建映射支持的**静态差异候选**，尚未证明是本次游戏UI异常的根因。正式明文不在本轮修改。
+
+### 下一步唯一工作
+
+逐项建立这12个函数的映射表：
+
+`当前全局声明 → 原型路径/父root创建槽 → 创建后目标寄存器 → 后续捕获/调用位置 → 原始作用域判断 → 当前明文差异`
+
+先完成静态证据闭合；不要直接把12个函数全部改成local，也不要先创建APK测试。确认哪些函数确实不是全局导出后，再基于最小差异决定是否进行一次单变量隔离测试。
