@@ -2522,3 +2522,68 @@ function BlacklistPlayerDetection()
         end
     end
 end
+
+-- 11.16 root/63：LuaSendMsg（92条指令，0参数、0子原型）。
+-- 本版常量确认Blocklist、SendHookList、networkCtl及四个消息参数字段；
+-- 业务主体沿用旧版同名实现，状态表改为本版MainLeftBottom.a。
+function LuaSendMsg(hookKey, param1, param2, param3, param4, messageId)
+    local mainState = MainLeftBottom.a
+    local message = {
+        recog = 0,
+        msgId = messageId,
+        param1 = param1,
+        param2 = param2,
+        param3 = param3,
+        param4 = param4,
+    }
+
+    local numericHookKey = tonumber(hookKey)
+    local blocklist = mainState.Blocklist or {}
+    local blockedIndex = table.find(blocklist, numericHookKey)
+
+    if not blockedIndex then
+        local formattedParams = {}
+        local parameterSource = {
+            message.param1,
+            message.param2,
+            message.param3,
+            message.param4,
+        }
+
+        for _, value in ipairs(parameterSource) do
+            if type(value) == "string" then
+                table.insert(formattedParams, "'" .. value .. "'")
+            else
+                table.insert(formattedParams, tostring(value))
+            end
+        end
+
+        local logText = "LuaSendMsg(" .. table.concat(formattedParams, ", ") .. ")"
+        if PrintLog then
+            PrintLog(logText)
+        end
+    end
+
+    local hookList = mainState.SendHookList or {}
+    local hook = hookList[hookKey]
+    if type(hook) == "function" then
+        local callOK, handled = pcall(hook, hookKey, messageId, message)
+        if callOK and handled == true then
+            return
+        end
+    end
+
+    global.networkCtl:SendMsg(
+        hookKey,
+        param1,
+        param2,
+        param3,
+        param4,
+        messageId
+    )
+end
+
+-- ============================================================================
+-- 第07阶段A1a-3：正式明文BlacklistPlayerDetection完整定义，用户实机反馈“正常”。
+-- 第07阶段A1a-4：追加LuaSendMsg完整函数定义（正式明文第2473-2531行）；本轮不加入第2533行绑定。
+-- ============================================================================
