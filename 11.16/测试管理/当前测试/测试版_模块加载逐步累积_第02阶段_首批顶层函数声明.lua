@@ -2527,3 +2527,67 @@ end
 -- 第07阶段A1a-3：BlacklistPlayerDetection完整定义，用户实机确认正常；保留为当前通过基线。
 -- 第07阶段A1a-4：LuaSendMsg完整函数定义加入后实机异常，已从测试文件撤回。
 -- ============================================================================
+
+
+-- ============================================================================
+-- 第07阶段A1a-4R：按11.16原始root/63（92条指令）恢复LuaSendMsg局部闭包。
+-- 本版不是全局function声明：先捕获root/63的两个upvalue（a、PrintLog），
+-- 再将可变参数闭包绑定到a.LuaSendMsg；全局导出由doInit的Schedule回调负责。
+-- 本轮唯一新增变量：创建并绑定该闭包；不调用LuaSendMsg，不主动导出全局函数。
+-- ============================================================================
+local capturedPrintLog = PrintLog
+
+a.LuaSendMsg = function(...)
+    local args = {...}
+
+    local hookKey = args[1]
+    local messageId = args[6]
+
+    local message = {
+        recog = 0,
+        msgId = messageId,
+        param1 = args[2],
+        param2 = args[3],
+        param3 = args[4],
+        param4 = args[5],
+    }
+
+    local numericHookKey = tonumber(hookKey)
+    local blockedIndex = table.find(a.Blocklist, numericHookKey)
+
+    if not blockedIndex then
+        local formattedParams = {}
+        local parameterSource = {
+            message.param1,
+            message.param2,
+            message.param3,
+            message.param4,
+        }
+
+        for _, value in ipairs(parameterSource) do
+            if type(value) == "string" then
+                table.insert(formattedParams, "'" .. value .. "'")
+            else
+                table.insert(formattedParams, tostring(value))
+            end
+        end
+
+        local logText =
+            "LuaSendMsg(" .. table.concat(formattedParams, ", ") .. ")"
+
+        capturedPrintLog(logText)
+    end
+
+    local hook = a.SendHookList[hookKey]
+
+    if type(hook) == "function" then
+        local callOK, handled =
+            pcall(hook, hookKey, messageId, message)
+
+        if callOK and handled == true then
+            return
+        end
+    end
+
+    global.networkCtl:SendMsg(...)
+end
