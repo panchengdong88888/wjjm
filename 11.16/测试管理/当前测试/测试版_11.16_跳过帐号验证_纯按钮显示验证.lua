@@ -841,7 +841,8 @@ local function make_helper_root_52_36(capturedUpvalues)
     return function()
         if capturedUpvalues[1].gatherTimer then
             capturedUpvalues[2]("关闭引怪功能")
-            StopGatherMonsters()
+            -- root/52/36原始指令调用全局StopGatherMonsters()。
+            rootEnvironment.StopGatherMonsters()
             return true
         end
 
@@ -1205,6 +1206,9 @@ StopGatherMonsters = function()
     ResetGatherMonsterData()
     PrintLog("引怪功能已停止")
 end
+
+-- root父原型在创建root/3后将其写入全局StopGatherMonsters。
+rootEnvironment.StopGatherMonsters = StopGatherMonsters
 
 
 -- 11.16 root/60：21条物理指令，0个显式参数；root父级创建事件仅明确记录1项捕获。
@@ -1773,6 +1777,9 @@ local function InitGatherMonsters()
         gatherConfig.GATHER_THRESHOLD
     ))
 end
+
+-- root父原型在创建root/23后将其写入全局InitGatherMonsters。
+rootEnvironment.InitGatherMonsters = InitGatherMonsters
 
 
 -- 11.16 root/29：ResetGatherMonsterData（20条物理指令；跨版本业务复用恢复）。
