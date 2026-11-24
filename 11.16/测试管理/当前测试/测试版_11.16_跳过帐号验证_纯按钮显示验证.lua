@@ -124,13 +124,19 @@ end
 
 -- root/80：按11.16 VM融合指令恢复；H[0]为环境表，读取screenH计算Y坐标。
 function ShowLocalNoticeByType(Msg)
+    -- 11.16模块初始化时屏幕高度保存在MainLeftBottom.a.screenH；
+    -- 不依赖未在本模块定义的全局screenH，避免提示回调在构造Notice时发生nil算术错误。
+    local screenHeight = MainLeftBottom.a.screenH
+        or SL:GetMetaValue("SCREEN_HEIGHT")
+        or 0
+
     local notice = {
         Type = 10,
         Msg = Msg,
         FColor = 249,
         BColor = 0,
         X = 5,
-        Y = screenH - 50,
+        Y = screenHeight - 50,
     }
 
     SL:ShowLocalNoticeByType(notice)
