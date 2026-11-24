@@ -2153,9 +2153,9 @@ end
 
 
 -- 11.16 root/19：AccountIDValidation（64条指令，两个子原型已按本版原始字节码提取）。
--- 按原始指令顺序恢复GAME_ID门控、UID白名单校验、验证提示及主界面等待回调。
--- root/19/0回调依次检查MainProperty、MainProperty._ui、MainProperty._ui.Panel_mini_chat；
--- 就绪时取消本回调的Schedule句柄并直接调用MainLeftBottom.doInit()。
+-- 本测试明确跳过GAME_ID与UID白名单验证，只保留主界面就绪轮询。
+-- root/19/0回调检查MainProperty、MainProperty._ui、MainProperty._ui.Panel_mini_chat；
+-- 就绪后取消本轮询并调用纯按钮doInit。
 local function AccountIDValidation()
     -- 兼容两种宿主加载方式：加载器主动调用main，或仅执行并返回模块文件。
     -- 两种方式同时存在时只启动一次，避免重复创建定时器和UI。
