@@ -418,3 +418,35 @@ slot528的调用目标是N18，不是N325；传入参数是N19。slot529决定�
 3. powerTick/powerRefreshing/combatPower均在slot685–712附近参与逻辑，但要先按真实K1语义还原条件分支及H捕获对象映射，才能确认其是否读写MainLeftBottom根表。
 4. 下一步优先恢复slot557–649和slot681–715的完整路径，特别是slot695/696的H[1].combatPower读取链，以及slot707/712两次读取的对象差异；随后定位战力文本infoPowerTxt的赋值。
 5. 未修改测试Lua，未触碰金币/元宝逻辑。
+
+
+## 2026-11-24 继续追踪：557–649为物品逻辑；681–715确认读取MainLeftBottom根表
+
+本轮重新从原版载荷完整解码root/52/23（897槽），完整消费142522字节。
+
+### 557–649区间用途已辨认
+
+该区间包含SL:GetMetaValue(QUICKUSE_DATA)、pairs遍历、SL:GetMetaValue(BAG_DATA)、物品Name/MakeIndex读取、检查祝福油、调用LuaSendMsg并使用global.MsgType.MSG_CS_USE_BAG_ITEM，以及武器幸运不足时提示使用/购买祝福油等逻辑。因此557–645主要是快捷使用/背包物品/祝福油逻辑，不应整体当作战力读取链。slot646–649已进入infoGoldTxt相关文本更新，但不属于本次战力排查范围。
+
+### slot681–715真实字段与关键语义
+
+slot683 K1=43融合叶连续执行三步：N[K2]=H[K3]；消费下一槽再执行N[K2]=H[K3]；再消费下一槽执行N[K2]=N[K3][K4]。代入683–685：N21=H[1]；N22=H[1]；N22=N22.powerTick。
+
+根据root/52/23闭包捕获映射，子原型H[1]来自父root/52的H[3]，即MainLeftBottom根表（不是MainLeftBottom.a）。因此N21、N22先取得MainLeftBottom根表，N22随后被改为根表的powerTick字段值。这闭合了战力逻辑的关键对象来源。
+
+slot692 K1=274执行N21=N21.powerRefreshing。slot693 K1=325判断N21真值（K4=1）。若为真，slot694 K1=388设置O=705，循环尾递增后从slot706继续，跳过695–705；若为假，则执行695及696。
+
+slot695 K1=9融合消费696，依次执行N21=H[1]，再执行N21=N21.combatPower。因此明确读取的是MainLeftBottom.combatPower根表字段。
+
+slot697 K1=358是N21真值条件判断（K4=0），决定是否执行slot698的控制流边界。slot699 K1=9融合消费700，执行N21=H[1]，再执行N21=N21.powerTick。slot707 K1=410分派叶是表成员读取，执行N21=N21.combatPower；其对象N21的具体前驱状态仍需结合698–706路径验证。
+
+slot712 K1=96执行N22=N22.combatPower。由于N22此前在683–685被改为powerTick字段值，必须先验证690–711是否重写N22，不能直接将slot712解释成对MainLeftBottom根表的读取。slot713 K1=209为函数调用/返回值写回类操作，slot714 K1=366为条件判断；调用目标、参数区间和后续文本赋值链待继续恢复。
+
+### 本轮结论与限制
+
+1. 已直接证明战力周期逻辑通过闭包H[1]取得MainLeftBottom根表，而非子表.a。
+2. 已直接证明powerRefreshing参与门控；为真时跳过695–705这条combatPower读取/处理分支。
+3. 已直接证明slot695–696读取MainLeftBottom.combatPower。
+4. 这与测试版接收端把解析值写入MainLeftBottom.combatPower方向一致，但尚不能据此断定UI显示失败的唯一原因。
+5. 仍需还原697–715的条件路径、N21/N22运行时对象变化、infoPowerTxt最终写入链，并确认root/52/35请求闭包是否在周期逻辑中真正调用。
+6. 未修改测试Lua，未触碰金币/元宝逻辑。
