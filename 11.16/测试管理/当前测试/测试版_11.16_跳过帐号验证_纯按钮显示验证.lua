@@ -849,7 +849,9 @@ local function make_helper_root_52_36(capturedUpvalues)
         end
 
         SL:ShowSystemTips("gatherTimer为空，进入启动分支")
+        SL:ShowSystemTips("准备调用开启提示函数")
         capturedUpvalues[2]("开启引怪功能，阈值：11")
+        SL:ShowSystemTips("开启提示函数执行完毕")
         SL:ShowSystemTips("正在调用InitGatherMonsters")
         capturedUpvalues[3]()
         return true
