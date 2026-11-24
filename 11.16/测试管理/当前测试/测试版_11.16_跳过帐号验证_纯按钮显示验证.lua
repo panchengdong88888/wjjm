@@ -3782,6 +3782,11 @@ end
 -- ============================================================================
 local function helper_root_52_32_0(callbackMap, buttonConfig, button)
     return function()
+        -- 临时点击链路测试：只对“开拉怪”按钮提示，不执行后续业务逻辑的前置拦截。
+        if buttonConfig and buttonConfig.key == "yinguaibut" then
+            SL:ShowSystemTips("开拉怪按钮点击已触发")
+        end
+
         local callback = callbackMap[buttonConfig.key]
         -- 尚未恢复出真实回调的按钮不得假装成功，也不得只翻转toggle外观。
         if type(callback) ~= "function" then
