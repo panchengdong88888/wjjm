@@ -6604,6 +6604,10 @@ local function CreateStandaloneButton(uiParent, key, title, x)
 
     MainLeftBottom[key] = button
     MainLeftBottom.b[key] = button
+    -- 隐藏按钮回调读取的是MainLeftBottom.a.hidebut，必须同步保存到主面板状态表。
+    if key == "hidebut" then
+        MainLeftBottom.a.hidebut = button
+    end
     GUI:Button_setTitleText(button, title)
     GUI:Button_setTitleFontSize(button, 18)
     GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
