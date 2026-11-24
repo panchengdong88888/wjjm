@@ -1,0 +1,30 @@
+name: 11.16 full module chunk syntax check
+
+on:
+  push:
+    branches:
+      - "test/11.16-main-disable-doinit"
+    paths:
+      - "11.16/MainLeftBottom_11.16_明文.lua"
+      - "11.16/测试版_Main函数屏蔽doInit_第一阶段.lua"
+      - "11.16/测试版_纯模块加载_屏蔽main自动启动.lua"
+      - ".github/workflows/11-16-module-chunk-syntax.yml"
+  workflow_dispatch:
+
+jobs:
+  lua54-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact test branch
+        uses: actions/checkout@v4
+      - name: Set up Lua 5.4
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.4"
+      - name: Compile formal source and both isolated test files
+        run: |
+          luac -v
+          luac -p "11.16/MainLeftBottom_11.16_明文.lua"
+          luac -p "11.16/测试版_Main函数屏蔽doInit_第一阶段.lua"
+          luac -p "11.16/测试版_纯模块加载_屏蔽main自动启动.lua"
+          echo "Lua 5.4 syntax check passed for all three files."
