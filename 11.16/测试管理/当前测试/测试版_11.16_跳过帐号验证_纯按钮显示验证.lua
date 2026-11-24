@@ -6414,13 +6414,10 @@ local function BuildMainLeftBottomButtonGroups_11_16()
         { key = "blacklistbut", name = "开黑名单", toggle = "关黑名单" },
         { key = "xiaotuibut", name = "快速小退" },
     }
-    -- 三个新增入口放在“锻造生肖”左侧，与原第三组保持同一行。
+    -- 11.16 root/52槽536–543：原第三组只有三个配置项。
     local group3 = {
         { key = "putinbut", name = "上架金条" },
         { key = "putoutbut", name = "下架物品" },
-        { key = "storagebut", name = "存仓" },
-        { key = "takebut", name = "取物" },
-        { key = "settingbut", name = "内挂设置" },
         { key = "forgezodiacbut", name = "锻造生肖" },
     }
     return group1, group2, group3
@@ -6734,7 +6731,7 @@ local function doInit_PlainButtons()
             infoBg, "infoYuanbaoTxt", 10, 72, 40, "#00ff00", ""
         )
         local infoPowerTxt = GUI:Text_Create(
-            infoBg, "infoPowerTxt", 10, 26, 26, "#00ff00", ""
+            infoBg, "infoPowerTxt", 10, 26, 40, "#00ff00", ""
         )
 
         GUI:setAnchorPoint(infoGoldTxt, 0, 0.5)
