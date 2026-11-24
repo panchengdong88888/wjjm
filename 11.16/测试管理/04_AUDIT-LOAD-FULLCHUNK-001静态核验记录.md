@@ -291,3 +291,13 @@ GitHub Actions双版本矩阵：
 目的：只验证完整chunk加载阶段的12个疑似root局部闭包是否因错误写入全局环境而影响游戏原生UI。它不是正式源码修复版。
 
 状态：**已生成，尚未实机测试；等待Lua 5.1/5.4 CI完成。** 不要把它标记为通过，也不要与A/B混为同一个测试。
+
+
+LOAD-004的双版本语法CI已完成：
+- Run ID：`45316256481`
+- Run URL：https://github.com/panchengdong88888/wjjm/actions/runs/45316256481
+- `lua-syntax (5.1)`：success
+- `lua-syntax (5.4)`：success
+- 两个job均成功编译正式明文、A、B和LOAD-004四个文件。
+
+因此LOAD-004可以进入一次实机验证。它仍然只是隔离测试文件，不是正式修复版；唯一明文没有修改。用户尚未实测。
