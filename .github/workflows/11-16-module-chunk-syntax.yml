@@ -33,4 +33,4 @@ jobs:
           luac -p "11.16/测试版_Main函数屏蔽doInit_第一阶段.lua"
           luac -p "11.16/测试版_纯模块加载_屏蔽main自动启动.lua"
           luac -p "11.16/测试版_LOAD-004_恢复root局部闭包作用域_保持main与doInit屏蔽.lua"
-          echo "Lua ${{ matrix.lua-version }} syntax check passed for all three files."
+          echo "Lua ${{ matrix.lua-version }} syntax check passed for all four files."
