@@ -208,3 +208,44 @@ GitHub Actions双版本矩阵：
 `当前全局声明 → 原型路径/父root创建槽 → 创建后目标寄存器 → 后续捕获/调用位置 → 原始作用域判断 → 当前明文差异`
 
 先完成静态证据闭合；不要直接把12个函数全部改成local，也不要先创建APK测试。确认哪些函数确实不是全局导出后，再基于最小差异决定是否进行一次单变量隔离测试。
+
+
+## 第五轮静态闭合：12个疑似局部闭包的父级寄存器已定位
+
+进一步对照`root_闭包创建与捕获映射.json`和root 654条指令流，已把12个疑似局部函数声明对应到父root闭包创建槽和目标寄存器。闭包创建指令将函数对象写入父函数寄存器N[A]；这与当前Lua源码的顶层`function Name()`全局写入形式存在明显作用域差异。
+
+| 当前明文函数名 | 原型路径 | root创建槽 | root指令 | 目标寄存器 |
+|---|---|---:|---:|---:|
+| PrintLog | root/51 | 43 | Opcode121 | N[4] |
+| ShowLocalNoticeByType | root/80 | 46 | Opcode121 | N[5] |
+| GetMainPlayerID | root/77 | 188 | Opcode121 | N[26] |
+| IsDie | root/39 | 192 | Opcode387 | N[30] |
+| GetOwnerID（变体1） | root/4 | 193 | Opcode387 | N[31] |
+| GetOwnerID（变体2） | root/64 | 194 | Opcode178 | N[32] |
+| GetOwnerID（变体3） | root/69 | 195 | Opcode121 | N[33] |
+| FindMonsterInCurrViewField相关闭包 | root/75 | 196 | Opcode387 | N[34] |
+| ResetGatherMonsterData | root/29 | 202 | Opcode387 | N[35] |
+| FindMonsterInCurrViewField相关闭包 | root/20 | 212 | Opcode387 | N[36] |
+| DestroyUI | root/22 | 264 | Opcode121 | N[37] |
+| ShowHideAllButtons | root/67 | 273 | Opcode178 | N[37] |
+| DeathAutoBlacklist | root/71 | 553 | Opcode387 | N[85] |
+| BlacklistPlayerDetection | root/34 | 558 | Opcode178 | N[86] |
+| NewZoneFeature | root/13 | 625 | Opcode178 | N[88] |
+
+注：12个当前函数名对应15个闭包创建事件，因为GetOwnerID有三个原型变体、FindMonsterInCurrViewField相关逻辑有两个原型；表中不把这些变体合并成同一个原始函数。
+
+### 当前可作出的判断
+
+- 上表的闭包创建目标是root局部寄存器N[A]，不是直接的全局环境字段写入。
+- 当前明文却把这些名字写成顶层全局函数声明，加载时会将函数对象写入全局环境。
+- 其中PrintLog和ShowLocalNoticeByType还被其他root闭包作为捕获值使用；现有闭包映射明确记录root/27的捕获链包含root/80 ShowLocalNoticeByType和root/51 PrintLog。
+- DestroyUI与ShowHideAllButtons两次闭包创建均写入N[37]，说明父root寄存器存在复用/覆盖；不能只凭源码函数名推断二者在原始作用域中的导出方式。
+- 这是比“函数名可能撞上游戏API”更强的证据：原始root将这些闭包存入局部寄存器，而当前重建文本却进行了全局写入。它很可能是完整chunk加载阶段与精简G48–G52结果不同的原因之一，但还没有实机因果验证。
+
+### 尚未完成的证据
+
+- 对每个N寄存器后续读取、闭包捕获和覆盖时点的完整数据流尚未全部列完。
+- 还要核对源码中函数声明的前后顺序；若将全局声明改成local，必须正确处理前向引用，不能简单批量替换后当作最终源码。
+- 原始root有些闭包创建后可能被复制到其他表/环境字段；必须追踪实际写入指令，不能仅凭N[A]目标就断言整个生命周期从未导出。
+
+因此当前不修改正式明文，也不立即生成“12个全改local”的测试版。下一步先完成这些寄存器的使用/捕获/导出追踪，形成可审计的原始作用域映射，再决定最小单变量实机测试。
