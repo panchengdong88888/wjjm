@@ -54,3 +54,62 @@
 2. 若任何文件语法失败，先定位具体行并确认是正式明文问题还是测试拼接问题；不要求用户先重测。
 3. 若三份文件语法均通过，再静态清点B完整chunk中真正执行的顶层表达式和环境写入，与G48–G52隔离覆盖表对照。
 4. 在取得加载器真实调用证据前，不创建新APK版本，不猜测main自动调用约定。
+
+
+## 第二轮静态核验：Lua 5.4语法CI通过
+
+GitHub Actions：
+- Workflow：`11.16 full module chunk syntax check`
+- Run ID：`45315508373`
+- Run URL：https://github.com/panchengdong88888/wjjm/actions/runs/45315508373
+- 触发提交：`dcca01999515ea874d82b5065d34553a8b0d7091`
+- Job：`lua54-syntax`
+- Job conclusion：`success`
+- 步骤“Set up Lua 5.4”及“Compile formal source and both isolated test files”均成功。
+
+因此，正式明文、测试A、测试B均通过Lua 5.4的`luac -p`语法编译。**这排除了这三份文件在Lua 5.4下的语法解析失败，但不排除目标游戏Lua版本差异、加载器契约问题、运行时顶层表达式异常或引擎接口行为差异。**
+
+## 完整模块chunk顶层立即执行清单（静态初筛）
+
+基于正式明文的顶层结构扫描，当前识别到的加载期动作如下。函数体定义本身不会执行其内部语句；以下仅列chunk加载时会执行的表达式/赋值/工厂调用：
+
+| 正式明文行 | 顶层动作 | G48–G52覆盖情况 |
+|---|---|---|
+| 25–32 | 选择rootEnvironment：getfenv(1) / _ENV / _G | G48覆盖环境选择 |
+| 34–61 | 创建MainLeftBottom、a/b/z表；全局导出；字段初始化 | G48/G49覆盖主要状态骨架 |
+| 41–42 | 调用SL:GetMetaValue读取SCREEN_WIDTH/SCREEN_HEIGHT | G49覆盖 |
+| 869 | 创建UPVALUE_CELL_TAG_11_16空表 | G48–G52未见单独测试；普通表创建 |
+| 1088、2139 | 将函数闭包写入MainLeftBottom.zd、MainLeftBottom.a.show | G48–G52未见逐项测试 |
+| 2226 | 将AccountIDValidation闭包写入MainLeftBottom.main | G52有main字段注册，但函数体版本与当前正式明文不同 |
+| 2533、2581 | 将LuaSendMsg、onDamageMsg闭包写入模块状态表 | G48–G52未见逐项测试 |
+| 3048起 | 创建新区物品关键词常量表 | G48–G52未见逐项测试；不调用业务函数 |
+| 4339–4383 | 创建苹果地图候选表；调用多个make_*工厂实例化闭包；将startAppleMap写入全局环境 | G51覆盖该组工厂实例化/全局赋值，但使用占位依赖 |
+| 5745–5747 | 局部前向声明并赋值BuildCruiseRunButtonHandler闭包 | G48–G52未见逐项测试；函数体不执行 |
+| 6899–6906 | 调用make_MainLeftBottom_doInit_11_16工厂，创建并赋值doInit闭包 | G50覆盖工厂定义/实例化，但应按该测试快照核对与当前正式明文一致性 |
+| 7446 | 将root52_23Callback闭包写入MainLeftBottom.a | G48–G52未见单独覆盖 |
+| 7465–7468 | 判断main类型并主动调用MainLeftBottom.main() | G52覆盖过隔离启动，但其AccountIDValidation是测试模式版本 |
+| 7471 | return MainLeftBottom | G48–G52均使用模块return骨架；完整chunk的return仍只在A/B中按当前源码组合实测 |
+
+注意：此表是顶层语句初筛，不是根因判定。表中“未见单独测试”表示尚未找到一份与当前完整明文逐字一致的隔离实测证据，不代表该语句有问题。
+
+## 对G52覆盖范围的重要更正
+
+重新读取`MainLeftBottom_11.16_UI批量诊断_G52_main启动兼容层测试.lua`（blob `f4fe85e8d5dea51d629b36c4267393f71c22baaf`）后确认：
+
+- G52中的AccountIDValidation明确打印“测试模式已跳过游戏ID与账号UID验证”，并包含`_mainStarted`、doInit类型检查、`_doInitStarted`、pcall保护等测试期逻辑。
+- 当前正式明文的AccountIDValidation已经恢复GAME_ID=204208门控、九项UID白名单及原始等待回调。
+- 因此G52通过只证明当时的测试模式main启动兼容路径通过，**不能声称当前正式明文中的完整AccountIDValidation已在游戏内通过**。
+- 当前正式明文中的AccountIDValidation另有独立Lua 5.4隔离工具，5/5 mock用例通过；仍不等于游戏内实机验证。
+
+## 加载器源码检索
+
+- 已检查main分支完整Git tree（611个文件），文件名筛选未发现明确的模块loader/require宿主实现。
+- GitHub代码搜索`MainLeftBottom.main`、`require MainLeftBottom`、`MainLeftBottom require`、`load MainLeftBottom`未返回匹配。
+- 这只能说明当前仓库没有找到可直接核验的加载器源码；不能证明宿主一定不调用main，也不能证明宿主一定会调用main。加载器契约仍为未核实。
+
+## 当前阶段判断
+
+- A/B与正式明文的差异已核实，三份文件Lua 5.4语法编译通过。
+- A/B实机均不显示，仍无法由语法错误解释。
+- G48–G52不应重测；但其中G52的main函数是测试模式版本，不能代表当前完整AccountIDValidation。
+- 当前需要继续的是静态核对未被G48–G52逐项覆盖的顶层状态/闭包注册，以及G51/G50测试桩与当前正式明文捕获参数的一致性；随后再决定是否需要一个严格单变量实机测试。
