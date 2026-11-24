@@ -1750,7 +1750,7 @@ end
 -- 以11.2/11.9共同业务流程为底稿；保留新版已确认的Schedule回调包装闭包closure_root_23_0。
 -- root/3停止函数闭包已确认运行开关为独立布尔upvalue、计时器对象含gatherTimer字段；这里沿用旧版变量名映射。
 -- 业务恢复可信度高，但未逐槽核验root/23的36条指令；如运行测试发现状态变量命名/作用域差异，再定点修正。
-InitGatherMonsters = function()
+local function InitGatherMonsters()
     -- 原型root/23为0参数、7个upvalue；计时器表由模块级z共享捕获，
     -- 不是由按钮回调临时作为显式参数传入。
     if timerState.gatherTimer then
