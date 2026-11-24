@@ -2258,3 +2258,11 @@ local function AccountIDValidation()
 
     waitTimer = SL:Schedule(waitForMainProperty, 0.5)
 end
+
+
+-- ============================================================================
+-- 第06阶段B3-C：从正式明文第2226行逐字提取。
+-- 仅将AccountIDValidation函数注册到MainLeftBottom.main；本轮不主动调用main。
+-- ============================================================================
+
+MainLeftBottom.main = AccountIDValidation
