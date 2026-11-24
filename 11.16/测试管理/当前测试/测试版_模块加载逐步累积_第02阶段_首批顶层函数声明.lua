@@ -2265,4 +2265,4 @@ end
 -- 仅将AccountIDValidation函数注册到MainLeftBottom.main；本轮不主动调用main。
 -- ============================================================================
 
-MainLeftBottom.main = AccountIDValidation
+-- B3-C隔离回退：暂不注册MainLeftBottom.main，回到B3-B已通过基线。
