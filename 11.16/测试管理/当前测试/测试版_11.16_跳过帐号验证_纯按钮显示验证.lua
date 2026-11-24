@@ -60,6 +60,9 @@ z.isTaking = false
 z.isDiuing = false
 z.isOutputted = false
 
+-- 原始root slot42创建独立空表；root/52的H[3]捕获该表，战力状态必须与之共用。
+local root52ModuleState = {}
+
 -- 11.16 root/23、root/3的计时器捕获源为MainLeftBottom.z。
 -- 以模块级局部别名保留同一状态表，两个原型均为0显式参数。
 local timerState = z
@@ -6137,9 +6140,9 @@ end
 -- 槽468从父局部寄存器N[15]捕获。
 -- root/52 H[3]=MainLeftBottom，H[0]=PrintLog；父N[15]是原SL.NetworkUtil.OnLuaMessage处理器。
 -- 原始局部函数符号名未知，make_helper_root_52_14为原型路径合成定位名。
-local function make_helper_root_52_14(capturedMainLeftBottom, capturedPrintLog, originalOnLuaMessage)
+local function make_helper_root_52_14(capturedModuleState, capturedPrintLog, originalOnLuaMessage)
     return function(arg0, messageId, arg2, arg3, arg4, payload)
-        local main = capturedMainLeftBottom
+        local main = capturedModuleState
 
         if messageId == 12170 and payload then
             local decodeOk, swordData = pcall(SL.JsonDecode, SL, payload, false)
@@ -6220,7 +6223,7 @@ local function make_helper_root_52_14(capturedMainLeftBottom, capturedPrintLog, 
 end
 
 -- 原版root/52父函数在主界面初始化时执行的消息回调安装。
--- 原版父H[3]=MainLeftBottom，H[0]=PrintLog，N[15]=SL.NetworkUtil.OnLuaMessage。
+-- 原版父H[3]=root slot42创建的moduleState表，H[0]=PrintLog，N[15]=原始消息回调。
 -- 原版把原回调备份到MainLeftBottom.a._origOnLuaMessage，再替换SL.NetworkUtil.OnLuaMessage。
 local function InstallCombatPowerMessageHook_11_16()
     local panelState = MainLeftBottom.a
@@ -6240,7 +6243,7 @@ local function InstallCombatPowerMessageHook_11_16()
     panelState._origOnLuaMessage = originalOnLuaMessage
 
     local wrapper = make_helper_root_52_14(
-        MainLeftBottom,
+        root52ModuleState,
         PrintLog,
         originalOnLuaMessage
     )
@@ -6970,6 +6973,10 @@ local function doInit_PlainButtons()
         GUI:addOnClickEvent(appleButton, callbackMap.applebut)
     end
 
+    -- root/52/11原版每秒把a.LuaSendMsg导出到全局LuaSendMsg。
+    -- 本测试在首次战力请求前先完成同一绑定，避免请求闭包调用到nil全局函数。
+    make_helper_root_52_11()
+
     -- 安装原版消息接收包装器，并启动纯显示/战力请求刷新。
     InstallCombatPowerMessageHook_11_16()
     if type(MainLeftBottom.startInfoRefresh_11_16) == "function" then
@@ -7551,14 +7558,13 @@ MainLeftBottom.startInfoRefresh_11_16 = function()
             return
         end
 
-        -- 原版root/52/23每秒调用root/52/35战力请求闭包。
-        -- root/52/35的H[0]捕获对象为MainLeftBottom根表。
-        pcall(make_helper_root_52_35, MainLeftBottom)
+        -- 原版root/52/35的H[0]与root/52/14的H[0]相同，均为root slot42创建的moduleState表。
+        pcall(make_helper_root_52_35, root52ModuleState)
 
-        -- 战力由网络回调写入MainLeftBottom根表，因此刷新时也从根表读取。
+        -- 战力由消息包装器写入同一moduleState.combatPower，显示时从该表读取。
         local ok = pcall(
             UpdateMainInfoTexts_11_16,
-            MainLeftBottom,
+            root52ModuleState,
             nil,
             state.infoGoldTxt,
             state.infoYuanbaoTxt,
