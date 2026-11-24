@@ -2470,23 +2470,27 @@ function BlacklistPlayerDetection()
 end
 
 
--- 11.16 root/63：LuaSendMsg（92条指令，0参数、0子原型）。
--- 本版常量确认Blocklist、SendHookList、networkCtl及四个消息参数字段；
--- 业务主体沿用旧版同名实现，状态表改为本版MainLeftBottom.a。
-function LuaSendMsg(hookKey, param1, param2, param3, param4, messageId)
-    local mainState = MainLeftBottom.a
+-- 11.16 root/63：LuaSendMsg（92条指令，0个固定参数、2个upvalues、0个子原型）。
+-- 原始闭包捕获本地状态表a与PrintLog；先绑定a.LuaSendMsg，全局导出由doInit的Schedule回调执行。
+local capturedPrintLog = PrintLog
+
+a.LuaSendMsg = function(...)
+    local args = {...}
+
+    local hookKey = args[1]
+    local messageId = args[6]
+
     local message = {
         recog = 0,
         msgId = messageId,
-        param1 = param1,
-        param2 = param2,
-        param3 = param3,
-        param4 = param4,
+        param1 = args[2],
+        param2 = args[3],
+        param3 = args[4],
+        param4 = args[5],
     }
 
     local numericHookKey = tonumber(hookKey)
-    local blocklist = mainState.Blocklist or {}
-    local blockedIndex = table.find(blocklist, numericHookKey)
+    local blockedIndex = table.find(a.Blocklist, numericHookKey)
 
     if not blockedIndex then
         local formattedParams = {}
@@ -2505,32 +2509,25 @@ function LuaSendMsg(hookKey, param1, param2, param3, param4, messageId)
             end
         end
 
-        local logText = "LuaSendMsg(" .. table.concat(formattedParams, ", ") .. ")"
-        if PrintLog then
-            PrintLog(logText)
-        end
+        local logText =
+            "LuaSendMsg(" .. table.concat(formattedParams, ", ") .. ")"
+
+        capturedPrintLog(logText)
     end
 
-    local hookList = mainState.SendHookList or {}
-    local hook = hookList[hookKey]
+    local hook = a.SendHookList[hookKey]
+
     if type(hook) == "function" then
-        local callOK, handled = pcall(hook, hookKey, messageId, message)
+        local callOK, handled =
+            pcall(hook, hookKey, messageId, message)
+
         if callOK and handled == true then
             return
         end
     end
 
-    global.networkCtl:SendMsg(
-        hookKey,
-        param1,
-        param2,
-        param3,
-        param4,
-        messageId
-    )
+    global.networkCtl:SendMsg(...)
 end
-
-MainLeftBottom.a.LuaSendMsg = LuaSendMsg
 
 
 -- 11.16 root/40：onDamageMsg（72条指令，2参数、1个JSON解码子闭包）。
