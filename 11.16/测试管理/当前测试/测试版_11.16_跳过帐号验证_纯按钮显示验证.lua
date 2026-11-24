@@ -817,6 +817,9 @@ local function make_helper_root_52_9(capturedUpvalues)
 end
 
 
+-- StopGatherMonsters先行声明，确保root/52/36闭包捕获本地停止函数。
+local StopGatherMonsters
+
 -- 11.16 root/52/36：19条物理指令，0个显式参数，3个upvalue。
 -- 父级root/52槽位605 Opcode387创建childIndex=36闭包，captureCount=3：
 -- 槽位606 Opcode132将父级H[3]绑定到本闭包H[0]；
@@ -862,7 +865,7 @@ local currentState = gatherStatusText.IDLE
 local isGatherRunning = false
 
 -- 先声明，供root/52/36的闭包捕获同一停止函数。
-local StopGatherMonsters
+
 
 -- VM共享upvalue cell适配层：私有标记避免与普通业务table混淆。
 local UPVALUE_CELL_TAG_11_16 = {}
