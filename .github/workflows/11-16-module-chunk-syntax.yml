@@ -12,19 +12,23 @@ on:
   workflow_dispatch:
 
 jobs:
-  lua54-syntax:
+  lua-syntax:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        lua-version: ["5.1", "5.4"]
     steps:
       - name: Checkout exact test branch
         uses: actions/checkout@v4
-      - name: Set up Lua 5.4
+      - name: Set up Lua ${{ matrix.lua-version }}
         uses: leafo/gh-actions-lua@v10
         with:
-          luaVersion: "5.4"
+          luaVersion: ${{ matrix.lua-version }}
       - name: Compile formal source and both isolated test files
         run: |
-          luac -v
+          lua -v
           luac -p "11.16/MainLeftBottom_11.16_明文.lua"
           luac -p "11.16/测试版_Main函数屏蔽doInit_第一阶段.lua"
           luac -p "11.16/测试版_纯模块加载_屏蔽main自动启动.lua"
-          echo "Lua 5.4 syntax check passed for all three files."
+          echo "Lua ${{ matrix.lua-version }} syntax check passed for all three files."
