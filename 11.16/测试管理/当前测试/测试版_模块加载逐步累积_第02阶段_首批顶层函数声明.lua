@@ -2376,3 +2376,149 @@ local function getMainLeftBottomBlacklistState()
     end
     return mainState.blacklist
 end
+
+
+-- ============================================================================
+-- 第07阶段A1a-2：正式明文第2314-2330行，实机通过（用户确认“正常”）。
+-- 第07阶段A1a-3：追加BlacklistPlayerDetection完整函数定义；本轮仅定义，不调用。
+-- ============================================================================
+
+-- 复用旧版黑名单检测业务主体；按本版常量改用gamePlayerController:GetMainPlayer，
+-- 玩家对象的GetID/GetName/GetMapX/GetMapY读取方式接入，并使用MainLeftBottom.a.blacklist共享状态。
+function BlacklistPlayerDetection()
+    MainLeftBottom.z.isBlacklisting = true
+    local blacklistState = getMainLeftBottomBlacklistState()
+
+    -- 11.16改为由gamePlayerController取得主玩家对象。
+    local mainPlayer = global.gamePlayerController:GetMainPlayer()
+    if not mainPlayer then return end
+    local mainActorID = mainPlayer:GetID()
+    if not mainActorID then return end
+
+    local hp = tonumber(SL:GetMetaValue("HP")) or 0.0
+    local previousHP = blacklistState.lastHp
+
+    if previousHP == nil then
+        blacklistState.lastHp = hp
+        blacklistState.deathHandled = (hp <= 0)
+    elseif hp > 0 then
+        blacklistState.lastHp = hp
+        blacklistState.deathHandled = false
+    elseif previousHP > 0 and not blacklistState.deathHandled then
+        blacklistState.deathHandled = true
+        blacklistState.lastHp = 0.0
+        DeathAutoBlacklist()
+    end
+
+    if hp <= 0 then
+        return
+    end
+
+    if IsInWhitelistMap() then
+        return
+    end
+
+    -- 宿主返回玩家列表和显式数量两个值；不能用#players替代第二返回值。
+    local players, playerCount = SL:GetMetaValue("FIND_IN_VIEW_PLAYER_LIST")
+    if not players or not playerCount or playerCount <= 0 then
+        return
+    end
+
+    for index = 1, playerCount do
+        local actorID = players[index]
+
+        if actorID and actorID ~= mainActorID then
+            local isBlacklisted, blacklistDisplayName =
+                FindBlacklistPlayer(actorID)
+
+            if isBlacklisted then
+                local actorName = blacklistDisplayName
+                if not actorName and type(actor) == "table" and actor.GetName then
+                    actorName = actor:GetName()
+                end
+                if not actorName then
+                    actorName = "黑名单玩家"
+                end
+
+                -- 未配置距离时不读取坐标，按原控制流直接允许后续告警/传送。
+                local distance
+                local distanceAccepted = true
+                local configuredDistance = blacklistState.distance
+
+                if configuredDistance then
+                    local mainX = mainPlayer:GetMapX()
+                    local mainY = mainPlayer:GetMapY()
+                    local actorX, actorY
+                    if type(actor) == "table" and actor.GetMapX and actor.GetMapY then
+                        actorX = actor:GetMapX()
+                        actorY = actor:GetMapY()
+                    end
+
+                    if mainX ~= nil and mainY ~= nil
+                        and actorX ~= nil and actorY ~= nil then
+                        distance = math.max(
+                            math.abs(mainX - actorX),
+                            math.abs(mainY - actorY)
+                        )
+                        distanceAccepted = distance <= configuredDistance
+                    else
+                        distanceAccepted = false
+                    end
+                end
+
+                if distanceAccepted then
+                    local now = os.time()
+                    local lastAlertAt = blacklistState.alertAt or 0
+                    local elapsed = now - lastAlertAt
+
+                    if blacklistAlertThreshold <= elapsed then
+                        blacklistState.alertAt = now
+                        PrintLog(
+                            "野外观测到黑名单玩家：%s（%d格）",
+                            actorName,
+                            distance or 0.0
+                        )
+                    end
+
+                    -- 等待重试截止时间时退出整个检测回调，不继续扫描其他玩家。
+                    if (blacklistState.nextTryAt or 0) > now then
+                        return
+                    end
+
+                    local usedTeleportItemName = UseItemByIndex()
+                    if usedTeleportItemName then
+                        blacklistState.nextTryAt = now + blacklistShortRetryDelay
+                        blacklistState.noStoneWarned = false
+
+                        ShowLocalNoticeByType(string.format(
+                            "黑名单玩家：%s（%d格），飞随机",
+                            actorName,
+                            distance or 0.0
+                        ))
+
+                        PrintLog(
+                            "黑名单玩家 %s，距离 %d 格，使用 %s 随机传送",
+                            actorName,
+                            distance or 0.0,
+                            usedTeleportItemName
+                        )
+                    else
+                        blacklistState.nextTryAt = now + blacklistNoItemRetryDelay
+
+                        if not blacklistState.noStoneWarned then
+                            blacklistState.noStoneWarned = true
+                            ShowLocalNoticeByType("没有随机传送石，黑名单玩家传送暂停")
+                            PrintLog(
+                                "没有可用的随机传送道具（%s）",
+                                table.concat(randomTeleportItemNames, "/")
+                            )
+                        end
+                    end
+
+                    -- 成功与失败路径均在处理当前首个命中玩家后退出。
+                    return
+                end
+            end
+        end
+    end
+end
