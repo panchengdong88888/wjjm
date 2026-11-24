@@ -60,6 +60,10 @@ z.isTaking = false
 z.isDiuing = false
 z.isOutputted = false
 
+-- 11.16 root/23、root/3的计时器捕获源为MainLeftBottom.z。
+-- 以模块级局部别名保留同一状态表，两个原型均为0显式参数。
+local timerState = z
+
 --[[
     首批恢复函数（2026-11-18）
     以下函数的参数、常量和调用形状均由11.16原型自身支持。
@@ -837,7 +841,7 @@ local function make_helper_root_52_36(capturedUpvalues)
     return function()
         if capturedUpvalues[1].gatherTimer then
             capturedUpvalues[2]("关闭引怪功能")
-            StopGatherMonsters(capturedUpvalues[1])
+            StopGatherMonsters()
             return true
         end
 
@@ -1187,7 +1191,8 @@ local function FormatStateChange(newState)
 end
 
 -- 11.16 root/3：停止引怪。timerState由root/52/36的第一个捕获值传入。
-StopGatherMonsters = function(timerState)
+StopGatherMonsters = function()
+    -- 原型root/3为0参数；同样捕获模块级MainLeftBottom.z状态表。
     isGatherRunning = false
 
     if timerState and timerState.gatherTimer then
@@ -1745,13 +1750,9 @@ end
 -- 以11.2/11.9共同业务流程为底稿；保留新版已确认的Schedule回调包装闭包closure_root_23_0。
 -- root/3停止函数闭包已确认运行开关为独立布尔upvalue、计时器对象含gatherTimer字段；这里沿用旧版变量名映射。
 -- 业务恢复可信度高，但未逐槽核验root/23的36条指令；如运行测试发现状态变量命名/作用域差异，再定点修正。
-local function InitGatherMonsters(timerState)
-    -- root/52/36的H[0]就是共享计时器状态表；不可依赖未定义的全局timerState。
-    if type(timerState) ~= "table" then
-        PrintLog("引怪启动失败：计时器状态未传入")
-        return false
-    end
-
+InitGatherMonsters = function()
+    -- 原型root/23为0参数、7个upvalue；计时器表由模块级z共享捕获，
+    -- 不是由按钮回调临时作为显式参数传入。
     if timerState.gatherTimer then
         SL:UnSchedule(timerState.gatherTimer)
         timerState.gatherTimer = nil
@@ -1771,7 +1772,6 @@ local function InitGatherMonsters(timerState)
         "引怪功能已启动 (阈值: %d)",
         gatherConfig.GATHER_THRESHOLD
     ))
-    return true
 end
 
 
@@ -6564,9 +6564,7 @@ local function BuildMainLeftBottomCallbackMap_11_16(context)
     end
     callbackMap.recyclebut = closure_root_52_21
     callbackMap.yinguaibut = make_helper_root_52_36({
-        timerState, ShowLocalNoticeByType, function()
-            return InitGatherMonsters(timerState)
-        end
+        timerState, ShowLocalNoticeByType, InitGatherMonsters
     })
     callbackMap.clearblacklistbut = make_helper_root_52_10
     callbackMap.storagebut = function()
