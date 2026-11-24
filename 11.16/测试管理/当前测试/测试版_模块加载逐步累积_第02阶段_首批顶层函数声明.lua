@@ -1736,4 +1736,526 @@ end
 -- 以11.2/11.9共同业务流程为底稿；保留新版已确认的Schedule回调包装闭包closure_root_23_0。
 -- root/3停止函数闭包已确认运行开关为独立布尔upvalue、计时器对象含gatherTimer字段；这里沿用旧版变量名映射。
 
+
+
+-- ============================================================================
+-- 第06阶段：正式明文第1721-2233行（513行），原样提取。
+-- 本批增加函数定义、show闭包赋值、AccountIDValidation定义及MainLeftBottom.main注册。
+-- 这些定义/赋值在chunk加载时创建函数并绑定入口；本阶段不主动调用main/doInit，
+-- 不触发函数体内的定时器、仓库、移动、丢弃物品或引擎业务调用。
+-- ============================================================================
+
+local function InitGatherMonsters()
+    if timerState.gatherTimer then
+        SL:UnSchedule(timerState.gatherTimer)
+        timerState.gatherTimer = nil
+    end
+
+    isGatherRunning = true
+    FormatStateChange(gatherStatusText.IDLE)
+    ResetGatherMonsterData()
+
+    -- 11.16 root/23/0是无参数、无捕获的包装闭包，内部读取全局MainLoop并调用。
+    timerState.gatherTimer = SL:Schedule(
+        closure_root_23_0,
+        gatherConfig.CHECK_INTERVAL
+    )
+
+    PrintLog(string.format(
+        "引怪功能已启动 (阈值: %d)",
+        gatherConfig.GATHER_THRESHOLD
+    ))
+end
+
+
+-- 11.16 root/29：ResetGatherMonsterData（20条物理指令；跨版本业务复用恢复）。
+-- 本版原型签名：0参数、无子原型；常量包含空字符串、数值0及“数据已重置”。
+-- 旧版11.2同名函数的复位顺序与本版常量/原型规模吻合；此处复用其已知业务主体。
+-- 20条本版指令虽已定点提取，但本轮没有逐槽模拟；状态变量写入目标及ClearTargetID_2调用
+-- 未宣称为本版指令级完全确认。若后续出现行为差异，再定点修订。
+function ResetGatherMonsterData()
+    resettableTable = {}
+    resetSlot16 = 0
+    resetSlot17 = 0
+    ClearTargetID_2()
+    resetSlot19 = false
+    resetSlot20 = 0
+    resetSlot21 = nil
+    resetSlot22 = ""
+    PrintLog("数据已重置")
+end
+
+-- 11.16 root/17：GetAvailableStoragePage（51条指令；跨版本业务复用）。
+-- 本版常量包含仓库代理、分页数据、开放格数及每页容量配置，与11.2同名实现吻合。
+function GetAvailableStoragePage()
+    local storageProxy = NPCStorageProxy
+    if not storageProxy then
+        PrintLog("仓库代理未初始化")
+        return
+    end
+
+    local maxPage = storageProxy:GetMaxPage()
+    for page = 1, maxPage do
+        local pageData = storageProxy:GetStorageDataByPage(page)
+        local currentCount = pageData and #pageData or 0
+        local pageCapacity = GUIDefine.STORAGE_PER_PAGE_MAX
+        if not pageCapacity then
+            pageCapacity = global.MMO.NPC_STORAGE_MAX_PAGE
+        end
+        local openSize = storageProxy:GetOpenSize()
+        local remainingOpenSize = openSize - (page - 1) * pageCapacity
+        local pageLimit = remainingOpenSize
+        if pageCapacity < remainingOpenSize then
+            pageLimit = pageCapacity
+        end
+        if pageLimit > 0 and pageLimit > currentCount then
+            return page
+        end
+    end
+    return
+end
+
+-- 11.16 root/36：GetStorageItemData（77条指令；跨版本业务复用）。
+-- 本版常量包含分页仓库代理、容量配置、可用格数提示，与11.2同名实现吻合。
+function GetStorageItemData()
+    local storageItems = {}
+    local storageProxy = NPCStorageProxy
+    if not storageProxy then
+        return storageItems
+    end
+
+    local maxPage = storageProxy:GetMaxPage()
+    local availableSlots = 0
+    for page = 1, maxPage do
+        local pageData = storageProxy:GetStorageDataByPage(page)
+        if type(pageData) == "table" then
+            for _, item in ipairs(pageData) do
+                table.insert(storageItems, item)
+            end
+        end
+
+        local pageItemCount = pageData and #pageData or 0
+        local perPageMax = GUIDefine.STORAGE_PER_PAGE_MAX
+        if not perPageMax then
+            perPageMax = global.MMO.NPC_STORAGE_MAX_PAGE
+        end
+        local openSize = storageProxy:GetOpenSize()
+        local pageLimit = openSize - (page - 1) * perPageMax
+        if pageLimit > perPageMax then
+            pageLimit = perPageMax
+        end
+        if pageLimit > 0 then
+            availableSlots = availableSlots + (pageLimit - pageItemCount)
+        end
+    end
+
+    PrintLog("仓库总可用格子: " .. tostring(availableSlots))
+    return storageItems
+end
+
+-- 11.16 root/51：PrintLog（38条指令；跨版本业务复用）。
+-- 本版常量包含select/type/#/pcall/format/tostring/string/SL/Print/dump，
+-- 与11.2同名函数结构吻合；保留原版对SL.Print的存在性检查，不擅自补造输出调用。
+function PrintLog(value, ...)
+    if type(value) == "table" then
+        SL.dump(value, "【超本】")
+        return
+    end
+
+    local message = tostring(value)
+    if select("#", ...) > 0 then
+        local ok, formatted = pcall(string.format, message, ...)
+        if ok and formatted then
+            message = formatted
+        end
+    end
+
+    if SL and SL.Print then
+        -- 原函数仅检查SL.Print是否存在，没有对应的Print调用指令。
+    end
+end
+
+
+-- 11.16 root/46：IsInWhitelistMap（0参数、12常量、42条指令、无子原型）。
+-- 本版常量明确包含IN_SAFE_AREA、MAP_NAME、ipairs、string.find，以及“盟重省”“土城”“盟重”三个地图名。
+-- 先判断是否处于安全区；否则读取地图名，对三个允许地图名逐一做字符串查找。
+-- 这是依据本版常量扩展11.2同名逻辑的业务重写；未逐槽模拟42条指令。
+function IsInWhitelistMap()
+    if SL:GetMetaValue("IN_SAFE_AREA") then
+        return true
+    end
+
+    local mapName = SL:GetMetaValue("MAP_NAME")
+    if not mapName then
+        return false
+    end
+
+    for _, allowedMapName in ipairs({ "盟重省", "土城", "盟重" }) do
+        if string.find(mapName, allowedMapName, 1) then
+            return true
+        end
+    end
+
+    return false
+end
+
+
+-- 11.16 root/12：51条物理指令，3参数；跨版本业务复用。
+-- 本版常量包含MMO、INPUT_MOVE_TYPE_AUTOMOVE、MAP_ID、InputMove、range、tonumber、PlayerPos、math.abs等，
+-- 与旧版MoveTo主体及参数完全吻合；常量“type”对应moveInfo.type字段。
+function MoveTo(x, y, range)
+    local moveInfo = {
+        mapID = SL:GetMetaValue("MAP_ID"),
+    }
+    moveInfo.x = tonumber(x)
+    moveInfo.y = tonumber(y)
+    moveInfo.type = global.MMO.INPUT_MOVE_TYPE_AUTOMOVE
+    if not range then
+        range = 0
+    end
+    moveInfo.range = range
+
+    global.Facade:sendNotification(global.NoticeTable.InputMove, moveInfo)
+
+    local playerX, playerY = PlayerPos()
+    local deltaX = math.abs(moveInfo.x - playerX)
+    if not (deltaX <= moveInfo.range) then
+        return false
+    end
+
+    local deltaY = math.abs(moveInfo.y - playerY)
+    if not (deltaY <= moveInfo.range) then
+        return false
+    end
+    return true
+end
+
+
+
+-- 11.16 root/2：DiuItems（226条物理指令，寄存器级控制流已闭合）。
+-- 参数mode决定名称筛选策略：
+--   mode==1：排除命中3项精确名称表的物品；
+--   mode==2：排除命中35项精确名称表的物品；
+--   其他值：仅保留命中28项Lua模式名称表的物品。
+-- H[0]由root N[2]捕获，即MainLeftBottom.z共享状态表；
+-- H[1]由root N[5]捕获，即ShowLocalNoticeByType闭包（root/80），用于本地提示。
+-- root/2闭包捕获已由root槽66–68闭合：H[0]=MainLeftBottom.z，H[1]=ShowLocalNoticeByType。
+local function DiuItems(mode)
+    local state = MainLeftBottom.z
+    local notify = ShowLocalNoticeByType
+    local MAX_GROUND_ITEMS = 35
+    if state.isDiuing then
+        return
+    end
+
+    state.isDiuing = true
+
+    local _, groundItemCount = GetDroppedItems()
+    if not groundItemCount then
+        groundItemCount = 0
+    end
+
+    if MAX_GROUND_ITEMS <= groundItemCount then
+        notify("地面物品(" .. groundItemCount .. ")超过上限(" .. MAX_GROUND_ITEMS .. ")")
+        state.isDiuing = false
+        return
+    end
+
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then
+        state.isDiuing = false
+        return
+    end
+
+    local patternNames = {
+        "声望卷", "称号卷", "悟道茶", "转生水晶", "时装晶魄",
+        "血龙宝珠", "洗髓丹", "恶魔令牌", "晶石", "经验卷",
+        "技能残页", "熬光", "敖顺", "敖闰", "点点", "之力",
+        "复活", "麻痹", "护身", "主印", "副印", "神凤",
+        "龙傲", "冰雪", "上古", "起源", "残", "鸿蒙",
+    }
+    local exactNames = {
+        "开天+7", "雷霆战甲(男)+7", "雷霆战盔+7", "雷霆项链+7",
+        "雷霆护腕+7", "雷霆戒指+7", "雷霆腰带+7", "雷霆战靴+7",
+        "开天+8", "雷霆战甲(男)+8", "雷霆战盔+8", "雷霆项链+8",
+        "雷霆护腕+8", "雷霆戒指+8", "雷霆腰带+8", "雷霆战靴+8",
+        "开天+9", "雷霆战甲(男)+9", "雷霆战盔+9", "雷霆项链+9",
+        "雷霆护腕+9", "雷霆戒指+9", "雷霆腰带+9", "雷霆战靴+9",
+        "终极开天", "终极雷霆战甲(男)", "终极雷霆战盔", "终极雷霆项链",
+        "终极雷霆护腕", "终极雷霆戒指", "终极雷霆腰带", "终极雷霆战靴",
+        "时装羽毛", "称号证明", "生肖魔石",
+    }
+    local specialNames = { "时装羽毛", "称号证明", "生肖魔石" }
+
+    local function containsExact(list, value)
+        for _, name in ipairs(list) do
+            if name == value then
+                return true
+            end
+        end
+        return false
+    end
+
+    -- 对应11.16原型root/2/1：闭包捕获patternNames，参数仅为待检查的物品名。
+    local function containsPattern(value)
+        for _, pattern in ipairs(patternNames) do
+            if string.find(value, pattern, 1, false) then
+                return true
+            end
+        end
+        return false
+    end
+
+    local candidates = {}
+    for _, item in pairs(bagData) do
+        if item and item.Name and item.MakeIndex
+            and not SL:GetMetaValue("ITEM_IS_BIND", item) then
+            local keep
+            if mode == 1 then
+                keep = not containsExact(specialNames, item.Name)
+            elseif mode == 2 then
+                keep = not containsExact(exactNames, item.Name)
+            else
+                keep = containsPattern(item.Name)
+            end
+
+            if keep then
+                candidates[#candidates + 1] = {
+                    makeIndex = item.MakeIndex,
+                    count = item.OverLap or 1,
+                    name = item.Name,
+                }
+            end
+        end
+    end
+
+    if #candidates == 0 then
+        notify("背包无可丢弃物品")
+        state.isDiuing = false
+        return
+    end
+
+    local sentCount = 0
+    for _, candidate in ipairs(candidates) do
+        if MAX_GROUND_ITEMS <= groundItemCount then
+            notify("地面物品已满" .. MAX_GROUND_ITEMS .. "件，停止丢弃")
+            break
+        end
+
+        notify("丢: " .. candidate.name)
+        LuaSendMsg(
+            global.MsgType.MSG_CS_MAP_ITEM_DISCARD,
+            candidate.makeIndex,
+            candidate.count,
+            0,
+            0,
+            candidate.name,
+            string.len(candidate.name),
+            candidate.name
+        )
+        sentCount = sentCount + 1
+        groundItemCount = groundItemCount + 1
+    end
+
+    notify("共丢弃 " .. sentCount .. " 件物品")
+    state.isDiuing = false
+end
+
+
+-- 11.16 root/58：TakeItems（99条物理指令、0显式参数、2个upvalue）。
+-- root槽81创建本闭包；槽82捕获root N[2]=MainLeftBottom.z，
+-- 槽83捕获root N[5]=ShowLocalNoticeByType。两项与root/2的捕获来源一致。
+local function TakeItems()
+    local featureState = MainLeftBottom.z
+    local showLocalNotice = ShowLocalNoticeByType
+
+    if featureState.isTaking then
+        return
+    end
+    featureState.isTaking = true
+
+    local storageItems = GetStorageItemData()
+    if not storageItems or #storageItems == 0 then
+        showLocalNotice("仓库无可取物品")
+        featureState.isTaking = false
+        return
+    end
+
+    local takenCount = 0
+    local filterNames = { "待定" }
+
+    for _, item in ipairs(storageItems) do
+        if item and item.Name and item.MakeIndex then
+            local itemName = string.trim(item.Name)
+            local shouldTake = true
+
+            for _, filterName in ipairs(filterNames) do
+                if string.find(itemName, filterName, 1, true) then
+                    shouldTake = false
+                    break
+                end
+            end
+
+            if shouldTake then
+                showLocalNotice("取: " .. itemName)
+                LuaSendMsg(
+                    global.MsgType.MSG_CS_STORAGE_PICK_OUT_REQUEST,
+                    999999999,
+                    item.MakeIndex,
+                    0,
+                    0,
+                    itemName,
+                    string.len(itemName)
+                )
+                takenCount = takenCount + 1
+            end
+        end
+    end
+
+    featureState.isTaking = false
+
+    if takenCount > 0 then
+        showLocalNotice(
+            "取出物品完成, 共取出 " .. tostring(takenCount) .. " 件"
+        )
+    end
+end
+
+
+-- 11.16 root/48：checkGold（26条物理指令、0参数、0个upvalue）。
+-- 通过Facade取得MoneyProxy，依次查询“金币”货币ID与当前数量；
+-- Proxy、货币ID或数量为空时按本版分支返回0。
+local function checkGold()
+    local moneyProxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
+    if not moneyProxy then
+        return 0
+    end
+
+    local moneyId = moneyProxy:GetMoneyIdByName("金币")
+    if not moneyId then
+        return 0
+    end
+
+    return moneyProxy:GetMoneyCountById(moneyId) or 0
+end
+
+
+
+-- 11.16 root/73：本版23条物理指令、0参数、0捕获；按本版指令流独立恢复。
+-- 先取当前日期表，再计算当天秒数；有效时间窗口为20:00（含）至22:00（不含）。
+-- 原型真实导出名称尚未从缺失的root父级654条指令流中确认，故保留合成定位名。
+local function helper_root_73()
+    local dateTable = os.date("*t")
+    if not dateTable then
+        return false
+    end
+
+    local secondsOfDay =
+        dateTable.hour * 3600
+        + dateTable.min * 60
+        + dateTable.sec
+
+    return secondsOfDay >= 72000 and secondsOfDay < 79200
+end
+
+
+-- 11.16 root/16：MainLeftBottom.a.show（25条物理指令、0参数、2个upvalue）。
+-- root槽269创建闭包，槽270/271分别捕获MainLeftBottom.a与MainLeftBottom.b；槽272注册为MainLeftBottom.a.show。
+-- Opcode 7写入a.isHidden=true；pairs遍历b的键，按键取按钮对象并调用GUI:setVisible(button,true)。
+-- 最后仅当a.infoBg为真值时，调用GUI:setVisible(a.infoBg,true)。所有可见性布尔值均由本版指令常量直接确认。
+MainLeftBottom.a.show = function()
+    local state = MainLeftBottom.a
+    local buttons = MainLeftBottom.b
+
+    state.isHidden = true
+
+    for key in pairs(buttons) do
+        GUI:setVisible(buttons[key], true)
+    end
+
+    if state.infoBg then
+        GUI:setVisible(state.infoBg, true)
+    end
+end
+
+
+-- 11.16 root/19：AccountIDValidation（64条指令，两个子原型已按本版原始字节码提取）。
+-- 按原始指令顺序恢复GAME_ID门控、UID白名单校验、验证提示及主界面等待回调。
+-- root/19/0回调依次检查MainProperty、MainProperty._ui、MainProperty._ui.Panel_mini_chat；
+-- 就绪时取消本回调的Schedule句柄并直接调用MainLeftBottom.doInit()。
+local function AccountIDValidation()
+    -- root/19 slot 1–17：验证游戏ID，只有204208允许继续。
+    local gameID = SL:GetMetaValue("GAME_ID")
+    PrintLog("游戏id：" .. tostring(gameID))
+    if gameID ~= 204208 then
+        PrintLog("游戏不一致，id：" .. tostring(gameID))
+        return
+    end
+
+    -- root/19 slot 18–26：读取并记录账号UID。
+    local uid = SL:GetMetaValue("UID")
+    PrintLog("账号ID：" .. tostring(uid))
+
+    -- root/19 slot 27–37：原始九项账号白名单。
+    local allowedUIDs = {
+        "6324648",
+        "39770358",
+        "3548598",
+        "1957840929",
+        "1488903257",
+        "1585201915",
+        "1627987432",
+        "1580027021",
+        "1304755149",
+    }
+
+    -- root/19/1：逐项转为字符串比较；命中后记录成功提示并返回true。
+    local allowed = false
+    for _, allowedUID in ipairs(allowedUIDs) do
+        if tostring(allowedUID) == tostring(uid) then
+            PrintLog("[提示] 账号ID在允许列表中，功能已开启")
+            allowed = true
+            break
+        end
+    end
+
+    if not allowed then
+        ShowLocalNoticeByType("账号不存在，功能已限制，账号ID：" .. tostring(uid))
+        PrintLog("[验证失败] 账号ID未在允许列表中")
+        return
+    end
+
+    PrintLog("[验证成功] 账号ID验证通过")
+
+    -- root/19 slot 55–63：Schedule每0.5秒检查主界面；闭包按引用捕获句柄变量。
+    local waitTimer
+    local function waitForMainProperty()
+        if MainProperty then
+            if MainProperty._ui then
+                if MainProperty._ui.Panel_mini_chat then
+                    SL:UnSchedule(waitTimer)
+                    MainLeftBottom.doInit()
+                else
+                    PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
+                end
+            else
+                PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
+            end
+        else
+            PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
+        end
+    end
+
+    waitTimer = SL:Schedule(waitForMainProperty, 0.5)
+end
+
+-- root slot 407–410：创建root/19闭包并写入MainLeftBottom.main。
+MainLeftBottom.main = AccountIDValidation
+
+
+-- 11.16 root/68：InstallDamageHook（40条指令）及其子闭包root/68/0（18条指令）。
+-- 本版父原型常量包含gameMapController、mNetMsgHandle、MsgType、
+-- MSG_SC_DAMAGE_HP、__ylwHookedOrigin及挂钩提示；子原型常量包含
+-- onDamageMsg、function、pcall、type。两层结构与11.9同职责实现的参数数、
+-- 指令数、常量和子原型数量吻合。
 return MainLeftBottom
