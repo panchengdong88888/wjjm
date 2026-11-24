@@ -6716,6 +6716,66 @@ local function doInit_PlainButtons()
 
     -- 与正常整合版相同：按钮父节点是游戏UI顶层容器。
     local uiParent = GUI:Attach_UITop()
+
+    -- 11.16 root/52槽364–455：按加密原型指令恢复金币、元宝、战力信息区。
+    -- Layout_Create参数及三个Text_Create的名称、坐标、字号、颜色、锚点均来自原始物理指令。
+    local infoBg = GUI:Layout_Create(
+        uiParent, "infoBg", 100, 30, 250, 150, true
+    )
+    if infoBg then
+        GUI:Layout_setBackGroundColorType(infoBg, 1)
+        GUI:Layout_setBackGroundColor(infoBg, "#000000")
+        GUI:Layout_setBackGroundColorOpacity(infoBg, 200)
+
+        local infoGoldTxt = GUI:Text_Create(
+            infoBg, "infoGoldTxt", 10, 118, 40, "#00ff00", ""
+        )
+        local infoYuanbaoTxt = GUI:Text_Create(
+            infoBg, "infoYuanbaoTxt", 10, 72, 40, "#00ff00", ""
+        )
+        local infoPowerTxt = GUI:Text_Create(
+            infoBg, "infoPowerTxt", 10, 26, 26, "#00ff00", ""
+        )
+
+        GUI:setAnchorPoint(infoGoldTxt, 0, 0.5)
+        GUI:setAnchorPoint(infoYuanbaoTxt, 0, 0.5)
+        GUI:setAnchorPoint(infoPowerTxt, 0, 0.5)
+
+        -- 保存到原版隐藏回调使用的主面板状态表，同时保留模块状态引用。
+        MainLeftBottom.a.infoBg = infoBg
+        MainLeftBottom.a.infoGoldTxt = infoGoldTxt
+        MainLeftBottom.a.infoYuanbaoTxt = infoYuanbaoTxt
+        MainLeftBottom.a.infoPowerTxt = infoPowerTxt
+        MainLeftBottom.infoBg = infoBg
+        MainLeftBottom.infoGoldTxt = infoGoldTxt
+        MainLeftBottom.infoYuanbaoTxt = infoYuanbaoTxt
+        MainLeftBottom.infoPowerTxt = infoPowerTxt
+
+        -- 使用11.16已恢复的MoneyProxy读取方式，填入首次显示值。
+        local gold, yuanbao = 0, 0
+        if moneyProxy then
+            local goldId = moneyProxy:GetMoneyIdByName("金币")
+            local yuanbaoId = moneyProxy:GetMoneyIdByName("元宝")
+            if goldId then
+                gold = tonumber(moneyProxy:GetMoneyCountById(goldId)) or 0
+            end
+            if yuanbaoId then
+                yuanbao = tonumber(moneyProxy:GetMoneyCountById(yuanbaoId)) or 0
+            end
+        end
+        GUI:Text_setString(
+            infoGoldTxt, string.format("金币:%dW", math.floor(gold / 10000))
+        )
+        GUI:Text_setString(
+            infoYuanbaoTxt, string.format("元宝:%d", yuanbao)
+        )
+        local combatPower = MainLeftBottom.combatPower
+        if combatPower == nil then
+            combatPower = "--"
+        end
+        GUI:Text_setString(infoPowerTxt, "战力:" .. tostring(combatPower))
+    end
+
     local mainProperty = MainProperty
     local miniChat = mainProperty._ui.Panel_mini_chat
 
