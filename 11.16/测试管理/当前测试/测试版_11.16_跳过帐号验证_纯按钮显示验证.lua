@@ -2912,10 +2912,15 @@ function ShowHideAllButtons()
         state.hidebut = nil
     end
 
-    -- 还原被脚本替换的网络消息回调。
-    if NetworkUtil and NetworkUtil._origOnLuaMessage then
-        NetworkUtil.OnLuaMessage = NetworkUtil._origOnLuaMessage
-        NetworkUtil._origOnLuaMessage = nil
+    -- 按原版保存位置恢复SL.NetworkUtil.OnLuaMessage。
+    local networkUtil = SL and SL.NetworkUtil
+    local originalOnLuaMessage = state._origOnLuaMessage
+    if networkUtil and originalOnLuaMessage then
+        if networkUtil.OnLuaMessage == state._combatPowerOnLuaMessageWrapper then
+            networkUtil.OnLuaMessage = originalOnLuaMessage
+        end
+        state._origOnLuaMessage = nil
+        state._combatPowerOnLuaMessageWrapper = nil
     end
 end
 
@@ -6208,8 +6213,38 @@ local function make_helper_root_52_14(capturedMainLeftBottom, capturedPrintLog, 
             end
         end
 
-        return originalOnLuaMessage(0, 1, 2, arg3, arg4, payload)
+        return originalOnLuaMessage(arg0, messageId, arg2, arg3, arg4, payload)
     end
+end
+
+-- 原版root/52父函数在主界面初始化时执行的消息回调安装。
+-- 原版父H[3]=MainLeftBottom，H[0]=PrintLog，N[15]=SL.NetworkUtil.OnLuaMessage。
+-- 原版把原回调备份到MainLeftBottom.a._origOnLuaMessage，再替换SL.NetworkUtil.OnLuaMessage。
+local function InstallCombatPowerMessageHook_11_16()
+    local panelState = MainLeftBottom.a
+    local networkUtil = SL and SL.NetworkUtil
+    if not panelState or type(networkUtil) ~= "table"
+        or type(networkUtil.OnLuaMessage) ~= "function"
+    then
+        return false
+    end
+
+    local installedWrapper = panelState._combatPowerOnLuaMessageWrapper
+    if installedWrapper and networkUtil.OnLuaMessage == installedWrapper then
+        return true
+    end
+
+    local originalOnLuaMessage = networkUtil.OnLuaMessage
+    panelState._origOnLuaMessage = originalOnLuaMessage
+
+    local wrapper = make_helper_root_52_14(
+        MainLeftBottom,
+        PrintLog,
+        originalOnLuaMessage
+    )
+    panelState._combatPowerOnLuaMessageWrapper = wrapper
+    networkUtil.OnLuaMessage = wrapper
+    return true
 end
 
 
@@ -6933,7 +6968,8 @@ local function doInit_PlainButtons()
         GUI:addOnClickEvent(appleButton, callbackMap.applebut)
     end
 
-    -- 纯显示测试：只启动金币/元宝/战力文本刷新，不启动root/52/23中的其他自动业务。
+    -- 安装原版消息接收包装器，并启动纯显示/战力请求刷新。
+    InstallCombatPowerMessageHook_11_16()
     if type(MainLeftBottom.startInfoRefresh_11_16) == "function" then
         MainLeftBottom.startInfoRefresh_11_16()
     end
@@ -7512,6 +7548,10 @@ MainLeftBottom.startInfoRefresh_11_16 = function()
         if not state then
             return
         end
+
+        -- 原版root/52/23每秒调用root/52/35战力请求闭包。
+        -- root/52/35的H[0]捕获对象为MainLeftBottom根表。
+        pcall(make_helper_root_52_35, MainLeftBottom)
 
         -- 战力由网络回调写入MainLeftBottom根表，因此刷新时也从根表读取。
         local ok = pcall(
