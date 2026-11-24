@@ -2354,8 +2354,25 @@ local function helper_root_18()
 end
 
 
+
+
 -- ============================================================================
--- 11.16 跨版本业务批量恢复：黑名单消息、网络消息发送及清理
--- 依据：11.16 root/26、root/40、root/63、root/71 的参数数/常量/闭包结构；
--- 旧版明文同名业务体直接迁移，状态统一接入MainLeftBottom.a。
+-- 第07阶段A1a-1：正式明文第2229-2312行，实机通过（用户确认“正常”）。
+-- 第07阶段A1a-2：正式明文第2314-2330行，新增一个完整局部函数定义；不调用函数体。
 -- ============================================================================
+
+local function getMainLeftBottomBlacklistState()
+    local mainState = MainLeftBottom.a
+    if not mainState.blacklist then
+        mainState.blacklist = {
+            lastAttacker = nil,
+            lastHp = nil,
+            deathHandled = false,
+            alertAt = 0,
+            nextTryAt = 0,
+            noStoneWarned = false,
+            distance = nil,
+        }
+    end
+    return mainState.blacklist
+end
