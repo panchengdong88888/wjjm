@@ -839,6 +839,7 @@ local StopGatherMonsters
 -- make_helper_root_52_36为原型路径合成定位名，不是原始函数符号名。
 local function make_helper_root_52_36(capturedUpvalues)
     return function()
+        SL:ShowSystemTips("已进入开拉怪处理回调")
         if capturedUpvalues[1].gatherTimer then
             capturedUpvalues[2]("关闭引怪功能")
             -- root/52/36原始指令调用全局StopGatherMonsters()。
@@ -847,6 +848,7 @@ local function make_helper_root_52_36(capturedUpvalues)
         end
 
         capturedUpvalues[2]("开启引怪功能，阈值：11")
+        SL:ShowSystemTips("正在调用InitGatherMonsters")
         capturedUpvalues[3]()
         return true
     end
@@ -3782,11 +3784,6 @@ end
 -- ============================================================================
 local function helper_root_52_32_0(callbackMap, buttonConfig, button)
     return function()
-        -- 临时点击链路测试：只对“开拉怪”按钮提示，不执行后续业务逻辑的前置拦截。
-        if buttonConfig and buttonConfig.key == "yinguaibut" then
-            SL:ShowSystemTips("开拉怪按钮点击已触发")
-        end
-
         local callback = callbackMap[buttonConfig.key]
         -- 尚未恢复出真实回调的按钮不得假装成功，也不得只翻转toggle外观。
         if type(callback) ~= "function" then
