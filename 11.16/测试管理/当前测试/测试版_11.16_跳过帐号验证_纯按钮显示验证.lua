@@ -1768,27 +1768,36 @@ end
 -- root/23原型为36条指令、7项捕获；通过模块级timerState及本地状态/配置/调度依赖实现捕获语义。
 -- 业务主体仍有未逐槽核实的部分；不得把跨版本复用部分标记为11.16指令级完整恢复。
 local function InitGatherMonsters()
+    SL:ShowSystemTips("已进入InitGatherMonsters")
     -- 原型root/23为0参数、7个upvalue；计时器表由模块级z共享捕获，
     -- 不是由按钮回调临时作为显式参数传入。
     if timerState.gatherTimer then
+        SL:ShowSystemTips("启动阶段：准备取消旧计时器")
         SL:UnSchedule(timerState.gatherTimer)
         timerState.gatherTimer = nil
+        SL:ShowSystemTips("启动阶段：旧计时器已取消")
     end
 
     isGatherRunning = true
+    SL:ShowSystemTips("启动阶段：准备切换状态")
     FormatStateChange(gatherStatusText.IDLE)
+    SL:ShowSystemTips("启动阶段：状态切换完成")
     ResetGatherMonsterData()
+    SL:ShowSystemTips("启动阶段：数据重置完成")
 
     -- 11.16 root/23/0是无参数、无捕获的包装闭包，内部读取全局MainLoop并调用。
+    SL:ShowSystemTips("启动阶段：准备创建调度计时器")
     timerState.gatherTimer = SL:Schedule(
         closure_root_23_0,
         gatherConfig.CHECK_INTERVAL
     )
+    SL:ShowSystemTips("启动阶段：调度计时器已创建")
 
     PrintLog(string.format(
         "引怪功能已启动 (阈值: %d)",
         gatherConfig.GATHER_THRESHOLD
     ))
+    SL:ShowSystemTips("InitGatherMonsters执行完成")
 end
 
 -- root父原型在创建root/23后将其写入全局InitGatherMonsters。
