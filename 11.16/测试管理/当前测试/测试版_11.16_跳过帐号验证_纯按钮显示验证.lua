@@ -1191,7 +1191,8 @@ local function FormatStateChange(newState)
     currentState = newState
 end
 
--- 11.16 root/3：停止引怪。timerState由root/52/36的第一个捕获值传入。
+-- 11.16 root/3：停止引怪（0显式参数、7项捕获）。
+-- root/3捕获模块级timerState及状态/清理/提示依赖，不从按钮回调接收参数。
 StopGatherMonsters = function()
     -- 原型root/3为0参数；同样捕获模块级MainLeftBottom.z状态表。
     isGatherRunning = false
@@ -1751,9 +1752,9 @@ end
 
 
 -- 11.16 root/23：InitGatherMonsters。
--- 以11.2/11.9共同业务流程为底稿；保留新版已确认的Schedule回调包装闭包closure_root_23_0。
--- root/3停止函数闭包已确认运行开关为独立布尔upvalue、计时器对象含gatherTimer字段；这里沿用旧版变量名映射。
--- 业务恢复可信度高，但未逐槽核验root/23的36条指令；如运行测试发现状态变量命名/作用域差异，再定点修正。
+-- 与11.2/11.9整合版对照后，按11.16原型签名修正为0显式参数。
+-- root/23原型为36条指令、7项捕获；通过模块级timerState及本地状态/配置/调度依赖实现捕获语义。
+-- 业务主体仍有未逐槽核实的部分；不得把跨版本复用部分标记为11.16指令级完整恢复。
 local function InitGatherMonsters()
     -- 原型root/23为0参数、7个upvalue；计时器表由模块级z共享捕获，
     -- 不是由按钮回调临时作为显式参数传入。
