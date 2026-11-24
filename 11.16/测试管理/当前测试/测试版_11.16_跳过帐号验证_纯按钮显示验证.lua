@@ -3939,12 +3939,14 @@ local function make_helper_root_52_35(capturedPowerState)
     -- 开启与3秒后关闭必须写入同一个捕获状态对象。
     -- 子闭包root/52/35/0明确对H[0].powerRefreshing写false，
     -- 因此这里也通过同一H[0]对象写true，避免SL全局表与捕获表分离。
-    local powerState = capturedPowerState or SL
+    local powerState = capturedPowerState
+    if not powerState then
+        return
+    end
     powerState.powerRefreshing = true
 
     -- VM已确认消息类型为global.MsgType.MSG_CS_NPC_CLICK；
-    -- 调用参数区间含固定零值、requestText及#requestText。
-    -- 参数代理保留，等待父级调用上下文确认具体协议字段位置。
+    -- 原版调用参数为消息类型、四个固定零值、请求文本及文本长度。
     local messageType = global.MsgType.MSG_CS_NPC_CLICK
     local requestLength = string.len(requestText)
     LuaSendMsg(messageType, 0, 0, 0, 0, requestText, requestLength)
@@ -6223,7 +6225,7 @@ end
 local function InstallCombatPowerMessageHook_11_16()
     local panelState = MainLeftBottom.a
     local networkUtil = SL and SL.NetworkUtil
-    if not panelState or type(networkUtil) ~= "table"
+    if not panelState or not networkUtil
         or type(networkUtil.OnLuaMessage) ~= "function"
     then
         return false
