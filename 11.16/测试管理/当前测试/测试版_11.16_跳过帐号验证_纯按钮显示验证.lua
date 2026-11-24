@@ -6794,9 +6794,11 @@ local function doInit_PlainButtons()
         { items = group3, offset = 80 },
     }
 
+    -- 原版root/52/32：工厂内部x=H[1]-85*参数2；父级ipairs循环传入#items-index+1，
+    -- 因此每组从最左侧开始创建，随后逐个向右排列。不可直接把ipairs的index当参数2。
     for _, group in ipairs(buttonGroups) do
         for rowIndex, config in ipairs(group.items) do
-            local x = xBase - 85 * rowIndex
+            local x = xBase - 85 * (#group.items - rowIndex + 1)
             local y = yBase + group.offset
             CreatePlainButton(uiParent, config, x, y)
         end
