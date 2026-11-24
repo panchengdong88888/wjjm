@@ -1,0 +1,18 @@
+name: 11.16 gather button Lua syntax
+
+on:
+  push:
+    paths:
+      - "11.16/测试管理/当前测试/测试版_11.16_跳过帐号验证_纯按钮显示验证.lua"
+
+jobs:
+  lua-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Lua 5.4
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.4"
+      - name: Compile current test file
+        run: luac -p "11.16/测试管理/当前测试/测试版_11.16_跳过帐号验证_纯按钮显示验证.lua"
