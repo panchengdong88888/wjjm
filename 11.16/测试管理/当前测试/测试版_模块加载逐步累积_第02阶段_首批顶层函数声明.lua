@@ -382,4 +382,254 @@ end
 -- H[3]=PrintLog；H[4]/H[5]=移动坐标151/144；H[6]/H[7]=NPC index 41/UserID 10030；
 -- H[8]=十二生肖普通装备名称表；H[9]=helper_root_53；H[10]=helper_root_72；H[11]=Nested_find。
 
+
+-- ============================================================================
+-- 第04阶段：从正式明文第380-622行逐字提取的函数/闭包声明。
+-- 本阶段只定义函数和闭包工厂；不调用任何函数。
+-- ============================================================================
+
+local function forgeZodiac()
+    local state = MainLeftBottom.z.forgeZodiac
+    if not state then
+        return
+    end
+
+    state.ticks = (state.ticks or 0) + 1
+    local mapName = GetMapName()
+
+    -- 检查金币并发起前往神龍之都的请求。
+    if state.state == "checkGold" then
+        if checkGold() < 2500000 then
+            ForgeZodiacToggleHandler("金币不足250W，停止锻造")
+            return
+        end
+
+        state.state = "toShenlong"
+        state.ticks = 0
+        LuaSendMsg(9002, 80101, 1, 2, 3, "神龍之都", 12)
+        PrintLog("前往神龍之都锻造生肖")
+        return
+    end
+
+    -- 等待地图切换；超时后重新发送地图请求。
+    if state.state == "toShenlong" then
+        if string.find(mapName, "神龍之都") then
+            state.state = "walkNpc"
+            state.ticks = 0
+        elseif state.ticks >= 50 then
+            state.ticks = 0
+            LuaSendMsg(9002, 80101, 1, 2, 3, "神龍之都", 12)
+        end
+        return
+    end
+
+    -- 移动到NPC并发送交互数据。
+    if state.state == "walkNpc" then
+        if MoveTo(151, 144, 8) then
+            local npcData = string.format('{"index":%d,"UserID":"%s"}', 41, "10030")
+            LuaSendMsg(9002, 1010, 0, 0, 0, 0, npcData, string.len(npcData))
+            state.state = "clickNpc"
+            state.ticks = 0
+        end
+        return
+    end
+
+    -- 点击NPC后至少等待5个回调tick，再开始生肖装备检测。
+    if state.state == "clickNpc" then
+        if state.ticks >= 5 then
+            state.state = "forge"
+            state.ticks = 0
+            state.tryCount = 0
+            state.forgeNextTick = {}
+            PrintLog("开始持续检测生肖装备")
+        end
+        return
+    end
+
+    if state.state ~= "forge" then
+        return
+    end
+
+    -- 生肖扫描每5个回调tick执行一次。
+    if state.ticks % 5 ~= 0 then
+        return
+    end
+
+    local zodiacNames = {
+        "鼠·[普通]", "牛·[普通]", "虎·[普通]", "兔·[普通]",
+        "龙·[普通]", "蛇·[普通]", "马·[普通]", "羊·[普通]",
+        "猴·[普通]", "鸡·[普通]", "狗·[普通]", "猪·[普通]",
+    }
+
+    local zodiacName
+    local prefix
+    for _, name in ipairs(zodiacNames) do
+        local namePrefix = helper_root_53(name)
+        if not helper_root_72(namePrefix) then
+            zodiacName = name
+            prefix = namePrefix
+        end
+    end
+
+    if not zodiacName then
+        ForgeZodiacToggleHandler("生肖锻造完毕")
+        return
+    end
+
+    -- 若背包中已有对应生肖装备，则先使用该物品。
+    local item = Nested_find(prefix)
+    if item then
+        SL.UseItemByIndex(item.Index)
+        PrintLog("使用背包生肖装备：" .. item.Name)
+    end
+
+    -- 每个生肖名称前缀独立设置30 tick节拍。
+    state.forgeNextTick = state.forgeNextTick or {}
+    local nextTick = state.forgeNextTick[prefix]
+    if nextTick and state.ticks < nextTick then
+        return
+    end
+    state.forgeNextTick[prefix] = state.ticks + 30
+
+    state.tryCount = (state.tryCount or 0) + 1
+    if state.tryCount > 200 then
+        ForgeZodiacToggleHandler("生肖锻造未完成，已尝试200次")
+        return
+    end
+
+    LuaSendMsg(9002, 10004, 1, 2, 3, zodiacName, string.len(zodiacName))
+    PrintLog("锻造生肖：" .. zodiacName .. " 第" .. state.tryCount .. "次")
+end
+
+
+-- 11.16 root/23/0：3条物理指令、无参数、无upvalue捕获。
+-- 父级root/23在槽位23通过Opcode387创建childIndex=0闭包，captureCount=0。
+-- Opcode105从全局环境读取MainLoop；Opcode128无参数调用；Opcode205结束。
+-- 3.40.x的SL.md、元变量.md及仓库搜索均未收录MainLoop；按11.16全局调用点恢复，不认定为框架公开API。
+-- closure_root_23_0为原型路径合成定位名，原始函数符号名尚未确认。
+local function closure_root_23_0()
+    MainLoop()
+end
+
+
+-- 11.16 root/52/21：16条物理指令、无参数、无upvalue捕获。
+-- 父级root/52在槽位603通过Opcode121创建childIndex=21闭包，captureCount=0。
+-- Opcode95加载全局LuaSendMsg并融合设置第1个参数；
+-- Opcode235融合装载后续6个参数；Opcode123发送消息。
+-- Opcode361融合准备SL.ShowSystemTips方法及字符串参数；Opcode128调用。
+-- Opcode110设置true，Opcode292返回该值；尾部Opcode339不可达。
+-- SL:ShowSystemTips(str)已在3.40.x的SL.md“文本提示”条目确认；LuaSendMsg未在开发文档收录，仅按原始调用点恢复。
+-- closure_root_52_21为原型路径合成定位名。
+local function closure_root_52_21()
+    LuaSendMsg(9002, 901238, 0, 0, 0, "[1,1]", 5)
+    SL:ShowSystemTips("回收完毕")
+    return true
+end
+
+
+-- 11.16 root/70：19条物理指令、无参数、无upvalue捕获。
+-- root父原型槽位189通过Opcode121创建childIndex=70闭包，captureCount=0。
+-- 两次SL:GetMetaValue分别读取"X"和"Y"；Opcode325按真值分支，为false/nil结果补默认0。
+-- Opcode309与Opcode355包含融合载荷：前者融合准备Y读取，后者融合构造{x=..., y=...}表。
+-- Opcode292返回坐标表；尾部Opcode339不可达。
+-- SL.md示例出现SL:GetMetaValue("MAP_ID")，确认receiver及字符串key调用形式；文档未给出返回类型，本函数按原始真值分支恢复。
+-- GetPlayerPosition：旧版函数声明与本版闭合函数体匹配。
+local function GetPlayerPosition()
+    local x = SL:GetMetaValue("X") or 0
+    local y = SL:GetMetaValue("Y") or 0
+    return { x = x, y = y }
+end
+
+
+-- 11.16 root/69：20条物理指令、2个参数、无upvalue捕获。
+-- root父原型槽位195通过Opcode121创建childIndex=69闭包，captureCount=0。
+-- arg1作为GetOwnerID方法receiver，arg2作为“自己”归属ID比较值。
+-- ownerId为nil、空字符串或-1时标签为“无归属”；等于arg2时为“自己”，否则为“其他玩家”。
+-- Opcode221融合复制ownerId与标签到返回寄存器；Opcode293返回两个值。
+-- GetOwnerID未在3.40.x开发文档中收录；仅按原始调用点恢复receiver与方法名，不认定为公开文档API。
+-- GetOwnerDescription：旧版函数声明与本版闭合函数体匹配；arg1/arg2为描述性参数名，原始参数名未恢复。
+local function GetOwnerDescription(arg1, arg2)
+    local ownerId = arg1:GetOwnerID()
+    local ownerLabel
+
+    if ownerId == nil or ownerId == "" or ownerId == -1 then
+        ownerLabel = "无归属"
+    elseif ownerId == arg2 then
+        ownerLabel = "自己"
+    else
+        ownerLabel = "其他玩家"
+    end
+
+    return ownerId, ownerLabel
+end
+
+-- 11.16 root/64：2参数、7常量、31条指令；GetOwnerID、type、tostring、空值及-1常量
+-- 与11.2同名GetOwnerIDText业务体吻合。保留旧版字符串分支的原始比较表达式，不擅自修正其逻辑。
+-- 本版未逐槽模拟31条指令，归类为跨版本业务复用。
+local function GetOwnerIDText(actor, expectedOwnerID)
+    local ownerID = actor:GetOwnerID()
+
+    if ownerID == nil or ownerID == "" or ownerID == -1 then
+        return false
+    end
+
+    if type(ownerID) == "string" then
+        return ownerID == tostring(ownerID)
+    end
+
+    return ownerID == expectedOwnerID
+end
+
+
+-- 11.16 root/5：1个参数、17条物理指令、无upvalue捕获。
+-- 父级root在物理槽位190创建childIndex=5闭包，captureCount=0。
+-- 参数为假值时，Opcode 193清空返回寄存器1，Opcode 293返回nil。
+-- 参数为真值时，分别读取mCurrMapX/mCurrMapY；Opcode 325实现false/nil默认值分支。
+-- Opcode 359在补x=0时融合读取mCurrMapY；Opcode 355在补y=0时融合创建表及字段写入；
+-- 非默认分支由Opcode 100创建表，Opcode 409融合写入x/y字段，Opcode 11返回表。
+-- 11.2同职责函数名为GetPlayerMapPosition；11.16的1参数、mCurrMapX/mCurrMapY常量及17条指令与之吻合。
+local function GetPlayerMapPosition(arg1)
+    if not arg1 then
+        return nil
+    end
+
+    local x = arg1.mCurrMapX or 0
+    local y = arg1.mCurrMapY or 0
+
+    return { x = x, y = y }
+end
+
+
+-- 11.16 root/2/0：13条物理指令；参数1；upvalue H[0]。
+-- Opcode 146/324/386装载ipairs与捕获表并建立迭代器；
+-- Opcode 250推进ipairs循环；Opcode 294比较参数与当前元素；
+-- 命中返回true，迭代结束返回false。
+-- 父级root/2的H[0]具体业务变量名尚未从父级闭包创建点确认。
+local function make_helper_root_2_0(capturedList)
+    return function(value)
+        for _, item in ipairs(capturedList) do
+            if value == item then
+                return true
+            end
+        end
+        return false
+    end
+end
+
+-- 11.16 root/2/2：13条物理指令；参数1；upvalue H[0]。
+-- Opcode 45融合装载ipairs与Opcode 234读取H[0]；
+-- Opcode 122与Opcode 250使用相同的迭代器推进分派逻辑；
+-- Opcode 294比较参数与当前元素；命中返回true，迭代结束返回false。
+-- 与root/2/0共享同一父原型的H[0]槽位；其业务变量名仍待父级映射。
+local function make_helper_root_2_2(capturedList)
+    return function(value)
+        for _, item in ipairs(capturedList) do
+            if value == item then
+                return true
+            end
+        end
+        return false
+    end
+end
+
 return MainLeftBottom
