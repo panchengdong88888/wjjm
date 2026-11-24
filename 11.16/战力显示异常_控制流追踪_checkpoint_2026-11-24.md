@@ -644,3 +644,56 @@ root/52槽151创建root/52/35闭包，槽152捕获父H[3]到子闭包H[0]。父H
 5. 暂不增加日志、不改金币/元宝、不提交未经原始指令闭合的猜测性补丁。
 
 状态：abf9328实机复测失败；请求发送与消息接收仍未实机确认；本轮未修改测试Lua。
+
+
+## 2026-11-25 第二轮原版指令闭合：发现状态捕获对象与全局发送函数导出均遗漏
+
+用户已实机测试提交abf9328，战力仍为“--”。本轮直接从原始文件 `11.16/MainLeftBottom 11.16原版.lua` 的载荷重新解析原型树（Base36/LZW、XOR 0x17、原始S()结构解析），完整消费142522/142522字节，直接取出root/52/35及其子原型root/52/35/0的全部指令，不再依赖此前未包含该原型的提取文件。
+
+### root/52/35（37条）逐槽确认
+
+- slot1–4：读取`SL:GetMetaValue("USER_ID")`。
+- slot5–7：USER_ID假值则跳转并提前结束。
+- slot8–15：构造`string.format('{"UserID":"%s","index":15}', tostring(userId))`。
+- slot16：将捕获对象H[0].powerRefreshing置true。
+- slot17–20：读取全局`LuaSendMsg`及`global.MsgType.MSG_CS_NPC_CLICK`。
+- slot21–24：准备四个固定零参数。
+- slot25–29：传入请求文本，并通过`string.len(requestText)`计算长度。
+- slot30：调用LuaSendMsg，完整实参顺序确认是`LuaSendMsg(messageType, 0, 0, 0, 0, requestText, requestLength)`。此前关于参数位置错误的怀疑不成立。
+- slot31–37：调用`SL:ScheduleOnce(callback, 3)`，子闭包在3秒后将同一H[0].powerRefreshing置false。
+
+### 状态捕获对象的真正身份
+
+从原始root父原型确认：
+- root slot42 opcode199执行`N[3]={}`，创建独立的空moduleState表。
+- root slot633创建root/52闭包；slot637的捕获记录把root N[3]绑定为root/52的H[3]。
+- root/52 slot151创建root/52/35；slot152把父H[3]捕获为root/52/35的H[0]。
+- root/52 slot151/152同一父H[3]捕获关系也决定root/52/14的状态对象；root/52/14中对H[0]的读取及combatPower/powerRefreshing字段写入与此一致。
+- root/52/23周期回调的捕获记录slot157同样读取父H[3]，所以消息包装器、战力请求、周期显示应共用同一moduleState对象。
+
+结论：上次错误地把`MainLeftBottom`根表传给root/52/14、root/52/35，并从该根表读取combatPower。正确对象是root slot42创建的独立moduleState表，不是MainLeftBottom根表，也不是MainLeftBottom.a或MainLeftBottom.z。
+
+### 全局LuaSendMsg导出链遗漏
+
+- 原型root/52/11的完整职责是`_G.LuaSendMsg = MainLeftBottom.a.LuaSendMsg`。
+- root/52父指令slot145–150先准备`SL:Schedule`，创建root/52/11闭包并捕获H[2]（MainLeftBottom.a），间隔1秒调用该闭包。
+- 当前纯按钮测试文件此前只有root/52/11函数定义，没有任何调用；因此无法保证全局`LuaSendMsg`已经绑定到本模块的`a.LuaSendMsg`。root/52/35调用的是全局LuaSendMsg，且调用外层pcall会吞掉函数不存在等错误。这是请求未发出的另一处明确缺口。
+
+### 本轮测试版修复提交
+
+已修改文件：`11.16/测试管理/当前测试/测试版_11.16_跳过帐号验证_纯按钮显示验证.lua`
+
+新提交：`046f3274f14e59c1d1b0a404c2678969a6d564c1`
+文件blob SHA：`54a101c7d88aa6c3d2d6af1d16314b9e0f93d9b6`
+
+修改项：
+1. 在root状态初始化对应位置创建独立`local root52ModuleState = {}`，对应原始root slot42的N[3]={}。
+2. root/52/14消息包装器改为捕获root52ModuleState，战力和其他root/52/14字段写入正确状态对象。
+3. root/52/35请求改为使用同一个root52ModuleState。
+4. 战力文本刷新改为从root52ModuleState.combatPower读取。
+5. doInit中在安装消息包装器和启动战力刷新前，先调用`make_helper_root_52_11()`，确保全局`LuaSendMsg`已绑定到`MainLeftBottom.a.LuaSendMsg`。
+6. 不改金币、元宝读取和显示逻辑。
+
+静态复核：root52ModuleState声明1处；消息包装器、请求函数、显示函数均使用同一对象；root52/11全局导出调用1处；旧的MainLeftBottom根表错误参数均不存在。尚未执行Lua解释器语法检查或游戏实机验证，不宣称修复成功。
+
+下一步：用户只需将提交`046f327`的当前测试文件重新打包实测一次。若战力仍为“--”，继续核对OnLuaMessage实际收到的参数位置、服务端响应消息ID与JSON字段；不再重复排查本轮已修正的moduleState捕获和LuaSendMsg导出。金币、元宝不动。
