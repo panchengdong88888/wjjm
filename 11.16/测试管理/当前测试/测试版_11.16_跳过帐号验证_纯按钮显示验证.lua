@@ -6455,26 +6455,10 @@ local function BuildMainLeftBottomCallbackMap_11_16(context)
     -- 11.16 root/52/1是关闭分支；开启分支调用本版完整黑名单检测函数，
     -- 使用同一timerState.blacklistTimer保存句柄，周期与旧版同职责入口一致为0.1秒。
     callbackMap.blacklistbut = function()
-        local button = visibleItems.blacklistbut
-        local config = moduleState.buttonConfigByKey
-            and moduleState.buttonConfigByKey.blacklistbut
-        local function sync(enabled)
-            if config then config.toggled = enabled end
-            if button then
-                GUI:Button_setTitleText(
-                    button, enabled and "关黑名单" or "开黑名单"
-                )
-                GUI:Button_setTitleColor(
-                    button, enabled and "#ff0000" or "#ffffff"
-                )
-            end
-        end
-
         if timerState.blacklistTimer then
             helper_root_52_1(
                 timerState, PrintLog, timerState, visibleItems
             )
-            sync(false)
             return true
         end
 
@@ -6488,7 +6472,6 @@ local function BuildMainLeftBottomCallbackMap_11_16(context)
         }
         make_helper_root_52_9(startCaptures)
         timerState.isBlacklisting = true
-        sync(true)
         return true
     end
 
@@ -6575,7 +6558,7 @@ end
 -- 本段先恢复root/52前180槽可确认的初始化主干：初始化提示、货币/物品
 -- 名单、时间快照、MoneyProxy资源快照、四组快捷栏预设、每日巡航旧句柄
 -- 清理入口及仓库数据请求。后续UI面板和按钮创建段继续补齐。
-local function CreatePlainButton(uiParent, config, x, y)
+local function CreatePlainButton(uiParent, config, x, y, callbackMap)
     local button = GUI:Button_Create(
         uiParent, config.key, x, y, "res/public/fuzhu_btn.png"
     )
@@ -6591,6 +6574,14 @@ local function CreatePlainButton(uiParent, config, x, y)
     if config.toggle then
         config.toggled = false
     end
+
+    if type(callbackMap) == "table" then
+        GUI:addOnClickEvent(
+            button,
+            helper_root_52_32_0(callbackMap, config, button)
+        )
+    end
+
     return button
 end
 
@@ -6800,17 +6791,42 @@ local function doInit_PlainButtons()
         { items = group3, offset = 80 },
     }
 
+    -- 先建立配置索引，再创建回调表；所有点击回调共享同一份按钮映射与运行状态。
+    local buttonConfigByKey = {}
+    for _, group in ipairs(buttonGroups) do
+        for _, config in ipairs(group.items) do
+            buttonConfigByKey[config.key] = config
+        end
+    end
+    MainLeftBottom.buttonConfigByKey = buttonConfigByKey
+
+    -- 资源统计按钮使用本版已恢复的root/52/6窗口构建器，不借用其他版本代码。
+    local resourceWindowHandler = MakeResourceStatisticsWindow_11_16(
+        MainLeftBottom.a,
+        PrintLog,
+        MainLeftBottom.z,
+        initSnapshot,
+        GetResourceItemCount_11_16
+    )
+    local callbackMap = BuildMainLeftBottomCallbackMap_11_16({
+        timerState = MainLeftBottom.z,
+        moduleState = MainLeftBottom,
+        mainPanelState = MainLeftBottom.a,
+        visibleItems = MainLeftBottom.b,
+        resourceWindowHandler = resourceWindowHandler,
+    })
+
     -- 原版root/52/32：工厂内部x=H[1]-85*参数2；父级ipairs循环传入#items-index+1，
     -- 因此每组从最左侧开始创建，随后逐个向右排列。不可直接把ipairs的index当参数2。
     for _, group in ipairs(buttonGroups) do
         for rowIndex, config in ipairs(group.items) do
             local x = xBase - 85 * (#group.items - rowIndex + 1)
             local y = yBase + group.offset
-            CreatePlainButton(uiParent, config, x, y)
+            CreatePlainButton(uiParent, config, x, y, callbackMap)
         end
     end
 
-    -- 11.16原有三个独立按钮；仅保留创建和外观，不接入点击回调。
+    -- 三个独立按钮沿用原位置；隐藏按钮保持已实机通过的透明度切换逻辑。
     local hideButton = CreateStandaloneButton(uiParent, "hidebut", "隐 藏", 0)
     if hideButton then
         GUI:addOnClickEvent(
@@ -6818,8 +6834,29 @@ local function doInit_PlainButtons()
             helper_root_52_2(MainLeftBottom.a, PrintLog)
         )
     end
-    CreateStandaloneButton(uiParent, "dropallbut", "开丢全部", 200)
-    CreateStandaloneButton(uiParent, "applebut", "开苹果图", 350)
+
+    -- “丢全部”是独立按钮，但仍使用通用toggle回调更新标题和颜色。
+    local dropAllConfig = {
+        key = "dropallbut",
+        name = "开丢全部",
+        toggle = "关丢全部",
+        toggled = false,
+    }
+    local dropAllButton = CreateStandaloneButton(
+        uiParent, "dropallbut", dropAllConfig.name, 200
+    )
+    if dropAllButton then
+        GUI:addOnClickEvent(
+            dropAllButton,
+            helper_root_52_32_0(callbackMap, dropAllConfig, dropAllButton)
+        )
+    end
+
+    -- 苹果图按钮接入11.16原型root/52/25的启动入口。
+    local appleButton = CreateStandaloneButton(uiParent, "applebut", "开苹果图", 350)
+    if appleButton and type(callbackMap.applebut) == "function" then
+        GUI:addOnClickEvent(appleButton, callbackMap.applebut)
+    end
 end
 
 MainLeftBottom.doInit = doInit_PlainButtons
