@@ -146,4 +146,6 @@ function FindMonsterInCurrViewField()
 
     return result
 
+end
+
 return MainLeftBottom
