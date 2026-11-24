@@ -834,7 +834,7 @@ local function make_helper_root_52_36(capturedUpvalues)
     return function()
         if capturedUpvalues[1].gatherTimer then
             capturedUpvalues[2]("关闭引怪功能")
-            StopGatherMonsters()
+            StopGatherMonsters(capturedUpvalues[1])
             return true
         end
 
@@ -845,25 +845,24 @@ local function make_helper_root_52_36(capturedUpvalues)
 end
 
 
--- 11.16 root/3：StopGatherMonsters（25条物理指令；跨版本高置信业务体）。
--- 本版常量含gatherTimer、UnSchedule、SL、IDLE及“引怪功能已停止”；
--- root/52/36本版闭包明确调用全局StopGatherMonsters()。11.9同职责函数的
--- 清理顺序与上述常量及调用关系吻合：停止运行标志、取消并清空计时器、
--- 清除目标、切回IDLE、重置引怪数据、输出停止提示。
--- root父级闭包创建/全局导出槽位尚未保存；此处恢复业务体，不伪称导出关系已逐槽确认。
-local function StopGatherMonsters()
-    gatherState.isRunning = false
+-- 11.16 引怪状态：MainLoop/root/52/36共用同一组状态。
+-- 阈值11由root/52/36启动提示常量直接确认；间隔0.5秒、攻击等待1秒
+-- 沿用同职责旧版配置，待11.16 root配置表原始槽位进一步核对。
+local gatherConfig = {
+    GATHER_THRESHOLD = 11,
+    CHECK_INTERVAL = 0.5,
+    ATTACK_WAIT_TIME = 1,
+}
+local gatherStatusText = {
+    IDLE = "空闲状态",
+    GATHERING = "引怪中",
+    ATTACKING = "攻击中",
+}
+local currentState = gatherStatusText.IDLE
+local isGatherRunning = false
 
-    if timerState.gatherTimer then
-        SL:UnSchedule(timerState.gatherTimer)
-        timerState.gatherTimer = nil
-    end
-
-    ClearTargetID_2()
-    FormatStateChange(gatherStatusText.IDLE)
-    ResetGatherMonsterData()
-    PrintLog("引怪功能已停止")
-end
+-- 先声明，供root/52/36的闭包捕获同一停止函数。
+local StopGatherMonsters
 
 -- VM共享upvalue cell适配层：私有标记避免与普通业务table混淆。
 local UPVALUE_CELL_TAG_11_16 = {}
@@ -1172,6 +1171,31 @@ local function ClearTargetID_2()
         0,
         global.MMO.SELETE_TARGET_TYPE_FIND
     )
+end
+
+-- 11.16 root/8：状态变化提示；按共享currentState记录前后状态。
+local function FormatStateChange(newState)
+    PrintLog(string.format(
+        "状态切换: %s -> %s",
+        currentState,
+        newState
+    ))
+    currentState = newState
+end
+
+-- 11.16 root/3：停止引怪。timerState由root/52/36的第一个捕获值传入。
+StopGatherMonsters = function(timerState)
+    isGatherRunning = false
+
+    if timerState and timerState.gatherTimer then
+        SL:UnSchedule(timerState.gatherTimer)
+        timerState.gatherTimer = nil
+    end
+
+    ClearTargetID_2()
+    FormatStateChange(gatherStatusText.IDLE)
+    ResetGatherMonsterData()
+    PrintLog("引怪功能已停止")
 end
 
 
@@ -1718,7 +1742,13 @@ end
 -- 以11.2/11.9共同业务流程为底稿；保留新版已确认的Schedule回调包装闭包closure_root_23_0。
 -- root/3停止函数闭包已确认运行开关为独立布尔upvalue、计时器对象含gatherTimer字段；这里沿用旧版变量名映射。
 -- 业务恢复可信度高，但未逐槽核验root/23的36条指令；如运行测试发现状态变量命名/作用域差异，再定点修正。
-local function InitGatherMonsters()
+local function InitGatherMonsters(timerState)
+    -- root/52/36的H[0]就是共享计时器状态表；不可依赖未定义的全局timerState。
+    if type(timerState) ~= "table" then
+        PrintLog("引怪启动失败：计时器状态未传入")
+        return false
+    end
+
     if timerState.gatherTimer then
         SL:UnSchedule(timerState.gatherTimer)
         timerState.gatherTimer = nil
@@ -1738,6 +1768,7 @@ local function InitGatherMonsters()
         "引怪功能已启动 (阈值: %d)",
         gatherConfig.GATHER_THRESHOLD
     ))
+    return true
 end
 
 
@@ -6530,7 +6561,9 @@ local function BuildMainLeftBottomCallbackMap_11_16(context)
     end
     callbackMap.recyclebut = closure_root_52_21
     callbackMap.yinguaibut = make_helper_root_52_36({
-        timerState, ShowLocalNoticeByType, InitGatherMonsters
+        timerState, ShowLocalNoticeByType, function()
+            return InitGatherMonsters(timerState)
+        end
     })
     callbackMap.clearblacklistbut = make_helper_root_52_10
     callbackMap.storagebut = function()
