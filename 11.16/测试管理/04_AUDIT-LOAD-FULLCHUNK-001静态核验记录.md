@@ -113,3 +113,63 @@ GitHub Actions：
 - A/B实机均不显示，仍无法由语法错误解释。
 - G48–G52不应重测；但其中G52的main函数是测试模式版本，不能代表当前完整AccountIDValidation。
 - 当前需要继续的是静态核对未被G48–G52逐项覆盖的顶层状态/闭包注册，以及G51/G50测试桩与当前正式明文捕获参数的一致性；随后再决定是否需要一个严格单变量实机测试。
+
+
+## 第三轮核验：Lua 5.1 与 5.4 均通过
+
+GitHub Actions双版本矩阵：
+- Workflow：`11.16 full module chunk syntax check`
+- Run ID：`45315725018`
+- Run URL：https://github.com/panchengdong88888/wjjm/actions/runs/45315725018
+- 触发提交：`99445dcf3ea02df0bce5a961de8d4a25a43d9252`
+- `lua-syntax (5.1)`：success
+- `lua-syntax (5.4)`：success
+- 两个job均对正式明文、测试A、测试B分别执行`luac -p`并成功。
+
+因此，已排除Lua 5.1与Lua 5.4两种语法解析失败。仍不等于目标游戏运行时通过。
+
+## 新发现：完整chunk包含28个顶层全局函数写入
+
+扫描正式明文发现28个非local的顶层函数声明。Lua语义中，顶层`function Name(...)`会向当前环境表写入/覆盖`Name`字段；这不是“只定义局部函数”，而是模块加载时真实发生的全局环境写入。
+
+| 行 | 全局名称 |
+|---:|---|
+| 71 | GetMapId |
+| 77 | GetMapName |
+| 82 | GetMainPlayerID |
+| 88 | IsDie |
+| 93 | PlayerPos |
+| 100 | GetOwnerID |
+| 116 | GetDroppedItems |
+| 122 | ShowLocalNoticeByType |
+| 138 | FindMonsterInCurrViewField |
+| 1464 | MainLoop |
+| 1749 | ResetGatherMonsterData |
+| 1763 | GetAvailableStoragePage |
+| 1793 | GetStorageItemData |
+| 1832 | PrintLog |
+| 1856 | IsInWhitelistMap |
+| 1879 | MoveTo |
+| 2334 | BlacklistPlayerDetection |
+| 2476 | LuaSendMsg |
+| 2538 | onDamageMsg |
+| 2586 | DeathAutoBlacklist |
+| 2621 | ClearBlacklistItems |
+| 2663 | StorageItems |
+| 2776 | DestroyUI |
+| 2809 | ShowHideAllButtons |
+| 2851 | Builtsetting |
+| 2951 | PickUpItems |
+| 3134 | NewZoneFeature |
+| 3156 | startForgeZodiac |
+
+### 为什么这是当前优先检查项
+
+- G48–G52使用的是精简隔离模块，未包含这28个全局函数声明，因此此前加载层通过记录没有覆盖这组全局环境写入。
+- 完整测试B包含这些声明，即使不调用main/doInit，Lua仍会在加载chunk时创建函数并写入当前环境。
+- 如果其中某些名称与游戏宿主已有全局函数/变量重名，可能覆盖宿主环境中的既有成员；目前尚未证实具体是否发生名称冲突，也未确认这就是UI不显示的根因。
+- 这些函数体不会因声明而执行；当前待验证的是**定义时对共享全局环境的写入副作用**，不是函数内部业务逻辑。
+
+### 下一步唯一候选
+
+先静态检查这28个名称是否与框架/宿主已知全局接口重名，并检查这些函数是否确实应导出到全局环境。若静态资料不足，再构造一个单变量隔离版本：保留完整chunk及函数体，只将这28个顶层全局函数声明改为模块局部声明，且保持main/doInit均不执行；先做精确diff和Lua 5.1/5.4语法CI，再由用户进行一次实机测试。若结果恢复，再二分两组定位具体名称；若仍不恢复，则该组不是单独原因。此候选测试尚未生成，不能当作当前待测文件。
