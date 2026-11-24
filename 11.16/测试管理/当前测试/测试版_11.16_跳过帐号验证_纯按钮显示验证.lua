@@ -6842,6 +6842,7 @@ local function doInit_PlainButtons()
         toggle = "关丢全部",
         toggled = false,
     }
+    MainLeftBottom.buttonConfigByKey.dropallbut = dropAllConfig
     local dropAllButton = CreateStandaloneButton(
         uiParent, "dropallbut", dropAllConfig.name, 200
     )
