@@ -2151,6 +2151,24 @@ MainLeftBottom.a.show = function()
     end
 end
 
+-- 纯按钮测试：隐藏功能只隐藏其他功能按钮，保留透明的hidebut作为再次显示入口。
+MainLeftBottom.a.hide = function()
+    local state = MainLeftBottom.a
+    local buttons = MainLeftBottom.b
+
+    state.isHidden = false
+
+    for key, button in pairs(buttons) do
+        if key ~= "hidebut" then
+            GUI:setVisible(button, false)
+        end
+    end
+
+    if state.infoBg then
+        GUI:setVisible(state.infoBg, false)
+    end
+end
+
 
 -- 11.16 root/19：AccountIDValidation（64条指令，两个子原型已按本版原始字节码提取）。
 -- 本测试明确跳过GAME_ID与UID白名单验证，只保留主界面就绪轮询。
@@ -3613,13 +3631,13 @@ end
 local function helper_root_52_2(mainLeftBottomA, printLog)
     return function()
         if mainLeftBottomA.isHidden then
-            printLog("隐藏所有按钮")
-            mainLeftBottomA.hide()
-            GUI:setOpacity(mainLeftBottomA.hidebut, 0)
-        else
             printLog("显示所有按钮")
             mainLeftBottomA.show()
             GUI:setOpacity(mainLeftBottomA.hidebut, 255)
+        else
+            printLog("隐藏所有按钮")
+            mainLeftBottomA.hide()
+            GUI:setOpacity(mainLeftBottomA.hidebut, 0)
         end
     end
 end
@@ -6727,7 +6745,13 @@ local function doInit_PlainButtons()
     end
 
     -- 11.16原有三个独立按钮；仅保留创建和外观，不接入点击回调。
-    CreateStandaloneButton(uiParent, "hidebut", "隐 藏", 0)
+    local hideButton = CreateStandaloneButton(uiParent, "hidebut", "隐 藏", 0)
+    if hideButton then
+        GUI:addOnClickEvent(
+            hideButton,
+            helper_root_52_2(MainLeftBottom.a, PrintLog)
+        )
+    end
     CreateStandaloneButton(uiParent, "dropallbut", "开丢全部", 200)
     CreateStandaloneButton(uiParent, "applebut", "开苹果图", 350)
 end
