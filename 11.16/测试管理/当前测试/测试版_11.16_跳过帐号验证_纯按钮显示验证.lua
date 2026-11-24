@@ -6932,6 +6932,11 @@ local function doInit_PlainButtons()
     if appleButton and type(callbackMap.applebut) == "function" then
         GUI:addOnClickEvent(appleButton, callbackMap.applebut)
     end
+
+    -- 纯显示测试：只启动金币/元宝/战力文本刷新，不启动root/52/23中的其他自动业务。
+    if type(MainLeftBottom.startInfoRefresh_11_16) == "function" then
+        MainLeftBottom.startInfoRefresh_11_16()
+    end
 end
 
 MainLeftBottom.doInit = doInit_PlainButtons
@@ -7485,6 +7490,52 @@ MainLeftBottom.a.root52_23Callback = function()
             cruiseTxt = MainLeftBottom.a.cruiseTxt,
         }
     )
+end
+
+-- 纯显示测试专用刷新器：每秒仅读取并更新金币、元宝、战力文本。
+-- 不调用ProcessMainLeftBottomMaintenance，避免误启动邮件、苹果商城、剑灵等其他业务。
+MainLeftBottom.startInfoRefresh_11_16 = function()
+    local panelState = MainLeftBottom.a
+    if not panelState or not panelState.infoGoldTxt
+        or not panelState.infoYuanbaoTxt or not panelState.infoPowerTxt
+    then
+        return false
+    end
+
+    if panelState.infoRefreshStarted then
+        return true
+    end
+    panelState.infoRefreshStarted = true
+
+    local callback = function()
+        local state = MainLeftBottom.a
+        if not state then
+            return
+        end
+
+        -- 战力由网络回调写入MainLeftBottom根表，因此刷新时也从根表读取。
+        local ok = pcall(
+            UpdateMainInfoTexts_11_16,
+            MainLeftBottom,
+            nil,
+            state.infoGoldTxt,
+            state.infoYuanbaoTxt,
+            state.infoPowerTxt
+        )
+        if not ok then
+            -- 单次刷新异常不应中断游戏UI或定时器。
+            return
+        end
+    end
+
+    local ok, timer = pcall(SL.Schedule, SL, callback, 1)
+    if ok then
+        panelState.infoRefreshTimer = timer
+        return true
+    end
+
+    panelState.infoRefreshStarted = false
+    return false
 end
 
 -- 启动兼容层：原始root仅注册main字段；部分宿主加载器只执行chunk并接收return值，
