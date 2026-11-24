@@ -7463,3 +7463,9 @@ end
 
 -- 原始root PC653-PC654：模块执行结果返回根表。
 return MainLeftBottom
+
+
+-- 2026-11-24开拉怪修复：root/23与root/3均为0显式参数，状态表捕获模块级z。
+-- root父原型将InitGatherMonsters与StopGatherMonsters分别导出到rootEnvironment；
+-- root/52/36点击闭包无参调用捕获的启动函数，停止分支调用全局StopGatherMonsters。
+-- 本次只完成静态源码对齐，尚未进行游戏内实机验证。
