@@ -6782,10 +6782,12 @@ local function doInit_PlainButtons()
     local miniChatRight = miniChatPosition.x + miniChatSize.width
     local miniChatY = miniChatPosition.y
 
-    -- 严格按11.16 root/52槽471–482：基准点就是mini_chat右边界及其世界Y坐标。
-    -- 不叠加11.2+11.9旧版的-10/+1偏移。
-    local xBase = miniChatRight
-    local yBase = miniChatY
+    -- 严格按11.16原版root/52槽471–482、664–665恢复按钮工厂捕获坐标：
+    -- N[17]=mini_chat世界右边界，N[18]=mini_chat世界Y；
+    -- 槽664 Opcode144：N[26]=N[17]+300；槽665 Opcode296：N[27]=N[18]-25。
+    -- root/52/32捕获H[1]=N[26]、H[2]=N[27]，因此不能直接使用未偏移的mini_chat坐标。
+    local xBase = miniChatRight + 300
+    local yBase = miniChatY - 25
 
     local group1, group2, group3 = BuildMainLeftBottomButtonGroups_11_16()
     local buttonGroups = {
