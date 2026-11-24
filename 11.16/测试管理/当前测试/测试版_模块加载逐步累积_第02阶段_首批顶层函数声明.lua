@@ -2265,4 +2265,2119 @@ end
 -- 仅将AccountIDValidation函数注册到MainLeftBottom.main；本轮不主动调用main。
 -- ============================================================================
 
--- B3-C隔离回退：暂不注册MainLeftBottom.main，回到B3-B已通过基线。
+-- B3-C入口注册暂不纳入累积文件：该语句实机异常，回退基线已由用户复测正常。
+
+-- ============================================================================
+-- 第07阶段：正式明文第2229-4337行，函数/闭包声明与全局回调绑定。
+-- 本段不包含后续苹果地图顶层闭包工厂实例化（从第4339行开始）。
+-- ============================================================================
+
+-- 11.16 root/68：InstallDamageHook（40条指令）及其子闭包root/68/0（18条指令）。
+-- 本版父原型常量包含gameMapController、mNetMsgHandle、MsgType、
+-- MSG_SC_DAMAGE_HP、__ylwHookedOrigin及挂钩提示；子原型常量包含
+-- onDamageMsg、function、pcall、type。两层结构与11.9同职责实现的参数数、
+-- 指令数、常量和子原型数量吻合。
+local function MakeInstallDamageHook(mainLeftBottomState, printLog)
+    return function()
+        local gameMapController = global.gameMapController
+        if not gameMapController then
+            return
+        end
+
+        local messageHandlers = gameMapController.mNetMsgHandle
+        if type(messageHandlers) ~= "table" then
+            return
+        end
+
+        local messageTypes = global.MsgType
+        if not messageTypes then
+            return
+        end
+
+        local damageMessageType = messageTypes.MSG_SC_DAMAGE_HP
+        if not damageMessageType then
+            return
+        end
+
+        local originalHandler = messageHandlers[damageMessageType]
+        if not originalHandler then
+            return
+        end
+
+        if gameMapController.__ylwHookedOrigin == originalHandler then
+            return
+        end
+
+        -- 对应root/68/0：两个参数、18条指令；先安全调用自定义伤害回调，
+        -- 再把原始参数原样传给旧处理器并返回其结果。
+        local wrappedHandler = function(arg1, arg2)
+            local optionalCallback = mainLeftBottomState.onDamageMsg
+            if type(optionalCallback) == "function" then
+                pcall(optionalCallback, arg1, arg2)
+            end
+            return originalHandler(arg1, arg2)
+        end
+
+        messageHandlers[damageMessageType] = wrappedHandler
+        gameMapController.__ylwHookedOrigin = messageHandlers[damageMessageType]
+        printLog("已挂接伤害消息钩子（击杀拉黑用）")
+    end
+end
+
+
+-- 11.16 root/18：配置文件读取与key=value解析（34条物理指令、0参数、1个upvalue）。
+-- root槽278装载字符串"dpp"，槽279创建闭包，槽280将该字符串捕获为H[0]。
+-- 34槽控制流闭合：创建结果表；拼接可写目录与"dpp"作为文件路径；
+-- 文件不存在或读取结果为空时返回空表；存在内容时按key=value逐行解析并返回表。
+-- 原始导出名称尚未确认，因此使用helper_root_18作为合成定位名。
+local function helper_root_18()
+    local result = {}
+    local filePath = global.FileUtilCtl:getWritablePath() .. "dpp"
+
+    if not global.FileUtilCtl:isFileExist(filePath) then
+        return result
+    end
+
+    local data = global.FileUtilCtl:getDataFromFileEx(filePath)
+    if not data then
+        return result
+    end
+
+    for key, value in string.gmatch(data, "([%w_]+)=([^\r\n]*)") do
+        result[key] = value
+    end
+
+    return result
+end
+
+
+-- ============================================================================
+-- 11.16 跨版本业务批量恢复：黑名单消息、网络消息发送及清理
+-- 依据：11.16 root/26、root/40、root/63、root/71 的参数数/常量/闭包结构；
+-- 旧版明文同名业务体直接迁移，状态统一接入MainLeftBottom.a。
+-- ============================================================================
+
+local function getMainLeftBottomBlacklistState()
+    local mainState = MainLeftBottom.a
+    if not mainState.blacklist then
+        mainState.blacklist = {
+            lastAttacker = nil,
+            lastHp = nil,
+            deathHandled = false,
+            alertAt = 0,
+            nextTryAt = 0,
+            noStoneWarned = false,
+            distance = nil,
+        }
+    end
+    return mainState.blacklist
+end
+
+
+-- 11.16 root/34：BlacklistPlayerDetection（274条指令，0参数、无子原型）。
+-- 复用旧版黑名单检测业务主体；按本版常量改用gamePlayerController:GetMainPlayer，
+-- 玩家对象的GetID/GetName/GetMapX/GetMapY读取方式接入，并使用MainLeftBottom.a.blacklist共享状态。
+function BlacklistPlayerDetection()
+    MainLeftBottom.z.isBlacklisting = true
+    local blacklistState = getMainLeftBottomBlacklistState()
+
+    -- 11.16改为由gamePlayerController取得主玩家对象。
+    local mainPlayer = global.gamePlayerController:GetMainPlayer()
+    if not mainPlayer then return end
+    local mainActorID = mainPlayer:GetID()
+    if not mainActorID then return end
+
+    local hp = tonumber(SL:GetMetaValue("HP")) or 0.0
+    local previousHP = blacklistState.lastHp
+
+    if previousHP == nil then
+        blacklistState.lastHp = hp
+        blacklistState.deathHandled = (hp <= 0)
+    elseif hp > 0 then
+        blacklistState.lastHp = hp
+        blacklistState.deathHandled = false
+    elseif previousHP > 0 and not blacklistState.deathHandled then
+        blacklistState.deathHandled = true
+        blacklistState.lastHp = 0.0
+        DeathAutoBlacklist()
+    end
+
+    if hp <= 0 then
+        return
+    end
+
+    if IsInWhitelistMap() then
+        return
+    end
+
+    -- 宿主返回玩家列表和显式数量两个值；不能用#players替代第二返回值。
+    local players, playerCount = SL:GetMetaValue("FIND_IN_VIEW_PLAYER_LIST")
+    if not players or not playerCount or playerCount <= 0 then
+        return
+    end
+
+    for index = 1, playerCount do
+        local actorID = players[index]
+
+        if actorID and actorID ~= mainActorID then
+            local isBlacklisted, blacklistDisplayName =
+                FindBlacklistPlayer(actorID)
+
+            if isBlacklisted then
+                local actorName = blacklistDisplayName
+                if not actorName and type(actor) == "table" and actor.GetName then
+                    actorName = actor:GetName()
+                end
+                if not actorName then
+                    actorName = "黑名单玩家"
+                end
+
+                -- 未配置距离时不读取坐标，按原控制流直接允许后续告警/传送。
+                local distance
+                local distanceAccepted = true
+                local configuredDistance = blacklistState.distance
+
+                if configuredDistance then
+                    local mainX = mainPlayer:GetMapX()
+                    local mainY = mainPlayer:GetMapY()
+                    local actorX, actorY
+                    if type(actor) == "table" and actor.GetMapX and actor.GetMapY then
+                        actorX = actor:GetMapX()
+                        actorY = actor:GetMapY()
+                    end
+
+                    if mainX ~= nil and mainY ~= nil
+                        and actorX ~= nil and actorY ~= nil then
+                        distance = math.max(
+                            math.abs(mainX - actorX),
+                            math.abs(mainY - actorY)
+                        )
+                        distanceAccepted = distance <= configuredDistance
+                    else
+                        distanceAccepted = false
+                    end
+                end
+
+                if distanceAccepted then
+                    local now = os.time()
+                    local lastAlertAt = blacklistState.alertAt or 0
+                    local elapsed = now - lastAlertAt
+
+                    if blacklistAlertThreshold <= elapsed then
+                        blacklistState.alertAt = now
+                        PrintLog(
+                            "野外观测到黑名单玩家：%s（%d格）",
+                            actorName,
+                            distance or 0.0
+                        )
+                    end
+
+                    -- 等待重试截止时间时退出整个检测回调，不继续扫描其他玩家。
+                    if (blacklistState.nextTryAt or 0) > now then
+                        return
+                    end
+
+                    local usedTeleportItemName = UseItemByIndex()
+                    if usedTeleportItemName then
+                        blacklistState.nextTryAt = now + blacklistShortRetryDelay
+                        blacklistState.noStoneWarned = false
+
+                        ShowLocalNoticeByType(string.format(
+                            "黑名单玩家：%s（%d格），飞随机",
+                            actorName,
+                            distance or 0.0
+                        ))
+
+                        PrintLog(
+                            "黑名单玩家 %s，距离 %d 格，使用 %s 随机传送",
+                            actorName,
+                            distance or 0.0,
+                            usedTeleportItemName
+                        )
+                    else
+                        blacklistState.nextTryAt = now + blacklistNoItemRetryDelay
+
+                        if not blacklistState.noStoneWarned then
+                            blacklistState.noStoneWarned = true
+                            ShowLocalNoticeByType("没有随机传送石，黑名单玩家传送暂停")
+                            PrintLog(
+                                "没有可用的随机传送道具（%s）",
+                                table.concat(randomTeleportItemNames, "/")
+                            )
+                        end
+                    end
+
+                    -- 成功与失败路径均在处理当前首个命中玩家后退出。
+                    return
+                end
+            end
+        end
+    end
+end
+
+
+-- 11.16 root/63：LuaSendMsg（92条指令，0参数、0子原型）。
+-- 本版常量确认Blocklist、SendHookList、networkCtl及四个消息参数字段；
+-- 业务主体沿用旧版同名实现，状态表改为本版MainLeftBottom.a。
+function LuaSendMsg(hookKey, param1, param2, param3, param4, messageId)
+    local mainState = MainLeftBottom.a
+    local message = {
+        recog = 0,
+        msgId = messageId,
+        param1 = param1,
+        param2 = param2,
+        param3 = param3,
+        param4 = param4,
+    }
+
+    local numericHookKey = tonumber(hookKey)
+    local blocklist = mainState.Blocklist or {}
+    local blockedIndex = table.find(blocklist, numericHookKey)
+
+    if not blockedIndex then
+        local formattedParams = {}
+        local parameterSource = {
+            message.param1,
+            message.param2,
+            message.param3,
+            message.param4,
+        }
+
+        for _, value in ipairs(parameterSource) do
+            if type(value) == "string" then
+                table.insert(formattedParams, "'" .. value .. "'")
+            else
+                table.insert(formattedParams, tostring(value))
+            end
+        end
+
+        local logText = "LuaSendMsg(" .. table.concat(formattedParams, ", ") .. ")"
+        if PrintLog then
+            PrintLog(logText)
+        end
+    end
+
+    local hookList = mainState.SendHookList or {}
+    local hook = hookList[hookKey]
+    if type(hook) == "function" then
+        local callOK, handled = pcall(hook, hookKey, messageId, message)
+        if callOK and handled == true then
+            return
+        end
+    end
+
+    global.networkCtl:SendMsg(
+        hookKey,
+        param1,
+        param2,
+        param3,
+        param4,
+        messageId
+    )
+end
+
+MainLeftBottom.a.LuaSendMsg = LuaSendMsg
+
+
+-- 11.16 root/40：onDamageMsg（72条指令，2参数、1个JSON解码子闭包）。
+-- 子闭包root/40/0已恢复为SL:JsonDecode(capturedJson)，此处直接复用该闭包工厂。
+function onDamageMsg(arg1, messageJson)
+    if not messageJson or messageJson == "" then
+        return
+    end
+
+    local decodeOK, message = pcall(function()
+        return SL.JsonDecode(messageJson)
+    end)
+    if not decodeOK or type(message) ~= "table" then
+        return
+    end
+
+    local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
+    if not mainActorID or message.UserID == mainActorID then
+        return
+    end
+
+    local attackerID = message.AttackUserID
+    if not attackerID or attackerID == mainActorID then
+        return
+    end
+
+    if SL:GetMetaValue("ACTOR_IS_HERO", attackerID) then
+        local masterActorID = SL:GetMetaValue("ACTOR_MASTER_ID", attackerID)
+        if masterActorID then
+            attackerID = masterActorID
+        end
+    end
+
+    local attackerName = SL:GetMetaValue("ACTOR_NAME", attackerID)
+    if not attackerName or attackerName == "" then
+        return
+    end
+    if string.find(attackerName, "分身", 1, true) then
+        return
+    end
+
+    getMainLeftBottomBlacklistState().lastAttacker = {
+        id = attackerID,
+        name = attackerName,
+    }
+end
+
+MainLeftBottom.a.onDamageMsg = onDamageMsg
+
+
+-- 11.16 root/71：DeathAutoBlacklist（47条指令，0参数、1个子闭包）。
+-- 子闭包root/71/0已恢复为SL:RequestAddBlacklistByName(name)。
+function DeathAutoBlacklist()
+    local blacklistState = getMainLeftBottomBlacklistState()
+    local lastAttacker = blacklistState.lastAttacker
+    blacklistState.lastAttacker = nil
+
+    if not lastAttacker or not lastAttacker.name or lastAttacker.name == "" then
+        if PrintLog then
+            PrintLog("本次死亡没记录到凶手，跳过自动拉黑")
+        end
+        return
+    end
+
+    if FindBlacklistPlayer(lastAttacker.id) then
+        if PrintLog then
+            PrintLog("凶手已在黑名单中：%s", lastAttacker.name)
+        end
+        return
+    end
+
+    if PrintLog then
+        PrintLog("被 %s 击杀，自动加入黑名单", lastAttacker.name)
+    end
+    ShowLocalNoticeByType("自动拉黑：" .. lastAttacker.name)
+
+    for retryIndex = 0, 5 do
+        SL:ScheduleOnce(function()
+            SL:RequestAddBlacklistByName(lastAttacker.name)
+        end, 0.5 * retryIndex)
+    end
+end
+
+
+-- 11.16 root/26：ClearBlacklistItems（63条指令，0参数、1个移除回调子闭包）。
+-- root/26/0的13条指令已恢复为RequestOutBlacklist(key)并清除_proxy数据项；
+-- 本函数按旧版同名业务主体迁移，回调通过已恢复的闭包工厂构造。
+function ClearBlacklistItems()
+    local friendProxy = PCallHelper_2()
+    if not friendProxy or not friendProxy._blacklistData then
+        if PrintLog then
+            PrintLog("取不到好友代理，清空失败")
+        end
+        ShowLocalNoticeByType("清空黑名单失败")
+        return
+    end
+
+    local blacklistData = friendProxy._blacklistData
+    local entries = {}
+    for key, _ in pairs(blacklistData) do
+        entries[#entries + 1] = key
+    end
+
+    if #entries == 0 then
+        if PrintLog then
+            PrintLog("黑名单本来就是空的")
+        end
+        ShowLocalNoticeByType("黑名单为空")
+        return
+    end
+
+    if PrintLog then
+        PrintLog(string.format("开始清空黑名单，共 %d 人", #entries))
+    end
+    ShowLocalNoticeByType("清空黑名单 " .. #entries .. " 人")
+
+    for index, entryKey in ipairs(entries) do
+        local removeEntry = make_helper_root_26_0(entryKey, friendProxy)
+        SL:ScheduleOnce(removeEntry, (index - 1) * 0.01)
+    end
+
+    getMainLeftBottomBlacklistState().lastAttacker = nil
+end
+
+
+-- 11.16 root/45：StorageItems（224条物理指令，0参数、2个子闭包）。
+-- 本版仓库常量与旧版同名存仓主体一致；分页查询复用已恢复的
+-- GetAvailableStoragePage，仓库数据读取复用GetStorageItemData。
+-- 两个内部回调在本函数内以普通Lua词法闭包重建。
+function StorageItems()
+    local z = MainLeftBottom.z
+    if z.isStoring then return end
+    z.isStoring = true
+    if not GetAvailableStoragePage() then
+        PrintLog("仓库已满,无法存仓")
+        z.isStoring = false
+        return
+    end
+    local storageProxy = NPCStorageProxy
+    local maxPage = storageProxy:GetMaxPage()
+    local pageCapacity = GUIDefine.STORAGE_PER_PAGE_MAX
+    if not pageCapacity then pageCapacity = global.MMO.NPC_STORAGE_MAX_PAGE end
+    local openSize = storageProxy:GetOpenSize()
+    local storedPageData = {}
+    for page = 1, maxPage do
+        local pageData = storageProxy:GetStorageDataByPage(page)
+        storedPageData[page] = pageData and #pageData or 0
+    end
+    -- root/45的27槽匿名子原型：仓库分页容量检查闭包（无参数）。
+    -- 依据其唯一常量1及父函数所处的maxPage/openSize/pageCapacity/storedPageData上下文恢复。
+    local function findAvailablePage()
+        for page = 1, maxPage do
+            local remainingOpenSize = openSize - (page - 1) * pageCapacity
+            local pageLimit = remainingOpenSize
+            if pageCapacity < remainingOpenSize then pageLimit = pageCapacity end
+            if pageLimit > 0 and pageLimit > storedPageData[page] then return page end
+        end
+        return
+    end
+
+    local specialNames = {
+        "金刚石","玄铁","真金矿石","BOSS头骨","转生证明","魔神石",
+        "神装碎片","涅槃石","宝石精魄","天神令","神彩","金罡",
+        "至尊","圣皇","凤凰","麻痹戒指","复活戒指","切割神戒"
+    }
+    local filterNames = {"待定"}
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then
+        PrintLog("背包物品为空")
+        z.isStoring = false
+        return
+    end
+    local processedMakeIndexes = {}
+    local queuedCount = 0
+    -- root/45的52槽匿名子原型：聚灵珠耐久/输出判断闭包（2参数）。
+    -- DuraMax、Dura、StdMode及聚灵珠提示常量与该闭包一一对应。
+    local function isOutputted(item, itemText)
+        if not string.find(itemText, "聚灵珠", 1, true) then return true end
+        if not z.isOutputted then
+            z.isOutputted = true
+            ShowLocalNoticeByType(item)
+            local info = "聚灵珠信息: " .. tostring(item.Name)
+                .. " StdMode=" .. tostring(item.StdMode)
+                .. " Dura=" .. tostring(item.Dura)
+                .. " DuraMax=" .. tostring(item.DuraMax)
+            ShowLocalNoticeByType(info)
+        end
+        if not item.Dura then return false end
+        if not item.DuraMax then return false end
+        return item.Dura <= item.DuraMax
+    end
+
+    for _, item in pairs(bagData) do
+        local makeIndex = item.MakeIndex
+        if makeIndex and not processedMakeIndexes[makeIndex] then
+            local isBound = SL:GetMetaValue("ITEM_IS_BIND", item)
+            if not isBound then
+                for _, filterName in ipairs(filterNames) do
+                    if string.find(item.Name, filterName, 1, true) then
+                        local itemIndex = SL:GetMetaValue("ITEM_INDEX_BY_NAME", item.Name)
+                        SL:UseItemByIndex(itemIndex)
+                        ShowLocalNoticeByType("使用: " .. item.Name)
+                    end
+                end
+                local matchedSpecialName = false
+                local shouldStore = true
+                for _, specialName in ipairs(specialNames) do
+                    if string.find(item.Name, specialName, 1, true) then
+                        matchedSpecialName = true
+                        if not isOutputted(item, specialName) then
+                            shouldStore = false
+                            break
+                        end
+                    end
+                end
+                if matchedSpecialName and shouldStore then
+                    local targetPage = findAvailablePage()
+                    if not targetPage then
+                        ShowLocalNoticeByType("仓库已满,无法存仓")
+                        z.isStoring = false
+                        return
+                    end
+                    ShowLocalNoticeByType("存: " .. item.Name)
+                    MainLeftBottom.a.LuaSendMsg(global.MsgType.MSG_CS_STORAGE_STORE_REQUEST,
+                        999999999,item.MakeIndex,targetPage,0,item.Name,string.len(item.Name))
+                    processedMakeIndexes[makeIndex] = true
+                    storedPageData[targetPage] = storedPageData[targetPage] + 1
+                    queuedCount = queuedCount + 1
+                end
+            end
+        end
+    end
+    z.isStoring = false
+    if queuedCount > 0 then
+        ShowLocalNoticeByType("存仓完成, 共存入 " .. tostring(queuedCount) .. " 件物品")
+    end
+end
+
+
+-- 11.16 root/22：DestroyUI（61条指令，0参数、无子原型）。
+-- 复用旧版窗口销毁/按钮隐藏主体，并将本版新增的appleMapBg、infoBg、
+-- goldWarnBg纳入清理；resWin/resTimer/isHidden按本版状态表字段处理。
+function DestroyUI()
+    local mainState = MainLeftBottom.a
+    local buttons = MainLeftBottom.b
+
+    mainState.isHidden = false
+
+    if mainState.resTimer then
+        SL:UnSchedule(mainState.resTimer)
+        mainState.resTimer = nil
+    end
+
+    mainState.resWin = nil
+    GUI:Win_CloseAll()
+
+    for key in pairs(buttons) do
+        GUI:setVisible(buttons[key], false)
+    end
+
+    if mainState.appleMapBg then
+        GUI:setVisible(mainState.appleMapBg, false)
+    end
+    if mainState.infoBg then
+        GUI:setVisible(mainState.infoBg, false)
+    end
+    if mainState.goldWarnBg then
+        GUI:setVisible(mainState.goldWarnBg, false)
+    end
+end
+
+
+-- 11.16 root/67：ShowHideAllButtons（154条物理指令，0参数、无子原型）。
+-- 复用旧版奖励/巡航定时器与按钮隐藏主体，补入本版新增的生肖锻造、苹果下图、
+-- 买金、存取仓、巡航及新区定时器清理，并恢复NetworkUtil原始OnLuaMessage回调。
+function ShowHideAllButtons()
+    local state = MainLeftBottom.a
+    local buttons = MainLeftBottom.b or {}
+
+    -- 先清理旧版已有的奖励/巡航定时器，再清理11.16新增模块定时器。
+    local timerFields = {
+        "rewardTimer", "cruiseTimer", "appleMapTimer", "buygoldTimer",
+        "putinTimer", "putoutTimer", "cruiseRunTimer",
+        "forgeZodiacTimer", "newzoneTimer",
+    }
+    for _, field in ipairs(timerFields) do
+        local timer = state[field] or _G[field]
+        if timer then
+            SL:UnSchedule(timer)
+            state[field] = nil
+            _G[field] = nil
+        end
+    end
+
+    state.forgeZodiac = false
+    state.appleMap = false
+    state.putinStart = false
+    -- root.children[40]的VM布尔常量为false：销毁/收起时隐藏全部功能按钮。
+    for key in pairs(buttons) do GUI:setVisible(buttons[key], false) end
+    if state.hidebut then
+        GUI:setVisible(state.hidebut, false)
+        state.hidebut = nil
+    end
+
+    -- 还原被脚本替换的网络消息回调。
+    if NetworkUtil and NetworkUtil._origOnLuaMessage then
+        NetworkUtil.OnLuaMessage = NetworkUtil._origOnLuaMessage
+        NetworkUtil._origOnLuaMessage = nil
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/55：Builtsetting（195条指令，0参数，51个常量）
+-- 以11.9同职责函数为主体迁移：指令数同为195，且设置ID、PKMODE、
+-- HP保护1优先级、随机传送石、SETTING_CONFIG/SETTING_RANK_DATA等常量吻合。
+-- 按11.16常量池修正高帧率及称号设置提示/开关值。
+-- ============================================================================
+function Builtsetting()
+    -- PC1-PC13：仅当PKMODE元数据值为1时，向引擎请求模式1并显示原提示。
+    local pkMode = SL:GetMetaValue("PKMODE")
+    if pkMode == 1 then
+        SL:RequestChangePKMode(1)
+        ShowLocalNoticeByType("切换和平模式")
+    end
+
+    -- PC14-PC22：关闭背景音乐。
+    CHANGE_SETTING(27, {0})
+    ShowLocalNoticeByType("关闭背景音乐")
+
+    -- PC23-PC31：关闭游戏音乐。
+    CHANGE_SETTING(52, {0})
+    ShowLocalNoticeByType("关闭游戏音乐")
+
+    -- PC32-PC40：高帧率设置。新版字节码参数为{0}，提示文字为“开启高帧率”。
+    CHANGE_SETTING(1002, {0})
+    ShowLocalNoticeByType("关闭高帧率")
+
+    -- PC41-PC49：人物简装。
+    CHANGE_SETTING(57, {0})
+    ShowLocalNoticeByType("开启人物简装")
+
+    -- PC50-PC58：怪物简装。
+    CHANGE_SETTING(58, {1})
+    ShowLocalNoticeByType("开启怪物简装")
+
+    -- PC59-PC67：关闭屏蔽特效。
+    CHANGE_SETTING(2002, {0})
+    ShowLocalNoticeByType("关闭屏蔽特效")
+
+    -- PC68-PC76：关闭屏蔽技能。
+    CHANGE_SETTING(3017, {0})
+    ShowLocalNoticeByType("关闭屏蔽技能")
+
+    -- PC77-PC85：关闭屏蔽怪物。
+    CHANGE_SETTING(2005, {0})
+    ShowLocalNoticeByType("关闭屏蔽怪物")
+
+    -- PC86-PC94：关闭显示称号设置。
+    CHANGE_SETTING(61, {1})
+    ShowLocalNoticeByType("开启显示称号设置")
+
+    -- PC95-PC103：关闭Boss不简装设置。
+    CHANGE_SETTING(158, {0})
+    ShowLocalNoticeByType("关闭Boss不简装")
+
+    -- PC104-PC112：被玩家攻击时逃跑设置。
+    CHANGE_SETTING(3039, {3})
+    ShowLocalNoticeByType("被玩家攻击时逃跑")
+
+    -- PC113-PC122：开启6格范围内有怪时不走去拾取。
+    CHANGE_SETTING(3040, {1, 6})
+    ShowLocalNoticeByType("开启6格范围内有多少怪 不走去拾取")
+
+    -- PC123-PC138：查询随机传送石索引，并开启HP保护1（生命值低于50%）。
+    local randomTeleportItemIndex =
+        SL:GetMetaValue("ITEM_INDEX_BY_NAME", "随机传送石")
+
+    CHANGE_SETTING(3020, {1, 50})
+    ShowLocalNoticeByType("开启HP保护1(生命值低于50%)")
+
+    -- PC139-PC195：仅在随机传送石存在，且SETTING_RANK_DATA、
+    -- SETTING_CONFIG及SETTING_CONFIG.indexs均存在时，重建并回写优先级索引。
+    if randomTeleportItemIndex then
+        local rankData = SL:GetMetaValue("SETTING_RANK_DATA", 3020)
+        local settingConfig = SL:GetMetaValue("SETTING_CONFIG", 3020)
+
+        if rankData and settingConfig and settingConfig.indexs then
+            -- VM先把随机传送石索引放入新表，再扫描原indexs字符串。
+            local priorityIndexes = { randomTeleportItemIndex }
+            local splitIndexes = string.split(settingConfig.indexs, "#")
+
+            for _, indexText in ipairs(splitIndexes) do
+                local itemIndex = tonumber(indexText)
+
+                -- 按VM原条件，仅把与随机传送石索引相等的数字项追加。
+                -- 不擅自去重，保持原始字节码行为。
+                if itemIndex and itemIndex == randomTeleportItemIndex then
+                    table.insert(priorityIndexes, itemIndex)
+                end
+            end
+
+            rankData.indexs = priorityIndexes
+            SL:SetMetaValue("SETTING_RANK_DATA", 3020, rankData)
+            ShowLocalNoticeByType(
+                "HP保护1物品优先级:" .. "随机传送石"
+            )
+        end
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/43：PickUpItems（172条物理指令，0参数，2个排序比较子闭包）
+-- 主体复用11.9中同为172条指令的MakePickUpItemsHandler业务实现。
+-- 新版root/43/1的dist比较闭包已独立恢复为a.dist >= b.dist，故排序时直接使用
+-- closure_root_43_1，不用旧版left.dist < right.dist覆盖新版指令结果。
+-- root/43/0的kIdx/dist双字段比较器按旧版同职责闭包迁移。
+-- ============================================================================
+function PickUpItems()
+    local function comparePreferredItems(left, right)
+        if left.kIdx ~= right.kIdx then
+            return left.kIdx < right.kIdx
+        end
+        return left.dist < right.dist
+    end
+
+    local droppedItems, droppedCount = GetDroppedItems()
+    if droppedCount == 0 then
+        ShowLocalNoticeByType("地面无可拾取物品")
+        return
+    end
+
+    local playerX, playerY = PlayerPos()
+    local preferredItems = {}
+    local ordinaryItems = {}
+    local nameRules = {}
+
+    for _, item in ipairs(droppedItems) do
+        local name = item.mName
+            or item.mONameStr
+            or item.Name
+            or item.name
+            or ""
+
+        local x = item.mCurrMapX
+            or item.MapX
+            or item.mapX
+            or item.x
+
+        local y = item.mCurrMapY
+            or item.MapY
+            or item.mapY
+            or item.y
+
+        if x and y then
+            local distance = math.abs(playerX - x)
+                + math.abs(playerY - y)
+            local matchedRuleIndex = 0
+
+            for ruleIndex, rule in ipairs(nameRules) do
+                if string.find(name, rule) then
+                    matchedRuleIndex = ruleIndex
+                    break
+                end
+            end
+
+            if matchedRuleIndex > 0 then
+                table.insert(preferredItems, {
+                    item = item,
+                    dist = distance,
+                    kIdx = matchedRuleIndex,
+                    x = x,
+                    y = y,
+                })
+            else
+                table.insert(ordinaryItems, {
+                    item = item,
+                    dist = distance,
+                    x = x,
+                    y = y,
+                })
+            end
+        end
+    end
+
+    table.sort(preferredItems, comparePreferredItems)
+    table.sort(ordinaryItems, closure_root_43_1)
+
+    local candidates = {}
+    for _, entry in ipairs(preferredItems) do
+        table.insert(candidates, entry)
+    end
+    for _, entry in ipairs(ordinaryItems) do
+        table.insert(candidates, entry)
+    end
+
+    if #candidates == 0 then
+        return
+    end
+
+    local target = candidates[1]
+    MoveTo(target.x, target.y, 0)
+
+    if math.abs(playerX - target.x) <= 1
+        and math.abs(playerY - target.y) <= 1 then
+        global.dropItemController:PickMainPlayerPosItem()
+        ShowLocalNoticeByType("拾取: " .. target.item.mName)
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/1：新区物品周期回调（76条指令，0参数）。
+-- 与11.9 MakeNewZoneItemTimerCallback返回的0参数/76指令回调同职责、同规模；
+-- 本版常量BAG_DATA、MSG_CS_USE_BAG_ITEM、newzoneTimer、Gbtc、ShowSystemTips吻合。
+-- ============================================================================
+local NEW_ZONE_ITEM_NAME_KEYWORDS = {
+    "开天",
+    "雷霆战甲(男)",
+    "雷霆战盔",
+    "雷霆项链",
+    "雷霆护腕",
+    "雷霆护腕",
+    "雷霆戒指",
+    "雷霆戒指",
+    "雷霆腰带",
+    "雷霆战靴",
+    "逐日剑法",
+    "半月弯刀",
+    "施毒术",
+    "烈火剑法",
+    "自动回收",
+    "自动拾取",
+    "自动合成",
+    "自由发言",
+    "解锁绑定",
+    "自由交易",
+    "超级狂暴",
+    "超级神器",
+    "超级复活",
+    "超级回血",
+    "超级四神",
+    "回血石Lv.1",
+    "雷霆の护盾",
+    "龙腾玉佩",
+    "龙腾战鼓",
+    "龙腾血符",
+    "斩尽天下不收刀",
+    "梦幻斗笠Lv.1",
+    "复活BUFF",
+    "青铜会员卡",
+    "白银会员卡",
+    "黄金会员卡",
+    "钻石会员卡",
+    "至尊会员卡",
+}
+
+local function ProcessNewZoneItems()
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then
+        return
+    end
+
+    for _, keyword in ipairs(NEW_ZONE_ITEM_NAME_KEYWORDS) do
+        for _, item in pairs(bagData) do
+            if item and item.MakeIndex and item.Name then
+                local matchStart = string.find(item.Name, keyword, 1, true)
+                if matchStart then
+                    LuaSendMsg(
+                        global.MsgType.MSG_CS_USE_BAG_ITEM,
+                        item.MakeIndex,
+                        0,
+                        0,
+                        0,
+                        item.Name,
+                        string.len(item.Name)
+                    )
+                    PrintLog("新区使用：%s", item.Name)
+                    return
+                end
+            end
+        end
+    end
+
+    local state = MainLeftBottom.a
+    local newZoneTimer = state.newzoneTimer
+    if newZoneTimer then
+        SL:UnSchedule(newZoneTimer)
+        state.newzoneTimer = nil
+    end
+
+    PrintLog("新区物品已全部使用完毕，停止定时器")
+    SL:ShowSystemTips("新区物品已全部使用完毕")
+    Gbtc()
+end
+
+
+-- ============================================================================
+-- 11.16 root/13：NewZoneFeature（37条指令，0参数，1个延迟消息子闭包）。
+-- 与11.9同职责root原型37指令主体吻合；新版延迟消息参数以root/13/0实际指令
+-- 为准，调用closure_root_13_0发送9002/22502/1/2/3/空串/0。
+-- ============================================================================
+function NewZoneFeature()
+    local state = MainLeftBottom.a
+    PrintLog("开启新区功能")
+    state.isNewzone = true
+
+    LuaSendMsg(9002, 22302, 1, 2, 3, "", 0)
+    Gbtc()
+
+    SL:ScheduleOnce(closure_root_13_0, 0.5)
+
+    if state.newzoneTimer then
+        SL:UnSchedule(state.newzoneTimer)
+    end
+
+    state.newzoneTimer = helper_root_78(ProcessNewZoneItems, 0.05)
+end
+
+-- ============================================================================
+-- 11.16 root/10：startForgeZodiac（29条物理指令，0参数，5个upvalue）。
+-- 捕获映射：H[0]=MainLeftBottom.z；H[1]=root/14生肖锻造按钮/通知回调；
+-- H[2]=_G.log；H[3]=root/78的SL:Schedule包装；H[4]="蛇·[普通]"。
+-- ============================================================================
+function startForgeZodiac()
+    local state = MainLeftBottom.z
+
+    if state.forgeZodiacRunning then
+        local toggleHandler = ForgeZodiacToggleHandler
+        toggleHandler("已停止锻造生肖")
+        state.forgeZodiacRunning = false
+        return
+    end
+
+    state.forgeZodiac = {
+        checkGold = checkGold,
+        ticks = 0,
+        index = 1,
+    }
+
+    state.forgeZodiacRunning = true
+    _G.log("开始锻造生肖")
+
+    state.forgeZodiacTimer = helper_root_78("蛇·[普通]", 0.1)
+end
+
+
+-- ============================================================================
+-- 11.16 root/15/1：拍卖行自动上架物品回调（121条物理指令，0显式参数）。
+--
+-- Upvalue捕获顺序：
+--   H[0] = SL引擎对象（父root/15的N[5]）
+--   H[1] = 货币/物品名称筛选字符串（父N[1]，缺省“金条”）
+--   H[2] = 数量选项（父N[2]）
+--   H[3] = 单价（父N[0]）
+--   H[4] = 父级H[3]，身份尚未确认；此处作为日志函数代理使用
+--   H[5] = 父级H[0]回调
+--
+-- 说明：
+--   1. 此闭包没有显式参数，所有上下文均来自capturedUpvalues。
+--   2. slot73–77的VM数据流确实是把H[0]写入调用寄存器后调用。
+--      虽然H[0]捕获为SL对象，语义看起来反常，但这里忠实保留，不改成H[5]。
+--   3. 数量选项分支按可读业务意图表达；若实际客户端表现与此不同，
+--      由APK运行结果再针对该分支调整。
+-- ============================================================================
+
+local function closure_root_15_1(capturedUpvalues)
+    local SL = capturedUpvalues[1]
+    local currencyName = capturedUpvalues[2]
+    local useStackQuantity = capturedUpvalues[3]
+    local unitPrice = capturedUpvalues[4]
+    local logFunction = capturedUpvalues[5] -- 父级H[3]，词法身份未确认
+    local callback = capturedUpvalues[6] -- 父级H[0]
+
+    local toNumber = tonumber
+
+    -- 读取拍卖行货架上限，缺省6。
+    local shelfLimit = toNumber(SL:GetMetaValue("AUCTION_DEFAULT_SHELF"))
+    if not shelfLimit then
+        shelfLimit = 6
+    end
+
+    -- 读取当前上架数量，缺省0。
+    local listedCount = toNumber(SL:GetMetaValue("AUCTION_PUT_LIST_CNT"))
+    if not listedCount then
+        listedCount = 0
+    end
+
+    if listedCount >= shelfLimit then
+        -- 原VM在此处调用H[0]，按原始Upvalue索引保留。
+        SL("上架结束：拍卖行货架已满")
+        return
+    end
+
+    local bagData = SL:GetMetaValue("BAG_DATA")
+    if not bagData then
+        bagData = {}
+    end
+
+    -- 背包中按名称筛选可上架物品；绑定物品不参与上架。
+    for _, item in pairs(bagData) do
+        if item and item.MakeIndex and item.Name then
+            if string.find(item.Name, currencyName) then
+                local isBound = SL:GetMetaValue("ITEM_IS_BIND", item)
+                if not isBound then
+                    local stackCount = toNumber(item.OverLap)
+                    if not stackCount then
+                        stackCount = 1
+                    end
+
+                    -- VM选项控制是否采用物品堆叠数量。
+                    local quantity = 1
+                    if useStackQuantity then
+                        quantity = stackCount
+                    end
+
+                    local totalPrice = unitPrice * quantity
+                    local maxPrice = toNumber(SL:GetMetaValue("AUCTION_BIDPRICE_MAX"))
+                    if not maxPrice then
+                        maxPrice = 2000000000
+                    end
+
+                    if totalPrice > maxPrice then
+                        -- 与slot98–100相同，保留H[0]调用形态。
+                        SL("上架结束：总价超出上限")
+                        return
+                    end
+
+                    logFunction(
+                        "上架物品：%s MakeIndex=%s 数量=%d 单价=%d 一口价=%d",
+                        currencyName,
+                        tostring(item.MakeIndex),
+                        quantity,
+                        unitPrice,
+                        totalPrice
+                    )
+
+                    SL:RequestAuctionPutin(
+                        item.MakeIndex,
+                        quantity,
+                        0,
+                        totalPrice,
+                        callback,
+                        100
+                    )
+                    return
+                end
+            end
+        end
+    end
+
+    -- 未找到符合名称且未绑定的物品。VM slot73–77直接调用H[0]。
+    SL("上架结束：背包已无" .. tostring(currencyName or ""))
+end
+
+-- 11.16 root/15/0：19条物理指令、1个显式参数、2个upvalue。
+-- 父级root/15在slot60创建本闭包；slot61/62的Opcode132分别捕获父级H[1]/H[2]。
+-- root/15的捕获映射为H[1]=MainLeftBottom.z、H[2]=ShowLocalNoticeByType，
+-- 因此本闭包H[0]为MainLeftBottom.z状态表，H[1]为ShowLocalNoticeByType回调。
+-- slot1/2读取状态表putinTimer；若定时器存在则调用SL:UnSchedule(timer)，并清空状态表putinTimer。
+-- 无论是否存在定时器，均调用ShowLocalNoticeByType(arg1)及SL:ShowSystemTips(arg1)。
+-- 参数原始局部名称未知，使用messageOrType中性命名；函数原始符号名未确认，使用合成定位名。
+local function closure_root_15_0(capturedUpvalues, messageOrType)
+    local state = capturedUpvalues[1]
+    local showLocalNoticeByType = capturedUpvalues[2]
+
+    local timer = state.putinTimer
+    if timer then
+        SL:UnSchedule(timer)
+        state.putinTimer = nil
+    end
+
+    showLocalNoticeByType(messageOrType)
+    SL:ShowSystemTips(messageOrType)
+end
+
+-- 11.16 root/15：拍卖行金条上架入口（87条物理指令，3个显式参数，5个捕获值）。
+-- 捕获映射：H[0]=父级root N[40]（当前入口主体不直接解释其原始名称）；
+-- H[1]=MainLeftBottom.z；H[2]=ShowLocalNoticeByType；
+-- H[3]=PrintLog；H[4]=Schedule。
+-- 参数按本版寄存器用途命名：unitPrice=N[0]、currencyName=N[1]、
+-- useStackQuantity=N[2]。回调由H[0]装入N[3]并传给root/15/1。
+-- root/15/1和root/15/0均已独立恢复，以下只负责初始化、旧定时器清理和启动上架轮询。
+
+local function startPutinGold(capturedUpvalues, unitPrice, currencyName, useStackQuantity)
+    local state = capturedUpvalues[2]
+    local showLocalNoticeByType = capturedUpvalues[3]
+    local printLog = capturedUpvalues[4]
+    local schedule = capturedUpvalues[5]
+
+    currencyName = currencyName or "金条"
+
+    -- 原始入口先处理拍卖行货币状态；货币未就绪时提示并终止本次上架。
+    local auctionMoney = SL:GetMetaValue("AUCTION_MONEY")
+    if not auctionMoney then
+        SL:ShowSystemTips("未获取到拍卖行货币")
+        return
+    end
+
+    local minimumPrice = tonumber(SL:GetMetaValue("AUCTION_BIDPRICE_MIN")) or 0
+    if unitPrice < minimumPrice then
+        SL:ShowSystemTips(string.format("单价不能低于 %d", minimumPrice))
+        return
+    end
+
+    -- 清理上一轮下架任务，避免新上架与旧下架轮询并行。
+    if state.putoutTimer then
+        SL:UnSchedule(state.putoutTimer)
+        state.putoutTimer = nil
+        state.putoutSent = false
+    end
+
+    -- 清理上一轮上架任务。
+    if state.putinTimer then
+        SL:UnSchedule(state.putinTimer)
+        state.putinTimer = nil
+    end
+
+    local callback = capturedUpvalues[1]
+    local putinCallback = closure_root_15_1({
+        SL,
+        currencyName,
+        useStackQuantity,
+        unitPrice,
+        printLog,
+        callback,
+    })
+
+    SL:RequestAuctionPutList(1)
+
+    local message = "开始上架" .. currencyName .. "，单价：" .. tostring(unitPrice)
+    SL:ShowSystemTips(message)
+
+    state.putinTimer = schedule(putinCallback, 0.1)
+end
+
+
+-- ============================================================================
+-- 11.16 root/76：拍卖货币ID查询（25条物理指令，0参数）。
+-- 原始符号名未确认，使用合成定位名helper_root_76。
+-- 读取AUCTION_MONEY配置，优先返回名称为“元宝”的条目ID；
+-- 未找到时返回配置列表第一项的ID。按本版Opcode分支/循环/返回槽整理。
+-- ============================================================================
+local function helper_root_76()
+    local auctionMoney = SL:GetMetaValue("AUCTION_MONEY")
+    if not auctionMoney then
+        auctionMoney = {}
+    end
+
+    for _, moneyInfo in ipairs(auctionMoney) do
+        if moneyInfo.name == "元宝" then
+            return moneyInfo.id
+        end
+    end
+
+    return auctionMoney[1].id
+end
+
+
+-- ============================================================================
+-- 11.16 root/14：ForgeZodiacToggleHandler（51条物理指令，1个显式参数）。
+-- 高置信候选名：root/10将该闭包捕获为停止回调并传入提示文本。
+-- 捕获：H[0]=MainLeftBottom.z；H[1]=父root N[1]（身份未知，当前主体未读取）；
+-- H[2]=ShowLocalNoticeByType（由CSV捕获映射记录确认，且本体末段调用该回调）。
+-- 另有独立的SL:ShowSystemTips(message)提示调用；本函数没有证据表明调用_G.log。
+-- 按本版指令恢复定时器/状态清理、NPC对话层关闭、按钮配置复位及双提示。
+-- ============================================================================
+local function ForgeZodiacToggleHandler(capturedUpvalues, message)
+    local state = capturedUpvalues[1]
+    local showLocalNoticeByType = capturedUpvalues[3]
+
+    if state.forgeZodiacTimer then
+        SL:UnSchedule(state.forgeZodiacTimer)
+    end
+
+    state.forgeZodiacTimer = nil
+    state.forgeZodiac = nil
+    state.forgeZodiacRunning = false
+
+    global.Facade:sendNotification(global.NoticeTable.Layer_NPC_Talk_Close)
+
+    local button = state.forgezodiacbut
+    if button then
+        local buttonConfig = state.forgezodiacbutCfg
+        if buttonConfig then
+            buttonConfig.toggled = false
+        end
+
+        GUI.Button_setTitleText(button, "锻造生肖")
+        GUI.Button_setTitleColor(button, "#ffffff")
+    end
+
+    showLocalNoticeByType(message)
+    SL:ShowSystemTips(message)
+end
+
+
+-- ============================================================================
+-- ============================================================================
+-- 11.16 root/59：苹果下图停止/按钮复位回调（44条物理指令，1个显式参数，4项捕获）。
+-- 父级root槽337 Opcode387创建本闭包；捕获顺序：
+-- H[0]=父root N[3]=MainLeftBottom.z状态表；
+-- H[1]=父root N[1]（本体未读取）；
+-- H[2]=父root N[0]=MainLeftBottom按钮配置所属表；
+-- H[3]=父root N[5]=ShowLocalNoticeByType。
+-- root/27捕获的是此处返回的单参数闭包，因此调用形式为stopAppleMapWithNotice(message)，
+-- 不能把capturedUpvalues表再次作为运行时参数传给root/27。
+-- ============================================================================
+local function make_helper_root_59(capturedUpvalues)
+    local state = capturedUpvalues[1]
+    local buttonConfigOwner = capturedUpvalues[3]
+    local showLocalNoticeByType = capturedUpvalues[4]
+
+    return function(message)
+        if state.appleMapTimer then
+            SL:UnSchedule(state.appleMapTimer)
+        end
+
+        state.appleMapTimer = nil
+        state.appleMap = nil
+        state.appleMapRunning = false
+
+        local button = state.applebut
+        if button then
+            local buttonConfig = buttonConfigOwner.applebutCfg
+            if buttonConfig then
+                buttonConfig.toggled = false
+            end
+
+            GUI.Button_setTitleText(button, "开苹果图")
+            GUI.Button_setTitleColor(button, "#ffffff")
+        end
+
+        showLocalNoticeByType(message)
+        SL:ShowSystemTips(message)
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/33：startPutoutAll（56条物理指令，0显式参数，4个捕获值）。
+-- 捕获：H0=MainLeftBottom.z；H1=ShowLocalNoticeByType；
+-- H2=PrintLog；H3=Schedule。父函数负责取消旧任务、检查AuctionProxy、
+-- 初始化下架状态、请求拍卖列表并启动0.1秒轮询。
+-- ============================================================================
+local function startPutoutAll(capturedUpvalues)
+    local state = capturedUpvalues[1]
+    local showLocalNoticeByType = capturedUpvalues[2]
+    local printLog = capturedUpvalues[3]
+    local schedule = capturedUpvalues[4]
+
+    if state.putoutTimer then
+        SL:UnSchedule(state.putoutTimer)
+        state.putoutTimer = nil
+    end
+
+    if state.putinTimer then
+        SL:UnSchedule(state.putinTimer)
+        state.putinTimer = nil
+    end
+
+    local auctionProxy = global.Facade:retrieveProxy(global.ProxyTable.AuctionProxy)
+    if not auctionProxy then
+        SL:ShowSystemTips("拍卖行未就绪")
+        return
+    end
+
+    state.putoutSent = {}
+    state.putoutTicks = 0
+    SL:ShowSystemTips("开始下架拍卖行物品")
+
+    local putoutTick = function()
+        helper_root_33_1({ state, state, printLog })
+    end
+    state.putoutTimer = schedule(putoutTick, 0.1)
+end
+
+
+-- ============================================================================
+-- 11.16 root/33/1：下架轮询回调（77条物理指令，0显式参数）。
+-- 三个捕获值保留为代理：H0/H1为父函数传入的状态引用，
+-- H2为PrintLog。按本体字段恢复列表遍历、已发送去重及下架请求。
+-- ============================================================================
+local function helper_root_33_1(capturedUpvalues)
+    local state = capturedUpvalues[1]
+    local stateAlias = capturedUpvalues[2]
+    local printLog = capturedUpvalues[3]
+
+    state.putoutTicks = (state.putoutTicks or 0) + 1
+
+    if state.putoutTicks % 30 == 0 then
+        SL:RequestAuctionPutList(1)
+    end
+
+    local auctionProxy = global.Facade:retrieveProxy(global.ProxyTable.AuctionProxy)
+    local putList = auctionProxy and auctionProxy._putlist or {}
+    local sent = stateAlias.putoutSent or {}
+
+    for _, item in ipairs(putList) do
+        local makeIndex = item and item.MakeIndex
+        if makeIndex ~= nil and not sent[makeIndex] then
+            sent[makeIndex] = true
+            printLog(string.format("下架物品：MakeIndex=%s", tostring(makeIndex)))
+            SL:RequestAuctionPutout(makeIndex)
+        end
+    end
+
+    if state.putoutTicks >= 40 and #putList == 0 then
+        SL:ShowSystemTips("下架完成：已无上架物品")
+        SL:ShowSystemTips("下架结束")
+        return
+    end
+end
+
+
+-- ============================================================================
+-- 11.16 root/44：拍卖/价格模式文本写入辅助函数（29条物理指令，3个显式参数）。
+-- 原始函数名未确认，使用合成定位名helper_root_44。
+-- 已确认：三个参数分别转为字符串，按price/name/mode格式组织，
+-- 并通过FileUtilCtl.writeStringToFile写入getWritablePath取得的可写路径。
+-- 参数名仅按格式字段作中性命名；原始分支对应的文件名/模式细节待实测。
+-- ============================================================================
+local function helper_root_44(priceValue, itemName, modeValue)
+    local fileUtil = global.FileUtilCtl
+    local writablePath = fileUtil:getWritablePath()
+
+    local content = string.format(
+        "price=%s\nname=%s\nmode=%s\n",
+        tostring(priceValue),
+        tostring(itemName),
+        tostring(modeValue)
+    )
+
+    fileUtil:writeStringToFile(content, writablePath)
+end
+
+
+-- ============================================================================
+-- 11.16 root/52/17：拾取物品按钮回调（25条指令，0个显式参数）。
+-- 合成定位名；根据本版常量与11.9同职责回调恢复。捕获值按用途命名，
+-- 原始upvalue槽位身份未在此处强行认定。
+-- ============================================================================
+local function helper_root_52_17(timerState, printLog, schedule)
+    return function()
+        if timerState.shiquTimer then
+            printLog("关闭拾取物品")
+            SL:UnSchedule(timerState.shiquTimer)
+            timerState.shiquTimer = nil
+            return
+        end
+
+        printLog("开启拾取物品")
+        PickUpItems()
+        timerState.shiquTimer = schedule(PickUpItems, 0.01)
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/52/19：取物按钮回调（29条指令，0个显式参数）。
+-- 合成定位名；对应takeTimer/isTaking启停分支。
+-- ============================================================================
+local function helper_root_52_19(timerState, printLog, featureState, schedule)
+    return function()
+        if timerState.takeTimer then
+            printLog("关闭取物功能")
+            SL:UnSchedule(timerState.takeTimer)
+            timerState.takeTimer = nil
+            featureState.isTaking = false
+            return
+        end
+
+        printLog("开启取物功能")
+        TakeItems()
+        timerState.takeTimer = schedule(TakeItems, 1.0)
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/52/1：黑名单关闭回调（23条指令，0个显式参数）。
+-- 本版常量仅包含关闭提示、isBlacklisting、blacklistTimer与false；
+-- 按停止分支恢复，不补造开启分支。
+-- ============================================================================
+local function helper_root_52_1(timerState, printLog, featureState, buttonItems)
+    if timerState.blacklistTimer then
+        printLog("关闭黑名单功能")
+        SL:UnSchedule(timerState.blacklistTimer)
+        timerState.blacklistTimer = nil
+        featureState.isBlacklisting = false
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/52/2：隐藏/显示主界面按钮回调（原版30条物理指令，0个显式参数）。
+-- 原版root/52槽755创建该闭包；槽756/757依次捕获H[2]=MainLeftBottom.a、
+-- H[0]=PrintLog，因此工厂参数顺序为(mainLeftBottomA, printLog)。
+-- 原始控制流：isHidden真值时执行hide分支；假值时执行show分支。
+-- hide/show均为无显式参数的点调用；GUI:setOpacity为带GUI receiver的冒号方法调用。
+local function helper_root_52_2(mainLeftBottomA, printLog)
+    return function()
+        if mainLeftBottomA.isHidden then
+            printLog("隐藏所有按钮")
+            mainLeftBottomA.hide()
+            GUI:setOpacity(mainLeftBottomA.hidebut, 0)
+        else
+            printLog("显示所有按钮")
+            mainLeftBottomA.show()
+            GUI:setOpacity(mainLeftBottomA.hidebut, 255)
+        end
+    end
+end
+
+-- 11.16 root/52/31：存仓按钮点击回调（29条指令，0个显式参数）。
+-- 合成定位名；本版常量包含isStoring、storageTimer、StorageItems、
+-- UnSchedule、关闭/开启存仓提示及周期值1；与11.9同职责回调主体吻合。
+-- 父级捕获槽位在当前资料中未单独闭合，按旧版职责以用途参数承载。
+-- ============================================================================
+local function helper_root_52_31(timerState, printLog, featureState, schedule)
+    if timerState.storageTimer then
+        printLog("关闭存仓功能")
+        SL:UnSchedule(timerState.storageTimer)
+        timerState.storageTimer = nil
+        featureState.isStoring = false
+        return
+    end
+
+    printLog("开启存仓功能")
+    StorageItems()
+    timerState.storageTimer = schedule(StorageItems, 1.0)
+end
+
+-- ============================================================================
+-- 11.16 root/52/3：自动检测金币并购买金条按钮回调（23条指令，0显式参数）。
+-- 合成定位名；父闭包结构与11.9 MakeBuyGoldButtonHandler相同。
+-- 本版专属证据：buygold110Timer、0.5秒周期、提示“开始检测金币(>110W买金条)”。
+-- 捕获参数按旧版已确认职责接入；本版upvalue槽位顺序未单独复核。
+-- ============================================================================
+local function helper_root_52_3(timerState, showLocalNotice, buyStoreItem, unusedCapturedFunction)
+    return function()
+        if timerState.buygold110Timer then
+            return
+        end
+
+        showLocalNotice("开始检测金币(>110W买金条)")
+        local callback = helper_root_52_3_0(
+            buyStoreItem,
+            showLocalNotice,
+            timerState,
+            unusedCapturedFunction
+        )
+        timerState.buygold110Timer = SL:Schedule(callback, 0.5)
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/52/3/0：自动购买金条周期回调（77条指令，0显式参数）。
+-- 主体沿用11.9同结构MakeBuyGoldTimerCallback；严格采用11.16常量中的
+-- 1100000阈值、buygold110Timer字段及本版成功/失败/余额不足提示。
+-- MoneyProxy仅按本版常量与旧版同一调用结构使用，不分析其内部实现。
+-- ============================================================================
+local function helper_root_52_3_0(buyStoreItem, showLocalNotice, timerState, unusedCapturedFunction)
+    return function()
+        local moneyProxy = global.Facade:retrieveProxy(global.ProxyTable.MoneyProxy)
+        if not moneyProxy then
+            return
+        end
+
+        local moneyId = moneyProxy:GetMoneyIdByName("金币")
+        if not moneyId then
+            return
+        end
+
+        local goldCount = moneyProxy:GetMoneyCountById(moneyId)
+        if not goldCount then
+            if timerState.buygold110Timer then
+                SL:UnSchedule(timerState.buygold110Timer)
+                timerState.buygold110Timer = nil
+            end
+            SL:ShowSystemTips("金币不足110W，买金条结束")
+            return
+        end
+
+        if goldCount > 1100000 then
+            local buyOK, buyResult = buyStoreItem("金条", 1)
+            if buyOK then
+                showLocalNotice("买金条成功，当前金币：%d", goldCount)
+            else
+                SL:ShowSystemTips(string.format("买金条失败：%s", tostring(buyResult)))
+                if timerState.buygold110Timer then
+                    SL:UnSchedule(timerState.buygold110Timer)
+                    timerState.buygold110Timer = nil
+                end
+            end
+        else
+            if timerState.buygold110Timer then
+                SL:UnSchedule(timerState.buygold110Timer)
+                timerState.buygold110Timer = nil
+            end
+            SL:ShowSystemTips("金币不足110W，买金条结束")
+        end
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/52/32/0：通用按钮点击回调（48条指令，0显式参数，3项捕获）。
+-- 合成定位名；由root/52/32工厂捕获callbackMap、buttonConfig、button后创建点击闭包；先按配置key分发回调；
+-- 只有回调明确返回false才中止；无toggle配置则直接返回，否则切换标题/颜色。
+-- ============================================================================
+local function helper_root_52_32_0(callbackMap, buttonConfig, button)
+    return function()
+        local callback = callbackMap[buttonConfig.key]
+        -- 尚未恢复出真实回调的按钮不得假装成功，也不得只翻转toggle外观。
+        if type(callback) ~= "function" then
+            return
+        end
+
+        local allowed = callback()
+        if allowed == false then
+            return
+        end
+        if not buttonConfig.toggle then
+            return
+        end
+
+        buttonConfig.toggled = not buttonConfig.toggled
+        GUI:Button_setTitleText(
+            button,
+            buttonConfig.toggled and buttonConfig.toggle or buttonConfig.name
+        )
+        GUI:Button_setTitleColor(
+            button,
+            buttonConfig.toggled and "#ff0000" or "#ffffff"
+        )
+    end
+end
+
+-- ============================================================================
+-- 11.16 root/52/32：主界面通用按钮创建工厂（55条指令，3个显式参数，5项捕获）。
+-- 父级root/52槽666创建本闭包，槽667–671按顺序捕获：
+-- H[0]=父N[7]、H[1]=父N[26]、H[2]=父N[27]、H[3]=父H[5]、H[4]=父N[25]。
+-- 本版3个显式参数按父级按钮配置遍历调用点承接为buttonConfig、rowIndex、groupOffset。
+-- 槽675–684遍历N[19]，每项groupOffset=40；
+-- 槽685–697遍历N[20]，每项groupOffset=0；
+-- 槽698–710遍历N[21]，每项groupOffset=80。
+-- 三组均使用同一工厂；工厂坐标公式为x=baseX-85*rowIndex、y=baseY+groupOffset。
+-- 结合本版常量(Button_Create/标题字体/颜色/按钮纹理/addOnClickEvent)及
+-- root/52/32/0三项捕获回调，与11.9同职责按钮工厂主体匹配；5项捕获语义按旧版
+-- 同职责顺序映射为uiParent/baseX/baseY/visibleItems/callbackMap，原始局部名未知。
+-- 捕获来源寄存器已确认，语义映射保留为适配层；不再沿用8个显式参数的旧签名。
+-- ============================================================================
+local function make_helper_root_52_32(capturedUpvalues)
+    capturedUpvalues = capturedUpvalues or {}
+
+    -- 五项闭包捕获按父级槽667–671的实际顺序保存。
+    local uiParent = capturedUpvalues[1]
+    local baseX = tonumber(capturedUpvalues[2]) or 0
+    local baseY = tonumber(capturedUpvalues[3]) or 0
+    local visibleItems = capturedUpvalues[4]
+    local callbackMap = capturedUpvalues[5]
+
+    -- 原型root/52/32只有三个显式参数；捕获值不占用参数位置。
+    return function(buttonConfig, rowIndex, groupOffset)
+        if type(buttonConfig) ~= "table" then
+            return nil
+        end
+
+        local x = baseX - 85 * (tonumber(rowIndex) or 0)
+        local y = baseY + (tonumber(groupOffset) or 0)
+
+        local button = GUI:Button_Create(
+            uiParent,
+            buttonConfig.key,
+            x,
+            y,
+            "res/public/fuzhu_btn.png"
+        )
+        if not button then
+            return nil
+        end
+
+        if type(visibleItems) == "table" then
+            visibleItems[buttonConfig.key] = button
+        end
+
+        GUI:Button_setTitleText(button, buttonConfig.name)
+        GUI:Button_setTitleFontSize(button, 18)
+        GUI:Button_setTitleFontName(button, "res/public/kaiti2.ttf")
+        GUI:Button_setTitleColor(button, "#ffffff")
+
+        if buttonConfig.toggle then
+            buttonConfig.toggled = false
+        end
+
+        -- 只为已有完整回调的按钮注册点击事件；缺失捕获的按钮保持显示但不接线。
+        if type(callbackMap) == "table"
+            and type(callbackMap[buttonConfig.key]) == "function"
+        then
+            GUI:addOnClickEvent(
+                button,
+                helper_root_52_32_0(callbackMap, buttonConfig, button)
+            )
+        end
+        return button
+    end
+end
+
+-- 11.16 root/52/35：NPC点击/战力刷新请求（37条物理指令，0参数，1个子原型）。
+-- 指令流确认：先读取SL:GetMetaValue("USER_ID")；USER_ID缺失时提前返回。
+-- 随后把USER_ID转为字符串，填入{"UserID":"%s","index":15"}请求文本。
+-- 将powerRefreshing置为true，读取global.MsgType.MSG_CS_NPC_CLICK，
+-- 并以请求文本及其长度组装LuaSendMsg调用参数。
+-- 末段通过SL:ScheduleOnce安排3秒后的复位闭包。
+-- 子闭包root/52/35/0只执行H[0].powerRefreshing=false；
+-- H[0]来自父函数的外层捕获，暂以capturedPowerState保留，不猜测其词法变量名。
+-- 本函数的网络消息前置参数及ScheduleOnce的参数顺序仍按寄存器代理保留待定；
+-- 不把未闭合的调用参数臆写成确定的公开接口签名。
+local function make_helper_root_52_35(capturedPowerState)
+    local userId = SL:GetMetaValue("USER_ID")
+    if not userId then
+        return
+    end
+
+    local requestText = string.format(
+        '{"UserID":"%s","index":15}',
+        tostring(userId)
+    )
+
+    -- 开启与3秒后关闭必须写入同一个捕获状态对象。
+    -- 子闭包root/52/35/0明确对H[0].powerRefreshing写false，
+    -- 因此这里也通过同一H[0]对象写true，避免SL全局表与捕获表分离。
+    local powerState = capturedPowerState or SL
+    powerState.powerRefreshing = true
+
+    -- VM已确认消息类型为global.MsgType.MSG_CS_NPC_CLICK；
+    -- 调用参数区间含固定零值、requestText及#requestText。
+    -- 参数代理保留，等待父级调用上下文确认具体协议字段位置。
+    local messageType = global.MsgType.MSG_CS_NPC_CLICK
+    local requestLength = string.len(requestText)
+    LuaSendMsg(messageType, 0, 0, 0, 0, requestText, requestLength)
+
+    -- 3秒后清除刷新状态；闭包捕获的外层状态对象按H[0]传入。
+    SL:ScheduleOnce(function()
+        make_helper_root_52_35_0(powerState)
+    end, 3)
+end
+
+-- 11.16 root/52/35/0：3条物理指令，0参数、1个upvalue。
+-- Opcode 88读取H[0]；Opcode 114设置H[0].powerRefreshing=false。
+local function make_helper_root_52_35_0(capturedPowerState)
+    capturedPowerState.powerRefreshing = false
+end
+
+
+-- 11.16 root/52/34/0：上架输入回调（18条物理指令，3个参数，3个upvalue）。
+-- 子闭包由root/52/34槽39创建，捕获顺序为父H[1]、H[3]、H[2]：
+-- H[0]=MainLeftBottom状态表；H[1]=配置写入闭包；H[2]=MainLeftBottom.a模块表。
+-- 执行顺序：写MainLeftBottom.putinPrice/putinName；写配置写入闭包的putinStacked字段；
+-- 调用配置写入闭包(price,name,stacked)；再调用MainLeftBottom.a.startPutinGold(price,name,stacked)。
+local function make_helper_root_52_34_0(capturedUpvalues)
+    return function(putinPrice, putinName, putinStacked)
+        local main = capturedUpvalues[1]
+        local saveInputConfig = capturedUpvalues[2]
+        local module = capturedUpvalues[3]
+
+        main.putinPrice = putinPrice
+        main.putinName = putinName
+
+        saveInputConfig.putinStacked = putinStacked
+        saveInputConfig(putinPrice, putinName, putinStacked)
+
+        module.startPutinGold(putinPrice, putinName, putinStacked)
+    end
+end
+
+-- 11.16 root/52/34：金条上架入口（46条物理指令，0个显式参数，4个upvalue）。
+-- root/52槽564创建此闭包，依次捕获H[11]配置读取闭包、H[3] MainLeftBottom、
+-- H[2] MainLeftBottom.a模块表、H[12]配置写入闭包。
+-- 子闭包root/52/34/0捕获MainLeftBottom、配置写入闭包、MainLeftBottom.a。
+local function make_helper_root_52_34(capturedUpvalues)
+    return function()
+        local readInputConfig = capturedUpvalues[1]
+        local main = capturedUpvalues[2]
+        local module = capturedUpvalues[3]
+        local saveInputConfig = capturedUpvalues[4]
+
+        local inputConfig = readInputConfig()
+        local price = tonumber(inputConfig.price) or main.putinPrice
+
+        local itemName = inputConfig.name
+        if not itemName or itemName == "" then
+            itemName = main.putinName
+            if not itemName then
+                itemName = "金条"
+            end
+        end
+
+        local useStackQuantity = inputConfig.mode == "1"
+        local onConfirm = make_helper_root_52_34_0({
+            main,
+            saveInputConfig,
+            module,
+        })
+
+        module.inputNumber(
+            "上架物品",
+            price,
+            onConfirm,
+            itemName,
+            useStackQuantity
+        )
+    end
+end
+-- ============================================================
+--  11.16 root/52/33：每日巡航协议时间窗口回调（部分恢复）
+-- ============================================================
+-- 43条物理指令与11.9版巡航回调的时间窗口结构一致：
+-- os.date("*t")取本地时间，计算当天秒数，仅在22:00:05至22:00:08窗口内处理；
+-- 日期格式为YYYYMMDD，同一日期只发送一次；协议参数为9002/55556/1/2/3/""/0。
+-- 本版通过捕获对象保存上次发送日期，并通过捕获对象上的LuaSendMsg发送协议。
+-- 父级创建点提供3项捕获，但当前仅能按子函数H[0]/H[1]读写关系使用代理参数；
+-- H[3]对应的辅助对象/函数身份尚未完全闭合，因此本函数标记部分恢复。
+local function MakeCruiseTimerCallback_11_16(capturedUpvalues)
+    -- H[0]是日期字符串本身；在返回闭包中保留可变局部值。
+    local lastSentDate = capturedUpvalues[1]
+    local messageState = capturedUpvalues[2]
+    local auxiliary = capturedUpvalues[3]
+
+    return function()
+        local dateParts = os.date("*t")
+        if not dateParts then
+            return
+        end
+
+        local secondsOfDay =
+            dateParts.hour * 3600 +
+            dateParts.min * 60 +
+            dateParts.sec
+
+        if secondsOfDay < 79205 or secondsOfDay > 79208 then
+            return
+        end
+
+        local dateKey = string.format(
+            "%04d%02d%02d",
+            dateParts.year,
+            dateParts.month,
+            dateParts.day
+        )
+
+        if lastSentDate == dateKey then
+            return
+        end
+
+        lastSentDate = dateKey
+        messageState.LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)
+
+        -- 本版尾部还会调用捕获的辅助对象/函数输出固定巡航提示；
+        -- 暂以可读代理字段保留调用位置，不伪造其真实字段名。
+        if type(auxiliary) == "function" then
+            auxiliary("到达 22:00:05，发送开启巡航协议")
+        end
+    end
+end
+
+
+
+-- ============================================================================
+-- 11.16 root/52/24：停止丢弃、拾取及自动购买金条（76个物理槽位）
+-- 本版完整指令流确认：取消dropTimer、shiquTimer、buygoldTimer、
+-- buygold110Timer；复位isDiuing；复位diuqibut/shiqubut两个toggle；
+-- 另将dropallbut按钮标题恢复为“开丢全部”、颜色恢复白色，并显示停止提示。
+-- 父级捕获寄存器与词法名称尚未闭合，因此以下依赖按业务职责显式传入，
+-- 不伪造原始upvalue槽位映射。
+-- ============================================================================
+-- 末尾slot74将N[0]置为true，slot75 Opcode292按N[0]起始返回值；
+-- slot76 Opcode205是另一控制路径的函数结束，不把它误写成false返回。
+local function helper_root_52_24(
+    timerState,
+    featureState,
+    syncButtonToggle,
+    dropAllButton,
+    showLocalNotice
+)
+    local function cancelTimer(fieldName)
+        local timer = timerState[fieldName]
+        if timer then
+            SL:UnSchedule(timer)
+            timerState[fieldName] = nil
+        end
+    end
+
+    cancelTimer("dropTimer")
+    featureState.isDiuing = false
+    syncButtonToggle("diuqibut", false)
+
+    cancelTimer("shiquTimer")
+    syncButtonToggle("shiqubut", false)
+
+    cancelTimer("buygoldTimer")
+    cancelTimer("buygold110Timer")
+
+    if dropAllButton then
+        GUI:Button_setTitleText(dropAllButton, "开丢全部")
+        GUI:Button_setTitleColor(dropAllButton, "#ffffff")
+    end
+
+    showLocalNotice("已停止丢物品、拾取和购买金条")
+    return true
+end
+
+-- ============================================================================
+-- 11.16 root/61：backCity（60条指令，0显式参数，0项捕获）
+-- ============================================================================
+-- 常量池明确指向QUICKUSE_DATA、盟重回城石、ITEM_COUNT、
+-- ITEM_INDEX_BY_NAME、pairs、tonumber、UseItemByIndex及Name/Index字段。
+-- 按该业务链恢复：在快捷使用数据中定位盟重回城石，确认背包数量后使用。
+-- 本版root/61逐槽指令流尚未单独提取，故保留为依据常量与调用关系恢复的主体。
+local function backCity()
+    local quickUseData = SL:GetMetaValue("QUICKUSE_DATA")
+    if type(quickUseData) ~= "table" then
+        return false
+    end
+
+    for _, quickUseItem in pairs(quickUseData) do
+        if quickUseItem and quickUseItem.Name
+            and string.find(quickUseItem.Name, "盟重回城石", 1, true)
+        then
+            local itemIndex = tonumber(
+                SL:GetMetaValue("ITEM_INDEX_BY_NAME", quickUseItem.Name)
+            )
+
+            if itemIndex then
+                local itemCount = tonumber(
+                    SL:GetMetaValue("ITEM_COUNT", itemIndex)
+                ) or 0
+
+                if itemCount > 0 then
+                    SL:UseItemByIndex(itemIndex)
+                    return true
+                end
+            end
+        end
+    end
+
+    return false
+end
+
+-- ============================================================
+--  11.16 root/54：startAppleMap（56条物理指令，0显式参数，5项upvalue）
+-- ============================================================
+-- 父级root槽位353 Opcode178创建childIndex=54，captureCount=5；
+-- 槽位354..358 Opcode243依次捕获父级N[3]/N[5]/N[43]/N[7]/N[48]：
+-- H[0]=MainLeftBottom状态表，H[1]=ShowLocalNoticeByType，
+-- H[2]=backCity，H[3]=Schedule，H[4]=root/27定时回调闭包。
+-- root槽位359 Opcode0将该闭包写入_ENV.startAppleMap；
+-- root/52/25的无参回调直接调用全局startAppleMap。
+-- root/27本体是独立原型，作为定时回调对象原样捕获；这里不展开其内部实现。
+-- ============================================================
+-- ============================================================================
+-- 11.16 root/27：AppleMapTimerCallback_11_16（307条物理指令，0显式参数，9项捕获）。
+-- 父级root槽343 Opcode121创建，槽344–352按顺序捕获：
+-- H[0]=MainLeftBottom.z；H[1]=root/73攻城时间判断；
+-- H[2]=root/80 ShowLocalNoticeByType；H[3]=root/65盟重/土城字面查找；
+-- H[4]=root/28称号51295有效期判断；H[5]=root/61 backCity；
+-- H[6]=root/59单参数停止/按钮复位回调；H[7]=root/51 PrintLog；
+-- H[8]=root/0候选地图选择闭包。
+-- 307槽控制流、融合消费边界、主要寄存器流和父级捕获来源均已静态闭合。
+-- ============================================================================
+local function make_AppleMapTimerCallback_11_16(capturedUpvalues)
+    local mainState = capturedUpvalues[1]
+    local isSiegeTime = capturedUpvalues[2]
+    local showLocalNoticeByType = capturedUpvalues[3]
+    local findWhitelistedCity = capturedUpvalues[4]
+    local hasAppleTitle = capturedUpvalues[5]
+    local backCity = capturedUpvalues[6]
+    local stopAppleMapWithNotice = capturedUpvalues[7]
+    local printLog = capturedUpvalues[8]
+    local chooseTargetMap = capturedUpvalues[9]
+
+    return function()
+        local state = mainState.appleMap
+        if not state then
+            return
+        end
+
+        state.ticks = state.ticks + 1
+
+        if isSiegeTime() then
+            if not state.siegeTip then
+                state.siegeTip = true
+                showLocalNoticeByType("攻城时间段(20:00-22:00)，苹果图暂停下图")
+            end
+            return
+        end
+
+        if state.siegeTip then
+            state.siegeTip = false
+            showLocalNoticeByType("攻城时间段结束，苹果图恢复下图")
+        end
+
+        local mapName = GetMapName()
+        local cityMatch = findWhitelistedCity(mapName)
+
+        if not cityMatch then
+            state.cityCloseSent = false
+        end
+
+        if hasAppleTitle() then
+            if cityMatch then
+                if state.cruiseConfirmed then
+                    state.state = "cruise"
+                    return
+                end
+
+                if state.ticks % 30 == 1 then
+                    LuaSendMsg(9002, 55556, 1, 2, 3, "", 0)
+                    state.cruiseSent = true
+                    showLocalNoticeByType("苹果已激活：开启巡航")
+                end
+
+                state.state = "cruise"
+                return
+            end
+
+            if state.cruiseSent then
+                state.cruiseConfirmed = true
+            end
+
+            state.cruiseOn = true
+
+            if state.cruiseConfirmed then
+                return
+            end
+
+            if state.cruiseSent then
+                return
+            end
+
+            if state.ticks % 30 == 1 then
+                if not backCity() then
+                    stopAppleMapWithNotice("背包没有盟重回城石，已停止")
+                end
+            end
+            return
+        end
+
+        if cityMatch then
+            if not state.cityCloseSent then
+                LuaSendMsg(9002, 55559, 1, 2, 3, "", 0)
+                state.cityCloseSent = true
+                state.cruiseOn = false
+                state.cruiseSent = false
+                state.cruiseConfirmed = false
+                printLog("苹果未激活：发送关闭巡航")
+            end
+
+            if state.state ~= "toShenlong" then
+                state.state = "toShenlong"
+                state.ticks = 0
+                LuaSendMsg(9002, 80101, 1, 2, 3, "神龍之都", 12)
+                printLog("前往神龍之都")
+            elseif state.ticks % 50 == 0 then
+                LuaSendMsg(9002, 80101, 1, 2, 3, "神龍之都", 12)
+            end
+            return
+        end
+
+        if string.find(mapName, "神龍之都", 1, true) then
+            if state.state ~= "walkNpc"
+                and state.state ~= "clickNpc"
+                and state.state ~= "waitEnter"
+            then
+                local target = chooseTargetMap(state)
+                state.target = target
+                state.state = "walkNpc"
+                state.ticks = 0
+                printLog("目标地图：" .. target.name)
+            end
+
+            if state.state == "walkNpc" then
+                local target = state.target
+                if MoveTo(target.x, target.y, 8) then
+                    local npcData = string.format(
+                        "{\"index\":%d,\"UserID\":\"%s\"}",
+                        target.index,
+                        target.userID
+                    )
+
+                    -- Opcode200的实参区间从N[5]开始；本消息没有9002前缀。
+                    LuaSendMsg(
+                        1010,
+                        0,
+                        0,
+                        0,
+                        0,
+                        npcData,
+                        string.len(npcData)
+                    )
+
+                    state.state = "clickNpc"
+                    state.ticks = 0
+                end
+                return
+            end
+
+            if state.state == "clickNpc" then
+                if state.ticks >= 3 then
+                    LuaSendMsg(9002, 10037, 1, 2, 3, "", 0)
+                    state.state = "waitEnter"
+                    state.ticks = 0
+                end
+                return
+            end
+
+            if state.state == "waitEnter" then
+                if state.ticks >= 30 then
+                    LuaSendMsg(9002, 10037, 1, 2, 3, "", 0)
+                    state.ticks = 0
+                end
+                return
+            end
+            return
+        end
+
+        if state.state == "monitor" then
+            if state.lastMapName
+                and string.find(mapName, state.lastMapName, 1, true)
+            then
+                return
+            end
+        end
+
+        local target = state.target
+        if target and string.find(mapName, target.name, 1, true) then
+            if state.state ~= "monitor" then
+                state.state = "monitor"
+                state.lastMapName = target.name
+                state.ticks = 0
+                printLog("已进入目标地图：" .. state.lastMapName)
+            end
+            return
+        end
+
+        if state.state ~= "backCity" then
+            state.state = "backCity"
+            state.ticks = 0
+            if not backCity() then
+                stopAppleMapWithNotice("背包没有盟重回城石，已停止")
+            end
+        elseif state.ticks % 30 == 0 then
+            if not backCity() then
+                stopAppleMapWithNotice("背包没有盟重回城石，已停止")
+            end
+        end
+        return
+    end
+end
+
+local function make_startAppleMap(capturedUpvalues)
+    local mainState = capturedUpvalues[1]
+    local showLocalNotice = capturedUpvalues[2]
+    local backCity = capturedUpvalues[3]
+    local schedule = capturedUpvalues[4]
+    local appleMapTimerCallback = capturedUpvalues[5]
+
+    return function()
+        if mainState.appleMapRunning then
+            if mainState.appleMapTimer then
+                SL:UnSchedule(mainState.appleMapTimer)
+            end
+
+            mainState.appleMapTimer = nil
+            mainState.appleMap = nil
+            mainState.appleMapRunning = false
+
+            showLocalNotice("已停止苹果下图")
+            return true
+        end
+
+        mainState.appleMap = {
+            state = "backCity",
+            ticks = 0,
+            cruiseOff = false,
+            cruiseOn = false,
+        }
+
+        if not backCity() then
+            mainState.appleMap = nil
+            showLocalNotice("背包没有盟重回城石")
+            return false
+        end
+
+        mainState.appleMapRunning = true
+        showLocalNotice("开始苹果下图")
+
+        mainState.appleMapTimer = schedule(appleMapTimerCallback, 0.1)
+        return true
+    end
+end
+
+
+-- ============================================================================
+-- 11.16 root级苹果下图闭包实例化（root/27 + root/54）。
+-- 本段严格按root_闭包创建与捕获映射.json中的槽343–359顺序组装。
+-- root/27的9项捕获：MainLeftBottom.z、root/73、root/80、
+-- root/65、root/28、root/61、root/59、root/51、root/0。
+-- root/54的5项捕获：MainLeftBottom.z、ShowLocalNoticeByType、
+-- root/61 backCity、root/78的SL:Schedule包装、root/27回调。
