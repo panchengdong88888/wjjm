@@ -2161,8 +2161,8 @@ end
 
 
 -- ============================================================================
--- 第06阶段B3：从正式明文第2135-2226行逐字提取。
--- 本段创建a.show闭包、定义AccountIDValidation并注册MainLeftBottom.main；不主动调用main。
+-- 第06阶段B3-A：从正式明文第2135-2152行逐字提取。
+-- 仅创建并注册MainLeftBottom.a.show闭包；暂不定义AccountIDValidation及注册main。
 -- ============================================================================
 
 -- 11.16 root/16：MainLeftBottom.a.show（25条物理指令、0参数、2个upvalue）。
@@ -2183,77 +2183,3 @@ MainLeftBottom.a.show = function()
         GUI:setVisible(state.infoBg, true)
     end
 end
-
-
--- 11.16 root/19：AccountIDValidation（64条指令，两个子原型已按本版原始字节码提取）。
--- 按原始指令顺序恢复GAME_ID门控、UID白名单校验、验证提示及主界面等待回调。
--- root/19/0回调依次检查MainProperty、MainProperty._ui、MainProperty._ui.Panel_mini_chat；
--- 就绪时取消本回调的Schedule句柄并直接调用MainLeftBottom.doInit()。
-local function AccountIDValidation()
-    -- root/19 slot 1–17：验证游戏ID，只有204208允许继续。
-    local gameID = SL:GetMetaValue("GAME_ID")
-    PrintLog("游戏id：" .. tostring(gameID))
-    if gameID ~= 204208 then
-        PrintLog("游戏不一致，id：" .. tostring(gameID))
-        return
-    end
-
-    -- root/19 slot 18–26：读取并记录账号UID。
-    local uid = SL:GetMetaValue("UID")
-    PrintLog("账号ID：" .. tostring(uid))
-
-    -- root/19 slot 27–37：原始九项账号白名单。
-    local allowedUIDs = {
-        "6324648",
-        "39770358",
-        "3548598",
-        "1957840929",
-        "1488903257",
-        "1585201915",
-        "1627987432",
-        "1580027021",
-        "1304755149",
-    }
-
-    -- root/19/1：逐项转为字符串比较；命中后记录成功提示并返回true。
-    local allowed = false
-    for _, allowedUID in ipairs(allowedUIDs) do
-        if tostring(allowedUID) == tostring(uid) then
-            PrintLog("[提示] 账号ID在允许列表中，功能已开启")
-            allowed = true
-            break
-        end
-    end
-
-    if not allowed then
-        ShowLocalNoticeByType("账号不存在，功能已限制，账号ID：" .. tostring(uid))
-        PrintLog("[验证失败] 账号ID未在允许列表中")
-        return
-    end
-
-    PrintLog("[验证成功] 账号ID验证通过")
-
-    -- root/19 slot 55–63：Schedule每0.5秒检查主界面；闭包按引用捕获句柄变量。
-    local waitTimer
-    local function waitForMainProperty()
-        if MainProperty then
-            if MainProperty._ui then
-                if MainProperty._ui.Panel_mini_chat then
-                    SL:UnSchedule(waitTimer)
-                    MainLeftBottom.doInit()
-                else
-                    PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
-                end
-            else
-                PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
-            end
-        else
-            PrintLog("等待主界面属性栏(MainProperty)初始化完成...")
-        end
-    end
-
-    waitTimer = SL:Schedule(waitForMainProperty, 0.5)
-end
-
--- root slot 407–410：创建root/19闭包并写入MainLeftBottom.main。
-MainLeftBottom.main = AccountIDValidation
