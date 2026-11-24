@@ -1,0 +1,1036 @@
+{
+  "project": "MainLeftBottom 11.16",
+  "source_file": "11.16/MainLeftBottom 11.16原版.lua",
+  "source_blob_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+  "extraction_method": "复现原版文件内Base36长度字段+LZW载荷解压；读取器逐字节XOR 0x17；按原版S()递归原型格式读取常量、子原型、参数数与物理指令。未使用旧版本数据。",
+  "decoded_bytes": 142522,
+  "consumed_bytes": 142522,
+  "prototype_count": 162,
+  "total_physical_instructions": 11334,
+  "validation": {
+    "root19_offset_crosscheck": {
+      "start_offset": 27070,
+      "end_offset": 28787,
+      "instruction_count": 64,
+      "matched_existing_export": true
+    },
+    "root52": {
+      "start_offset": 70567,
+      "end_offset": 117326,
+      "instruction_count": 865
+    }
+  },
+  "target_prototypes": [
+    {
+      "path": "root/52/32",
+      "start_offset": 105793,
+      "end_offset": 107155,
+      "constant_count": 18,
+      "constants": [
+        false,
+        "Button_Create",
+        "Button_setTitleFontName",
+        "key",
+        "res/public/kaiti2.ttf",
+        "Button_setTitleColor",
+        "#ffffff",
+        "Cfg",
+        "res/public/fuzhu_btn.png",
+        85,
+        18,
+        "addOnClickEvent",
+        "toggle",
+        "Button_setTitleFontSize",
+        "name",
+        "toggled",
+        "GUI",
+        "Button_setTitleText"
+      ],
+      "parameter_count": 3,
+      "instruction_count": 55,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 253,
+          "A": 3,
+          "mode": 1,
+          "flags": 2,
+          "B": "GUI"
+        },
+        {
+          "slot": 2,
+          "opcode": 393,
+          "A": 3,
+          "mode": 0,
+          "flags": 4,
+          "B": 3,
+          "C": "Button_Create"
+        },
+        {
+          "slot": 3,
+          "opcode": 127,
+          "A": 5,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 4,
+          "opcode": 274,
+          "A": 6,
+          "mode": 0,
+          "flags": 4,
+          "B": 0,
+          "C": "key"
+        },
+        {
+          "slot": 5,
+          "opcode": 324,
+          "A": 7,
+          "mode": 0,
+          "flags": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 305,
+          "A": 8,
+          "mode": 0,
+          "flags": 2,
+          "B": 85,
+          "C": 1
+        },
+        {
+          "slot": 7,
+          "opcode": 147,
+          "A": 7,
+          "mode": 0,
+          "flags": 0,
+          "B": 7,
+          "C": 8
+        },
+        {
+          "slot": 8,
+          "opcode": 234,
+          "A": 8,
+          "mode": 0,
+          "flags": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 273,
+          "A": 8,
+          "mode": 0,
+          "flags": 0,
+          "B": 8,
+          "C": 2
+        },
+        {
+          "slot": 10,
+          "opcode": 295,
+          "A": 9,
+          "mode": 1,
+          "flags": 2,
+          "B": "res/public/fuzhu_btn.png"
+        },
+        {
+          "slot": 11,
+          "opcode": 209,
+          "A": 3,
+          "mode": 0,
+          "flags": 0,
+          "B": 9,
+          "C": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 325,
+          "A": 3,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 13,
+          "opcode": 388,
+          "A": 0,
+          "mode": 1,
+          "flags": 0,
+          "B": 14
+        },
+        {
+          "slot": 14,
+          "opcode": 339,
+          "A": 0,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 15,
+          "opcode": 9,
+          "A": 4,
+          "mode": 0,
+          "flags": 0,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 16,
+          "opcode": 410,
+          "A": 5,
+          "mode": 0,
+          "flags": 4,
+          "B": 0,
+          "C": "key"
+        },
+        {
+          "slot": 17,
+          "opcode": 371,
+          "A": 4,
+          "mode": 0,
+          "flags": 0,
+          "B": 5,
+          "C": 3
+        },
+        {
+          "slot": 18,
+          "opcode": 9,
+          "A": 4,
+          "mode": 0,
+          "flags": 0,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 19,
+          "opcode": 274,
+          "A": 5,
+          "mode": 0,
+          "flags": 4,
+          "B": 0,
+          "C": "key"
+        },
+        {
+          "slot": 20,
+          "opcode": 215,
+          "A": 6,
+          "mode": 1,
+          "flags": 2,
+          "B": "Cfg"
+        },
+        {
+          "slot": 21,
+          "opcode": 93,
+          "A": 5,
+          "mode": 0,
+          "flags": 0,
+          "B": 5,
+          "C": 6
+        },
+        {
+          "slot": 22,
+          "opcode": 197,
+          "A": 4,
+          "mode": 0,
+          "flags": 0,
+          "B": 5,
+          "C": 0
+        },
+        {
+          "slot": 23,
+          "opcode": 210,
+          "A": 4,
+          "mode": 1,
+          "flags": 2,
+          "B": "GUI"
+        },
+        {
+          "slot": 24,
+          "opcode": 393,
+          "A": 4,
+          "mode": 0,
+          "flags": 4,
+          "B": 4,
+          "C": "Button_setTitleText"
+        },
+        {
+          "slot": 25,
+          "opcode": 241,
+          "A": 6,
+          "mode": 0,
+          "flags": 0,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 26,
+          "opcode": 410,
+          "A": 7,
+          "mode": 0,
+          "flags": 4,
+          "B": 0,
+          "C": "name"
+        },
+        {
+          "slot": 27,
+          "opcode": 128,
+          "A": 4,
+          "mode": 0,
+          "flags": 0,
+          "B": 7,
+          "C": 0
+        },
+        {
+          "slot": 28,
+          "opcode": 146,
+          "A": 4,
+          "mode": 1,
+          "flags": 2,
+          "B": "GUI"
+        },
+        {
+          "slot": 29,
+          "opcode": 393,
+          "A": 4,
+          "mode": 0,
+          "flags": 4,
+          "B": 4,
+          "C": "Button_setTitleFontSize"
+        },
+        {
+          "slot": 30,
+          "opcode": 390,
+          "A": 6,
+          "mode": 0,
+          "flags": 0,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 31,
+          "opcode": 295,
+          "A": 7,
+          "mode": 1,
+          "flags": 2,
+          "B": 18
+        },
+        {
+          "slot": 32,
+          "opcode": 128,
+          "A": 4,
+          "mode": 0,
+          "flags": 0,
+          "B": 7,
+          "C": 0
+        },
+        {
+          "slot": 33,
+          "opcode": 210,
+          "A": 4,
+          "mode": 1,
+          "flags": 2,
+          "B": "GUI"
+        },
+        {
+          "slot": 34,
+          "opcode": 152,
+          "A": 4,
+          "mode": 0,
+          "flags": 4,
+          "B": 4,
+          "C": "Button_setTitleFontName"
+        },
+        {
+          "slot": 35,
+          "opcode": 390,
+          "A": 6,
+          "mode": 0,
+          "flags": 0,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 36,
+          "opcode": 295,
+          "A": 7,
+          "mode": 1,
+          "flags": 2,
+          "B": "res/public/kaiti2.ttf"
+        },
+        {
+          "slot": 37,
+          "opcode": 128,
+          "A": 4,
+          "mode": 0,
+          "flags": 0,
+          "B": 7,
+          "C": 0
+        },
+        {
+          "slot": 38,
+          "opcode": 210,
+          "A": 4,
+          "mode": 1,
+          "flags": 2,
+          "B": "GUI"
+        },
+        {
+          "slot": 39,
+          "opcode": 152,
+          "A": 4,
+          "mode": 0,
+          "flags": 4,
+          "B": 4,
+          "C": "Button_setTitleColor"
+        },
+        {
+          "slot": 40,
+          "opcode": 390,
+          "A": 6,
+          "mode": 0,
+          "flags": 0,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 41,
+          "opcode": 295,
+          "A": 7,
+          "mode": 1,
+          "flags": 2,
+          "B": "#ffffff"
+        },
+        {
+          "slot": 42,
+          "opcode": 123,
+          "A": 4,
+          "mode": 0,
+          "flags": 0,
+          "B": 7,
+          "C": 0
+        },
+        {
+          "slot": 43,
+          "opcode": 274,
+          "A": 4,
+          "mode": 0,
+          "flags": 4,
+          "B": 0,
+          "C": "toggle"
+        },
+        {
+          "slot": 44,
+          "opcode": 358,
+          "A": 4,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 45,
+          "opcode": 388,
+          "A": 0,
+          "mode": 1,
+          "flags": 0,
+          "B": 46
+        },
+        {
+          "slot": 46,
+          "opcode": 7,
+          "A": 0,
+          "mode": 0,
+          "flags": 6,
+          "B": "toggled",
+          "C": false
+        },
+        {
+          "slot": 47,
+          "opcode": 146,
+          "A": 4,
+          "mode": 1,
+          "flags": 2,
+          "B": "GUI"
+        },
+        {
+          "slot": 48,
+          "opcode": 152,
+          "A": 4,
+          "mode": 0,
+          "flags": 4,
+          "B": 4,
+          "C": "addOnClickEvent"
+        },
+        {
+          "slot": 49,
+          "opcode": 288,
+          "A": 6,
+          "mode": 0,
+          "flags": 0,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 50,
+          "opcode": 387,
+          "A": 7,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 3
+        },
+        {
+          "slot": 51,
+          "opcode": 132,
+          "A": 0,
+          "mode": 0,
+          "flags": 0,
+          "B": 4,
+          "C": 0
+        },
+        {
+          "slot": 52,
+          "opcode": 243,
+          "A": 0,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 53,
+          "opcode": 243,
+          "A": 0,
+          "mode": 0,
+          "flags": 0,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 54,
+          "opcode": 123,
+          "A": 4,
+          "mode": 0,
+          "flags": 0,
+          "B": 7,
+          "C": 0
+        },
+        {
+          "slot": 55,
+          "opcode": 339,
+          "A": 0,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 0
+        }
+      ]
+    },
+    {
+      "path": "root/52/32/0",
+      "start_offset": 106087,
+      "end_offset": 106655,
+      "constant_count": 10,
+      "constants": [
+        "toggle",
+        "GUI",
+        "name",
+        "#ff0000",
+        "Button_setTitleColor",
+        "Button_setTitleText",
+        "toggled",
+        "#ffffff",
+        false,
+        "key"
+      ],
+      "parameter_count": 0,
+      "instruction_count": 48,
+      "instructions": [
+        {
+          "slot": 1,
+          "opcode": 43,
+          "A": 0,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 2,
+          "opcode": 44,
+          "A": 1,
+          "mode": 0,
+          "flags": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 3,
+          "opcode": 96,
+          "A": 1,
+          "mode": 0,
+          "flags": 4,
+          "B": 1,
+          "C": "key"
+        },
+        {
+          "slot": 4,
+          "opcode": 398,
+          "A": 0,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 5,
+          "opcode": 110,
+          "A": 1,
+          "mode": 0,
+          "flags": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 6,
+          "opcode": 289,
+          "A": 0,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 7,
+          "opcode": 388,
+          "A": 0,
+          "mode": 1,
+          "flags": 0,
+          "B": 10
+        },
+        {
+          "slot": 8,
+          "opcode": 241,
+          "A": 2,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 9,
+          "opcode": 209,
+          "A": 2,
+          "mode": 0,
+          "flags": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 10,
+          "opcode": 241,
+          "A": 1,
+          "mode": 0,
+          "flags": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 11,
+          "opcode": 234,
+          "A": 2,
+          "mode": 0,
+          "flags": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 12,
+          "opcode": 274,
+          "A": 2,
+          "mode": 0,
+          "flags": 4,
+          "B": 2,
+          "C": "toggle"
+        },
+        {
+          "slot": 13,
+          "opcode": 289,
+          "A": 2,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 14,
+          "opcode": 388,
+          "A": 0,
+          "mode": 1,
+          "flags": 0,
+          "B": 47
+        },
+        {
+          "slot": 15,
+          "opcode": 143,
+          "A": 1,
+          "mode": 0,
+          "flags": 4,
+          "B": 1,
+          "C": false
+        },
+        {
+          "slot": 16,
+          "opcode": 388,
+          "A": 0,
+          "mode": 1,
+          "flags": 0,
+          "B": 47
+        },
+        {
+          "slot": 17,
+          "opcode": 234,
+          "A": 2,
+          "mode": 0,
+          "flags": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 18,
+          "opcode": 9,
+          "A": 3,
+          "mode": 0,
+          "flags": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 19,
+          "opcode": 410,
+          "A": 3,
+          "mode": 0,
+          "flags": 4,
+          "B": 3,
+          "C": "toggled"
+        },
+        {
+          "slot": 20,
+          "opcode": 61,
+          "A": 3,
+          "mode": 0,
+          "flags": 0,
+          "B": 3,
+          "C": 0
+        },
+        {
+          "slot": 21,
+          "opcode": 35,
+          "A": 2,
+          "mode": 0,
+          "flags": 2,
+          "B": "toggled",
+          "C": 3
+        },
+        {
+          "slot": 22,
+          "opcode": 253,
+          "A": 2,
+          "mode": 1,
+          "flags": 2,
+          "B": "GUI"
+        },
+        {
+          "slot": 23,
+          "opcode": 138,
+          "A": 2,
+          "mode": 0,
+          "flags": 4,
+          "B": 2,
+          "C": "Button_setTitleText"
+        },
+        {
+          "slot": 24,
+          "opcode": 43,
+          "A": 4,
+          "mode": 0,
+          "flags": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 25,
+          "opcode": 9,
+          "A": 5,
+          "mode": 0,
+          "flags": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 26,
+          "opcode": 96,
+          "A": 5,
+          "mode": 0,
+          "flags": 4,
+          "B": 5,
+          "C": "toggled"
+        },
+        {
+          "slot": 27,
+          "opcode": 60,
+          "A": 5,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 28,
+          "opcode": 388,
+          "A": 0,
+          "mode": 1,
+          "flags": 0,
+          "B": 32
+        },
+        {
+          "slot": 29,
+          "opcode": 9,
+          "A": 5,
+          "mode": 0,
+          "flags": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 30,
+          "opcode": 410,
+          "A": 5,
+          "mode": 0,
+          "flags": 4,
+          "B": 5,
+          "C": "toggle"
+        },
+        {
+          "slot": 31,
+          "opcode": 325,
+          "A": 5,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 32,
+          "opcode": 388,
+          "A": 0,
+          "mode": 1,
+          "flags": 0,
+          "B": 34
+        },
+        {
+          "slot": 33,
+          "opcode": 9,
+          "A": 5,
+          "mode": 0,
+          "flags": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 34,
+          "opcode": 274,
+          "A": 5,
+          "mode": 0,
+          "flags": 4,
+          "B": 5,
+          "C": "name"
+        },
+        {
+          "slot": 35,
+          "opcode": 123,
+          "A": 2,
+          "mode": 0,
+          "flags": 0,
+          "B": 5,
+          "C": 0
+        },
+        {
+          "slot": 36,
+          "opcode": 146,
+          "A": 2,
+          "mode": 1,
+          "flags": 2,
+          "B": "GUI"
+        },
+        {
+          "slot": 37,
+          "opcode": 393,
+          "A": 2,
+          "mode": 0,
+          "flags": 4,
+          "B": 2,
+          "C": "Button_setTitleColor"
+        },
+        {
+          "slot": 38,
+          "opcode": 324,
+          "A": 4,
+          "mode": 0,
+          "flags": 0,
+          "B": 2,
+          "C": 0
+        },
+        {
+          "slot": 39,
+          "opcode": 234,
+          "A": 5,
+          "mode": 0,
+          "flags": 0,
+          "B": 1,
+          "C": 0
+        },
+        {
+          "slot": 40,
+          "opcode": 274,
+          "A": 5,
+          "mode": 0,
+          "flags": 4,
+          "B": 5,
+          "C": "toggled"
+        },
+        {
+          "slot": 41,
+          "opcode": 340,
+          "A": 5,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 0
+        },
+        {
+          "slot": 42,
+          "opcode": 388,
+          "A": 0,
+          "mode": 1,
+          "flags": 0,
+          "B": 45
+        },
+        {
+          "slot": 43,
+          "opcode": 295,
+          "A": 5,
+          "mode": 1,
+          "flags": 2,
+          "B": "#ff0000"
+        },
+        {
+          "slot": 44,
+          "opcode": 366,
+          "A": 5,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 1
+        },
+        {
+          "slot": 45,
+          "opcode": 388,
+          "A": 0,
+          "mode": 1,
+          "flags": 0,
+          "B": 46
+        },
+        {
+          "slot": 46,
+          "opcode": 295,
+          "A": 5,
+          "mode": 1,
+          "flags": 2,
+          "B": "#ffffff"
+        },
+        {
+          "slot": 47,
+          "opcode": 128,
+          "A": 2,
+          "mode": 0,
+          "flags": 0,
+          "B": 5,
+          "C": 0
+        },
+        {
+          "slot": 48,
+          "opcode": 339,
+          "A": 0,
+          "mode": 0,
+          "flags": 0,
+          "B": 0,
+          "C": 0
+        }
+      ]
+    }
+  ],
+  "parent_closure_creation": {
+    "parent_path": "root/52",
+    "create_slot": 666,
+    "create_instruction": {
+      "slot": 666,
+      "opcode": 387,
+      "A": 28,
+      "mode": 0,
+      "flags": 0,
+      "B": 32,
+      "C": 5
+    },
+    "capture_count": 5,
+    "capture_descriptors": [
+      {
+        "capture_index": 0,
+        "descriptor_slot": 667,
+        "opcode": 243,
+        "source_register": 0,
+        "source_kind": "parent-local-register"
+      },
+      {
+        "capture_index": 1,
+        "descriptor_slot": 668,
+        "opcode": 243,
+        "source_register": 0,
+        "source_kind": "parent-local-register"
+      },
+      {
+        "capture_index": 2,
+        "descriptor_slot": 669,
+        "opcode": 243,
+        "source_register": 0,
+        "source_kind": "parent-local-register"
+      },
+      {
+        "capture_index": 3,
+        "descriptor_slot": 670,
+        "opcode": 132,
+        "source_register": 0,
+        "source_kind": "parent-upvalue"
+      },
+      {
+        "capture_index": 4,
+        "descriptor_slot": 671,
+        "opcode": 243,
+        "source_register": 0,
+        "source_kind": "parent-local-register"
+      }
+    ]
+  },
+  "notes": [
+    "root/52/32 offsets are byte offsets in the XOR-restored decoded payload; start is the cursor immediately before its constant-count field, end is the cursor immediately after its final physical instruction.",
+    "root/52/32 has 3 explicit parameters and 1 child prototype; root/52/32/0 has 0 explicit parameters.",
+    "Capture descriptors establish source register/upvalue identity only. Semantic names/roles of the five captured values are not inferred in this extraction file."
+  ]
+}
