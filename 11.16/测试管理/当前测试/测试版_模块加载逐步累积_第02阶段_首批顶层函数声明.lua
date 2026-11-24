@@ -632,4 +632,1108 @@ local function make_helper_root_2_2(capturedList)
     end
 end
 
+
+-- ============================================================================
+-- 第05阶段：正式明文第623-1719行，连续追加函数声明与局部辅助定义。
+-- 本阶段不主动调用本批函数；仅保留正式明文原有顶层语句。
+-- ============================================================================
+
+
+
+-- 11.16 root/2/1：20条物理指令；1个参数；通过父级闭包捕获H[0]。
+-- root/2槽位109的Opcode387创建childIndex=1闭包，captureCount=1；紧随槽位110的Opcode243
+-- 指明捕获父级局部寄存器N[6]。该寄存器在root/2槽位37创建列表，槽位66将28个物品名称/名称片段
+-- 写入列表，因此这里将H[0]描述为物品名称匹配列表；父级原始局部变量名仍未确认。
+-- 子函数先用ipairs遍历捕获列表，再调用string.find(value, pattern, 1, false)进行Lua模式匹配；
+-- 命中时返回true，遍历结束返回false。Opcode227融合装载string.find及参数准备；Opcode314建立ipairs迭代器；
+-- Opcode358控制命中分支，Opcode250推进迭代，Opcode293返回布尔结果。
+-- make_helper_root_2_1为原型路径合成定位名，非原始函数符号名。
+local function make_helper_root_2_1(capturedNamePatterns)
+    return function(value)
+        for _, pattern in ipairs(capturedNamePatterns) do
+            if string.find(value, pattern, 1, false) then
+                return true
+            end
+        end
+        return false
+    end
+end
+
+
+-- 11.16 root/40/0：6条物理指令，0个显式参数，1个upvalue。
+-- Opcode 105/138准备SL:JsonDecode方法调用；Opcode 127读取H[0]作为jsonStr；Opcode 202返回调用结果。
+-- 3.40.x开发文档 SL.md「json字符串解密」条目确认签名：SL:JsonDecode(jsonStr, isfilter)，jsonStr为string，isfilter默认为true，返回json table。
+-- 因此闭包体可确定为return SL:JsonDecode(capturedJson)。这里用工厂参数显式承载H[0]，保持生成闭包自身为零参数。
+-- root/40父原型的72条指令流未保存，capturedJson在父级的来源/业务变量名仍待确认；本项是捕获参数显式化的可读恢复，不计入31个完整原型函数。
+-- make_helper_root_40_0为原型路径合成定位名。
+local function make_helper_root_40_0(capturedJson)
+    return function()
+        return SL:JsonDecode(capturedJson)
+    end
+end
+
+
+-- 11.16 root/52/20：5条物理指令，0个显式参数，1个upvalue。
+-- 已由11.16原始载荷定点重解析闭合：读取H[0]并无参调用；随后返回true；尾部Opcode339结束。
+-- 父级root/52中H[0]的创建来源/业务变量名尚未映射，因此用capturedCallback显式承载捕获值，不伪造原始名称。
+-- make_helper_root_52_20为原型路径合成定位名；闭包体已恢复，但捕获来源未确认，不计入完整函数数。
+local function make_helper_root_52_20(capturedCallback)
+    return function()
+        capturedCallback()
+        return true
+    end
+end
+
+
+-- 11.16 root/50/1：5条物理指令，0个显式参数，2个upvalue。
+-- 已确认寄存器行为：先将H[0]写为false，再无参数调用H[1]，随后结束。
+-- capturedState与capturedCallback是工厂层的显式捕获占位，不是已确认的父级局部变量原名。
+local function make_helper_root_50_1(capturedState, capturedCallback)
+    return function()
+        capturedState = false
+        capturedCallback()
+    end
+end
+
+-- 11.16 root/50/2：5条物理指令，0个显式参数，2个upvalue。
+-- Opcode330融合写入H[0]=false并读取H[1]，随后无参数调用H[1]并结束。
+-- 与root/50/1的最终闭包效果一致；保留独立原型定位名，不合并原型身份。
+local function make_helper_root_50_2(capturedState, capturedCallback)
+    return function()
+        capturedState = false
+        capturedCallback()
+    end
+end
+
+
+-- 11.16 root/52/10：6条物理指令，0个显式参数，1个upvalue。
+-- 父级root/52槽617创建此闭包，捕获root/52 H[0]；root槽633创建root/52时，
+-- H[0]来自root N[4]。root N[4]在root槽43被root/51闭包覆盖；
+-- root/51为PrintLog（与11.2同名函数及本版参数/常量信息吻合）。
+-- 因此该闭包先调用PrintLog("清空黑名单")，再调用全局ClearBlacklistItems()。
+-- make_helper_root_52_10为原型路径合成定位名，不是原始函数符号名。
+local function make_helper_root_52_10()
+    PrintLog("清空黑名单")
+    ClearBlacklistItems()
+end
+
+
+-- 11.16 root/52/13：13条物理指令，0个显式参数，3项捕获。
+-- 精确父级创建点：root/52槽591 Opcode178，childIndex=13，captureCount=3；
+-- 槽592/593/594依次捕获父级H[3]/H[14]/H[15]，随后槽595将闭包写入cruisebut。
+-- root/52的H[3]来自root N[3]，即MainLeftBottom.z计时器状态表；
+-- H[14]=root N[83]=root/11（关闭见人跑回调）；H[15]=root N[82]=root/25（开启见人跑回调）。
+-- 两个回调原型均已分别恢复；root/25本身的13项捕获数组仍须保持原始生命周期并正确注入。
+-- H[0].cruiseRunTimer为分支条件；真值分支调用H[1]，假值分支调用H[2]；
+-- 两条分支均将返回寄存器置为true后返回。
+local function make_helper_root_52_13(capturedCruiseState, capturedCallback1, capturedCallback2)
+    return function()
+        if capturedCruiseState.cruiseRunTimer then
+            capturedCallback1()
+            return true
+        end
+
+        capturedCallback2()
+        return true
+    end
+end
+
+
+-- 11.16 root/26/0：13条物理指令、无显式参数。
+-- Opcode 253/138准备SL:RequestOutBlacklist调用，参数来自H[0]。
+-- 随后读取H[1]._blacklistData；仅当该字段为真值时，执行
+-- H[1]._blacklistData[H[0]]=nil。nil来自原版S()常量类型2的解码规则。
+-- H[0]、H[1]的父级root/26创建点捕获来源尚未取得，以下使用显式占位，
+-- 不将capturedBlacklistKey/capturedBlacklistState视为原始局部变量名。
+local function make_helper_root_26_0(itemKey, friendProxy)
+    return function()
+        SL:RequestOutBlacklist(itemKey)
+
+        local blacklistData = friendProxy._blacklistData
+        if blacklistData then
+            blacklistData[itemKey] = nil
+        end
+    end
+end
+
+
+-- 11.16 root/74：FormatStateChange（10条物理指令；1个显式参数；2个捕获槽位）。
+-- root父级槽183创建本闭包；槽184捕获N[4]为H[0]，槽185捕获N[14]为H[1]。
+-- root N[4]由槽43装载root/51闭包，身份为PrintLog；H[1]是被更新的当前状态值。
+-- 指令顺序：读取PrintLog；准备string.format("状态切换: %s -> %s", H[1], newState)；
+-- 调用PrintLog输出格式化文本；最后执行H[1] = newState。
+-- Opcode 324读取H[1]，Opcode 288复制旧状态参数，Opcode 264调用string.format并收集结果，
+-- Opcode 376调用PrintLog，Opcode 62按B字段索引写回H[1]。
+local function make_helper_root_74(capturedUpvalues)
+    return function(newState)
+        local printLog = capturedUpvalues[0]
+        local previousState = capturedUpvalues[1]
+        local formattedMessage = string.format(
+            "状态切换: %s -> %s",
+            previousState,
+            newState
+        )
+
+        printLog(formattedMessage)
+        capturedUpvalues[1] = newState
+    end
+end
+
+
+-- 11.16 root/52/11：5条物理指令，0个显式参数，1个upvalue。
+-- root槽633创建root/52时，第3个捕获（root/52 H[2]）来自root N[0]。
+-- root N[0]由初始化段与root/16捕获映射确认是MainLeftBottom.a。
+-- 子闭包完整行为：把MainLeftBottom.a.LuaSendMsg赋给_G.LuaSendMsg。
+-- make_helper_root_52_11为原型路径合成定位名，不是原始函数符号名。
+local function make_helper_root_52_11()
+    _G.LuaSendMsg = MainLeftBottom.a.LuaSendMsg
+end
+
+
+-- 11.16 root/52/28：7条物理指令，0个显式参数，1个upvalue。
+-- 父级root/52槽位556以Opcode178创建childIndex=28闭包，captureCount=1；
+-- 槽位557 Opcode132读取父级H[9]并绑定到本闭包H[0]。
+-- Opcode324读取H[0]；Opcode7将H[0].GATHER_THRESHOLD设为11，并融合槽位3装载全局InitGatherMonsters；
+-- Opcode123无参调用该全局函数；Opcode110写入一个未再使用的false临时值；
+-- Opcode292返回当前N[0]（仍为InitGatherMonsters函数值），Opcode205位于return之后。
+-- 父级root/52的H[9]已追到root槽633创建childIndex=52时的第10个捕获，来源为root N[8]；N[8]持有GetMapId、GetMapName、PlayerPos、GetDroppedItems、MoveTo、DiuItems等接口方法，原始变量名未证实，保留capturedUpvalue0占位。
+-- make_helper_root_52_28为原型路径合成定位名，不是原始函数符号名。
+local function make_helper_root_52_28(capturedUpvalue0)
+    capturedUpvalue0.GATHER_THRESHOLD = 11
+    InitGatherMonsters()
+    return InitGatherMonsters
+end
+
+
+-- 11.16 root/52/9：18条物理指令，0个显式参数，5个upvalue。
+-- 父级root/52槽位550 Opcode178创建childIndex=9闭包，captureCount=5：
+-- 槽551–555依次将父级H[6]、H[3]、H[7]、H[8]、H[0]绑定到本闭包H[0..4]。
+-- root槽位633创建root/52时，root/52的H[6]/H[3]/H[7]/H[8]/H[0]
+-- 分别来自root N[67]/N[3]/N[7]/N[62]/N[4]；父级寄存器原始业务变量名未全部恢复，
+-- 但5项捕获链及本闭包全部18槽执行体均已闭合，使用capturedUpvalues保留真实值。
+-- Opcode49融合消费槽位2和3：先读取H[0]并设置其distance=11，再装载全局BlacklistItems；
+-- 槽位4调用BlacklistItems()。
+-- 后续读取H[1]作为定时器状态对象，读取H[2]作为调度函数，
+-- 调度函数以BlacklistItems和H[3]为参数，返回值写入H[1].blacklistTimer。
+-- 最后调用H[4](提示格式字符串, H[0].distance)，并返回true。
+-- H[0..4]均保留捕获代理，原始变量符号名未知不影响本闭包的静态完整恢复。
+-- make_helper_root_52_9为原型路径合成定位名，不是原始函数符号名。
+local function make_helper_root_52_9(capturedUpvalues)
+    capturedUpvalues[1].distance = 11
+
+    BlacklistItems()
+
+    capturedUpvalues[2].blacklistTimer =
+        capturedUpvalues[3](BlacklistItems, capturedUpvalues[4])
+
+    capturedUpvalues[5](
+        "开启黑名单功能，距离格子：%d",
+        capturedUpvalues[1].distance
+    )
+
+    return true
+end
+
+
+-- 11.16 root/52/36：19条物理指令，0个显式参数，3个upvalue。
+-- 父级root/52槽位605 Opcode387创建childIndex=36闭包，captureCount=3：
+-- 槽位606 Opcode132将父级H[3]绑定到本闭包H[0]；
+-- 槽位607 Opcode132将父级H[13]绑定到本闭包H[1]；
+-- 槽位608 Opcode243将父级N[24]绑定到本闭包H[2]。
+-- root/52自身由root槽位633 Opcode178创建，captureCount=19；其H[3]来自root N[3]，
+-- H[13]来自root N[5]。因此本闭包H[0]/H[1]的捕获链已映射到root N[3]/N[5]；
+-- H[2]对应root/52创建点的N[24]；该父级局部变量的原始业务名称未知，但捕获来源已精确闭合。
+-- Opcode9融合消费槽位2：先读取H[0]，再读取其gatherTimer字段。
+-- gatherTimer存在时调用H[1](“关闭引怪功能”)，再调用全局业务函数StopGatherMonsters()并返回true；
+-- 不存在时调用H[1](“开启引怪功能，阈值：11”)，再调用H[2]()并返回true。
+-- H[2]以捕获代理保留真实回调值；其原始变量名未知不影响本闭包19槽控制流的静态完整恢复。
+-- make_helper_root_52_36为原型路径合成定位名，不是原始函数符号名。
+local function make_helper_root_52_36(capturedUpvalues)
+    return function()
+        if capturedUpvalues[1].gatherTimer then
+            capturedUpvalues[2]("关闭引怪功能")
+            StopGatherMonsters()
+            return true
+        end
+
+        capturedUpvalues[2]("开启引怪功能，阈值：11")
+        capturedUpvalues[3]()
+        return true
+    end
+end
+
+
+-- 11.16 root/3：StopGatherMonsters（25条物理指令；跨版本高置信业务体）。
+-- 本版常量含gatherTimer、UnSchedule、SL、IDLE及“引怪功能已停止”；
+-- root/52/36本版闭包明确调用全局StopGatherMonsters()。11.9同职责函数的
+-- 清理顺序与上述常量及调用关系吻合：停止运行标志、取消并清空计时器、
+-- 清除目标、切回IDLE、重置引怪数据、输出停止提示。
+-- root父级闭包创建/全局导出槽位尚未保存；此处恢复业务体，不伪称导出关系已逐槽确认。
+local function StopGatherMonsters()
+    gatherState.isRunning = false
+
+    if timerState.gatherTimer then
+        SL:UnSchedule(timerState.gatherTimer)
+        timerState.gatherTimer = nil
+    end
+
+    ClearTargetID_2()
+    FormatStateChange(gatherStatusText.IDLE)
+    ResetGatherMonsterData()
+    PrintLog("引怪功能已停止")
+end
+
+-- VM共享upvalue cell适配层：私有标记避免与普通业务table混淆。
+local UPVALUE_CELL_TAG_11_16 = {}
+local function MakeUpvalueCell_11_16(value)
+    return setmetatable({ value = value }, {
+        __index = function(_, key)
+            if key == "__upvalue_cell_11_16" then return UPVALUE_CELL_TAG_11_16 end
+        end,
+    })
+end
+local function IsUpvalueCell_11_16(value)
+    return type(value) == "table" and value.__upvalue_cell_11_16 == UPVALUE_CELL_TAG_11_16
+end
+local function ReadUpvalueCell_11_16(value)
+    if IsUpvalueCell_11_16(value) then return value.value end
+    return value
+end
+local function WriteUpvalueCell_11_16(cell, value)
+    if IsUpvalueCell_11_16(cell) then cell.value = value return true end
+    return false
+end
+local function MakeUpvalueCellSetter_11_16(cell)
+    return function(value) WriteUpvalueCell_11_16(cell, value) end
+end
+
+-- 11.16 root/25/0/0：3条物理指令，0个显式参数，1个upvalue。
+-- 父级root/25槽位18创建root/25/0并将父级H[2]绑定到root/25/0的H[0]；
+-- root/25/0槽位513 Opcode178创建childIndex=0闭包，槽位514 Opcode132将父级H[0]
+-- 绑定到本闭包H[0]。因此本闭包写入的是root/25/0共享的同一upvalue单元。
+-- Opcode110置N[0]=false，Opcode162执行H[0]=N[0]，Opcode205结束。
+-- capturedUpvalues[0]为共享upvalue代理；捕获链最终指向root N[74]，但该寄存器在root主函数中有分支/复用，业务变量身份尚待确认。
+local function make_helper_root_25_0_0(capturedUpvalues)
+    return function()
+        local sharedCell = capturedUpvalues[0]
+        if type(sharedCell) == "function" then
+            sharedCell(false)
+        elseif not WriteUpvalueCell_11_16(sharedCell, false) then
+            capturedUpvalues[0] = false
+        end
+    end
+end
+
+
+-- 11.16 root/25/0/2：3条物理指令，0个显式参数，1个upvalue。
+-- 父级root/25/0槽位594 Opcode121创建childIndex=2闭包，captureCount=1；
+-- 槽位595 Opcode132将父级H[0]绑定到本闭包H[0]，与root/25/0/0共享同一upvalue单元。
+-- Opcode110置N[0]=false，Opcode62执行H[0]=N[0]，Opcode339结束。
+-- capturedUpvalues[0]为共享upvalue代理；其在root层的业务变量身份尚待确认。
+local function make_helper_root_25_0_2(capturedUpvalues)
+    return function()
+        local sharedCell = capturedUpvalues[0]
+        if type(sharedCell) == "function" then
+            sharedCell(false)
+        elseif not WriteUpvalueCell_11_16(sharedCell, false) then
+            capturedUpvalues[0] = false
+        end
+    end
+end
+
+
+-- 11.16 root/50/3：5条物理指令，0个显式参数，1个upvalue。
+-- 父级root/50槽位441以Opcode387创建childIndex=3闭包，槽位442 Opcode243
+-- 将父级N[7]捕获到本闭包H[0]。Opcode253/138准备GUI.Win_Close方法调用：
+-- N[1]保存GUI receiver，N[0]保存GUI.Win_Close；Opcode324将H[0]放入N[2]；
+-- Opcode123按N[1]..N[2]作为参数区间调用，因此等价于GUI:Win_Close(H[0])。
+-- 先前“调用参数区间1..0、H[0]未使用”的判断已纠正；实际B=2，捕获值是调用参数。
+-- 父级N[7]的真实词法变量名/业务身份尚未确认，以下保留显式占位，不计入完整函数数。
+local function make_helper_root_50_3(capturedWindow)
+    return function()
+        GUI:Win_Close(capturedWindow)
+    end
+end
+
+
+-- root/62 UseItemByIndex：33条指令、0个显式参数、8项常量。
+-- 11.16常量包含ipairs、SL:GetMetaValue、ITEM_INDEX_BY_NAME、ITEM_COUNT、
+-- tonumber及SL:UseItemByIndex；与11.9同名闭包的业务体和API调用序列一致。
+-- 旧版父级将randomTeleportItemNames作为捕获值注入无参闭包；11.16 root/62的
+-- 本版父级创建/捕获指令未保存在当前提取集中，因此这里只恢复闭包主体，并用工厂参数
+-- 显式承载名称表，不声称randomTeleportItemNames已由11.16父级逐槽证实。
+-- 本项属于跨版本业务复用的部分恢复；待root父级捕获点/调用注册关系补齐后再计入完整函数。
+local function makeUseItemByIndex(randomTeleportItemNames)
+    return function()
+        for _, itemName in ipairs(randomTeleportItemNames) do
+            local itemIndex = tonumber(
+                SL:GetMetaValue("ITEM_INDEX_BY_NAME", itemName)
+            )
+            local itemCount = 0
+            if itemIndex then
+                itemCount = tonumber(
+                    SL:GetMetaValue("ITEM_COUNT", itemIndex)
+                ) or 0
+            end
+
+            if itemIndex and itemCount > 0 then
+                SL:UseItemByIndex(itemIndex)
+                return itemName
+            end
+        end
+    end
+end
+
+-- 11.16 root/65：18条物理指令，1个参数，无子原型、无upvalue捕获。
+-- Opcode 257加载string并融合读取find成员；Opcode 131复制输入参数并融合装载“盟重”和起始位置1；
+-- Opcode 110装载plain=true；Opcode 209调用string.find(value, "盟重", 1, true)。
+-- Opcode 366/388形成短路分支：找到“盟重”时跳过第二次查找并返回第一次结果；未找到时执行
+-- 第二次string.find(value, "土城", 1, true)。Opcode 11返回寄存器1，Opcode 339结束。
+-- 因此函数返回地图名称中“盟重”的首次字面匹配位置；若无匹配则返回“土城”的首次字面匹配位置，否则nil。
+-- 原型没有upvalue捕获，函数体、参数及控制流均已闭合；原始函数符号名未从注册点确认，使用合成定位名。
+local function helper_root_65(value)
+    return string.find(value, "盟重", 1, true)
+        or string.find(value, "土城", 1, true)
+end
+
+-- 11.16 root/32：17条物理指令，1个显式参数，3个upvalue捕获。
+-- Opcode 324读取H[0]；Opcode 289在H[0]为真时跳过后续跳转槽。
+-- H[0]为真时将其置false，并调用H[1]("见人跑：" .. zd)；
+-- Opcode 88读取H[2]并融合写入H[2].cruiseGatherPaused=false；
+-- 随后读取H[2].zd并调用zd(true)。
+-- root槽522 Opcode178创建root/32，槽523–525依次捕获父级N[75]、N[5]、N[0]。
+-- N[75]在槽517初始化为false，作为本闭包的一次性提示门控；
+-- N[5]由槽46创建并保持为root/80：ShowLocalNoticeByType；
+-- N[0]由槽2装入MainLeftBottom模块表。捕获链与闭包体均已闭合。
+local function make_helper_root_32(capturedUpvalues)
+    return function(zd)
+        if ReadUpvalueCell_11_16(capturedUpvalues[1]) then
+            WriteUpvalueCell_11_16(capturedUpvalues[1], false)
+            capturedUpvalues[2]("见人跑：" .. zd)
+        end
+
+        capturedUpvalues[3].cruiseGatherPaused = false
+        capturedUpvalues[3].zd(true)
+    end
+end
+
+
+
+-- 11.16 root/0：37条物理指令；1参数、1捕获；root槽335创建，槽336捕获父级N[41]。
+-- 遍历捕获的候选列表，优先收集name不等于参数.lastMapName的项目；
+-- 若排除上一地图后列表为空，则回退为全部候选；最后用math.random随机返回一项。
+-- 父级N[41]的原始局部变量名未确认，使用capturedUpvalues[0]保持同一共享引用。
+local function make_helper_root_0(capturedUpvalues)
+    return function(state)
+        local candidates = {}
+        local sourceList = capturedUpvalues[0]
+
+        for _, item in ipairs(sourceList) do
+            if item.name ~= state.lastMapName then
+                table.insert(candidates, item)
+            end
+        end
+
+        if #candidates == 0 then
+            for _, item in ipairs(sourceList) do
+                table.insert(candidates, item)
+            end
+        end
+
+        return candidates[math.random(#candidates)]
+    end
+end
+
+
+-- 11.16 root/11：31条物理指令；0参数；root槽540创建，槽541–546捕获N[3]/N[74]/N[75]/N[79]/N[0]/N[5]。
+-- H[0]=MainLeftBottom.z，H[3]为root/60捕获回调，H[4]=MainLeftBottom，H[5]=ShowLocalNoticeByType；
+-- H[1]=root N[74]：同时被root/25/0及其两个子闭包共享写入false，属于见人跑流程共享状态门控；H[2]=root N[75]：同时被root/32捕获为见人跑提示的一次性门控。两者必须以共享cell代理接入，不能以普通boolean副本模拟。
+-- 主体：取消并清空巡航计时器；复位H[1]/H[2]；调用H[3]清理目标；恢复巡航暂停标志；
+-- 不在白名单地图时调用MainLeftBottom.zd(true)，最后提示关闭见人跑。本项不计完整静态恢复。
+local function make_helper_root_11(capturedUpvalues)
+    return function()
+        -- root/11捕获数组按Lua 1-based顺序：
+        -- [1]=root N[3]计时器状态表，[2]=root N[74]共享暂停门控，
+        -- [3]=root N[75]提示一次性门控，[4]=root N[79]清理攻击目标回调，
+        -- [5]=root N[0]MainLeftBottom模块表，[6]=root N[5]关闭提示函数。
+        local state = capturedUpvalues[1]
+        if state.cruiseRunTimer then
+            SL:UnSchedule(state.cruiseRunTimer)
+            state.cruiseRunTimer = nil
+        end
+        WriteUpvalueCell_11_16(capturedUpvalues[2], false)
+        WriteUpvalueCell_11_16(capturedUpvalues[3], false)
+        capturedUpvalues[4]()
+        local moduleState = capturedUpvalues[5]
+        moduleState.cruiseGatherPaused = false
+        if not IsInWhitelistMap() then
+            moduleState.zd(true)
+        end
+        capturedUpvalues[6]("关闭见人跑")
+    end
+end
+
+
+-- 11.16 root/35：32条物理指令；0参数、0捕获；root槽579创建。
+-- 检查Facade，发送Layer_CommonTips_Close通知，取得LayerFacadeMediator；
+-- 逆序遍历其_normalMediators，对每个非nil对象调用CloseLayer()。
+-- 原始符号名/父级挂载字段未确认，helper_root_35为合成定位名。
+local function helper_root_35()
+    local facade = global.Facade
+    if facade == nil then
+        return
+    end
+    facade:sendNotification(global.NoticeTable.Layer_CommonTips_Close)
+    local layerFacadeMediator = facade:retrieveMediator("LayerFacadeMediator")
+    if layerFacadeMediator == nil then
+        return
+    end
+    local normalMediators = layerFacadeMediator._normalMediators
+    if normalMediators == nil then
+        return
+    end
+    for index = #normalMediators, 1, -1 do
+        local layer = normalMediators[index]
+        if layer ~= nil then
+            layer:CloseLayer()
+        end
+    end
+end
+
+
+-- 11.16 root/41：28条物理指令；1参数、0捕获；root槽52创建，槽53以zd键写入MainLeftBottom。
+-- 读取BATTLE_IS_AFK；仅在请求状态与当前状态不一致时发送AFKBegin/AFKEnd通知。
+MainLeftBottom.zd = function(afkEnabled)
+    local isAFK = SL:GetMetaValue("BATTLE_IS_AFK")
+    if afkEnabled == true then
+        if isAFK then
+            return
+        end
+        global.Facade:sendNotification(global.NoticeTable.AFKBegin)
+    elseif afkEnabled == false then
+        if isAFK then
+            global.Facade:sendNotification(global.NoticeTable.AFKEnd)
+        end
+    end
+end
+
+
+
+-- 11.16 root/28：32条物理指令，0参数、0捕获；原始函数名未从父级导出关系确认，使用合成定位名。
+-- 从SL读取固定标题ID 51295的标题数据；标题数据或time字段不存在时返回false。
+-- 将标题time与SL提供的SERVER_TIME转为数字；服务器时间缺失/不可转数字时回退0；
+-- 返回标题截止时间是否仍晚于服务器当前时间。
+local function helper_root_28()
+    local titleData = SL:GetMetaValue("TITLE_DATA_BY_ID", 51295)
+    if not titleData then
+        return false
+    end
+
+    local titleTimeValue = titleData.time
+    if not titleTimeValue then
+        return false
+    end
+
+    local titleTime = tonumber(titleTimeValue)
+    local serverTime = tonumber(SL:GetMetaValue("SERVER_TIME")) or 0
+
+    return titleTime > serverTime
+end
+
+
+-- 11.16 root/42：22条物理指令，0个显式参数、0个upvalue、无子原型。
+-- slot1–5检查global.Facade；Facade不存在时Opcode205直接结束函数。
+-- slot6–12取得global.Facade.retrieveProxy并以global.ProxyTable.PlayerInputProxy调用；
+-- slot13 Opcode325检查返回代理对象，代理不存在时跳到slot15结束。
+-- slot16 Opcode393准备PlayerInputProxy:SetTargetID方法及receiver；
+-- slot17 Opcode158融合消费slot18–20，依次准备参数0和global.MMO.SELETE_TARGET_TYPE_FIND。
+-- slot21 Opcode123按寄存器区间N[2]..N[4]调用方法，即receiver、0、目标类型；
+-- 等价于playerInputProxy:SetTargetID(0, global.MMO.SELETE_TARGET_TYPE_FIND)。
+-- slot22 Opcode205结束。函数体无未知捕获，调用关系与两处提前结束分支均已闭合。
+-- 11.16 root/66：1参数、26条指令；常量集合与11.2同名SetTargetID完全对应。
+-- 按旧版同名业务函数恢复：检查Facade/代理对象，设置目标类型为SELETE_TARGET_TYPE_FIND；
+-- 本版未逐槽模拟26条指令，归类为跨版本业务复用，保留旧版false/true返回约定。
+local function SetTargetID(targetID)
+    if not global.Facade then
+        return false
+    end
+
+    local playerInputProxy =
+        global.Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)
+
+    if not playerInputProxy then
+        return false
+    end
+
+    playerInputProxy:SetTargetID(
+        targetID,
+        global.MMO.SELETE_TARGET_TYPE_FIND
+    )
+    return true
+end
+
+
+-- ClearTargetID_2：旧版函数声明与本版闭合函数体匹配，已恢复真实名称。
+local function ClearTargetID_2()
+    if not global.Facade then
+        return
+    end
+
+    local playerInputProxy =
+        global.Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)
+
+    if not playerInputProxy then
+        return
+    end
+
+    playerInputProxy:SetTargetID(
+        0,
+        global.MMO.SELETE_TARGET_TYPE_FIND
+    )
+end
+
+
+-- 11.16 root/60：21条物理指令，0个显式参数；root父级创建事件仅明确记录1项捕获。
+-- slot1 Opcode324读取H[0]；slot2 Opcode325判断其真值。
+-- H[0]为假时slot3跳转被slot4 Opcode339结束路径截断；H[0]为真时跳过结束槽继续。
+-- slot5 Opcode213清空N[0]；slot6 Opcode397将N[0]写回H[0]，即消费该捕获状态并置为nil。
+-- slot7–12由Opcode411融合链完成global.Facade读取、retrieveProxy方法准备，
+-- 以及global.ProxyTable.PlayerInputProxy参数读取；slot13调用retrieveProxy。
+-- slot14 Opcode289检查代理对象；代理不存在时slot15跳至函数末尾。
+-- slot16 Opcode274读取ClearAttackTargetID成员；slot17 Opcode289检查该成员，
+-- 不存在时slot18跳至函数末尾；存在时slot19 Opcode393准备方法和receiver，
+-- slot20 Opcode123无参调用，等价于playerInputProxy:ClearAttackTargetID()。
+-- 本函数实际读写H[0]；root槽519创建闭包、槽520明确捕获父级N[76]到H[0]。原型索引upvalue_count与创建事件captureCount不一致，按实际创建事件的一项捕获恢复。
+-- 父级共享槽位的原始业务变量名未恢复，但捕获单元及其读写语义已明确，因此用capturedUpvalues[0]
+-- 保留同一共享upvalue，不臆造变量名；函数体和唯一实际使用的捕获来源均已完整恢复。
+-- helper_root_60为按原型路径生成的合成定位名，不代表原始Lua符号名。
+local function make_helper_root_60(capturedUpvalues)
+    return function()
+        if not ReadUpvalueCell_11_16(capturedUpvalues[0]) then
+            return
+        end
+
+        WriteUpvalueCell_11_16(capturedUpvalues[0], nil)
+
+        local playerInputProxy =
+            global.Facade:retrieveProxy(global.ProxyTable.PlayerInputProxy)
+
+        if not playerInputProxy then
+            return
+        end
+
+        if playerInputProxy.ClearAttackTargetID then
+            playerInputProxy:ClearAttackTargetID()
+        end
+    end
+end
+
+
+-- 11.16 root/33/0：21条物理指令，1个显式参数，6个upvalue。
+-- 闭包体已恢复；H[0]与H[1]的父级词法来源尚未由root/33闭包创建点证实，
+-- root/33槽位39创建本闭包，槽位40/41分别将root/33的H[0]/H[1]捕获到本闭包。
+-- root/33的父级创建映射已确认：H[0]=MainLeftBottom.z，H[1]=ShowLocalNoticeByType。
+-- 因此本闭包capturedUpvalues[0]是主界面状态表，capturedUpvalues[1]是本地提示回调。
+-- slot1–3读取H[0].putoutTimer并判断真值；假值路径经slot4跳到slot12。
+-- 真值路径执行SL:UnSchedule(timer)，随后清空H[0].putoutTimer。
+-- 两条路径均清空H[0].putoutSent，然后以参数和timer（假值路径为nil）
+-- 调用H[1]；最后调用SL:ShowSystemTips(参数)。
+-- SL.UnSchedule与SL.ShowSystemTips按3.40.x官方开发文档直接使用，不分析其内部实现。
+-- Opcode114在本原型中是直接常量键表写入，不融合消费后续槽位；
+-- 此处纠正此前账本把slot11误判为融合指令的记录。
+local function make_helper_root_33_0(capturedUpvalues)
+    return function(message)
+        local state = capturedUpvalues[0]
+        local timer = state.putoutTimer
+
+        if timer then
+            SL:UnSchedule(timer)
+            state.putoutTimer = nil
+        end
+
+        state.putoutSent = nil
+        capturedUpvalues[1](message, timer)
+        SL:ShowSystemTips(message)
+    end
+end
+
+
+-- 11.16 root/3：StopGatherMonsters（高置信候选），25条物理指令、0个显式参数。
+-- 全部25槽均有效；slot5/6条件路径在slot14汇合。
+-- slot1/2将H[0]置为false；slot3/4读取H[1].gatherTimer。
+-- timer存在时，slot7/8准备SL:UnSchedule，slot9/10读取timer，
+-- slot11调用SL:UnSchedule(timer)，slot12/13将H[1].gatherTimer清空为nil。
+-- timer不存在时，slot6跳转到slot14，跳过取消定时器部分。
+-- 公共尾段依次调用H[2]()、H[3](H[4].IDLE)、H[5](),
+-- H[6]("引怪功能已停止")，最后结束。
+-- 父级root闭包创建时H[1]–H[6]的业务变量身份尚未映射；
+-- 以下capturedUpvalues[n]仅表示VM捕获槽，不冒充原始局部变量名。
+-- SL:UnSchedule按已核实的3.40.x官方API直接调用，不分析其内部实现。
+local function make_helper_root_3(capturedUpvalues)
+    capturedUpvalues[0] = false
+
+    local gatherState = capturedUpvalues[1]
+    local gatherTimer = gatherState.gatherTimer
+
+    if gatherTimer then
+        SL:UnSchedule(gatherTimer)
+        gatherState.gatherTimer = nil
+    end
+
+    capturedUpvalues[2]()
+    capturedUpvalues[3](capturedUpvalues[4].IDLE)
+    capturedUpvalues[5]()
+    capturedUpvalues[6]("引怪功能已停止")
+end
+
+-- 11.16 root/7：MoveItemToQuickUse(itemIndex, targetPos)。
+-- 业务体参考11.2与11.9两份已恢复旧版源码；两版函数主体一致，且11.16 root/7的26项常量与其快捷栏/背包操作常量集合对应。
+-- 采用跨版本业务复用恢复，不宣称逐条反汇编还原；本版133条指令尚未逐槽核验。未证实的宿主方法语义不作扩展解释。
+local function MoveItemToQuickUse(itemIndex, targetPos)
+    -- PC1-PC14：分别取得QuickUseProxy与Bag代理。
+    local quickUseProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.QuickUseProxy
+    )
+    local bagProxy = global.Facade:retrieveProxy(
+        global.ProxyTable.Bag
+    )
+
+    -- PC15-PC21：任一代理缺失均返回false和固定提示。
+    if not quickUseProxy or not bagProxy then
+        return false, "参数无效"
+    end
+
+    -- PC22-PC30：检查目标位置范围[1, GetQuickUseSize()]。
+    local quickUseSize = quickUseProxy:GetQuickUseSize()
+    if targetPos < 1 or targetPos > quickUseSize then
+        return false, "目标位置超出范围"
+    end
+
+    -- PC31-PC35：取得快捷栏数据，按pairs遍历位置与条目。
+    local quickUseData = quickUseProxy:GetQuickUseData()
+
+    -- PC36-PC90：查找物品是否已经存在于快捷栏。
+    for position, quickUseEntry in pairs(quickUseData) do
+        if quickUseEntry.Index == itemIndex then
+            -- PC42-PC46：物品已经处于目标位置。
+            if position == targetPos then
+                return false, "物品已在目标位置"
+            end
+
+            -- PC47-PC49：读取目标位置当前条目。
+            local targetEntry =
+                quickUseProxy:GetQucikUseDataByPos(targetPos)
+
+            -- PC50-PC54：先按原始调用顺序写回当前位置条目。
+            -- 第三个显式参数为true；其宿主含义未知，按原值保留。
+            quickUseProxy:SetQuickUsePosData(
+                position,
+                quickUseEntry,
+                true
+            )
+
+            if targetEntry then
+                -- PC55-PC66：目标位置已有条目，执行双位置交换。
+                quickUseProxy:SetQuickUsePosData(
+                    targetPos,
+                    quickUseEntry,
+                    false
+                )
+                quickUseProxy:SetQuickUsePosData(
+                    position,
+                    targetEntry,
+                    false
+                )
+
+                -- PC67-PC74：返回成功状态及“交换”格式提示。
+                return true, string.format(
+                    "快捷栏交换: %d ↔ %d",
+                    position,
+                    targetPos
+                )
+            end
+
+            -- PC75-PC88：目标位置无条目，写入目标位置并返回移动提示。
+            quickUseProxy:SetQuickUsePosData(
+                targetPos,
+                quickUseEntry,
+                true
+            )
+            return true, string.format(
+                "快捷栏移动: %d → %d",
+                position,
+                targetPos
+            )
+        end
+    end
+
+    -- PC89-PC103：快捷栏中未找到该Index，转查背包。
+    local itemDataList =
+        bagProxy:GetItemDataByItemIndex(itemIndex)
+
+    -- PC94-PC103：不仅检查返回值truthy，还调用next确认表非空。
+    if not itemDataList or not next(itemDataList) then
+        return false, "物品不存在"
+    end
+
+    -- PC104-PC106：读取目标快捷栏位置原有条目。
+    local targetEntry =
+        quickUseProxy:GetQucikUseDataByPos(targetPos)
+
+    if targetEntry then
+        -- PC107-PC116：目标位置原有条目时，按原始顺序写入并退回背包。
+        quickUseProxy:SetQuickUsePosData(
+            targetPos,
+            targetEntry,
+            true
+        )
+        bagProxy:addItemData(targetEntry)
+    end
+
+    -- PC117-PC125：取返回表的第1项，按原始顺序删除并写入目标位置。
+    -- 保留itemDataList[1]，不擅自改写为.Index或MakeIndex。
+    local itemEntry = itemDataList[1]
+    quickUseProxy:DelItemData(itemEntry)
+    quickUseProxy:SetQuickUsePosData(
+        targetPos,
+        itemEntry,
+        false
+    )
+
+    -- PC126-PC132：返回成功状态及背包移入快捷栏提示。
+    return true, string.format(
+        "已从背包移动到快捷栏位置%d",
+        targetPos
+    )
+end
+
+-- 11.16 root/38：DistanceCalculation业务辅助函数（2参数、6常量、25条指令、无子原型）。
+-- 11.2与11.9均存在同职责实现：缺少任一坐标表时返回99999；
+-- 否则计算两点X/Y差值绝对值的最大值（Chebyshev距离）。
+-- 11.2分别检查两个参数，11.9合并检查；业务结果一致。
+-- 11.16本版完整指令流未保存在仓库，故按跨版本业务复用恢复，不宣称逐槽还原。
+local function DistanceCalculation(pointA, pointB)
+    if not pointA or not pointB then
+        return 99999
+    end
+
+    local dx = math.abs(pointA.x - pointB.x)
+    local dy = math.abs(pointA.y - pointB.y)
+    return math.max(dx, dy)
+end
+
+
+-- 11.16 root/75：FindMonsterCandidates。
+-- 以11.2/11.9旧版共同业务主体为底稿；11.16 root/75常量确认保留忽略名单、怪物遍历、距离计算与阈值截取。
+-- 11.16子原型root/75/0已恢复为a._distance >= b._distance，因此本函数按新版比较方向降序排序，不沿用旧版升序。
+-- root/20的FindMonsterInCurrViewField调用参数变化不直接套用到本函数；root/75自身常量池含true，且未发现false，故保留旧版此处true,true调用。
+local function FindMonsterCandidates()
+    local monsters = SL:FindMonsterInCurrViewField(true, true)
+    if not monsters or #monsters == 0 then
+        return {}
+    end
+
+    local ignoredNames = {}
+    local ignoreSetting = GET_SETTING(global.MMO.SETTING_IDX_IGNORE_MONSTER)
+
+    if ignoreSetting and type(ignoreSetting[1]) == "table" then
+        for name, enabled in pairs(ignoreSetting[1]) do
+            if enabled == true then
+                ignoredNames[name] = true
+            end
+        end
+    end
+
+    local playerPosition = GetPlayerPosition()
+    local candidates = {}
+
+    for _, actor in ipairs(monsters) do
+        if IsDie(actor) then
+            local name = actor:GetName() or "未知怪物"
+            if not ignoredNames[name] then
+                local actorPosition = GetPlayerMapPosition(actor)
+                actor._distance = DistanceCalculation(
+                    playerPosition,
+                    actorPosition
+                )
+                table.insert(candidates, actor)
+            end
+        end
+    end
+
+    table.sort(candidates, function(left, right)
+        return left._distance >= right._distance
+    end)
+
+    local result = {}
+    for index, actor in ipairs(candidates) do
+        if index > gatherConfig.GATHER_THRESHOLD then
+            break
+        end
+        table.insert(result, actor)
+    end
+
+    return result
+end
+
+-- 11.16 root/6：MainLoop（573条物理指令，0参数、无子原型）。
+-- 旧版同名引怪状态机主体与本版InitGatherMonsters/ResetGatherMonsterData所用
+-- 的isGatherRunning、currentState、resettableTable及resetSlot状态变量一致，直接迁移。
+function MainLoop()
+    if not isGatherRunning then
+        return
+    end
+
+    -- 白名单地图：仅在状态非IDLE时记录切换并复位。
+    if IsInWhitelistMap() then
+        if currentState ~= gatherStatusText.IDLE then
+            PrintLog("在白名单地图, 停止引怪")
+            FormatStateChange(gatherStatusText.IDLE)
+            ResetGatherMonsterData()
+        end
+        return
+    end
+
+    --------------------------------------------------------------------------
+    -- IDLE：收集候选怪物ID。
+    --------------------------------------------------------------------------
+    if currentState == gatherStatusText.IDLE then
+        PrintLog("扫描怪物中")
+
+        local candidates = FindMonsterCandidates()
+        if #candidates == 0 then
+            PrintLog("视野内没有可攻击怪物")
+            return
+        end
+
+        resettableTable = {}
+        local mainPlayerID = GetMainPlayerID()
+
+        for _, actor in ipairs(candidates) do
+            if not GetOwnerID(actor, mainPlayerID) then
+                table.insert(resettableTable, actor:GetID())
+            end
+        end
+
+        if #resettableTable == 0 then
+            PrintLog("没有可攻击的怪物")
+            return
+        end
+
+        resetSlot17 = 1
+        resetSlot16 = 0
+        PrintLog(string.format("开始引怪，目标数量: %d", #resettableTable))
+        FormatStateChange(gatherStatusText.GATHERING)
+        return
+    end
+
+    --------------------------------------------------------------------------
+    -- GATHERING：先处理等待归属变更的目标，再扫描目标列表。
+    --------------------------------------------------------------------------
+    if currentState == gatherStatusText.GATHERING then
+        PrintLog("引怪中")
+
+        if resetSlot19 then
+            local now = os.time()
+            if now < resetSlot20 then
+                PrintLog(string.format(
+                    "等待归属变更中: %s (还剩 %d 秒)",
+                    resetSlot22,
+                    resetSlot20 - now
+                ))
+                return
+            end
+
+            -- 等待到期后的确认查询按原型调用点不传参数；PC159-PC160常规扫描调用才传入额外实参。
+            local actorMap = FindMonsterInCurrViewField()
+            local actor = actorMap[resetSlot21]
+            local mainPlayerID = GetMainPlayerID()
+
+            if actor and GetOwnerIDText(actor, mainPlayerID) then
+                PrintLog(string.format(
+                    "怪物 %s 归属已变更为自己",
+                    resetSlot22
+                ))
+                -- VM PC137-PC139：确认归属成功后递增共享归属计数。
+                resetSlot16 = resetSlot16 + 1
+            else
+                PrintLog(string.format(
+                    "怪物 %s 归属未变更或已离开视野",
+                    resetSlot22
+                ))
+            end
+
+            resetSlot19 = false
+            resetSlot20 = 0
+            resetSlot21 = 0
+            resetSlot22 = ""
+            resetSlot17 = resetSlot17 + 1
+        end
+
+        -- 原型PC159-PC160向零形参辅助函数传入等待标记；Lua 5.1会忽略多余实参，保留调用形态。
+        local actorMap = FindMonsterInCurrViewField(resetSlot19)
+        local mainPlayerID = GetMainPlayerID()
+        local allOwnersResolved = true
+
+        -- 注意：数值for的起止值在进入循环时确定；循环内更新resetSlot17
+        -- 只影响下一次MainLoop回调的起点，不会改变本轮index的递增。
+        for index = resetSlot17, #resettableTable do
+            local targetID = resettableTable[index]
+            local actor = actorMap[targetID]
+
+            if not actor then
+                PrintLog(string.format(
+                    "怪物 %d (ID: %s) 不在视野内，跳过",
+                    index,
+                    tostring(targetID)
+                ))
+                resetSlot17 = index + 1
+
+            elseif not IsDie(actor) then
+                PrintLog(string.format(
+                    "怪物 %d (ID: %s) 已死亡，跳过",
+                    index,
+                    tostring(targetID)
+                ))
+                resetSlot17 = index + 1
+
+            else
+                local monsterName = actor:GetName()
+                if not monsterName then
+                    monsterName = "未知怪物"
+                end
+
+                local ownerID, ownerDescription =
+                    GetOwnerDescription(actor, mainPlayerID)
+
+                if GetOwnerID(actor, mainPlayerID) then
+                    PrintLog(string.format(
+                        "怪物 %d (%s, ID: %s) 归属属于其他玩家(归属ID: %s, %s)，跳过",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerID),
+                        tostring(ownerDescription)
+                    ))
+                    resetSlot17 = index + 1
+
+                elseif GetOwnerIDText(actor, mainPlayerID) then
+                    PrintLog(string.format(
+                        "怪物 %d (%s, ID: %s) 归属已属于自己(归属ID: %s, %s)，跳过",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerID),
+                        tostring(ownerDescription)
+                    ))
+                    resetSlot16 = resetSlot16 + 1
+                    resetSlot17 = index + 1
+
+                else
+                    allOwnersResolved = false
+                    resetSlot17 = index
+
+                    PrintLog(string.format(
+                        "锁定怪物 %d: %s (ID: %s, 归属: %s)",
+                        index,
+                        monsterName,
+                        tostring(targetID),
+                        tostring(ownerDescription)
+                    ))
+
+                    local accepted = SetTargetID(targetID)
+                    if accepted then
+                        resetSlot19 = true
+                        resetSlot20 = os.time() + gatherConfig.ATTACK_WAIT_TIME
+                        resetSlot21 = targetID
+                        resetSlot22 = monsterName
+
+                        PrintLog(string.format(
+                            "开始等待 %s 归属变更 (等待 %d 秒)",
+                            monsterName,
+                            gatherConfig.ATTACK_WAIT_TIME
+                        ))
+
+                        -- VM PC280-PC302：锁定成功后设置等待状态并立即返回。
+                        -- 游标必须保持在当前index；等待归属确认后再由VM的确认分支推进。
+                        return
+                    end
+
+                    -- VM PC303-PC311：锁定失败时记录日志、游标推进到下一只，然后返回。
+                    PrintLog(string.format("锁定怪物 %s 失败", monsterName))
+                    resetSlot17 = index + 1
+                    return
+                end
+            end
+        end
+
+        -- VM PC314-PC330：只有归属确认计数达到目标列表总数，才允许进入攻击状态。
+        -- 若扫描结束但计数不足（包括归属被其他玩家抢走），按VM回到IDLE并重置本批。
+        if allOwnersResolved and resetSlot16 >= #resettableTable then
+            PrintLog("所有怪物归属已获取，切换到攻击状态")
+            resetSlot17 = 1
+            FormatStateChange(gatherStatusText.ATTACKING)
+            return
+        end
+
+        PrintLog("怪物列表处理完毕但未全部获取归属，重新扫描")
+        FormatStateChange(gatherStatusText.IDLE)
+        ResetGatherMonsterData()
+        return
+    end
+
+    --------------------------------------------------------------------------
+    -- ATTACKING：按目标ID查找下一个仍存活的对象。
+    --------------------------------------------------------------------------
+    if currentState == gatherStatusText.ATTACKING then
+        PrintLog("攻击中")
+
+        local actorMap = FindMonsterInCurrViewField()
+        for index = resetSlot17, #resettableTable do
+            local targetID = resettableTable[index]
+            local actor = actorMap[targetID]
+
+            if actor and IsDie(actor) then
+                local monsterName = actor:GetName()
+                if not monsterName then
+                    monsterName = "未知怪物"
+                end
+
+                PrintLog(string.format(
+                    "攻击怪物 %d: %s (ID: %s)",
+                    index,
+                    monsterName,
+                    tostring(targetID)
+                ))
+
+                -- ATTACKING每0.5秒都会进入一次；目标没变化时不重复SetTargetID，
+                -- 避免引擎反复刷新同一目标造成地图怪物选中效果闪烁。
+                if resetSlot21 ~= targetID then
+                    if SetTargetID(targetID) then
+                        resetSlot21 = targetID
+                    end
+                end
+                return
+            end
+
+            PrintLog(string.format(
+                "怪物 %d (ID: %s) 已死亡或离开视野",
+                index,
+                tostring(targetID)
+            ))
+            resetSlot17 = index + 1
+        end
+
+        PrintLog("所有目标怪物已死亡或离开视野，切换到空闲状态")
+        FormatStateChange(gatherStatusText.IDLE)
+        ResetGatherMonsterData()
+        return
+    end
+end
+
+
+-- 11.16 root/23：InitGatherMonsters。
+-- 以11.2/11.9共同业务流程为底稿；保留新版已确认的Schedule回调包装闭包closure_root_23_0。
+-- root/3停止函数闭包已确认运行开关为独立布尔upvalue、计时器对象含gatherTimer字段；这里沿用旧版变量名映射。
+
 return MainLeftBottom
