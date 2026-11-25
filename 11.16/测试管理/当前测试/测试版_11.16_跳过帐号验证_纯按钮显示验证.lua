@@ -3930,7 +3930,7 @@ end
 -- H[0]来自父函数的外层捕获，暂以capturedPowerState保留，不猜测其词法变量名。
 -- 本函数的网络消息前置参数及ScheduleOnce的参数顺序仍按寄存器代理保留待定；
 -- 不把未闭合的调用参数臆写成确定的公开接口签名。
-local function make_helper_root_52_35(capturedPowerState)
+local function make_helper_root_52_35()
     local userId = SL:GetMetaValue("USER_ID")
     if not userId then
         return
@@ -3944,7 +3944,9 @@ local function make_helper_root_52_35(capturedPowerState)
     -- 开启与3秒后关闭必须写入同一个捕获状态对象。
     -- 子闭包root/52/35/0明确对H[0].powerRefreshing写false，
     -- 因此这里也通过同一H[0]对象写true，避免SL全局表与捕获表分离。
-    local powerState = capturedPowerState
+    -- root/52/35原型为0个显式参数、1个upvalue；
+    -- H[0]对应root slot42创建的独立moduleState表。
+    local powerState = root52ModuleState
     if not powerState then
         return
     end
@@ -3958,14 +3960,14 @@ local function make_helper_root_52_35(capturedPowerState)
 
     -- 3秒后清除刷新状态；闭包捕获的外层状态对象按H[0]传入。
     SL:ScheduleOnce(function()
-        make_helper_root_52_35_0(powerState)
+        make_helper_root_52_35_0()
     end, 3)
 end
 
--- 11.16 root/52/35/0：3条物理指令，0参数、1个upvalue。
--- Opcode 88读取H[0]；Opcode 114设置H[0].powerRefreshing=false。
-local function make_helper_root_52_35_0(capturedPowerState)
-    capturedPowerState.powerRefreshing = false
+-- 11.16 root/52/35/0：3条物理指令，0个显式参数、1个upvalue。
+-- H[0]与父级root/52/35的H[0]指向同一个root slot42 moduleState表。
+local function make_helper_root_52_35_0()
+    root52ModuleState.powerRefreshing = false
 end
 
 
@@ -6222,7 +6224,8 @@ local function make_helper_root_52_14(capturedModuleState, capturedPrintLog, ori
             end
         end
 
-        return originalOnLuaMessage(0, 1, 2, arg3, arg4, payload)
+        -- 原版root/52/14槽165–172：六个回调参数原样、按顺序转发。
+        return originalOnLuaMessage(arg0, messageId, arg2, arg3, arg4, payload)
     end
 end
 
@@ -6961,7 +6964,7 @@ local function doInit_PlainButtons()
 
     -- 隔离测试第2步：保留游戏原生OnLuaMessage，只发送一次原版战力请求。
     -- 不安装消息包装器，也不放进每秒定时器；用于判断请求发送本身是否影响NPC界面。
-    pcall(make_helper_root_52_35, root52ModuleState)
+    pcall(make_helper_root_52_35)
 
     -- 消息接收包装器继续停用；只刷新金币、元宝和当前战力显示值。
     InstallCombatPowerMessageHook_11_16()
