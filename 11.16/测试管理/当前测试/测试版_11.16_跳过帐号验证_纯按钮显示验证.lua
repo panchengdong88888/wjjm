@@ -6216,9 +6216,9 @@ local function make_helper_root_52_14(capturedModuleState, capturedPrintLog, ori
                     if combatPower then
                         main.combatPower = combatPower
                         if main.powerRefreshing then
-                            -- 隔离测试：清除请求状态，但仍把消息原样交给游戏原生回调。
-                            -- 用于确认NPC界面异常是否由原版early-return吞掉消息造成。
+                            -- 恢复已实机验证通过的原版行为：战力响应不再交给游戏原生消息处理器。
                             main.powerRefreshing = false
+                            return
                         end
                     end
                 end
@@ -6984,9 +6984,9 @@ local function doInit_PlainButtons()
     -- 本测试在首次战力请求前先完成同一绑定，避免请求闭包调用到nil全局函数。
     make_helper_root_52_11()
 
-    -- 先安装战力消息包装器；战力请求由下面的1秒周期回调触发。
-    -- 本轮保留原版请求频率，但测试性取消包装器early-return，避免误吞NPC消息。
+    -- 恢复已实机验证通过的配置：先安装包装器，再只发送一次战力请求。
     InstallCombatPowerMessageHook_11_16()
+    pcall(make_helper_root_52_35)
     if type(MainLeftBottom.startInfoRefresh_11_16) == "function" then
         MainLeftBottom.startInfoRefresh_11_16()
     end
@@ -7566,9 +7566,8 @@ MainLeftBottom.startInfoRefresh_11_16 = function()
             return
         end
 
-        -- 原版root/52/23每1秒调用H[4]，即root/52/35战力请求闭包。
-        -- 本测试恢复这一原版请求频率，以验证NPC故障是否来自消息包装器提前return。
-        pcall(make_helper_root_52_35)
+        -- 暂时只刷新金币、元宝、战力文字，不重复发送战力请求。
+        -- 已验证单次请求时战力显示正常，NPC界面也正常。
 
         -- 战力由消息包装器写入同一moduleState.combatPower，显示时从该表读取。
         local ok = pcall(
