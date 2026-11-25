@@ -3245,7 +3245,8 @@ function startForgeZodiac()
             { state, nil, ShowLocalNoticeByType },
             "已停止锻造生肖"
         )
-        return
+        -- 停止回调已自行复位标题和颜色，阻止通用工厂再次翻转toggle。
+        return false
     end
 
     state.forgeZodiac = {
@@ -3264,6 +3265,7 @@ function startForgeZodiac()
 
     -- 周期回调必须是函数；原恢复稿错误地把生肖名称字符串传给Schedule。
     state.forgeZodiacTimer = helper_root_78(forgeZodiac, 0.1)
+    return true
 end
 
 
