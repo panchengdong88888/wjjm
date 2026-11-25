@@ -387,6 +387,9 @@ local function helper_root_72(searchText)
 end
 
 
+-- startForgeZodiac与forgeZodiac都要调用停止回调；先声明局部变量，供前置函数捕获。
+local ForgeZodiacToggleHandler
+
 -- 11.16 root/79：forgeZodiac（212条物理指令；0个显式参数；12个捕获值）。
 -- 定时回调状态位于MainLeftBottom.z.forgeZodiac。
 -- 捕获映射：H[0]=MainLeftBottom.z；H[1]=checkGold；H[2]=ForgeZodiacToggleHandler；
@@ -3489,7 +3492,7 @@ end
 -- 另有独立的SL:ShowSystemTips(message)提示调用；本函数没有证据表明调用_G.log。
 -- 按本版指令恢复定时器/状态清理、NPC对话层关闭、按钮配置复位及双提示。
 -- ============================================================================
-local function ForgeZodiacToggleHandler(capturedUpvalues, message)
+ForgeZodiacToggleHandler = function(capturedUpvalues, message)
     local state = capturedUpvalues[1]
     local showLocalNoticeByType = capturedUpvalues[3]
 
