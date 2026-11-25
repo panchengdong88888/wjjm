@@ -60,9 +60,10 @@ z.isTaking = false
 z.isDiuing = false
 z.isOutputted = false
 
--- 11.16 root/52的H[3]捕获的是模块根表MainLeftBottom；
--- 战力请求、OnLuaMessage接收、powerRefreshing复位及文本刷新必须共享此表。
-local root52ModuleState = MainLeftBottom
+-- 11.16 root slot42执行N[3]={}创建独立moduleState；
+-- root/52的H[3]捕获该表，不能替换成MainLeftBottom或MainLeftBottom.a。
+-- 战力请求、OnLuaMessage接收及战力刷新统一使用这张独立状态表。
+local root52ModuleState = {}
 
 -- 11.16 root/23、root/3的计时器捕获源为MainLeftBottom.z。
 -- 以模块级局部别名保留同一状态表，两个原型均为0显式参数。
