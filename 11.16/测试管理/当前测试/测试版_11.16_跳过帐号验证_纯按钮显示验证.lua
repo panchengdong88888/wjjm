@@ -6235,9 +6235,30 @@ end
 -- 原版父H[3]=root slot42创建的moduleState表，H[0]=PrintLog，N[15]=原始消息回调。
 -- 原版把原回调备份到MainLeftBottom.a._origOnLuaMessage，再替换SL.NetworkUtil.OnLuaMessage。
 local function InstallCombatPowerMessageHook_11_16()
-    -- NPC界面故障隔离：不替换游戏原生OnLuaMessage回调。
-    -- 先恢复原生消息链；战力消息解析暂时停用，待确认原生NPC消息正常后再单独接入。
-    return false
+    local panelState = MainLeftBottom.a
+    local networkUtil = SL and SL.NetworkUtil
+    if not panelState or not networkUtil
+        or type(networkUtil.OnLuaMessage) ~= "function"
+    then
+        return false
+    end
+
+    local installedWrapper = panelState._combatPowerOnLuaMessageWrapper
+    if installedWrapper and networkUtil.OnLuaMessage == installedWrapper then
+        return true
+    end
+
+    local originalOnLuaMessage = networkUtil.OnLuaMessage
+    panelState._origOnLuaMessage = originalOnLuaMessage
+
+    local wrapper = make_helper_root_52_14(
+        root52ModuleState,
+        PrintLog,
+        originalOnLuaMessage
+    )
+    panelState._combatPowerOnLuaMessageWrapper = wrapper
+    networkUtil.OnLuaMessage = wrapper
+    return true
 end
 
 -- ============================================================
@@ -6964,12 +6985,10 @@ local function doInit_PlainButtons()
     -- 本测试在首次战力请求前先完成同一绑定，避免请求闭包调用到nil全局函数。
     make_helper_root_52_11()
 
-    -- 隔离测试第2步：保留游戏原生OnLuaMessage，只发送一次原版战力请求。
-    -- 不安装消息包装器，也不放进每秒定时器；用于判断请求发送本身是否影响NPC界面。
-    pcall(make_helper_root_52_35)
-
-    -- 消息接收包装器继续停用；只刷新金币、元宝和当前战力显示值。
+    -- 先安装战力消息包装器，再发送一次原版请求，避免响应先于接收端安装。
+    -- 本轮仍只请求一次，不恢复每秒请求；用于单独判断消息包装器是否影响NPC界面。
     InstallCombatPowerMessageHook_11_16()
+    pcall(make_helper_root_52_35)
     if type(MainLeftBottom.startInfoRefresh_11_16) == "function" then
         MainLeftBottom.startInfoRefresh_11_16()
     end
