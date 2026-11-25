@@ -3930,6 +3930,8 @@ end
 -- H[0]来自父函数的外层捕获，暂以capturedPowerState保留，不猜测其词法变量名。
 -- 本函数的网络消息前置参数及ScheduleOnce的参数顺序仍按寄存器代理保留待定；
 -- 不把未闭合的调用参数臆写成确定的公开接口签名。
+local make_helper_root_52_35_0
+
 local function make_helper_root_52_35()
     local userId = SL:GetMetaValue("USER_ID")
     if not userId then
@@ -3966,7 +3968,7 @@ end
 
 -- 11.16 root/52/35/0：3条物理指令，0个显式参数、1个upvalue。
 -- H[0]与父级root/52/35的H[0]指向同一个root slot42 moduleState表。
-local function make_helper_root_52_35_0()
+make_helper_root_52_35_0 = function()
     root52ModuleState.powerRefreshing = false
 end
 
