@@ -6221,7 +6221,7 @@ local function make_helper_root_52_14(capturedModuleState, capturedPrintLog, ori
             end
         end
 
-        return originalOnLuaMessage(arg0, messageId, arg2, arg3, arg4, payload)
+        return originalOnLuaMessage(0, 1, 2, arg3, arg4, payload)
     end
 end
 
