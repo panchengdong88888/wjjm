@@ -6959,7 +6959,11 @@ local function doInit_PlainButtons()
     -- 本测试在首次战力请求前先完成同一绑定，避免请求闭包调用到nil全局函数。
     make_helper_root_52_11()
 
-    -- 安装原版消息接收包装器，并启动纯显示/战力请求刷新。
+    -- 隔离测试第2步：保留游戏原生OnLuaMessage，只发送一次原版战力请求。
+    -- 不安装消息包装器，也不放进每秒定时器；用于判断请求发送本身是否影响NPC界面。
+    pcall(make_helper_root_52_35, root52ModuleState)
+
+    -- 消息接收包装器继续停用；只刷新金币、元宝和当前战力显示值。
     InstallCombatPowerMessageHook_11_16()
     if type(MainLeftBottom.startInfoRefresh_11_16) == "function" then
         MainLeftBottom.startInfoRefresh_11_16()
