@@ -6211,8 +6211,9 @@ local function make_helper_root_52_14(capturedModuleState, capturedPrintLog, ori
                     if combatPower then
                         main.combatPower = combatPower
                         if main.powerRefreshing then
+                            -- 只结束战力刷新状态，不拦截原始网络消息回调；
+                            -- NPC等游戏原生界面仍需收到同一条服务器消息。
                             main.powerRefreshing = false
-                            return
                         end
                     end
                 end
