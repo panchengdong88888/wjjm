@@ -6230,32 +6230,10 @@ end
 -- 原版父H[3]=root slot42创建的moduleState表，H[0]=PrintLog，N[15]=原始消息回调。
 -- 原版把原回调备份到MainLeftBottom.a._origOnLuaMessage，再替换SL.NetworkUtil.OnLuaMessage。
 local function InstallCombatPowerMessageHook_11_16()
-    local panelState = MainLeftBottom.a
-    local networkUtil = SL and SL.NetworkUtil
-    if not panelState or not networkUtil
-        or type(networkUtil.OnLuaMessage) ~= "function"
-    then
-        return false
-    end
-
-    local installedWrapper = panelState._combatPowerOnLuaMessageWrapper
-    if installedWrapper and networkUtil.OnLuaMessage == installedWrapper then
-        return true
-    end
-
-    local originalOnLuaMessage = networkUtil.OnLuaMessage
-    panelState._origOnLuaMessage = originalOnLuaMessage
-
-    local wrapper = make_helper_root_52_14(
-        root52ModuleState,
-        PrintLog,
-        originalOnLuaMessage
-    )
-    panelState._combatPowerOnLuaMessageWrapper = wrapper
-    networkUtil.OnLuaMessage = wrapper
-    return true
+    -- NPC界面故障隔离：不替换游戏原生OnLuaMessage回调。
+    -- 先恢复原生消息链；战力消息解析暂时停用，待确认原生NPC消息正常后再单独接入。
+    return false
 end
-
 
 -- ============================================================
 -- 11.16 root/50：inputNumber（444条物理指令，5个显式参数，5个子闭包）
@@ -7563,7 +7541,7 @@ MainLeftBottom.startInfoRefresh_11_16 = function()
         end
 
         -- 原版root/52/35的H[0]与root/52/14的H[0]相同，均为root slot42创建的moduleState表。
-        pcall(make_helper_root_52_35, root52ModuleState)
+        -- NPC故障隔离期间暂停每秒战力请求，避免额外网络消息干扰原生界面。
 
         -- 战力由消息包装器写入同一moduleState.combatPower，显示时从该表读取。
         local ok = pcall(
