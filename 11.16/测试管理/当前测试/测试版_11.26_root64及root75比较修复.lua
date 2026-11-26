@@ -193,7 +193,7 @@ end
 
 
 -- 11.16 root/75/0：8条物理指令，FindMonsterCandidates中的距离比较闭包。
--- Opcode 79/96分别读取两个参数的_distance字段；Opcode 226检测a._distance < b._distance。
+-- Opcode 79/96分别读取两个参数的_distance字段；Opcode 226按原版分派器执行a._distance <= b._distance比较。
 -- 若小于条件成立，执行Opcode 174写入false并跳过Opcode 110；
 -- 若条件不成立，Opcode 388跳过Opcode 174，随后Opcode 110写入true。
 -- 因而最终返回的是“小于等于”。Opcode 11返回该布尔值。
@@ -1407,7 +1407,7 @@ end
 
 -- 11.16 root/75：FindMonsterCandidates。
 -- 以11.2/11.9旧版共同业务主体为底稿；11.16 root/75常量确认保留忽略名单、怪物遍历、距离计算与阈值截取。
--- 11.16子原型root/75/0已恢复为a._distance >= b._distance，因此本函数按新版比较方向升序排序，不沿用旧版升序。
+-- 11.16子原型root/75/0按原版控制流恢复为a._distance <= b._distance，因此本函数按该比较方向升序排序。
 -- root/20的FindMonsterInCurrViewField调用参数变化不直接套用到本函数；root/75自身常量池含true，且未发现false，故保留旧版此处true,true调用。
 local function FindMonsterCandidates()
     local monsters = SL:FindMonsterInCurrViewField(true, true)
