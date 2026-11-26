@@ -523,11 +523,11 @@ end
 -- 3.40.x的SL.md、元变量.md及仓库搜索均未收录MainLoop；按11.16全局调用点恢复，不认定为框架公开API。
 -- closure_root_23_0为原型路径合成定位名，原始函数符号名尚未确认。
 local function closure_root_23_0()
-    -- 仅首次触发提示，避免每0.5秒刷屏；用于确认Schedule创建后的回调确实运行。
-    if not timerState.gatherCallbackProbeShown then
-        timerState.gatherCallbackProbeShown = true
-        SL:ShowSystemTips("定时器回调已触发，准备执行MainLoop")
-    end
+    -- 调试提示暂时屏蔽；需要排查定时器时可取消下面注释。
+    -- if not timerState.gatherCallbackProbeShown then
+    --     timerState.gatherCallbackProbeShown = true
+    --     SL:ShowSystemTips("定时器回调已触发，准备执行MainLoop")
+    -- end
     MainLoop()
 end
 
