@@ -4861,29 +4861,34 @@ end
 -- ============================================================================
 -- 11.16 root/52/29：苹果按钮点击状态切换（39条指令，0显式参数，3项捕获）
 -- ============================================================================
--- 原型证据确认：读取两个捕获对象的applebut字段；切换配置对象toggled；
--- 按toggle/name选择按钮标题，并按toggled选择红/白标题颜色。
--- 三个捕获的父级词法来源尚未闭合，按原始H[0]/H[1]/H[2]顺序保留代理，
--- 不将代理变量名冒充真实父级变量名。
+-- 原始捕获顺序：H[0]=回调表callbackMap；H[1]=applebutCfg配置表；
+-- H[2]=MainLeftBottom.z按钮状态表。物理指令先调用callbackMap.applebut，
+-- 仅当其返回值不等于false时，才切换配置状态并更新同一按钮的标题/颜色。
 local function MakeAppleMapButtonToggleHandler_11_16(capturedUpvalues)
-    local titleButtonHost = capturedUpvalues[1] -- H[0]：提供.applebut标题按钮
-    local applebutCfg = capturedUpvalues[2]     -- H[1]：提供toggled/toggle/name
-    local colorButtonHost = capturedUpvalues[3] -- H[2]：提供.applebut颜色按钮
+    local callbackMap = capturedUpvalues[1]
+    local applebutCfg = capturedUpvalues[2]
+    local buttonState = capturedUpvalues[3]
 
     return function()
-        if not titleButtonHost.applebut then
+        local callback = callbackMap.applebut
+        if type(callback) ~= "function" then
+            return
+        end
+
+        local callbackResult = callback()
+        if callbackResult == false then
             return
         end
 
         applebutCfg.toggled = not applebutCfg.toggled
 
-        GUI:Button_setTitleText(
-            titleButtonHost.applebut,
+        local button = buttonState.applebut
+        GUI.Button_setTitleText(
+            button,
             applebutCfg.toggled and applebutCfg.toggle or applebutCfg.name
         )
-
-        GUI:Button_setTitleColor(
-            colorButtonHost.applebut,
+        GUI.Button_setTitleColor(
+            button,
             applebutCfg.toggled and "#ff0000" or "#ffffff"
         )
     end
@@ -7050,10 +7055,24 @@ local function doInit_PlainButtons()
         )
     end
 
-    -- 苹果图按钮接入11.16原型root/52/25的启动入口。
-    local appleButton = CreateStandaloneButton(uiParent, "applebut", "开苹果图", 350)
-    if appleButton and type(callbackMap.applebut) == "function" then
-        GUI:addOnClickEvent(appleButton, callbackMap.applebut)
+    -- root/52/29的第二捕获是苹果图配置表；root/59通过MainLeftBottom.applebutCfg复位同一配置。
+    local appleButtonConfig = {
+        name = "开苹果图",
+        toggle = "关苹果图",
+        toggled = false,
+    }
+    MainLeftBottom.applebutCfg = appleButtonConfig
+
+    local appleButton = CreateStandaloneButton(uiParent, "applebut", appleButtonConfig.name, 350)
+    if appleButton then
+        -- root/52/29与root/59共用MainLeftBottom.z.applebut这一按钮引用。
+        MainLeftBottom.z.applebut = appleButton
+        local appleButtonClickHandler = MakeAppleMapButtonToggleHandler_11_16({
+            callbackMap,
+            appleButtonConfig,
+            MainLeftBottom.z,
+        })
+        GUI:addOnClickEvent(appleButton, appleButtonClickHandler)
     end
 
     -- root/52/11原版每秒把a.LuaSendMsg导出到全局LuaSendMsg。
