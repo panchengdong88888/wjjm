@@ -209,12 +209,11 @@ end
 
 -- 11.16 root/75/0：8条物理指令，FindMonsterCandidates中的距离比较闭包。
 -- Opcode 79/96分别读取两个参数的_distance字段；Opcode 226检测a._distance < b._distance。
--- 若小于条件成立，执行Opcode 174写入false并跳过Opcode 110；
--- 若条件不成立，Opcode 388跳过Opcode 174，随后Opcode 110写入true。
--- 因而最终返回的是“大于等于”，不是“小于”。Opcode 11返回该布尔值。
+-- 按原版条件跳转的最终落点，Opcode 226对应的比较结果为a._distance <= b._distance。
+-- Opcode 11返回该布尔值；此处按原版字节码恢复，不自行改写比较方向。
 -- closure_root_75_0为原型路径合成定位名，不冒充原始函数名。
 local function closure_root_75_0(a, b)
-    return a._distance >= b._distance
+    return a._distance <= b._distance
 end
 
 
@@ -585,8 +584,8 @@ local function GetOwnerDescription(arg1, arg2)
 end
 
 -- 11.16 root/64：2参数、7常量、31条指令；GetOwnerID、type、tostring、空值及-1常量
--- 与11.2同名GetOwnerIDText业务体吻合。保留旧版字符串分支的原始比较表达式，不擅自修正其逻辑。
--- 本版未逐槽模拟31条指令，归类为跨版本业务复用。
+-- 原版字节码确认：字符串分支将ownerID与tostring(expectedOwnerID)比较。
+-- 此处修正此前跨版本复用造成的字符串归属ID比较错误。
 local function GetOwnerIDText(actor, expectedOwnerID)
     local ownerID = actor:GetOwnerID()
 
@@ -595,7 +594,7 @@ local function GetOwnerIDText(actor, expectedOwnerID)
     end
 
     if type(ownerID) == "string" then
-        return ownerID == tostring(ownerID)
+        return ownerID == tostring(expectedOwnerID)
     end
 
     return ownerID == expectedOwnerID
@@ -1473,7 +1472,7 @@ end
 
 -- 11.16 root/75：FindMonsterCandidates。
 -- 以11.2/11.9旧版共同业务主体为底稿；11.16 root/75常量确认保留忽略名单、怪物遍历、距离计算与阈值截取。
--- 11.16子原型root/75/0已恢复为a._distance >= b._distance，因此本函数按新版比较方向降序排序，不沿用旧版升序。
+-- 11.16子原型root/75/0按原版字节码恢复为a._distance <= b._distance；此处排序比较同步使用相同表达式。
 -- root/20的FindMonsterInCurrViewField调用参数变化不直接套用到本函数；root/75自身常量池含true，且未发现false，故保留旧版此处true,true调用。
 local function FindMonsterCandidates()
     local monsters = SL:FindMonsterInCurrViewField(true, true)
@@ -1510,7 +1509,7 @@ local function FindMonsterCandidates()
     end
 
     table.sort(candidates, function(left, right)
-        return left._distance >= right._distance
+        return left._distance <= right._distance
     end)
 
     local result = {}
