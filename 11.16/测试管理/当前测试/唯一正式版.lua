@@ -2404,19 +2404,27 @@ local function getMainLeftBottomBlacklistState()
 end
 
 
--- 11.16 root/34：BlacklistPlayerDetection（274条指令，0参数、无子原型）。
--- 复用旧版黑名单检测业务主体；按本版常量改用gamePlayerController:GetMainPlayer，
--- 玩家对象的GetID/GetName/GetMapX/GetMapY读取方式接入，并使用MainLeftBottom.a.blacklist共享状态。
+-- 11.16 root/47：BlacklistPlayerDetection（216条物理指令，0参数、无子原型）。
+-- 依据root/47原始VM逐槽恢复；父级13项捕获改为本地闭包依赖，保留原始调用顺序。
+local blacklistInstallDamageHook = MakeInstallDamageHook(MainLeftBottom.a, PrintLog)
+local blacklistRandomTeleportNames = {"随机传送石"}
+local blacklistFindAndUseRandomTeleport =
+    makeUseItemByIndex(blacklistRandomTeleportNames)
+local blacklistAlertInterval = 2.0
+local blacklistSuccessRetryDelay = 0.01
+local blacklistNoStoneRetryDelay = 30.0
+local blacklistDistanceCalculation
+
 function BlacklistPlayerDetection()
     MainLeftBottom.z.isBlacklisting = true
+    blacklistInstallDamageHook()
+
+    local mainActorID = SL:GetMetaValue("MAIN_ACTOR_ID")
+    if not mainActorID then
+        return
+    end
+
     local blacklistState = getMainLeftBottomBlacklistState()
-
-    -- 11.16改为由gamePlayerController取得主玩家对象。
-    local mainPlayer = global.gamePlayerController:GetMainPlayer()
-    if not mainPlayer then return end
-    local mainActorID = mainPlayer:GetID()
-    if not mainActorID then return end
-
     local hp = tonumber(SL:GetMetaValue("HP")) or 0.0
     local previousHP = blacklistState.lastHp
 
@@ -2440,8 +2448,8 @@ function BlacklistPlayerDetection()
         return
     end
 
-    -- 宿主返回玩家列表和显式数量两个值；不能用#players替代第二返回值。
-    local players, playerCount = SL:GetMetaValue("FIND_IN_VIEW_PLAYER_LIST")
+    local players, playerCount =
+        SL:GetMetaValue("FIND_IN_VIEW_PLAYER_LIST")
     if not players or not playerCount or playerCount <= 0 then
         return
     end
@@ -2455,37 +2463,27 @@ function BlacklistPlayerDetection()
 
             if isBlacklisted then
                 local actorName = blacklistDisplayName
-                if not actorName and type(actor) == "table" and actor.GetName then
-                    actorName = actor:GetName()
+                if not actorName then
+                    actorName = SL:GetMetaValue("ACTOR_NAME", actorID)
                 end
                 if not actorName then
                     actorName = "黑名单玩家"
                 end
 
-                -- 未配置距离时不读取坐标，按原控制流直接允许后续告警/传送。
                 local distance
                 local distanceAccepted = true
                 local configuredDistance = blacklistState.distance
 
                 if configuredDistance then
-                    local mainX = mainPlayer:GetMapX()
-                    local mainY = mainPlayer:GetMapY()
-                    local actorX, actorY
-                    if type(actor) == "table" and actor.GetMapX and actor.GetMapY then
-                        actorX = actor:GetMapX()
-                        actorY = actor:GetMapY()
-                    end
+                    local mainX = SL:GetMetaValue("ACTOR_MAP_X", mainActorID)
+                    local mainY = SL:GetMetaValue("ACTOR_MAP_Y", mainActorID)
+                    local actorX = SL:GetMetaValue("ACTOR_MAP_X", actorID)
+                    local actorY = SL:GetMetaValue("ACTOR_MAP_Y", actorID)
 
-                    if mainX ~= nil and mainY ~= nil
-                        and actorX ~= nil and actorY ~= nil then
-                        distance = math.max(
-                            math.abs(mainX - actorX),
-                            math.abs(mainY - actorY)
-                        )
-                        distanceAccepted = distance <= configuredDistance
-                    else
-                        distanceAccepted = false
-                    end
+                    distance = blacklistDistanceCalculation(
+                        mainX, mainY, actorX, actorY, configuredDistance
+                    )
+                    distanceAccepted = (distance ~= nil)
                 end
 
                 if distanceAccepted then
@@ -2493,7 +2491,7 @@ function BlacklistPlayerDetection()
                     local lastAlertAt = blacklistState.alertAt or 0
                     local elapsed = now - lastAlertAt
 
-                    if blacklistAlertThreshold <= elapsed then
+                    if blacklistAlertInterval <= elapsed then
                         blacklistState.alertAt = now
                         PrintLog(
                             "野外观测到黑名单玩家：%s（%d格）",
@@ -2502,14 +2500,15 @@ function BlacklistPlayerDetection()
                         )
                     end
 
-                    -- 等待重试截止时间时退出整个检测回调，不继续扫描其他玩家。
                     if (blacklistState.nextTryAt or 0) > now then
                         return
                     end
 
-                    local usedTeleportItemName = UseItemByIndex()
+                    local usedTeleportItemName =
+                        blacklistFindAndUseRandomTeleport()
                     if usedTeleportItemName then
-                        blacklistState.nextTryAt = now + blacklistShortRetryDelay
+                        blacklistState.nextTryAt =
+                            now + blacklistSuccessRetryDelay
                         blacklistState.noStoneWarned = false
 
                         ShowLocalNoticeByType(string.format(
@@ -2525,26 +2524,27 @@ function BlacklistPlayerDetection()
                             usedTeleportItemName
                         )
                     else
-                        blacklistState.nextTryAt = now + blacklistNoItemRetryDelay
+                        blacklistState.nextTryAt =
+                            now + blacklistNoStoneRetryDelay
 
                         if not blacklistState.noStoneWarned then
                             blacklistState.noStoneWarned = true
-                            ShowLocalNoticeByType("没有随机传送石，黑名单玩家传送暂停")
+                            ShowLocalNoticeByType(
+                                "没有随机传送石，黑名单玩家传送暂停"
+                            )
                             PrintLog(
                                 "没有可用的随机传送道具（%s）",
-                                table.concat(randomTeleportItemNames, "/")
+                                table.concat(blacklistRandomTeleportNames, "/")
                             )
                         end
                     end
 
-                    -- 成功与失败路径均在处理当前首个命中玩家后退出。
                     return
                 end
             end
         end
     end
 end
-
 
 -- 11.16 root/63：LuaSendMsg（92条指令，0个固定参数、2个upvalues、0个子原型）。
 -- 原始闭包捕获本地状态表a与PrintLog；先绑定a.LuaSendMsg，全局导出由doInit的Schedule回调执行。
@@ -5969,6 +5969,10 @@ local function MakeGetMapData2DPtr_11_16(unusedCapturedValue)
         return distance
     end
 end
+
+
+-- root/47 UP[5]：5参数切比雪夫距离门控函数。
+blacklistDistanceCalculation = MakeGetMapData2DPtr_11_16(nil)
 
 
 -- ============================================================
