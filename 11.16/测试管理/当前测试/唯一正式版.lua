@@ -5938,10 +5938,10 @@ end
 
 
 -- ============================================================================
--- 11.16 root/9：GetMapData2DPtr候选函数（5参数距离门控）
+-- 11.16 root/22：GetMapData2DPtr（144条物理指令，5参数、1项捕获）。
 -- ============================================================================
--- 本版root/9有5个显式参数及1项父级捕获。对照11.9同职责旧版，活动路径
--- 返回切比雪夫距离；父级捕获在活动路径不读取，故保留unusedCapturedValue。
+-- 原始VM只有PC1-PC37可达；活动路径执行五参数切比雪夫距离门控。
+-- UP[0]在活动路径不读取，故保留unusedCapturedValue占位捕获。
 -- 常量池中的sceneManager/isObstacle/getMapDataRows/getMapDataCols等属于
 -- 旧版同体中return之后的残留尾段，不将其误写成地图数据读取逻辑。
 local function MakeGetMapData2DPtr_11_16(unusedCapturedValue)
