@@ -4862,7 +4862,7 @@ end
 -- 11.16 root/52/29：苹果按钮点击状态切换（39条指令，0显式参数，3项捕获）
 -- ============================================================================
 -- 原始捕获顺序：H[0]=回调表callbackMap；H[1]=applebutCfg配置表；
--- H[2]=MainLeftBottom.z按钮状态表。物理指令先调用callbackMap.applebut，
+-- H[2]=MainLeftBottom.b按钮映射表。物理指令先调用callbackMap.applebut，
 -- 仅当其返回值不等于false时，才切换配置状态并更新同一按钮的标题/颜色。
 local function MakeAppleMapButtonToggleHandler_11_16(capturedUpvalues)
     local callbackMap = capturedUpvalues[1]
@@ -4883,11 +4883,11 @@ local function MakeAppleMapButtonToggleHandler_11_16(capturedUpvalues)
         applebutCfg.toggled = not applebutCfg.toggled
 
         local button = buttonState.applebut
-        GUI.Button_setTitleText(
+        GUI:Button_setTitleText(
             button,
             applebutCfg.toggled and applebutCfg.toggle or applebutCfg.name
         )
-        GUI.Button_setTitleColor(
+        GUI:Button_setTitleColor(
             button,
             applebutCfg.toggled and "#ff0000" or "#ffffff"
         )
@@ -7065,12 +7065,12 @@ local function doInit_PlainButtons()
 
     local appleButton = CreateStandaloneButton(uiParent, "applebut", appleButtonConfig.name, 350)
     if appleButton then
-        -- root/52/29与root/59共用MainLeftBottom.z.applebut这一按钮引用。
+        -- root/52/29按原始捕获使用MainLeftBottom.b；root/59仍通过z.applebut复位同一控件。
         MainLeftBottom.z.applebut = appleButton
         local appleButtonClickHandler = MakeAppleMapButtonToggleHandler_11_16({
             callbackMap,
             appleButtonConfig,
-            MainLeftBottom.z,
+            MainLeftBottom.b,
         })
         GUI:addOnClickEvent(appleButton, appleButtonClickHandler)
     end
