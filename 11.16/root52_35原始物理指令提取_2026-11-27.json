@@ -1,0 +1,453 @@
+{
+  "source": "11.16/MainLeftBottom 11.16原版.lua",
+  "source_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+  "decode": {
+    "encoded_length": 147000,
+    "decoded_length": 142522,
+    "xor": 23,
+    "bytes_consumed": 142522
+  },
+  "prototypes": {
+    "root/52/35/0": {
+      "constant_count": 2,
+      "constants": [
+        "powerRefreshing",
+        false
+      ],
+      "child_count": 0,
+      "parameter_count": 0,
+      "vararg": 0,
+      "instruction_count": 3,
+      "instructions": [
+        {
+          "slot": 1,
+          "flag": 64,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 88,
+          "b": 0,
+          "c": 0,
+          "d": 0
+        },
+        {
+          "slot": 2,
+          "flag": 48,
+          "mode": 0,
+          "mask": 6,
+          "opcode": 114,
+          "b": 0,
+          "c": "powerRefreshing",
+          "d": false
+        },
+        {
+          "slot": 3,
+          "flag": 0,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 205,
+          "b": 0,
+          "c": 0,
+          "d": 0
+        }
+      ]
+    },
+    "root/52/35": {
+      "constant_count": 17,
+      "constants": [
+        "tostring",
+        "string",
+        "LuaSendMsg",
+        "global",
+        "format",
+        "len",
+        "USER_ID",
+        "{\"UserID\":\"%s\",\"index\":15}",
+        0,
+        "MsgType",
+        "MSG_CS_NPC_CLICK",
+        true,
+        "GetMetaValue",
+        3,
+        "ScheduleOnce",
+        "powerRefreshing",
+        "SL"
+      ],
+      "child_count": 1,
+      "parameter_count": 0,
+      "vararg": 0,
+      "instruction_count": 37,
+      "instructions": [
+        {
+          "slot": 1,
+          "flag": 146,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 146,
+          "b": 0,
+          "c": "SL",
+          "d": null
+        },
+        {
+          "slot": 2,
+          "flag": 96,
+          "mode": 0,
+          "mask": 4,
+          "opcode": 102,
+          "b": 0,
+          "c": 0,
+          "d": "GetMetaValue"
+        },
+        {
+          "slot": 3,
+          "flag": 82,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 295,
+          "b": 2,
+          "c": "USER_ID",
+          "d": null
+        },
+        {
+          "slot": 4,
+          "flag": 128,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 209,
+          "b": 0,
+          "c": 2,
+          "d": 0
+        },
+        {
+          "slot": 5,
+          "flag": 128,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 325,
+          "b": 0,
+          "c": 0,
+          "d": 1
+        },
+        {
+          "slot": 6,
+          "flag": 2,
+          "mode": 1,
+          "mask": 0,
+          "opcode": 388,
+          "b": 0,
+          "c": 7,
+          "d": null
+        },
+        {
+          "slot": 7,
+          "flag": 64,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 339,
+          "b": 0,
+          "c": 0,
+          "d": 0
+        },
+        {
+          "slot": 8,
+          "flag": 18,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 105,
+          "b": 1,
+          "c": "string",
+          "d": null
+        },
+        {
+          "slot": 9,
+          "flag": 224,
+          "mode": 0,
+          "mask": 4,
+          "opcode": 163,
+          "b": 1,
+          "c": 1,
+          "d": "format"
+        },
+        {
+          "slot": 10,
+          "flag": 210,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 384,
+          "b": 2,
+          "c": "{\"UserID\":\"%s\",\"index\":15}",
+          "d": null
+        },
+        {
+          "slot": 11,
+          "flag": 18,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 188,
+          "b": 3,
+          "c": "tostring",
+          "d": null
+        },
+        {
+          "slot": 12,
+          "flag": 192,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 64,
+          "b": 4,
+          "c": 0,
+          "d": 0
+        },
+        {
+          "slot": 13,
+          "flag": 0,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 184,
+          "b": 3,
+          "c": 4,
+          "d": 0
+        },
+        {
+          "slot": 14,
+          "flag": 192,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 10,
+          "b": 1,
+          "c": 0,
+          "d": 0
+        },
+        {
+          "slot": 15,
+          "flag": 0,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 49,
+          "b": 2,
+          "c": 0,
+          "d": 0
+        },
+        {
+          "slot": 16,
+          "flag": 112,
+          "mode": 0,
+          "mask": 6,
+          "opcode": 322,
+          "b": 2,
+          "c": "powerRefreshing",
+          "d": true
+        },
+        {
+          "slot": 17,
+          "flag": 210,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 382,
+          "b": 2,
+          "c": "LuaSendMsg",
+          "d": null
+        },
+        {
+          "slot": 18,
+          "flag": 18,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 5,
+          "b": 3,
+          "c": "global",
+          "d": null
+        },
+        {
+          "slot": 19,
+          "flag": 160,
+          "mode": 0,
+          "mask": 4,
+          "opcode": 96,
+          "b": 3,
+          "c": 3,
+          "d": "MsgType"
+        },
+        {
+          "slot": 20,
+          "flag": 224,
+          "mode": 0,
+          "mask": 4,
+          "opcode": 274,
+          "b": 3,
+          "c": 3,
+          "d": "MSG_CS_NPC_CLICK"
+        },
+        {
+          "slot": 21,
+          "flag": 146,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 168,
+          "b": 4,
+          "c": 0,
+          "d": null
+        },
+        {
+          "slot": 22,
+          "flag": 146,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 295,
+          "b": 5,
+          "c": 0,
+          "d": null
+        },
+        {
+          "slot": 23,
+          "flag": 210,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 374,
+          "b": 6,
+          "c": 0,
+          "d": null
+        },
+        {
+          "slot": 24,
+          "flag": 18,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 295,
+          "b": 7,
+          "c": 0,
+          "d": null
+        },
+        {
+          "slot": 25,
+          "flag": 128,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 241,
+          "b": 8,
+          "c": 1,
+          "d": 0
+        },
+        {
+          "slot": 26,
+          "flag": 82,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 257,
+          "b": 9,
+          "c": "string",
+          "d": null
+        },
+        {
+          "slot": 27,
+          "flag": 160,
+          "mode": 0,
+          "mask": 4,
+          "opcode": 406,
+          "b": 9,
+          "c": 9,
+          "d": "len"
+        },
+        {
+          "slot": 28,
+          "flag": 192,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 241,
+          "b": 10,
+          "c": 1,
+          "d": 0
+        },
+        {
+          "slot": 29,
+          "flag": 64,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 264,
+          "b": 9,
+          "c": 10,
+          "d": 0
+        },
+        {
+          "slot": 30,
+          "flag": 192,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 376,
+          "b": 2,
+          "c": 0,
+          "d": 0
+        },
+        {
+          "slot": 31,
+          "flag": 210,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 253,
+          "b": 2,
+          "c": "SL",
+          "d": null
+        },
+        {
+          "slot": 32,
+          "flag": 160,
+          "mode": 0,
+          "mask": 4,
+          "opcode": 138,
+          "b": 2,
+          "c": 2,
+          "d": "ScheduleOnce"
+        },
+        {
+          "slot": 33,
+          "flag": 64,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 178,
+          "b": 4,
+          "c": 0,
+          "d": 1
+        },
+        {
+          "slot": 34,
+          "flag": 192,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 132,
+          "b": 0,
+          "c": 0,
+          "d": 0
+        },
+        {
+          "slot": 35,
+          "flag": 82,
+          "mode": 1,
+          "mask": 2,
+          "opcode": 295,
+          "b": 5,
+          "c": 3,
+          "d": null
+        },
+        {
+          "slot": 36,
+          "flag": 0,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 123,
+          "b": 2,
+          "c": 5,
+          "d": 0
+        },
+        {
+          "slot": 37,
+          "flag": 64,
+          "mode": 0,
+          "mask": 0,
+          "opcode": 205,
+          "b": 0,
+          "c": 0,
+          "d": 0
+        }
+      ]
+    }
+  }
+}
