@@ -1853,3 +1853,52 @@ F()循环每轮执行完当前指令后，统一执行`O=O+1`。Opcode388的跳�
 ### 结论边界
 
 root/34的13项父级捕获来源现已全部定位（13/13）。四项值与当前明文中的四个自由变量用途相互吻合。但root/34自身274条指令尚未逐槽提取/反汇编；本批只闭合父级捕获数据流，不代表函数主体已完成指令级恢复，也不据此修改唯一正式明文。
+
+
+## 2026-11-28：root/52/23 金币警告最终显示调用闭合
+
+本轮继续核对原版加密源码内嵌的F()分派器，完成root/52/23物理槽129–134的融合边界与参数寄存器追踪。
+
+### 原始分派器证据
+
+- Opcode 253：先执行`N[A]=Z[B]`，再消费下一物理记录完成方法接收者/self及方法成员准备。
+- Opcode 393：`local X=N[B]; N[A+1]=X; N[A]=X[C]`。
+- Opcode 9：`N[A]=H[B]`，随后融合消费下一物理记录，执行`N[next.A]=N[next.B][next.C]`。
+- Opcode 64：`N[A]=N[B]`。
+- Opcode 123：以N[A]为函数，调用参数区间N[A+1..B]。
+
+### root/52/23槽129–134闭合
+
+| 物理槽 | Opcode | 实际作用 |
+|---:|---:|---|
+| 129 | 253 | 从常量表装载GUI，并融合消费槽130准备setVisible方法调用 |
+| 130 | 393 | 被槽129融合消费：保存GUI作为self，并取得GUI.setVisible |
+| 131 | 9 | 读取H[0]，并融合消费槽132读取状态表字段 |
+| 132 | 406 | **不是独立执行的Opcode**；作为槽131的融合载荷，完成N[7]=N[7]["goldWarnBg"] |
+| 133 | 64 | N[8]=N[4]，把显示判断布尔值放入第三个参数寄存器 |
+| 134 | 123 | 调用N[5](N[6],N[7],N[8])，即GUI:setVisible(goldWarnBg, N[4]) |
+
+### 闭包捕获与恢复表达式
+
+root/52/23的H[0]来自父级root/52 upvalue 2，对应MainLeftBottom.a状态表。因此：
+
+```lua
+GUI:setVisible(MainLeftBottom.a.goldWarnBg, showGoldWarning)
+```
+
+其中showGoldWarning是槽113–128已闭合得到的布尔结果：
+```lua
+local showGoldWarning =
+    goldCount < 100000
+    and boundGoldCount < 100000
+    and MainLeftBottom.a.isHidden == true
+```
+
+这里的boundGoldCount来自`SL:GetMetaValue("ITEM_COUNT", 3)`，槽位3道具实测为绑定金币。
+
+### 核验状态边界
+
+- 原版字节码的金币数量来源、索引3道具数量来源、100000阈值分支、isHidden门控及最终GUI:setVisible目标/参数，现已闭合。
+- 用户此前实测的组合（金币0、索引3道具数量40000、isHidden=true）显示，与原版字节码推演一致。
+- 这只证明指定数据组合下的原版分支推演与实测现象吻合；**不等于金币警告全部条件组合、控件创建/赋值流程或完整游戏功能已经实机验收通过**。
+- 本轮仅更新Opcode语义映射工作记录；未修改唯一正式版Lua、未修改明文恢复稿。
