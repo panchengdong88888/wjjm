@@ -3831,27 +3831,27 @@ local function helper_root_52_32_0(callbackMap, buttonConfig, button)
         end
 
         -- 7.79诊断：所有诊断信息均通过游戏内系统提示显示。
-        SL:ShowSystemTips("[7.79] 点击开始：" .. tostring(buttonConfig.key))
+        SL:ShowSystemTips("[7.80] 点击开始：" .. tostring(buttonConfig.key))
         local callbackOK, allowed = pcall(callback)
         if not callbackOK then
-            SL:ShowSystemTips("[7.79] 功能回调异常：" .. tostring(buttonConfig.key)
+            SL:ShowSystemTips("[7.80] 功能回调异常：" .. tostring(buttonConfig.key)
                 .. " / " .. tostring(allowed))
             error(allowed)
         end
-        SL:ShowSystemTips("[7.79] 功能回调已返回：" .. tostring(buttonConfig.key)
+        SL:ShowSystemTips("[7.80] 功能回调已返回：" .. tostring(buttonConfig.key)
             .. " / " .. tostring(allowed))
 
         if allowed == false then
-            SL:ShowSystemTips("[7.79] 回调返回false，跳过按钮更新：" .. tostring(buttonConfig.key))
+            SL:ShowSystemTips("[7.80] 回调返回false，跳过按钮更新：" .. tostring(buttonConfig.key))
             return
         end
         if not buttonConfig.toggle then
-            SL:ShowSystemTips("[7.79] 配置缺少toggle：" .. tostring(buttonConfig.key))
+            SL:ShowSystemTips("[7.80] 配置缺少toggle：" .. tostring(buttonConfig.key))
             return
         end
 
         buttonConfig.toggled = not buttonConfig.toggled
-        SL:ShowSystemTips("[7.79] 准备更新按钮：" .. tostring(buttonConfig.key)
+        SL:ShowSystemTips("[7.80] 准备更新按钮：" .. tostring(buttonConfig.key)
             .. " / toggled=" .. tostring(buttonConfig.toggled))
         GUI:Button_setTitleText(
             button,
@@ -3861,7 +3861,7 @@ local function helper_root_52_32_0(callbackMap, buttonConfig, button)
             button,
             buttonConfig.toggled and "#ff0000" or "#ffffff"
         )
-        SL:ShowSystemTips("[7.79] 按钮文字和颜色更新完成：" .. tostring(buttonConfig.key))
+        SL:ShowSystemTips("[7.80] 按钮文字和颜色更新完成：" .. tostring(buttonConfig.key))
     end
 end
 
