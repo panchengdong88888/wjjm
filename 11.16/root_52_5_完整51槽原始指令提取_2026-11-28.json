@@ -1,0 +1,442 @@
+{
+  "source": "11.16/MainLeftBottom 11.16原版.lua",
+  "source_sha": "ceadad470b2f73e82e8ff90d0d6417816058adaa",
+  "extraction": {
+    "method": "复用原文件内D()的base36/LZW及XOR 0x17载荷解码，并按原版S()字段结构定点解析",
+    "decoded_bytes": 142522,
+    "consumed_bytes": 142522,
+    "prototype_count": 162,
+    "root_instruction_count": 654
+  },
+  "prototype": {
+    "path": "root/52/5",
+    "constant_count": 10,
+    "child_count": 0,
+    "parameter_count": 2,
+    "instruction_count": 51,
+    "constants": [
+      null,
+      "name",
+      "GUI",
+      "#ffffff",
+      "#ff0000",
+      "key",
+      "Button_setTitleText",
+      "ipairs",
+      "toggle",
+      "toggled",
+      "Button_setTitleColor"
+    ],
+    "children": [],
+    "instructions": [
+      {
+        "slot": 1,
+        "opcode": 210,
+        "a": 146,
+        "b": 3,
+        "c": "ipairs",
+        "d": null
+      },
+      {
+        "slot": 2,
+        "opcode": 64,
+        "a": 76,
+        "b": 4,
+        "c": 3,
+        "d": 0
+      },
+      {
+        "slot": 3,
+        "opcode": 64,
+        "a": 234,
+        "b": 5,
+        "c": 0,
+        "d": 0
+      },
+      {
+        "slot": 4,
+        "opcode": 64,
+        "a": 127,
+        "b": 6,
+        "c": 1,
+        "d": 0
+      },
+      {
+        "slot": 5,
+        "opcode": 0,
+        "a": 127,
+        "b": 7,
+        "c": 2,
+        "d": 0
+      },
+      {
+        "slot": 6,
+        "opcode": 64,
+        "a": 41,
+        "b": 4,
+        "c": 3,
+        "d": 1
+      },
+      {
+        "slot": 7,
+        "opcode": 192,
+        "a": 307,
+        "b": 3,
+        "c": 4,
+        "d": 5
+      },
+      {
+        "slot": 8,
+        "opcode": 194,
+        "a": 388,
+        "b": 0,
+        "c": 19,
+        "d": null
+      },
+      {
+        "slot": 9,
+        "opcode": 82,
+        "a": 188,
+        "b": 8,
+        "c": "ipairs",
+        "d": null
+      },
+      {
+        "slot": 10,
+        "opcode": 64,
+        "a": 64,
+        "b": 9,
+        "c": 7,
+        "d": 0
+      },
+      {
+        "slot": 11,
+        "opcode": 0,
+        "a": 386,
+        "b": 8,
+        "c": 9,
+        "d": 10
+      },
+      {
+        "slot": 12,
+        "opcode": 2,
+        "a": 388,
+        "b": 0,
+        "c": 17,
+        "d": null
+      },
+      {
+        "slot": 13,
+        "opcode": 96,
+        "a": 274,
+        "b": 13,
+        "c": 12,
+        "d": "key"
+      },
+      {
+        "slot": 14,
+        "opcode": 192,
+        "a": 294,
+        "b": 0,
+        "c": 13,
+        "d": 0
+      },
+      {
+        "slot": 15,
+        "opcode": 194,
+        "a": 388,
+        "b": 0,
+        "c": 17,
+        "d": null
+      },
+      {
+        "slot": 16,
+        "opcode": 192,
+        "a": 241,
+        "b": 2,
+        "c": 12,
+        "d": 0
+      },
+      {
+        "slot": 17,
+        "opcode": 208,
+        "a": 0,
+        "b": 12,
+        "c": "toggled",
+        "d": 1
+      },
+      {
+        "slot": 18,
+        "opcode": 64,
+        "a": 250,
+        "b": 8,
+        "c": 2,
+        "d": 0
+      },
+      {
+        "slot": 19,
+        "opcode": 66,
+        "a": 388,
+        "b": 0,
+        "c": 12,
+        "d": null
+      },
+      {
+        "slot": 20,
+        "opcode": 64,
+        "a": 122,
+        "b": 3,
+        "c": 2,
+        "d": 0
+      },
+      {
+        "slot": 21,
+        "opcode": 66,
+        "a": 388,
+        "b": 0,
+        "c": 8,
+        "d": null
+      },
+      {
+        "slot": 22,
+        "opcode": 0,
+        "a": 232,
+        "b": 3,
+        "c": 3,
+        "d": 0
+      },
+      {
+        "slot": 23,
+        "opcode": 0,
+        "a": 398,
+        "b": 3,
+        "c": 3,
+        "d": 0
+      },
+      {
+        "slot": 24,
+        "opcode": 64,
+        "a": 340,
+        "b": 3,
+        "c": 0,
+        "d": 0
+      },
+      {
+        "slot": 25,
+        "opcode": 194,
+        "a": 388,
+        "b": 0,
+        "c": 50,
+        "d": null
+      },
+      {
+        "slot": 26,
+        "opcode": 0,
+        "a": 358,
+        "b": 2,
+        "c": 0,
+        "d": 0
+      },
+      {
+        "slot": 27,
+        "opcode": 194,
+        "a": 388,
+        "b": 0,
+        "c": 50,
+        "d": null
+      },
+      {
+        "slot": 28,
+        "opcode": 224,
+        "a": 274,
+        "b": 4,
+        "c": 2,
+        "d": "toggle"
+      },
+      {
+        "slot": 29,
+        "opcode": 0,
+        "a": 289,
+        "b": 4,
+        "c": 0,
+        "d": 0
+      },
+      {
+        "slot": 30,
+        "opcode": 130,
+        "a": 388,
+        "b": 0,
+        "c": 50,
+        "d": null
+      },
+      {
+        "slot": 31,
+        "opcode": 146,
+        "a": 146,
+        "b": 4,
+        "c": "GUI",
+        "d": null
+      },
+      {
+        "slot": 32,
+        "opcode": 224,
+        "a": 204,
+        "b": 4,
+        "c": 4,
+        "d": "Button_setTitleText"
+      },
+      {
+        "slot": 33,
+        "opcode": 0,
+        "a": 288,
+        "b": 6,
+        "c": 3,
+        "d": 0
+      },
+      {
+        "slot": 34,
+        "opcode": 0,
+        "a": 358,
+        "b": 1,
+        "c": 0,
+        "d": 0
+      },
+      {
+        "slot": 35,
+        "opcode": 194,
+        "a": 388,
+        "b": 0,
+        "c": 38,
+        "d": null
+      },
+      {
+        "slot": 36,
+        "opcode": 96,
+        "a": 96,
+        "b": 7,
+        "c": 2,
+        "d": "toggle"
+      },
+      {
+        "slot": 37,
+        "opcode": 192,
+        "a": 366,
+        "b": 7,
+        "c": 0,
+        "d": 1
+      },
+      {
+        "slot": 38,
+        "opcode": 130,
+        "a": 388,
+        "b": 0,
+        "c": 39,
+        "d": null
+      },
+      {
+        "slot": 39,
+        "opcode": 224,
+        "a": 274,
+        "b": 7,
+        "c": 2,
+        "d": "name"
+      },
+      {
+        "slot": 40,
+        "opcode": 64,
+        "a": 128,
+        "b": 4,
+        "c": 7,
+        "d": 0
+      },
+      {
+        "slot": 41,
+        "opcode": 146,
+        "a": 210,
+        "b": 4,
+        "c": "GUI",
+        "d": null
+      },
+      {
+        "slot": 42,
+        "opcode": 32,
+        "a": 152,
+        "b": 4,
+        "c": 4,
+        "d": "Button_setTitleColor"
+      },
+      {
+        "slot": 43,
+        "opcode": 128,
+        "a": 64,
+        "b": 6,
+        "c": 3,
+        "d": 0
+      },
+      {
+        "slot": 44,
+        "opcode": 64,
+        "a": 358,
+        "b": 1,
+        "c": 0,
+        "d": 0
+      },
+      {
+        "slot": 45,
+        "opcode": 194,
+        "a": 388,
+        "b": 0,
+        "c": 48,
+        "d": null
+      },
+      {
+        "slot": 46,
+        "opcode": 210,
+        "a": 295,
+        "b": 7,
+        "c": "#ff0000",
+        "d": null
+      },
+      {
+        "slot": 47,
+        "opcode": 128,
+        "a": 366,
+        "b": 7,
+        "c": 0,
+        "d": 1
+      },
+      {
+        "slot": 48,
+        "opcode": 66,
+        "a": 388,
+        "b": 0,
+        "c": 49,
+        "d": null
+      },
+      {
+        "slot": 49,
+        "opcode": 146,
+        "a": 295,
+        "b": 7,
+        "c": "#ffffff",
+        "d": null
+      },
+      {
+        "slot": 50,
+        "opcode": 128,
+        "a": 128,
+        "b": 4,
+        "c": 7,
+        "d": 0
+      },
+      {
+        "slot": 51,
+        "opcode": 192,
+        "a": 205,
+        "b": 0,
+        "c": 0,
+        "d": 0
+      }
+    ]
+  }
+}
