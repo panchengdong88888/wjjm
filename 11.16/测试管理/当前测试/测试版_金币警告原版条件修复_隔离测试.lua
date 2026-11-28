@@ -7549,7 +7549,7 @@ local function RefreshMainLeftBottomDisplay_11_16(moduleState, moneyProxy, contr
 
     local gold = UpdateGoldWarning_11_16(
         moduleState,
-        controls.goldWarnBg
+        controls.goldWarningBg
     )
 
     local goldText, yuanbao, combatPower = UpdateMainInfoTexts_11_16(
